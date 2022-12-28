@@ -1,0 +1,39 @@
+<div class="d-flex flex-column dfm-gap-16 dfm-p-16">
+  <div class="d-flex justify-content-between align-items-center dfm-gap-32">
+    <div class="d-flex align-items-start">
+      <img src="./assets/icons/Drag.svg" alt="drag logo" class="pointer dfm-me-8">
+      <span class="font-weight-medium">Upcoming Appointments in 4 hours ({{ upcomingAppointmentCount }})</span>
+    </div>
+    <dfm-button-icon
+      color="secondary"
+      size="sm"
+      icon="calendar-date"
+    ></dfm-button-icon>
+  </div>
+
+  <div class="overflow-scroll">
+    <div class="d-flex flex-column dfm-gap-16 overflow-y-scroll upcoming-events-container">
+      <div *ngFor="let appointment of upcomingAppointments" class="d-flex flex-row dfm-gap-8 position-relative">
+        <div class="circle-icon"></div>
+        <div
+          class="d-flex flex-column justify-content-center dfm-bg-main-50 dfm-px-10 dfm-py-4 text-xs text-center rounded">
+          <span class="font-weight-medium"> {{ appointment.time | date : 'h:mm' }} </span>
+          <span class="dfm-text-main-400"> Room {{ appointment.roomNo }} </span>
+        </div>
+        <div class="d-flex flex-row align-items-center">
+          <div class="rounded-circle avatar-container">
+            <img [src]="appointment.avatar ? appointment.avatar : 'assets/images/blank-avatar.png'"
+                 class="rounded-circle border-light border-1"
+                 alt="Doctor's avatar"
+                 width="40"
+                 height="40">
+          </div>
+          <div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs">
+            <span class="font-weight-medium"> {{ appointment.name | titlecase }} </span>
+            <span class="dfm-text-main-400"> Room {{ appointment.post | titlecase }} </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

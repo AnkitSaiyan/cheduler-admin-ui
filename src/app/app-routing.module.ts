@@ -4,9 +4,13 @@ import { BaseLayoutComponent } from './core/components/base-layout/base-layout.c
 
 const routes: Routes = [
   {
-    path: '',
-    component: BaseLayoutComponent,
+    path: 'auth',
+    loadChildren: async () => (await import('./auth/auth.module')).AuthModule
   },
+  {
+    path: '',
+    loadChildren: async () => (await import('./main/main.module')).MainModule
+  }
 ];
 
 @NgModule({

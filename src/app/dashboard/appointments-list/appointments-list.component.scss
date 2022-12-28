@@ -1,0 +1,30 @@
+.appointment-list-header-container {
+  display: flex;
+  column-gap: 8px;
+  align-items: center;
+  //flex-wrap: wrap;
+}
+
+//dfm-button-group-item {
+//  button {
+//    border-right-color: rgba(0,0,0,0) !important;
+//  }
+//}
+
+.dfm-btn-group {
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  height: 40px;
+
+  div:first-child {
+    border-right: 1px solid var(--dfm-input-border);
+  }
+
+  div:last-child {
+    border-left: 1px solid var(--dfm-input-border);
+  }
+}
+
+.input-container[_ngcontent-svh-c65] .dfm-input-sm[readonly][_ngcontent-svh-c65] {
+  border: none !important;
+}

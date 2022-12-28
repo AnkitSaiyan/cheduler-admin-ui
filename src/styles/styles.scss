@@ -4,3 +4,11 @@
 @import '../../node_modules/bootstrap/scss/bootstrap';
 
 @import './themes/theme';
+
+.dfm-card-header {
+  display: none !important;
+}
+
+dfm-input-dropdown input {
+  border: none !important;
+}

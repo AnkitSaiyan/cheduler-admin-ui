@@ -1,0 +1,26 @@
+.upcoming-events-container {
+  border-left: 1px solid var(--dfm-input-border);
+  padding: 16px 8px 16px 24px;
+  margin: 0 0 0 8px;
+  max-height: 240px;
+  //overflow-y: scroll;
+
+  .circle-icon {
+    position: absolute;
+    z-index: 1;
+    background: white;
+    border: 2px solid var(--dfm-primary);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    left: -32px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+  }
+
+  .avatar-container {
+    object-fit: contain;
+    border: 1px solid var(--bs-gray-200)
+  }
+}
