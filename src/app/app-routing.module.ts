@@ -7,10 +7,6 @@ const routes: Routes = [
     path: '',
     component: BaseLayoutComponent,
   },
-  {
-    path: 'dashboard',
-    loadChildren: async () => (await import('./dashboard/dashboard.module')).DashboardModule,
-  },
 ];
 
 @NgModule({

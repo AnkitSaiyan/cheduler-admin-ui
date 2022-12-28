@@ -1,0 +1,15 @@
+@import './light-theme';
+@import './dark-theme';
+
+@media (prefers-color-scheme: light) {
+  body {
+    @include light();
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    // change to dark once dark is implemented
+    @include light();
+  }
+}

@@ -1,0 +1,80 @@
+.font-weight-normal {
+  @include weight-normal;
+}
+
+.font-weight-medium {
+  @include weight-medium;
+}
+
+.font-weight-semi-bold {
+  @include weight-semi-bold;
+}
+
+.font-weight-bold {
+  @include weight-bold;
+}
+
+.text-xs {
+  @include text-xs;
+
+  &-medium {
+    @extend .text-xs;
+    @include weight-medium;
+  }
+
+  &-semi-bold {
+    @extend .text-xs;
+    @include weight-semi-bold;
+  }
+}
+
+.text-sm {
+  @include text-sm;
+
+  &-medium {
+    @extend .text-sm;
+    @include weight-medium;
+  }
+
+  &-semi-bold {
+    @extend .text-sm;
+    @include weight-semi-bold;
+  }
+}
+
+.text-md {
+  @include text-md;
+
+  &-medium {
+    @extend .text-md;
+    @include weight-medium;
+  }
+
+  &-semi-bold {
+    @extend .text-md;
+    @include weight-semi-bold;
+  }
+}
+
+.text-lg {
+  @include text-lg;
+
+  &-medium {
+    @extend .text-lg;
+    @include weight-medium;
+  }
+
+  &-semi-bold {
+    @extend .text-lg;
+    @include weight-semi-bold;
+  }
+}
+
+.display-sm {
+  @include display-sm;
+
+  &-medium {
+    @extend .display-sm;
+    @include weight-medium;
+  }
+}
