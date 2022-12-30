@@ -30,18 +30,24 @@ dfm-input-dropdown input {
 .carousel-control-prev-icon, .carousel-control-next-icon {
   width: 24px;
   height: 24px;
+
+  border-radius: 50%;
+  &:hover {
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  }
 }
 
 .carousel-control-prev, .carousel-control-next {
-
+  display: block;
+  width: auto;
 }
 
 .carousel-control-prev {
-  left: -16px;
+  left: 16px;
 }
 
 .carousel-control-next {
-  right: -16px;
+  right: 16px;
 }
 
 .carousel-indicators {
