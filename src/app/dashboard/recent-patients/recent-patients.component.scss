@@ -1,8 +1,5 @@
-.appointment-list-header-container {
-  display: flex;
-  column-gap: 8px;
-  align-items: center;
-  //flex-wrap: wrap;
+.search-filter {
+  flex: 1;
 }
 
 .dfm-btn-group {
@@ -15,11 +12,11 @@
   }
 
   div:last-child {
-    border-left: 1px solid var(--dfm-input-border);
+    flex: 1 ;
   }
 }
 
 .table-wrapper {
-  max-height: 648px;
   overflow-y: scroll;
+  max-height: 384px;
 }

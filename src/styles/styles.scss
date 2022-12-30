@@ -5,10 +5,19 @@
 
 @import './themes/theme';
 
-.dfm-card-header {
-  display: none !important;
-}
+//.dfm-card-header {
+//  display: none !important;
+//}
 
 dfm-input-dropdown input {
   border: none !important;
+}
+
+// Having styling issues with dfm-card component so created a class
+.dfm-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  //height: fit-content;
+  flex: 1;
 }

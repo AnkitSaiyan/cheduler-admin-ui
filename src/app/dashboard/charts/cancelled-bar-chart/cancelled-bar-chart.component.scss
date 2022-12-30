@@ -1,0 +1,14 @@
+.cancelled-bar-chart-wrapper {
+  section:first-child {
+    div span {
+      color: var(--dfm-badge-warning-color);
+    }
+  }
+
+  section:last-child {
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}

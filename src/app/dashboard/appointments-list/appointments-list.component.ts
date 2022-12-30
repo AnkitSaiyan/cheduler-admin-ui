@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import {TableItem} from "diflexmo-angular-design";
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'dfm-appointments-list',
   templateUrl: './appointments-list.component.html',
-  styleUrls: ['./appointments-list.component.scss']
+  styleUrls: ['./appointments-list.component.scss'],
 })
 export class AppointmentsListComponent implements OnInit {
   public columns: string[] = [
@@ -67,6 +66,38 @@ export class AppointmentsListComponent implements OnInit {
       applicationNo: 736,
       read: 'No',
       confirm: false,
+    },
+    {
+      getStarted: new Date(),
+      end: new Date(),
+      name: 'Maaike Benoit',
+      applicationNo: 736,
+      read: 'No',
+      confirm: false,
+    },
+    {
+      getStarted: new Date(),
+      end: new Date(),
+      name: 'Maaike Benoit',
+      applicationNo: 736,
+      read: 'No',
+      confirm: false,
+    },
+    {
+      getStarted: new Date(),
+      end: new Date(),
+      name: 'Maaike Benoit',
+      applicationNo: 736,
+      read: 'No',
+      confirm: false,
+    },
+    {
+      getStarted: new Date(),
+      end: new Date(),
+      name: 'Maaike Benoit',
+      applicationNo: 736,
+      read: 'No',
+      confirm: false,
     }
   ]
   public downloadItems: any[] = [
@@ -92,7 +123,8 @@ export class AppointmentsListComponent implements OnInit {
     }
   ]
 
-  constructor() { }
+  constructor() {
+  }
 
   public ngOnInit(): void {
   }

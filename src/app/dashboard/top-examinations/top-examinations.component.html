@@ -1,0 +1,16 @@
+<div class="d-flex flex-column dfm-gap-8 dfm-p-16">
+  <section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-mb-16">
+    <div class="d-flex align-items-start">
+      <img src="./assets/icons/Drag.svg" alt="drag logo" class="pointer dfm-me-8">
+      <header class="font-weight-medium">
+        <span>Top 10 Examinations</span>
+      </header>
+    </div>
+  </section>
+
+  <section class="d-flex flex-column dfm-gap-8 exams-list-wrapper">
+    <div *ngFor="let exam of topExaminations" class="d-flex dfm-gap-8 align-items-center">
+      <span>{{ exam }}</span>
+    </div>
+  </section>
+</div>

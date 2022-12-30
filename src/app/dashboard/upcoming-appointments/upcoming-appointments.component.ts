@@ -7,8 +7,6 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UpcomingAppointmentsComponent implements OnInit {
 
-  public upcomingAppointmentCount: number = 16;
-
   public upcomingAppointments: any[] = [
     {
       name: 'Angela Bower',

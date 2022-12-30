@@ -1,10 +1,12 @@
-<div class="dfm-p-16 d-flex flex-column dfm-gap-16">
-  <div class="d-flex align-items-center">
-    <img src="./assets/icons/Drag.svg" class="pointer dfm-me-8">
-    <span class="font-weight-medium">Appointments</span>
-  </div>
+<div class="dfm-p-16 d-flex flex-column">
+  <section class="d-flex align-items-center dfm-mb-16">
+    <img src="../../../../assets/icons/Drag.svg" class="pointer dfm-me-8">
+    <header class="font-weight-medium">
+      <span>Appointments</span>
+    </header>
+  </section>
 
-  <div class="chart-wrapper align-self-center">
+  <section class="chart-wrapper align-self-center dfm-mb-16">
     <canvas baseChart
             [type]="'doughnut'"
             [data]="doughnutChartConfig"
@@ -13,9 +15,9 @@
             [plugins]="doughnutChartPlugins"
             [legend]="doughnutChartLegend">
     </canvas>
-  </div>
+  </section>
 
-  <div class="d-flex flex-column text-sm dfm-gap-4 dfm-ms-4">
+  <section class="d-flex flex-column text-sm dfm-gap-4 dfm-ms-4">
     <div class="d-flex dfm-gap-8">
       <span class="font-weight-medium">{{ appointmentDetails.total }}</span>
       <span class="dfm-text-main-400">Total</span>
@@ -28,7 +30,7 @@
       <span class="font-weight-medium">{{ appointmentDetails.unconfirmed }}</span>
       <span class="dfm-text-main-400">Unconfirmed</span>
     </div>
-  </div>
+  </section>
 
   <div class="d-flex flex-column align-items-center dfm-gap-4">
   </div>

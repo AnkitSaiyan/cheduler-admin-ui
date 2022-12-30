@@ -1,0 +1,46 @@
+<div class="d-flex flex-column dfm-p-16">
+  <section class="d-flex flex-column dfm-gap-16 dfm-mb-16">
+    <div class="d-flex justify-content-between align-items-center dfm-gap-8">
+      <div class="d-flex align-items-center">
+        <img src="../../../../assets/icons/Drag.svg" class="pointer dfm-me-8">
+        <header class="font-weight-medium">
+          <span>Overall Status</span>
+        </header>
+      </div>
+
+     <div class="dfm-btn-group dfm-me-12">
+       <dfm-input-dropdown
+         [items]="[]"
+         placeholder="Sort By"
+         [showDescription]="true"
+         size="sm"
+         [loading]="false"
+       ></dfm-input-dropdown>
+     </div>
+    </div>
+  </section>
+
+  <section class="d-flex dfm-gap-16 align-self-end dfm-me-16 text-sm dfm-mb-16">
+    <div class="d-flex align-items-center dfm-gap-8">
+      <div class="line-chart-legend patients-legend"></div>
+      <span>Patients</span>
+    </div>
+
+    <div class="d-flex align-items-center dfm-gap-8">
+      <div class="line-chart-legend consultations-legend"></div>
+      <span>Consultations</span>
+    </div>
+  </section>
+
+  <section class="chart-wrapper align-self-center">
+    <canvas baseChart
+            class="chart-canvas"
+            [type]="'line'"
+            [data]="lineChartConfig"
+            [labels]="lineChartLabels"
+            [options]="lineChartOptions"
+            [legend]="lineChartLegend">
+    </canvas>
+  </section>
+
+</div>

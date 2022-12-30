@@ -1,0 +1,18 @@
+.employee-absences-wrapper {
+  section:nth-child(2) {
+    dfm-input {
+      //flex: 1;
+    }
+  }
+
+  section:last-child {
+    margin-top: 8px;
+    max-height: 384px;
+    overflow-y: scroll;
+
+    .avatar-container {
+      object-fit: contain;
+      border: 1px solid var(--bs-gray-200)
+    }
+  }
+}

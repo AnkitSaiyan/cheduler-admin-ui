@@ -1,8 +1,10 @@
-<div class="d-flex flex-column dfm-gap-8">
-  <div class="dfm-p-16 d-flex flex-column dfm-gap-8">
+<div class="d-flex flex-column dfm-pb-8">
+  <section  class="dfm-p-16 d-flex flex-column dfm-gap-8 dfm-mb-8">
     <div class="d-flex align-items-center">
       <img src="./assets/icons/Drag.svg" class="pointer dfm-me-8">
-      <span class="font-weight-medium" >Appointment List</span>
+      <header class="font-weight-medium">
+        <span>Appointments List</span>
+      </header>
     </div>
 
     <div class="appointment-list-header-container dfm-pt-12">
@@ -67,66 +69,67 @@
         [disabled]="false"
       >Add Appointments</dfm-button>
     </div>
-  </div>
+  </section>
 
-  <dfm-table [items]="appointments">
-    <ng-template #headerRowTemplate>
-      <dfm-table-header-cell>
-        <dfm-checkbox size="sm"></dfm-checkbox>
-      </dfm-table-header-cell>
-      <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
-    </ng-template>
-    <ng-template #bodyRowTemplate let-item>
-      <dfm-table-body-cell>
-        <dfm-checkbox label="" hint="" size="sm" [indeterminate]="allSelected()"
-                      (change)="handleChange($event)"></dfm-checkbox>
-      </dfm-table-body-cell>
-      <dfm-table-body-cell>{{ item.getStarted | date  : 'short' }}</dfm-table-body-cell>
-      <dfm-table-body-cell>{{ item.end | date : 'mediumTime' }}</dfm-table-body-cell>
-      <dfm-table-body-cell>{{ item.name }}</dfm-table-body-cell>
-      <dfm-table-body-cell>{{ item.applicationNo }}</dfm-table-body-cell>
-      <dfm-table-body-cell>{{ item.read }}</dfm-table-body-cell>
-      <dfm-table-body-cell>
-        <dfm-badge
-          *ngIf="item.confirm"
-          fontWeight="medium"
-          color="success"
-          size="sm"
-        >
-          Yes
-        </dfm-badge>
-        <dfm-badge
-          *ngIf="!item.confirm"
-          fontWeight="medium"
-          color="warning"
-          size="sm"
-        >
-          No
-        </dfm-badge>
-      </dfm-table-body-cell>
-      <dfm-table-body-cell>
-        <div class="d-flex dfm-gap-4">
-          <dfm-button-icon
-            color="tertiary-gray"
+  <section class="table-wrapper">
+    <dfm-table [items]="appointments">
+      <ng-template #headerRowTemplate>
+        <dfm-table-header-cell>
+          <dfm-checkbox size="sm"></dfm-checkbox>
+        </dfm-table-header-cell>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+      </ng-template>
+      <ng-template #bodyRowTemplate let-item>
+        <dfm-table-body-cell>
+          <dfm-checkbox label="" hint="" size="sm" [indeterminate]="allSelected()"
+                        (change)="handleChange($event)"></dfm-checkbox>
+        </dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.getStarted | date  : 'short' }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.end | date : 'mediumTime' }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.name }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.applicationNo }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.read }}</dfm-table-body-cell>
+        <dfm-table-body-cell>
+          <dfm-badge
+            *ngIf="item.confirm"
+            fontWeight="medium"
+            color="success"
             size="sm"
-            icon="check-circle"
-            [disabled]="false"
-          ></dfm-button-icon>
-          <dfm-button-icon
-            color="tertiary-gray"
+          >
+            Yes
+          </dfm-badge>
+          <dfm-badge
+            *ngIf="!item.confirm"
+            fontWeight="medium"
+            color="warning"
             size="sm"
-            icon="pencil-02"
-            [disabled]="false"
-          ></dfm-button-icon>
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="sm"
-            icon="trash-01"
-            [disabled]="false"
-          ></dfm-button-icon>
-        </div>
-      </dfm-table-body-cell>
-    </ng-template>
-  </dfm-table>
-
+          >
+            No
+          </dfm-badge>
+        </dfm-table-body-cell>
+        <dfm-table-body-cell>
+          <div class="d-flex dfm-gap-4">
+            <dfm-button-icon
+              color="tertiary-gray"
+              size="sm"
+              icon="check-circle"
+              [disabled]="false"
+            ></dfm-button-icon>
+            <dfm-button-icon
+              color="tertiary-gray"
+              size="sm"
+              icon="pencil-02"
+              [disabled]="false"
+            ></dfm-button-icon>
+            <dfm-button-icon
+              color="tertiary-gray"
+              size="sm"
+              icon="trash-01"
+              [disabled]="false"
+            ></dfm-button-icon>
+          </div>
+        </dfm-table-body-cell>
+      </ng-template>
+    </dfm-table>
+  </section>
 </div>
