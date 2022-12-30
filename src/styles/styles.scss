@@ -21,3 +21,43 @@ dfm-input-dropdown input {
   //height: fit-content;
   flex: 1;
 }
+
+.carousel-inner {
+  height: 360px !important;
+}
+
+.carousel-control-prev-icon, .carousel-control-next-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.carousel-control-prev {
+  left: -16px;
+}
+
+.carousel-control-next {
+  right: -16px;
+}
+
+.carousel-indicators {
+  display: flex;
+  column-gap: 8px;
+
+  .active {
+    background: var(--dfm-primary);
+  }
+
+  button {
+    background: var(--bs-gray-400);
+    width: 8px;
+    height: 8px;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+
+    &:hover {
+      background: rgba(var(--dfm-primary), 0.5);
+    }
+  }
+
+}
