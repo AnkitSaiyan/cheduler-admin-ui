@@ -1,9 +1,8 @@
 .notification-wrapper {
-  flex: 1;
+  height: inherit;
 
   section:last-child {
-    max-height: 294px;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 
   section:last-child>div {

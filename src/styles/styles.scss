@@ -22,6 +22,7 @@ dfm-input-dropdown input {
   flex: 1;
 }
 
+
 .carousel-inner {
   height: 360px !important;
 }
@@ -29,6 +30,10 @@ dfm-input-dropdown input {
 .carousel-control-prev-icon, .carousel-control-next-icon {
   width: 24px;
   height: 24px;
+}
+
+.carousel-control-prev, .carousel-control-next {
+
 }
 
 .carousel-control-prev {

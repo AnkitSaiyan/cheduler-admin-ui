@@ -1,6 +1,10 @@
-.doctor-list-wrapper {
-  max-height: 304px;
-  overflow-y: scroll;
+.top-referring-doctors-wrapper {
+  height: inherit;
+
+  section:last-child {
+    height: inherit;
+    overflow-y: auto;
+  }
 
   .avatar-container {
     object-fit: contain;

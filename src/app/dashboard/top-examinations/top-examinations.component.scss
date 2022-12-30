@@ -1,4 +1,7 @@
 .exams-list-wrapper {
-  overflow-y: scroll;
-  max-height: 304px;
+  height: inherit;
+
+  section:last-child {
+    overflow-y: auto;
+  }
 }

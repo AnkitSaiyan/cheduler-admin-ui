@@ -1,22 +1,21 @@
-.search-filter {
-  flex: 1;
-}
+.recent-patient-list-wrapper {
+  height: inherit;
 
-.dfm-btn-group {
-  border: 1px solid var(--dfm-input-border);
-  border-radius: 8px;
-  height: 40px;
+  .dfm-btn-group {
+    border: 1px solid var(--dfm-input-border);
+    border-radius: 8px;
+    height: 40px;
 
-  div:first-child {
-    border-right: 1px solid var(--dfm-input-border);
+    div:first-child {
+      border-right: 1px solid var(--dfm-input-border);
+    }
+
+    div:last-child {
+      flex: 1 ;
+    }
   }
 
-  div:last-child {
-    flex: 1 ;
+  section:last-child {
+    overflow-y: auto;
   }
-}
-
-.table-wrapper {
-  overflow-y: scroll;
-  max-height: 384px;
 }

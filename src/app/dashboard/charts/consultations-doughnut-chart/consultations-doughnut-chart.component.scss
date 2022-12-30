@@ -1,24 +1,32 @@
 .consultations-chart-wrapper {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  object-fit: contain;
-  height: 184px;
+  height: inherit;
 
-  div, span {
-    height: fit-content;
-    width: fit-content;
-  }
+  section:last-child {
+    height: 90%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    object-fit: contain;
 
-  div {
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-  }
+    div, span {
+      height: fit-content;
+      width: fit-content;
+    }
 
-  canvas {
-    //height: 186px;
+    div {
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 }
