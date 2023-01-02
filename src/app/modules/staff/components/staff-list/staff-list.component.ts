@@ -88,6 +88,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       .pipe(
         filter((value) => !!value),
         map((value) => {
+          console.log(value);
           if (value?.proceed) {
             return [...this.selectedStaffIds.map((id) => ({ id: +id, newStatus: value.newStatus }))];
           }
@@ -130,6 +131,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
+    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
