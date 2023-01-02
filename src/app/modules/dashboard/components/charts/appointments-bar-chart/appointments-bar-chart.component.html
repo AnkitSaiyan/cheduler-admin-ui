@@ -1,0 +1,24 @@
+<div class="d-flex justify-content-between align-items-center dfm-gap-8 dfm-px-16 h-100 appointments-bar-chart-wrapper">
+  <section class="d-flex flex-column h-100 justify-content-center dfm-gap-8">
+    <header>
+      <span class="dfm-text-main-400">Appointments</span>
+    </header>
+    <h2>678</h2>
+  </section>
+
+  <section class="d-flex flex-column justify-content-between align-items-end h-100 dfm-pt-16">
+    <header class="d-flex dfm-gap-8">
+      <img src="/src/assets/icons/arrow-narrow-up-right.svg" width="12">
+      <span class="text-success dfm-me-16">21.77%</span>
+    </header>
+    <canvas baseChart
+            width="120"
+            [type]="'bar'" r
+            [data]="appointmentBarChartConfig"
+            [labels]="appointmentBarChartLabels"
+            [options]="appointmentBarChartOptions"
+            [plugins]="appointmentBarChartPlugins"
+            [legend]="appointmentBarChartLegend">
+    </canvas>
+  </section>
+</div>

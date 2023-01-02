@@ -13,6 +13,12 @@ dfm-input-dropdown input {
   border: none !important;
 }
 
+.dfm-btn-group {
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  height: 40px;
+}
+
 // Having styling issues with dfm-card component so created a class
 .dfm-card {
   background: white;
@@ -22,6 +28,21 @@ dfm-input-dropdown input {
   flex: 1;
 }
 
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.h-inherit {
+  height: inherit;
+}
 
 .carousel-inner {
   height: 360px !important;

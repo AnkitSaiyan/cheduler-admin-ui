@@ -1,0 +1,45 @@
+<div class="d-flex flex-column dfm-gap-8 dfm-p-16 employee-absences-wrapper">
+  <section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-mb-16">
+    <div class="d-flex align-items-start">
+      <img src="../../../../../assets/icons/Drag.svg" alt="drag logo" class="pointer dfm-me-8">
+      <header class="font-weight-medium">
+        <span>Top 10 Examinations</span>
+      </header>
+    </div>
+  </section>
+
+  <section class="d-flex dfm-gap-16 align-items-center">
+    <dfm-input
+      class="flex-grow-1"
+      size="sm"
+      placeholder="Search employee"
+      icon="search-sm"
+    ></dfm-input>
+
+    <dfm-button-icon
+      color="tertiary-gray"
+      size="sm"
+      icon="calendar-plus-02"
+    ></dfm-button-icon>
+  </section>
+
+  <section class="d-flex flex-column dfm-gap-16">
+    <div *ngFor="let employee of employeeAbsences" class="d-flex align-items-center dfm-gap-8">
+      <div class="rounded-circle avatar-container">
+        <img [src]="employee.avatar ? employee.avatar : 'assets/images/blank-avatar.png'"
+             class="rounded-circle border-1"
+             alt="Doctor's avatar"
+             width="32"
+             height="32">
+      </div>
+
+      <div class="d-flex flex-column text-sm">
+        <div class="d-flex align-items-center dfm-gap-8">
+          <span class="font-weight-medium">{{ employee.name }}</span>
+          <span class="text-xs dfm-text-main-400">({{employee.post}})</span>
+        </div>
+        <span class="text-xs dfm-text-main-500">{{ employee.fromDate | date : 'shortDate' }} - {{ employee.toDate | date : 'shortDate' }}</span>
+      </div>
+    </div>
+  </section>
+</div>

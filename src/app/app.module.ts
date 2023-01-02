@@ -1,13 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DesignSystemModule } from 'diflexmo-angular-design';
 import { AppComponent } from './app.component';
-import { CoreModule } from './core/core.module';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, CoreModule, DesignSystemModule, ReactiveFormsModule, FormsModule],
+  imports: [BrowserModule, ReactiveFormsModule, FormsModule, AppRoutingModule],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
