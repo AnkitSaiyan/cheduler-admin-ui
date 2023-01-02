@@ -1,0 +1,119 @@
+<div class="d-flex flex-column dfm-gap-16 h-100">
+  <section class="d-flex">
+    <div class="d-flex dfm-gap-8 align-items-center dfm-pt-12 flex-1">
+      <dfm-input
+        class="flex-1"
+        size="sm"
+        placeholder="Search by Staff Name"
+        icon="search-sm"
+        [formControl]="searchControl"
+      ></dfm-input>
+
+      <div class="d-flex align-items-center dfm-btn-group">
+        <div>
+          <dfm-button-icon
+            color="tertiary-gray"
+            size="sm"
+            icon="copy-01"
+          ></dfm-button-icon>
+        </div>
+
+        <div>
+          <dfm-input-dropdown
+            [items]="downloadItems"
+            [showDescription]="false"
+            [formControl]="downloadDropdownControl"
+            placeholder="Download"
+            size="sm"
+          ></dfm-input-dropdown>
+        </div>
+      </div>
+
+      <dfm-button
+        color="secondary"
+        size="sm"
+        [disabled]="!selectedStaffIds.length"
+        (click)="openConfirmationBanner()"
+      >Confirm
+      </dfm-button>
+
+      <dfm-button
+        color="primary"
+        size="sm"
+        class="text-nowrap"
+        [disabled]="false"
+      >Add Staff
+      </dfm-button>
+    </div>
+  </section>
+
+  <section class="overflow-y-auto" *ngIf="filteredStaffs$$ | async as staffs">
+    <dfm-table [items]="staffs" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+               [clearSelected$]="clearSelected$$">
+      <ng-template #headerRowTemplate>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+      </ng-template>
+
+      <ng-template #bodyRowTemplate let-item>
+        <dfm-table-body-cell>{{ item.firstname | titlecase | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.lastname | titlecase | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.userType | titlecase | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.email | dashIfNothing }}</dfm-table-body-cell>
+
+        <dfm-table-body-cell>
+          <dfm-badge *ngIf="item.status === statusType.Active"
+                     color="success"
+                     size="sm"
+                     fontWeight="medium">
+            {{ item.status | statusName | dashIfNothing }}
+          </dfm-badge>
+
+          <dfm-badge *ngIf="item.status === statusType.Inactive"
+                     color="primary"
+                     size="sm">
+            {{ item.status | statusName | dashIfNothing }}
+          </dfm-badge>
+        </dfm-table-body-cell>
+
+        <dfm-table-body-cell>
+          <div class="d-flex dfm-gap-4">
+            <dfm-button-icon
+              *ngIf="item.status === statusType.Inactive"
+              color="tertiary-gray"
+              size="sm"
+              icon="check-circle"
+              (click)="changeStatus([ { id: item.id, newStatus: statusType.Active }])"
+            ></dfm-button-icon>
+
+            <dfm-button-icon
+              *ngIf="item.status === statusType.Active"
+              color="tertiary-gray"
+              size="sm"
+              icon="x-circle"
+              (click)="changeStatus([ { id: item.id, newStatus: statusType.Inactive }])"
+            ></dfm-button-icon>
+
+            <dfm-button-icon
+              color="tertiary-gray"
+              size="sm"
+              icon="pencil-02"
+            ></dfm-button-icon>
+
+            <dfm-button-icon
+              color="tertiary-gray"
+              size="sm"
+              icon="trash-01"
+              (click)="deleteStaff(item.id)"
+            ></dfm-button-icon>
+          </div>
+        </dfm-table-body-cell>
+      </ng-template>
+    </dfm-table>
+    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!staffs.length">
+      No data found
+    </div>
+  </section>
+</div>
+
+<dfm-confirm-status-change-banner [display]="showBanner"
+                                  (confirmationEvent)="handleConfirmation($event)"></dfm-confirm-status-change-banner>
