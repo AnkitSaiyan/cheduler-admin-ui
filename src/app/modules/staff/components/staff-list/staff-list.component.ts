@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
 import { FormControl } from '@angular/forms';
+import formatters from 'chart.js/dist/core/core.ticks';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { Status } from '../../../../shared/models/status';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
 
 @Component({
   selector: 'dfm-staff-list',
@@ -20,19 +22,19 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public downloadItems: any[] = [
     {
+      name: 'CSV',
+      value: 'csv',
+      description: 'Download as CSV',
+    },
+    {
       name: 'Excel',
       value: 'xls',
       description: 'Download as Excel',
     },
     {
-      name: 'PDF',
+      name: 'Pdf',
       value: 'pdf',
       description: 'Download as PDF',
-    },
-    {
-      name: 'CSV',
-      value: 'csv',
-      description: 'Download as CSV',
     },
     {
       name: 'Print',
@@ -55,7 +57,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public showBanner = false;
 
-  constructor(private staffApiSvc: StaffApiService) {
+  constructor(private staffApiSvc: StaffApiService, private notificationSvc: NotificationDataService) {
     super();
     this.staffs$$ = new BehaviorSubject<any[]>([]);
     this.filteredStaffs$$ = new BehaviorSubject<any[]>([]);
@@ -75,14 +77,20 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       }
     });
 
-    // this.downloadDropdownControl.valueChanges
-    //   .pipe(
-    //     filter((value) => !!value && !this.downloadTypeSelected),
-    //     takeUntil(this.destroy$$),
-    //   )
-    //   .subscribe(() => {
-    //     this.downloadTypeSelected = true;
-    //   });
+    this.downloadDropdownControl.valueChanges
+      .pipe(
+        filter((value) => !!value),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe((value) => {
+        switch (value) {
+          case 'print':
+            this.notificationSvc.showNotification(`Data printed successfully`);
+            break;
+          default:
+            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+        }
+      });
 
     this.afterBannerClosed$$
       .pipe(
@@ -100,6 +108,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       )
       .subscribe((value) => {
         if (value) {
+          this.notificationSvc.showNotification('Status has changed successfully');
           this.clearSelected$$.next();
         }
         this.showBanner = false;
@@ -123,11 +132,15 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public changeStatus(changes: { id: number | string; newStatus: Status | null }[]) {
-    this.staffApiSvc.changeStaffStatus$(changes).pipe(takeUntil(this.destroy$$)).subscribe();
+    this.staffApiSvc
+      .changeStaffStatus$(changes)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
   }
 
   public deleteStaff(id: number) {
     this.staffApiSvc.deleteStaff(id);
+    this.notificationSvc.showNotification('Staff deleted successfully');
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
@@ -137,5 +150,9 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public openConfirmationBanner() {
     this.showBanner = true;
+  }
+
+  public handleCopyClick() {
+    this.notificationSvc.showNotification('Data copied to clipboard successfully');
   }
 }

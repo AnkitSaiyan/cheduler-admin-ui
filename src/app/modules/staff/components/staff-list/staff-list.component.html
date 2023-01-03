@@ -15,6 +15,7 @@
             color="tertiary-gray"
             size="sm"
             icon="copy-01"
+            (click)="handleCopyClick()"
           ></dfm-button-icon>
         </div>
 
@@ -23,7 +24,6 @@
             [items]="downloadItems"
             [showDescription]="false"
             [formControl]="downloadDropdownControl"
-
             placeholder="Download"
             size="sm"
           ></dfm-input-dropdown>
