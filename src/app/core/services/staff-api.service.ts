@@ -4,6 +4,8 @@ import { combineLatest, Observable, of, startWith, Subject, switchMap } from 'rx
 import { AvailabilityType, User, UserType } from '../../shared/models/user.model';
 import { Status } from '../../shared/models/status';
 import { AddStaffRequestData } from '../../shared/models/staff.model';
+import { Weekday } from '../../shared/models/weekday';
+import { PracticeAvailability } from '../../shared/models/practice.model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,8 +24,87 @@ export class StaffApiService {
       availabilityType: AvailabilityType.Unavailable,
       deletedBy: null,
       gsm: '',
-      examList: [],
-      practiceAvailability: null,
+      examList: [1, 2, 3],
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
     {
       id: 2,
@@ -37,8 +118,15 @@ export class StaffApiService {
       availabilityType: AvailabilityType.Available,
       deletedBy: null,
       gsm: '',
-      examList: [],
-      practiceAvailability: null,
+      examList: [1],
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.MON,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
     {
       id: 3,
@@ -53,7 +141,14 @@ export class StaffApiService {
       deletedBy: null,
       gsm: '',
       examList: [],
-      practiceAvailability: null,
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
     {
       id: 4,
@@ -68,7 +163,14 @@ export class StaffApiService {
       deletedBy: null,
       gsm: '',
       examList: [],
-      practiceAvailability: null,
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.SAT,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
     {
       id: 5,
@@ -82,8 +184,21 @@ export class StaffApiService {
       availabilityType: AvailabilityType.Unavailable,
       deletedBy: null,
       gsm: '',
-      examList: [],
-      practiceAvailability: null,
+      examList: [1, 2],
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.THU,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
     {
       id: 6,
@@ -98,7 +213,26 @@ export class StaffApiService {
       deletedBy: null,
       gsm: '',
       examList: [],
-      practiceAvailability: null,
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.SUN,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
     {
       id: 7,
@@ -113,7 +247,14 @@ export class StaffApiService {
       deletedBy: null,
       gsm: '',
       examList: [],
-      practiceAvailability: null,
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
     {
       id: 8,
@@ -128,7 +269,14 @@ export class StaffApiService {
       deletedBy: null,
       gsm: '',
       examList: [],
-      practiceAvailability: null,
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
     {
       id: 9,
@@ -143,7 +291,7 @@ export class StaffApiService {
       deletedBy: null,
       gsm: '',
       examList: [],
-      practiceAvailability: null,
+      practiceAvailability: [],
     },
     {
       id: 10,
@@ -158,7 +306,14 @@ export class StaffApiService {
       deletedBy: null,
       gsm: '',
       examList: [],
-      practiceAvailability: null,
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
     {
       id: 11,
@@ -173,7 +328,14 @@ export class StaffApiService {
       deletedBy: null,
       gsm: '',
       examList: [],
-      practiceAvailability: null,
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.WED,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
     {
       id: 12,
@@ -188,7 +350,14 @@ export class StaffApiService {
       deletedBy: null,
       gsm: '',
       examList: [],
-      practiceAvailability: null,
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.FRI,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
     {
       id: 13,
@@ -203,7 +372,14 @@ export class StaffApiService {
       deletedBy: null,
       gsm: '',
       examList: [],
-      practiceAvailability: null,
+      practiceAvailability: [
+        {
+          id: 60,
+          weekday: Weekday.THU,
+          dayStart: new Date(),
+          dayEnd: new Date(),
+        },
+      ],
     },
   ];
 
@@ -229,7 +405,7 @@ export class StaffApiService {
       deletedBy: null,
       gsm: '',
       examList: requestData.examLists,
-      practiceAvailability: requestData.practiceAvailability,
+      practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
     });
 
     this.refreshStaffs$$.next('');

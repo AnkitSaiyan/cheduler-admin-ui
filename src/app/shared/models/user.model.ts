@@ -1,4 +1,5 @@
 import { Status } from './status';
+import { PracticeAvailability } from './practice.model';
 
 export enum AvailabilityType {
   Unavailable,
@@ -27,5 +28,6 @@ export interface User {
   deletedBy: number | null;
   userType: UserType;
   examList: number[];
-  practiceAvailability: null | [] | any;
+  practiceAvailability: PracticeAvailability[];
+  info?: string;
 }

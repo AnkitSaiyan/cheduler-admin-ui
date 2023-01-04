@@ -1,11 +1,6 @@
 import { UserType } from './user.model';
-import { Weekday } from './weekday';
+import { PracticeAvailability } from './practice.model';
 
-export interface PracticeAvailabilityRequestData {
-  weekday: Weekday;
-  dayStart: string;
-  dayEnd: string;
-}
 export interface AddStaffRequestData {
   firstname: string;
   lastname: string;
@@ -13,7 +8,7 @@ export interface AddStaffRequestData {
   telephone: string;
   address?: string;
   userType: UserType;
-  practiceAvailability?: PracticeAvailabilityRequestData[];
+  practiceAvailability?: PracticeAvailability[];
   examLists: number[];
   info?: string;
 }

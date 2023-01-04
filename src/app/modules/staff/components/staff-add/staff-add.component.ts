@@ -9,8 +9,9 @@ import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { Weekday } from '../../../../shared/models/weekday';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { AddStaffRequestData, PracticeAvailabilityRequestData } from '../../../../shared/models/staff.model';
+import { AddStaffRequestData } from '../../../../shared/models/staff.model';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
+import { PracticeAvailability } from '../../../../shared/models/practice.model';
 
 interface FormValues {
   firstname: string;
@@ -205,9 +206,9 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, A
                 return [...a, { ...control.value }];
               }
               return a;
-            }, [] as PracticeAvailabilityRequestData[]),
+            }, [] as PracticeAvailability[]),
           ],
-          [] as PracticeAvailabilityRequestData[],
+          [] as PracticeAvailability[],
         ),
       ],
     };
