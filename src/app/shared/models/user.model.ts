@@ -1,16 +1,17 @@
 import { Status } from './status';
 
-export enum AvailabilityTypes {
+export enum AvailabilityType {
   Unavailable,
   Available,
 }
 
-export enum UserTypes {
+export enum UserType {
   Scheduler = 'scheduler',
   General = 'General',
-  Specialist = 'specialist',
+  Radiologist = 'radiologist',
   Nursing = 'nursing',
   Assistant = 'assistant',
+  Secretary = 'secretary',
 }
 
 export interface User {
@@ -20,11 +21,11 @@ export interface User {
   email: string;
   telephone: string;
   address: string;
-  availabilityType: AvailabilityTypes | null;
+  availabilityType: AvailabilityType | null;
   gsm: string;
   status: Status;
   deletedBy: number | null;
-  userType: UserTypes;
+  userType: UserType;
   examList: number[];
-  practiceAvailability: null;
+  practiceAvailability: null | [] | any;
 }

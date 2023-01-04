@@ -44,7 +44,7 @@
     "chart.js": "^4.1.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "chartjs-plugin-labels": "^1.1.0",
-    "diflexmo-angular-design": "^202212.20.1",
+    "diflexmo-angular-design": "^202212.31.1",
     "ng2-charts": "^4.1.1",
     "mdb-angular-ui-kit": "file:mdb-angular-ui-kit-3.0.1.tgz",
     "rxjs": "^7.6.0",

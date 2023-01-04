@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { combineLatest, Observable, of, startWith, Subject, switchMap } from 'rxjs';
-import { AvailabilityTypes, User, UserTypes } from '../../shared/models/user.model';
+import { AvailabilityType, User, UserType } from '../../shared/models/user.model';
 import { Status } from '../../shared/models/status';
+import { AddStaffRequestData } from '../../shared/models/staff.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,12 +14,12 @@ export class StaffApiService {
       id: 1,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserTypes.General,
+      userType: UserType.General,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Inactive,
-      availabilityType: AvailabilityTypes.Unavailable,
+      availabilityType: AvailabilityType.Unavailable,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -28,12 +29,12 @@ export class StaffApiService {
       id: 2,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserTypes.General,
+      userType: UserType.General,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Active,
-      availabilityType: AvailabilityTypes.Available,
+      availabilityType: AvailabilityType.Available,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -43,12 +44,12 @@ export class StaffApiService {
       id: 3,
       firstname: 'David',
       lastname: 'Warner',
-      userType: UserTypes.General,
+      userType: UserType.General,
       email: 'david@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Inactive,
-      availabilityType: AvailabilityTypes.Unavailable,
+      availabilityType: AvailabilityType.Unavailable,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -58,12 +59,12 @@ export class StaffApiService {
       id: 4,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserTypes.General,
+      userType: UserType.General,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Active,
-      availabilityType: AvailabilityTypes.Available,
+      availabilityType: AvailabilityType.Available,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -73,12 +74,12 @@ export class StaffApiService {
       id: 5,
       firstname: 'Jennifer',
       lastname: 'Woodley',
-      userType: UserTypes.General,
+      userType: UserType.General,
       email: 'jennifer@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Inactive,
-      availabilityType: AvailabilityTypes.Unavailable,
+      availabilityType: AvailabilityType.Unavailable,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -88,12 +89,12 @@ export class StaffApiService {
       id: 6,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserTypes.General,
+      userType: UserType.General,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Active,
-      availabilityType: AvailabilityTypes.Available,
+      availabilityType: AvailabilityType.Available,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -103,12 +104,12 @@ export class StaffApiService {
       id: 7,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserTypes.Scheduler,
+      userType: UserType.Scheduler,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Inactive,
-      availabilityType: AvailabilityTypes.Unavailable,
+      availabilityType: AvailabilityType.Unavailable,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -118,12 +119,12 @@ export class StaffApiService {
       id: 8,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserTypes.General,
+      userType: UserType.General,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Active,
-      availabilityType: AvailabilityTypes.Available,
+      availabilityType: AvailabilityType.Available,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -133,12 +134,12 @@ export class StaffApiService {
       id: 9,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserTypes.Assistant,
+      userType: UserType.Assistant,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Inactive,
-      availabilityType: AvailabilityTypes.Unavailable,
+      availabilityType: AvailabilityType.Unavailable,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -148,12 +149,12 @@ export class StaffApiService {
       id: 10,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserTypes.General,
+      userType: UserType.General,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Active,
-      availabilityType: AvailabilityTypes.Available,
+      availabilityType: AvailabilityType.Available,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -163,12 +164,12 @@ export class StaffApiService {
       id: 11,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserTypes.General,
+      userType: UserType.General,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Active,
-      availabilityType: AvailabilityTypes.Available,
+      availabilityType: AvailabilityType.Available,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -178,12 +179,12 @@ export class StaffApiService {
       id: 12,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserTypes.General,
+      userType: UserType.General,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Active,
-      availabilityType: AvailabilityTypes.Available,
+      availabilityType: AvailabilityType.Available,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -193,12 +194,12 @@ export class StaffApiService {
       id: 13,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserTypes.Specialist,
+      userType: UserType.Radiologist,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
       status: Status.Inactive,
-      availabilityType: AvailabilityTypes.Available,
+      availabilityType: AvailabilityType.Available,
       deletedBy: null,
       gsm: '',
       examList: [],
@@ -212,6 +213,28 @@ export class StaffApiService {
 
   public get staffList$(): Observable<User[]> {
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.staffLists)));
+  }
+
+  public createStaff$(requestData: AddStaffRequestData): Observable<string> {
+    this.staffLists.push({
+      id: Math.random(),
+      firstname: requestData.firstname,
+      lastname: requestData.lastname,
+      userType: UserType.Assistant,
+      email: requestData.email,
+      telephone: requestData.telephone,
+      address: requestData?.address ?? '',
+      status: Status.Active,
+      availabilityType: AvailabilityType.Available,
+      deletedBy: null,
+      gsm: '',
+      examList: requestData.examLists,
+      practiceAvailability: requestData.practiceAvailability,
+    });
+
+    this.refreshStaffs$$.next('');
+
+    return of('created');
   }
 
   public changeStaffStatus$(changes: { id: number | string; newStatus: Status | null }[]): Observable<boolean> {
@@ -247,5 +270,7 @@ export class StaffApiService {
     }
   }
 
-  public addStaff() {}
+  public getStaffByID(staffID: number): Observable<User | undefined> {
+    return of(this.staffLists.find((staff) => +staff.id === +staffID));
+  }
 }

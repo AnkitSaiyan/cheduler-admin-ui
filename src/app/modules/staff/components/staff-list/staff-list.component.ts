@@ -2,11 +2,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import formatters from 'chart.js/dist/core/core.ticks';
+import { TableItem } from 'diflexmo-angular-design';
+import { ActivatedRoute, Router } from '@angular/router';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { Status } from '../../../../shared/models/status';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { User } from '../../../../shared/models/user.model';
 
 @Component({
   selector: 'dfm-staff-list',
@@ -57,7 +60,12 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public showBanner = false;
 
-  constructor(private staffApiSvc: StaffApiService, private notificationSvc: NotificationDataService) {
+  constructor(
+    private staffApiSvc: StaffApiService,
+    private notificationSvc: NotificationDataService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {
     super();
     this.staffs$$ = new BehaviorSubject<any[]>([]);
     this.filteredStaffs$$ = new BehaviorSubject<any[]>([]);
@@ -154,5 +162,11 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public handleCopyClick() {
     this.notificationSvc.showNotification('Data copied to clipboard successfully');
+  }
+
+  public navigateToViewStaff(e: TableItem) {
+    if (e?.id) {
+      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+    }
   }
 }
