@@ -11,10 +11,10 @@ const routes: Routes = [
         path: 'dashboard',
         loadChildren: async () => (await import('../modules/dashboard/dashboard.module')).DashboardModule,
       },
-      {
-        path: 'staff',
-        loadChildren: async () => (await import('../modules/staff/staff.module')).StaffModule,
-      },
+      // {
+      //   path: 'staff',
+      //   loadChildren: async () => (await import('../modules/staff/staff.module')).StaffModule,
+      // },
     ],
   },
   {

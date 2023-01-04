@@ -80,7 +80,7 @@
   }
 }
 
-dfm-unavailable-hall-periods {
+.dfm-unavailable-hall-periods {
   width: fit-content;
   margin: 0;
 }
@@ -96,4 +96,22 @@ dfm-unavailable-hall-periods {
     grid-template-rows: 1fr 2fr;
     grid-gap: 12px;
   }
+}
+.employee-absences-card{
+  display: none!important;
+}
+
+// ======================Media Query for Mobile view=================
+@media (min-width:180px) and (max-width:680px) {
+  .dfm-dashboard-wrapper{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-container{
+    width: 100%;
+  }
+
+  
 }

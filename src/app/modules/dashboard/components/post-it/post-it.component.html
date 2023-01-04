@@ -28,13 +28,13 @@
     <dfm-button-icon
       color="tertiary-gray"
       size="sm"
-      icon="copy-01"
+      icon="copy-01" class="border border-gray rounded"
     ></dfm-button-icon>
 
     <dfm-button
       size="sm"
       color="secondary"
-      class="text-nowrap"
+      class="text-nowrap post-view-all-btn"
     >
       View All
     </dfm-button>
@@ -42,7 +42,7 @@
 
   <section class="h-100">
     <mdb-carousel [controls]="true" [indicators]="true" [dark]="true" class="h-100">
-      <mdb-carousel-item *ngFor="let post of posts; let i = index" class="h-100" [interval]="100000000">
+      <mdb-carousel-item *ngFor="let post of posts; let i = index" class="h-100" [interval]="5000">
         <div class="d-flex flex-column dfm-gap-16 dfm-p-24 justify-content-between rounded-3 shadow-sm post-it-card"
              [ngStyle]="{ 'background': i % 2 === 0 ? '#EBE9FE' : '#FDF8F2' }">
           <header>

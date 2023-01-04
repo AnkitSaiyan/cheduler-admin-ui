@@ -18,3 +18,9 @@
     }
   }
 }
+// ======================Media Query for Mobile view=================
+@media (min-width:180px) and (max-width:680px) {
+  .percentage-text{
+    font-weight:600;
+  }
+}
