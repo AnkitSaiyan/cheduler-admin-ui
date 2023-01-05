@@ -36,4 +36,16 @@
   .percentage-text{
     font-weight:600;
   }
+  canvas{
+    width: 50% !important;
+    height: 50% !important;
+  }
+}
+
+// ======================Media Query for Tab view=================
+@media (min-width:680px) and (max-width:1060px) {
+  canvas{
+    width: 50% !important;
+    height: 50% !important;
+  }
 }

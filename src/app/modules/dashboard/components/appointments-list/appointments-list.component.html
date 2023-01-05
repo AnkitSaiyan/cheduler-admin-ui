@@ -46,7 +46,14 @@
         <dfm-input-dropdown
           [items]="downloadItems"
           placeholder="Download"
-          [showDescription]="true"
+          [showDescription]="true" class="appointment-list-download-placeholder"
+          size="sm"
+          [loading]="false"
+        ></dfm-input-dropdown>
+        <dfm-input-dropdown
+          [items]="downloadItems"
+          placeholder=""
+          [showDescription]="true" class="appointment-list-download-icon-placeholder rounded"
           size="sm"
           [loading]="false"
         ></dfm-input-dropdown>
@@ -62,7 +69,7 @@
       <dfm-button-icon
             color="tertiary-gray"
             size="sm"
-            icon="calendar-date" class="appointment-list-calendar-icon-mv border border-secondary rounded"
+            icon="calendar-date" class="appointment-list-calendar-icon-mv rounded border border-secondary"
           ></dfm-button-icon>
 
 <!--      <dfm-button-group>-->

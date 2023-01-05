@@ -32,6 +32,9 @@
 .appointment-list-calendar-icon-mv{
   display: none;
 }
+.appointment-list-download-icon-placeholder{
+  display: none;
+}
 // ======================Media Query for Mobile view=================
 @media (min-width:180px) and (max-width:680px) {
   .appointment-list-header-section{
@@ -72,8 +75,14 @@
   .appointment-list-calendar-icon-mv{
     display: block;
   }
+  .appointment-list-download-placeholder{
+    display: none;
+  }
+  .appointment-list-download-icon-placeholder{
+    display: block;
+  }
 
 }
-// ======================Media Query for Mobile view=================
+// ======================Media Query for Mobile view Ends=================
 
 
