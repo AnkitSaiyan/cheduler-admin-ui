@@ -1,0 +1,22 @@
+<div class="cancelled-bar-chart-wrapper d-flex flex-column justify-content-between dfm-gap-16 dfm-p-16">
+  <section class="d-flex justify-content-between dfm-gap-8 align-items-center">
+    <header>
+      <span class="font-weight-medium">Cancelled</span>
+    </header>
+    <div class="d-flex dfm-gap-8">
+      <img src="/src/assets/icons/arrow-narrow-down-left.svg" width="12">
+      <span>6.09%</span>
+    </div>
+  </section>
+
+  <section class="d-flex justify-content-end">
+    <canvas baseChart
+            [type]="'bar'" r
+            [data]="cancelledBarChartConfig"
+            [labels]="cancelledBarChartLabels"
+            [options]="cancelledBarChartOptions"
+            [plugins]="cancelledBarChartPlugins"
+            [legend]="cancelledBarChartLegend">
+    </canvas>
+  </section>
+</div>

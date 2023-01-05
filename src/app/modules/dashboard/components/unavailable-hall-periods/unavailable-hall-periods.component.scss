@@ -1,0 +1,21 @@
+.unavailable-periods-list-wrapper {
+  height: inherit;
+  
+  .dfm-btn-group {
+    border: 1px solid var(--dfm-input-border);
+    border-radius: 8px;
+    height: 40px;
+
+    div:first-child {
+      border-right: 1px solid var(--dfm-input-border);
+    }
+
+    div:last-child {
+      flex: 1 ;
+    }
+  }
+
+  .table-wrapper {
+    overflow-y: auto;
+  }
+}

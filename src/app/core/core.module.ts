@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
-import { DesignSystemCoreModule, DesignSystemModule } from 'diflexmo-angular-design';
-import { BaseLayoutComponent } from './components/base-layout/base-layout.component';
-import { AppRoutingModule } from '../app-routing.module';
+import { CommonModule } from '@angular/common';
+
+import { CoreRoutingModule } from './core-routing.module';
+import { CoreComponent } from './core.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
-  declarations: [BaseLayoutComponent],
-  imports: [DesignSystemCoreModule, AppRoutingModule, DesignSystemModule],
-  exports: [AppRoutingModule],
+  declarations: [CoreComponent],
+  imports: [CommonModule, CoreRoutingModule, SharedModule],
 })
 export class CoreModule {}

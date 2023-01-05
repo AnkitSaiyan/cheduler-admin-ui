@@ -1,0 +1,133 @@
+<div class="d-flex flex-column dfm-pb-8 appointment-list-wrapper">
+  <section  class="dfm-p-16 d-flex flex-column dfm-gap-8 dfm-mb-8">
+    <div class="d-flex align-items-center">
+      <img src="../../../../../assets/icons/Drag.svg" class="pointer dfm-me-8">
+      <header class="font-weight-medium">
+        <span>Appointments List</span>
+      </header>
+    </div>
+
+    <div class="d-flex dfm-gap-8 align-items-center dfm-pt-12 flex-grow-1 flex-shrink-1">
+      <dfm-input
+        size="sm"
+        placeholder="Search"
+        icon="search-sm"
+      ></dfm-input>
+
+      <dfm-input
+        size="sm"
+        placeholder="Advanced Search"
+        icon="search-sm"
+      ></dfm-input>
+
+      <div class="d-flex align-items-center dfm-btn-group">
+        <div>
+          <dfm-button-icon
+            color="tertiary-gray"
+            size="sm"
+            icon="copy-01"
+          ></dfm-button-icon>
+        </div>
+
+        <dfm-input-dropdown
+          [items]="downloadItems"
+          placeholder="Download"
+          [showDescription]="true"
+          size="sm"
+          [loading]="false"
+        ></dfm-input-dropdown>
+
+        <div>
+          <dfm-button-icon
+            color="tertiary-gray"
+            size="sm"
+            icon="calendar-date"
+          ></dfm-button-icon>
+        </div>
+      </div>
+
+<!--      <dfm-button-group>-->
+<!--        <dfm-button-group-item icon="copy-01" class="bo">-->
+<!--        </dfm-button-group-item>-->
+
+<!--        <dfm-button-group-item icon="calendar-date">-->
+<!--        </dfm-button-group-item>-->
+<!--      </dfm-button-group>-->
+
+      <dfm-button
+        color="secondary"
+        size="sm"
+        [disabled]="false"
+      >Confirm</dfm-button>
+
+      <dfm-button
+        color="primary"
+        size="sm"
+        class="text-nowrap"
+        [disabled]="false"
+      >Add Appointments</dfm-button>
+    </div>
+  </section>
+
+  <section class="table-wrapper">
+    <dfm-table [items]="appointments">
+      <ng-template #headerRowTemplate>
+        <dfm-table-header-cell>
+          <dfm-checkbox size="sm"></dfm-checkbox>
+        </dfm-table-header-cell>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+      </ng-template>
+      <ng-template #bodyRowTemplate let-item>
+        <dfm-table-body-cell>
+          <dfm-checkbox label="" hint="" size="sm" [indeterminate]="allSelected()"
+                        (change)="handleChange($event)"></dfm-checkbox>
+        </dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.getStarted | date  : 'short' }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.end | date : 'mediumTime' }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.name }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.applicationNo }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.read }}</dfm-table-body-cell>
+        <dfm-table-body-cell>
+          <dfm-badge
+            *ngIf="item.confirm"
+            fontWeight="medium"
+            color="success"
+            size="sm"
+          >
+            Yes
+          </dfm-badge>
+          <dfm-badge
+            *ngIf="!item.confirm"
+            fontWeight="medium"
+            color="warning"
+            size="sm"
+          >
+            No
+          </dfm-badge>
+        </dfm-table-body-cell>
+        <dfm-table-body-cell>
+          <div class="d-flex dfm-gap-4">
+            <dfm-button-icon
+              color="tertiary-gray"
+              size="sm"
+              icon="check-circle"
+              [disabled]="false"
+            ></dfm-button-icon>
+            <dfm-button-icon
+              color="tertiary-gray"
+              size="sm"
+              icon="pencil-02"
+              [disabled]="false"
+            ></dfm-button-icon>
+            <dfm-button-icon
+              color="tertiary-gray"
+              size="sm"
+              icon="trash-01"
+              [disabled]="false"
+            ></dfm-button-icon>
+          </div>
+        </dfm-table-body-cell>
+      </ng-template>
+    </dfm-table>
+  </section>
+</div>

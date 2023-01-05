@@ -1,0 +1,15 @@
+.top-referring-doctors-wrapper {
+  height: inherit;
+
+  section:last-child {
+    height: inherit;
+    overflow-y: auto;
+  }
+
+  .avatar-container {
+    object-fit: contain;
+    border: 1px solid var(--bs-gray-200)
+  }
+}
+
+

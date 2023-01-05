@@ -1,0 +1,7 @@
+.exams-list-wrapper {
+  height: inherit;
+
+  section:last-child {
+    overflow-y: auto;
+  }
+}

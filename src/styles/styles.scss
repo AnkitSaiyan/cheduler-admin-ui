@@ -1,6 +1,131 @@
 @import '../../node_modules/bootstrap/scss/functions';
 
-@import '../../node_modules/diflexmo-angular-design/assets/styles.scss';
+@import '../../node_modules/diflexmo-angular-design/lib/styles/styles.scss';
 @import '../../node_modules/bootstrap/scss/bootstrap';
 
 @import './themes/theme';
+
+//.dfm-card-header {
+//  display: none !important;
+//}
+
+dfm-input-dropdown input {
+  border: none !important;
+}
+
+.dfm-btn-group {
+  background: white;
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  height: 40px;
+}
+
+// Having styling issues with dfm-card component so created a class
+.dfm-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  //height: fit-content;
+  flex: 1;
+}
+
+// Custom Global styling
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.h-inherit {
+  height: inherit;
+}
+
+.w-fit {
+  width: fit-content;
+}
+
+.min-w-fit {
+  min-width: fit-content;
+}
+
+.max-w-fit {
+  max-width: fit-content;
+}
+
+// others
+.carousel-inner {
+  height: 360px !important;
+}
+
+.carousel-control-prev-icon, .carousel-control-next-icon {
+  width: 24px;
+  height: 24px;
+
+  border-radius: 50%;
+  &:hover {
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  }
+}
+
+.carousel-control-prev, .carousel-control-next {
+  display: block;
+  width: auto;
+}
+
+.carousel-control-prev {
+  left: 16px;
+}
+
+.carousel-control-next {
+  right: 16px;
+}
+
+.carousel-indicators {
+  display: flex;
+  column-gap: 8px;
+
+  .active {
+    background: var(--dfm-primary);
+  }
+
+  button {
+    background: var(--bs-gray-400);
+    width: 8px;
+    height: 8px;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+
+    &:hover {
+      background: rgba(var(--dfm-primary), 0.5);
+    }
+  }
+
+}
+
+//input[type="time"]::-webkit-calendar-picker-indicator{
+//  filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);
+//}
+//
+//input[type="time"]:focus{
+//  outline: none;
+//}
+
+//.input-dropdown[_ngcontent-cob-c76] .selected-items[_ngcontent-cob-c76] {
+//  position: absolute;
+//  /* top: 7px; */
+//  /* right: 8px; */
+//  left: 0;
+//  bottom: 0;
+//  display: flex;
+//  justify-content: flex-end;
+//  flex-wrap: wrap;
+//  gap: 8px;
+//  max-width: calc(100% - 200px);
+//}

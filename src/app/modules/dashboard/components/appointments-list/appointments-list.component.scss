@@ -1,0 +1,23 @@
+.appointment-list-wrapper {
+  height: inherit;
+
+  section:last-child {
+    height: inherit;
+    overflow-y: auto;
+  }
+}
+
+.dfm-btn-group {
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  //height: 40px;
+
+  div:first-child {
+    border-right: 1px solid var(--dfm-input-border);
+  }
+
+  div:last-child {
+    border-left: 1px solid var(--dfm-input-border);
+  }
+}
+

@@ -1,0 +1,11 @@
+.notification-wrapper {
+  height: inherit;
+
+  section:last-child {
+    overflow-y: auto;
+  }
+
+  section:last-child>div {
+    border-bottom: 1px solid var(--dfm-secondary);
+  }
+}

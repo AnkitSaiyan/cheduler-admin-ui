@@ -1,16 +1,19 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { BaseLayoutComponent } from './core/components/base-layout/base-layout.component';
 
-const routes: Routes = [
+const rootRoutes: Routes = [
+  {
+    path: 'auth',
+    loadChildren: async () => (await import('./core/auth/auth.module')).AuthModule
+  },
   {
     path: '',
-    component: BaseLayoutComponent,
-  },
+    loadChildren: async () => (await import('./core/core.module')).CoreModule
+  }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(rootRoutes)],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

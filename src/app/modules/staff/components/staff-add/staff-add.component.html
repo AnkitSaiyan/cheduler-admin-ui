@@ -1,0 +1,173 @@
+<div class="d-flex flex-column dfm-gap-24">
+  <section class="d-flex align-items-center justify-content-between dfm-gap-16">
+    <div class="d-flex dfm-gap-8 dfm-text-primary">
+      <span class="pointer" routerLink="../">Staff</span>
+      <span> > Add</span>
+    </div>
+
+    <div class="d-flex dfm-gap-16">
+      <!--      <dfm-button-->
+      <!--        color="secondary"-->
+      <!--        size="sm"-->
+      <!--      >Cancel-->
+      <!--      </dfm-button>-->
+
+      <dfm-button
+        color="primary"
+        size="sm"
+        class="text-nowrap"
+        [disabled]="false"
+        (click)="saveStaff()"
+      >Add Staff
+      </dfm-button>
+    </div>
+  </section>
+
+  <section class="dfm-card overflow-y-auto">
+    <form [formGroup]="addStaffForm" class="dfm-p-16 d-flex flex-column dfm-gap-32">
+      <div class="d-flex flex-column dfm-gap-16">
+        <div class="d-flex dfm-gap-16 flex-wrap">
+          <dfm-input size="sm" placeholder="Enter First Name" label="First Name *" formControlName="firstname">
+          </dfm-input>
+
+          <dfm-input size="sm" placeholder="Enter Last Name" label="Last Name *" formControlName="lastname">
+          </dfm-input>
+        </div>
+
+        <div class="d-flex dfm-gap-16 flex-wrap">
+          <dfm-input type="email" size="sm" placeholder="Enter Email" label="Email *" formControlName="email">
+          </dfm-input>
+
+          <dfm-input type="number" size="sm" placeholder="Enter Telephone" label="Telephone *"
+                     formControlName="telephone">
+          </dfm-input>
+        </div>
+
+        <div *ngIf="generalUserTypes$$ | async as staffTypes">
+          <dfm-input-dropdown size="sm" placeholder="Select Staff Type" label="Staff Type *" [items]="staffTypes"
+                              formControlName="userType">
+          </dfm-input-dropdown>
+        </div>
+
+        <div *ngIf="exams$$ | async as exams" class="position-relative">
+          <dfm-input-dropdown #examsDropdown size="sm" [multiple]="true"
+                              #dropdown
+                              [placeholder]="!!examsDropdown.value?.length ? examsDropdown.value.length + ' Selected' : 'Select Studies involving this Staff'"
+                              label="Studies *" [items]="exams"
+                              formControlName="examLists">
+          </dfm-input-dropdown>
+          <!--        <span *ngIf="!!examsDropdown.value?.length"-->
+          <!--              class="studies-dropdown-text text-sm font-weight-medium text-center">-->
+          <!--          {{ examsDropdown.value?.length }} Selected-->
+          <!--        </span>-->
+        </div>
+
+        <dfm-text-area size="sm" placeholder="Enter Info" label="Info">
+        </dfm-text-area>
+      </div>
+
+      <div class="d-flex flex-column dfm-gap-16">
+        <div class="d-flex flex-column dfm-gap-8">
+          <span class="text-md font-weight-semi-bold">Add Practice Data</span>
+
+          <div>
+            <dfm-radio-button
+              label="Always"
+              hint="Corresponds to the opening hours of the practice"
+              size="sm"
+              [checkedValue]="false"
+              formControlName="practiceAvailabilityToggle"
+              (change)="handleRadioButtonChange(false)"
+            ></dfm-radio-button>
+
+            <dfm-radio-button
+              label="Get Detailed"
+              hint="Use only for exceptions"
+              size="sm"
+              [checkedValue]="true"
+              (change)="handleRadioButtonChange(true)"
+            ></dfm-radio-button>
+          </div>
+        </div>
+
+        <div *ngIf="formValues.practiceAvailabilityToggle" class="d-flex flex-column dfm-gap-24">
+          <div class="d-flex flex-column dfm-gap-8">
+            <span class="font-weight-medium">Choose Day</span>
+
+            <div class="d-flex dfm-gap-16">
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.ALL ? 'primary' : 'gray'" class="pointer"
+                         (click)="selectWeekday(weekday.ALL)">VIEW ALL
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.MON ? 'primary' : 'gray'" class="pointer"
+                         (click)="selectWeekday(weekday.MON)">MON
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.TUE ? 'primary' : 'gray'" class="pointer"
+                         (click)="selectWeekday(weekday.TUE)">TUE
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.WED ? 'primary' : 'gray'" class="pointer"
+                         (click)="selectWeekday(weekday.WED)">WED
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.THU ? 'primary' : 'gray'" class="pointer"
+                         (click)="selectWeekday(weekday.THU)">THU
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.FRI ? 'primary' : 'gray'" class="pointer"
+                         (click)="selectWeekday(weekday.FRI)">FRI
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.SAT ? 'primary' : 'gray'" class="pointer"
+                         (click)="selectWeekday(weekday.SAT)">SAT
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.SUN ? 'primary' : 'gray'" class="pointer"
+                         (click)="selectWeekday(weekday.SUN)">SUN
+              </dfm-badge>
+            </div>
+          </div>
+
+          <div formGroupName="practiceAvailability" class="d-flex flex-wrap dfm-gap-32">
+            <div *ngFor="let controlArray of practiceAvailabilityControlsArray"
+                 [formArrayName]="getFormArrayName(controlArray)"
+                 class="d-flex flex-column flex-wrap dfm-gap-8">
+              <span class="text-sm font-weight-medium">
+                {{ getFormArrayName(controlArray) | weekdayToName }}
+              </span>
+
+              <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
+                   class="d-flex flex-column dfm-gap-16">
+                <div class="d-flex dfm-gap-16 align-items-center">
+                  <dfm-input size="sm" placeholder="Start Time" formControlName="dayStart">
+                  </dfm-input>
+
+                  <dfm-input size="sm" placeholder="End Time" formControlName="dayEnd">
+                  </dfm-input>
+
+<!--                  <input type="time">-->
+
+                  <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                                   (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
+                <div class="dfm-bg-primary rounded-circle text-white text-center add-slot-icon">&plus;</div>
+                <span class="text-sm dfm-text-main-600">Add Slot</span>
+              </div>
+            </div>
+          </div>
+
+          <!--          <div formArrayName="practiceAvailability" class="d-flex dfm-gap-16" *ngIf="!!formValues.practiceAvailability">-->
+          <!--            <div [formGroupName]="i" *ngFor="let control of practiceAvailabilityControls; let i = index" class="d-flex flex-column dfm-gap-8">-->
+          <!--              <span>{{ control.value?.weekday | weekdayToName  }}</span>-->
+
+          <!--              <div class="d-flex dfm-gap-16 flex-wrap">-->
+          <!--                <dfm-input size="sm" placeholder="Enter First Name" label="First Name *" formControlName="dayStart">-->
+          <!--                </dfm-input>-->
+
+          <!--                <dfm-input size="sm" placeholder="Enter Last Name" label="Last Name *" formControlName="dayEnd">-->
+          <!--                </dfm-input>-->
+          <!--              </div>-->
+          <!--            </div>-->
+          <!--          </div>-->
+        </div>
+      </div>
+    </form>
+  </section>
+</div>
