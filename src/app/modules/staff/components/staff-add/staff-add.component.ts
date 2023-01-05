@@ -1,15 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  AbstractControl,
-  FormArray,
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ɵElement,
-  ɵFormGroupRawValue,
-  ɵGetProperty,
-  ɵTypedOrUntyped,
-} from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, distinctUntilChanged, filter, map, switchMap, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,9 +11,9 @@ import { Weekday } from '../../../../shared/models/weekday';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AddStaffRequestData } from '../../../../shared/models/staff.model';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { COMING_FROM_ROUTE, EDIT, STAFF_ID } from '../../../../shared/utils/const';
 import { RouterStateService } from '../../../../core/services/router-state.service';
+import { PracticeAvailability } from '../../../../shared/models/practice.model';
 
 interface TimeDistributed {
   hour: number;
