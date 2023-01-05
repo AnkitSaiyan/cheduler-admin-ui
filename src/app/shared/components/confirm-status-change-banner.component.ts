@@ -1,15 +1,11 @@
-import { Component, EventEmitter, HostBinding, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Status } from '../models/status';
 
 @Component({
   selector: 'dfm-confirm-status-change-banner',
   template: `
-    <div
-      *ngIf="display"
-      class="bg-white d-flex justify-content-between align-items-center dfm-gap-24 dfm-px-32 dfm-py-8 shadow-sm confirm-banner"
-      [ngClass]="bannerPosition === 'top' ? 'position-top' : 'position-bottom'"
-    >
+    <div *ngIf="display" class="confirm-banner bg-white d-flex justify-content-between align-items-center dfm-gap-24 dfm-px-32 dfm-py-24 shadow-sm">
       <span>Are you sure want to change Status?</span>
       <div class="d-flex align-items-center dfm-gap-16">
         <div class="dfm-btn-group flex-1 dropdown-wrapper">
@@ -23,48 +19,39 @@ import { Status } from '../models/status';
           ></dfm-input-dropdown>
         </div>
 
-        <dfm-button color="secondary" size="md" (click)="handleProceedClick(false)">Cancel</dfm-button>
-        <dfm-button color="primary" size="md" (click)="handleProceedClick(true)" [disabled]="statusDropdownControl.invalid">Proceed </dfm-button>
+        <dfm-button color="secondary" size="md" (click)="handleClick(false)">Cancel</dfm-button>
+        <dfm-button color="primary" size="md" (click)="handleClick(true)" [disabled]="statusDropdownControl.invalid"> Proceed </dfm-button>
       </div>
     </div>
   `,
   styles: [
     `
       .confirm-banner {
-        transition: bottom 1s;
+        transition: all 1000ms ease-in-out;
         position: absolute;
         left: 0;
         right: 0;
         z-index: 101;
-
-        //.dropdown-wrapper {
-        //  width: 128px;
-        //}
-      }
-
-      .position-top {
-        top: 0;
-        border-bottom-right-radius: 16px;
-        border-bottom-left-radius: 16px;
-      }
-
-      .position-bottom {
         bottom: 0;
-        //transition: bottom 1s;
         border-top-right-radius: 16px;
         border-top-left-radius: 16px;
+
+        .dropdown-wrapper {
+          width: 160px;
+        }
       }
+
+      //.show-banner {
+      //  bottom: 0;
+      //  opacity: 1;
+      //}
     `,
   ],
 })
-export class ConfirmStatusChangeBannerComponent implements OnInit, OnChanges {
+export class ConfirmStatusChangeBannerComponent implements OnInit {
   @Input() public display;
 
-  @Input() public bannerPosition: 'bottom' | 'top' = 'bottom';
-
   @Output() private confirmationEvent = new EventEmitter<{ proceed: boolean; newStatus: Status | null }>();
-
-  @HostBinding('class.confirm-banner') public displayBanner = false;
 
   public statusDropdownControl = new FormControl(null, [Validators.required]);
 
@@ -81,11 +68,11 @@ export class ConfirmStatusChangeBannerComponent implements OnInit, OnChanges {
 
   public ngOnInit() {}
 
-  public ngOnChanges() {
-    this.displayBanner = this.display;
-  }
+  public handleClick(proceed: boolean) {
+    if (!proceed) {
+      this.confirmationEvent.emit({ proceed, newStatus: null });
+    }
 
-  public handleProceedClick(proceed: boolean) {
     if (this.statusDropdownControl.valid) {
       this.confirmationEvent.emit({ proceed, newStatus: this.statusDropdownControl.value });
     }

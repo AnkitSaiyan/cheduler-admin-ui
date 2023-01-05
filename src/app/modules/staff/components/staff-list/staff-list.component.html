@@ -15,6 +15,7 @@
             color="tertiary-gray"
             size="sm"
             icon="copy-01"
+            (click)="handleCopyClick()"
           ></dfm-button-icon>
         </div>
 
@@ -42,6 +43,7 @@
         size="sm"
         class="text-nowrap"
         [disabled]="false"
+        routerLink="./add"
       >Add Staff
       </dfm-button>
     </div>
@@ -49,7 +51,7 @@
 
   <section class="overflow-y-auto" *ngIf="filteredStaffs$$ | async as staffs">
     <dfm-table [items]="staffs" [selectable]="true" (selected)="handleCheckboxSelection($event)"
-               [clearSelected$]="clearSelected$$">
+               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewStaff($event)">
       <ng-template #headerRowTemplate>
         <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
       </ng-template>
@@ -97,6 +99,7 @@
               color="tertiary-gray"
               size="sm"
               icon="pencil-02"
+              [routerLink]="['./', item.id, 'edit']"
             ></dfm-button-icon>
 
             <dfm-button-icon

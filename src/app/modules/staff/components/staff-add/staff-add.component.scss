@@ -1,0 +1,35 @@
+section:last-child {
+  // header height - content padding - section 1 height - row gap - maintaining b0ttom gap
+  max-height: calc(100vh - 64px - 24px - 36px - 24px - 16px);
+
+  div:nth-child(3) {
+    max-width: 504px;
+  }
+
+  .add-slot-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 32px;
+    line-height: 24px;
+  }
+
+  //.studies-dropdown-text {
+  //  position: absolute;
+  //  top: 55%;
+  //  left: 12px;
+  //}
+}
+
+@media (max-width: 1440px) {
+  section:last-child {
+    // header height - content padding - section 1 height - row gap
+    max-height: calc(100vh - 36px - 24px - 36px - 24px);
+  }
+}
+
+@media (max-width: 680px) {
+  section:last-child {
+    // header height - content padding - section 1 height - row gap - bottom nav bar height
+    max-height: calc(100vh - 36px - 24px - 36px - 24px - 65px - 16px);
+  }
+}

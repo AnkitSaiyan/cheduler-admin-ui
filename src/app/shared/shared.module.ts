@@ -8,9 +8,10 @@ import { DestroyableComponent } from './components/destroyable.component';
 import { StatusNamePipe } from './pipes/status-name.pipe';
 import { DashIfNothingPipe } from './pipes/dash-if-nothing.pipe';
 import { ConfirmStatusChangeBannerComponent } from './components/confirm-status-change-banner.component';
+import { WeekDayToNamePipe } from './pipes/week-day-to-name.pipe';
 
 @NgModule({
-  declarations: [DestroyableComponent, StatusNamePipe, DashIfNothingPipe, ConfirmStatusChangeBannerComponent],
+  declarations: [DestroyableComponent, StatusNamePipe, DashIfNothingPipe, ConfirmStatusChangeBannerComponent, WeekDayToNamePipe],
   imports: [CommonModule, DesignSystemModule, DesignSystemCoreModule, ReactiveFormsModule],
   exports: [
     DesignSystemModule,
@@ -21,6 +22,7 @@ import { ConfirmStatusChangeBannerComponent } from './components/confirm-status-
     DashIfNothingPipe,
     StatusNamePipe,
     ConfirmStatusChangeBannerComponent,
+    WeekDayToNamePipe,
   ],
 })
 export class SharedModule {}
