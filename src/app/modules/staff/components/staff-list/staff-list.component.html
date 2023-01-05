@@ -9,12 +9,12 @@
         [formControl]="searchControl"
       ></dfm-input>
 
-      <div class="d-flex align-items-center dfm-btn-group">
+      <div class="d-flex align-items-center dfm-button-group-wrapper">
         <div>
           <dfm-button-icon
             color="tertiary-gray"
             size="sm"
-            icon="copy-01"
+            icon="copy-02"
             (click)="handleCopyClick()"
           ></dfm-button-icon>
         </div>
@@ -100,6 +100,7 @@
               size="sm"
               icon="pencil-02"
               [routerLink]="['./', item.id, 'edit']"
+              [state]="{ comingFromRoute: 'staff', edit: true }"
             ></dfm-button-icon>
 
             <dfm-button-icon

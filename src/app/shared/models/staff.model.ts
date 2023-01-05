@@ -11,4 +11,5 @@ export interface AddStaffRequestData {
   practiceAvailability?: PracticeAvailability[];
   examLists: number[];
   info?: string;
+  id?: number;
 }

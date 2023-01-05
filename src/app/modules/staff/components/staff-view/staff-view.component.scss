@@ -1,8 +1,21 @@
-section:first-child {
-  max-height: 272px;
+section:nth-child(2) {
+  max-height: 256px;
 }
 
-.table-wrapper  {
-  // page height - top nav - content padding - section 1 height - row gap - sec2 top padding - sec2 header height - sec2 gap - sec2 bottom padding - extra space
-  max-height: calc(100vh - 64px - 24px - 272px - 24px - 16px - 40px - 16px - 16px - 16px);
+section:last-child .table-wrapper  {
+  // sec is section
+  // page height - top nav - content padding - sec1 height - sec gap - sec2 height - sec gap - sec2 top padding - sec2 header height - sec2 gap - sec2 bottom padding - extra space
+  max-height: calc(100vh - 64px - 24px - 24px - 24px - 256px - 24px - 16px - 40px - 16px - 16px - 16px);
+}
+
+@media (max-width: 1440px) {
+  .table-wrapper {
+    max-height: calc(100vh - 36px - 24px - 24px - 24px - 256px - 24px - 16px - 40px - 16px);
+  }
+}
+
+@media (max-width: 680px) {
+  .table-wrapper {
+    max-height: calc(100vh - 36px - 24px - 24px - 24px - 256px - 24px - 16px - 40px - 16px - 16px - 16px - 65px);
+  }
 }

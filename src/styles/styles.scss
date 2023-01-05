@@ -9,27 +9,80 @@
 //  display: none !important;
 //}
 
-dfm-input-dropdown input {
-  border: none !important;
+// custom styles for dfm elements ===========================================================
+dfm-input-dropdown {
+  input {
+    border: none !important;
+  }
+
+  label.dfm-input-label {
+    position: absolute;
+    z-index: 1;
+    top: -28px;
+  }
+
+  div.selected-items.selected-items-with-dropdown-icon {
+    left: 0 !important;
+    top: 48px !important;
+    width: fit-content;
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
+    max-width: 90% !important;
+  }
 }
 
-.dfm-btn-group {
+// button group wrapper
+.dfm-button-group-wrapper {
   background: white;
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
   height: 40px;
 }
 
-// Having styling issues with dfm-card component so created a class
+// use this for single select dropdown
+.dfm-input-dropdown-wrapper {
+  background: white;
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  height: 40px;
+  margin-top: 28px;
+}
+
+// Third party library stylings ========================================================
+ngb-timepicker {
+  input {
+    height: 40px;
+    border-radius: 8px;
+  }
+
+  input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: var(--dfm-input-border-focus) !important;
+    border-width: 2px;
+  }
+}
+
+// use this for multi type dropdown
+.dfm-input-multi-dropdown-wrapper {
+  background: white;
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  height: 40px;
+  margin-top: 28px;
+  margin-bottom: 40px;
+}
+
+
 .dfm-card {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
   //height: fit-content;
   flex: 1;
 }
 
-// Custom Global styling
+// Custom Global styling ==============================================================
 .overflow-y-auto {
   overflow-y: auto;
 }
@@ -46,6 +99,10 @@ dfm-input-dropdown input {
   height: inherit;
 }
 
+.h-fit {
+  height: fit-content;
+}
+
 .w-fit {
   width: fit-content;
 }
@@ -58,6 +115,10 @@ dfm-input-dropdown input {
   max-width: fit-content;
 }
 
+.text-red {
+  color: red;
+}
+
 // others
 .carousel-inner {
   height: 360px !important;
@@ -68,8 +129,9 @@ dfm-input-dropdown input {
   height: 24px;
 
   border-radius: 50%;
+
   &:hover {
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
   }
 }
 
@@ -100,7 +162,7 @@ dfm-input-dropdown input {
     height: 8px;
     border: none;
     border-radius: 50%;
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
 
     &:hover {
       background: rgba(var(--dfm-primary), 0.5);
@@ -108,6 +170,7 @@ dfm-input-dropdown input {
   }
 
 }
+
 
 //input[type="time"]::-webkit-calendar-picker-indicator{
 //  filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);

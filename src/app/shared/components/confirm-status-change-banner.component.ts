@@ -8,7 +8,7 @@ import { Status } from '../models/status';
     <div *ngIf="display" class="confirm-banner bg-white d-flex justify-content-between align-items-center dfm-gap-24 dfm-px-32 dfm-py-24 shadow-sm">
       <span>Are you sure want to change Status?</span>
       <div class="d-flex align-items-center dfm-gap-16">
-        <div class="dfm-btn-group flex-1 dropdown-wrapper">
+        <div class="dfm-input-dropdown-wrapper flex-1 dropdown-wrapper">
           <dfm-input-dropdown
             #statusDropdown
             [items]="statuses"

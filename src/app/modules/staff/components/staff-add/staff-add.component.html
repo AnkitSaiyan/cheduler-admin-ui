@@ -1,16 +1,39 @@
 <div class="d-flex flex-column dfm-gap-24">
   <section class="d-flex align-items-center justify-content-between dfm-gap-16">
-    <div class="d-flex dfm-gap-8 dfm-text-primary">
-      <span class="pointer" routerLink="../">Staff</span>
-      <span> > Add</span>
+    <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary">
+      <dfm-button
+        color="link"
+        size="sm"
+        routerLink="/staff"
+      >Staff
+      </dfm-button>
+
+      <div style="width: 16px; height: 16px" class="h-fit">
+        <dfm-icon name="chevron-right"></dfm-icon>
+      </div>
+
+      <div class="d-flex align-items-center dfm-gap-8" *ngIf="comingFromRoute === 'view' && staffID">
+        <dfm-button
+          color="link"
+          size="sm"
+          [routerLink]="['../', 'view']"
+        >View
+        </dfm-button>
+
+        <div style="width: 16px; height: 16px" class="h-fit">
+          <dfm-icon name="chevron-right"></dfm-icon>
+        </div>
+      </div>
+
+      <dfm-button
+        color="link-gray"
+        size="sm"
+      >{{ comingFromRoute ? 'Edit' : 'Add' }}
+      </dfm-button>
     </div>
 
     <div class="d-flex dfm-gap-16">
-      <!--      <dfm-button-->
-      <!--        color="secondary"-->
-      <!--        size="sm"-->
-      <!--      >Cancel-->
-      <!--      </dfm-button>-->
+      <dfm-button color="secondary" size="sm" routerLink="/staff">Cancel</dfm-button>
 
       <dfm-button
         color="primary"
@@ -18,13 +41,14 @@
         class="text-nowrap"
         [disabled]="false"
         (click)="saveStaff()"
-      >Add Staff
+      >{{ comingFromRoute ? 'Update' : 'Add' }} Staff
       </dfm-button>
     </div>
   </section>
 
   <section class="dfm-card overflow-y-auto">
-    <form [formGroup]="addStaffForm" class="dfm-p-16 d-flex flex-column dfm-gap-32">
+    <form [formGroup]="addStaffForm" class="dfm-p-16 d-flex flex-column dfm-gap-32"
+          *ngIf="(loading$$ | async) === false">
       <div class="d-flex flex-column dfm-gap-16">
         <div class="d-flex dfm-gap-16 flex-wrap">
           <dfm-input size="sm" placeholder="Enter First Name" label="First Name *" formControlName="firstname">
@@ -44,12 +68,14 @@
         </div>
 
         <div *ngIf="generalUserTypes$$ | async as staffTypes">
-          <dfm-input-dropdown size="sm" placeholder="Select Staff Type" label="Staff Type *" [items]="staffTypes"
-                              formControlName="userType">
-          </dfm-input-dropdown>
+          <div class="dfm-input-dropdown-wrapper">
+            <dfm-input-dropdown size="sm" placeholder="Select Staff Type" label="Staff Type *" [items]="staffTypes"
+                                formControlName="userType">
+            </dfm-input-dropdown>
+          </div>
         </div>
 
-        <div *ngIf="exams$$ | async as exams" class="position-relative">
+        <div *ngIf="exams$$ | async as exams" class="position-relative dfm-input-multi-dropdown-wrapper">
           <dfm-input-dropdown #examsDropdown size="sm" [multiple]="true"
                               #dropdown
                               [placeholder]="!!examsDropdown.value?.length ? examsDropdown.value.length + ' Selected' : 'Select Studies involving this Staff'"
@@ -84,6 +110,7 @@
               label="Get Detailed"
               hint="Use only for exceptions"
               size="sm"
+              formControlName="practiceAvailabilityToggle"
               [checkedValue]="true"
               (change)="handleRadioButtonChange(true)"
             ></dfm-radio-button>
@@ -95,28 +122,36 @@
             <span class="font-weight-medium">Choose Day</span>
 
             <div class="d-flex dfm-gap-16">
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.ALL ? 'primary' : 'gray'" class="pointer"
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.ALL ? 'primary' : 'gray'"
+                         class="pointer"
                          (click)="selectWeekday(weekday.ALL)">VIEW ALL
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.MON ? 'primary' : 'gray'" class="pointer"
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.MON ? 'primary' : 'gray'"
+                         class="pointer"
                          (click)="selectWeekday(weekday.MON)">MON
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.TUE ? 'primary' : 'gray'" class="pointer"
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.TUE ? 'primary' : 'gray'"
+                         class="pointer"
                          (click)="selectWeekday(weekday.TUE)">TUE
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.WED ? 'primary' : 'gray'" class="pointer"
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.WED ? 'primary' : 'gray'"
+                         class="pointer"
                          (click)="selectWeekday(weekday.WED)">WED
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.THU ? 'primary' : 'gray'" class="pointer"
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.THU ? 'primary' : 'gray'"
+                         class="pointer"
                          (click)="selectWeekday(weekday.THU)">THU
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.FRI ? 'primary' : 'gray'" class="pointer"
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.FRI ? 'primary' : 'gray'"
+                         class="pointer"
                          (click)="selectWeekday(weekday.FRI)">FRI
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.SAT ? 'primary' : 'gray'" class="pointer"
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.SAT ? 'primary' : 'gray'"
+                         class="pointer"
                          (click)="selectWeekday(weekday.SAT)">SAT
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.SUN ? 'primary' : 'gray'" class="pointer"
+              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.SUN ? 'primary' : 'gray'"
+                         class="pointer"
                          (click)="selectWeekday(weekday.SUN)">SUN
               </dfm-badge>
             </div>
@@ -125,21 +160,26 @@
           <div formGroupName="practiceAvailability" class="d-flex flex-wrap dfm-gap-32">
             <div *ngFor="let controlArray of practiceAvailabilityControlsArray"
                  [formArrayName]="getFormArrayName(controlArray)"
-                 class="d-flex flex-column flex-wrap dfm-gap-8">
+                 class="d-flex flex-column flex-wrap dfm-gap-16">
               <span class="text-sm font-weight-medium">
                 {{ getFormArrayName(controlArray) | weekdayToName }}
               </span>
 
               <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
                    class="d-flex flex-column dfm-gap-16">
-                <div class="d-flex dfm-gap-16 align-items-center">
-                  <dfm-input size="sm" placeholder="Start Time" formControlName="dayStart">
-                  </dfm-input>
+                <div class="d-flex dfm-gap-16 align-items-end">
+                  <div class="d-flex flex-column dfm-gap-8">
+                    <label class="text-sm font-weight-medium">Start Time</label>
+                    <ngb-timepicker formControlName="dayStart" size="small" [spinners]="false"></ngb-timepicker>
+                    <span class="text-sm text-red"
+                          *ngIf="controls.get('dayStart')?.hasError('startTimeErr')">Start Time must be smaller.</span>
+                  </div>
 
-                  <dfm-input size="sm" placeholder="End Time" formControlName="dayEnd">
-                  </dfm-input>
-
-<!--                  <input type="time">-->
+                  <div class="d-flex flex-column dfm-gap-8">
+                    <label class="text-sm font-weight-medium">End Time</label>
+                    <ngb-timepicker formControlName="dayEnd" size="small" [spinners]="false"></ngb-timepicker>
+                    <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>
+                  </div>
 
                   <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
                                    (click)="removeSlot(controlArray, i)"></dfm-button-icon>

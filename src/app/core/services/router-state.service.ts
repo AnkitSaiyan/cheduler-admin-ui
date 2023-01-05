@@ -21,14 +21,11 @@ export class RouterStateService {
 
       // Getting params
       let params = {};
-      while (state.params) {
+      while (state.firstChild) {
         params = { ...params, ...state.params };
-        if (state.firstChild) {
-          state = state.firstChild;
-        } else {
-          break;
-        }
+        state = state.firstChild;
       }
+      params = { ...params, ...state.params };
 
       const url = snapshot.url.split('?')[0];
       const { queryParams } = snapshot.root;
@@ -38,6 +35,10 @@ export class RouterStateService {
 
       this.routerState$$.next(routerState);
     });
+  }
+
+  public get routerState$() {
+    return this.routerState$$.asObservable().pipe(filter((params) => !!params));
   }
 
   public listenForParamChange$(paramName: string): Observable<string> {
