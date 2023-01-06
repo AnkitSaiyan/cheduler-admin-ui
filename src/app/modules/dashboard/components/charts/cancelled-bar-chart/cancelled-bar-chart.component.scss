@@ -18,3 +18,24 @@
     }
   }
 }
+// ======================Media Query for Mobile view=================
+@media (min-width:180px) and (max-width:680px) {
+  .percentage-text{
+    font-weight:600;
+  }
+}
+// ======================Media Query for Tab view=================
+@media (min-width:680px) and (max-width:1060px) {
+  .cancelled-bar-chart-wrapper
+    canvas{
+      width: 80% !important;
+      height: 80% !important;
+    }
+    .bar-chart-tab-view{
+      display: flex!important;
+      flex-direction: row !important;
+      justify-content: center !important;
+      align-items: center !important;
+    }
+  }
+

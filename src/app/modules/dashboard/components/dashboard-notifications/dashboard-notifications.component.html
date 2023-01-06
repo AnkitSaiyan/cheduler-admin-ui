@@ -17,7 +17,7 @@
 
   <section class="d-flex flex-column doctor-list-wrapper">
     <div *ngFor="let notification of notifications; let i = index;"
-         class="d-flex dfm-gap-16 justify-content-between text-sm dfm-py-16"
+         class="d-flex dfm-gap-16 justify-content-between text-sm dfm-py-16 notification-mobile-view"
          [ngClass]="{
             'dfm-py-16' : i > 0 && i < notifications.length - 1,
             'dfm-pb-16' : i === 0,

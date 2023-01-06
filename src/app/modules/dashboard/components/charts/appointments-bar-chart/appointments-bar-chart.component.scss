@@ -3,3 +3,21 @@
     color: var(--dfm-badge-success-color);
   }
 }
+
+// ======================Media Query for Mobile view=================
+@media (min-width:180px) and (max-width:680px) {
+  .card-value-text{
+    font-weight: 600;
+    font-size: 30px;
+  }
+  .percentage-text{
+    font-weight:600;
+  }
+}
+// ======================Media Query for Tab view=================
+@media (min-width:680px) and (max-width:1060px) {
+  .appointment-bar-tab-view
+  canvas{
+    width: 300px;
+  }
+}

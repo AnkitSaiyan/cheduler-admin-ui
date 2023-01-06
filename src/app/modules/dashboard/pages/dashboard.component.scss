@@ -64,6 +64,13 @@
       grid-row: 23/27;
     }
   }
+  
+}
+.mv-up-arrow-btn{
+  position: absolute;
+  bottom: 20px;
+  right: 40px;
+  display: none;
 }
 
 
@@ -80,7 +87,7 @@
   }
 }
 
-dfm-unavailable-hall-periods {
+.dfm-unavailable-hall-periods {
   width: fit-content;
   margin: 0;
 }
@@ -96,4 +103,41 @@ dfm-unavailable-hall-periods {
     grid-template-rows: 1fr 2fr;
     grid-gap: 12px;
   }
+}
+.employee-absences-card{
+  display: none!important;
+}
+
+// ======================Media Query for Mobile view=================
+@media (min-width:180px) and (max-width:680px) {
+  .dfm-dashboard-wrapper{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-container{
+    width: 100%;
+  }
+  .mv-up-arrow-btn{
+    position: absolute;
+    bottom: 80px;
+    right: 40px;
+    display: block;
+    z-index: 999;
+  }
+}
+
+// ======================Media Query for Tab view=================
+@media (min-width:680px) and (max-width:1060px) {
+  .dfm-dashboard-wrapper{
+    width: 100%;
+    display: flex;
+    flex-direction:column;
+    height: auto;
+  }
+  .card-container{
+    width: 100%;
+  }
+
 }

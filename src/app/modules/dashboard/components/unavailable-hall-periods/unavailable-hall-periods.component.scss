@@ -19,3 +19,24 @@
     overflow-y: auto;
   }
 }
+.room-name-placeholder{
+  display: none;
+}
+.unavailable-hall-download-icon-placeholder{
+  display: none;
+}
+// ======================Media Query for Mobile view=================
+@media (min-width:180px) and (max-width:680px) {
+  .room-name-placeholder{
+    display: block;
+  }
+  .search-room-name-placeholder{
+    display: none;
+  }
+  .unavailable-hall-download-placeholder{
+    display: none;
+  }
+  .unavailable-hall-download-icon-placeholder{
+    display: block;
+  }
+}

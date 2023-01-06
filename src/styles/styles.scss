@@ -91,5 +91,18 @@ dfm-input-dropdown input {
       background: rgba(var(--dfm-primary), 0.5);
     }
   }
+}
+.font-weight-mobile-view{
+  font-weight: 600;
+}
 
+// ======================Media Query for Mobile view=================
+@media (min-width:180px) and (max-width:680px) {
+
+  .carousel-control-prev, .carousel-control-next{
+    display: none;
+  }
+  .font-weight-mobile-view{
+    font-weight: 600;
+  }
 }

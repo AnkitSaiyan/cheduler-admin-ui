@@ -19,3 +19,16 @@
     overflow-y: auto;
   }
 }
+.patient-placeholder{
+  display: none;
+}
+
+// ======================Media Query for Mobile view=================
+@media (min-width:180px) and (max-width:680px) {
+  .search-patient-placeholder{
+    display: none;
+  }
+  .patient-placeholder{
+    display: block;
+  }
+}

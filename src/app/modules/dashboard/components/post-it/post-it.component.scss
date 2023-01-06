@@ -41,3 +41,32 @@
 mdb-carousel-item {
   padding-bottom: 40px;
 }
+.post-search-placeholder{
+  display: none;
+}
+.post-search-it-placeholder{
+  flex-grow: 1;
+}
+// ======================Media Query for Mobile view=================
+@media (min-width:180px) and (max-width:680px) {
+  .post-view-all-btn{
+    display: none;
+  }
+.post-it-card {
+  margin-right: 20px;
+  margin-left: 20px;
+}
+.carousel-footer-content{
+  margin-top: 50px;
+}
+.post-search-placeholder{
+  display: block;
+}
+.post-search-it-placeholder{
+  display: none;
+}
+.flex-grow-full{
+  flex-grow: 1
+};
+
+}

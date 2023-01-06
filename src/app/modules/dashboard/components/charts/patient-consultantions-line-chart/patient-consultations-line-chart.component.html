@@ -8,7 +8,7 @@
         </header>
       </div>
 
-     <div class="dfm-btn-group dfm-me-12">
+     <div class="dfm-btn-group dfm-me-12 overall-sort-icon">
        <dfm-input-dropdown
          [items]="[]"
          placeholder="Sort By"
@@ -17,10 +17,15 @@
          [loading]="false"
        ></dfm-input-dropdown>
      </div>
+      <dfm-button-icon
+            color="tertiary-gray"
+            size="sm"
+            icon="calendar-date" class="overall-sort-icon-mv border border-secondary rounded"
+          ></dfm-button-icon>
     </div>
   </section>
 
-  <section class="d-flex dfm-gap-16 align-self-end dfm-me-16 text-sm dfm-mb-16">
+  <section class="d-flex dfm-gap-16 justify-content-end dfm-me-16 text-sm dfm-mb-16 w-100 overall-patients-consultations">
     <div class="d-flex align-items-center dfm-gap-8">
       <div class="line-chart-legend patients-legend"></div>
       <span>Patients</span>

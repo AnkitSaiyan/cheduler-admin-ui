@@ -7,18 +7,32 @@
       </header>
     </div>
 
-    <div class="d-flex dfm-gap-8 align-items-center dfm-pt-12 flex-grow-1 flex-shrink-1">
+    <div class="d-flex dfm-gap-8 align-items-center dfm-pt-12 flex-grow-1 flex-shrink-1 appointment-list-header-section">
       <dfm-input
         size="sm"
         placeholder="Search"
-        icon="search-sm"
+        icon="search-sm" class="appointment-search-field"
       ></dfm-input>
+      <div>
+        <dfm-button-icon
+        color="tertiary-gray"
+        size="sm"
+        icon="search-sm" class="appointment-search-icon"
+      ></dfm-button-icon>
+    </div>
 
       <dfm-input
         size="sm"
         placeholder="Advanced Search"
-        icon="search-sm"
+        icon="search-sm" class="appointment-adv-search-field"
       ></dfm-input>
+      <div>
+        <dfm-button-icon
+        color="tertiary-gray"
+        size="sm"
+        icon="calendar-date" class="appointment-adv-search-icon"
+      ></dfm-button-icon>
+    </div>
 
       <div class="d-flex align-items-center dfm-btn-group">
         <div>
@@ -32,7 +46,14 @@
         <dfm-input-dropdown
           [items]="downloadItems"
           placeholder="Download"
-          [showDescription]="true"
+          [showDescription]="true" class="appointment-list-download-placeholder"
+          size="sm"
+          [loading]="false"
+        ></dfm-input-dropdown>
+        <dfm-input-dropdown
+          [items]="downloadItems"
+          placeholder=""
+          [showDescription]="true" class="appointment-list-download-icon-placeholder"
           size="sm"
           [loading]="false"
         ></dfm-input-dropdown>
@@ -41,10 +62,15 @@
           <dfm-button-icon
             color="tertiary-gray"
             size="sm"
-            icon="calendar-date"
+            icon="calendar-date" class="appointment-list-calendar-icon"
           ></dfm-button-icon>
         </div>
       </div>
+      <dfm-button-icon
+            color="tertiary-gray"
+            size="sm"
+            icon="calendar-date" class="appointment-list-calendar-icon-mv"
+          ></dfm-button-icon>
 
 <!--      <dfm-button-group>-->
 <!--        <dfm-button-group-item icon="copy-01" class="bo">-->
@@ -57,15 +83,21 @@
       <dfm-button
         color="secondary"
         size="sm"
-        [disabled]="false"
+        [disabled]="false" class="appointment-list-confirm-btn"
       >Confirm</dfm-button>
 
       <dfm-button
         color="primary"
         size="sm"
-        class="text-nowrap"
+        class="text-nowrap appointment-list-add-appointment-btn"
         [disabled]="false"
-      >Add Appointments</dfm-button>
+      >Add Appointment</dfm-button>
+      <dfm-button
+        color="primary"
+        size="sm"
+        class="text-nowrap appointment-list-add-btn"
+        [disabled]="false"
+      >Add</dfm-button>
     </div>
   </section>
 
