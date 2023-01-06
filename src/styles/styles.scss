@@ -92,11 +92,17 @@ dfm-input-dropdown input {
     }
   }
 }
+.font-weight-mobile-view{
+  font-weight: 600;
+}
 
 // ======================Media Query for Mobile view=================
 @media (min-width:180px) and (max-width:680px) {
 
   .carousel-control-prev, .carousel-control-next{
     display: none;
+  }
+  .font-weight-mobile-view{
+    font-weight: 600;
   }
 }

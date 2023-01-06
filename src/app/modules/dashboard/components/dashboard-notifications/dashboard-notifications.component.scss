@@ -9,3 +9,13 @@
     border-bottom: 1px solid var(--dfm-secondary);
   }
 }
+
+
+// ======================Media Query for Mobile view=================
+@media (min-width:180px) and (max-width:680px) {
+  .notification-mobile-view{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+}

@@ -12,9 +12,17 @@
 @media (min-width:180px) and (max-width:680px) {
   .card-value-text{
     font-weight: 600;
-    font-size: 40px;
+    font-size: 30px;
   }
   .percentage-text{
     font-weight:600;
+  }
+}
+
+// ======================Media Query for Tab view=================
+@media (min-width:680px) and (max-width:1060px) {
+  .patients-bar-tab-view
+  canvas{
+    width: 300px;
   }
 }

@@ -44,6 +44,9 @@ mdb-carousel-item {
 .post-search-placeholder{
   display: none;
 }
+.post-search-it-placeholder{
+  flex-grow: 1;
+}
 // ======================Media Query for Mobile view=================
 @media (min-width:180px) and (max-width:680px) {
   .post-view-all-btn{
@@ -62,4 +65,8 @@ mdb-carousel-item {
 .post-search-it-placeholder{
   display: none;
 }
+.flex-grow-full{
+  flex-grow: 1
+};
+
 }

@@ -26,14 +26,16 @@
 }
 // ======================Media Query for Tab view=================
 @media (min-width:680px) and (max-width:1060px) {
-  // .cancelled-bar-chart-wrapper{
-  //   display: flex;
-  // align-items: center;
-  // justify-content: center;
-  // width: 100%;
-  // }
-//   .cancelled-bar-chart-wrapper canvas{
-//   width: 50% !important;
-//   height: 50% !important;
-// }
-}
+  .cancelled-bar-chart-wrapper
+    canvas{
+      width: 80% !important;
+      height: 80% !important;
+    }
+    .bar-chart-tab-view{
+      display: flex!important;
+      flex-direction: row !important;
+      justify-content: center !important;
+      align-items: center !important;
+    }
+  }
+
