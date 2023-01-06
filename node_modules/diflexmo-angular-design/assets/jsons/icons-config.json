@@ -257,6 +257,10 @@
       "iconPath": "/assets/icons/x-close.svg"
     },
     {
+      "iconName": "x-circle",
+      "iconPath": "/assets/icons/x-circle.svg"
+    },
+    {
       "iconName": "zoom-in",
       "iconPath": "/assets/icons/zoom-in.svg"
     },

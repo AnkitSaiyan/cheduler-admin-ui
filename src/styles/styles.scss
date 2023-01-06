@@ -48,21 +48,6 @@ dfm-input-dropdown {
   margin-top: 28px;
 }
 
-// Third party library stylings ========================================================
-ngb-timepicker {
-  input {
-    height: 40px;
-    border-radius: 8px;
-  }
-
-  input:focus {
-    outline: none !important;
-    box-shadow: none !important;
-    border-color: var(--dfm-input-border-focus) !important;
-    border-width: 2px;
-  }
-}
-
 // use this for multi type dropdown
 .dfm-input-multi-dropdown-wrapper {
   background: white;
@@ -82,44 +67,38 @@ ngb-timepicker {
   flex: 1;
 }
 
-// Custom Global styling ==============================================================
-.overflow-y-auto {
-  overflow-y: auto;
+dfm-button {
+  button {
+    height: inherit;
+    width: inherit;
+  }
 }
 
-.overflow-x-auto {
-  overflow-x: auto;
+dfm-table-body-cell td {
+  overflow: visible !important;
 }
 
-.flex-1 {
-  flex: 1;
+// Third party library styling ========================================================
+ngb-timepicker {
+  input {
+    height: 40px;
+    border-radius: 8px;
+  }
+
+  input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: var(--dfm-input-border-focus) !important;
+    border-width: 2px;
+  }
 }
 
-.h-inherit {
-  height: inherit;
+// others ===================================================================
+button:disabled {
+  background: #D0D5DD !important;
+  color: white !important;
 }
 
-.h-fit {
-  height: fit-content;
-}
-
-.w-fit {
-  width: fit-content;
-}
-
-.min-w-fit {
-  min-width: fit-content;
-}
-
-.max-w-fit {
-  max-width: fit-content;
-}
-
-.text-red {
-  color: red;
-}
-
-// others
 .carousel-inner {
   height: 360px !important;
 }
@@ -171,6 +150,74 @@ ngb-timepicker {
 
 }
 
+// Custom Global styling ==============================================================
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.h-inherit {
+  height: inherit;
+}
+
+.h-fit {
+  height: fit-content;
+}
+
+.w-fit {
+  width: fit-content;
+}
+
+.min-w-fit {
+  min-width: fit-content;
+}
+
+.max-w-fit {
+  max-width: fit-content;
+}
+
+.text-red {
+  color: red;
+}
+
+.hidden {
+  display: none;
+}
+
+.x-circle {
+  display: flex;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid gray;
+  border-radius: 50%;
+}
+
+.modal-header  {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border: none;
+}
+
+.modal-footer {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 16px;
+  border: none;
+}
 
 //input[type="time"]::-webkit-calendar-picker-indicator{
 //  filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);

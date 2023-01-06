@@ -4,13 +4,14 @@ import { DesignSystemCoreModule, DesignSystemModule, TableModule } from 'diflexm
 import { NgChartsModule } from 'ng2-charts';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NgbTimepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModalModule, NgbTimepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from './components/destroyable.component';
 import { StatusNamePipe } from './pipes/status-name.pipe';
 import { DashIfNothingPipe } from './pipes/dash-if-nothing.pipe';
 import { ConfirmStatusChangeBannerComponent } from './components/confirm-status-change-banner.component';
 import { WeekDayToNamePipe } from './pipes/week-day-to-name.pipe';
 import { InputDropdownWrapperComponent } from './components/input-dropdown-wrapper.component';
+import { ConfirmActionDialogComponent } from './components/confirm-action-dialog.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { InputDropdownWrapperComponent } from './components/input-dropdown-wrapp
     ConfirmStatusChangeBannerComponent,
     WeekDayToNamePipe,
     InputDropdownWrapperComponent,
+    ConfirmActionDialogComponent,
   ],
   imports: [CommonModule, DesignSystemModule, DesignSystemCoreModule, ReactiveFormsModule],
   exports: [
@@ -29,10 +31,13 @@ import { InputDropdownWrapperComponent } from './components/input-dropdown-wrapp
     NgChartsModule,
     MdbCarouselModule,
     NgbTimepickerModule,
+    NgbModalModule,
+    NgbDropdownModule,
     DashIfNothingPipe,
     StatusNamePipe,
     ConfirmStatusChangeBannerComponent,
     WeekDayToNamePipe,
+    ConfirmActionDialogComponent,
   ],
 })
 export class SharedModule {}

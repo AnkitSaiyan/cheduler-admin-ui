@@ -1,15 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
 import { FormControl } from '@angular/forms';
-import formatters from 'chart.js/dist/core/core.ticks';
 import { TableItem } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { Status } from '../../../../shared/models/status';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { User } from '../../../../shared/models/user.model';
+import { ConfirmActionDialogComponent } from '../../../../shared/components/confirm-action-dialog.component';
+import { ModalService } from '../../../../core/services/modal.service';
 
 @Component({
   selector: 'dfm-staff-list',
@@ -17,6 +18,8 @@ import { User } from '../../../../shared/models/user.model';
   styleUrls: ['./staff-list.component.scss'],
 })
 export class StaffListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
+
   public searchControl = new FormControl('', []);
 
   public downloadDropdownControl = new FormControl('', []);
@@ -60,11 +63,14 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public showBanner = false;
 
+  public openedDialog!: NgbModalRef;
+
   constructor(
     private staffApiSvc: StaffApiService,
     private notificationSvc: NotificationDataService,
     private router: Router,
     private route: ActivatedRoute,
+    private modalSvc: ModalService,
   ) {
     super();
     this.staffs$$ = new BehaviorSubject<any[]>([]);
@@ -147,6 +153,8 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public deleteStaff(id: number) {
+    // this.modalSvc.open(ConfirmActionDialogComponent);
+    this.openedDialog.dismissed.subscribe((data) => console.log(data));
     this.staffApiSvc.deleteStaff(id);
     this.notificationSvc.showNotification('Staff deleted successfully');
   }
@@ -167,6 +175,14 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   public navigateToViewStaff(e: TableItem) {
     if (e?.id) {
       this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+    }
+  }
+
+  public toggleMenu() {
+    const icon = document.querySelector('.sf-li-plus-btn-icon');
+    if (icon) {
+      icon.classList.toggle('rotate-z-45');
+      icon.classList.toggle('rotate-z-0');
     }
   }
 }
