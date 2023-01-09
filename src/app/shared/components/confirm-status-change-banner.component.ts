@@ -5,11 +5,20 @@ import { Status } from '../models/status';
 @Component({
   selector: 'dfm-confirm-status-change-banner',
   template: `
-    <div *ngIf="display" class="confirm-banner bg-white d-flex justify-content-between align-items-center dfm-gap-24 dfm-px-32 dfm-py-12 shadow-lg">
-      <span class="font-weight-medium">Are you sure want to change Status?</span>
+    <div *ngIf="display" class="confirm-banner dfm-gap-16 dfm-px-32 dfm-py-12 shadow-lg">
+      <div class="hidden align-items-center justify-content-between dfm-gap-16">
+        <h5 class="modal-title">Confirmation</h5>
+        <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="$event.stopPropagation(); handleClick(false)"></dfm-button-icon>
+      </div>
+
+      <div class="w-full">
+        <span class="font-weight-medium">Are you sure want to change Status?</span>
+      </div>
+
       <div class="d-flex align-items-center dfm-gap-16">
         <div class="dfm-input-dropdown-wrapper-wo-label flex-1 dropdown-wrapper">
           <dfm-input-dropdown
+            (click)="$event.stopPropagation()"
             #statusDropdown
             [items]="statuses"
             [showDescription]="false"
@@ -19,8 +28,17 @@ import { Status } from '../models/status';
           ></dfm-input-dropdown>
         </div>
 
-        <dfm-button color="secondary" size="md" (click)="handleClick(false)">Cancel</dfm-button>
-        <dfm-button color="primary" size="md" (click)="handleClick(true)" [disabled]="statusDropdownControl.value === null"> Proceed </dfm-button>
+        <div class="d-flex flex-row dfm-gap-16 align-items-center">
+          <dfm-button color="secondary" size="md" (click)="$event.stopPropagation(); handleClick(false)">Cancel</dfm-button>
+          <dfm-button
+            color="primary"
+            size="md"
+            (click)="$event.stopPropagation(); handleClick(true)"
+            [disabled]="statusDropdownControl.value === null"
+          >
+            Proceed
+          </dfm-button>
+        </div>
       </div>
     </div>
   `,
@@ -28,6 +46,10 @@ import { Status } from '../models/status';
     `
       .confirm-banner {
         transition: all 1000ms ease-in-out;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         position: absolute;
         left: 0;
         right: 0;
@@ -45,6 +67,39 @@ import { Status } from '../models/status';
       //  bottom: 0;
       //  opacity: 1;
       //}
+
+      @media (max-width: 680px) {
+        .confirm-banner {
+          transition: all ease 200ms;
+          flex-direction: column;
+          justify-content: start !important;
+
+          & > div,
+          div:last-child > div,
+          dfm-input-dropdown {
+            flex: 1;
+            width: 100%;
+          }
+
+          div:first-child {
+            display: flex;
+          }
+
+          div:last-child {
+            transition: all ease 200ms;
+            flex-direction: column;
+            margin-bottom: 8px;
+
+            div:last-child {
+              transition: all ease 200ms;
+              dfm-button {
+                height: 44px;
+                flex: 1;
+              }
+            }
+          }
+        }
+      }
     `,
   ],
 })
