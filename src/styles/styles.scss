@@ -211,7 +211,7 @@ button:disabled {
 .weekday-header {
   dfm-badge {
     div {
-      padding: 4px 12px !important;
+      padding: 8px 12px !important;
       border-radius: 8px !important;
     }
   }
@@ -228,6 +228,12 @@ button:disabled {
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.hide-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .flex-1 {
@@ -304,6 +310,14 @@ button:disabled {
 
   .modal-footer {
     justify-content: center;
+  }
+
+  .weekday-header {
+    dfm-badge {
+      div.dfm-badge-gray {
+        background: var(--bs-gray-200) !important;
+      }
+    }
   }
 }
 //input[type="time"]::-webkit-calendar-picker-indicator{

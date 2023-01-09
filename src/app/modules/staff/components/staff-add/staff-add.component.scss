@@ -1,4 +1,8 @@
-section.sf-ed-section2 {
+.sf-ad-action-buttons {
+  display: flex;
+}
+
+section.sf-ad-section2 {
   // header height - content padding - section 1 height - row gap - maintaining bottom gap
   max-height: calc(100vh - 64px - 24px - 36px - 24px - 24px);
 
@@ -29,15 +33,58 @@ section.sf-ed-section2 {
 }
 
 @media (max-width: 1440px) {
-  section.sf-ed-section2 {
+  section.sf-ad-section2 {
     // header height - content padding - section 1 height - row gap - extra gap
     max-height: calc(100vh - 36px - 24px - 36px - 24px - 24px);
   }
 }
 
 @media (max-width: 680px) {
-  section.sf-ed-section2 {
+  .sf-ad-title-buttons {
+    display: none !important;
+  }
+
+  .sf-ad-title-buttons-mv {
+    display: flex;
+  }
+
+  .sf-ad-action-buttons {
+    background: white;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    column-gap: 16px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    z-index: 10000;
+
+    &>dfm-button {
+      height: 44px;
+      flex: 1;
+    }
+  }
+
+  section.sf-ad-section2 {
     // header height - content padding - section 1 height - row gap - bottom nav bar height - extra gap
     max-height: calc(100vh - 36px - 24px - 36px - 24px - 65px - 24px);
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+
+    .sf-ad-staff-dropdown, .sf-ad-exam-dropdown, .sf-ad-info-input, dfm-input {
+      flex: 1;
+      max-width: 100%;
+      min-width: 100%;
+    }
+
+    form {
+      padding: 0;
+    }
+
+    .sf-ad-weekdays-tab {
+      overflow-x: auto;
+    }
   }
 }

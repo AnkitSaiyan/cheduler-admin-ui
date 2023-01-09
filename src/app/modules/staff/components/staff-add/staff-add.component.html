@@ -1,6 +1,6 @@
 <div class="d-flex flex-column dfm-gap-24">
   <section class="d-flex align-items-center justify-content-between dfm-gap-16">
-    <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary">
+    <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary sf-ad-title-buttons">
       <dfm-button
         color="link"
         size="sm"
@@ -32,24 +32,43 @@
       </dfm-button>
     </div>
 
-    <div class="d-flex dfm-gap-16">
+    <div class="dfm-gap-16 sf-ad-action-buttons">
       <dfm-button color="secondary" size="sm" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/staff']">Cancel</dfm-button>
-
       <dfm-button
         color="primary"
         size="sm"
         class="text-nowrap"
-        [disabled]="false"
         (click)="saveStaff()"
-      >{{ comingFromRoute ? 'Update' : 'Add' }} Staff
+      >{{ comingFromRoute ? 'Save Changes' : 'Add Staff' }}
       </dfm-button>
     </div>
+
+<!--  Mobile View  -->
+    <div class="hidden dfm-gap-8 align-items-center sf-ad-title-buttons-mv">
+      <div class="rounded-circle overflow-hidden">
+        <dfm-button-icon
+          color="tertiary-gray"
+          size="sm"
+          icon="chevron-left"
+          [routerLink]="comingFromRoute === 'view' ? '../view' : '/staff'"
+        >
+        </dfm-button-icon>
+      </div>
+
+      <dfm-button
+        color="link"
+        size="md"
+        routerLink="./"
+      > {{ edit ? 'Edit Staff' : 'Add Staff' }}
+      </dfm-button>
+    </div>
+<!--  **  -->
   </section>
 
-  <section class="dfm-card overflow-y-auto sf-ed-section2">
+  <section class="dfm-card overflow-y-auto hide-scrollbar sf-ad-section2">
     <form [formGroup]="addStaffForm" class="dfm-p-16 d-flex flex-column dfm-gap-32"
           *ngIf="(loading$$ | async) === false">
-      <div class="d-flex flex-column dfm-gap-16">
+      <div class="d-flex flex-column dfm-gap-16 sf-ad-form-general-info">
         <div class="d-flex dfm-gap-16 flex-wrap">
           <dfm-input size="sm" placeholder="Enter First Name" label="First Name *" formControlName="firstname">
           </dfm-input>
@@ -121,7 +140,7 @@
           <div class="d-flex flex-column dfm-gap-8">
             <span class="text-sm font-weight-semi-bold">Choose Day</span>
 
-            <div class="d-flex dfm-gap-16 weekday-header">
+            <div class="d-flex dfm-gap-16 weekday-header sf-ad-weekdays-tab hide-scrollbar">
               <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.ALL ? 'primary' : 'gray'"
                          class="pointer"
                          (click)="selectWeekday(weekday.ALL)">VIEW ALL
@@ -169,6 +188,9 @@
                    class="d-flex flex-column dfm-gap-16">
                 <div class="d-flex dfm-gap-16 align-items-end">
                   <div class="d-flex flex-column dfm-gap-8">
+<!--                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">-->
+
+<!--                    </dfm-input-dropdown>-->
                     <label class="text-sm font-weight-medium">Start Time</label>
                     <ngb-timepicker formControlName="dayStart" size="small" [spinners]="false"></ngb-timepicker>
                     <span class="text-sm text-red"

@@ -12,6 +12,7 @@ import { ConfirmStatusChangeBannerComponent } from './components/confirm-status-
 import { WeekDayToNamePipe } from './pipes/week-day-to-name.pipe';
 import { InputDropdownWrapperComponent } from './components/input-dropdown-wrapper.component';
 import { ConfirmActionDialogComponent } from './components/confirm-action-dialog.component';
+import { TimeInIntervalPipe } from './pipes/time-in-interval.pipe';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { ConfirmActionDialogComponent } from './components/confirm-action-dialog
     WeekDayToNamePipe,
     InputDropdownWrapperComponent,
     ConfirmActionDialogComponent,
+    TimeInIntervalPipe,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule],
   exports: [
@@ -37,6 +39,7 @@ import { ConfirmActionDialogComponent } from './components/confirm-action-dialog
     ConfirmStatusChangeBannerComponent,
     WeekDayToNamePipe,
     ConfirmActionDialogComponent,
+    TimeInIntervalPipe,
   ],
 })
 export class SharedModule {}
