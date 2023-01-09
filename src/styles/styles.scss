@@ -48,6 +48,13 @@ dfm-input-dropdown {
   margin-top: 28px;
 }
 
+.dfm-input-dropdown-wrapper-wo-label {
+  background: white;
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  height: 40px;
+}
+
 // use this for multi type dropdown
 .dfm-input-multi-dropdown-wrapper {
   background: white;
