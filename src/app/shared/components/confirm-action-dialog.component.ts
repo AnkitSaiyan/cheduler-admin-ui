@@ -15,17 +15,17 @@ export interface DialogData {
   template: `
     <div #content class="">
       <div class="modal-header">
-        <h4 class="modal-title">{{ dialogData.titleText }}</h4>
-        <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="dismiss()"></dfm-button-icon>
+        <h5 class="modal-title">{{ dialogData.titleText }}</h5>
+        <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
       </div>
 
       <div class="modal-body">
-        <p>{{ dialogData.bodyText }}</p>
+        <p class="dfm-m-0">{{ dialogData.bodyText }}</p>
       </div>
 
       <div class="modal-footer">
-        <dfm-button color="secondary" size="sm" (click)="dismiss()">{{ dialogData.cancelButtonText }}</dfm-button>
-        <dfm-button color="primary" size="sm" (click)="confirm()">{{ dialogData.confirmButtonText }}</dfm-button>
+        <dfm-button color="secondary" size="sm" (click)="close(false)">{{ dialogData.cancelButtonText }}</dfm-button>
+        <dfm-button color="primary" size="sm" (click)="close(true)">{{ dialogData.confirmButtonText }}</dfm-button>
       </div>
     </div>
   `,
@@ -33,7 +33,7 @@ export interface DialogData {
 })
 export class ConfirmActionDialogComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public dialogData: DialogData = {
-    confirmButtonText: 'Confirm',
+    confirmButtonText: 'Proceed',
     cancelButtonText: 'Cancel',
     titleText: 'Confirmation',
     bodyText: 'Are you sure you want to perform this action?',
@@ -53,11 +53,7 @@ export class ConfirmActionDialogComponent extends DestroyableComponent implement
     super.ngOnDestroy();
   }
 
-  public dismiss() {
-    this.dialogSvc.dismiss();
-  }
-
-  public confirm() {
-    this.dialogSvc.close(true);
+  public close(result: boolean) {
+    this.dialogSvc.close(result);
   }
 }

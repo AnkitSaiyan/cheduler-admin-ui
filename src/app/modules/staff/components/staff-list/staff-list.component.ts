@@ -1,15 +1,14 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { TableItem } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { Status } from '../../../../shared/models/status';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ConfirmActionDialogComponent } from '../../../../shared/components/confirm-action-dialog.component';
+import { ConfirmActionDialogComponent, DialogData } from '../../../../shared/components/confirm-action-dialog.component';
 import { ModalService } from '../../../../core/services/modal.service';
 
 @Component({
@@ -62,8 +61,6 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   public statusType = getStatusEnum();
 
   public showBanner = false;
-
-  public openedDialog!: NgbModalRef;
 
   constructor(
     private staffApiSvc: StaffApiService,
@@ -153,10 +150,24 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public deleteStaff(id: number) {
-    // this.modalSvc.open(ConfirmActionDialogComponent);
-    this.openedDialog.dismissed.subscribe((data) => console.log(data));
-    this.staffApiSvc.deleteStaff(id);
-    this.notificationSvc.showNotification('Staff deleted successfully');
+    const dialogRef = this.modalSvc.open(ConfirmActionDialogComponent, {
+      data: {
+        titleText: 'Confirmation',
+        bodyText: 'Are you sure you want to delete this Staff?',
+        confirmButtonText: 'Proceed',
+        cancelButtonText: 'Cancel',
+      } as DialogData,
+    });
+
+    dialogRef.closed
+      .pipe(
+        filter((res: boolean) => res),
+        take(1),
+      )
+      .subscribe(() => {
+        this.staffApiSvc.deleteStaff(id);
+        this.notificationSvc.showNotification('Staff deleted successfully');
+      });
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
@@ -164,11 +175,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     this.afterBannerClosed$$.next(e);
   }
 
-  public openConfirmationBanner() {
-    this.showBanner = true;
-  }
-
-  public handleCopyClick() {
+  public copyToClipboard() {
     this.notificationSvc.showNotification('Data copied to clipboard successfully');
   }
 

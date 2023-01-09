@@ -11,17 +11,17 @@
         [formControl]="searchControl"
       ></dfm-input>
 
-      <div class="d-flex align-items-center sf-li-dropdown dfm-button-group-wrapper">
-        <div>
+      <div class="d-flex align-items-center dfm-button-group-wrapper sf-li-button-dropdown-group">
+        <div class="dfm-button-icon-bg-transparent">
           <dfm-button-icon
             color="tertiary-gray"
             size="sm"
             icon="copy-03"
-            (click)="handleCopyClick()"
+            (click)="copyToClipboard()"
           ></dfm-button-icon>
         </div>
 
-        <div>
+        <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
           <dfm-input-dropdown
             [items]="downloadItems"
             [showDescription]="false"
@@ -37,7 +37,6 @@
           color="secondary"
           size="sm"
           [disabled]="!selectedStaffIds.length"
-          (click)="openConfirmationBanner()"
         >Confirm
         </dfm-button>
 
@@ -53,37 +52,11 @@
     </div>
   </section>
 
-  <!--  <div ngbDropdown>-->
-  <!--    <dfm-button size="sm" color="link-gray" trailingIcon="dots-vertical" id="dropdownBasic1" ngbDropdownToggle>-->
-  <!--      Toggle dropdown-->
-  <!--    </dfm-button>-->
-  <!--    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">-->
-  <!--      <button ngbDropdownItem>-->
-  <!--        <div style="width: 16px; height: 16px" class="h-fit">-->
-  <!--          <dfm-icon name="check-circle"></dfm-icon>-->
-  <!--        </div>-->
-  <!--      </button>-->
-  <!--      <button ngbDropdownItem>-->
-  <!--        <div style="width: 16px; height: 16px" class="h-fit">-->
-  <!--          <dfm-icon name="x-circle"></dfm-icon>-->
-  <!--        </div>-->
-  <!--      </button>-->
-  <!--      <button ngbDropdownItem>-->
-  <!--        <div style="width: 16px; height: 16px" class="h-fit">-->
-  <!--          <dfm-icon name="pencil-02"></dfm-icon>-->
-  <!--        </div>-->
-  <!--      </button>-->
-  <!--      <button ngbDropdownItem>-->
-  <!--        <div style="width: 16px; height: 16px" class="h-fit">-->
-  <!--          <dfm-icon name="trash-01"></dfm-icon>-->
-  <!--        </div>-->
-  <!--      </button>-->
-  <!--    </div>-->
-  <!--  </div>-->
+<!--  (rowClicked)="navigateToViewStaff($event)"-->
 
   <section class="overflow-y-auto sf-li-table-wrapper dfm-mt-16" *ngIf="filteredStaffs$$ | async as staffs">
     <dfm-table [items]="staffs" [selectable]="true" (selected)="handleCheckboxSelection($event)"
-               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewStaff($event)">
+               [clearSelected$]="clearSelected$$" [rowClickable]="false">
       <ng-template #headerRowTemplate>
         <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
       </ng-template>
@@ -116,7 +89,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
-              (click)="changeStatus([ { id: item.id, newStatus: statusType.Active }])"
+              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Active }])"
             ></dfm-button>
 
             <dfm-button
@@ -124,13 +97,14 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
-              (click)="changeStatus([ { id: item.id, newStatus: statusType.Inactive }])"
+              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Inactive }])"
             ></dfm-button>
 
             <dfm-button
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
+              (click)="$event.stopPropagation()"
               [routerLink]="['./', item.id, 'edit']"
               [state]="{ comingFromRoute: 'staff', edit: true }"
             ></dfm-button>
@@ -139,7 +113,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
-              (click)="deleteStaff(item.id)"
+              (click)="$event.stopPropagation(); deleteStaff(item.id)"
             ></dfm-button>
           </div>
 
@@ -202,7 +176,5 @@
   </dfm-button>
 </div>
 
-<dfm-confirm-status-change-banner [display]="showBanner"
+<dfm-confirm-status-change-banner [display]="selectedStaffIds.length"
                                   (confirmationEvent)="handleConfirmation($event)"></dfm-confirm-status-change-banner>
-
-<!--<dfm-confirm-action-dialog></dfm-confirm-action-dialog>-->

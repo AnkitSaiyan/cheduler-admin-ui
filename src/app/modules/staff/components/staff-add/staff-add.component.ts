@@ -180,7 +180,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe(() => {
-        this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
+        // this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
       });
 
     fg.get('dayEnd')
@@ -189,7 +189,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe(() => {
-        this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
+        // this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
       });
 
     return fg;
@@ -267,14 +267,15 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
     }
   }
 
-  public get practiceAvailabilityControlsArray(): FormArray[] {
+  public practiceAvailabilityWeekWiseControlsArray(all = false): FormArray[] {
     const controls: FormArray[] = [];
 
     const fg = this.addStaffForm.get('practiceAvailability');
     const { selectedWeekday } = this.formValues;
-    const keys = Object.keys(this.formValues.practiceAvailability).filter(
-      (key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL,
-    );
+    let keys = Object.keys(this.formValues.practiceAvailability);
+    if (!all) {
+      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL)];
+    }
 
     if (keys?.length) {
       keys.forEach((key) => {
@@ -330,7 +331,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
     const addStaffReqData: AddStaffRequestData = {
       ...rest,
       practiceAvailability: [
-        ...this.practiceAvailabilityControlsArray.reduce(
+        ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
           (acc, formArray) => [
             ...acc,
             ...formArray.controls.reduce((a, control) => {
@@ -351,6 +352,8 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
         ),
       ],
     };
+
+    console.log(addStaffReqData.info);
 
     if (!addStaffReqData.info) {
       delete addStaffReqData.info;
@@ -376,8 +379,10 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
         if (this.comingFromRoute === 'view') {
           route = '../view';
         } else {
-          route = this.edit ? '/staff' : './staff';
+          route = this.edit ? '/staff' : '../';
         }
+
+        console.log(route);
         this.router.navigate([route], { relativeTo: this.route });
       });
   }

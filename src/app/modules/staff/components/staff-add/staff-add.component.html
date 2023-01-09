@@ -33,7 +33,7 @@
     </div>
 
     <div class="d-flex dfm-gap-16">
-      <dfm-button color="secondary" size="sm" routerLink="/staff">Cancel</dfm-button>
+      <dfm-button color="secondary" size="sm" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/staff']">Cancel</dfm-button>
 
       <dfm-button
         color="primary"
@@ -46,7 +46,7 @@
     </div>
   </section>
 
-  <section class="dfm-card overflow-y-auto">
+  <section class="dfm-card overflow-y-auto sf-ed-section2">
     <form [formGroup]="addStaffForm" class="dfm-p-16 d-flex flex-column dfm-gap-32"
           *ngIf="(loading$$ | async) === false">
       <div class="d-flex flex-column dfm-gap-16">
@@ -67,7 +67,7 @@
           </dfm-input>
         </div>
 
-        <div *ngIf="generalUserTypes$$ | async as staffTypes">
+        <div *ngIf="generalUserTypes$$ | async as staffTypes" class="sf-ad-staff-dropdown">
           <div class="dfm-input-dropdown-wrapper">
             <dfm-input-dropdown size="sm" placeholder="Select Staff Type" label="Staff Type *" [items]="staffTypes"
                                 formControlName="userType">
@@ -75,7 +75,7 @@
           </div>
         </div>
 
-        <div *ngIf="exams$$ | async as exams" class="position-relative dfm-input-multi-dropdown-wrapper">
+        <div *ngIf="exams$$ | async as exams" class="position-relative dfm-input-multi-dropdown-wrapper sf-ad-exam-dropdown">
           <dfm-input-dropdown #examsDropdown size="sm" [multiple]="true"
                               #dropdown
                               [placeholder]="!!examsDropdown.value?.length ? examsDropdown.value.length + ' Selected' : 'Select Studies involving this Staff'"
@@ -88,7 +88,7 @@
           <!--        </span>-->
         </div>
 
-        <dfm-text-area size="sm" placeholder="Enter Info" label="Info">
+        <dfm-text-area size="sm" placeholder="Enter Info" label="Info" class="sf-ad-info-input" formControlName="info">
         </dfm-text-area>
       </div>
 
@@ -96,7 +96,7 @@
         <div class="d-flex flex-column dfm-gap-8">
           <span class="text-md font-weight-semi-bold">Add Practice Data</span>
 
-          <div>
+          <div class="w-fit">
             <dfm-radio-button
               label="Always"
               hint="Corresponds to the opening hours of the practice"
@@ -119,9 +119,9 @@
 
         <div *ngIf="formValues.practiceAvailabilityToggle" class="d-flex flex-column dfm-gap-24">
           <div class="d-flex flex-column dfm-gap-8">
-            <span class="font-weight-medium">Choose Day</span>
+            <span class="text-sm font-weight-semi-bold">Choose Day</span>
 
-            <div class="d-flex dfm-gap-16">
+            <div class="d-flex dfm-gap-16 weekday-header">
               <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.ALL ? 'primary' : 'gray'"
                          class="pointer"
                          (click)="selectWeekday(weekday.ALL)">VIEW ALL
@@ -157,11 +157,11 @@
             </div>
           </div>
 
-          <div formGroupName="practiceAvailability" class="d-flex flex-wrap dfm-gap-32">
-            <div *ngFor="let controlArray of practiceAvailabilityControlsArray"
+          <div formGroupName="practiceAvailability" class="d-flex flex-column dfm-gap-32">
+            <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray()"
                  [formArrayName]="getFormArrayName(controlArray)"
                  class="d-flex flex-column flex-wrap dfm-gap-16">
-              <span class="text-sm font-weight-medium">
+              <span class="text-sm font-weight-semi-bold">
                 {{ getFormArrayName(controlArray) | weekdayToName }}
               </span>
 
@@ -188,7 +188,7 @@
 
               <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
                 <div class="dfm-bg-primary rounded-circle text-white text-center add-slot-icon">&plus;</div>
-                <span class="text-sm dfm-text-main-600">Add Slot</span>
+                <span class="text-sm dfm-text-main-600">Click to add slot</span>
               </div>
             </div>
           </div>

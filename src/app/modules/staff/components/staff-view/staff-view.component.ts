@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { User } from '../../../../shared/models/user.model';
@@ -10,6 +10,8 @@ import { Weekday } from '../../../../shared/models/weekday';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ConfirmActionDialogComponent, DialogData } from '../../../../shared/components/confirm-action-dialog.component';
+import { ModalService } from '../../../../core/services/modal.service';
 
 interface TimeSlot {
   id?: number;
@@ -48,6 +50,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     private examApiSvc: ExamApiService,
     private notificationSvc: NotificationDataService,
     private router: Router,
+    private modalSvc: ModalService,
   ) {
     super();
   }
@@ -136,9 +139,31 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     return practiceAvailability;
   }
 
+  // public deleteStaff(id: number) {
+  //   this.staffApiSvc.deleteStaff(id);
+  //   this.notificationSvc.showNotification('Staff deleted successfully');
+  //   this.router.navigate(['/', 'staff']);
+  // }
+
   public deleteStaff(id: number) {
-    this.staffApiSvc.deleteStaff(id);
-    this.notificationSvc.showNotification('Staff deleted successfully');
-    this.router.navigate(['/', 'staff']);
+    const dialogRef = this.modalSvc.open(ConfirmActionDialogComponent, {
+      data: {
+        titleText: 'Confirmation',
+        bodyText: 'Are you sure you want to delete this Staff?',
+        confirmButtonText: 'Proceed',
+        cancelButtonText: 'Cancel',
+      } as DialogData,
+    });
+
+    dialogRef.closed
+      .pipe(
+        filter((res: boolean) => res),
+        take(1),
+      )
+      .subscribe(() => {
+        this.staffApiSvc.deleteStaff(id);
+        this.notificationSvc.showNotification('Staff deleted successfully');
+        this.router.navigate(['/', 'staff']);
+      });
   }
 }

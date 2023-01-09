@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DesignSystemCoreModule, DesignSystemModule, TableModule } from 'diflexmo-angular-design';
+import { DesignSystemModule, TableModule } from 'diflexmo-angular-design';
 import { NgChartsModule } from 'ng2-charts';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -23,10 +23,9 @@ import { ConfirmActionDialogComponent } from './components/confirm-action-dialog
     InputDropdownWrapperComponent,
     ConfirmActionDialogComponent,
   ],
-  imports: [CommonModule, DesignSystemModule, DesignSystemCoreModule, ReactiveFormsModule],
+  imports: [CommonModule, DesignSystemModule, ReactiveFormsModule],
   exports: [
     DesignSystemModule,
-    DesignSystemCoreModule,
     TableModule,
     NgChartsModule,
     MdbCarouselModule,

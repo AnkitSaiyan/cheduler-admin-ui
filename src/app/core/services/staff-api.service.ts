@@ -404,7 +404,7 @@ export class StaffApiService {
           id: requestData.id,
           firstname: requestData.firstname,
           lastname: requestData.lastname,
-          userType: UserType.Assistant,
+          userType: requestData.userType,
           email: requestData.email,
           telephone: requestData.telephone,
           address: requestData?.address ?? '',
@@ -414,6 +414,7 @@ export class StaffApiService {
           gsm: '',
           examList: requestData.examLists,
           practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
+          info: requestData?.info ?? '',
         };
 
         console.log(requestData.practiceAvailability);

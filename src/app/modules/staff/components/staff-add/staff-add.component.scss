@@ -1,9 +1,13 @@
-section:last-child {
-  // header height - content padding - section 1 height - row gap - maintaining b0ttom gap
-  max-height: calc(100vh - 64px - 24px - 36px - 24px - 16px);
+section.sf-ed-section2 {
+  // header height - content padding - section 1 height - row gap - maintaining bottom gap
+  max-height: calc(100vh - 64px - 24px - 36px - 24px - 24px);
 
-  div:nth-child(3) {
+  .sf-ad-staff-dropdown, .sf-ad-exam-dropdown {
     max-width: 504px;
+  }
+
+  .sf-ad-info-input {
+    max-width: 70%;
   }
 
   .add-slot-icon {
@@ -11,6 +15,10 @@ section:last-child {
     height: 24px;
     font-size: 32px;
     line-height: 24px;
+  }
+
+  dfm-badge {
+
   }
 
   //.studies-dropdown-text {
@@ -21,15 +29,15 @@ section:last-child {
 }
 
 @media (max-width: 1440px) {
-  section:last-child {
-    // header height - content padding - section 1 height - row gap
-    max-height: calc(100vh - 36px - 24px - 36px - 24px);
+  section.sf-ed-section2 {
+    // header height - content padding - section 1 height - row gap - extra gap
+    max-height: calc(100vh - 36px - 24px - 36px - 24px - 24px);
   }
 }
 
 @media (max-width: 680px) {
-  section:last-child {
-    // header height - content padding - section 1 height - row gap - bottom nav bar height
-    max-height: calc(100vh - 36px - 24px - 36px - 24px - 65px - 16px);
+  section.sf-ed-section2 {
+    // header height - content padding - section 1 height - row gap - bottom nav bar height - extra gap
+    max-height: calc(100vh - 36px - 24px - 36px - 24px - 65px - 24px);
   }
 }

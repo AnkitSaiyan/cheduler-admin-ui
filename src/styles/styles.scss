@@ -37,6 +37,10 @@ dfm-input-dropdown {
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
   height: 40px;
+
+  div + div {
+    border-left: 1px solid var(--dfm-input-border);
+  }
 }
 
 // use this for single select dropdown
@@ -63,6 +67,44 @@ dfm-input-dropdown {
   height: 40px;
   margin-top: 28px;
   margin-bottom: 40px;
+}
+
+.dfm-input-multi-dropdown-wrapper-wo-label {
+  background: white;
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  height: 40px;
+  margin-bottom: 40px;
+}
+
+.dfm-button-icon-bg-transparent {
+  dfm-button-icon {
+    button {
+      background: transparent !important;
+    }
+  }
+}
+
+.dfm-dropdown-bg-transparent {
+  dfm-input-dropdown {
+    input {
+      background: transparent !important;
+    }
+  }
+}
+
+.dfm-dropdown-placeholder-text-primary {
+  dfm-input-dropdown {
+    input {
+      &::placeholder, &::-webkit-input-placeholder {
+        color: var(--dfm-primary) !important;
+      }
+    }
+  }
+
+  dfm-icon {
+    color: var(--dfm-primary) !important;
+  }
 }
 
 
@@ -98,6 +140,10 @@ ngb-timepicker {
     border-color: var(--dfm-input-border-focus) !important;
     border-width: 2px;
   }
+}
+
+.modal-content {
+  border-radius: 20px !important;
 }
 
 // others ===================================================================
@@ -154,7 +200,15 @@ button:disabled {
       background: rgba(var(--dfm-primary), 0.5);
     }
   }
+}
 
+.weekday-header {
+  dfm-badge {
+    div {
+      padding: 4px 12px !important;
+      border-radius: 8px !important;
+    }
+  }
 }
 
 // Custom Global styling ==============================================================
@@ -198,6 +252,8 @@ button:disabled {
   display: none;
 }
 
+.text-tr
+
 .x-circle {
   display: flex;
   justify-content: center;
@@ -207,7 +263,7 @@ button:disabled {
   border-radius: 50%;
 }
 
-.modal-header  {
+.modal-header {
   display: flex;
   flex-shrink: 0;
   align-items: center;
