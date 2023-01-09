@@ -39,12 +39,12 @@
       </div>
 
       <div class="d-flex dfm-gap-8 align-items-center">
-<!--        <dfm-button-->
-<!--          color="secondary"-->
-<!--          size="sm"-->
-<!--          [disabled]="!selectedStaffIds.length"-->
-<!--        >Confirm-->
-<!--        </dfm-button>-->
+        <!--        <dfm-button-->
+        <!--          color="secondary"-->
+        <!--          size="sm"-->
+        <!--          [disabled]="!selectedStaffIds.length"-->
+        <!--        >Confirm-->
+        <!--        </dfm-button>-->
 
         <dfm-button
           color="primary"
@@ -58,9 +58,10 @@
     </div>
   </section>
 
-  <section class="overflow-y-auto sf-li-table-wrapper dfm-mt-16" *ngIf="filteredStaffs$$ | async as staffs">
+  <section class="overflow-y-auto sf-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredStaffs$$ | async as staffs">
     <dfm-table [items]="staffs" [selectable]="true" (selected)="handleCheckboxSelection($event)"
-               [clearSelected$]="clearSelected$$" [rowClickable]="false" (rowClicked)="navigateToViewStaff($event)">
+               [clearSelected$]="clearSelected$$" [rowClickable]="false" (rowClicked)="navigateToViewStaff($event)"
+               class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
         <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
       </ng-template>
@@ -69,7 +70,9 @@
         <dfm-table-body-cell>{{ item.firstname | titlecase | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.lastname | titlecase | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.userType | titlecase | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.email | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>
+          <span class="text-truncate">{{ item.email | dashIfNothing }}</span>
+        </dfm-table-body-cell>
 
         <dfm-table-body-cell>
           <dfm-badge *ngIf="item.status === statusType.Active"
@@ -162,7 +165,7 @@
   </section>
   <div ngbDropdown #optionsMenu="ngbDropdown">
     <div class="shadow-lg sf-li-plus-btn-menu sf-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
+      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">
         <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
       </div>
       <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
@@ -174,7 +177,7 @@
     </div>
   </div>
 
-  <dfm-button color="secondary" size="md" class="hidden shadow-lg sf-li-plus-btn"
+  <dfm-button color="secondary" size="md" class="hidden shadow-lg sf-li-plus-btn rounded-2"
               (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">
     <dfm-icon #showMoreButtonIcon name="plus" class="sf-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
   </dfm-button>

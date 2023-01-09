@@ -11,9 +11,9 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'dfm-confirm-action-dialog',
+  selector: 'dfm-confirm-action-modal',
   template: `
-    <div #content class="">
+    <div #content class="bg-white rounded-4 confirm-action-modal">
       <div class="modal-header">
         <h5 class="modal-title">{{ dialogData.titleText }}</h5>
         <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
@@ -32,6 +32,10 @@ export interface DialogData {
   styles: [
     `
       @media (max-width: 680px) {
+        .confirm-action-modal {
+          margin: auto 16px;
+        }
+
         dfm-button {
           height: 44px;
           flex: 1;
@@ -40,7 +44,7 @@ export interface DialogData {
     `,
   ],
 })
-export class ConfirmActionDialogComponent extends DestroyableComponent implements OnInit, OnDestroy {
+export class ConfirmActionModalComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public dialogData: DialogData = {
     confirmButtonText: 'Proceed',
     cancelButtonText: 'Cancel',

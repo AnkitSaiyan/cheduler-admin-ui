@@ -11,8 +11,9 @@ import { DashIfNothingPipe } from './pipes/dash-if-nothing.pipe';
 import { ConfirmStatusChangeBannerComponent } from './components/confirm-status-change-banner.component';
 import { WeekDayToNamePipe } from './pipes/week-day-to-name.pipe';
 import { InputDropdownWrapperComponent } from './components/input-dropdown-wrapper.component';
-import { ConfirmActionDialogComponent } from './components/confirm-action-dialog.component';
+import { ConfirmActionModalComponent } from './components/confirm-action-modal.component';
 import { TimeInIntervalPipe } from './pipes/time-in-interval.pipe';
+import { SearchModalComponent } from './components/search-modal.component';
 
 @NgModule({
   declarations: [
@@ -22,8 +23,9 @@ import { TimeInIntervalPipe } from './pipes/time-in-interval.pipe';
     ConfirmStatusChangeBannerComponent,
     WeekDayToNamePipe,
     InputDropdownWrapperComponent,
-    ConfirmActionDialogComponent,
+    ConfirmActionModalComponent,
     TimeInIntervalPipe,
+    SearchModalComponent,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule],
   exports: [
@@ -38,8 +40,9 @@ import { TimeInIntervalPipe } from './pipes/time-in-interval.pipe';
     StatusNamePipe,
     ConfirmStatusChangeBannerComponent,
     WeekDayToNamePipe,
-    ConfirmActionDialogComponent,
+    ConfirmActionModalComponent,
     TimeInIntervalPipe,
+    SearchModalComponent,
   ],
 })
 export class SharedModule {}

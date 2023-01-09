@@ -35,16 +35,16 @@
   .sf-li-plus-btn {
     display: block;
     position: absolute;
-    bottom: 16px;
-    right: 16px;
-    z-index: 100;
-    height: 40px;
-    width: 40px;
+    bottom: 0;
+    right: 0;
+    z-index: 1000;
+    height: 44px;
+    width: 44px;
   }
 
   .sf-li-menus {
-    position: absolute;
     min-width: fit-content !important;
+    max-width: 44px;
     border: none;
     border-radius: 12px;
     flex-direction: column;
@@ -60,8 +60,9 @@
   }
 
   .sf-li-plus-btn-menu {
-    bottom: 64px;
-    right: 16px;
+    position: fixed;
+    bottom: 144px;
+    right: 28px;
   }
 
   .sf-li-action-buttons-menu {

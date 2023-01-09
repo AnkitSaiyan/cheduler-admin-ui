@@ -15,7 +15,7 @@ import { Status } from '../models/status';
         <span class="font-weight-medium">Are you sure want to change Status?</span>
       </div>
 
-      <div class="d-flex align-items-center dfm-gap-16">
+      <div class="d-flex align-items-center dfm-gap-16 w-fit">
         <div class="dfm-input-dropdown-wrapper-wo-label flex-1 dropdown-wrapper">
           <dfm-input-dropdown
             (click)="$event.stopPropagation()"
@@ -29,7 +29,7 @@ import { Status } from '../models/status';
         </div>
 
         <div class="d-flex flex-row dfm-gap-16 align-items-center">
-          <dfm-button color="secondary" size="md" (click)="$event.stopPropagation(); handleClick(false)">Cancel</dfm-button>
+          <dfm-button color="secondary" size="md" (click)="$event.stopPropagation(); handleClick(false)">Cancel </dfm-button>
           <dfm-button
             color="primary"
             size="md"
@@ -53,7 +53,7 @@ import { Status } from '../models/status';
         position: absolute;
         left: 0;
         right: 0;
-        z-index: 101;
+        z-index: 1001;
         bottom: 0;
         border-top-right-radius: 20px;
         border-top-left-radius: 20px;
@@ -75,8 +75,7 @@ import { Status } from '../models/status';
           justify-content: start !important;
 
           & > div,
-          div:last-child > div,
-          dfm-input-dropdown {
+          div:last-child {
             flex: 1;
             width: 100%;
           }
@@ -90,8 +89,13 @@ import { Status } from '../models/status';
             flex-direction: column;
             margin-bottom: 8px;
 
+            div:first-child {
+              margin-right: auto;
+            }
+
             div:last-child {
               transition: all ease 200ms;
+
               dfm-button {
                 height: 44px;
                 flex: 1;

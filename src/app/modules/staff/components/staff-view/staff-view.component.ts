@@ -10,7 +10,7 @@ import { Weekday } from '../../../../shared/models/weekday';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ConfirmActionDialogComponent, DialogData } from '../../../../shared/components/confirm-action-dialog.component';
+import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
 
 interface TimeSlot {
@@ -146,7 +146,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
   // }
 
   public deleteStaff(id: number) {
-    const dialogRef = this.modalSvc.open(ConfirmActionDialogComponent, {
+    const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
         bodyText: 'Are you sure you want to delete this Staff?',
