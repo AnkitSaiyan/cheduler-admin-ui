@@ -14,7 +14,7 @@ import { Status } from '../models/status';
             [items]="statuses"
             [showDescription]="false"
             placeholder="Status"
-            size="sm"
+            size="md"
             [formControl]="statusDropdownControl"
           ></dfm-input-dropdown>
         </div>
@@ -71,10 +71,10 @@ export class ConfirmStatusChangeBannerComponent implements OnInit {
   public handleClick(proceed: boolean) {
     if (!proceed) {
       this.confirmationEvent.emit({ proceed, newStatus: null });
-    }
-
-    if (this.statusDropdownControl.value) {
+    } else if (this.statusDropdownControl.value !== null) {
       this.confirmationEvent.emit({ proceed, newStatus: this.statusDropdownControl.value });
     }
+
+    this.statusDropdownControl.setValue(null, { emitEvent: false });
   }
 }

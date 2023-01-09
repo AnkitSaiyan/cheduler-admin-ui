@@ -60,8 +60,6 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public statusType = getStatusEnum();
 
-  public showBanner = false;
-
   constructor(
     private staffApiSvc: StaffApiService,
     private notificationSvc: NotificationDataService,
@@ -105,9 +103,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
     this.afterBannerClosed$$
       .pipe(
-        filter((value) => !!value),
         map((value) => {
-          console.log(value);
           if (value?.proceed) {
             return [...this.selectedStaffIds.map((id) => ({ id: +id, newStatus: value.newStatus }))];
           }
@@ -120,9 +116,8 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       .subscribe((value) => {
         if (value) {
           this.notificationSvc.showNotification('Status has changed successfully');
-          this.clearSelected$$.next();
         }
-        this.showBanner = false;
+        this.clearSelected$$.next();
       });
   }
 
