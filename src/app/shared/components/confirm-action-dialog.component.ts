@@ -24,8 +24,8 @@ export interface DialogData {
       </div>
 
       <div class="modal-footer">
-        <dfm-button color="secondary" size="sm" (click)="close(false)">{{ dialogData.cancelButtonText }}</dfm-button>
-        <dfm-button color="primary" size="sm" (click)="close(true)">{{ dialogData.confirmButtonText }}</dfm-button>
+        <dfm-button color="secondary" size="md" (click)="close(false)">{{ dialogData.cancelButtonText }}</dfm-button>
+        <dfm-button color="primary" size="md" (click)="close(true)">{{ dialogData.confirmButtonText }}</dfm-button>
       </div>
     </div>
   `,

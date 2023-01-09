@@ -22,12 +22,16 @@ section.sf-vw-section3  {
 }
 
 @media (max-width: 680px) {
+  .sf-vw-main-wrapper {
+    padding: 0;
+  }
+
   section.sf-vw-section1 {
     position: fixed;
     width: 100%;
     left: 0;
     top: 36px;
-    padding: 16px 24px;
+    padding: 24px;
     background: var(--dfm-body-bg);
 
     .sf-vw-title-buttons, .sf-vw-action-buttons {
@@ -40,7 +44,7 @@ section.sf-vw-section3  {
   }
 
   section.sf-vw-section2 {
-    margin-top: 48px;
+    margin-top: 56px;
   }
 
   section.sf-vw-section3 {

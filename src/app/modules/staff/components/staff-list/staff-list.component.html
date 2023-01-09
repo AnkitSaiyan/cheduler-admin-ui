@@ -1,11 +1,17 @@
-<div class="d-flex flex-column h-100 position-relative">
+<div class="d-flex flex-column h-100 position-relative dfm-px-8 sf-ls-main-wrapper">
   <section>
-    <div class="d-flex align-items-center dfm-gap-8 flex-1 sf-li-section-1">
-      <span class="hidden sf-li-staff-link text-sm font-weight-semi-bold dfm-text-primary">Staff</span>
+    <div class="d-flex align-items-center dfm-gap-16 flex-1 sf-li-section-1">
+      <dfm-button
+        class="hidden sf-li-title-buttons"
+        color="link"
+        size="lg"
+        routerLink="./"
+      >Staff
+      </dfm-button>
 
       <dfm-input
         class="flex-1 sf-li-search"
-        size="sm"
+        size="md"
         placeholder="Search by Staff Name"
         icon="search-sm"
         [formControl]="searchControl"
@@ -15,7 +21,7 @@
         <div class="dfm-button-icon-bg-transparent">
           <dfm-button-icon
             color="tertiary-gray"
-            size="sm"
+            size="md"
             icon="copy-03"
             (click)="copyToClipboard()"
           ></dfm-button-icon>
@@ -27,36 +33,34 @@
             [showDescription]="false"
             [formControl]="downloadDropdownControl"
             placeholder="Download"
-            size="sm"
+            size="md"
           ></dfm-input-dropdown>
         </div>
       </div>
 
       <div class="d-flex dfm-gap-8 align-items-center">
-        <dfm-button
-          color="secondary"
-          size="sm"
-          [disabled]="!selectedStaffIds.length"
-        >Confirm
-        </dfm-button>
+<!--        <dfm-button-->
+<!--          color="secondary"-->
+<!--          size="sm"-->
+<!--          [disabled]="!selectedStaffIds.length"-->
+<!--        >Confirm-->
+<!--        </dfm-button>-->
 
         <dfm-button
           color="primary"
-          size="sm"
+          size="md"
           class="text-nowrap"
           [disabled]="false"
           routerLink="./add"
-        >Add
+        >Add Staff
         </dfm-button>
       </div>
     </div>
   </section>
 
-<!--  (rowClicked)="navigateToViewStaff($event)"-->
-
   <section class="overflow-y-auto sf-li-table-wrapper dfm-mt-16" *ngIf="filteredStaffs$$ | async as staffs">
     <dfm-table [items]="staffs" [selectable]="true" (selected)="handleCheckboxSelection($event)"
-               [clearSelected$]="clearSelected$$" [rowClickable]="false">
+               [clearSelected$]="clearSelected$$" [rowClickable]="false" (rowClicked)="navigateToViewStaff($event)">
       <ng-template #headerRowTemplate>
         <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
       </ng-template>

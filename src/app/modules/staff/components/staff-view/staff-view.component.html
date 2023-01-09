@@ -1,9 +1,9 @@
-<div *ngIf="staffDetails$$ | async as staffDetails" class="d-flex flex-column dfm-gap-24">
+<div *ngIf="staffDetails$$ | async as staffDetails" class="d-flex flex-column dfm-gap-24 dfm-px-8 sf-vw-main-wrapper">
   <section class="d-flex align-items-center justify-content-between dfm-gap-16 sf-vw-section1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary sf-vw-title-buttons">
       <dfm-button
         color="link"
-        size="sm"
+        size="lg"
         routerLink="/staff"
       >Staff
       </dfm-button>
@@ -12,7 +12,7 @@
       </div>
       <dfm-button
         color="link-gray"
-        size="sm"
+        size="lg"
       >View
       </dfm-button>
     </div>
@@ -20,7 +20,7 @@
     <div class="d-flex dfm-gap-16 sf-vw-action-buttons">
       <dfm-button
         color="link"
-        size="sm"
+        size="md"
         leadingIcon="pencil-02"
         [routerLink]="['../', 'edit']"
         [state]="{ comingFromRoute: 'view', edit: true }"
@@ -29,7 +29,7 @@
 
       <dfm-button
         color="link"
-        size="sm"
+        size="md"
         class="text-nowrap"
         leadingIcon="trash-01"
         (click)="deleteStaff(staffDetails.id)"
@@ -45,14 +45,15 @@
           color="tertiary-gray"
           size="sm"
           icon="chevron-left"
+          routerLink="/staff"
         >
         </dfm-button-icon>
       </div>
 
       <dfm-button
         color="link"
-        size="sm"
-        routerLink="/staff"
+        size="lg"
+        routerLink="./"
       >Staff View
       </dfm-button>
     </div>

@@ -40,6 +40,10 @@ section.sf-ad-section2 {
 }
 
 @media (max-width: 680px) {
+  .sf-ad-main-wrapper {
+    padding: 0;
+  }
+
   .sf-ad-title-buttons {
     display: none !important;
   }
@@ -50,7 +54,7 @@ section.sf-ad-section2 {
 
   .sf-ad-action-buttons {
     background: white;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
@@ -72,6 +76,7 @@ section.sf-ad-section2 {
     box-shadow: none;
     background: transparent;
     padding: 0;
+    border-radius: 0%;
 
     .sf-ad-staff-dropdown, .sf-ad-exam-dropdown, .sf-ad-info-input, dfm-input {
       flex: 1;

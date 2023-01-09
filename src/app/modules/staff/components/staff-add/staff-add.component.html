@@ -1,9 +1,9 @@
-<div class="d-flex flex-column dfm-gap-24">
+<div class="d-flex flex-column dfm-gap-24 dfm-px-8 sf-ad-main-wrapper">
   <section class="d-flex align-items-center justify-content-between dfm-gap-16">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary sf-ad-title-buttons">
       <dfm-button
         color="link"
-        size="sm"
+        size="lg"
         routerLink="/staff"
       >Staff
       </dfm-button>
@@ -15,7 +15,7 @@
       <div class="d-flex align-items-center dfm-gap-8" *ngIf="comingFromRoute === 'view' && staffID">
         <dfm-button
           color="link"
-          size="sm"
+          size="lg"
           [routerLink]="['../', 'view']"
         >View
         </dfm-button>
@@ -27,16 +27,16 @@
 
       <dfm-button
         color="link-gray"
-        size="sm"
+        size="lg"
       >{{ comingFromRoute ? 'Edit' : 'Add' }}
       </dfm-button>
     </div>
 
     <div class="dfm-gap-16 sf-ad-action-buttons">
-      <dfm-button color="secondary" size="sm" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/staff']">Cancel</dfm-button>
+      <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/staff']">Cancel</dfm-button>
       <dfm-button
         color="primary"
-        size="sm"
+        size="md"
         class="text-nowrap"
         (click)="saveStaff()"
       >{{ comingFromRoute ? 'Save Changes' : 'Add Staff' }}
@@ -57,7 +57,7 @@
 
       <dfm-button
         color="link"
-        size="md"
+        size="lg"
         routerLink="./"
       > {{ edit ? 'Edit Staff' : 'Add Staff' }}
       </dfm-button>
@@ -70,32 +70,32 @@
           *ngIf="(loading$$ | async) === false">
       <div class="d-flex flex-column dfm-gap-16 sf-ad-form-general-info">
         <div class="d-flex dfm-gap-16 flex-wrap">
-          <dfm-input size="sm" placeholder="Enter First Name" label="First Name *" formControlName="firstname">
+          <dfm-input size="md" placeholder="Enter First Name" label="First Name *" formControlName="firstname">
           </dfm-input>
 
-          <dfm-input size="sm" placeholder="Enter Last Name" label="Last Name *" formControlName="lastname">
+          <dfm-input size="md" placeholder="Enter Last Name" label="Last Name *" formControlName="lastname">
           </dfm-input>
         </div>
 
         <div class="d-flex dfm-gap-16 flex-wrap">
-          <dfm-input type="email" size="sm" placeholder="Enter Email" label="Email *" formControlName="email">
+          <dfm-input type="email" size="md" placeholder="Enter Email" label="Email *" formControlName="email">
           </dfm-input>
 
-          <dfm-input type="number" size="sm" placeholder="Enter Telephone" label="Telephone *"
+          <dfm-input type="number" size="md" placeholder="Enter Telephone" label="Telephone *"
                      formControlName="telephone">
           </dfm-input>
         </div>
 
         <div *ngIf="generalUserTypes$$ | async as staffTypes" class="sf-ad-staff-dropdown">
           <div class="dfm-input-dropdown-wrapper">
-            <dfm-input-dropdown size="sm" placeholder="Select Staff Type" label="Staff Type *" [items]="staffTypes"
+            <dfm-input-dropdown size="md" placeholder="Select Staff Type" label="Staff Type *" [items]="staffTypes"
                                 formControlName="userType">
             </dfm-input-dropdown>
           </div>
         </div>
 
         <div *ngIf="exams$$ | async as exams" class="position-relative dfm-input-multi-dropdown-wrapper sf-ad-exam-dropdown">
-          <dfm-input-dropdown #examsDropdown size="sm" [multiple]="true"
+          <dfm-input-dropdown #examsDropdown size="md" [multiple]="true"
                               #dropdown
                               [placeholder]="!!examsDropdown.value?.length ? examsDropdown.value.length + ' Selected' : 'Select Studies involving this Staff'"
                               label="Studies *" [items]="exams"
@@ -107,7 +107,7 @@
           <!--        </span>-->
         </div>
 
-        <dfm-text-area size="sm" placeholder="Enter Info" label="Info" class="sf-ad-info-input" formControlName="info">
+        <dfm-text-area size="md" placeholder="Enter Info" label="Info" class="sf-ad-info-input" formControlName="info">
         </dfm-text-area>
       </div>
 

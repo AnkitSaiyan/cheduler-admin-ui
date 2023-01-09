@@ -11,11 +11,15 @@
 .sf-li-button-dropdown-group {
   background: transparent;
   div:last-child {
-    max-width: 136px;
+    max-width: 152px;
   }
 }
 
 @media (max-width: 680px) {
+  .sf-ls-main-wrapper {
+    padding: 0;
+  }
+
   .sf-li-section-1 {
     justify-content: space-between;
   }
@@ -24,7 +28,7 @@
     display: none !important;
   }
 
-  .sf-li-staff-link {
+  .sf-li-title-buttons {
     display: block;
   }
 
