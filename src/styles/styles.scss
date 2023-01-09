@@ -127,6 +127,12 @@ dfm-table-body-cell td {
   overflow: visible !important;
 }
 
+.dfm-button-gray-400 {
+  dfm-button button {
+    color: var(--bs-gray-400) !important;
+  }
+}
+
 // Third party library styling ========================================================
 ngb-timepicker {
   input {
@@ -220,6 +226,10 @@ button:disabled {
   overflow-x: auto;
 }
 
+.overflow-hidden {
+  overflow: hidden;
+}
+
 .flex-1 {
   flex: 1;
 }
@@ -272,6 +282,10 @@ button:disabled {
   border: none;
 }
 
+.modal-body {
+  padding: 0px 16px;
+}
+
 .modal-footer {
   display: flex;
   flex-shrink: 0;
@@ -282,6 +296,16 @@ button:disabled {
   border: none;
 }
 
+
+@media (max-width: 680px) {
+  .modal-content {
+    margin: auto 16px;
+  }
+
+  .modal-footer {
+    justify-content: center;
+  }
+}
 //input[type="time"]::-webkit-calendar-picker-indicator{
 //  filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);
 //}

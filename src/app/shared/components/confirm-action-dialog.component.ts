@@ -29,7 +29,16 @@ export interface DialogData {
       </div>
     </div>
   `,
-  styles: [``],
+  styles: [
+    `
+      @media (max-width: 680px) {
+        dfm-button {
+          height: 44px;
+          flex: 1;
+        }
+      }
+    `,
+  ],
 })
 export class ConfirmActionDialogComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public dialogData: DialogData = {

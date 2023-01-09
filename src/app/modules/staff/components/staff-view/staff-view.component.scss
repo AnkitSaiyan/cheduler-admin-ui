@@ -1,6 +1,5 @@
 section.sf-vw-section2 {
   &>div {
-    min-height: 256px;
     max-height: 256px;
     min-width: 256px;
   }
@@ -8,7 +7,7 @@ section.sf-vw-section2 {
 
 section.sf-vw-section3  {
   // sec is section
-  // page height - top nav - content padding - sec1 height - sec gap - sec2 height - sec gap -extra space
+  // page height - top nav - content padding - sec1 height - sec gap - sec2 height - sec gap - extra space
   max-height: calc(100vh - 64px - 24px - 24px - 24px - 256px - 24px - 24px);
 }
 
@@ -23,10 +22,47 @@ section.sf-vw-section3  {
 }
 
 @media (max-width: 680px) {
+  section.sf-vw-section1 {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 36px;
+    padding: 16px 24px;
+    background: var(--dfm-body-bg);
+
+    .sf-vw-title-buttons, .sf-vw-action-buttons {
+      display: none !important;
+    }
+
+    .sf-vw-title-buttons-mv {
+      display: flex;
+    }
+  }
+
+  section.sf-vw-section2 {
+    margin-top: 48px;
+  }
+
   section.sf-vw-section3 {
-    max-height: calc(100vh - 36px - 24px - 24px - 24px - 256px - 24px - 24px - 65px);
+    // page height - top nav - content padding - sec1 height - sec gap - sec gap - bottom bar height
+    max-height: calc(100vh - 36px - 24px - 24px - 24px - 24px - 65px);
+  }
+
+  .sf-vw-action-buttons-mv {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    column-gap: 16px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    z-index: 10000;
+
+    &>dfm-button {
+      height: 44px;
+      flex: 1;
+    }
   }
 }
-
-//git commit -m "confirm modal added, design fixes in staff pages, routing fixes, delete button fixed"
 
