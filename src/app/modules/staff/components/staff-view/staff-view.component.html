@@ -137,7 +137,7 @@
     </header>
 
     <div class="overflow-y-auto h-fit h-fit">
-      <dfm-table [items]="practiceAvailability">
+      <dfm-table [items]="practiceAvailability" *ngIf="staffDetails?.practiceAvailability?.length">
         <ng-template #headerRowTemplate>
           <dfm-table-header-cell>Slot No</dfm-table-header-cell>
           <dfm-table-header-cell *ngFor="let column of columns">{{ column | weekdayToName }}</dfm-table-header-cell>
@@ -196,7 +196,7 @@
           </dfm-table-body-cell>
         </ng-template>
       </dfm-table>
-      <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"
+      <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom dfm-text-main-600"
            *ngIf="!staffDetails?.practiceAvailability?.length">
         No data found
       </div>
