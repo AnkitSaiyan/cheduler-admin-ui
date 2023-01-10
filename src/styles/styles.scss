@@ -396,6 +396,16 @@ button:disabled {
   line-height: 24px;
 }
 
+.rotate-z-45 {
+  transition: all ease-in-out 150ms;
+  transform: rotateZ(45deg);
+}
+
+.rotate-z-0 {
+  transition: all ease-in-out 150ms;
+  transform: rotateZ(0deg);
+}
+
 @media (max-width: 1440px) {
   dfm-notification {
     .dfm-notification {
