@@ -1,103 +1,105 @@
-<div class="d-flex flex-column dfm-pb-8 appointment-list-wrapper">
-  <section  class="dfm-p-16 d-flex flex-column dfm-gap-8 dfm-mb-8">
-    <div class="d-flex align-items-center">
-      <img src="../../../../../assets/icons/Drag.svg" class="pointer dfm-me-8">
-      <header class="font-weight-medium">
-        <span>Appointments List</span>
-      </header>
-    </div>
+<div class="d-flex flex-column dfm-gap-24 dfm-pb-8 ap-li-main-wrapper">
+  <section class="dfm-px-16 dfm-pt-16 d-flex flex-column dfm-gap-8">
+    <header class="d-flex align-items-center dfm-gap-8">
+      <div class="dfm-button-gray-400">
+        <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+      </div>
+      <span class="font-weight-medium">Appointments List</span>
+    </header>
+  </section>
 
-    <div class="d-flex dfm-gap-8 align-items-center dfm-pt-12 flex-grow-1 flex-shrink-1 appointment-list-header-section">
+  <section>
+    <div class="d-flex dfm-gap-8 align-items-center flex-1 dfm-px-16 ap-li-section2-action-bar">
       <dfm-input
-        size="sm"
+        size="md"
         placeholder="Search"
-        icon="search-sm" class="appointment-search-field"
+        icon="search-sm"
+        class="flex-1"
       ></dfm-input>
-      <div>
-        <dfm-button-icon
-        color="tertiary-gray"
-        size="sm"
-        icon="search-sm" class="appointment-search-icon"
-      ></dfm-button-icon>
-    </div>
 
       <dfm-input
-        size="sm"
+        size="md"
         placeholder="Advanced Search"
-        icon="search-sm" class="appointment-adv-search-field"
+        icon="search-sm"
+        class="flex-1"
       ></dfm-input>
-      <div>
-        <dfm-button-icon
-        color="tertiary-gray"
-        size="sm"
-        icon="calendar-date" class="appointment-adv-search-icon"
-      ></dfm-button-icon>
-    </div>
 
-      <div class="d-flex align-items-center dfm-input-dropdown-wrapper">
+      <div class="d-flex align-items-center dfm-button-group-wrapper">
         <div>
           <dfm-button-icon
             color="tertiary-gray"
-            size="sm"
-            icon="copy-01"
+            size="md"
+            icon="copy-03"
           ></dfm-button-icon>
         </div>
 
-        <dfm-input-dropdown
-          [items]="downloadItems"
-          placeholder="Download"
-          [showDescription]="true" class="appointment-list-download-placeholder"
-          size="sm"
-          [loading]="false"
-        ></dfm-input-dropdown>
-        <dfm-input-dropdown
-          [items]="downloadItems"
-          placeholder=""
-          [showDescription]="true" class="appointment-list-download-icon-placeholder"
-          size="sm"
-          [loading]="false"
-        ></dfm-input-dropdown>
+        <div class="download-dropdown-max-w-144">
+          <dfm-input-dropdown
+            [items]="downloadItems"
+            placeholder="Download"
+            size="md"
+          ></dfm-input-dropdown>
+        </div>
 
         <div>
           <dfm-button-icon
             color="tertiary-gray"
-            size="sm"
-            icon="calendar-date" class="appointment-list-calendar-icon"
+            size="md"
+            icon="calendar-date"
           ></dfm-button-icon>
         </div>
       </div>
-      <dfm-button-icon
-            color="tertiary-gray"
-            size="sm"
-            icon="calendar-date" class="appointment-list-calendar-icon-mv"
-          ></dfm-button-icon>
-
-<!--      <dfm-button-group>-->
-<!--        <dfm-button-group-item icon="copy-01" class="bo">-->
-<!--        </dfm-button-group-item>-->
-
-<!--        <dfm-button-group-item icon="calendar-date">-->
-<!--        </dfm-button-group-item>-->
-<!--      </dfm-button-group>-->
 
       <dfm-button
         color="secondary"
-        size="sm"
-        [disabled]="false" class="appointment-list-confirm-btn"
-      >Confirm</dfm-button>
+        size="md"
+      >Confirm
+      </dfm-button>
 
       <dfm-button
         color="primary"
-        size="sm"
-        class="text-nowrap appointment-list-add-appointment-btn"
-        [disabled]="false"
-      >Add Appointment</dfm-button>
+        size="md"
+        class="text-nowrap"
+      >Add Appointment
+      </dfm-button>
+    </div>
+
+    <div class="hidden align-items-center dfm-gap-16 dfm-px-24 ap-li-section2-action-bar-mv">
+      <dfm-button-icon color="secondary-gray" size="md" icon="search-sm"></dfm-button-icon>
+
+      <dfm-button-icon color="secondary-gray" size="md" icon="search-sm"></dfm-button-icon>
+
+      <div class="d-flex align-items-center dfm-button-group-wrapper">
+        <div>
+          <dfm-button-icon
+            color="tertiary-gray"
+            size="md"
+            icon="copy-03"
+          ></dfm-button-icon>
+        </div>
+
+        <div>
+          <dfm-button-icon
+            color="tertiary-gray"
+            size="md"
+            icon="download-01"
+          ></dfm-button-icon>
+        </div>
+      </div>
+
+      <dfm-button-icon
+        color="secondary-gray"
+        size="md"
+        icon="calendar-date"
+      ></dfm-button-icon>
+
       <dfm-button
         color="primary"
-        size="sm"
-        class="text-nowrap appointment-list-add-btn"
+        size="md"
+        class="text-nowrap"
         [disabled]="false"
-      >Add</dfm-button>
+      >Add
+      </dfm-button>
     </div>
   </section>
 
@@ -138,25 +140,29 @@
           </dfm-badge>
         </dfm-table-body-cell>
         <dfm-table-body-cell>
-          <div class="d-flex dfm-gap-4">
-            <dfm-button-icon
-              color="tertiary-gray"
-              size="sm"
-              icon="check-circle"
-              [disabled]="false"
-            ></dfm-button-icon>
-            <dfm-button-icon
-              color="tertiary-gray"
-              size="sm"
-              icon="pencil-02"
-              [disabled]="false"
-            ></dfm-button-icon>
-            <dfm-button-icon
-              color="tertiary-gray"
-              size="sm"
-              icon="trash-01"
-              [disabled]="false"
-            ></dfm-button-icon>
+          <div class="d-flex align-items-center dfm-gap-14">
+            <dfm-button
+              *ngIf="!item.confirm"
+              color="link-gray"
+              size="md"
+              trailingIcon="check-circle"
+            ></dfm-button>
+            <dfm-button
+              *ngIf="item.confirm"
+              color="link-gray"
+              size="md"
+              trailingIcon="x-circle"
+            ></dfm-button>
+            <dfm-button
+              color="link-gray"
+              size="md"
+              trailingIcon="pencil-02"
+            ></dfm-button>
+            <dfm-button
+              color="link-gray"
+              size="md"
+              trailingIcon="trash-01"
+            ></dfm-button>
           </div>
         </dfm-table-body-cell>
       </ng-template>

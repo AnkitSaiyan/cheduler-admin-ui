@@ -36,7 +36,7 @@ dfm-input-dropdown {
   background: white;
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
-  height: 40px;
+  //height: 40px;
 
   div + div {
     border-left: 1px solid var(--dfm-input-border);
@@ -359,6 +359,10 @@ button:disabled {
   border: none;
 }
 
+.download-dropdown-max-w-144 {
+  max-width: 144px;
+}
+
 @media (max-width: 1440px) {
   dfm-notification {
     .dfm-notification {
@@ -392,14 +396,10 @@ button:disabled {
   .carousel-control-prev, .carousel-control-next{
     display: none;
   }
-  
+
   .font-weight-mobile-view{
     font-weight: 600;
   }
-
-  //.dfm-table-wrapper {
-  //  dfm-table
-  //}
 }
 
 

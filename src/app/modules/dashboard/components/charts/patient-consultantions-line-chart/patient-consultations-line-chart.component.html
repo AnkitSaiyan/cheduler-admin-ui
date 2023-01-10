@@ -1,19 +1,19 @@
-<div class="patient-consultation-line-chart d-flex flex-column dfm-p-16">
-  <section class="d-flex flex-column dfm-gap-16 dfm-mb-16">
+<div class="patient-consultation-line-chart d-flex flex-column dfm-px-16 dfm-pt-16 dfm-gap-16">
+  <section class="d-flex flex-column dfm-gap-16 dfm-mb-8">
     <div class="d-flex justify-content-between align-items-center dfm-gap-8">
-      <div class="d-flex align-items-center">
-        <img src="../../../../../../assets/icons/Drag.svg" class="pointer dfm-me-8">
-        <header class="font-weight-medium">
-          <span>Overall Status</span>
-        </header>
-      </div>
+      <header class="d-flex align-items-center dfm-gap-8">
+        <div class="dfm-button-gray-400">
+          <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+        </div>
+        <span class="font-weight-medium">Overall Status</span>
+      </header>
 
      <div class="dfm-input-dropdown-wrapper-wo-label overall-sort-icon dfm-me-12">
        <dfm-input-dropdown
          [items]="[]"
          placeholder="Sort By"
          [showDescription]="true"
-         size="sm"
+         size="md"
          [loading]="false"
        ></dfm-input-dropdown>
      </div>
@@ -25,7 +25,7 @@
     </div>
   </section>
 
-  <section class="d-flex dfm-gap-16 justify-content-end dfm-me-16 text-sm dfm-mb-16 w-100 overall-patients-consultations">
+  <section class="d-flex dfm-gap-16 justify-content-end dfm-px-8 text-sm w-100 overall-patients-consultations">
     <div class="d-flex align-items-center dfm-gap-8">
       <div class="line-chart-legend patients-legend"></div>
       <span>Patients</span>

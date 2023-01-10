@@ -1,15 +1,15 @@
 <div class="d-flex flex-column dfm-gap-8 dfm-y-16 h-100">
   <section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-m-16">
-    <div class="d-flex align-items-start">
-      <img src="../../../../../assets/icons/Drag.svg" alt="drag logo" class="pointer dfm-me-8">
-      <header class="font-weight-medium">
-        <span>Post It ({{ posts.length }})</span>
-      </header>
-    </div>
+    <header class="d-flex align-items-center dfm-gap-8">
+      <div class="dfm-button-gray-400">
+        <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+      </div>
+      <span class="font-weight-medium">Post It ({{ posts.length }})</span>
+    </header>
 
     <div>
       <dfm-button
-        size="sm"
+        size="md"
         color="primary"
       >
         Add
@@ -20,13 +20,13 @@
   <section class="d-flex dfm-gap-8 align-items-center justify-content-between dfm-mb-16 dfm-mx-16 dfm-gap-32">
     <dfm-input
       class="flex-grow-1"
-      size="sm"
+      size="md"
       placeholder="Search post it" class="post-search-it-placeholder"
       icon="search-sm"
     ></dfm-input>
     <div class="d-flex flex-row justify-content-between dfm-gap-16">
     <dfm-input
-      size="sm"
+      size="md"
       placeholder="Search" class="post-search-placeholder flex-grow-1"
       icon="search-sm"
     ></dfm-input>
@@ -38,7 +38,7 @@
     ></dfm-button-icon>
 
     <dfm-button
-      size="sm"
+      size="md"
       color="secondary"
       class="text-nowrap post-view-all-btn"
     >

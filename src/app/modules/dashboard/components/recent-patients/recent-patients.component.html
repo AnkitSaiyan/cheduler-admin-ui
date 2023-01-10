@@ -1,44 +1,36 @@
-<div class="recent-patient-list-wrapper d-flex flex-column dfm-pb-8">
-  <section class="dfm-p-16 d-flex flex-column dfm-gap-16 dfm-mb-8">
-    <div class="d-flex align-items-center">
-      <img src="../../../../../assets/icons/Drag.svg" class="pointer dfm-me-8">
-      <header class="font-weight-medium">
-        <span>Recent Patients</span>
-      </header>
-    </div>
+<div class="re-pt-main-wrapper d-flex flex-column dfm-gap-24">
+  <section class="dfm-px-16 dfm-pt-16 d-flex flex-column dfm-gap-16">
+    <header class="d-flex align-items-center dfm-gap-8">
+      <div class="dfm-button-gray-400">
+        <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+      </div>
+      <span class="font-weight-medium">Recent Patients</span>
+    </header>
+  </section>
 
-    <div class="d-flex dfm-gap-8">
-      <dfm-input
-        class="flex-shrink-1 flex-grow-1"
-        size="sm"
-        placeholder="Search patient name" class="search-patient-placeholder"
-        icon="search-sm"
-      ></dfm-input>
-      <dfm-input
-        class="flex-shrink-1 flex-grow-1"
-        size="sm"
-        placeholder="Patient" class="patient-placeholder"
-        icon="search-sm"
-      ></dfm-input>
+  <section class="d-flex dfm-px-16 align-items-center dfm-gap-16">
+    <dfm-input
+      class="flex-1"
+      size="md"
+      placeholder="Search Patient Name"
+      icon="search-sm"
+    ></dfm-input>
 
-      <div class="d-flex align-items-center dfm-input-dropdown-wrapper">
-        <div>
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="sm"
-            icon="copy-01"
-          ></dfm-button-icon>
-        </div>
+    <div class="d-flex align-items-center dfm-button-group-wrapper">
+      <div>
+        <dfm-button-icon
+          color="tertiary-gray"
+          size="md"
+          icon="copy-03"
+        ></dfm-button-icon>
+      </div>
 
-        <div>
-          <dfm-input-dropdown
-            [items]="downloadItems"
-            placeholder="Download"
-            [showDescription]="true"
-            size="sm"
-            [loading]="false"
-          ></dfm-input-dropdown>
-        </div>
+      <div class="download-dropdown-max-w-144">
+        <dfm-input-dropdown
+          [items]="downloadItems"
+          placeholder="Download"
+          size="md"
+        ></dfm-input-dropdown>
       </div>
     </div>
   </section>
@@ -66,19 +58,17 @@
         <dfm-table-body-cell>{{ item.appointmentDate | date : 'short' }}</dfm-table-body-cell>
 
         <dfm-table-body-cell>
-          <div class="d-flex dfm-gap-4">
-            <dfm-button-icon
-              color="tertiary-gray"
+          <div class="d-flex dfm-gap-16">
+            <dfm-button
+              color="link-gray"
               size="sm"
-              icon="pencil-02"
-              [disabled]="false"
-            ></dfm-button-icon>
-            <dfm-button-icon
-              color="tertiary-gray"
+              trailingIcon="pencil-02"
+            ></dfm-button>
+            <dfm-button
+              color="link-gray"
               size="sm"
-              icon="trash-01"
-              [disabled]="false"
-            ></dfm-button-icon>
+              trailingIcon="trash-01"
+            ></dfm-button>
           </div>
         </dfm-table-body-cell>
       </ng-template>

@@ -1,4 +1,4 @@
-.appointment-list-wrapper {
+.ap-li-main-wrapper {
   height: inherit;
 
   section:last-child {
@@ -7,36 +7,16 @@
   }
 }
 
-.dfm-input-dropdown-wrapper {
-  border: 1px solid var(--dfm-input-border);
-  border-radius: 8px;
-  //height: 40px;
-
-  div:first-child {
-    border-right: 1px solid var(--dfm-input-border);
-  }
-
-  div:last-child {
-    border-left: 1px solid var(--dfm-input-border);
-  }
-}
-.appointment-list-add-btn{
-  display: none;
-}
-.appointment-search-icon{
-  display: none;
-}
-.appointment-adv-search-icon{
-  display: none;
-}
-.appointment-list-calendar-icon-mv{
-  display: none;
-}
-.appointment-list-download-icon-placeholder{
-  display: none;
-}
 // ======================Media Query for Mobile view=================
 @media (min-width:180px) and (max-width:680px) {
+  .ap-li-section2-action-bar {
+    display: none !important;
+  }
+
+  .ap-li-section2-action-bar-mv {
+    display: flex !important;
+  }
+
   .appointment-list-header-section{
     width: 100%;
     display: flex;

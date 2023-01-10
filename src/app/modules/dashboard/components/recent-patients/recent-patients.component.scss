@@ -1,34 +1,22 @@
-.recent-patient-list-wrapper {
+.re-pt-main-wrapper {
   height: inherit;
-
-  .dfm-input-dropdown-wrapper {
-    border: 1px solid var(--dfm-input-border);
-    border-radius: 8px;
-    height: 40px;
-
-    div:first-child {
-      border-right: 1px solid var(--dfm-input-border);
-    }
-
-    div:last-child {
-      flex: 1 ;
-    }
-  }
 
   section:last-child {
     overflow-y: auto;
   }
 }
-.patient-placeholder{
+
+.patient-placeholder {
   display: none;
 }
 
 // ======================Media Query for Mobile view=================
 @media (min-width:180px) and (max-width:680px) {
-  .search-patient-placeholder{
+  .search-patient-placeholder {
     display: none;
   }
-  .patient-placeholder{
+
+  .patient-placeholder {
     display: block;
   }
 }
