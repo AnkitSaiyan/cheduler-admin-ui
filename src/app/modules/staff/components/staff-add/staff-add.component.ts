@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, distinctUntilChanged, filter, map, takeUntil } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, distinctUntilChanged, filter, map, switchMap, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserType } from '../../../../shared/models/user.model';
+import { User, UserType } from '../../../../shared/models/user.model';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
@@ -11,7 +11,15 @@ import { Weekday } from '../../../../shared/models/weekday';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AddStaffRequestData } from '../../../../shared/models/staff.model';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
+import { COMING_FROM_ROUTE, EDIT, STAFF_ID } from '../../../../shared/utils/const';
+import { RouterStateService } from '../../../../core/services/router-state.service';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
+
+interface TimeDistributed {
+  hour: number;
+  minute: number;
+  second?: number;
+}
 
 interface FormValues {
   firstname: string;
@@ -24,11 +32,10 @@ interface FormValues {
   practiceAvailability: {
     [key: string]: {
       weekday: Weekday;
-      dayStart: Date;
-      dayEnd: Date;
+      dayStart: TimeDistributed;
+      dayEnd: TimeDistributed;
     }[];
   };
-
   examLists: number[];
   selectedWeekday: Weekday;
   info: string;
@@ -39,35 +46,75 @@ interface FormValues {
   templateUrl: './staff-add.component.html',
   styleUrls: ['./staff-add.component.scss'],
 })
-export class StaffAddComponent extends DestroyableComponent implements OnInit, AfterViewInit {
-  @ViewChild('dropdown') private eleRef!: ElementRef;
-
+export class StaffAddComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public addStaffForm!: FormGroup;
 
   public exams$$ = new BehaviorSubject<any[]>([]);
 
   public generalUserTypes$$ = new BehaviorSubject<any[]>([]);
 
+  public staffDetails$$ = new BehaviorSubject<User | undefined>(undefined);
+
+  public loading$$ = new BehaviorSubject(false);
+
   public weekday = Weekday;
+
+  public comingFromRoute = '';
+
+  public staffID!: number;
+
+  public edit = false;
 
   constructor(
     private fb: FormBuilder,
     private userApiSvc: UserApiService,
     private examApiSvc: ExamApiService,
-    private notificationSvc: NotificationDataService,
     private staffApiSvc: StaffApiService,
+    private notificationSvc: NotificationDataService,
     private router: Router,
     private route: ActivatedRoute,
+    private routerStateSvc: RouterStateService,
   ) {
     super();
+    const state = this.router.getCurrentNavigation()?.extras?.state;
+    if (state !== undefined) {
+      this.loading$$.next(true);
+      this.comingFromRoute = state[COMING_FROM_ROUTE];
+      this.edit = state[EDIT];
+
+      localStorage.setItem(COMING_FROM_ROUTE, this.comingFromRoute);
+      if (typeof this.edit === 'boolean') {
+        localStorage.setItem(EDIT, this.edit.toString());
+      }
+    } else {
+      this.loading$$.next(true);
+      this.getComingFromRouteFromLocalStorage();
+    }
   }
 
-  public ngAfterViewInit() {
-    console.log(this.eleRef);
+  private getComingFromRouteFromLocalStorage() {
+    const comingFromRoute = localStorage.getItem(COMING_FROM_ROUTE);
+    if (comingFromRoute) {
+      this.comingFromRoute = comingFromRoute;
+    }
+    const edit = localStorage.getItem(EDIT);
+    if (edit) {
+      this.edit = edit === 'true';
+    }
   }
 
   public ngOnInit(): void {
-    this.createForm();
+    this.routerStateSvc
+      .listenForParamChange$(STAFF_ID)
+      .pipe(
+        tap((staffID) => (this.staffID = +staffID)),
+        switchMap((staffID) => this.staffApiSvc.getStaffByID(+staffID)),
+      )
+      .subscribe((staffDetails) => {
+        this.createForm(staffDetails);
+        this.loading$$.next(false);
+        this.staffDetails$$.next(staffDetails);
+      });
 
     this.userApiSvc.generalUserTypes.pipe(takeUntil(this.destroy$$)).subscribe((generalUserTypes) => {
       this.generalUserTypes$$.next(generalUserTypes);
@@ -92,33 +139,88 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, A
       .subscribe(() => this.addPracticeAvailabilityControls());
   }
 
-  private createForm(): void {
-    this.addStaffForm = this.fb.group({
-      firstname: ['', [Validators.required]],
-      lastname: ['', [Validators.required]],
-      email: ['', [Validators.required]],
-      telephone: ['', [Validators.required]],
-      userType: ['', [Validators.required]],
-      info: ['', []],
-      examLists: [[], [Validators.required]],
-      selectedWeekday: [this.weekday.ALL, []],
-      practiceAvailabilityToggle: [false, []],
-      practiceAvailability: this.fb.group({}),
-    });
+  public override ngOnDestroy() {
+    super.ngOnDestroy();
+    localStorage.removeItem(COMING_FROM_ROUTE);
+    localStorage.removeItem(EDIT);
   }
 
-  private getPracticeAvailabilityFormGroup(weekday?: Weekday): FormGroup {
+  private createForm(staffDetails?: User | undefined): void {
+    this.addStaffForm = this.fb.group({
+      firstname: [staffDetails?.firstname, [Validators.required]],
+      lastname: [staffDetails?.lastname, [Validators.required]],
+      email: [staffDetails?.email, [Validators.required]],
+      telephone: [staffDetails?.telephone, [Validators.required]],
+      userType: [staffDetails?.userType, [Validators.required]],
+      info: [staffDetails?.info, []],
+      examLists: [staffDetails?.examList, [Validators.required]],
+      selectedWeekday: [this.weekday.ALL, []],
+      practiceAvailabilityToggle: [!!staffDetails?.practiceAvailability?.length, []],
+      practiceAvailability: this.fb.group({}),
+    });
+
+    if (staffDetails?.practiceAvailability?.length) {
+      staffDetails.practiceAvailability.forEach((practice) => {
+        this.addStaffForm.patchValue({ selectedWeekday: practice.weekday });
+        this.addPracticeAvailabilityControls(practice);
+      });
+    }
+  }
+
+  private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: TimeDistributed, dayEnd?: TimeDistributed): FormGroup {
     const fg = this.fb.group({
       weekday: [weekday ?? this.formValues.selectedWeekday, []],
-      dayStart: ['', []],
-      dayEnd: ['', []],
+      dayStart: [dayStart, []],
+      dayEnd: [dayEnd, []],
     });
+
+    fg.get('dayStart')
+      ?.valueChanges.pipe(
+        filter((time) => !!time),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe(() => {
+        // this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
+      });
+
+    fg.get('dayEnd')
+      ?.valueChanges.pipe(
+        filter((time) => !!time),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe(() => {
+        // this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
+      });
+
     return fg;
   }
 
-  private addPracticeAvailabilityControls(): void {
+  private toggleTimeError(dayStart: AbstractControl | null, dayEnd: AbstractControl | null) {
+    if (!dayStart && !dayEnd) {
+      return;
+    }
+
+    if (
+      dayStart?.value?.hour > dayEnd?.value?.hour ||
+      (dayStart?.value?.hour === dayEnd?.value?.hour && dayStart?.value?.minute > dayEnd?.value?.minute)
+    ) {
+      dayStart?.setErrors({ startTimeErr: true });
+      dayEnd?.setErrors({ endTimeErr: true });
+    } else {
+      if (dayStart?.hasError('startTimeErr')) {
+        dayStart?.setErrors(null);
+      }
+
+      if (dayEnd?.hasError('endTimeErr')) {
+        dayEnd?.setErrors(null);
+      }
+    }
+  }
+
+  private addPracticeAvailabilityControls(practice?: PracticeAvailability): void {
     const fg = this.addStaffForm.get('practiceAvailability') as FormGroup;
-    switch (this.formValues.selectedWeekday) {
+    const weekday = this.formValues.selectedWeekday;
+    switch (weekday) {
       case Weekday.ALL:
         Object.values(this.weekday).forEach((day) => {
           if (typeof day === 'number' && day > 0) {
@@ -131,19 +233,49 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, A
         break;
       default:
         if (!Object.keys(fg.value)?.length || (Object.keys(fg.value).length && !fg.get(this.formValues.selectedWeekday.toString()))) {
-          fg.addControl(this.formValues.selectedWeekday.toString(), this.fb.array([this.getPracticeAvailabilityFormGroup()]));
+          fg.addControl(
+            this.formValues.selectedWeekday.toString(),
+            this.fb.array([
+              this.getPracticeAvailabilityFormGroup(
+                practice?.weekday,
+                {
+                  hour: practice?.dayStart?.getHours() ?? 0,
+                  minute: practice?.dayStart?.getMinutes() ?? 0,
+                },
+                {
+                  hour: practice?.dayEnd?.getHours() ?? 0,
+                  minute: practice?.dayEnd?.getMinutes() ?? 0,
+                },
+              ),
+            ]),
+          );
+        } else if (fg.get(this.formValues.selectedWeekday.toString()) && practice) {
+          (fg.get(practice.weekday.toString()) as FormArray).push(
+            this.getPracticeAvailabilityFormGroup(
+              practice.weekday,
+              {
+                hour: practice.dayStart.getHours(),
+                minute: practice.dayStart.getMinutes(),
+              },
+              {
+                hour: practice.dayEnd.getHours(),
+                minute: practice.dayEnd.getMinutes(),
+              },
+            ),
+          );
         }
     }
   }
 
-  public get practiceAvailabilityControlsArray(): FormArray[] {
+  public practiceAvailabilityWeekWiseControlsArray(all = false): FormArray[] {
     const controls: FormArray[] = [];
 
     const fg = this.addStaffForm.get('practiceAvailability');
     const { selectedWeekday } = this.formValues;
-    const keys = Object.keys(this.formValues.practiceAvailability).filter(
-      (key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL,
-    );
+    let keys = Object.keys(this.formValues.practiceAvailability);
+    if (!all) {
+      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL)];
+    }
 
     if (keys?.length) {
       keys.forEach((key) => {
@@ -153,6 +285,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, A
         }
       });
     }
+
     return controls;
   }
 
@@ -175,7 +308,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, A
     }
 
     // const { weekday } = this.formValues;
-    this.addStaffForm.patchValue({ weekday: selectedWeekday });
+    this.addStaffForm.patchValue({ selectedWeekday });
     this.addPracticeAvailabilityControls();
   }
 
@@ -191,19 +324,26 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, A
     if (this.addStaffForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
       this.addStaffForm.updateValueAndValidity();
-      // return;
+      return;
     }
 
     const { practiceAvailabilityToggle, practiceAvailability, selectedWeekday, ...rest } = this.formValues;
     const addStaffReqData: AddStaffRequestData = {
       ...rest,
       practiceAvailability: [
-        ...this.practiceAvailabilityControlsArray.reduce(
+        ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
           (acc, formArray) => [
             ...acc,
             ...formArray.controls.reduce((a, control) => {
               if (control.value.dayStart && control.value.dayEnd) {
-                return [...a, { ...control.value }];
+                return [
+                  ...a,
+                  {
+                    ...control.value,
+                    dayStart: new Date(new Date().setHours(control.value.dayStart.hour, control.value.dayStart.minute)),
+                    dayEnd: new Date(new Date().setHours(control.value.dayEnd.hour, control.value.dayEnd.minute)),
+                  },
+                ];
               }
               return a;
             }, [] as PracticeAvailability[]),
@@ -212,6 +352,8 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, A
         ),
       ],
     };
+
+    console.log(addStaffReqData.info);
 
     if (!addStaffReqData.info) {
       delete addStaffReqData.info;
@@ -222,15 +364,26 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, A
     if (!addStaffReqData.practiceAvailability?.length) {
       delete addStaffReqData.practiceAvailability;
     }
-
-    this.staffApiSvc
-      .createStaff$(addStaffReqData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification('Staff added successfully');
-        this.router.navigate(['../'], { relativeTo: this.route });
-      });
+    if (this.staffID) {
+      addStaffReqData.id = this.staffID;
+    }
 
     console.log(addStaffReqData);
+
+    this.staffApiSvc
+      .upsertStaff$(addStaffReqData)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.notificationSvc.showNotification(`Staff ${this.edit ? 'updated' : 'added'} successfully`);
+        let route: string;
+        if (this.comingFromRoute === 'view') {
+          route = '../view';
+        } else {
+          route = this.edit ? '/staff' : '../';
+        }
+
+        console.log(route);
+        this.router.navigate([route], { relativeTo: this.route });
+      });
   }
 }

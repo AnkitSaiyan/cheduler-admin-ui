@@ -21,7 +21,7 @@ export class UserApiService {
     },
     {
       name: 'Secretary',
-      value: UserType.Scheduler,
+      value: UserType.Secretary,
     },
   ];
 

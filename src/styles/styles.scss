@@ -9,56 +9,208 @@
 //  display: none !important;
 //}
 
-dfm-input-dropdown input {
-  border: none !important;
+// custom styles for dfm elements ===========================================================
+dfm-input-dropdown {
+  input {
+    border: none !important;
+  }
+
+  label.dfm-input-label {
+    position: absolute;
+    z-index: 1;
+    top: -28px;
+  }
+
+  div.selected-items.selected-items-with-dropdown-icon {
+    left: 0 !important;
+    top: 48px !important;
+    width: fit-content;
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
+    max-width: 90% !important;
+  }
 }
 
-.dfm-btn-group {
+// button group wrapper
+.dfm-button-group-wrapper {
   background: white;
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
   height: 40px;
+
+  div + div {
+    border-left: 1px solid var(--dfm-input-border);
+  }
 }
 
-// Having styling issues with dfm-card component so created a class
+// use this for single select dropdown
+.dfm-input-dropdown-wrapper {
+  background: white;
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  //height: 40px;
+  margin-top: 28px;
+}
+
+.dfm-input-dropdown-wrapper-wo-label {
+  background: white;
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  //height: 40px;
+}
+
+// use this for multi type dropdown
+.dfm-input-multi-dropdown-wrapper {
+  background: white;
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  height: 40px;
+  margin-top: 28px;
+  margin-bottom: 40px;
+}
+
+.dfm-input-multi-dropdown-wrapper-wo-label {
+  background: white;
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  height: 40px;
+  margin-bottom: 40px;
+}
+
+.dfm-button-icon-bg-transparent {
+  dfm-button-icon {
+    button {
+      background: transparent !important;
+    }
+  }
+}
+
+.dfm-dropdown-bg-transparent {
+  dfm-input-dropdown {
+    input {
+      background: transparent !important;
+    }
+  }
+}
+
+.dfm-dropdown-placeholder-text-primary {
+  dfm-input-dropdown {
+    input {
+      &::placeholder, &::-webkit-input-placeholder {
+        color: var(--dfm-primary) !important;
+      }
+    }
+  }
+
+  dfm-icon {
+    color: var(--dfm-primary) !important;
+  }
+}
+
+
 .dfm-card {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
   //height: fit-content;
   flex: 1;
 }
 
-// Custom Global styling
-.overflow-y-auto {
-  overflow-y: auto;
+dfm-button {
+  button {
+    height: inherit;
+    width: inherit;
+  }
 }
 
-.overflow-x-auto {
-  overflow-x: auto;
+dfm-table-body-cell td {
+  overflow: visible !important;
 }
 
-.flex-1 {
-  flex: 1;
+.dfm-button-gray-400 {
+  dfm-button button {
+    color: var(--bs-gray-400) !important;
+  }
 }
 
-.h-inherit {
-  height: inherit;
+dfm-notification {
+  .dfm-notification {
+    //animation: fromRight 1s ease !important;
+    top: 152px !important;
+    right: 32px !important;
+    z-index: 1003 !important;
+  }
+
+  .dfm-icon-wrapper {
+    width: 30px !important;
+    height: 30px !important;
+    padding: 4px !important;
+    margin-right: 8px !important;
+  }
+
+  .dfm-notification-success {
+    background: #ECFDF3 !important;
+    border-bottom: 2px solid #32D583 !important;
+
+    .dfm-icon-wrapper {
+      color: white !important;
+      background: #12B76A !important;
+    }
+  }
+
+  .dfm-notification-danger {
+    background: #fee4e2 !important;
+    border-bottom: 2px solid #b42318 !important;
+
+    .dfm-icon-wrapper {
+      color: white !important;
+      background: #b42318 !important;
+    }
+  }
 }
 
-.w-fit {
-  width: fit-content;
+.dfm-table-wrapper {
+  td:nth-child(4) {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
 }
 
-.min-w-fit {
-  min-width: fit-content;
+//@keyframes fromRight {
+//  0% {
+//    right: -128px !important;
+//  }
+//  100% {
+//    right: 32px !important;
+//  }
+//}
+
+// Third party library styling ========================================================
+ngb-timepicker {
+  input {
+    height: 40px;
+    border-radius: 8px;
+  }
+
+  input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: var(--dfm-input-border-focus) !important;
+    border-width: 2px;
+  }
 }
 
-.max-w-fit {
-  max-width: fit-content;
+.modal-content {
+  background: transparent !important;
 }
 
-// others
+// others ===================================================================
+button:disabled {
+  background: #D0D5DD !important;
+  color: white !important;
+}
+
 .carousel-inner {
   height: 360px !important;
 }
@@ -68,8 +220,9 @@ dfm-input-dropdown input {
   height: 24px;
 
   border-radius: 50%;
+
   &:hover {
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
   }
 }
 
@@ -100,14 +253,146 @@ dfm-input-dropdown input {
     height: 8px;
     border: none;
     border-radius: 50%;
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
 
     &:hover {
       background: rgba(var(--dfm-primary), 0.5);
     }
   }
-
 }
+
+.weekday-header {
+  dfm-badge {
+    div {
+      padding: 8px 12px !important;
+      border-radius: 8px !important;
+    }
+  }
+}
+
+// Custom Global styling ==============================================================
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.hide-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.h-inherit {
+  height: inherit;
+}
+
+.h-fit {
+  height: fit-content;
+}
+
+.w-fit {
+  width: fit-content;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.min-w-fit {
+  min-width: fit-content;
+}
+
+.max-w-fit {
+  max-width: fit-content;
+}
+
+.text-red {
+  color: red;
+}
+
+.hidden {
+  display: none;
+}
+
+.text-tr
+.x-circle {
+  display: flex;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid gray;
+  border-radius: 50%;
+}
+
+.modal-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border: none;
+}
+
+.modal-body {
+  padding: 0px 16px;
+}
+
+.modal-footer {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 8px;
+  padding: 8px 16px;
+  border: none;
+}
+
+@media (max-width: 1440px) {
+  dfm-notification {
+    .dfm-notification {
+      top: 128px !important;
+    }
+  }
+}
+
+@media (max-width: 680px) {
+  .modal-footer {
+    justify-content: center;
+  }
+
+  .weekday-header {
+    dfm-badge {
+      div.dfm-badge-gray {
+        background: var(--bs-gray-200) !important;
+      }
+    }
+  }
+
+  dfm-notification {
+    .dfm-notification {
+      margin: auto !important;
+      top: 128px !important;
+      right: 4px !important;
+    }
+  }
+
+  //.dfm-table-wrapper {
+  //  dfm-table
+  //}
+}
+
 
 //input[type="time"]::-webkit-calendar-picker-indicator{
 //  filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);

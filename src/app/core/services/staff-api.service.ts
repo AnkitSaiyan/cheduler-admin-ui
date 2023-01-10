@@ -16,7 +16,7 @@ export class StaffApiService {
       id: 1,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserType.General,
+      userType: UserType.Radiologist,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
@@ -24,7 +24,7 @@ export class StaffApiService {
       availabilityType: AvailabilityType.Unavailable,
       deletedBy: null,
       gsm: '',
-      examList: [1, 2, 3],
+      examList: [1, 2, 3, 5, 6, 7, 8],
       practiceAvailability: [
         {
           id: 60,
@@ -391,22 +391,52 @@ export class StaffApiService {
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.staffLists)));
   }
 
-  public createStaff$(requestData: AddStaffRequestData): Observable<string> {
-    this.staffLists.push({
-      id: Math.random(),
-      firstname: requestData.firstname,
-      lastname: requestData.lastname,
-      userType: UserType.Assistant,
-      email: requestData.email,
-      telephone: requestData.telephone,
-      address: requestData?.address ?? '',
-      status: Status.Active,
-      availabilityType: AvailabilityType.Available,
-      deletedBy: null,
-      gsm: '',
-      examList: requestData.examLists,
-      practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
-    });
+  public upsertStaff$(requestData: AddStaffRequestData): Observable<string> {
+    if (!requestData) {
+      return of('');
+    }
+
+    if (requestData.id) {
+      const index = this.staffLists.findIndex((staff) => staff.id === requestData.id);
+      if (index !== -1) {
+        this.staffLists[index] = {
+          ...this.staffLists[index],
+          id: requestData.id,
+          firstname: requestData.firstname,
+          lastname: requestData.lastname,
+          userType: requestData.userType,
+          email: requestData.email,
+          telephone: requestData.telephone,
+          address: requestData?.address ?? '',
+          status: Status.Active,
+          availabilityType: AvailabilityType.Available,
+          deletedBy: null,
+          gsm: '',
+          examList: requestData.examLists,
+          practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
+          info: requestData?.info ?? '',
+        };
+
+        console.log(requestData.practiceAvailability);
+      }
+    } else {
+      this.staffLists.push({
+        id: Math.random(),
+        firstname: requestData.firstname,
+        lastname: requestData.lastname,
+        userType: requestData.userType,
+        email: requestData.email,
+        telephone: requestData.telephone,
+        address: requestData?.address ?? '',
+        status: Status.Active,
+        availabilityType: AvailabilityType.Available,
+        deletedBy: null,
+        gsm: '',
+        examList: requestData.examLists,
+        practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
+        info: requestData?.info ?? '',
+      });
+    }
 
     this.refreshStaffs$$.next('');
 

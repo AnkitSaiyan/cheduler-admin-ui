@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { FormControl } from '@angular/forms';
-import formatters from 'chart.js/dist/core/core.ticks';
 import { TableItem } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
@@ -9,6 +8,9 @@ import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { Status } from '../../../../shared/models/status';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ModalService } from '../../../../core/services/modal.service';
+import { SearchModalComponent } from '../../../../shared/components/search-modal.component';
 import { User } from '../../../../shared/models/user.model';
 
 @Component({
@@ -17,6 +19,8 @@ import { User } from '../../../../shared/models/user.model';
   styleUrls: ['./staff-list.component.scss'],
 })
 export class StaffListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
+
   public searchControl = new FormControl('', []);
 
   public downloadDropdownControl = new FormControl('', []);
@@ -58,13 +62,12 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public statusType = getStatusEnum();
 
-  public showBanner = false;
-
   constructor(
     private staffApiSvc: StaffApiService,
     private notificationSvc: NotificationDataService,
     private router: Router,
     private route: ActivatedRoute,
+    private modalSvc: ModalService,
   ) {
     super();
     this.staffs$$ = new BehaviorSubject<any[]>([]);
@@ -102,9 +105,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
     this.afterBannerClosed$$
       .pipe(
-        filter((value) => !!value),
         map((value) => {
-          console.log(value);
           if (value?.proceed) {
             return [...this.selectedStaffIds.map((id) => ({ id: +id, newStatus: value.newStatus }))];
           }
@@ -117,9 +118,8 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       .subscribe((value) => {
         if (value) {
           this.notificationSvc.showNotification('Status has changed successfully');
-          this.clearSelected$$.next();
         }
-        this.showBanner = false;
+        this.clearSelected$$.next();
       });
   }
 
@@ -128,6 +128,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public handleCheckboxSelection(selected: string[]) {
+    this.toggleMenu(true);
     this.selectedStaffIds = [...selected];
   }
 
@@ -147,8 +148,24 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public deleteStaff(id: number) {
-    this.staffApiSvc.deleteStaff(id);
-    this.notificationSvc.showNotification('Staff deleted successfully');
+    const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
+      data: {
+        titleText: 'Confirmation',
+        bodyText: 'Are you sure you want to delete this Staff?',
+        confirmButtonText: 'Proceed',
+        cancelButtonText: 'Cancel',
+      } as DialogData,
+    });
+
+    dialogRef.closed
+      .pipe(
+        filter((res: boolean) => res),
+        take(1),
+      )
+      .subscribe(() => {
+        this.staffApiSvc.deleteStaff(id);
+        this.notificationSvc.showNotification('Staff deleted successfully');
+      });
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
@@ -156,11 +173,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     this.afterBannerClosed$$.next(e);
   }
 
-  public openConfirmationBanner() {
-    this.showBanner = true;
-  }
-
-  public handleCopyClick() {
+  public copyToClipboard() {
     this.notificationSvc.showNotification('Data copied to clipboard successfully');
   }
 
@@ -168,5 +181,41 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     if (e?.id) {
       this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
     }
+  }
+
+  public toggleMenu(reset = false) {
+    const icon = document.querySelector('.sf-li-plus-btn-icon');
+    if (icon) {
+      if (reset) {
+        icon.classList.add('rotate-z-0');
+        icon.classList.remove('rotate-z-45');
+      } else {
+        icon.classList.toggle('rotate-z-45');
+        icon.classList.toggle('rotate-z-0');
+      }
+    }
+  }
+
+  public openSearchModal() {
+    this.toggleMenu();
+
+    const modalRef = this.modalSvc.open(SearchModalComponent, {
+      options: { fullscreen: true },
+      data: [...this.staffs$$.value],
+    });
+
+    modalRef.closed.pipe(take(1)).subscribe((result) => this.filterStaffList(result));
+  }
+
+  private filterStaffList(result: { name: string; value: string }[]) {
+    console.log(result, this.staffs$$.value);
+    if (!result?.length) {
+      this.filteredStaffs$$.next([...this.staffs$$.value]);
+      return;
+    }
+
+    const ids = new Set<number>();
+    result.forEach((item) => ids.add(+item.value));
+    this.filteredStaffs$$.next([...this.staffs$$.value.filter((staff: User) => ids.has(+staff.id))]);
   }
 }
