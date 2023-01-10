@@ -12,7 +12,7 @@
       <dfm-input
         class="flex-1 sf-li-search"
         size="md"
-        placeholder="Search by Staff Name"
+        placeholder="Search by Staff Name, Type, Email..."
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
@@ -60,7 +60,7 @@
 
   <section class="overflow-y-auto sf-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredStaffs$$ | async as staffs">
     <dfm-table [items]="staffs" [selectable]="true" (selected)="handleCheckboxSelection($event)"
-               [clearSelected$]="clearSelected$$" [rowClickable]="false" (rowClicked)="navigateToViewStaff($event)"
+               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewStaff($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
         <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>

@@ -139,6 +139,11 @@ dfm-notification {
     top: 152px !important;
     right: 32px !important;
     z-index: 2000 !important;
+
+    .dfm-notification-body {
+      color: black !important;
+      font-weight: 400 !important;
+    }
   }
 
   .dfm-icon-wrapper {
@@ -150,7 +155,7 @@ dfm-notification {
 
   .dfm-notification-success {
     background: #ECFDF3 !important;
-    border-bottom: 2px solid #32D583 !important;
+    border-bottom: 3px solid #32D583 !important;
 
     .dfm-icon-wrapper {
       color: white !important;
@@ -160,7 +165,7 @@ dfm-notification {
 
   .dfm-notification-danger {
     background: #fee4e2 !important;
-    border-bottom: 2px solid #b42318 !important;
+    border-bottom: 3px solid #b42318 !important;
 
     .dfm-icon-wrapper {
       color: white !important;
@@ -394,6 +399,16 @@ button:disabled {
   height: 24px;
   font-size: 32px;
   line-height: 24px;
+}
+
+.rotate-z-45 {
+  transition: all ease-in-out 150ms;
+  transform: rotateZ(45deg);
+}
+
+.rotate-z-0 {
+  transition: all ease-in-out 150ms;
+  transform: rotateZ(0deg);
 }
 
 @media (max-width: 1440px) {

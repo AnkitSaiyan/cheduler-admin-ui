@@ -10,7 +10,7 @@ import { Status } from '../../../../shared/models/status';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
-import { SearchModalComponent } from '../../../../shared/components/search-modal.component';
+import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { User } from '../../../../shared/models/user.model';
 
 @Component({
@@ -135,7 +135,12 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   private handleSearch(searchText: string): void {
     this.filteredStaffs$$.next([
       ...this.staffs$$.value.filter((staff) => {
-        return staff.firstname?.toLowerCase()?.includes(searchText) || staff.lastname?.toLowerCase()?.includes(searchText);
+        return (
+          staff.firstname?.toLowerCase()?.includes(searchText) ||
+          staff.lastname?.toLowerCase()?.includes(searchText) ||
+          staff.email?.toLowerCase()?.includes(searchText) ||
+          staff.userType?.toLowerCase()?.includes(searchText)
+        );
       }),
     ]);
   }
@@ -201,7 +206,19 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
     const modalRef = this.modalSvc.open(SearchModalComponent, {
       options: { fullscreen: true },
-      data: [...this.staffs$$.value],
+      data: {
+        items: [
+          ...this.staffs$$.value.map(({ id, firstname, lastname, email, userType }) => {
+            return {
+              name: `${firstname} ${lastname}`,
+              description: userType,
+              key: `${firstname} ${lastname} ${email} ${userType}`,
+              value: id,
+            };
+          }),
+        ],
+        placeHolder: 'Search by Staff Name, Type, Email...',
+      } as SearchModalData,
     });
 
     modalRef.closed.pipe(take(1)).subscribe((result) => this.filterStaffList(result));
