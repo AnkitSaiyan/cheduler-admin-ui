@@ -1,8 +1,8 @@
-import { Weekday } from './weekday';
+import { WeekdayModel } from './weekday.model';
 
 export interface PracticeAvailability {
   id?: number;
-  weekday: Weekday;
+  weekday: WeekdayModel;
   dayStart: Date;
   dayEnd: Date;
 }

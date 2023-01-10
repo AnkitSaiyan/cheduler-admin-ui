@@ -14,7 +14,7 @@ export class ModalService {
 
   constructor(private ngbModal: NgbModal) {}
 
-  public open(dialogBox: any, extras: { options?: NgbModalOptions; data?: any }): NgbModalRef {
+  public open(dialogBox: any, extras?: { options?: NgbModalOptions; data?: any }): NgbModalRef {
     if (extras?.data) {
       this.dialogData$$.next(extras.data);
     }

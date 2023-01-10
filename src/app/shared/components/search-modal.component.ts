@@ -4,6 +4,19 @@ import { InputDropdownComponent } from 'diflexmo-angular-design';
 import { ModalService } from '../../core/services/modal.service';
 import { DestroyableComponent } from './destroyable.component';
 
+export interface NameValue {
+  name: string; // display name
+  key: string; // search key
+  value: any; // value to be used in background
+  description?: string;
+}
+
+export interface SearchModalData {
+  items: NameValue[];
+  // searchByKeys: string[];
+  placeHolder?: string;
+}
+
 @Component({
   selector: 'dfm-search-modal',
   template: `
@@ -18,10 +31,11 @@ import { DestroyableComponent } from './destroyable.component';
             #dropdown
             class="flex-1"
             size="md"
-            placeholder="Search by Staff Name"
-            [items]="filteredStaffs"
+            [placeholder]="placeholder"
+            [items]="filteredItems"
             [multiple]="true"
             [typeToSearch]="true"
+            [showDescription]="true"
             (searchInput)="handleSearch($event)"
           ></dfm-input-dropdown>
         </div>
@@ -49,24 +63,22 @@ import { DestroyableComponent } from './destroyable.component';
   ],
 })
 export class SearchModalComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public staffs: any[] = [];
+  public items: NameValue[] = [];
 
-  public filteredStaffs: any[] = [];
+  public filteredItems: NameValue[] = [];
+
+  public placeholder = 'Search';
 
   constructor(private dialogSvc: ModalService) {
     super();
   }
 
   public ngOnInit() {
-    this.dialogSvc.dialogData$
-      .pipe(
-        map((users) => users.map((user) => ({ name: `${user.firstname} ${user.lastname}`, value: user.id }))),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((users) => {
-        this.staffs = [...users];
-        this.filteredStaffs = [...users];
-      });
+    this.dialogSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data: SearchModalData) => {
+      this.items = [...data.items];
+      this.filteredItems = [...data.items];
+      this.placeholder = data?.placeHolder ?? this.placeholder;
+    });
   }
 
   public override ngOnDestroy() {
@@ -80,9 +92,9 @@ export class SearchModalComponent extends DestroyableComponent implements OnInit
   handleSearch(searchText: string) {
     console.log(searchText);
     if (searchText) {
-      this.filteredStaffs = [...this.staffs.filter((staffs) => staffs.name.toLowerCase().includes(searchText.toString()))];
+      this.filteredItems = [...this.items.filter((item) => item.key.toLowerCase().includes(searchText.toString()))];
     } else {
-      this.filteredStaffs = [...this.staffs];
+      this.filteredItems = [...this.items];
     }
   }
 }

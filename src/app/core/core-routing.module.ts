@@ -15,6 +15,10 @@ const routes: Routes = [
         path: 'staff',
         loadChildren: async () => (await import('../modules/staff/staff.module')).StaffModule,
       },
+      {
+        path: 'room',
+        loadChildren: async () => (await import('../modules/rooms/rooms.module')).RoomsModule,
+      },
     ],
   },
   {

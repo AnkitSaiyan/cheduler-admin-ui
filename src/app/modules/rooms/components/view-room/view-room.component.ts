@@ -1,42 +1,26 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
-import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { User } from '../../../../shared/models/user.model';
+import { TimeSlot, WeekdayModel, WeekWisePracticeAvailability } from '../../../../shared/models/weekday.model';
 import { RouterStateService } from '../../../../core/services/router-state.service';
-import { STAFF_ID } from '../../../../shared/utils/const';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { WeekdayModel } from '../../../../shared/models/weekday.model';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
-
-interface TimeSlot {
-  id?: number;
-  dayStart: Date;
-  dayEnd: Date;
-}
-
-interface WeekWisePracticeAvailability {
-  slotNo: number;
-  monday: TimeSlot;
-  tuesday: TimeSlot;
-  wednesday: TimeSlot;
-  thursday: TimeSlot;
-  friday: TimeSlot;
-  saturday: TimeSlot;
-  sunday: TimeSlot;
-}
+import { ROOM_ID } from '../../../../shared/utils/const';
+import { PracticeAvailability } from '../../../../shared/models/practice.model';
+import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { Room } from '../../../../shared/models/rooms.model';
+import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
 
 @Component({
-  selector: 'dfm-staff-view',
-  templateUrl: './staff-view.component.html',
-  styleUrls: ['./staff-view.component.scss'],
+  selector: 'dfm-view-room',
+  templateUrl: './view-room.component.html',
+  styleUrls: ['./view-room.component.scss'],
 })
-export class StaffViewComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public staffDetails$$ = new BehaviorSubject<User | undefined>(undefined);
+export class ViewRoomComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  public roomDetails$$ = new BehaviorSubject<Room | undefined>(undefined);
 
   public examIdToNameMap = new Map<number, string>();
 
@@ -53,7 +37,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
   ];
 
   constructor(
-    private staffApiSvc: StaffApiService,
+    private roomApiSvc: RoomsApiService,
     private routerStateSvc: RouterStateService,
     private examApiSvc: ExamApiService,
     private notificationSvc: NotificationDataService,
@@ -65,16 +49,16 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 
   public ngOnInit(): void {
     this.routerStateSvc
-      .listenForParamChange$(STAFF_ID)
+      .listenForParamChange$(ROOM_ID)
       .pipe(
-        switchMap((staffID) => this.staffApiSvc.getStaffByID(+staffID)),
+        switchMap((roomID) => this.roomApiSvc.getRoomByID(+roomID)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((staffDetails) => {
-        this.staffDetails$$.next(staffDetails);
+      .subscribe((roomDetails) => {
+        this.roomDetails$$.next(roomDetails);
 
-        if (staffDetails?.practiceAvailability?.length) {
-          this.practiceAvailability$$.next([...this.getPracticeAvailability(staffDetails.practiceAvailability)]);
+        if (roomDetails?.practiceAvailability?.length) {
+          this.practiceAvailability$$.next([...this.getPracticeAvailability(roomDetails.practiceAvailability)]);
         }
       });
 
@@ -147,17 +131,11 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     return practiceAvailability;
   }
 
-  // public deleteStaff(id: number) {
-  //   this.staffApiSvc.deleteStaff(id);
-  //   this.notificationSvc.showNotification('Staff deleted successfully');
-  //   this.router.navigate(['/', 'staff']);
-  // }
-
-  public deleteStaff(id: number) {
+  public deleteRoom(id: number) {
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Staff?',
+        bodyText: 'Are you sure you want to delete this Room?',
         confirmButtonText: 'Proceed',
         cancelButtonText: 'Cancel',
       } as DialogData,
@@ -169,9 +147,19 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
         take(1),
       )
       .subscribe(() => {
-        this.staffApiSvc.deleteStaff(id);
-        this.notificationSvc.showNotification('Staff deleted successfully');
-        this.router.navigate(['/', 'staff']);
+        this.roomApiSvc.deleteRoom(id);
+        this.notificationSvc.showNotification('Room deleted successfully');
+        this.router.navigate(['/', 'room']);
       });
+  }
+
+  public openEditRoomModal() {
+    this.modalSvc.open(AddRoomModalComponent, {
+      data: { edit: !!this.roomDetails$$.value?.id, roomDetails: { ...this.roomDetails$$.value } },
+      options: {
+        size: 'lg',
+        centered: true,
+      },
+    });
   }
 }
