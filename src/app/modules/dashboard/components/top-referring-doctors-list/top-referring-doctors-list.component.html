@@ -9,13 +9,17 @@
   </section>
 
   <section class="d-flex flex-column dfm-gap-8">
-    <div *ngFor="let doctorDetails of top10Doctors" class="d-flex dfm-gap-8 align-items-center">
+    <div *ngFor="let doctorDetails of top10Doctors" class="d-flex dfm-gap-12 align-items-center">
       <div class="rounded-circle avatar-container">
-        <img [src]="doctorDetails.avatar ? doctorDetails.avatar : 'assets/images/blank-avatar.png'"
+        <img *ngIf="doctorDetails.avatar" [src]="doctorDetails.avatar"
              class="rounded-circle border-1"
              alt="Doctor's avatar"
              width="32"
              height="32">
+
+        <div *ngIf="!doctorDetails.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+          {{ doctorDetails.name.toString()[0].toUpperCase() }}
+        </div>
       </div>
       <div class="text-sm d-flex flex-column">
         <span class="font-weight-medium">{{ doctorDetails.name }}</span>

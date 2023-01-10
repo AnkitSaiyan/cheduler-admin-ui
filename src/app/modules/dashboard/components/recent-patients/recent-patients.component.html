@@ -44,11 +44,15 @@
         <dfm-table-body-cell>
           <div class="d-flex dfm-gap-8 align-items-center">
             <div class="rounded-circle avatar-container">
-              <img [src]="item.avatar ? item.avatar : 'assets/images/blank-avatar.png'"
+              <img *ngIf="item.avatar" [src]="item.avatar"
                    class="rounded-circle border-light border-1"
                    alt="Doctor's avatar"
                    width="40"
                    height="40">
+
+              <div *ngIf="!item.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+                {{ item.patientName.toString()[0].toUpperCase() }}
+              </div>
             </div>
             <span>{{ item.patientName }}</span>
           </div>

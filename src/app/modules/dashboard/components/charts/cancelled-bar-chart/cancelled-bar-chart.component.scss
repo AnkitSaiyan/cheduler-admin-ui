@@ -2,14 +2,11 @@
   height: inherit;
 
   section:first-child {
-    div span {
-      color: var(--dfm-badge-warning-color);
-    }
   }
 
   section:last-child {
     flex: 1;
-    
+
     canvas {
       display: flex;
       align-self: end;

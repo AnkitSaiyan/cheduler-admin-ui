@@ -104,18 +104,11 @@
   </section>
 
   <section class="table-wrapper">
-    <dfm-table [items]="appointments">
+    <dfm-table [items]="appointments" [selectable]="true">
       <ng-template #headerRowTemplate>
-        <dfm-table-header-cell>
-          <dfm-checkbox size="sm"></dfm-checkbox>
-        </dfm-table-header-cell>
         <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
       </ng-template>
       <ng-template #bodyRowTemplate let-item>
-        <dfm-table-body-cell>
-          <dfm-checkbox label="" hint="" size="sm" [indeterminate]="allSelected()"
-                        (change)="handleChange($event)"></dfm-checkbox>
-        </dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.getStarted | date  : 'short' }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.end | date : 'mediumTime' }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.name }}</dfm-table-body-cell>
