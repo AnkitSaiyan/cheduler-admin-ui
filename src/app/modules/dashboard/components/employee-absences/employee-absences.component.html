@@ -1,11 +1,11 @@
 <div class="d-flex flex-column dfm-gap-8 dfm-p-16 employee-absences-wrapper">
   <section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-mb-16">
-    <div class="d-flex align-items-start">
-      <img src="../../../../../assets/icons/Drag.svg" alt="drag logo" class="pointer dfm-me-8">
-      <header class="font-weight-medium">
-        <span>Top 10 Examinations</span>
-      </header>
-    </div>
+    <header class="d-flex align-items-center dfm-gap-8">
+      <div class="dfm-button-gray-400">
+        <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+      </div>
+      <span class="font-weight-medium">Employee Absences ({{employeeAbsences.length}})</span>
+    </header>
   </section>
 
   <section class="d-flex dfm-gap-16 align-items-center">
@@ -19,18 +19,22 @@
     <dfm-button-icon
       color="tertiary-gray"
       size="sm"
-      icon="calendar-plus-02"
+      icon="calendar-plus-02" class="border border-gray rounded"
     ></dfm-button-icon>
   </section>
 
   <section class="d-flex flex-column dfm-gap-16">
     <div *ngFor="let employee of employeeAbsences" class="d-flex align-items-center dfm-gap-8">
       <div class="rounded-circle avatar-container">
-        <img [src]="employee.avatar ? employee.avatar : 'assets/images/blank-avatar.png'"
+        <img *ngIf="employee.avatar" [src]="employee.avatar"
              class="rounded-circle border-1"
              alt="Doctor's avatar"
              width="32"
              height="32">
+
+        <div *ngIf="!employee.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+          {{ employee.name.toString()[0].toUpperCase() }}
+        </div>
       </div>
 
       <div class="d-flex flex-column text-sm">

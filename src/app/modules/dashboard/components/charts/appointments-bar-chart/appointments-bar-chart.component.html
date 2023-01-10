@@ -3,14 +3,21 @@
     <header>
       <span class="dfm-text-main-400">Appointments</span>
     </header>
-    <h2>678</h2>
+    <h2 class="card-value-text">678</h2>
   </section>
 
-  <section class="d-flex flex-column justify-content-between align-items-end h-100 dfm-pt-16">
-    <header class="d-flex dfm-gap-8">
-      <img src="/src/assets/icons/arrow-narrow-up-right.svg" width="12">
-      <span class="text-success dfm-me-16">21.77%</span>
+  <section class="d-flex flex-column justify-content-between align-items-end h-100 dfm-pt-16 appointment-bar-tab-view">
+    <header class="d-flex align-items-center">
+      <div class="chart-arrow-up">
+        <dfm-button
+          color="link-gray"
+          size="sm"
+          trailingIcon="arrow-up"
+        ></dfm-button>
+      </div>
+      <span style="color:#12B76A;" class="font-weight-medium">21.77%</span>
     </header>
+
     <canvas baseChart
             width="120"
             [type]="'bar'" r
@@ -22,3 +29,4 @@
     </canvas>
   </section>
 </div>
+

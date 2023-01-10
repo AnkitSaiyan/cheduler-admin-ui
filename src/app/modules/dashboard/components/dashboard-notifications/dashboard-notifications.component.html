@@ -1,15 +1,15 @@
 <div class="notification-wrapper d-flex flex-column dfm-gap-8 dfm-p-16">
   <section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-mb-16">
-    <div class="d-flex align-items-start">
-      <img src="../../../../../assets/icons/Drag.svg" alt="drag logo" class="pointer dfm-me-8">
-      <header class="font-weight-medium">
-        <span>Notifications ({{ notifications.length }})</span>
-      </header>
-    </div>
+    <header class="d-flex align-items-center dfm-gap-8">
+      <div class="dfm-button-gray-400">
+        <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+      </div>
+      <span>Notifications ({{ notifications.length }})</span>
+    </header>
 
     <div>
       <dfm-button
-        size="sm"
+        size="md"
         color="secondary"
       >View All</dfm-button>
     </div>
@@ -17,7 +17,7 @@
 
   <section class="d-flex flex-column doctor-list-wrapper">
     <div *ngFor="let notification of notifications; let i = index;"
-         class="d-flex dfm-gap-16 justify-content-between text-sm dfm-py-16"
+         class="d-flex dfm-gap-16 justify-content-between text-sm dfm-py-16 notification-mobile-view"
          [ngClass]="{
             'dfm-py-16' : i > 0 && i < notifications.length - 1,
             'dfm-pb-16' : i === 0,

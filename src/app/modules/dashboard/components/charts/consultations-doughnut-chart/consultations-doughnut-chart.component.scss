@@ -30,3 +30,22 @@
     }
   }
 }
+
+// ======================Media Query for Mobile view=================
+@media (min-width:180px) and (max-width:680px) {
+  .percentage-text{
+    font-weight:600;
+  }
+  canvas{
+    width: 50% !important;
+    height: 50% !important;
+  }
+}
+
+// ======================Media Query for Tab view=================
+@media (min-width:680px) and (max-width:1060px) {
+  canvas{
+    width: 30% !important;
+    height: 30% !important;
+  }
+}

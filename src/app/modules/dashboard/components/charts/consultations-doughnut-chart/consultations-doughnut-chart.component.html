@@ -4,14 +4,20 @@
       <span class="font-weight-medium">Consultations</span>
     </header>
     <div class="d-flex dfm-gap-8">
-      <img src="/src/assets/icons/arrow-narrow-up-right.svg" width="12">
-      <span class="text-success">21.77%</span>
+      <div class="chart-arrow-up">
+        <dfm-button
+          color="link-gray"
+          size="sm"
+          trailingIcon="arrow-up"
+        ></dfm-button>
+      </div>
+      <span style="color:#12B76A;" class="font-weight-medium">21.77%</span>
     </div>
   </section>
 
   <section>
     <div class="position-absolute d-flex flex-column align-items-center flex-shrink-1">
-      <span class="font-weight-medium text-md">21</span>
+      <span class="font-weight-medium text-md fw-bold fs-4">21</span>
       <span class="text-sm dfm-text-main-400">Today</span>
     </div>
     <canvas baseChart
