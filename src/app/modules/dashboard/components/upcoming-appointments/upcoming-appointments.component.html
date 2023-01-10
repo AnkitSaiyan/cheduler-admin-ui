@@ -25,11 +25,15 @@
         </div>
         <div class="d-flex flex-row align-items-center">
           <div class="rounded-circle avatar-container">
-            <img [src]="appointment.avatar ? appointment.avatar : 'assets/images/blank-avatar.png'"
+            <img *ngIf="appointment.avatar" [src]="appointment.avatar"
                  class="rounded-circle border-light border-1"
                  alt="Doctor's avatar"
                  width="40"
                  height="40">
+
+            <div *ngIf="!appointment.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+              {{ appointment.name.toString()[0].toUpperCase() }}
+            </div>
           </div>
           <div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs">
             <span class="font-weight-medium"> {{ appointment.name | titlecase }} </span>

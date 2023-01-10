@@ -363,6 +363,32 @@ button:disabled {
   max-width: 144px;
 }
 
+.circle-gray-200-40 {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+  background: var(--bs-gray-200);
+}
+
+.chart-arrow-up {
+  transform: rotateZ(45deg) ;
+  dfm-button {
+    button {
+      color: #12B76A !important;
+    }
+  }
+}
+
+.chart-arrow-down {
+  transform: rotateZ(45deg) ;
+  dfm-button {
+    button {
+      color: red !important;
+    }
+  }
+}
+
 @media (max-width: 1440px) {
   dfm-notification {
     .dfm-notification {
