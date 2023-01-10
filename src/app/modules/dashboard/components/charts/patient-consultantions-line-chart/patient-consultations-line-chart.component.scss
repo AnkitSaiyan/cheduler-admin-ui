@@ -29,17 +29,21 @@
     }
   }
 }
-.overall-sort-icon-mv{
+
+.overall-sort-icon-mv {
   display: none;
 }
+
 // ======================Media Query for Mobile view=================
 @media (min-width:180px) and (max-width:680px) {
   .overall-sort-icon-mv{
     display: block;
   }
+
   .overall-sort-icon{
     display: none;
   }
+  
   .overall-patients-consultations{
     // width: 100%;
     display: flex;
