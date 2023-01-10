@@ -7,7 +7,7 @@ import { User, UserType } from '../../../../shared/models/user.model';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
-import { Weekday } from '../../../../shared/models/weekday';
+import { WeekdayModel } from '../../../../shared/models/weekday.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AddStaffRequestData } from '../../../../shared/models/staff.model';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
@@ -31,13 +31,13 @@ interface FormValues {
   practiceAvailabilityToggle?: boolean;
   practiceAvailability: {
     [key: string]: {
-      weekday: Weekday;
+      weekday: WeekdayModel;
       dayStart: TimeDistributed;
       dayEnd: TimeDistributed;
     }[];
   };
   examLists: number[];
-  selectedWeekday: Weekday;
+  selectedWeekday: WeekdayModel;
   info: string;
 }
 
@@ -57,7 +57,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
 
   public loading$$ = new BehaviorSubject(false);
 
-  public weekday = Weekday;
+  public weekday = WeekdayModel;
 
   public comingFromRoute = '';
 
@@ -167,7 +167,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
     }
   }
 
-  private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: TimeDistributed, dayEnd?: TimeDistributed): FormGroup {
+  private getPracticeAvailabilityFormGroup(weekday?: WeekdayModel, dayStart?: TimeDistributed, dayEnd?: TimeDistributed): FormGroup {
     const fg = this.fb.group({
       weekday: [weekday ?? this.formValues.selectedWeekday, []],
       dayStart: [dayStart, []],
@@ -221,7 +221,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
     const fg = this.addStaffForm.get('practiceAvailability') as FormGroup;
     const weekday = this.formValues.selectedWeekday;
     switch (weekday) {
-      case Weekday.ALL:
+      case WeekdayModel.ALL:
         Object.values(this.weekday).forEach((day) => {
           if (typeof day === 'number' && day > 0) {
             const fa = fg.get(day.toString()) as FormArray;
@@ -274,7 +274,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
     const { selectedWeekday } = this.formValues;
     let keys = Object.keys(this.formValues.practiceAvailability);
     if (!all) {
-      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL)];
+      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === WeekdayModel.ALL)];
     }
 
     if (keys?.length) {
@@ -293,7 +293,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
     return this.addStaffForm.value;
   }
 
-  public getFormArrayName(controlArray: FormArray): Weekday {
+  public getFormArrayName(controlArray: FormArray): WeekdayModel {
     return controlArray.value[0].weekday;
   }
 
@@ -302,7 +302,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
     this.addStaffForm.patchValue({ practiceAvailabilityToggle: toggle });
   }
 
-  public selectWeekday(selectedWeekday: Weekday): void {
+  public selectWeekday(selectedWeekday: WeekdayModel): void {
     if (this.formValues.selectedWeekday === selectedWeekday) {
       return;
     }
