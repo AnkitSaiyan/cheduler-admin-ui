@@ -1,0 +1,158 @@
+<div class="bg-white rounded-4 ad-rm-main-wrapper dfm-px-16">
+  <section class="modal-header">
+    <h5 class="modal-title">{{ modalData.edit ? 'Edit' : 'Add' }} Room</h5>
+    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="closeModal(false)"></dfm-button-icon>
+  </section>
+
+  <section class="modal-body dfm-pb-24 ad-rm-section2">
+    <form [formGroup]="addRoomForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+      <div class="d-flex dfm-gap-32 flex-wrap">
+        <dfm-input class="flex-1" size="md" placeholder="Enter room name" label="Room Name *" formControlName="name">
+        </dfm-input>
+
+        <dfm-input type="number" class="flex-1" size="md" placeholder="Enter room no." label="Room No. *" formControlName="roomNo">
+        </dfm-input>
+      </div>
+
+      <div class="d-flex dfm-gap-32 flex-wrap align-items-center">
+        <dfm-input class="flex-1" size="md" placeholder="Enter room description" label="Description *" formControlName="description">
+        </dfm-input>
+
+        <div class="d-flex flex-column dfm-gap-16 flex-1" style="width: 50%">
+          <span class="text-sm font-weight-medium dfm-text-main-700">Room Type *</span>
+          <div class="w-fit d-flex justify-content-between dfm-gap-24">
+            <dfm-radio-button class="font-weight-normal" label="Public" [checkedValue]="'public'" formControlName="type" (change)="handle($event)"></dfm-radio-button>
+            <dfm-radio-button class="font-weight-normal" label="Private" [checkedValue]="'private'" formControlName="type"></dfm-radio-button>
+          </div>
+        </div>
+<!--        <dfm-input class="flex-1" size="md" placeholder="Enter Room no." label="Room No. *" formControlName="roomNo">-->
+<!--        </dfm-input>-->
+
+      </div>
+
+      <div class="d-flex flex-column dfm-gap-8">
+        <span class="font-weight-medium">Add Availability Data</span>
+
+        <div class="w-fit">
+          <dfm-radio-button
+            label="Always"
+            hint="Corresponds to the opening hours of the practice"
+            size="sm"
+            [checkedValue]="false"
+            formControlName="practiceAvailabilityToggle"
+            (change)="toggleAvailabilityForm(false)"
+          ></dfm-radio-button>
+
+          <dfm-radio-button
+            label="Get Detailed"
+            hint="Use only for exceptions"
+            size="sm"
+            formControlName="practiceAvailabilityToggle"
+            [checkedValue]="true"
+            (change)="toggleAvailabilityForm(true)"
+          ></dfm-radio-button>
+        </div>
+      </div>
+
+      <div *ngIf="formValues.practiceAvailabilityToggle" class="d-flex flex-column dfm-gap-24">
+        <div class="d-flex flex-column dfm-gap-8">
+          <span class="text-sm font-weight-semi-bold">Choose Day</span>
+
+          <div class="d-flex dfm-gap-16 weekday-header ad-rm-weekdays-tab hide-scrollbar">
+            <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekdayEnum.ALL ? 'primary' : 'gray'"
+                       class="pointer"
+                       (click)="selectWeekday(weekdayEnum.ALL)">VIEW ALL
+            </dfm-badge>
+            <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekdayEnum.MON ? 'primary' : 'gray'"
+                       class="pointer"
+                       (click)="selectWeekday(weekdayEnum.MON)">MON
+            </dfm-badge>
+            <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekdayEnum.TUE ? 'primary' : 'gray'"
+                       class="pointer"
+                       (click)="selectWeekday(weekdayEnum.TUE)">TUE
+            </dfm-badge>
+            <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekdayEnum.WED ? 'primary' : 'gray'"
+                       class="pointer"
+                       (click)="selectWeekday(weekdayEnum.WED)">WED
+            </dfm-badge>
+            <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekdayEnum.THU ? 'primary' : 'gray'"
+                       class="pointer"
+                       (click)="selectWeekday(weekdayEnum.THU)">THU
+            </dfm-badge>
+            <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekdayEnum.FRI ? 'primary' : 'gray'"
+                       class="pointer"
+                       (click)="selectWeekday(weekdayEnum.FRI)">FRI
+            </dfm-badge>
+            <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekdayEnum.SAT ? 'primary' : 'gray'"
+                       class="pointer"
+                       (click)="selectWeekday(weekdayEnum.SAT)">SAT
+            </dfm-badge>
+            <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekdayEnum.SUN ? 'primary' : 'gray'"
+                       class="pointer"
+                       (click)="selectWeekday(weekdayEnum.SUN)">SUN
+            </dfm-badge>
+          </div>
+        </div>
+
+        <div formGroupName="practiceAvailability" class="d-flex flex-column dfm-gap-32">
+          <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray()"
+               [formArrayName]="getFormArrayName(controlArray)"
+               class="d-flex flex-column flex-wrap dfm-gap-16">
+              <span class="text-sm font-weight-semi-bold">
+                {{ getFormArrayName(controlArray) | weekdayToName }}
+              </span>
+
+            <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
+                 class="d-flex flex-column dfm-gap-16">
+              <div class="d-flex dfm-gap-16 align-items-end">
+                <div class="d-flex flex-column dfm-gap-8">
+                  <!--                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">-->
+
+                  <!--                    </dfm-input-dropdown>-->
+                  <label class="text-sm font-weight-medium">Start Time</label>
+                  <ngb-timepicker formControlName="dayStart" size="small" [spinners]="false"></ngb-timepicker>
+                  <span class="text-sm text-red"
+                        *ngIf="controls.get('dayStart')?.hasError('startTimeErr')">Start Time must be smaller.</span>
+                </div>
+
+                <div class="d-flex flex-column dfm-gap-8">
+                  <label class="text-sm font-weight-medium">End Time</label>
+                  <ngb-timepicker formControlName="dayEnd" size="small" [spinners]="false"></ngb-timepicker>
+                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>
+                </div>
+
+                <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary" class="dfm-mb-4"
+                                 (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
+              <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+              <span class="text-sm dfm-text-main-600">Click to add slot</span>
+            </div>
+          </div>
+        </div>
+
+        <!--          <div formArrayName="practiceAvailability" class="d-flex dfm-gap-16" *ngIf="!!formValues.practiceAvailability">-->
+        <!--            <div [formGroupName]="i" *ngFor="let control of practiceAvailabilityControls; let i = index" class="d-flex flex-column dfm-gap-8">-->
+        <!--              <span>{{ control.value?.weekday | weekdayToName  }}</span>-->
+
+        <!--              <div class="d-flex dfm-gap-16 flex-wrap">-->
+        <!--                <dfm-input size="sm" placeholder="Enter First Name" label="First Name *" formControlName="dayStart">-->
+        <!--                </dfm-input>-->
+
+        <!--                <dfm-input size="sm" placeholder="Enter Last Name" label="Last Name *" formControlName="dayEnd">-->
+        <!--                </dfm-input>-->
+        <!--              </div>-->
+        <!--            </div>-->
+        <!--          </div>-->
+      </div>
+    </form>
+  </section>
+
+  <section class="modal-footer">
+    <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
+    <dfm-button color="primary" size="md"
+                (click)="saveRoom()">{{ modalData.edit ? 'Save Changes' : 'Add Room' }}</dfm-button>
+  </section>
+</div>

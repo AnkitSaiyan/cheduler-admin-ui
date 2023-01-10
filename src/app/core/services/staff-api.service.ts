@@ -4,7 +4,7 @@ import { combineLatest, Observable, of, startWith, Subject, switchMap } from 'rx
 import { AvailabilityType, User, UserType } from '../../shared/models/user.model';
 import { Status } from '../../shared/models/status';
 import { AddStaffRequestData } from '../../shared/models/staff.model';
-import { Weekday } from '../../shared/models/weekday';
+import { WeekdayModel } from '../../shared/models/weekday.model';
 import { PracticeAvailability } from '../../shared/models/practice.model';
 
 @Injectable({
@@ -28,79 +28,79 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -122,7 +122,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.MON,
+          weekday: WeekdayModel.MON,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -144,7 +144,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -166,7 +166,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.SAT,
+          weekday: WeekdayModel.SAT,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -188,13 +188,13 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.THU,
+          weekday: WeekdayModel.THU,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -216,19 +216,19 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.SUN,
+          weekday: WeekdayModel.SUN,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -250,7 +250,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -272,7 +272,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -309,7 +309,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -331,7 +331,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.WED,
+          weekday: WeekdayModel.WED,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -353,7 +353,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.FRI,
+          weekday: WeekdayModel.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -375,7 +375,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: Weekday.THU,
+          weekday: WeekdayModel.THU,
           dayStart: new Date(),
           dayEnd: new Date(),
         },

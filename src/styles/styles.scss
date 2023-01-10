@@ -138,7 +138,7 @@ dfm-notification {
     //animation: fromRight 1s ease !important;
     top: 152px !important;
     right: 32px !important;
-    z-index: 1003 !important;
+    z-index: 2000 !important;
   }
 
   .dfm-icon-wrapper {
@@ -387,6 +387,13 @@ button:disabled {
       color: red !important;
     }
   }
+}
+
+.icon-24 {
+  width: 24px;
+  height: 24px;
+  font-size: 32px;
+  line-height: 24px;
 }
 
 @media (max-width: 1440px) {

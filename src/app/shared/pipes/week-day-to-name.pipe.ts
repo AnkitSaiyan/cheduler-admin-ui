@@ -1,25 +1,25 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Weekday } from '../models/weekday';
+import { WeekdayModel } from '../models/weekday.model';
 
 @Pipe({
   name: 'weekdayToName',
 })
 export class WeekDayToNamePipe implements PipeTransform {
-  public transform(weekday: Weekday): string {
+  public transform(weekday: WeekdayModel): string {
     switch (weekday) {
-      case Weekday.MON:
+      case WeekdayModel.MON:
         return 'Monday';
-      case Weekday.TUE:
+      case WeekdayModel.TUE:
         return 'Tuesday';
-      case Weekday.WED:
+      case WeekdayModel.WED:
         return 'Wednesday';
-      case Weekday.THU:
+      case WeekdayModel.THU:
         return 'Thursday';
-      case Weekday.FRI:
+      case WeekdayModel.FRI:
         return 'Friday';
-      case Weekday.SAT:
+      case WeekdayModel.SAT:
         return 'Saturday';
-      case Weekday.SUN:
+      case WeekdayModel.SUN:
         return 'Sunday';
       default:
         return '';
