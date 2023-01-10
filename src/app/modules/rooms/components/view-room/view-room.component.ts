@@ -159,6 +159,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
       options: {
         size: 'lg',
         centered: true,
+        backdropClass: 'modal-backdrop-remove-mv',
       },
     });
   }
