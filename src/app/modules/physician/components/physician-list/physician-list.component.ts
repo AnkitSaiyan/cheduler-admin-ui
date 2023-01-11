@@ -223,6 +223,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       options: {
         size: 'lg',
         centered: true,
+        backdropClass: 'modal-backdrop-remove-mv',
       },
     });
   }

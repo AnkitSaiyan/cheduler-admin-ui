@@ -1,7 +1,25 @@
 <div class="bg-white rounded-4 ad-ph-main-wrapper dfm-px-16">
   <section class="modal-header">
-    <h5 class="modal-title">{{ modalData.edit ? 'Edit' : 'Add' }} Room</h5>
-    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="closeModal(false)"></dfm-button-icon>
+    <h5 class="modal-title ad-ph-title-buttons">{{ modalData.edit ? 'Edit' : 'Add' }} Physician</h5>
+    <dfm-button-icon class="ad-ph-title-buttons" color="tertiary-gray" icon="x-close" (click)="closeModal(false)"></dfm-button-icon>
+
+    <div class="hidden dfm-gap-8 align-items-center ad-ph-title-buttons-mv">
+      <div class="rounded-circle overflow-hidden">
+        <dfm-button-icon
+          color="tertiary-gray"
+          size="sm"
+          icon="chevron-left"
+          (click)="closeModal(false)"
+        >
+        </dfm-button-icon>
+      </div>
+
+      <dfm-button
+        color="link"
+        size="lg"
+      > {{ modalData?.edit ? 'Edit' : 'Add' }} Physician
+      </dfm-button>
+    </div>
   </section>
 
   <section class="modal-body dfm-pb-24 ad-ph-section2">
@@ -40,7 +58,7 @@
     </form>
   </section>
 
-  <section class="modal-footer">
+  <section class="modal-footer ad-ph-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
     <dfm-button color="primary" size="md"
                 (click)="savePhysician()">{{ modalData.edit ? 'Save Changes' : 'Add Physician' }}</dfm-button>
