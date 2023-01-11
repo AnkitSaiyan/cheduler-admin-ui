@@ -419,6 +419,13 @@ button:disabled {
   transform: rotateZ(0deg);
 }
 
+.modal-backdrop-remove-mv {
+  @media (max-width: 680px) {
+    opacity: 0 !important;
+  }
+}
+
+
 @media (max-width: 1440px) {
   dfm-notification {
     .dfm-notification {
