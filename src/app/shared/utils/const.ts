@@ -8,3 +8,4 @@ export const PHYSICIAN_ID = 'physicianID';
 
 export const COMING_FROM_ROUTE = 'comingFromRoute';
 export const EDIT = 'edit';
+export const Statuses = Object.freeze(['inactive', 'active']);

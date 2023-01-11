@@ -198,6 +198,7 @@ export class PhysicianApiService {
           telephone: requestData.telephone,
           address: requestData.address,
           notifyDoctor: requestData.notifyDoctor,
+          status: Status.Active,
         };
       }
     } else {
@@ -211,6 +212,7 @@ export class PhysicianApiService {
         telephone: requestData.telephone,
         address: requestData.address,
         notifyDoctor: requestData.notifyDoctor,
+        status: Status.Active,
       });
     }
 
