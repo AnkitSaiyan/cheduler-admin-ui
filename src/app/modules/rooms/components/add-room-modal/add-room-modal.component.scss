@@ -10,7 +10,52 @@
 }
 
 @media (max-width: 680px) {
+  .ad-rm-main-wrapper {
+    position: fixed;
+    height: calc(100vh - 40px);
+    width: 100vw;
+    top: 40px;
+    left: 0;
+    border-radius: 0 !important;
+    background: var(--dfm-base-layout-bg) !important;
+
+    .ad-rm-title-buttons-mv {
+      display: flex;
+    }
+
+    .ad-rm-title-buttons {
+      display: none !important;
+    }
+
+    .ad-rm-section2 {
+      // viewport - nav bar height - modal header height - modal footer header - extra space
+      max-height: calc(100vh - 40px - 76px - 64px - 16px);
+    }
+
+    form {
+      .ad-rm-form-room-type {
+        width: 100% !important;
+      }
+
+      & > div {
+        flex-direction: column;
+      }
+    }
+  }
+
   .ad-rm-weekdays-tab {
     overflow-x: auto;
+  }
+
+  .ad-rm-footer-buttons {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+
+    dfm-button {
+      flex: 1;
+    }
   }
 }
