@@ -64,7 +64,7 @@ dfm-input-dropdown {
   background: white;
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
-  height: 40px;
+  //height: 40px;
   margin-top: 28px;
   margin-bottom: 40px;
 }
@@ -73,8 +73,14 @@ dfm-input-dropdown {
   background: white;
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
-  height: 40px;
+  //height: 40px;
   margin-bottom: 40px;
+}
+
+dfm-input-dropdown {
+  dfm-error {
+    position: absolute !important;
+  }
 }
 
 .dfm-button-icon-bg-transparent {
@@ -377,7 +383,8 @@ button:disabled {
 }
 
 .chart-arrow-up {
-  transform: rotateZ(45deg) ;
+  transform: rotateZ(45deg);
+
   dfm-button {
     button {
       color: #12B76A !important;
@@ -386,7 +393,8 @@ button:disabled {
 }
 
 .chart-arrow-down {
-  transform: rotateZ(45deg) ;
+  transform: rotateZ(45deg);
+
   dfm-button {
     button {
       color: red !important;
@@ -441,11 +449,11 @@ button:disabled {
   }
 
 
-  .carousel-control-prev, .carousel-control-next{
+  .carousel-control-prev, .carousel-control-next {
     display: none;
   }
 
-  .font-weight-mobile-view{
+  .font-weight-mobile-view {
     font-weight: 600;
   }
 }
