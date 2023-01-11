@@ -27,6 +27,10 @@ const routes: Routes = [
         path: 'site-management',
         loadChildren: async () => (await import('../modules/site-management/site-management.module')).SiteManagementModule,
       },
+      {
+        path: 'practice-hours',
+        loadChildren: async () => (await import('../modules/practice-hours/practice-hours.module')).PracticeHoursModule,
+      },
     ],
   },
   {
