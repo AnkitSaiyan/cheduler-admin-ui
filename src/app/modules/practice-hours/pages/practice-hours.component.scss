@@ -6,26 +6,11 @@
     max-height: calc(100vh - 48px - 24px - 40px - 16px - 16px);
     overflow-y: auto;
   }
-
-  .pr-hr-logo-container {
-    height: 52px;
-    width: 52px;
-    margin-top: 16px;
-    padding: 4px;
-
-    img {
-      object-fit: contain;
-    }
-  }
-
-  dfm-text-area {
-    max-width: 680px;
-  }
 }
 
 @media (max-width: 1440px) {
-  .pr-hr-main-wrapper {
-    max-height: calc(100vh - 36px - 24px - 40px - 16px - 16px);
+  .pr-hr-section2 {
+    max-height: calc(100vh - 36px - 24px - 40px - 16px);
   }
 }
 
@@ -51,30 +36,6 @@
       form {
         .pr-hr-weekdays-tab {
           overflow-x: auto;
-        }
-
-        .pr-hr-choose-file-container {
-          margin: 0;
-        }
-
-        dfm-text-area {
-          width: 100% !important;
-        }
-
-        & > div {
-          flex-direction: column;
-          width: 100%;
-
-          .pr-hr-heading-subheading {
-            flex-direction: column;
-            width: 100%;
-            gap: 16px;
-            margin-bottom: 8px;
-          }
-
-          dfm-input {
-            width: 100%;
-          }
         }
       }
     }
