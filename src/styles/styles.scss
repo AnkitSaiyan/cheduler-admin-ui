@@ -143,7 +143,7 @@ dfm-notification {
   .dfm-notification {
     //animation: fromRight 1s ease !important;
     top: 152px !important;
-    right: 32px !important;
+    right: 0 !important;
     z-index: 2000 !important;
 
     .dfm-notification-body {
@@ -485,7 +485,6 @@ button:disabled {
     .dfm-notification {
       margin: auto !important;
       top: 128px !important;
-      right: 4px !important;
     }
   }
 
