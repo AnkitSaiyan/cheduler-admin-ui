@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { distinctUntilChanged, filter, take, takeUntil } from 'rxjs';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NotificationType } from 'diflexmo-angular-design';
+import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
@@ -284,5 +284,28 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
         this.notificationSvc.showNotification(`Room ${this.modalData.edit ? 'updated' : 'added'} successfully`);
         this.closeModal(true);
       });
+  }
+
+  public getBadgeColor(weekday: WeekdayModel): BadgeColor {
+    if (this.formValues.selectedWeekday === weekday) {
+      return 'primary';
+    }
+
+    if (weekday === WeekdayModel.ALL) {
+      for (let i = 1; i <= 7; i++) {
+        if (!this.formValues.practiceAvailability[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
+          return 'gray';
+        }
+      }
+
+      return 'success';
+    }
+
+    const practiceHours = this.formValues.practiceAvailability[weekday.toString()];
+    if (practiceHours?.length && practiceHours.every((pa) => pa.dayEnd && pa.dayStart)) {
+      return 'success';
+    }
+
+    return 'gray';
   }
 }
