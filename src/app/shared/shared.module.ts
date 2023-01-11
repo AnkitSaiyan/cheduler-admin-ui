@@ -14,6 +14,7 @@ import { InputDropdownWrapperComponent } from './components/input-dropdown-wrapp
 import { ConfirmActionModalComponent } from './components/confirm-action-modal.component';
 import { TimeInIntervalPipe } from './pipes/time-in-interval.pipe';
 import { SearchModalComponent } from './components/search-modal.component';
+import { DfmSpinnerComponent } from './components/dfm-spinner.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { SearchModalComponent } from './components/search-modal.component';
     ConfirmActionModalComponent,
     TimeInIntervalPipe,
     SearchModalComponent,
+    DfmSpinnerComponent,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule],
   exports: [
@@ -43,6 +45,7 @@ import { SearchModalComponent } from './components/search-modal.component';
     ConfirmActionModalComponent,
     TimeInIntervalPipe,
     SearchModalComponent,
+    DfmSpinnerComponent,
   ],
 })
 export class SharedModule {}

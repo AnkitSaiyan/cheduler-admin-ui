@@ -188,6 +188,40 @@ dfm-notification {
   }
 }
 
+.input-type-file-primary-md {
+  background: var(--dfm-primary);
+  color: var(--dfm-secondary);
+  border-radius: 8px;
+  text-align: center;
+  padding: 8px 16px;
+  cursor: pointer;
+
+  &:hover {
+    color: white;
+  }
+
+  &:active {
+    border: 1px solid var(--dfm-primary);
+  }
+}
+
+.input-type-file-secondary-md {
+  background: var(--dfm-secondary);
+  color: var(--dfm-primary);
+  border-radius: 8px;
+  text-align: center;
+  padding: 8px 16px;
+  cursor: pointer;
+
+  &:hover {
+    color: black;
+  }
+
+  &:active {
+    border: 1px solid var(--dfm-secondary);
+  }
+}
+
 //@keyframes fromRight {
 //  0% {
 //    right: -128px !important;
@@ -462,6 +496,14 @@ button:disabled {
 
   .font-weight-mobile-view {
     font-weight: 600;
+  }
+
+  .st-mg-text-area {
+    dfm-text-area {
+      text-area {
+        height: 240px !important;
+      }
+    }
   }
 }
 
