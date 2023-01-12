@@ -25,3 +25,5 @@ export interface WeekWisePracticeAvailability {
   saturday: TimeSlot;
   sunday: TimeSlot;
 }
+
+export declare type TimeDurationType = 'Minutes' | 'Hours' | 'Days';

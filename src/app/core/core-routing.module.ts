@@ -23,6 +23,10 @@ const routes: Routes = [
         path: 'physician',
         loadChildren: async () => (await import('../modules/physician/physician.module')).PhysicianModule,
       },
+      {
+        path: 'site-management',
+        loadChildren: async () => (await import('../modules/site-management/site-management.module')).SiteManagementModule,
+      },
     ],
   },
   {
