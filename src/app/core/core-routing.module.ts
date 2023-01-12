@@ -31,17 +31,17 @@ const routes: Routes = [
         path: 'practice-hours',
         loadChildren: async () => (await import('../modules/practice-hours/practice-hours.module')).PracticeHoursModule,
       },
+      {
+        path: '',
+        redirectTo: '/dashboard',
+        pathMatch: 'full',
+      },
+      {
+        path: '**',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
     ],
-  },
-  {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
-  },
-  {
-    path: '*',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
   },
 ];
 
