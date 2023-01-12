@@ -19,10 +19,19 @@ const routes: Routes = [
         path: 'room',
         loadChildren: async () => (await import('../modules/rooms/rooms.module')).RoomsModule,
       },
+      {
+        path: 'physician',
+        loadChildren: async () => (await import('../modules/physician/physician.module')).PhysicianModule,
+      },
     ],
   },
   {
     path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full',
+  },
+  {
+    path: '*',
     redirectTo: 'dashboard',
     pathMatch: 'full',
   },
