@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, distinctUntilChanged, filter, map, switchMap, takeUntil, tap } from 'rxjs';
-import { NotificationType } from 'diflexmo-angular-design';
+import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User, UserType } from '../../../../shared/models/user.model';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -57,7 +57,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
 
   public loading$$ = new BehaviorSubject(false);
 
-  public weekday = WeekdayModel;
+  public weekdayEnum = WeekdayModel;
 
   public comingFromRoute = '';
 
@@ -154,7 +154,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
       userType: [staffDetails?.userType, [Validators.required]],
       info: [staffDetails?.info, []],
       examLists: [staffDetails?.examList, [Validators.required]],
-      selectedWeekday: [this.weekday.ALL, []],
+      selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceAvailabilityToggle: [!!staffDetails?.practiceAvailability?.length, []],
       practiceAvailability: this.fb.group({}),
     });
@@ -222,7 +222,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
     const weekday = this.formValues.selectedWeekday;
     switch (weekday) {
       case WeekdayModel.ALL:
-        Object.values(this.weekday).forEach((day) => {
+        Object.values(this.weekdayEnum).forEach((day) => {
           if (typeof day === 'number' && day > 0) {
             const fa = fg.get(day.toString()) as FormArray;
             if (!fa || !fa.length) {
@@ -385,5 +385,28 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
         console.log(route);
         this.router.navigate([route], { relativeTo: this.route });
       });
+  }
+
+  public getBadgeColor(weekday: WeekdayModel): BadgeColor {
+    if (this.formValues.selectedWeekday === weekday) {
+      return 'primary';
+    }
+
+    if (weekday === WeekdayModel.ALL) {
+      for (let i = 1; i <= 7; i++) {
+        if (!this.formValues.practiceAvailability[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
+          return 'gray';
+        }
+      }
+
+      return 'success';
+    }
+
+    const practiceHours = this.formValues.practiceAvailability[weekday.toString()];
+    if (practiceHours?.length && practiceHours.every((pa) => pa.dayEnd && pa.dayStart)) {
+      return 'success';
+    }
+
+    return 'gray';
   }
 }
