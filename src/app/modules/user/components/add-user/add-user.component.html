@@ -1,7 +1,8 @@
 <div class="bg-white rounded-4 ad-us-main-wrapper dfm-px-16">
   <section class="modal-header">
     <h5 class="modal-title ad-us-title-buttons">{{ modalData.edit ? 'Edit' : 'Add' }} User</h5>
-    <dfm-button-icon class="ad-us-title-buttons" color="tertiary-gray" icon="x-close" (click)="closeModal(false)"></dfm-button-icon>
+    <dfm-button-icon class="ad-us-title-buttons" color="tertiary-gray" icon="x-close"
+                     (click)="closeModal(false)"></dfm-button-icon>
 
     <div class="hidden dfm-gap-8 align-items-center ad-us-title-buttons-mv">
       <div class="rounded-circle overflow-hidden">
@@ -27,15 +28,18 @@
       <div class="d-flex flex-column dfm-gap-16 flex-1">
         <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Select User Type *</span>
         <div class="w-fit d-flex justify-content-between dfm-gap-24">
-          <dfm-radio-button class="font-weight-normal" label="Scheduler User" [checkedValue]="userType.Scheduler"
+          <dfm-radio-button class="font-weight-normal" label="Scheduler User"
+                            [checkedValue]="userType.Scheduler"
                             formControlName="userType"></dfm-radio-button>
-          <dfm-radio-button class="font-weight-normal" label="General user" [checkedValue]="userType.General"
+          <dfm-radio-button class="font-weight-normal" label="General user"
+                            [checkedValue]="userType.General"
                             formControlName="userType"></dfm-radio-button>
         </div>
       </div>
 
       <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
-        <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="First Name *" formControlName="firstname">
+        <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="First Name *"
+                   formControlName="firstname">
         </dfm-input>
 
         <dfm-input class="flex-1" size="md" placeholder="Enter last name" label="Last Name" formControlName="lastname">
@@ -46,15 +50,17 @@
         <dfm-input class="flex-1" size="md" placeholder="Enter email" label="Email" formControlName="email">
         </dfm-input>
 
-        <dfm-input type="number" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone" formControlName="telephone">
+        <dfm-input type="number" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone"
+                   formControlName="telephone">
         </dfm-input>
       </div>
 
-      <div class="d-flex dfm-gap-32 flex-wrap" *ngIf="formValues.userType === userType.Scheduler">
+      <div class="d-flex dfm-gap-32 flex-wrap"
+           *ngIf="modalData.edit ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler">
         <dfm-input class="flex-1" size="md" placeholder="Enter GSM" label="GSM" formControlName="gsm">
         </dfm-input>
 
-        <dfm-text-area label="Address" placeholder="Enter address" formControlName="address"></dfm-text-area>
+        <dfm-text-area class="flex-1" label="Address" placeholder="Enter address" formControlName="address"></dfm-text-area>
       </div>
     </form>
   </section>
