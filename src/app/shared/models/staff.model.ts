@@ -5,11 +5,12 @@ export interface AddStaffRequestData {
   firstname: string;
   lastname: string;
   email: string;
-  telephone: string;
+  telephone: string | number;
   address?: string;
   userType: UserType;
   practiceAvailability?: PracticeAvailability[];
-  examLists: number[];
+  examLists?: number[];
+  gsm?: string;
   info?: string;
   id?: number;
 }

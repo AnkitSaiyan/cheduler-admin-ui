@@ -407,17 +407,17 @@ export class StaffApiService {
           userType: requestData.userType,
           email: requestData.email,
           telephone: requestData.telephone,
-          address: requestData?.address ?? '',
+          address: requestData?.address ?? this.staffLists[index].address,
           status: Status.Active,
           availabilityType: AvailabilityType.Available,
           deletedBy: null,
-          gsm: '',
-          examList: requestData.examLists,
-          practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
-          info: requestData?.info ?? '',
+          gsm: requestData.gsm ?? this.staffLists[index].gsm,
+          examList: requestData?.examLists ?? this.staffLists[index].examList,
+          practiceAvailability: requestData.practiceAvailability ?? (this.staffLists[index].practiceAvailability as PracticeAvailability[]),
+          info: requestData?.info ?? this.staffLists[index].info,
         };
 
-        console.log(requestData.practiceAvailability);
+        console.log(requestData);
       }
     } else {
       this.staffLists.push({
@@ -431,8 +431,8 @@ export class StaffApiService {
         status: Status.Active,
         availabilityType: AvailabilityType.Available,
         deletedBy: null,
-        gsm: '',
-        examList: requestData.examLists,
+        gsm: requestData.gsm ?? '',
+        examList: requestData?.examLists ?? [],
         practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
         info: requestData?.info ?? '',
       });
@@ -477,6 +477,8 @@ export class StaffApiService {
   }
 
   public getStaffByID(staffID: number): Observable<User | undefined> {
-    return of(this.staffLists.find((staff) => +staff.id === +staffID));
+    return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
+      switchMap(() => of(this.staffLists.find((staff) => +staff.id === +staffID))),
+    );
   }
 }
