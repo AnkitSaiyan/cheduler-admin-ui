@@ -39,20 +39,10 @@
         }
       }
     }
-  }
 
-  .pr-hr-footer-buttons {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    z-index: 1000;
-
-    dfm-button {
-      flex: 1;
-      height: 44px;
+    .pr-hr-save-changes-btn-mv {
+      display: flex;
+      margin-left: auto;
     }
   }
 }
