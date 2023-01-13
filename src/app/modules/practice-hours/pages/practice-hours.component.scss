@@ -6,11 +6,23 @@
     max-height: calc(100vh - 48px - 24px - 40px - 16px - 16px);
     overflow-y: auto;
   }
+
+  .pr-hr-form-fields {
+    max-height: 672px;
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 1440px) {
   .pr-hr-section2 {
     max-height: calc(100vh - 36px - 24px - 40px - 16px);
+  }
+}
+
+@media (max-width: 720px) {
+  .pr-hr-form-fields {
+    max-height: 100% !important;
+    flex-wrap: nowrap !important;
   }
 }
 
