@@ -299,6 +299,42 @@
     {
       "iconName": "question",
       "iconPath": "/assets/icons/question.svg"
+    },
+    {
+      "iconName": "building-01",
+      "iconPath": "/assets/icons/building-01.svg"
+    },
+    {
+      "iconName": "clock",
+      "iconPath": "/assets/icons/clock.svg"
+    },
+    {
+      "iconName": "dots-horizontal",
+      "iconPath": "/assets/icons/dots-horizontal.svg"
+    },
+    {
+      "iconName": "dots-vertical",
+      "iconPath": "/assets/icons/dots-vertical.svg"
+    },
+    {
+      "iconName": "mail-01",
+      "iconPath": "/assets/icons/mail-01.svg"
+    },
+    {
+      "iconName": "marker-pin-01",
+      "iconPath": "/assets/icons/marker-pin-01.svg"
+    },
+    {
+      "iconName": "medical-circle",
+      "iconPath": "/assets/icons/medical-circle.svg"
+    },
+    {
+      "iconName": "user-plus-01",
+      "iconPath": "/assets/icons/user-plus-01.svg"
+    },
+    {
+      "iconName": "user-x-01",
+      "iconPath": "/assets/icons/user-x-01.svg"
     }
   ],
   "customIcons": []
