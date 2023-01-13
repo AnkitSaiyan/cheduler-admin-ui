@@ -58,7 +58,13 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
   private createForm(userDetails?: User | undefined): void {
     this.addUserForm = this.fb.group({
-      userType: [userDetails?.userType ?? UserType.General, [Validators.required]],
+      userType: [
+        {
+          value: userDetails?.userType ?? UserType.Scheduler,
+          disabled: this.modalData.edit,
+        },
+        [Validators.required],
+      ],
       firstname: [userDetails?.firstname ?? '', [Validators.required]],
       lastname: [userDetails?.lastname ?? '', [Validators.required]],
       email: [userDetails?.email ?? '', []],
@@ -91,6 +97,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
         ...addUserReqData,
         gsm,
         address,
+        ...(this.modalData.edit ? { userType: this.modalData.userDetails.userType } : {}),
       };
     }
 
