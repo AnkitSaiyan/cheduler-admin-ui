@@ -81,6 +81,10 @@ dfm-input-dropdown {
   dfm-error {
     position: absolute !important;
   }
+
+  input {
+    padding-right: 14px !important;
+  }
 }
 
 .dfm-button-icon-bg-transparent {
@@ -88,6 +92,13 @@ dfm-input-dropdown {
     button {
       background: transparent !important;
     }
+  }
+}
+
+dfm-input-dropdown {
+  .dropdown-menu {
+    max-height: 256px !important;
+    overflow-y: auto;
   }
 }
 

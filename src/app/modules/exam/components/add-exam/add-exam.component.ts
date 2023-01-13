@@ -71,6 +71,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     radiologists: [],
     nursing: [],
     secretaries: [],
+    mandatory: [],
   });
 
   public availableRooms$$ = new BehaviorSubject<RoomsGroupedByType>({ private: [], public: [] });
@@ -166,15 +167,22 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       .pipe(take(1))
       .subscribe((roomTypes) => (this.roomTypes = [...roomTypes]));
 
-    this.roomApiSvc.availableRoomsGroupedByType$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
+    this.roomApiSvc.roomsGroupedByType$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
       this.availableRooms$$.next(rooms);
     });
 
     this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
-      const staffGroupedByType: StaffsGroupedByType = { radiologists: [], assistants: [], nursing: [], secretaries: [] };
+      const staffGroupedByType: StaffsGroupedByType = {
+        radiologists: [],
+        assistants: [],
+        nursing: [],
+        secretaries: [],
+        mandatory: [],
+      };
 
       staffs.forEach((staff) => {
         const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff.id };
+        staffGroupedByType.mandatory.push(nameValue);
         switch (staff.userType) {
           case UserType.Assistant:
             staffGroupedByType.assistants.push(nameValue);
