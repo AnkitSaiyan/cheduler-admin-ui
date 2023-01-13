@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Directive, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,7 +12,6 @@ import { DownloadService } from '../../../../core/services/download.service';
 import { Statuses } from '../../../../shared/utils/const';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { AddExamComponent } from '../add-exam/add-exam.component';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { Exam } from '../../../../shared/models/exam.model';
 
@@ -22,7 +21,12 @@ import { Exam } from '../../../../shared/models/exam.model';
   styleUrls: ['./exam-list.component.scss'],
 })
 export class ExamListComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
+  @HostListener('document:click', ['$event']) onClick() {
+    this.toggleMenu(true);
+  }
+
+  @ViewChild('showMoreButtonIcon')
+  private showMoreBtn!: ElementRef;
 
   public searchControl = new FormControl('', []);
 
@@ -172,7 +176,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public toggleMenu(reset = false) {
-    const icon = document.querySelector('.ph-li-plus-btn-icon');
+    const icon = document.querySelector('.ex-li-plus-btn-icon');
     if (icon) {
       if (reset) {
         icon.classList.add('rotate-z-0');

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,6 +21,10 @@ import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.componen
   styleUrls: ['./room-list.component.scss'],
 })
 export class RoomListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  @HostListener('document:click', ['$event']) onClick() {
+    this.toggleMenu(true);
+  }
+
   @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
 
   public searchControl = new FormControl('', []);
@@ -168,7 +172,8 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public toggleMenu(reset = false) {
-    const icon = document.querySelector('.sf-li-plus-btn-icon');
+    const icon = document.querySelector('.rm-li-plus-btn-icon');
+
     if (icon) {
       if (reset) {
         icon.classList.add('rotate-z-0');

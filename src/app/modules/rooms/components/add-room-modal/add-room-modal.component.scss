@@ -19,6 +19,10 @@
     max-height: 100% !important;
     flex-wrap: nowrap !important;
   }
+
+  .ad-rm-weekdays-tab {
+    overflow-x: auto;
+  }
 }
 
 @media (max-width: 680px) {
