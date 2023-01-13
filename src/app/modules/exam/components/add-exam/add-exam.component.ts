@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
+import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
 import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, switchMap, take, takeUntil } from 'rxjs';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -96,15 +96,15 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   public count: any[] = [
     {
       value: '1',
-      name: 1,
+      name: '1',
     },
     {
       value: '2',
-      name: 2,
+      name: '2',
     },
     {
       value: '3',
-      name: 3,
+      name: '3',
     },
   ];
 
@@ -597,5 +597,12 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
 
     return 'gray';
+  }
+
+  handleClick(uncombinableDropdown: InputDropdownComponent) {
+    console.log(uncombinableDropdown as any);
+    if (!(uncombinableDropdown as any).isDropdownClosed) {
+      uncombinableDropdown.clickout();
+    }
   }
 }

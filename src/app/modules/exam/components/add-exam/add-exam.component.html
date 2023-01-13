@@ -113,7 +113,7 @@
             <dfm-input-dropdown #uncombinableDropdown size="md" [multiple]="true"
                                 [placeholder]="!!uncombinableDropdown.value?.length ? uncombinableDropdown.value.length + ' Selected' : 'Select Exam'"
                                 label="Uncombinable" [items]="exams"
-                                formControlName="uncombinables">
+                                formControlName="uncombinables" (click)="handleClick(uncombinableDropdown)">
             </dfm-input-dropdown>
           </div>
 
