@@ -1,0 +1,120 @@
+.ad-ex-action-buttons {
+  display: flex;
+}
+
+section.ad-ex-section2 {
+  // header height - content padding - section 1 height - row gap - maintaining bottom gap
+  max-height: calc(100vh - 64px - 24px - 36px - 24px - 24px);
+
+  .ad-ex-name {
+    width: 512px;
+  }
+
+  .ad-ex-name-expense-room > dfm-input {
+    margin-right: 64px;
+  }
+
+  .ad-ex-general-staff {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 16px 24px;
+
+    .ad-ex-count-dropdown {
+      width: 128px;
+    }
+  }
+
+  //.ad-ex-staff-dropdown, .ad-ex-exam-dropdown {
+  //  max-width: 504px;
+  //}
+
+  .ad-ex-info-input {
+    max-width: 70%;
+  }
+}
+
+@media (max-width: 1440px) {
+  section.ad-ex-section2 {
+    // header height - content padding - section 1 height - row gap - extra gap
+    max-height: calc(100vh - 36px - 24px - 36px - 24px - 24px);
+  }
+}
+
+@media (max-width: 680px) {
+  .ad-ex-main-wrapper {
+    padding: 0;
+  }
+
+  .ad-ex-title-buttons {
+    display: none !important;
+  }
+
+  .ad-ex-title-buttons-mv {
+    display: flex;
+    margin-bottom: 16px;
+  }
+
+  .ad-ex-name-expense-room > dfm-input {
+    margin-right: 0!important;
+  }
+
+  .ad-ex-form-exam-info {
+    & > div {
+      flex-direction: column;
+    }
+  }
+
+  .ad-ex-general-staff {
+    display: flex !important;
+    flex-direction: column !important;
+
+    .ad-ex-general-staff-dropdown {
+      flex: 1;
+    }
+  }
+
+  .ad-ex-duration {
+    flex: 1;
+  }
+
+  .ad-ex-action-buttons {
+    background: white;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    column-gap: 16px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    z-index: 10000;
+
+    & > dfm-button {
+      height: 44px;
+      flex: 1;
+    }
+  }
+
+  section.ad-ex-section2 {
+    // header height - content padding - section 1 height - row gap - bottom nav bar height - extra gap
+    max-height: calc(100vh - 36px - 24px - 36px - 24px - 65px - 24px);
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+    border-radius: 0%;
+
+    .ad-ex-staff-dropdown, .ad-ex-exam-dropdown, .ad-ex-info-input, dfm-input {
+      flex: 1;
+      max-width: 100%;
+      min-width: 100%;
+    }
+
+    form {
+      padding: 0;
+    }
+
+    .ad-ex-weekdays-tab {
+      overflow-x: auto;
+    }
+  }
+}

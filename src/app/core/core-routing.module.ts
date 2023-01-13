@@ -36,6 +36,10 @@ const routes: Routes = [
         loadChildren: async () => (await import('../modules/user/user.module')).UserModule,
       },
       {
+        path: 'exam',
+        loadChildren: async () => (await import('../modules/exam/exam.module')).ExamModule,
+      },
+      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full',

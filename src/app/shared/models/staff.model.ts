@@ -1,5 +1,6 @@
 import { UserType } from './user.model';
 import { PracticeAvailability } from './practice.model';
+import { NameValue } from '../components/search-modal.component';
 
 export interface AddStaffRequestData {
   firstname: string;
@@ -13,4 +14,11 @@ export interface AddStaffRequestData {
   gsm?: string;
   info?: string;
   id?: number;
+}
+
+export interface StaffsGroupedByType {
+  radiologists: NameValue[];
+  assistants: NameValue[];
+  nursing: NameValue[];
+  secretaries: NameValue[];
 }
