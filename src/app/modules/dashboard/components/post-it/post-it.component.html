@@ -24,6 +24,7 @@
       placeholder="Search post it" class="post-search-it-placeholder"
       icon="search-sm"
     ></dfm-input>
+
     <div class="d-flex flex-row justify-content-between dfm-gap-16">
       <dfm-input
         size="md"
@@ -32,9 +33,9 @@
       ></dfm-input>
 
       <dfm-button-icon
-        color="tertiary-gray"
-        size="sm"
-        icon="copy-01"
+        color="secondary-gray"
+        size="md"
+        icon="copy-03"
       ></dfm-button-icon>
 
       <dfm-button
@@ -52,7 +53,7 @@
       <mdb-carousel-item *ngFor="let post of posts; let i = index" class="h-100" [interval]="5000">
         <div class="d-flex flex-column dfm-gap-16 dfm-px-24 dfm-pt-16 dfm-pb-24 justify-content-between rounded-3 shadow-sm post-it-card"
              [ngStyle]="{ 'background': i % 2 === 0 ? '#EBE9FE' : '#FDF8F2' }">
-          <header>
+          <header class="overflow-y-auto hide-scrollbar">
             <div class="d-flex flex-column dfm-gap-16 h-100">
               <div class="d-flex dfm-gap-16 align-items-center justify-content-between">
                 <span class="font-weight-medium"

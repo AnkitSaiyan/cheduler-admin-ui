@@ -12,6 +12,14 @@
 
 // ======================Media Query for Mobile view=================
 @media (min-width:180px) and (max-width:680px) {
+  .rec-pt-buttons {
+    display: none !important;
+  }
+
+  .rec-pt-mv-buttons {
+    display: flex !important;
+  }
+
   .search-patient-placeholder {
     display: none;
   }

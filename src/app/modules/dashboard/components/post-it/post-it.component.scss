@@ -24,10 +24,6 @@
   margin-left: 64px;
   height: inherit;
 
-  header {
-    overflow-y: auto;
-  }
-
   .avatar-container {
     object-fit: contain;
     border: 1px solid var(--bs-gray-400)

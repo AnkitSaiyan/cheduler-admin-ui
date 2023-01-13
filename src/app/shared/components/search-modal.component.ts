@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, takeUntil } from 'rxjs';
 import { InputDropdownComponent } from 'diflexmo-angular-design';
+import { FormControl } from '@angular/forms';
 import { ModalService } from '../../core/services/modal.service';
 import { DestroyableComponent } from './destroyable.component';
 
@@ -32,7 +33,7 @@ export interface SearchModalData {
             class="flex-1"
             size="md"
             [placeholder]="placeholder"
-            [items]="filteredItems"
+            [items]="(filteredItems$$ | async) ?? []"
             [multiple]="true"
             [typeToSearch]="true"
             [showDescription]="true"
@@ -63,11 +64,13 @@ export interface SearchModalData {
   ],
 })
 export class SearchModalComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public items: NameValue[] = [];
+  public items$$ = new BehaviorSubject<any[]>([]);
 
-  public filteredItems: NameValue[] = [];
+  public filteredItems$$ = new BehaviorSubject<NameValue[]>([]);
 
   public placeholder = 'Search';
+
+  // public searchControl = new FormControl('', []);
 
   constructor(private dialogSvc: ModalService) {
     super();
@@ -75,10 +78,14 @@ export class SearchModalComponent extends DestroyableComponent implements OnInit
 
   public ngOnInit() {
     this.dialogSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data: SearchModalData) => {
-      this.items = [...data.items];
-      this.filteredItems = [...data.items];
+      this.items$$.next([...data.items]);
+      this.filteredItems$$.next([...data.items]);
       this.placeholder = data?.placeHolder ?? this.placeholder;
     });
+    //
+    // this.searchControl.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe((searchText) => {
+    //   this.handleSearch(searchText?.toString()?.toLowerCase());
+    // });
   }
 
   public override ngOnDestroy() {
@@ -89,12 +96,12 @@ export class SearchModalComponent extends DestroyableComponent implements OnInit
     this.dialogSvc.close(dropdown.selectedItems);
   }
 
-  handleSearch(searchText: string) {
+  handleSearch(searchText: string | undefined) {
     console.log(searchText);
-    if (searchText) {
-      this.filteredItems = [...this.items.filter((item) => item?.key?.toLowerCase()?.includes(searchText.toString()))];
+    if (searchText?.toString()?.toLowerCase()) {
+      this.filteredItems$$.next([...this.items$$.value.filter((item) => item?.key?.toLowerCase()?.includes(searchText))]);
     } else {
-      this.filteredItems = [...this.items];
+      this.filteredItems$$.next([...this.items$$.value]);
     }
   }
 }
