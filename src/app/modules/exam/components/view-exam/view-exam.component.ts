@@ -183,7 +183,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
       data: {
         titleText: 'Confirmation',
         bodyText: 'Are you sure you want to delete this Exam?',
-        confirmButtonText: 'Proceed',
+        confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
     });
