@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { map, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { InputDropdownComponent } from 'diflexmo-angular-design';
 import { ModalService } from '../../core/services/modal.service';
 import { DestroyableComponent } from './destroyable.component';
 
 export interface NameValue {
   name: string; // display name
-  key: string; // search key
+  key?: string; // search key
   value: any; // value to be used in background
   description?: string;
 }
@@ -92,7 +92,7 @@ export class SearchModalComponent extends DestroyableComponent implements OnInit
   handleSearch(searchText: string) {
     console.log(searchText);
     if (searchText) {
-      this.filteredItems = [...this.items.filter((item) => item.key.toLowerCase().includes(searchText.toString()))];
+      this.filteredItems = [...this.items.filter((item) => item?.key?.toLowerCase()?.includes(searchText.toString()))];
     } else {
       this.filteredItems = [...this.items];
     }

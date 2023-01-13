@@ -31,3 +31,8 @@ export interface AddRoomRequestData {
   practiceAvailability?: PracticeAvailability[];
   id?: number;
 }
+
+export interface RoomsGroupedByType {
+  public: Room[];
+  private: Room[];
+}
