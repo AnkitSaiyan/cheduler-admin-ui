@@ -198,7 +198,7 @@ export class PhysicianApiService {
           telephone: requestData.telephone,
           address: requestData.address,
           notifyDoctor: requestData.notifyDoctor,
-          status: Status.Active,
+          status: this.physicians[index].status,
         };
       }
     } else {
