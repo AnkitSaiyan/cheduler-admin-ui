@@ -21,4 +21,5 @@ export interface StaffsGroupedByType {
   assistants: NameValue[];
   nursing: NameValue[];
   secretaries: NameValue[];
+  mandatory: NameValue[];
 }

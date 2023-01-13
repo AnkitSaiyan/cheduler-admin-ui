@@ -232,17 +232,15 @@ export class RoomsApiService {
     return of(this.roomTypes);
   }
 
-  public get availableRoomsGroupedByType$(): Observable<RoomsGroupedByType> {
+  public get roomsGroupedByType$(): Observable<RoomsGroupedByType> {
     return this.rooms$.pipe(
       map((rooms) => {
         const roomsGroupedByType: RoomsGroupedByType = { private: [], public: [] };
         rooms.forEach((room) => {
-          if (room.availabilityType === AvailabilityType.Available) {
-            if (room.type === RoomType.Public) {
-              roomsGroupedByType.public.push(room);
-            } else if (room.type === RoomType.Private) {
-              roomsGroupedByType.private.push(room);
-            }
+          if (room.type === RoomType.Public) {
+            roomsGroupedByType.public.push(room);
+          } else if (room.type === RoomType.Private) {
+            roomsGroupedByType.private.push(room);
           }
         });
         return roomsGroupedByType;

@@ -68,7 +68,7 @@
 
   <section class="dfm-card overflow-y-auto hide-scrollbar ad-ex-section2">
     <form [formGroup]="createExamForm" class="dfm-p-16 d-flex flex-column dfm-gap-32"
-          *ngIf="(loading$$ | async) === false">
+          *ngIf="staffsGroupedByTypes$$ | async as staffsGroupedByType">
       <div class="d-flex flex-column dfm-gap-16 ad-ex-form-exam-info">
         <div class="d-flex dfm-gap-24 flex-wrap ad-ex-name-expense-room">
           <dfm-input class="ad-ex-name" size="md" placeholder="Enter Exam Name" label="Exam Name *" formControlName="name">
@@ -85,7 +85,7 @@
         </div>
 
         <div class="d-flex dfm-gap-8 flex-column" *ngIf="!!createExamForm.get('roomType')?.value">
-          <span class="text-sm font-weight-medium dfm-text-main-700">Available Rooms *</span>
+          <span class="text-sm font-weight-medium dfm-text-main-700">{{ formValues.roomType | titlecase }} Rooms *</span>
 
           <div class="d-flex dfm-gap-24 flex-wrap" formArrayName="roomsForExam">
             <div [formGroupName]="rowIndex"
@@ -120,7 +120,7 @@
           <div class="dfm-input-multi-dropdown-wrapper flex-1">
             <dfm-input-dropdown #mandatoryStaffsDropdown size="md" [multiple]="true"
                                 [placeholder]="!!mandatoryStaffsDropdown.value?.length ? mandatoryStaffsDropdown.value.length + ' Selected' : 'Select Staff'"
-                                label="Mandatory Staffs *" [items]="[]"
+                                label="Mandatory Staffs *" [items]="staffsGroupedByType.mandatory"
                                 formControlName="mandatoryStaffs">
             </dfm-input-dropdown>
           </div>
@@ -128,7 +128,7 @@
 
         <span class="text-sm font-weight-medium dfm-text-main-700">General Staff</span>
 
-        <div class="ad-ex-general-staff" *ngIf="staffsGroupedByTypes$$ | async as staffsGroupedByType">
+        <div class="ad-ex-general-staff">
           <div class="d-flex dfm-gap-16">
             <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
               <dfm-input-dropdown class="flex-1" size="md" label="Select No." placeholder="Select" formControlName="assistantCount" [items]="count">
@@ -136,7 +136,8 @@
             </div>
 
             <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
-              <dfm-input-dropdown size="md" label="Assistant" placeholder="Select Staff" [multiple]="true" formControlName="assistants"
+              <dfm-input-dropdown #assistantDropdown size="md" label="Assistant" placeholder="Select Staff" [multiple]="true" formControlName="assistants"
+                                  [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : 'Select Staff'"
                                   [items]="staffsGroupedByType.assistants">
               </dfm-input-dropdown>
             </div>
@@ -149,7 +150,8 @@
             </div>
 
             <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
-              <dfm-input-dropdown size="md" label="Radiologists" placeholder="Select Staff" [multiple]="true" formControlName="radiologists"
+              <dfm-input-dropdown #radiologistDropdown size="md" label="Radiologists" placeholder="Select Staff" [multiple]="true" formControlName="radiologists"
+                                  [placeholder]="!!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : 'Select Staff'"
                                   [items]="staffsGroupedByType.radiologists">
               </dfm-input-dropdown>
             </div>
@@ -162,7 +164,8 @@
             </div>
 
             <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
-              <dfm-input-dropdown size="md" label="Nursing" placeholder="Select Staff" [multiple]="true" formControlName="nursing"
+              <dfm-input-dropdown #nursingDropdown size="md" label="Nursing" placeholder="Select Staff" [multiple]="true" formControlName="nursing"
+                                  [placeholder]="!!nursingDropdown.value?.length ? nursingDropdown.value.length + ' Selected' : 'Select Staff'"
                                   [items]="staffsGroupedByType.nursing">
               </dfm-input-dropdown>
             </div>
@@ -175,7 +178,8 @@
             </div>
 
             <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
-              <dfm-input-dropdown size="md" label="Secretary" placeholder="Select Staff" [multiple]="true" formControlName="secretaries"
+              <dfm-input-dropdown #secretaryDropdown size="md" label="Secretary" placeholder="Select Staff" [multiple]="true" formControlName="secretaries"
+                                  [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ' Selected' : 'Select Staff'"
                                   [items]="staffsGroupedByType.secretaries">
               </dfm-input-dropdown>
             </div>
