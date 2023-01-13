@@ -3,6 +3,7 @@ import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-a
 import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, switchMap, take, takeUntil } from 'rxjs';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { set } from 'husky';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { WeekdayModel } from '../../../../shared/models/weekday.model';
 import { UserApiService } from '../../../../core/services/user-api.service';
@@ -599,10 +600,14 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     return 'gray';
   }
 
-  handleClick(uncombinableDropdown: InputDropdownComponent) {
-    console.log(uncombinableDropdown as any);
-    if (!(uncombinableDropdown as any).isDropdownClosed) {
-      uncombinableDropdown.clickout();
-    }
-  }
+  // handleClick(uncombinableDropdown: InputDropdownComponent) {
+  //   console.log(uncombinableDropdown as any);
+  //
+  //
+  //   setTimeout(() => {
+  //     if (!(uncombinableDropdown as any).isDropdownClosed) {
+  //       uncombinableDropdown.clickout();
+  //     }
+  //   }, 500);
+  // }
 }
