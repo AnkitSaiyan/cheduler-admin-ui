@@ -46,6 +46,7 @@ import { DfmSpinnerComponent } from './components/dfm-spinner.component';
     TimeInIntervalPipe,
     SearchModalComponent,
     DfmSpinnerComponent,
+    InputDropdownWrapperComponent,
   ],
 })
 export class SharedModule {}

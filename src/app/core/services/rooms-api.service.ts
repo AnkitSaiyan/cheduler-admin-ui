@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, startWith, Subject, switchMap } from 'rxjs';
-import { AddRoomRequestData, Room, RoomType } from '../../shared/models/rooms.model';
+import { combineLatest, map, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { AddRoomRequestData, Room, RoomsGroupedByType, RoomType } from '../../shared/models/rooms.model';
 import { Status } from '../../shared/models/status';
-import { AddStaffRequestData } from '../../shared/models/staff.model';
 import { AvailabilityType } from '../../shared/models/user.model';
 import { PracticeAvailability } from '../../shared/models/practice.model';
 
@@ -16,7 +15,7 @@ export class RoomsApiService {
       name: 'John Room',
       description: 'Test Room',
       type: RoomType.Public,
-      availabilityType: 2,
+      availabilityType: AvailabilityType.Available,
       status: Status.Inactive,
       placeInAgenda: 0,
       roomNo: 1,
@@ -28,7 +27,7 @@ export class RoomsApiService {
       name: 'Tim Room',
       description: 'General Room',
       type: RoomType.Private,
-      availabilityType: 2,
+      availabilityType: AvailabilityType.Available,
       status: Status.Active,
       placeInAgenda: 0,
       roomNo: 1,
@@ -40,7 +39,7 @@ export class RoomsApiService {
       name: 'John Room',
       description: 'Test Room',
       type: RoomType.Public,
-      availabilityType: 2,
+      availabilityType: AvailabilityType.Unavailable,
       status: Status.Inactive,
       placeInAgenda: 0,
       roomNo: 1,
@@ -52,7 +51,7 @@ export class RoomsApiService {
       name: 'Tim Room',
       description: 'General Room',
       type: RoomType.Private,
-      availabilityType: 2,
+      availabilityType: AvailabilityType.Available,
       status: Status.Active,
       placeInAgenda: 0,
       roomNo: 1,
@@ -64,7 +63,7 @@ export class RoomsApiService {
       name: 'John Room',
       description: 'Test Room',
       type: RoomType.Public,
-      availabilityType: 2,
+      availabilityType: AvailabilityType.Unavailable,
       status: Status.Inactive,
       placeInAgenda: 0,
       roomNo: 1,
@@ -76,7 +75,7 @@ export class RoomsApiService {
       name: 'Tim Room',
       description: 'General Room',
       type: RoomType.Private,
-      availabilityType: 2,
+      availabilityType: AvailabilityType.Unavailable,
       status: Status.Active,
       placeInAgenda: 0,
       roomNo: 1,
@@ -88,7 +87,7 @@ export class RoomsApiService {
       name: 'John Room',
       description: 'Test Room',
       type: RoomType.Public,
-      availabilityType: 2,
+      availabilityType: AvailabilityType.Available,
       status: Status.Inactive,
       placeInAgenda: 0,
       roomNo: 1,
@@ -100,7 +99,7 @@ export class RoomsApiService {
       name: 'Tim Room',
       description: 'General Room',
       type: RoomType.Private,
-      availabilityType: 2,
+      availabilityType: AvailabilityType.Available,
       status: Status.Active,
       placeInAgenda: 0,
       roomNo: 1,
@@ -112,7 +111,7 @@ export class RoomsApiService {
       name: 'John Room',
       description: 'Test Room',
       type: RoomType.Public,
-      availabilityType: 2,
+      availabilityType: AvailabilityType.Available,
       status: Status.Inactive,
       placeInAgenda: 0,
       roomNo: 1,
@@ -124,12 +123,23 @@ export class RoomsApiService {
       name: 'Tim Room',
       description: 'General Room',
       type: RoomType.Private,
-      availabilityType: 2,
+      availabilityType: AvailabilityType.Available,
       status: Status.Active,
       placeInAgenda: 0,
       roomNo: 1,
       practiceAvailability: [],
       examLists: [],
+    },
+  ];
+
+  private roomTypes: { name: string; value: string }[] = [
+    {
+      name: 'Private',
+      value: RoomType.Private,
+    },
+    {
+      name: 'Public',
+      value: RoomType.Public,
     },
   ];
 
@@ -216,5 +226,25 @@ export class RoomsApiService {
       this.rooms.splice(index, 1);
       this.refreshRooms$$.next();
     }
+  }
+
+  public getRoomTypes(): Observable<{ name: string; value: string }[]> {
+    return of(this.roomTypes);
+  }
+
+  public get roomsGroupedByType$(): Observable<RoomsGroupedByType> {
+    return this.rooms$.pipe(
+      map((rooms) => {
+        const roomsGroupedByType: RoomsGroupedByType = { private: [], public: [] };
+        rooms.forEach((room) => {
+          if (room.type === RoomType.Public) {
+            roomsGroupedByType.public.push(room);
+          } else if (room.type === RoomType.Private) {
+            roomsGroupedByType.private.push(room);
+          }
+        });
+        return roomsGroupedByType;
+      }),
+    );
   }
 }
