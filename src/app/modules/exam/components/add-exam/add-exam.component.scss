@@ -31,12 +31,24 @@ section.ad-ex-section2 {
   .ad-ex-info-input {
     max-width: 70%;
   }
+
+  .ad-ex-availability-form-fields {
+    max-height: 672px;
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 1440px) {
   section.ad-ex-section2 {
     // header height - content padding - section 1 height - row gap - extra gap
     max-height: calc(100vh - 36px - 24px - 36px - 24px - 24px);
+  }
+}
+
+@media (max-width: 720px) {
+  .ad-ex-availability-form-fields {
+    max-height: 100% !important;
+    flex-wrap: nowrap !important;
   }
 }
 

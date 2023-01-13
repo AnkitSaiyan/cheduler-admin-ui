@@ -26,6 +26,11 @@
     @extend .text-xs;
     @include weight-semi-bold;
   }
+
+  &-bold {
+    @extend .text-xs;
+    @include weight-bold;
+  }
 }
 
 .text-sm {

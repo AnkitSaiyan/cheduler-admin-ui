@@ -44,7 +44,7 @@ export class PhysicianViewComponent extends DestroyableComponent implements OnIn
       data: {
         titleText: 'Confirmation',
         bodyText: 'Are you sure you want to delete this Physician?',
-        confirmButtonText: 'Proceed',
+        confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
     });

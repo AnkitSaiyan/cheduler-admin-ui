@@ -396,9 +396,12 @@ export class StaffApiService {
       return of('');
     }
 
+    console.log(requestData);
+    debugger;
     if (requestData.id) {
       const index = this.staffLists.findIndex((staff) => staff.id === requestData.id);
       if (index !== -1) {
+        console.log(index);
         this.staffLists[index] = {
           ...this.staffLists[index],
           id: requestData.id,
@@ -408,8 +411,8 @@ export class StaffApiService {
           email: requestData.email,
           telephone: requestData.telephone,
           address: requestData?.address ?? this.staffLists[index].address,
-          status: Status.Active,
-          availabilityType: AvailabilityType.Available,
+          status: this.staffLists[index].status,
+          availabilityType: this.staffLists[index].availabilityType,
           deletedBy: null,
           gsm: requestData.gsm ?? this.staffLists[index].gsm,
           examList: requestData?.examLists ?? this.staffLists[index].examList,

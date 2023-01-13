@@ -92,13 +92,16 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     let addUserReqData: AddStaffRequestData = { ...rest };
 
-    if (this.formValues.userType === this.userType.Scheduler) {
+    if (this.formValues.userType === this.userType.Scheduler || this.modalData.userDetails.userType === this.userType.Scheduler) {
       addUserReqData = {
         ...addUserReqData,
         gsm,
         address,
-        ...(this.modalData.edit ? { userType: this.modalData.userDetails.userType } : {}),
       };
+    }
+
+    if (this.modalData.edit) {
+      addUserReqData.userType = this.modalData.userDetails.userType;
     }
 
     if (this.modalData?.userDetails?.id) {

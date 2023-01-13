@@ -195,8 +195,8 @@ export class RoomsApiService {
           description: requestData.description,
           type: requestData.type,
           roomNo: requestData?.roomNo ?? 1,
-          status: Status.Active,
-          availabilityType: AvailabilityType.Available,
+          status: this.rooms[index].status,
+          availabilityType: this.rooms[index].availabilityType,
           practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
         };
 

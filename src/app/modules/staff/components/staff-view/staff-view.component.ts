@@ -158,7 +158,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
       data: {
         titleText: 'Confirmation',
         bodyText: 'Are you sure you want to delete this Staff?',
-        confirmButtonText: 'Proceed',
+        confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
     });
