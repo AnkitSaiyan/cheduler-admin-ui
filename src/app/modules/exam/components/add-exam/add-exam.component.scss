@@ -33,6 +33,7 @@ section.ad-ex-section2 {
   }
 
   .ad-ex-availability-form-fields {
+    transition: all linear 200ms;
     max-height: 672px;
     flex-wrap: wrap;
   }
@@ -47,6 +48,7 @@ section.ad-ex-section2 {
 
 @media (max-width: 720px) {
   .ad-ex-availability-form-fields {
+    transition: all linear 200ms;
     max-height: 100% !important;
     flex-wrap: nowrap !important;
   }

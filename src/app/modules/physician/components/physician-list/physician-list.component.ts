@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { TableItem } from 'diflexmo-angular-design';
 import { FormControl } from '@angular/forms';
@@ -22,6 +22,10 @@ import { PhysicianAddComponent } from '../physician-add/physician-add.component'
   styleUrls: ['./physician-list.component.scss'],
 })
 export class PhysicianListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  @HostListener('document:click', ['$event']) onClick() {
+    this.toggleMenu(true);
+  }
+
   @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
 
   public searchControl = new FormControl('', []);

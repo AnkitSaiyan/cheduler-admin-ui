@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,7 +14,6 @@ import { SearchModalComponent, SearchModalData } from '../../../../shared/compon
 import { User, UserType } from '../../../../shared/models/user.model';
 import { DownloadService } from '../../../../core/services/download.service';
 import { getUserTypeEnum } from '../../../../shared/utils/getUserTypeEnum';
-import { PhysicianAddComponent } from '../../../physician/components/physician-add/physician-add.component';
 import { AddUserComponent } from '../add-user/add-user.component';
 
 @Component({
@@ -23,6 +22,10 @@ import { AddUserComponent } from '../add-user/add-user.component';
   styleUrls: ['./user-list.component.scss'],
 })
 export class UserListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  @HostListener('document:click', ['$event']) onClick() {
+    this.toggleMenu(true);
+  }
+
   @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
 
   public searchControl = new FormControl('', []);
@@ -183,7 +186,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public toggleMenu(reset = false) {
-    const icon = document.querySelector('.sf-li-plus-btn-icon');
+    const icon = document.querySelector('.us-li-plus-btn-icon');
     if (icon) {
       if (reset) {
         icon.classList.add('rotate-z-0');
