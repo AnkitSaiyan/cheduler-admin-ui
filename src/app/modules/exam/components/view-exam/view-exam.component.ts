@@ -3,7 +3,7 @@ import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { User, UserType } from '../../../../shared/models/user.model';
-import { TimeSlot, WeekdayModel, WeekWisePracticeAvailability } from '../../../../shared/models/weekday.model';
+import { TimeSlot, Weekday, WeekWisePracticeAvailability } from '../../../../shared/models/calendar.model';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
@@ -41,15 +41,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 
   public practiceAvailability$$ = new BehaviorSubject<any[]>([]);
 
-  public columns: WeekdayModel[] = [
-    WeekdayModel.MON,
-    WeekdayModel.TUE,
-    WeekdayModel.WED,
-    WeekdayModel.THU,
-    WeekdayModel.FRI,
-    WeekdayModel.SAT,
-    WeekdayModel.SUN,
-  ];
+  public columns: Weekday[] = [Weekday.MON, Weekday.TUE, Weekday.WED, Weekday.THU, Weekday.FRI, Weekday.SAT, Weekday.SUN];
 
   constructor(
     private staffApiSvc: StaffApiService,

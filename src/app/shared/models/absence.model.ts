@@ -27,15 +27,15 @@ export interface Absence {
   repeatType?: RepeatType;
   repeatFrequency?: number;
   repeatDays?: string;
-  roomList?: number[];
-  staffList?: number[];
-  rooms?: Room[];
-  staff?: User[];
+  roomList: number[];
+  staffList: number[];
+  rooms: Room[];
+  staff: User[];
 }
 
 export interface AddAbsenceRequestDate {
   name: string;
-  isHoliday: true;
+  isHoliday: boolean;
   startedAt: string;
   endedAt: string;
   priority: PriorityType;

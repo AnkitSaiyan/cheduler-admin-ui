@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, filter, takeUntil } from 'rxjs';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
-import { WeekdayModel } from '../../../shared/models/weekday.model';
+import { Weekday } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
 import { PracticeAvailability } from '../../../shared/models/practice.model';
 import { PracticeHoursApiService } from '../../../core/services/practice-hours-api.service';
@@ -15,11 +15,11 @@ interface TimeDistributed {
 }
 
 interface FormValues {
-  selectedWeekday: WeekdayModel;
+  selectedWeekday: Weekday;
   practiceHours: {
     [key: string]: {
       id?: number;
-      weekday: WeekdayModel;
+      weekday: Weekday;
       dayStart: TimeDistributed;
       dayEnd: TimeDistributed;
     }[];
@@ -36,7 +36,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
   public practiceHoursData$$ = new BehaviorSubject<PracticeAvailability[]>([]);
 
-  public weekdayEnum = WeekdayModel;
+  public weekdayEnum = Weekday;
 
   constructor(private fb: FormBuilder, private notificationSvc: NotificationDataService, private practiceHourApiSvc: PracticeHoursApiService) {
     super();
@@ -73,7 +73,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     }
   }
 
-  private getPracticeHoursFormGroup(weekday?: WeekdayModel, dayStart?: TimeDistributed, dayEnd?: TimeDistributed, id?: number): FormGroup {
+  private getPracticeHoursFormGroup(weekday?: Weekday, dayStart?: TimeDistributed, dayEnd?: TimeDistributed, id?: number): FormGroup {
     const fg = this.fb.group({
       ...(id ? { id: [id ?? 0, []] } : {}),
       weekday: [weekday ?? this.formValues.selectedWeekday, []],
@@ -106,7 +106,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     const fg = this.practiceHourForm.get('practiceHours') as FormGroup;
     const weekday = this.formValues.selectedWeekday;
     switch (weekday) {
-      case WeekdayModel.ALL:
+      case Weekday.ALL:
         Object.values(this.weekdayEnum).forEach((day) => {
           if (typeof day === 'number' && day > 0) {
             const fa = fg.get(day.toString()) as FormArray;
@@ -162,7 +162,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     let keys = Object.keys(this.formValues.practiceHours);
 
     if (!getAll) {
-      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === WeekdayModel.ALL)];
+      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL)];
     }
 
     if (keys?.length) {
@@ -177,11 +177,11 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     return controls;
   }
 
-  public getFormArrayName(controlArray: FormArray): WeekdayModel {
+  public getFormArrayName(controlArray: FormArray): Weekday {
     return controlArray.value[0].weekday;
   }
 
-  public selectWeekday(selectedWeekday: WeekdayModel): void {
+  public selectWeekday(selectedWeekday: Weekday): void {
     if (this.formValues.selectedWeekday === selectedWeekday) {
       return;
     }
@@ -199,12 +199,12 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     controlArray.removeAt(i);
   }
 
-  public getBadgeColor(weekday: WeekdayModel): BadgeColor {
+  public getBadgeColor(weekday: Weekday): BadgeColor {
     if (this.formValues.selectedWeekday === weekday) {
       return 'primary';
     }
 
-    if (weekday === WeekdayModel.ALL) {
+    if (weekday === Weekday.ALL) {
       for (let i = 1; i <= 7; i++) {
         if (!this.formValues.practiceHours[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
           return 'gray';

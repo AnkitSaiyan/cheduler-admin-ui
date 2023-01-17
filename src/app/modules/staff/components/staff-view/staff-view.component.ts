@@ -6,7 +6,7 @@ import { User } from '../../../../shared/models/user.model';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { STAFF_ID } from '../../../../shared/utils/const';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { WeekdayModel } from '../../../../shared/models/weekday.model';
+import { Weekday } from '../../../../shared/models/calendar.model';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -42,15 +42,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 
   public practiceAvailability$$ = new BehaviorSubject<any[]>([]);
 
-  public columns: WeekdayModel[] = [
-    WeekdayModel.MON,
-    WeekdayModel.TUE,
-    WeekdayModel.WED,
-    WeekdayModel.THU,
-    WeekdayModel.FRI,
-    WeekdayModel.SAT,
-    WeekdayModel.SUN,
-  ];
+  public columns: Weekday[] = [Weekday.MON, Weekday.TUE, Weekday.WED, Weekday.THU, Weekday.FRI, Weekday.SAT, Weekday.SUN];
 
   constructor(
     private staffApiSvc: StaffApiService,

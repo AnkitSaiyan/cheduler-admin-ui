@@ -12,5 +12,6 @@ import { SharedModule } from '../../shared/shared.module';
 @NgModule({
   declarations: [AbsenceComponent, AbsenceListComponent, ViewAbsenceComponent, AddAbsenceComponent],
   imports: [CommonModule, AbsenceRoutingModule, ReactiveFormsModule, SharedModule],
+  providers: [],
 })
 export class AbsenceModule {}

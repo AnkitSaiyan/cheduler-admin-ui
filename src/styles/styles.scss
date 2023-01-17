@@ -33,6 +33,7 @@ dfm-input-dropdown {
 
 // button group wrapper
 .dfm-button-group-wrapper {
+  display: flex;
   background: white;
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
@@ -83,7 +84,7 @@ dfm-input-dropdown {
   }
 
   input {
-    padding-right: 14px !important;
+    padding-right: 42px !important;
   }
 }
 
@@ -233,6 +234,23 @@ dfm-notification {
   }
 }
 
+.dfm-datepicker-dropdown-single {
+  dfm-datepicker {
+    .default-date-options-container {
+      display: none !important;
+    }
+
+    .datepicker-months > div:last-child {
+      display: none !important;
+    }
+
+    .actions-bar {
+      flex-direction: column !important;
+      row-gap: 8px;
+    }
+  }
+}
+
 //@keyframes fromRight {
 //  0% {
 //    right: -128px !important;
@@ -282,6 +300,19 @@ button:disabled {
   }
 }
 
+.input-as-dfm-input {
+  input {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+
+    &:focus {
+      outline: none;
+      border-color: var(--dfm-input-border-focus);
+    }
+  }
+}
+
 .carousel-control-prev, .carousel-control-next {
   display: block;
   width: auto;
@@ -325,6 +356,88 @@ button:disabled {
     }
   }
 }
+
+ngb-datepicker {
+  border: none !important;
+  box-shadow: 0 .125rem .50rem rgba(0, 0, 0, .075);
+  padding: 8px !important;
+
+  .ngb-dp-header {
+    background: white !important;
+    padding: 8px !important;
+
+    .ngb-dp-arrow {
+      button {
+        color: var(--dfm-main-300) !important;
+        border: none !important;
+        border-radius: 50% !important;
+        font-weight: normal !important;
+        font-size: 1rem !important;
+        width: 32px !important;
+        height: 32px !important;
+        margin: 0 !important;
+        padding: 4px !important;
+
+        &:active, &:hover {
+          color: var(--dfm-primary) !important;
+          background: var(--dfm-main-100) !important;
+        }
+      }
+    }
+
+    .ngb-dp-navigation-select {
+      column-gap: 8px !important;
+
+      select {
+        padding-right: 0px !important;
+        border: none !important;
+        cursor: pointer;
+
+        &:focus {
+          outline: 0 !important;
+          border: 1px solid var(--dfm-input-border-focus) !important;
+        }
+      }
+    }
+  }
+
+  .ngb-dp-content {
+    border: none !important;
+
+    ngb-datepicker-month {
+      & > div {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+
+        & > div {
+          border: none !important;
+          width: 2.5rem !important;
+          height: 2.5rem !important;
+
+          &.ngb-dp-weekday {
+            color: black !important;
+            font-style: normal;
+          }
+
+          & > div {
+            margin: 0 !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            border-radius: 50% !important;
+
+            &:hover, &.bg-primary {
+              background: var(--dfm-primary) !important;
+              color: var(--dfm-secondary) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 
 // Custom Global styling ==============================================================
 .overflow-y-auto {
@@ -381,7 +494,6 @@ button:disabled {
   display: none;
 }
 
-.text-tr
 .x-circle {
   display: flex;
   justify-content: center;

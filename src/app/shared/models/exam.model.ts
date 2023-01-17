@@ -1,7 +1,7 @@
 import { AvailabilityType, User } from './user.model';
 import { Status } from './status';
 import { Room, RoomType } from './rooms.model';
-import { WeekdayModel } from './weekday.model';
+import { Weekday } from './calendar.model';
 import { PracticeAvailability } from './practice.model';
 
 export interface Exam {

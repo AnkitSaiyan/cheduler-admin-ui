@@ -1,1 +1,135 @@
-<p>absence-list works!</p>
+<div class="d-flex flex-column h-100 position-relative dfm-px-8 ab-li-main-wrapper">
+  <section>
+    <div class="d-flex align-items-center dfm-gap-16 flex-1 ab-li-section-1">
+      <dfm-button
+        class="hidden ab-li-title-buttons"
+        color="link"
+        size="lg"
+        routerLink="./"
+      >Absence
+      </dfm-button>
+
+      <dfm-input
+        class="flex-1 ab-li-search"
+        size="md"
+        placeholder="Search by Absence Name"
+        icon="search-sm"
+        [formControl]="searchControl"
+      ></dfm-input>
+
+      <div class="d-flex align-items-center dfm-button-group-wrapper ab-li-button-dropdown-group">
+        <div class="dfm-button-icon-bg-transparent">
+          <dfm-button-icon
+            color="tertiary-gray"
+            size="md"
+            icon="copy-03"
+            (click)="copyToClipboard()"
+          ></dfm-button-icon>
+        </div>
+
+        <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
+          <dfm-input-dropdown
+            [items]="downloadItems"
+            [showDescription]="false"
+            [formControl]="downloadDropdownControl"
+            placeholder="Download"
+            size="md"
+          ></dfm-input-dropdown>
+        </div>
+      </div>
+
+      <div class="d-flex dfm-gap-8 align-items-center">
+        <dfm-button
+          color="primary"
+          size="md"
+          class="text-nowrap"
+          [disabled]="false"
+          (click)="openAddAbsenceModal()"
+        >Add Absence
+        </dfm-button>
+      </div>
+    </div>
+  </section>
+
+  <section class="overflow-y-auto ab-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredAbsences$$ | async as absences">
+    <dfm-table [items]="absences" [rowClickable]="true" (rowClicked)="navigateToViewAbsence($event)"
+               class="dfm-table-wrapper">
+      <ng-template #headerRowTemplate>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+      </ng-template>
+
+      <ng-template #bodyRowTemplate let-item>
+        <dfm-table-body-cell>{{ item.name | titlecase | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.startedAt | date: 'y-MM-dd' | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.endedAt | date: 'y-M-dd' | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>
+          <div class="text-truncate ab-li-info-cell"> {{ item.info | dashIfNothing }} </div>
+        </dfm-table-body-cell>
+
+        <dfm-table-body-cell>
+          <div class="d-flex dfm-gap-16 align-items-center ab-li-action-buttons">
+            <dfm-button
+              color="link-gray"
+              size="sm"
+              trailingIcon="pencil-02"
+              (click)="$event.stopPropagation(); openAddAbsenceModal(item);"
+            ></dfm-button>
+
+            <dfm-button
+              color="link-gray"
+              size="sm"
+              trailingIcon="trash-01"
+              (click)="$event.stopPropagation(); deleteAbsence(item.id)"
+            ></dfm-button>
+          </div>
+
+          <div class="position-relative">
+            <div ngbDropdown #actionButtonsMenu="ngbDropdown">
+              <div class="shadow-lg ab-li-action-buttons-menu ab-li-menus" ngbDropdownMenu
+                   aria-labelledby="dropdownManual">
+                <div ngbDropdownItem (click)="$event.stopPropagation(); openAddAbsenceModal(item)"
+                     class="position-relative">
+                  <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
+                  <div class="menu-point-forward shadow-sm"></div>
+                </div>
+                <div ngbDropdownItem (click)="$event.stopPropagation(); deleteAbsence(item.id)">
+                  <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
+                </div>
+              </div>
+            </div>
+
+            <dfm-button
+              class="hidden ab-li-vertical-dots-btn"
+              color="link-gray"
+              size="sm"
+              trailingIcon="dots-vertical"
+              (click)="$event.stopPropagation(); actionButtonsMenu.open();"
+            ></dfm-button>
+
+          </div>
+        </dfm-table-body-cell>
+      </ng-template>
+    </dfm-table>
+    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!absences.length">
+      No data found
+    </div>
+  </section>
+  <div ngbDropdown #optionsMenu="ngbDropdown">
+    <div class="shadow-lg ab-li-plus-btn-menu ab-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
+      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">
+        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
+      </div>
+      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
+        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
+      </div>
+      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
+        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
+      </div>
+    </div>
+  </div>
+
+  <dfm-button color="secondary" size="md" class="hidden shadow-lg ab-li-plus-btn rounded-2"
+              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">
+    <dfm-icon #showMoreButtonIcon name="plus" class="ab-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
+  </dfm-button>
+</div>

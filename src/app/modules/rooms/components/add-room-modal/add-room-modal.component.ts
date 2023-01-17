@@ -5,7 +5,7 @@ import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
-import { WeekdayModel } from '../../../../shared/models/weekday.model';
+import { Weekday } from '../../../../shared/models/calendar.model';
 import { AddRoomRequestData, Room, RoomType } from '../../../../shared/models/rooms.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
@@ -24,12 +24,12 @@ interface FormValues {
   practiceAvailabilityToggle?: boolean;
   practiceAvailability: {
     [key: string]: {
-      weekday: WeekdayModel;
+      weekday: Weekday;
       dayStart: TimeDistributed;
       dayEnd: TimeDistributed;
     }[];
   };
-  selectedWeekday: WeekdayModel;
+  selectedWeekday: Weekday;
 }
 
 @Component({
@@ -42,7 +42,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
   public modalData!: { edit: boolean; roomDetails: Room };
 
-  public weekdayEnum = WeekdayModel;
+  public weekdayEnum = Weekday;
 
   constructor(
     private modalSvc: ModalService,
@@ -101,7 +101,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     this.addRoomForm.patchValue({ practiceAvailabilityToggle: toggle });
   }
 
-  private getPracticeAvailabilityFormGroup(weekday?: WeekdayModel, dayStart?: TimeDistributed, dayEnd?: TimeDistributed): FormGroup {
+  private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: TimeDistributed, dayEnd?: TimeDistributed): FormGroup {
     const fg = this.fb.group({
       weekday: [weekday ?? this.formValues.selectedWeekday, []],
       dayStart: [dayStart, []],
@@ -133,7 +133,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     const fg = this.addRoomForm.get('practiceAvailability') as FormGroup;
     const weekday = this.formValues.selectedWeekday;
     switch (weekday) {
-      case WeekdayModel.ALL:
+      case Weekday.ALL:
         Object.values(this.weekdayEnum).forEach((day) => {
           if (typeof day === 'number' && day > 0) {
             const fa = fg.get(day.toString()) as FormArray;
@@ -186,7 +186,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     const { selectedWeekday } = this.formValues;
     let keys = Object.keys(this.formValues.practiceAvailability);
     if (!all) {
-      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === WeekdayModel.ALL)];
+      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL)];
     }
 
     if (keys?.length) {
@@ -201,11 +201,11 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     return controls;
   }
 
-  public getFormArrayName(controlArray: FormArray): WeekdayModel {
+  public getFormArrayName(controlArray: FormArray): Weekday {
     return controlArray.value[0].weekday;
   }
 
-  public selectWeekday(selectedWeekday: WeekdayModel): void {
+  public selectWeekday(selectedWeekday: Weekday): void {
     if (this.formValues.selectedWeekday === selectedWeekday) {
       return;
     }
@@ -286,12 +286,12 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
       });
   }
 
-  public getBadgeColor(weekday: WeekdayModel): BadgeColor {
+  public getBadgeColor(weekday: Weekday): BadgeColor {
     if (this.formValues.selectedWeekday === weekday) {
       return 'primary';
     }
 
-    if (weekday === WeekdayModel.ALL) {
+    if (weekday === Weekday.ALL) {
       for (let i = 1; i <= 7; i++) {
         if (!this.formValues.practiceAvailability[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
           return 'gray';

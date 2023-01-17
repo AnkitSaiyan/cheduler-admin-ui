@@ -18,6 +18,11 @@ const absenceRoutes: Routes = [
         path: `:${ABSENCE_ID}/view`,
         component: ViewAbsenceComponent,
       },
+      {
+        path: '**',
+        redirectTo: '',
+        pathMatch: 'full',
+      },
     ],
   },
 ];
