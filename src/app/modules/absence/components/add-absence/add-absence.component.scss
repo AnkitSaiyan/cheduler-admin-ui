@@ -6,6 +6,10 @@
     // viewport - m-top - modal header height - modal footer header - p-bottom - m-bottom - extra
     max-height: calc(100vh - 24px - 76px - 64px - 16px - 24px - 48px);
     overflow-y: auto;
+
+    .ad-ab-time-dropdown {
+      min-width: 128px;
+    }
   }
 }
 
@@ -16,6 +20,10 @@
 }
 
 @media (max-width: 992px) {
+  .ad-ab-dates {
+    flex-wrap: wrap;
+  }
+
   .ad-ab-radio-group {
     flex-direction: column;
 

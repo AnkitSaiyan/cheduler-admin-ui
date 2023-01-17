@@ -30,49 +30,79 @@
         </dfm-input>
       </div>
 
-      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
-        <div class="ad-ab-from-date">
+      <div class="d-flex dfm-gap-32 align-items-center ad-ab-dates">
+        <div class="ad-ab-from-date flex-1">
           <span class="text-sm font-weight-medium dfm-text-main-700">From *</span>
 
-          <div class="dfm-button-group-wrapper">
-            <div class="input-as-dfm-input flex-1">
-              <input
-                formControlName="startedAt"
-                placeholder="yyyy-mm-dd"
-                ngbDatepicker
-                #startedAt="ngbDatepicker"
-              />
+          <div class="d-flex align-items-center dfm-gap-16 flex-1">
+            <div class="dfm-button-group-wrapper h-fit flex-1">
+              <div class="input-as-dfm-input flex-1">
+                <input
+                  class="w-full min-w-128"
+                  formControlName="startedAt"
+                  placeholder="yyyy-mm-dd"
+                  ngbDatepicker
+                  #startedAt="ngbDatepicker"
+                />
+              </div>
+              <div>
+                <dfm-button-icon
+                  color="tertiary-gray"
+                  size="md"
+                  icon="calendar-date"
+                  (click)="startedAt.toggle()"
+                ></dfm-button-icon>
+              </div>
             </div>
-            <div>
-              <dfm-button-icon
-                color="tertiary-gray"
-                size="md"
-                icon="calendar-date"
-                (click)="startedAt.toggle()"
-              ></dfm-button-icon>
+
+            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
+              <dfm-input-dropdown #startTime
+                                  [items]="startTimes"
+                                  [typeToSearch]="true"
+                                  [typeToSearchText]="startTime.value"
+                                  (searchInput)="handleTimeInput($event, 'startTime')"
+                                  formControlName="startTime"
+                                  size="md"
+                                  placeholder="hh:mm">
+              </dfm-input-dropdown>
             </div>
           </div>
         </div>
 
-        <div class="ad-ab-to-date">
+        <div class="ad-ab-to-date flex-1">
           <span class="text-sm font-weight-medium dfm-text-main-700">Until *</span>
 
-          <div class="dfm-button-group-wrapper">
-            <div class="input-as-dfm-input flex-1">
-              <input
-                formControlName="endedAt"
-                placeholder="yyyy-mm-dd"
-                ngbDatepicker
-                #endedAt="ngbDatepicker"
-              />
+          <div class="d-flex align-items-center dfm-gap-16">
+            <div class="dfm-button-group-wrapper flex-1">
+              <div class="input-as-dfm-input flex-1">
+                <input
+                  class="w-full min-w-128"
+                  formControlName="endedAt"
+                  placeholder="yyyy-mm-dd"
+                  ngbDatepicker
+                  #endedAt="ngbDatepicker"
+                />
+              </div>
+              <div>
+                <dfm-button-icon
+                  color="tertiary-gray"
+                  size="md"
+                  icon="calendar-date"
+                  (click)="endedAt.toggle()"
+                ></dfm-button-icon>
+              </div>
             </div>
-            <div>
-              <dfm-button-icon
-                color="tertiary-gray"
-                size="md"
-                icon="calendar-date"
-                (click)="endedAt.toggle()"
-              ></dfm-button-icon>
+
+            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
+              <dfm-input-dropdown #endTime
+                                  [items]="endTimes"
+                                  [typeToSearch]="true"
+                                  [typeToSearchText]="endTime.value"
+                                  (searchInput)="handleTimeInput($event, 'endTime')"
+                                  formControlName="endTime"
+                                  size="md"
+                                  placeholder="hh:mm">
+              </dfm-input-dropdown>
             </div>
           </div>
         </div>
