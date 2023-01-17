@@ -367,35 +367,45 @@ ngb-datepicker {
     padding: 8px !important;
 
     .ngb-dp-arrow {
+      width: auto;
+      height: auto;
+
       button {
-        color: var(--dfm-main-300) !important;
-        border: none !important;
-        border-radius: 50% !important;
-        font-weight: normal !important;
-        font-size: 1rem !important;
-        width: 32px !important;
-        height: 32px !important;
-        margin: 0 !important;
-        padding: 4px !important;
+        color: var(--dfm-main-300);
+        border: none;
+        border-radius: 50%;
+        font-weight: normal;
+        font-size: 1rem;
+        width: 40px;
+        height: 40px;
+        margin: 0;
+        padding: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         &:active, &:hover {
-          color: var(--dfm-primary) !important;
-          background: var(--dfm-main-100) !important;
+          color: var(--dfm-primary);
+          background: var(--dfm-main-100);
+        }
+
+        span {
+          margin-right: 0;
         }
       }
     }
 
     .ngb-dp-navigation-select {
-      column-gap: 8px !important;
+      column-gap: 8px;
 
       select {
-        padding-right: 0px !important;
-        border: none !important;
+        padding-right: 0;
+        border: none;
         cursor: pointer;
 
         &:focus {
-          outline: 0 !important;
-          border: 1px solid var(--dfm-input-border-focus) !important;
+          outline: 0;
+          border: 1px solid var(--dfm-input-border-focus);
         }
       }
     }
@@ -418,6 +428,7 @@ ngb-datepicker {
           &.ngb-dp-weekday {
             color: black !important;
             font-style: normal;
+            font-weight: 400;
           }
 
           & > div {
@@ -426,6 +437,7 @@ ngb-datepicker {
             height: 2.5rem !important;
             line-height: 2.5rem !important;
             border-radius: 50% !important;
+            font-weight: 300;
 
             &:hover, &.bg-primary {
               background: var(--dfm-primary) !important;
