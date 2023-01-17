@@ -4,6 +4,7 @@ export const STAFF_ID = 'staffID';
 export const ROOM_ID = 'roomID';
 export const PHYSICIAN_ID = 'physicianID';
 export const EXAM_ID = 'examID';
+export const ABSENCE_ID = 'absenceID';
 
 // Other constants
 

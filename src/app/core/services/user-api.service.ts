@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { AvailabilityType, User, UserType } from '../../shared/models/user.model';
 import { Status } from '../../shared/models/status';
-import { WeekdayModel } from '../../shared/models/weekday.model';
+import { Weekday } from '../../shared/models/calendar.model';
 
 @Injectable({
   providedIn: 'root',
@@ -44,13 +44,13 @@ export class UserApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },

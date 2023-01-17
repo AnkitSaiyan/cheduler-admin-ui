@@ -1,4 +1,4 @@
-export enum WeekdayModel {
+export enum Weekday {
   ALL,
   MON,
   TUE,
@@ -27,3 +27,18 @@ export interface WeekWisePracticeAvailability {
 }
 
 export declare type TimeDurationType = 'Minutes' | 'Hours' | 'Days';
+
+export enum Month {
+  JAN = 1,
+  FEB,
+  MAR,
+  APR,
+  MAY,
+  JUN,
+  JUL,
+  AUG,
+  SEP,
+  OCT,
+  NOV,
+  DEC,
+}

@@ -1,0 +1,89 @@
+.ad-ab-main-wrapper {
+  transition: all ease 200ms;
+  padding-bottom: 16px;
+
+  .ad-ab-section2 {
+    // viewport - m-top - modal header height - modal footer header - p-bottom - m-bottom - extra
+    max-height: calc(100vh - 24px - 76px - 64px - 16px - 24px - 48px);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 1200px) {
+  .ad-ab-repeat {
+    flex: 2;
+  }
+}
+
+@media (max-width: 992px) {
+  .ad-ab-radio-group {
+    flex-direction: column;
+
+    .ad-ab-repeat-every {
+      margin-bottom: 8px;
+    }
+  }
+}
+
+@media (max-width: 680px) {
+  .ad-ab-main-wrapper {
+    position: fixed;
+    height: calc(100vh - 40px);
+    width: 100vw;
+    top: 40px;
+    left: 0;
+    border-radius: 0 !important;
+    background: var(--dfm-base-layout-bg) !important;
+    padding: 0;
+
+    form {
+      .ad-ab-from-date, .ad-ab-to-date {
+        width: 100%;
+      }
+
+      .ad-ab-repeat-form {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .ad-ab-rooms, .ad-ab-staffs {
+        margin-bottom: 8px;
+      }
+    }
+
+    .ad-ab-title-buttons-mv {
+      display: flex;
+    }
+
+    .ad-ab-title-buttons {
+      display: none !important;
+    }
+
+    .ad-ab-section2 {
+      // viewport - nav bar height - modal header height - modal footer header - extra space
+      max-height: calc(100vh - 40px - 76px - 64px - 16px);
+
+      form {
+        & > div {
+          flex-direction: column;
+
+          dfm-input {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+
+  .ad-ab-footer-buttons {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+
+    dfm-button {
+      flex: 1;
+    }
+  }
+}

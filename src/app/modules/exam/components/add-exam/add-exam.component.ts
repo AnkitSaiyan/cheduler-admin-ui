@@ -5,7 +5,7 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '
 import { ActivatedRoute, Router } from '@angular/router';
 import { set } from 'husky';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { WeekdayModel } from '../../../../shared/models/weekday.model';
+import { Weekday } from '../../../../shared/models/calendar.model';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
@@ -49,12 +49,12 @@ interface FormValues {
   practiceAvailabilityToggle?: boolean;
   practiceAvailability: {
     [key: string]: {
-      weekday: WeekdayModel;
+      weekday: Weekday;
       dayStart: TimeDistributed;
       dayEnd: TimeDistributed;
     }[];
   };
-  selectedWeekday: WeekdayModel;
+  selectedWeekday: Weekday;
 }
 
 @Component({
@@ -83,7 +83,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   public roomTypes: any[] = [];
 
-  public weekdayEnum = WeekdayModel;
+  public weekdayEnum = Weekday;
 
   public comingFromRoute = '';
 
@@ -319,7 +319,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     return (this.createExamForm.get('roomsForExam') as FormArray)?.controls;
   }
 
-  private getPracticeAvailabilityFormGroup(weekday?: WeekdayModel, dayStart?: TimeDistributed, dayEnd?: TimeDistributed): FormGroup {
+  private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: TimeDistributed, dayEnd?: TimeDistributed): FormGroup {
     const fg = this.fb.group({
       weekday: [weekday ?? this.formValues.selectedWeekday, []],
       dayStart: [dayStart, []],
@@ -392,7 +392,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     const fg = this.createExamForm.get('practiceAvailability') as FormGroup;
     const weekday = this.formValues.selectedWeekday;
     switch (weekday) {
-      case WeekdayModel.ALL:
+      case Weekday.ALL:
         Object.values(this.weekdayEnum).forEach((day) => {
           if (typeof day === 'number' && day > 0) {
             const fa = fg.get(day.toString()) as FormArray;
@@ -445,7 +445,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     const { selectedWeekday } = this.formValues;
     let keys = Object.keys(this.formValues.practiceAvailability);
     if (!all) {
-      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === WeekdayModel.ALL)];
+      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL)];
     }
 
     if (keys?.length) {
@@ -464,7 +464,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     return this.createExamForm.value;
   }
 
-  public getFormArrayName(controlArray: FormArray): WeekdayModel {
+  public getFormArrayName(controlArray: FormArray): Weekday {
     return controlArray.value[0].weekday;
   }
 
@@ -473,7 +473,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     this.createExamForm.patchValue({ practiceAvailabilityToggle: toggle });
   }
 
-  public selectWeekday(selectedWeekday: WeekdayModel): void {
+  public selectWeekday(selectedWeekday: Weekday): void {
     if (this.formValues.selectedWeekday === selectedWeekday) {
       return;
     }
@@ -577,12 +577,12 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       });
   }
 
-  public getBadgeColor(weekday: WeekdayModel): BadgeColor {
+  public getBadgeColor(weekday: Weekday): BadgeColor {
     if (this.formValues.selectedWeekday === weekday) {
       return 'primary';
     }
 
-    if (weekday === WeekdayModel.ALL) {
+    if (weekday === Weekday.ALL) {
       for (let i = 1; i <= 7; i++) {
         if (!this.formValues.practiceAvailability[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
           return 'gray';

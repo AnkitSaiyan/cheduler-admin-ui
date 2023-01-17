@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { SiteManagement, SiteManagementRequestData } from '../../../shared/models/site-management.model';
-import { TimeDurationType } from '../../../shared/models/weekday.model';
+import { TimeDurationType } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
 import { SiteManagementApiService } from '../../../core/services/site-management-api.service';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';

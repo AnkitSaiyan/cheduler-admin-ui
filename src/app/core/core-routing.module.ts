@@ -40,6 +40,10 @@ const routes: Routes = [
         loadChildren: async () => (await import('../modules/exam/exam.module')).ExamModule,
       },
       {
+        path: 'absence',
+        loadChildren: async () => (await import('../modules/absence/absence.module')).AbsenceModule,
+      },
+      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full',
