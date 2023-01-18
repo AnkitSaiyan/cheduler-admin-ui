@@ -17,6 +17,7 @@ import { SearchModalComponent } from './components/search-modal.component';
 import { DfmSpinnerComponent } from './components/dfm-spinner.component';
 import { MonthToNamePipe } from './pipes/month-to-name.pipe';
 import { JoinWithAndPipe } from './pipes/join-with-and.pipe';
+import { NameValuePairPipe } from './pipes/name-value-pair.pipe';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { JoinWithAndPipe } from './pipes/join-with-and.pipe';
     DfmSpinnerComponent,
     MonthToNamePipe,
     JoinWithAndPipe,
+    NameValuePairPipe,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule],
   exports: [
@@ -54,6 +56,7 @@ import { JoinWithAndPipe } from './pipes/join-with-and.pipe';
     NgbDatepickerModule,
     MonthToNamePipe,
     JoinWithAndPipe,
+    NameValuePairPipe,
   ],
 })
 export class SharedModule {}

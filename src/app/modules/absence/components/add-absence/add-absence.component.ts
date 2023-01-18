@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, take, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
-import _default from 'chart.js/dist/core/core.interaction';
 import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -15,11 +14,16 @@ import { WeekdayToNamePipe } from '../../../../shared/pipes/weekday-to-name.pipe
 import { MonthToNamePipe } from '../../../../shared/pipes/month-to-name.pipe';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { formatTime } from '../../../../shared/utils/formatTime';
 
 interface FormValues {
   name: string;
   startedAt: any;
+  startTime: string;
   endedAt: any;
+  endTime: string;
   isRepeat: boolean;
   isHoliday: boolean;
   priority: PriorityType;
@@ -62,6 +66,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
   public staffList: NameValue[] = [];
 
+  public startTimes: NameValue[];
+
+  public endTimes: NameValue[];
+
   public repeatEvery = {
     daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
     weekly: [...this.getRepeatEveryItems(RepeatType.Weekly)],
@@ -78,8 +86,13 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     private roomApiSvc: RoomsApiService,
     private staffApiSvc: StaffApiService,
     private datePipe: DatePipe,
+    private timeInIntervalPipe: TimeInIntervalPipe,
+    private nameValuePairPipe: NameValuePairPipe,
   ) {
     super();
+    const times = this.nameValuePairPipe.transform(this.timeInIntervalPipe.transform(30));
+    this.startTimes = [...times];
+    this.endTimes = [...times];
   }
 
   public ngOnInit(): void {
@@ -116,6 +129,24 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   private createForm(absenceDetails?: Absence | undefined): void {
+    let startTime;
+    let endTime;
+
+    if (absenceDetails?.startedAt) {
+      const date = new Date(absenceDetails.startedAt);
+      startTime = this.datePipe.transform(date, 'hh:mmaa');
+
+      if (startTime) {
+        this.startTimes.push({ name: startTime, value: startTime });
+      }
+    }
+
+    if (absenceDetails?.endedAt) {
+      const date = new Date(absenceDetails.endedAt);
+      endTime = this.datePipe.transform(date, 'hh:mmaa');
+      this.endTimes.push({ name: endTime, value: endTime });
+    }
+
     this.absenceForm = this.fb.group({
       name: [absenceDetails?.name ?? '', [Validators.required]],
       startedAt: [
@@ -128,6 +159,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
           : null,
         [Validators.required],
       ],
+      startTime: [startTime, [Validators.required]],
       endedAt: [
         absenceDetails?.endedAt
           ? {
@@ -138,6 +170,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
           : null,
         [Validators.required],
       ],
+      endTime: [endTime, [Validators.required]],
       isRepeat: [!!absenceDetails?.isRepeat, []],
       isHoliday: [!!absenceDetails?.isHoliday, []],
       repeatType: [absenceDetails?.repeatType ?? null, []],
@@ -163,12 +196,12 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
     console.log(this.formValues);
 
-    const { startedAt, endedAt, repeatDays, ...rest } = this.formValues;
+    const { startedAt, endedAt, repeatDays, startTime, endTime, ...rest } = this.formValues;
 
     const addAbsenceReqData: AddAbsenceRequestDate = {
       ...rest,
-      startedAt: new Date(startedAt.year, startedAt.month, startedAt.day).toDateString(),
-      endedAt: new Date(endedAt.year, endedAt.month, endedAt.day).toDateString(),
+      startedAt: new Date(startedAt.year, startedAt.month, startedAt.day, +startTime.slice(0, 2), +startTime.slice(3, 5)).toISOString(),
+      endedAt: new Date(endedAt.year, endedAt.month, endedAt.day, +endTime.slice(0, 2), +endTime.slice(3, 5)).toISOString(),
       repeatDays: '',
     };
 
@@ -207,5 +240,39 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       default:
         return [];
     }
+  }
+
+  public handleTimeInput(time: string, controlName: 'startTime' | 'endTime') {
+    const formattedTime = formatTime(time);
+
+    console.log(formattedTime);
+
+    if (!formattedTime) {
+      return;
+    }
+
+    const nameValue = {
+      name: formattedTime,
+      value: formattedTime,
+    };
+
+    switch (controlName) {
+      case 'startTime':
+        if (!this.startTimes.find((t) => t.value === formattedTime)) {
+          this.startTimes.splice(0, 0, nameValue);
+        }
+        break;
+      case 'endTime':
+        if (!this.endTimes.find((t) => t.value === formattedTime)) {
+          this.endTimes.splice(0, 0, nameValue);
+        }
+        break;
+      default:
+        return;
+    }
+
+    this.absenceForm.patchValue({
+      [controlName]: formattedTime,
+    });
   }
 }

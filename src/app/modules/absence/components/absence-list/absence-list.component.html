@@ -60,8 +60,8 @@
 
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-body-cell>{{ item.name | titlecase | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.startedAt | date: 'y-MM-dd' | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.endedAt | date: 'y-M-dd' | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.startedAt | date: 'short' | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.endedAt | date: 'short' | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <div class="text-truncate ab-li-info-cell"> {{ item.info | dashIfNothing }} </div>
         </dfm-table-body-cell>
