@@ -5,11 +5,11 @@ import { NameValue } from '../components/search-modal.component';
   name: 'nameValuePair',
 })
 export class NameValuePairPipe implements PipeTransform {
-  public transform(value: any[]): NameValue[] {
-    if (!value || !value?.length) {
+  public transform(arr: any[], nameKey?: string, valueKey?: string): NameValue[] {
+    if (!arr || !arr?.length) {
       return [];
     }
 
-    return value.map((val) => ({ name: val, value: val }));
+    return arr.map((val) => ({ name: nameKey ? val[nameKey] : val, value: valueKey ? val[valueKey]?.toString() : val }));
   }
 }

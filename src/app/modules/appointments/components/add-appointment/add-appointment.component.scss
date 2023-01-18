@@ -1,0 +1,56 @@
+.ad-ap-main-wrapper {
+  transition: all ease 200ms;
+
+  .ad-ap-section2 {
+    // viewport - nav - padding - sec1 height - sec gap - extra
+    max-height: calc(100vh - 48px - 24px - 40px - 16px - 16px);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 1440px) {
+  .ad-ap-main-wrapper {
+    max-height: calc(100vh - 36px - 24px - 40px - 16px - 16px);
+  }
+}
+
+@media (max-width: 680px) {
+  .ad-ap-main-wrapper {
+    max-height: calc(100vh - 38px - 24px - 36px - 16px - 16px - 20px);
+
+    .ad-ap-title-buttons-mv {
+      display: flex;
+    }
+
+    .ad-ap-title-buttons {
+      display: none !important;
+    }
+
+    .ad-ap-section2 {
+      background: transparent;
+      padding: 0;
+      box-shadow: none;
+      border-radius: 0;
+
+      form {
+        .ad-ap-multi-dropdown {
+          margin-bottom: 8px;
+        }
+
+        & > div {
+          flex-direction: column;
+          width: 100%;
+
+          dfm-input {
+            width: 100%;
+          }
+        }
+
+        .ad-ap-save-changes-btn-mv {
+          display: flex;
+          margin-left: auto;
+        }
+      }
+    }
+  }
+}
