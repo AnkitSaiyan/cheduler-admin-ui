@@ -35,38 +35,38 @@
     <form [formGroup]="appointmentForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-center">
         <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="Patient First Name *"
-                   formControlName="firstname">
+                   formControlName="patientFname">
         </dfm-input>
 
         <dfm-input class="flex-1" size="md" placeholder="Enter last name" label="Patient Last Name *"
-                   formControlName="lastname">
+                   formControlName="patientLname">
         </dfm-input>
 
         <dfm-input class="flex-1" size="md" placeholder="Enter Telephone" label="Enter telephone *" type="number"
-                   formControlName="telephone">
+                   formControlName="patientTel">
         </dfm-input>
       </div>
 
       <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
         <dfm-input class="flex-1 min-w-128" size="md" placeholder="Enter Patient Email" label="Patient Email *"
-                   formControlName="email">
+                   formControlName="patientEmail">
         </dfm-input>
 
         <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
           <dfm-input-dropdown [items]="physicianList" class="flex-1" size="md" placeholder="Select doctor" label="Doctor"
-                              formControlName="doctor">
+                              formControlName="doctorId">
           </dfm-input-dropdown>
         </div>
 
         <div class="ad-ab-from-date flex-1 dfm-gap-8 w-full">
           <span class="text-sm font-weight-medium dfm-text-main-700">Date *</span>
 
-          <div class="d-flex align-items-center dfm-gap-16 flex-1">
+          <div class="d-flex align-items-center dfm-gap-16 flex-1 ad-ap-dates">
             <div class="dfm-button-group-wrapper h-fit flex-1">
               <div class="input-as-dfm-input flex-1">
                 <input
                   class="w-full min-w-128"
-                  formControlName="date"
+                  formControlName="startedAt"
                   placeholder="yyyy-mm-dd"
                   ngbDatepicker
                   #date="ngbDatepicker"
@@ -82,13 +82,13 @@
               </div>
             </div>
 
-            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
+            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128">
               <dfm-input-dropdown #time
                                   [items]="timings"
                                   [typeToSearch]="true"
                                   [typeToSearchText]="time.value"
                                   (searchInput)="handleTimeInput($event)"
-                                  formControlName="time"
+                                  formControlName="startTime"
                                   size="md"
                                   placeholder="hh:mm">
               </dfm-input-dropdown>
@@ -108,17 +108,6 @@
       </div>
 
       <div class="dfm-input-multi-dropdown-wrapper ad-ap-multi-dropdown">
-        <dfm-input-dropdown #rooms
-                            [items]="formValues.roomType ? roomList[formValues.roomType] : []"
-                            [multiple]="true"
-                            [placeholder]="!!rooms.value?.length ? rooms.value.length + ' Selected' : 'Select Rooms'"
-                            formControlName="roomList"
-                            size="md"
-                            label="Rooms *">
-        </dfm-input-dropdown>
-      </div>
-
-      <div class="dfm-input-multi-dropdown-wrapper ad-ap-multi-dropdown">
         <dfm-input-dropdown #exams
                             [items]="examList"
                             [multiple]="true"
@@ -129,12 +118,11 @@
         </dfm-input-dropdown>
       </div>
 
-      <div class="dfm-input-multi-dropdown-wrapper ad-ap-multi-dropdown">
-        <dfm-input-dropdown #staffs
+      <div class="dfm-input-dropdown-wrapper">
+        <dfm-input-dropdown #generalUsers
                             [items]="userList"
-                            [multiple]="true"
-                            [placeholder]="!!staffs.value?.length ? staffs.value.length + ' Selected' : 'Select General Users'"
-                            formControlName="userList"
+                            [placeholder]="!!generalUsers.value?.length ? generalUsers.value.length + ' Selected' : 'Select General Users'"
+                            formControlName="userId"
                             size="md"
                             label="General Users *">
         </dfm-input-dropdown>

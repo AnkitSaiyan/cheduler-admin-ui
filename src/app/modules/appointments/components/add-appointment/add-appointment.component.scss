@@ -54,3 +54,10 @@
     }
   }
 }
+
+@media (max-width: 368px) {
+  .ad-ap-dates {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

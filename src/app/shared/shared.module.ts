@@ -18,6 +18,7 @@ import { DfmSpinnerComponent } from './components/dfm-spinner.component';
 import { MonthToNamePipe } from './pipes/month-to-name.pipe';
 import { JoinWithAndPipe } from './pipes/join-with-and.pipe';
 import { NameValuePairPipe } from './pipes/name-value-pair.pipe';
+import { ApprovalTypeNamePipe } from './pipes/approval-type-name.pipe';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { NameValuePairPipe } from './pipes/name-value-pair.pipe';
     MonthToNamePipe,
     JoinWithAndPipe,
     NameValuePairPipe,
+    ApprovalTypeNamePipe,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule],
   exports: [
@@ -57,6 +59,7 @@ import { NameValuePairPipe } from './pipes/name-value-pair.pipe';
     MonthToNamePipe,
     JoinWithAndPipe,
     NameValuePairPipe,
+    ApprovalTypeNamePipe,
   ],
 })
 export class SharedModule {}

@@ -15,19 +15,20 @@ import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { formatTime } from '../../../../shared/utils/formatTime';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
+import { UserType } from '../../../../shared/models/user.model';
+import { AddAppointmentRequestData, Appointment } from '../../../../shared/models/appointment.model';
 
 interface FormValues {
-  firstname: string;
-  lastname: string;
-  email: string;
-  telephone: number;
-  doctor: number;
-  date: any;
-  time: string;
+  patientFname: string;
+  patientLname: string;
+  patientEmail: string;
+  patientTel: number;
+  startedAt: any;
+  startTime: string;
+  doctorId: number;
+  userId: number;
   roomType: RoomType;
-  roomList: number[];
   examList: number[];
-  userList: number[];
   comments: string;
 }
 
@@ -42,8 +43,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   public appointment$$ = new BehaviorSubject<any>(undefined);
 
   public userList: NameValue[] = [];
-
-  public roomList: any = { private: [], public: [] };
 
   public examList: NameValue[] = [];
 
@@ -75,17 +74,13 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       this.createForm(appointment);
     });
 
-    this.roomApiSvc.roomsGroupedByType$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      this.roomList.public = [...this.nameValuePipe.transform(rooms.public, 'name', 'id')];
-      this.roomList.private = [...this.nameValuePipe.transform(rooms.private, 'name', 'id')];
-    });
-
     this.examApiService.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
       this.examList = this.nameValuePipe.transform(exams, 'name', 'id');
       console.log(this.examList);
     });
 
-    this.staffApiSvc.staffList$
+    this.staffApiSvc
+      .getUsersByType(UserType.General)
       .pipe(takeUntil(this.destroy$$))
       .subscribe((staffs) => (this.userList = this.nameValuePipe.transform(staffs, 'firstname', 'id')));
 
@@ -102,38 +97,40 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     return this.appointmentForm.value;
   }
 
-  private createForm(appointment?: any | undefined): void {
+  private createForm(appointment?: Appointment | undefined | null): void {
     let time;
-    if (appointment?.date) {
-      const date = new Date(appointment.date);
-      time = this.datePipe.transform(date, 'hh:mmaa');
-      if (time) {
-        this.timings.push({ name: time, value: time });
+    if (appointment?.startedAt) {
+      const date = new Date(appointment.startedAt);
+
+      if (date) {
+        time = this.datePipe.transform(date, 'hh:mmaa');
+        if (time) {
+          this.timings.push({ name: time, value: time });
+        }
       }
     }
 
     this.appointmentForm = this.fb.group({
-      firstname: [appointment?.firstname ?? '', [Validators.required]],
-      lastname: [appointment?.lastname ?? '', [Validators.required]],
-      telephone: [appointment?.telephone, [Validators.required]],
-      email: [appointment?.email ?? '', []],
-      doctor: [appointment.doctor ?? null, [Validators.required]],
-      date: [
-        appointment?.date
+      patientFname: [appointment?.patientFname ?? '', [Validators.required]],
+      patientLname: [appointment?.patientLname ?? '', [Validators.required]],
+      patientTel: [appointment?.patientTel ?? null, [Validators.required]],
+      patientEmail: [appointment?.patientEmail ?? '', []],
+      doctorId: [appointment?.doctorId ?? null, [Validators.required]],
+      startedAt: [
+        appointment?.startedAt
           ? {
-              year: new Date(appointment.date).getFullYear(),
-              month: new Date(appointment.date).getMonth() + 1,
-              day: new Date(appointment.date).getDate(),
+              year: new Date(appointment.startedAt).getFullYear(),
+              month: new Date(appointment.startedAt).getMonth() + 1,
+              day: new Date(appointment.startedAt).getDate(),
             }
           : null,
         [Validators.required],
       ],
-      time: [time, [Validators.required]],
+      startTime: [time, [Validators.required]],
       roomType: [appointment?.roomType ?? null, [Validators.required]],
-      roomList: [appointment?.roomList ?? [], [Validators.required]],
       examList: [appointment?.examList ?? [], [Validators.required]],
-      userList: [appointment?.userList ?? [], [Validators.required]],
-      comments: [appointment?.comments ?? [], []],
+      userId: [appointment?.userId ?? null, [Validators.required]],
+      comments: [appointment?.comments ?? '', []],
     });
   }
 
@@ -145,11 +142,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       return;
     }
 
-    const { date, time, ...rest } = this.formValues;
+    const { startedAt, startTime, ...rest } = this.formValues;
 
-    const requestData: any = {
+    const requestData: AddAppointmentRequestData = {
       ...rest,
-      date: new Date(date.year, date.month, date.day, +time.slice(0, 2), +time.slice(3, 5)).toISOString(),
+      startedAt: new Date(startedAt.year, startedAt.month, startedAt.day, +startTime.slice(0, 2), +startTime.slice(3, 5)),
     };
 
     if (this.appointment$$.value && this.appointment$$.value?.id) {
@@ -162,7 +159,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       .upsertAppointment$(requestData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.notificationSvc.showNotification(`${this.appointment$$.value?.id ? 'Changes updated' : 'Saved'} successfully`);
+        this.notificationSvc.showNotification(`Appointment ${this.appointment$$.value?.id ? 'updated' : 'saved'} successfully`);
       });
   }
 
@@ -185,7 +182,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     }
 
     this.appointmentForm.patchValue({
-      time: formattedTime,
+      startTime: formattedTime,
     });
   }
 }
