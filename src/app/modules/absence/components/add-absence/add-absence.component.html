@@ -109,7 +109,7 @@
       </div>
 
       <div class="d-flex dfm-gap-32 flex-wrap ad-ab-radio-group">
-        <div class="d-flex flex-column dfm-gap-16 flex-1 ad-ab-repeat">
+        <div class="d-flex flex-column dfm-gap-16 flex-1 ad-ab-repeat-radio">
           <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Repeat</span>
 
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
@@ -118,27 +118,6 @@
             <dfm-radio-button class="font-weight-normal" label="Repeat" [checkedValue]="true"
                               formControlName="isRepeat"></dfm-radio-button>
           </div>
-
-          <ng-container *ngIf="formValues.isRepeat">
-            <div class="d-flex dfm-gap-32 flex-wrap ad-ab-repeat-form">
-              <div class="dfm-input-dropdown-wrapper flex-1">
-                <dfm-input-dropdown #repeatType [items]="repeatTypes" size="md" label="Repeat Type *"
-                                    placeholder="Select repeat type" formControlName="repeatType">
-                </dfm-input-dropdown>
-              </div>
-
-              <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-repeat-every">
-                <dfm-input-dropdown #repeatEveryDropdown
-                                    [items]="repeatType.value ? repeatEvery[repeatType.value] : []"
-                                    [multiple]="true"
-                                    [placeholder]="!!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + ' Selected' : 'Select repeat every'"
-                                    size="md"
-                                    label="Repeat Every *"
-                                    formControlName="repeatDays">
-                </dfm-input-dropdown>
-              </div>
-            </div>
-          </ng-container>
         </div>
 
         <div class="d-flex flex-column dfm-gap-16 flex-1">
@@ -165,6 +144,32 @@
           </div>
         </div>
       </div>
+
+      <ng-container *ngIf="formValues.isRepeat">
+        <div class="d-flex dfm-gap-32 flex-wrap align-items-start ad-ab-repeat-form">
+          <div class="dfm-input-dropdown-wrapper flex-1">
+            <dfm-input-dropdown #repeatType [items]="repeatTypes" size="md" label="Repeat Type *"
+                                placeholder="Select repeat type" formControlName="repeatType">
+            </dfm-input-dropdown>
+          </div>
+
+          <div class="d-flex dfm-gap-8 align-items-end flex-1">
+            <dfm-input class="flex-1" size="md" type="number" formControlName="repeatFrequency" label="Repeat Every" placeholder="Enter repeat every"></dfm-input>
+            <div *ngIf="repeatType.value" class="d-flex justify-content-center align-items-center text-sm ad-ab-repeat-type-text">{{ repeatTypeToName[repeatType.value] }}</div>
+          </div>
+
+          <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
+            <dfm-input-dropdown #repeatEveryDropdown
+                                [items]="repeatType.value ? repeatEvery[repeatType.value] : []"
+                                [multiple]="true"
+                                [placeholder]="!!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + ' Selected' : 'Select repeat every'"
+                                size="md"
+                                label="Repeat On *"
+                                formControlName="repeatDays">
+            </dfm-input-dropdown>
+          </div>
+        </div>
+      </ng-container>
 
       <div class="d-flex dfm-gap-32 flex-wrap flex-1">
         <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-rooms">
