@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ApprovalType } from '../models/appointment.model';
+import { AppointmentStatus } from '../models/status';
 
 @Pipe({
   name: 'approvalTypeName',
@@ -11,11 +11,11 @@ export class ApprovalTypeNamePipe implements PipeTransform {
     2: 'Cancelled',
   };
 
-  public transform(approvalType: ApprovalType): string {
+  public transform(approvalType: AppointmentStatus): string {
     switch (approvalType) {
-      case ApprovalType.Approved:
-      case ApprovalType.Cancelled:
-      case ApprovalType.Pending:
+      case AppointmentStatus.Approved:
+      case AppointmentStatus.Cancelled:
+      case AppointmentStatus.Pending:
         return this.approvalTypes[approvalType];
       default:
         return '';

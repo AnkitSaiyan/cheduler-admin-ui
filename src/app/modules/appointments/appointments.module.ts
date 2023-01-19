@@ -6,9 +6,11 @@ import { AppointmentsRoutingModule } from './appointments-routing.module';
 import { AppointmentsComponent } from './pages/appointments.component';
 import { AddAppointmentComponent } from './components/add-appointment/add-appointment.component';
 import { SharedModule } from '../../shared/shared.module';
+import { AppointmentListComponent } from './components/appointment-list/appointment-list.component';
+import { ViewAppointmentComponent } from './components/view-appointment/view-appointment.component';
 
 @NgModule({
-  declarations: [AppointmentsComponent, AddAppointmentComponent],
+  declarations: [AppointmentsComponent, AddAppointmentComponent, AppointmentListComponent, ViewAppointmentComponent],
   imports: [CommonModule, AppointmentsRoutingModule, SharedModule, ReactiveFormsModule],
 })
 export class AppointmentsModule {}

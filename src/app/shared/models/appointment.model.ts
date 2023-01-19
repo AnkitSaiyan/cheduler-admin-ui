@@ -2,12 +2,7 @@ import { Physician } from './physician.model';
 import { RoomType } from './rooms.model';
 import { Exam } from './exam.model';
 import { User } from './user.model';
-
-export enum ApprovalType {
-  Pending,
-  Approved,
-  Cancelled,
-}
+import { AppointmentStatus, ReadStatus } from './status';
 
 export interface Appointment {
   id: number;
@@ -20,9 +15,9 @@ export interface Appointment {
   examName?: string;
   roomType: RoomType;
   comments: string;
-  approval: ApprovalType;
+  approval: AppointmentStatus;
   rejectReason: string;
-  readStatus?: 0;
+  readStatus: ReadStatus;
   startedAt: Date;
   endedAt?: Date;
   createdBy?: number;
@@ -45,7 +40,7 @@ export interface AddAppointmentRequestData {
   comments: string;
   startedAt: Date;
   examList: number[];
-  approval?: ApprovalType;
+  approval?: AppointmentStatus;
   createdBy?: number;
   updatedBy?: number;
   rejectReason?: string;

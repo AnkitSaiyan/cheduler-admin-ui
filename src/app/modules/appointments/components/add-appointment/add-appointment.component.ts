@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BehaviorSubject, from, switchMap, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -17,6 +18,8 @@ import { formatTime } from '../../../../shared/utils/formatTime';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { UserType } from '../../../../shared/models/user.model';
 import { AddAppointmentRequestData, Appointment } from '../../../../shared/models/appointment.model';
+import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, STAFF_ID } from '../../../../shared/utils/const';
+import { RouterStateService } from '../../../../core/services/router-state.service';
 
 interface FormValues {
   patientFname: string;
@@ -42,6 +45,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public appointment$$ = new BehaviorSubject<any>(undefined);
 
+  public loading$$ = new BehaviorSubject(false);
+
   public userList: NameValue[] = [];
 
   public examList: NameValue[] = [];
@@ -51,6 +56,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   public timings: NameValue[];
 
   public roomType = RoomType;
+
+  public edit = false;
+
+  public comingFromRoute = '';
 
   constructor(
     private fb: FormBuilder,
@@ -63,16 +72,51 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     private nameValuePipe: NameValuePairPipe,
     private timeInIntervalPipe: TimeInIntervalPipe,
     private datePipe: DatePipe,
+    private routerStateSvc: RouterStateService,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {
     super();
     this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(30))];
+
+    const state = this.router.getCurrentNavigation()?.extras?.state;
+    if (state !== undefined) {
+      this.loading$$.next(true);
+      this.comingFromRoute = state[COMING_FROM_ROUTE];
+      this.edit = state[EDIT];
+
+      localStorage.setItem(COMING_FROM_ROUTE, this.comingFromRoute);
+      if (typeof this.edit === 'boolean') {
+        localStorage.setItem(EDIT, this.edit.toString());
+      }
+    } else {
+      this.loading$$.next(true);
+      this.getComingFromRouteFromLocalStorage();
+    }
+  }
+
+  private getComingFromRouteFromLocalStorage() {
+    const comingFromRoute = localStorage.getItem(COMING_FROM_ROUTE);
+    if (comingFromRoute) {
+      this.comingFromRoute = comingFromRoute;
+    }
+    const edit = localStorage.getItem(EDIT);
+    if (edit) {
+      this.edit = edit === 'true';
+    }
   }
 
   public ngOnInit(): void {
-    this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
-      this.appointment$$.next(appointment ?? {});
-      this.createForm(appointment);
-    });
+    this.routerStateSvc
+      .listenForParamChange$(APPOINTMENT_ID)
+      .pipe(
+        switchMap((appointmentID) => this.appointmentApiSvc.getAppointmentByID(+appointmentID)),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe((appointment) => {
+        this.appointment$$.next(appointment ?? {});
+        this.createForm(appointment);
+      });
 
     this.examApiService.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
       this.examList = this.nameValuePipe.transform(exams, 'name', 'id');
@@ -82,7 +126,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.staffApiSvc
       .getUsersByType(UserType.General)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((staffs) => (this.userList = this.nameValuePipe.transform(staffs, 'firstname', 'id')));
+      .subscribe((staffs) => {
+        console.log(staffs);
+        this.userList = this.nameValuePipe.transform(staffs, 'firstname', 'id');
+        console.log(this.userList);
+      });
 
     this.physicianApiSvc.physicians$
       .pipe(takeUntil(this.destroy$$))
@@ -90,6 +138,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   public override ngOnDestroy() {
+    localStorage.removeItem(COMING_FROM_ROUTE);
+    localStorage.removeItem(EDIT);
     super.ngOnDestroy();
   }
 
@@ -115,12 +165,12 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       patientLname: [appointment?.patientLname ?? '', [Validators.required]],
       patientTel: [appointment?.patientTel ?? null, [Validators.required]],
       patientEmail: [appointment?.patientEmail ?? '', []],
-      doctorId: [appointment?.doctorId ?? null, [Validators.required]],
+      doctorId: [appointment?.doctorId?.toString() ?? null, [Validators.required]],
       startedAt: [
         appointment?.startedAt
           ? {
               year: new Date(appointment.startedAt).getFullYear(),
-              month: new Date(appointment.startedAt).getMonth() + 1,
+              month: new Date(appointment.startedAt).getMonth(),
               day: new Date(appointment.startedAt).getDate(),
             }
           : null,
@@ -128,8 +178,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       ],
       startTime: [time, [Validators.required]],
       roomType: [appointment?.roomType ?? null, [Validators.required]],
-      examList: [appointment?.examList ?? [], [Validators.required]],
-      userId: [appointment?.userId ?? null, [Validators.required]],
+      examList: [appointment?.examList.map((examID) => examID?.toString()) ?? [], [Validators.required]],
+      userId: [appointment?.userId?.toString() ?? null, [Validators.required]],
       comments: [appointment?.comments ?? '', []],
     });
   }
@@ -155,11 +205,19 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
     console.log(requestData);
 
-    this.appointmentApiSvc
-      .upsertAppointment$(requestData)
+    from(this.appointmentApiSvc.upsertAppointment$(requestData))
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         this.notificationSvc.showNotification(`Appointment ${this.appointment$$.value?.id ? 'updated' : 'saved'} successfully`);
+        let route: string;
+        if (this.comingFromRoute === 'view') {
+          route = '../view';
+        } else {
+          route = this.edit ? '/appointment' : '../';
+        }
+
+        console.log(route);
+        this.router.navigate([route], { relativeTo: this.route });
       });
   }
 
