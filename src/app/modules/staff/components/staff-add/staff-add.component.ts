@@ -140,9 +140,10 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
   }
 
   public override ngOnDestroy() {
-    super.ngOnDestroy();
     localStorage.removeItem(COMING_FROM_ROUTE);
     localStorage.removeItem(EDIT);
+    localStorage.removeItem(STAFF_ID);
+    super.ngOnDestroy();
   }
 
   private createForm(staffDetails?: User | undefined): void {

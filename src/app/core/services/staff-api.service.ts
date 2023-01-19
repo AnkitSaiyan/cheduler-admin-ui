@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { combineLatest, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, of, startWith, Subject, switchMap } from 'rxjs';
 import { AvailabilityType, User, UserType } from '../../shared/models/user.model';
 import { Status } from '../../shared/models/status';
 import { AddStaffRequestData } from '../../shared/models/staff.model';
@@ -482,5 +482,9 @@ export class StaffApiService {
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
       switchMap(() => of(this.staffLists.find((staff) => +staff.id === +staffID))),
     );
+  }
+
+  public getUsersByType(userType: UserType): Observable<User[]> {
+    return of(this.staffLists).pipe(map((staffs) => staffs.filter((staff) => staff.userType === userType)));
   }
 }

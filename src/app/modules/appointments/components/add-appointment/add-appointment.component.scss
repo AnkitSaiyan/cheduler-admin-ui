@@ -1,6 +1,10 @@
 .ad-ap-main-wrapper {
   transition: all ease 200ms;
 
+  .ad-ap-action-buttons {
+    display: flex;
+  }
+
   .ad-ap-section2 {
     // viewport - nav - padding - sec1 height - sec gap - extra
     max-height: calc(100vh - 48px - 24px - 40px - 16px - 16px);
@@ -26,6 +30,32 @@
       display: none !important;
     }
 
+    .ad-ap-title-buttons {
+      display: none !important;
+    }
+
+    .ad-ap-title-buttons-mv {
+      display: flex;
+    }
+
+    .ad-ap-action-buttons {
+      background: white;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      column-gap: 16px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      z-index: 10000;
+
+      &>dfm-button {
+        height: 44px;
+        flex: 1;
+      }
+    }
+
     .ad-ap-section2 {
       background: transparent;
       padding: 0;
@@ -45,12 +75,14 @@
             width: 100%;
           }
         }
-
-        .ad-ap-save-changes-btn-mv {
-          display: flex;
-          margin-left: auto;
-        }
       }
     }
+  }
+}
+
+@media (max-width: 368px) {
+  .ad-ap-dates {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }

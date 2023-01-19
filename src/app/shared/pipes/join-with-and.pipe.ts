@@ -4,9 +4,9 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'joinWithAnd',
 })
 export class JoinWithAndPipe implements PipeTransform {
-  public transform(value: any[], key?: string): string {
+  public transform(value: any[] | undefined, key?: string): string {
     if (!Array.isArray(value)) {
-      return value;
+      return '';
     }
 
     if (!value || !value.length) {
