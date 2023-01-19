@@ -10,6 +10,12 @@
     .ad-ab-time-dropdown {
       min-width: 128px;
     }
+
+    .ad-ab-repeat-type-text {
+      border: 1px solid var(--dfm-main-300);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
   }
 }
 
@@ -52,6 +58,10 @@
       .ad-ab-repeat-form {
         flex-direction: column;
         gap: 16px;
+      }
+
+      .ad-ab-repeat-radio {
+        order: 1;
       }
 
       .ad-ab-rooms, .ad-ab-staffs {

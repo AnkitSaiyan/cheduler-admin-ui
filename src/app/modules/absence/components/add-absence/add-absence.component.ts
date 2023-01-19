@@ -71,9 +71,15 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   public endTimes: NameValue[];
 
   public repeatEvery = {
-    daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
+    // daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
     weekly: [...this.getRepeatEveryItems(RepeatType.Weekly)],
-    monthly: [...this.getRepeatEveryItems(RepeatType.Monthly)],
+    monthly: [...this.getRepeatEveryItems(RepeatType.Daily)],
+  };
+
+  public repeatTypeToName = {
+    daily: 'Days',
+    weekly: 'Weeks',
+    monthly: 'Months',
   };
 
   constructor(
@@ -175,6 +181,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       isHoliday: [!!absenceDetails?.isHoliday, []],
       repeatType: [absenceDetails?.repeatType ?? null, []],
       repeatDays: [absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '', []],
+      repeatFrequency: [absenceDetails?.repeatFrequency ?? null, []],
       staffList: [absenceDetails?.staffList ?? [], [Validators.required]],
       roomList: [absenceDetails?.roomList ?? [], [Validators.required]],
       info: [absenceDetails?.info ?? '', [Validators.required]],
