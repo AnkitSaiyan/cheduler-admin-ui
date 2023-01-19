@@ -58,6 +58,10 @@
       .ad-ab-repeat-form {
         flex-direction: column;
         gap: 16px;
+
+        & > div {
+          width: 100%;
+        }
       }
 
       .ad-ab-repeat-radio {
