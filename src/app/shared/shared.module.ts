@@ -19,6 +19,7 @@ import { MonthToNamePipe } from './pipes/month-to-name.pipe';
 import { JoinWithAndPipe } from './pipes/join-with-and.pipe';
 import { NameValuePairPipe } from './pipes/name-value-pair.pipe';
 import { ApprovalTypeNamePipe } from './pipes/approval-type-name.pipe';
+import { SumPipe } from './pipes/sum.pipe';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { ApprovalTypeNamePipe } from './pipes/approval-type-name.pipe';
     JoinWithAndPipe,
     NameValuePairPipe,
     ApprovalTypeNamePipe,
+    SumPipe,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule],
   exports: [
@@ -60,6 +62,7 @@ import { ApprovalTypeNamePipe } from './pipes/approval-type-name.pipe';
     JoinWithAndPipe,
     NameValuePairPipe,
     ApprovalTypeNamePipe,
+    SumPipe,
   ],
 })
 export class SharedModule {}
