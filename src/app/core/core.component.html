@@ -1,16 +1,42 @@
 <div class="dfm-layout">
-  <dfm-navigation-bar [content]="content">
+  <dfm-navigation-bar [content]="content" class="">
     <ng-template #navigationItems>
-      <dfm-navigation-item class="navigation-items" icon="home-03" title="Dashboard" routerLink="/dashboard" [exact]="false"></dfm-navigation-item>
-      <dfm-navigation-item class="navigation-items" icon="file-06" title="Appointments" routerLink="/appointment" [exact]="false"></dfm-navigation-item>
-      <dfm-navigation-item class="navigation-items" icon="user-01" title="Staff" routerLink="/staff" [exact]="false"></dfm-navigation-item>
-      <dfm-navigation-item class="navigation-items" icon="building-01" title="Rooms" routerLink="/room" [exact]="false"></dfm-navigation-item>
-      <dfm-navigation-item class="navigation-items" icon="medical-circle" title="Physician" routerLink="/physician" [exact]="false"></dfm-navigation-item>
-      <dfm-navigation-item class="navigation-items" icon="tool-02" title="Site Management" routerLink="/site-management" [exact]="false"></dfm-navigation-item>
-      <dfm-navigation-item class="navigation-items" icon="clock" title="Practice Hours" routerLink="/practice-hours" [exact]="false"></dfm-navigation-item>
-      <dfm-navigation-item class="navigation-items" icon="user-01" title="User" routerLink="/user" [exact]="false"></dfm-navigation-item>
-      <dfm-navigation-item class="navigation-items" icon="user-01" title="Exams" routerLink="/exam" [exact]="false"></dfm-navigation-item>
-      <dfm-navigation-item class="navigation-items" icon="user-01" title="Absence" routerLink="/absence" [exact]="false"></dfm-navigation-item>
+      <dfm-navigation-item class="navigation-items" icon="home-03" title="Dashboard" routerLink="/dashboard"
+                           [exact]="false"></dfm-navigation-item>
+      <dfm-navigation-item class="navigation-items" icon="file-06" title="Appointments" routerLink="/appointment"
+                           [exact]="false"></dfm-navigation-item>
+      <dfm-navigation-item class="navigation-items" icon="user-01" title="Absence" routerLink="/absence"
+                           [exact]="false"></dfm-navigation-item>
+
+      <div class="position-relative">
+        <div #configuration class="navigation-items d-flex dfm-gap-12 h-fit nav-item-configuration-btn text-sm"
+             (click)="toggleMenu($event)">
+          <div style="width: 20px; height: 20px;">
+            <dfm-icon [name]="configurationMenuIconName"></dfm-icon>
+          </div>
+          <span #configurationMenuText class="font-weight-medium">{{ configurationMenuTitle | titlecase }}</span>
+        </div>
+        <div #configurationMenu class="nav-configuration-menu position-absolute hidden">
+          <dfm-navigation-item (click)="toggleMenu($event)" icon="user-01" title="Staff"
+                               routerLink="/staff" [exact]="false"></dfm-navigation-item>
+          <dfm-navigation-item (click)="toggleMenu($event)"
+                               icon="building-01" title="Rooms" routerLink="/room"
+                               [exact]="false"></dfm-navigation-item>
+          <dfm-navigation-item (click)="toggleMenu($event)"
+                               icon="medical-circle" title="Physician" routerLink="/physician"
+                               [exact]="false"></dfm-navigation-item>
+          <dfm-navigation-item (click)="toggleMenu($event)"
+                               icon="tool-02" title="Site Management" routerLink="/site-management"
+                               [exact]="false"></dfm-navigation-item>
+          <dfm-navigation-item (click)="toggleMenu($event)"
+                               icon="clock" title="Practice Hours" routerLink="/practice-hours"
+                               [exact]="false"></dfm-navigation-item>
+          <dfm-navigation-item (click)="toggleMenu($event)"
+                               icon="user-01" title="User" routerLink="/user" [exact]="false"></dfm-navigation-item>
+          <dfm-navigation-item (click)="toggleMenu($event)"
+                               icon="user-x-01" title="Exams" routerLink="/exam" [exact]="false"></dfm-navigation-item>
+        </div>
+      </div>
     </ng-template>
     <ng-template #profileItems>
       <!--      <dfm-navigation-item-tenant [tenants]="tenants" [currentTenantValue]="currentTenant" (tenantChanged)="changeTenant($event)"-->

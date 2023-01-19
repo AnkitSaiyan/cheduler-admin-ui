@@ -451,6 +451,15 @@ ngb-datepicker {
   }
 }
 
+.nav-configuration-menu {
+  dfm-navigation-item {
+    a {
+      width: 100% !important;
+      border-radius: 0 !important;
+    }
+  }
+}
+
 
 // Custom Global styling ==============================================================
 .overflow-y-auto {
@@ -595,6 +604,10 @@ ngb-datepicker {
 .rotate-z-0 {
   transition: all ease-in-out 150ms;
   transform: rotateZ(0deg);
+}
+
+.bg-transparent {
+  background: transparent;
 }
 
 .modal-backdrop-remove-mv {

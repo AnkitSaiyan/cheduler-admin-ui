@@ -102,7 +102,7 @@
               <span *ngFor="let staff of absenceDetails?.staffList; let i = index"
                     class="text-wrap">
               {{ staffIdToNameMap.get(staff) | titlecase }}
-                <span *ngIf="i < absenceDetails.staffList.length - 1"> {{ ', ' }}</span>
+                <span *ngIf="i < absenceDetails.staffList.length - 1"> {{ ',' }}&nbsp;</span>
             </span>
           </div>
           <span class="flex-1" *ngIf="!absenceDetails?.staffList?.length">{{ '' | dashIfNothing}}</span>
@@ -145,7 +145,7 @@
         <span class="font-weight-medium">Absence Repeat Details</span>
       </header>
 
-      <div class="d-flex flex-column dfm-gap-16 overflow-y-auto dfm-bg-main-100 dfm-p-16">
+      <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Start Date</span>
           <span class="flex-1">{{ absenceDetails.startedAt | date : 'short' }}</span>
@@ -164,7 +164,7 @@
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Repeat Every</span>
           <span class="flex-1">{{ absenceDetails.repeatFrequency }}
-            <span *ngIf="absenceDetails?.repeatFrequency">{{ absenceDetails.repeatType | repeatTypeToName }}</span>
+            <span>{{ absenceDetails.repeatType | repeatTypeToName | dashIfNothing }}</span>
           </span>
         </div>
 
@@ -176,7 +176,7 @@
                 *ngIf="absenceDetails.repeatDays && absenceDetails.repeatType === repeatType.Weekly">{{ absenceDetails.repeatDays.split(',') | weekdayToName : true | joinWithAnd | dashIfNothing }}</span>
           <span class="flex-1"
                 *ngIf="absenceDetails.repeatDays && absenceDetails.repeatType === repeatType.Daily">{{ '' | dashIfNothing }}</span>
-          <span *ngIf="!absenceDetails.repeatDays">{{ '' | dashIfNothing }}</span>
+          <span *ngIf="!absenceDetails.repeatDays" class="flex-1">{{ '' | dashIfNothing }}</span>
         </div>
       </div>
     </div>
