@@ -54,4 +54,8 @@ export class RouterStateService {
       distinctUntilChanged(),
     );
   }
+
+  public listenForUrlChange$(): Observable<string> {
+    return this.routerState$$.pipe(map((state) => state.url));
+  }
 }

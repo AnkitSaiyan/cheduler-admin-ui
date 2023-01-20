@@ -1,14 +1,16 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NotificationService } from 'diflexmo-angular-design';
-import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs';
+import { Router } from '@angular/router';
+import { takeUntil } from 'rxjs';
+import { RouterStateService } from './services/router-state.service';
+import { DestroyableComponent } from '../shared/components/destroyable.component';
 
 @Component({
   selector: 'dfm-main',
   templateUrl: './core.component.html',
   styleUrls: ['./core.component.scss'],
 })
-export class CoreComponent implements OnInit {
+export class CoreComponent extends DestroyableComponent implements OnInit, OnDestroy {
   @ViewChild('configurationMenu') private configMenu!: ElementRef;
 
   @ViewChild('configuration') private configBtn!: ElementRef;
@@ -41,25 +43,35 @@ export class CoreComponent implements OnInit {
     exams: 'user-x-01',
   };
 
-  constructor(private notificationSvc: NotificationService, private router: Router) {}
+  constructor(private notificationSvc: NotificationService, private routerStateSvc: RouterStateService) {
+    super();
+  }
 
   public ngOnInit(): void {
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      const { snapshot } = this.router.routerState;
-      const currentRouteName = snapshot.url.split('/')[1];
+    this.routerStateSvc
+      .listenForUrlChange$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((url) => this.updateNavBar(url));
+  }
 
-      if (this.notConfigurationRoutes.includes(currentRouteName)) {
-        this.configurationMenuTitle = 'Configuration';
-      } else {
-        this.configurationMenuTitle = currentRouteName;
-      }
+  public override ngOnDestroy() {
+    super.ngOnDestroy();
+  }
 
-      this.configurationMenuIconName = this.navTitleToIconObj[currentRouteName] ?? 'tool-02';
-    });
+  private updateNavBar(url: string) {
+    const currentRouteName = url.split('/')[1];
+
+    if (this.notConfigurationRoutes.includes(currentRouteName)) {
+      this.configurationMenuTitle = 'Configuration';
+    } else {
+      this.configurationMenuTitle = currentRouteName;
+    }
+
+    this.configurationMenuIconName = this.navTitleToIconObj[currentRouteName] ?? 'tool-02';
   }
 
   public toggleMenu(e: MouseEvent, reset = false) {
-    console.log('in', reset);
+    // console.log('in', reset);
     const el = this.configMenu?.nativeElement as HTMLDivElement;
     if (reset) {
       if (!el.className.includes('hidden')) {
@@ -69,12 +81,12 @@ export class CoreComponent implements OnInit {
       e.stopPropagation();
       e.stopImmediatePropagation();
       el.classList.toggle('hidden');
-      console.log(el.classList);
+      // console.log(el.classList);
     }
 
     const config = this.configMenu?.nativeElement as HTMLDivElement;
     if (!this.notConfigurationRoutes.includes(this.configurationMenuTitle)) {
-      console.log(config);
+      // console.log(config);
       config.classList.add('nav-item-selected-bg');
     } else {
       config.classList.remove('nav-item-selected-bg');
