@@ -21,11 +21,11 @@ import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 export class ViewAbsenceComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public absenceDetails$$ = new BehaviorSubject<Absence | undefined>(undefined);
 
-  public roomIdToNameMap = new Map<number, string>();
-
-  public staffIdToNameMap = new Map<number, string>();
-
   public repeatType = RepeatType;
+
+  public staffNames: string[] = [];
+
+  public roomNames: string[] = [];
 
   constructor(
     private absenceApiSvc: AbsenceApiService,
@@ -51,13 +51,28 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
         console.log(absenceDetails);
       });
 
-    this.staffApiSvc.staffList$
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((staffs) => staffs.forEach((staff) => this.staffIdToNameMap.set(staff.id, `${staff.firstname} ${staff.lastname}`)));
+    this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
+      const staffIdToNameMap = new Map<number, string>();
+      staffs.forEach((staff) => staffIdToNameMap.set(+staff.id, `${staff.firstname} ${staff.lastname}`));
 
-    this.roomApiSvc.rooms$
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((rooms) => rooms.forEach((room) => this.roomIdToNameMap.set(room.id, room.name)));
+      this.absenceDetails$$.value?.staffList.forEach((id) => {
+        const name = staffIdToNameMap.get(+id);
+        if (name) {
+          this.staffNames.push(name);
+        }
+      });
+    });
+
+    this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
+      const roomIdToNameMap = new Map<number, string>();
+      rooms.forEach((room) => roomIdToNameMap.set(+room.id, room.name));
+      this.absenceDetails$$.value?.roomList.forEach((id) => {
+        const name = roomIdToNameMap.get(+id);
+        if (name) {
+          this.roomNames.push(name);
+        }
+      });
+    });
   }
 
   public deleteAbsence(id: number) {
