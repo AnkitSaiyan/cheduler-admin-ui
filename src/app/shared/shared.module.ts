@@ -21,6 +21,7 @@ import { NameValuePairPipe } from './pipes/name-value-pair.pipe';
 import { ApprovalTypeNamePipe } from './pipes/approval-type-name.pipe';
 import { SumPipe } from './pipes/sum.pipe';
 import { RepeatTypeToNamePipe } from './pipes/repeat-type-to-name.pipe';
+import { AppendTextToInputDirective } from './directives/append-text-to-input.directive';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { RepeatTypeToNamePipe } from './pipes/repeat-type-to-name.pipe';
     ApprovalTypeNamePipe,
     SumPipe,
     RepeatTypeToNamePipe,
+    AppendTextToInputDirective,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule],
   exports: [
@@ -66,6 +68,7 @@ import { RepeatTypeToNamePipe } from './pipes/repeat-type-to-name.pipe';
     ApprovalTypeNamePipe,
     SumPipe,
     RepeatTypeToNamePipe,
+    AppendTextToInputDirective,
   ],
 })
 export class SharedModule {}

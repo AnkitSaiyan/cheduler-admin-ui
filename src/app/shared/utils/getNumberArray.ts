@@ -13,7 +13,5 @@ export function getNumberArray(end: number, start = 1, step = 1): number[] {
     numbers.push(i);
   }
 
-  console.log(numbers);
-
   return numbers;
 }

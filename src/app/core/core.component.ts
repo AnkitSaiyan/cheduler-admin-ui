@@ -71,7 +71,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
   }
 
   public toggleMenu(e: MouseEvent, reset = false) {
-    console.log('in', reset);
+    // console.log('in', reset);
     const el = this.configMenu?.nativeElement as HTMLDivElement;
     if (reset) {
       if (!el.className.includes('hidden')) {
@@ -81,12 +81,12 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       e.stopPropagation();
       e.stopImmediatePropagation();
       el.classList.toggle('hidden');
-      console.log(el.classList);
+      // console.log(el.classList);
     }
 
     const config = this.configMenu?.nativeElement as HTMLDivElement;
     if (!this.notConfigurationRoutes.includes(this.configurationMenuTitle)) {
-      console.log(config);
+      // console.log(config);
       config.classList.add('nav-item-selected-bg');
     } else {
       config.classList.remove('nav-item-selected-bg');

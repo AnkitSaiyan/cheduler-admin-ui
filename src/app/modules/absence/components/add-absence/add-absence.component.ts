@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, take, takeUntil } from 'rxjs';
-import { NotificationType } from 'diflexmo-angular-design';
+import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -28,7 +28,7 @@ interface FormValues {
   isHoliday: boolean;
   priority: PriorityType;
   repeatType: RepeatType;
-  repeatFrequency: number;
+  repeatFrequency: string;
   repeatDays: string[];
   staffList: number[];
   roomList: number[];
@@ -123,7 +123,14 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     this.absenceForm
       .get('repeatType')
       ?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
-      .subscribe(() => this.absenceForm.get('repeatDays')?.setValue([]));
+      .subscribe((value) => {
+        this.absenceForm.get('repeatDays')?.setValue([]);
+        if (this.formValues.repeatFrequency) {
+          this.absenceForm
+            .get('repeatFrequency')
+            ?.setValue(`${this.formValues.repeatFrequency.toString().split(' ')[0]} ${this.repeatTypeToName[value]}`);
+        }
+      });
   }
 
   public override ngOnDestroy() {
@@ -210,6 +217,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       startedAt: new Date(startedAt.year, startedAt.month, startedAt.day, +startTime.slice(0, 2), +startTime.slice(3, 5)).toISOString(),
       endedAt: new Date(endedAt.year, endedAt.month, endedAt.day, +endTime.slice(0, 2), +endTime.slice(3, 5)).toISOString(),
       repeatDays: '',
+      repeatFrequency: rest.repeatFrequency ? +rest.repeatFrequency.split(' ')[0] : 0,
     };
 
     if (repeatDays.length) {
@@ -281,5 +289,34 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     this.absenceForm.patchValue({
       [controlName]: formattedTime,
     });
+  }
+
+  public handleFocusOut(repeatFrequency: InputComponent) {
+    let { value } = repeatFrequency;
+    // eslint-disable-next-line no-param-reassign
+    repeatFrequency.type = 'text';
+    if (!value.toString().includes(this.repeatTypeToName[this.formValues.repeatType]) && +value > 0) {
+      value += ` ${this.repeatTypeToName[this.formValues.repeatType]}`;
+      // eslint-disable-next-line no-param-reassign
+      repeatFrequency.value = value;
+    }
+  }
+
+  public handleFocusIn(repeatFrequency: InputComponent) {
+    const { value } = repeatFrequency;
+
+    // eslint-disable-next-line no-param-reassign
+    repeatFrequency.type = 'number';
+    if (repeatFrequency.value) {
+      const num = value.split(' ')[0];
+      if (num && !Number.isNaN(+num)) {
+        // eslint-disable-next-line no-param-reassign
+        repeatFrequency.value = +num;
+      }
+    }
+  }
+
+  public handleChange(repeatFrequency: InputComponent) {
+    console.log(repeatFrequency);
   }
 }
