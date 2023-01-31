@@ -1,0 +1,68 @@
+<div class="bg-white d-flex flex-column dfm-gap-16 dfm-p-24 h-100">
+  <section class="calendar-header">
+    <h4 *ngIf="selectedDate" class="">{{ selectedDate | date : 'MMM dd, yyyy' }}</h4>
+
+    <div class="d-flex dfm-gap-8 flex-wrap">
+      <div>
+        <dfm-button-icon
+          color="secondary-gray"
+          size="sm"
+          icon="calendar-date"
+        ></dfm-button-icon>
+      </div>
+
+      <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label">
+        <dfm-input-dropdown size="sm" [formControl]="calendarViewFormControl" [showDescription]="false" [items]="calendarViewType"></dfm-input-dropdown>
+      </div>
+
+      <div class="d-flex dfm-gap-8 flex-1">
+        <div>
+          <dfm-button-icon
+            color="secondary-gray"
+            size="sm"
+            icon="chevron-left"
+            (click)="changeDate(-1)"
+          ></dfm-button-icon>
+        </div>
+
+        <div class="flex-1">
+          <dfm-button
+            color="secondary-gray"
+            size="sm"
+            class="h-100"
+          >Today</dfm-button>
+        </div>
+
+        <div>
+          <dfm-button-icon
+            color="secondary-gray"
+            size="sm"
+            icon="chevron-right"
+            (click)="changeDate(1)"
+          ></dfm-button-icon>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="calendar-body h-100">
+    <ng-container [ngSwitch]="calendarViewFormControl.value">
+      <ng-container *ngSwitchCase="'month'">
+        <dfm-calendar-month-view
+          class="h-100"
+          (selectedDateEvent)="updateDate($event)"
+          [changeDate$$]="changeDate$$"
+        >
+        </dfm-calendar-month-view>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'week'">
+        <dfm-calendar-week-view></dfm-calendar-week-view>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'day'">
+        <dfm-calendar-day-view></dfm-calendar-day-view>
+      </ng-container>
+    </ng-container>
+  </section>
+</div>

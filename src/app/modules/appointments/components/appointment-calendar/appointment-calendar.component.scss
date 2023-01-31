@@ -1,0 +1,16 @@
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  row-gap: 16px;
+
+  h4 {
+    margin: 0;
+  }
+}
+
+.calendar-body {
+  overflow: auto;
+}
