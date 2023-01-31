@@ -1,0 +1,56 @@
+table, th, tr, td {
+  border: 1px solid var(--dfm-main-300);
+  border-collapse: collapse;
+}
+
+.calender-month-view {
+  transition: all 200ms linear;
+  width: 100%;
+  height: 100%;
+
+  th, td {
+    padding: 12px;
+  }
+
+  .calender-month-view-weekday {
+    background: var(--dfm-table-odd-cell-bg);
+
+    th {
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+  }
+
+  .calender-month-view-day-cell {
+    transition: all 500ms linear;
+    vertical-align: top;
+
+    .calender-month-view-day {
+      transition: all 150ms linear;
+      text-align: center;
+      width: 32px;
+      height: 32px;
+      float: right;
+      border-radius: 50%;
+      line-height: 16px;
+      padding: 8px;
+
+      &:hover {
+        cursor: pointer;
+        background: var(--dfm-main-200);
+        color: black;
+      }
+    }
+
+    .calender-month-view-day-light {
+      color: var(--dfm-main-300);
+    }
+  }
+
+  .calender-month-view-today {
+    background: coral;
+    color: white;
+  }
+
+}
