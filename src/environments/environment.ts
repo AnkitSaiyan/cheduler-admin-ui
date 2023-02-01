@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  serverBaseUrl: 'https://diflexmo-scheduler-api-dev.azurewebsites.net/api',
 };
 
 /*
