@@ -6,6 +6,7 @@ import { Weekday } from '../models/calendar.model';
 })
 export class WeekdayToNamePipe implements PipeTransform {
   private weekdays = {
+    0: 'Sunday',
     1: 'Monday',
     2: 'Tuesday',
     3: 'Wednesday',
@@ -15,7 +16,8 @@ export class WeekdayToNamePipe implements PipeTransform {
     7: 'Sunday',
   };
 
-  public transform(weekday: Weekday | any[], short = false): any {
+  public transform(weekday: Weekday | any[], short = false, startWithSunday = false): any {
+    console.log(weekday);
     if (typeof weekday === 'number') {
       switch (weekday) {
         case Weekday.MON:
@@ -27,6 +29,9 @@ export class WeekdayToNamePipe implements PipeTransform {
         case Weekday.SUN:
           return (short ? this.weekdays[weekday].slice(0, 3) : this.weekdays[weekday]) as string;
         default:
+          if (startWithSunday && weekday === 0) {
+            return (short ? this.weekdays[weekday].slice(0, 3) : this.weekdays[weekday]) as string;
+          }
           return '';
       }
     } else if (Array.isArray(weekday)) {

@@ -40,7 +40,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: AppointmentStatus | null } | null>(null);
 
-  public calendarView$$ = new BehaviorSubject<boolean>(false);
+  public calendarView$$ = new BehaviorSubject<boolean>(true);
 
   public selectedAppointmentIDs: string[] = [];
 

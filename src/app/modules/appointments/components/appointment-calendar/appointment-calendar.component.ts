@@ -34,7 +34,7 @@ export class AppointmentCalendarComponent implements OnInit {
   constructor(private cdr: ChangeDetectorRef) {}
 
   public ngOnInit(): void {
-    this.calendarViewFormControl.setValue('month');
+    this.calendarViewFormControl.setValue('week');
 
     this.calendarViewFormControl.valueChanges.pipe().subscribe((value) => {});
   }

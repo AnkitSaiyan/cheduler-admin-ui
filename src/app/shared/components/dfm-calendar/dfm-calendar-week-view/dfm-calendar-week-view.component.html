@@ -1,1 +1,55 @@
-<p>dfm-calendar-week-view works!</p>
+<div role="grid">
+  <div role="presentation" class="calender-week-view-header">
+    <div class="text-xs calender-week-view-time-format">
+      <div>
+        GMT +5:30
+      </div>
+    </div>
+
+    <div role="presentation" class="calender-week-view-weekday-header">
+      <div role="row" class="calender-week-view-weekdays">
+        <div class="calender-week-view-weekday-header-left-vertical-line"></div>
+        <div *ngFor="let day of daysOfWeekArr; let weekday = index;" role="columnheader"
+             class="calender-week-view-weekday">
+          <div class="calender-week-view-header-cell-left-line"></div>
+          <h3>
+            <div class="text-xs font-weight-medium w-fit calender-week-view-day-name">{{ weekday | weekdayToName : true : true | uppercase }}</div>
+            <div class="font-weight-normal w-fit calender-week-view-date" [ngClass]="{ 'calender-week-view-date-today': todayDate.getDate() === day && todayDate.getMonth() === selectedDate.getMonth() }">
+              {{ day }}
+            </div>
+          </h3>
+        </div>
+      </div>
+
+      <div class="">
+
+      </div>
+    </div>
+  </div>
+
+  <div class="calender-week-view-body-container">
+    <div role="presentation" class="calender-week-view-body">
+      <div role="row" class="calender-week-view-time-slot-container">
+        <div class="calender-week-view-time-slot text-xs" *ngFor="let time of 60 | timeInInterval : true">
+          <span>{{ time }}</span>
+          <div class="calender-week-view-horizontal-line"></div>
+        </div>
+      </div>
+
+      <div role="presentation" class="calender-week-view-events-container-main">
+        <div role="row" class="calender-week-view-events-container">
+          <div>
+            <div *ngFor="let i of 60 | timeInInterval" class="calender-week-view-horizontal-line">
+            </div>
+          </div>
+          <div class="calender-week-view-events-left-vertical-line"></div>
+          <div *ngFor="let day of daysOfWeekArr" role="gridcell" class="calender-week-view-body-grid-column">
+            <div></div>
+            <div role="presentation">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

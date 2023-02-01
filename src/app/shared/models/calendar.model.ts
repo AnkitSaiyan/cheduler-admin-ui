@@ -88,3 +88,22 @@ export function getWeekdayWiseDays(date: Date): number[][] {
 
   return daysMatrix;
 }
+
+export function getAllDaysOfWeek(selectedDate: Date): number[] {
+  const weekday = new Date(selectedDate).getDay();
+  const date = new Date(selectedDate).getDate();
+  const year = new Date(selectedDate).getFullYear();
+  const month = new Date(selectedDate).getMonth();
+
+  const daysOfWeekArr: number[] = [];
+
+  for (let day = weekday; day >= 0; day--) {
+    daysOfWeekArr.push(getDateOfMonth(year, month, date - day));
+  }
+
+  for (let day = weekday + 1; day < 7; day++) {
+    daysOfWeekArr.push(getDateOfMonth(year, month, date + (day - weekday)));
+  }
+
+  return daysOfWeekArr;
+}
