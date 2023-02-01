@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -62,7 +62,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     },
   ];
 
-  public roomList: NameValue[] = [];
+  public roomList$$ = new BehaviorSubject<NameValue[]>([] as NameValue[])
 
   public staffList: NameValue[] = [];
 
@@ -108,7 +108,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      rooms.forEach((room) => this.roomList.push({ name: room.name, value: room.id }));
+      this.roomList$$.next(rooms.map((room) => ({ name: room.name, value: room.id })) as NameValue[]);
     });
 
     this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {

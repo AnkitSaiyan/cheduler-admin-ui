@@ -183,7 +183,7 @@
       </ng-container>
 
       <div class="d-flex dfm-gap-32 flex-wrap flex-1">
-        <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-rooms">
+        <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-rooms" *ngIf="roomList$$ | async as roomList">
           <dfm-input-dropdown #roomDropdown
                               [items]="roomList"
                               [multiple]="true"
