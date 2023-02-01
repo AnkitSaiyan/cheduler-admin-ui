@@ -213,7 +213,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         if (this.comingFromRoute === 'view') {
           route = '../view';
         } else {
-          route = this.edit ? '/appointment' : '../';
+          route = this.edit ? '/appointment' : '';
         }
 
         console.log(route);

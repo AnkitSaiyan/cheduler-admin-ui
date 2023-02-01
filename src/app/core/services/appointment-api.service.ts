@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, of, startWith, Subject, switchMap } from 'rxjs';
 import { AddAppointmentRequestData, Appointment } from '../../shared/models/appointment.model';
 import { AppointmentStatus, ReadStatus, Status } from '../../shared/models/status';
 import { RoomType } from '../../shared/models/rooms.model';
@@ -8,7 +8,9 @@ import { Weekday } from '../../shared/models/calendar.model';
 import { PhysicianApiService } from './physician.api.service';
 import { StaffApiService } from './staff-api.service';
 import { Physician } from '../../shared/models/physician.model';
-
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { BaseResponse } from 'src/app/shared/models/base-response.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -2390,17 +2392,25 @@ export class AppointmentApiService {
 
   private refreshAppointment = new Subject<void>();
 
-  constructor(private physicianApiSvc: PhysicianApiService, private staffApiSvc: StaffApiService) {}
+  constructor(private physicianApiSvc: PhysicianApiService, private staffApiSvc: StaffApiService, private http: HttpClient) {}
 
   public get appointment$(): Observable<Appointment[]> {
-    return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(switchMap(() => of(this.appointments)));
+    return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
+  }
+  
+  private fetchAllAppointments(): Observable<Appointment[]>{
+    return this.http.get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment/getnewandunconfirmedlist`).pipe(
+      map(response => response.data)
+    );
   }
 
-  public upsertAppointment$(requestData: AddAppointmentRequestData): Observable<string> {
+  public upsertAppointment$(requestData: AddAppointmentRequestData): any {
     // this.appointments = requestData;
     if (requestData.id) {
       const index = this.appointments.findIndex((appointments) => appointments.id === requestData.id);
       if (index !== -1) {
+        console.log('2405 called');
+
         this.appointments[index] = {
           ...this.appointments[index],
           patientFname: requestData.patientFname ?? this.appointments[index].patientFname,
@@ -2432,25 +2442,32 @@ export class AppointmentApiService {
         }
       }
     } else {
-      this.appointments.push({
-        id: Math.floor(Math.random() * 100),
-        patientFname: requestData.patientFname,
-        patientLname: requestData.patientLname,
-        patientEmail: requestData.patientEmail,
-        patientTel: requestData.patientTel,
-        doctorId: requestData.doctorId,
-        doctor: {} as Physician,
-        userId: requestData.userId,
-        user: {} as User,
-        approval: requestData.approval ?? AppointmentStatus.Pending,
-        examList: requestData.examList,
-        startedAt: requestData.startedAt,
-        endedAt: new Date(new Date(requestData.startedAt).setDate(new Date(requestData.startedAt).getDate() + 2)),
-        roomType: requestData.roomType,
-        comments: requestData.comments ?? '',
-        readStatus: ReadStatus.Unread,
-        rejectReason: '',
-      });
+
+      console.log('2457 called');
+      console.log('requestData: ', requestData);
+      console.log('environment.serverBaseUrl: ', `${environment.serverBaseUrl}/appointment/addappointmentbypatient`);
+    
+      
+      // return patientAddedAppointment;
+      // this.appointments.push({
+      //   id: Math.floor(Math.random() * 100),
+      //   patientFname: requestData.patientFname,
+      //   patientLname: requestData.patientLname,
+      //   patientEmail: requestData.patientEmail,
+      //   patientTel: requestData.patientTel,
+      //   doctorId: requestData.doctorId,
+      //   doctor: {} as Physician,
+      //   userId: requestData.userId,
+      //   user: {} as User,
+      //   approval: requestData.approval ?? AppointmentStatus.Pending,
+      //   examList: requestData.examList,
+      //   startedAt: requestData.startedAt,
+      //   endedAt: new Date(new Date(requestData.startedAt).setDate(new Date(requestData.startedAt).getDate() + 2)),
+      //   roomType: requestData.roomType,
+      //   comments: requestData.comments ?? '',
+      //   readStatus: ReadStatus.Unread,
+      //   rejectReason: '',
+      // });
 
       this.physicianApiSvc.getPhysicianByID(+requestData.doctorId).subscribe((doctor) => {
         this.appointments[this.appointments.length - 1].doctor = doctor as Physician;
@@ -2459,6 +2476,24 @@ export class AppointmentApiService {
       this.staffApiSvc.getStaffByID(+requestData.userId).subscribe((user) => {
         this.appointments[this.appointments.length - 1].user = user as User;
       });
+
+       return this.http.post<AddAppointmentRequestData>(
+        `${environment.serverBaseUrl}/appointment/addappointmentbypatient`,
+        {
+          // id: Math.floor(Math.random() * 100),
+          patientFname: requestData.patientFname,
+          patientLname: requestData.patientLname,
+          patientEmail: requestData.patientEmail,
+          patientTel: requestData.patientTel,
+          doctorId: requestData.doctorId,
+          referringPhysician: 'test',
+          examForAppointments: [{
+            examId: 1
+          }],
+          comments: requestData.comments ?? '',
+          startedAt: requestData.startedAt,
+        },
+      )
     }
 
     this.refreshAppointment.next();
@@ -2492,16 +2527,29 @@ export class AppointmentApiService {
   }
 
   public deleteAppointment(appointmentID: number) {
+    return this.http.delete(`${environment.serverBaseUrl}/appointment/${appointmentID}`).pipe(
+      map(response => response)
+    )
+
     const index = this.appointments.findIndex((appointment) => appointment.id === +appointmentID);
     if (index !== -1) {
       this.appointments.splice(index, 1);
+      // this.http.delete(`${environment.serverBaseUrl}/appointment`, {body: appointmentID})
       this.refreshAppointment.next();
     }
   }
 
-  public getAppointmentByID(appointmentID: number): Observable<Appointment | undefined> {
+   public getAppointmentByID(appointmentID: number): Observable<Appointment> {
     return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(
-      switchMap(() => of(this.appointments.find((appointment) => +appointment.id === +appointmentID))),
+      switchMap(() => this.fetchAppointmentById(appointmentID)),
     );
+  }
+
+  public fetchAppointmentById(appointmentID: number): Observable<Appointment>{
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append("id", appointmentID);
+    return this.http.get<BaseResponse<Appointment>>(`${environment.serverBaseUrl}/appointment`, {params:queryParams}).pipe(
+      map(response => response.data)
+    )
   }
 }
