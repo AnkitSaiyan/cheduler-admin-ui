@@ -13,6 +13,7 @@ import { NameValue, SearchModalComponent, SearchModalData } from '../../../../sh
 import { DownloadService } from '../../../../core/services/download.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { Appointment } from '../../../../shared/models/appointment.model';
+import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -44,6 +45,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public selectedAppointmentIDs: string[] = [];
 
+  public roomList: NameValue[] = [];
+
   public statusType = getAppointmentStatusEnum();
 
   public readStatus = getReadStatusEnum();
@@ -55,6 +58,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private router: Router,
     private route: ActivatedRoute,
     private modalSvc: ModalService,
+    private roomApiSvc: RoomsApiService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -110,6 +114,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         }
         this.clearSelected$$.next();
       });
+
+    this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
+      this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
+    });
   }
 
   public override ngOnDestroy() {

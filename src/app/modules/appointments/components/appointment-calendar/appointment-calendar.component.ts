@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { NameValue } from '../../../../shared/components/search-modal.component';
@@ -35,6 +35,9 @@ export class AppointmentCalendarComponent implements OnInit {
   public changeMonth$$ = new BehaviorSubject<number>(0);
 
   public newDate$$ = new BehaviorSubject<Date | null>(null);
+
+  @Input()
+  public headerList!: NameValue[];
 
   constructor() {}
 

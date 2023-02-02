@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, filter } from 'rxjs';
+import { NameValue } from '../../search-modal.component';
 
 @Component({
   selector: 'dfm-calendar-day-view',
@@ -15,6 +16,9 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
 
   @Input()
   public changeDate$$ = new BehaviorSubject<number>(0);
+
+  @Input()
+  public headerList: NameValue[] = [];
 
   @Input()
   public newDate$$ = new BehaviorSubject<Date | null>(null);

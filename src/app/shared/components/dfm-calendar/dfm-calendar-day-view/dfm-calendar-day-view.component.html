@@ -9,23 +9,35 @@
     <div role="presentation" class="calender-day-view-weekday-header">
       <div role="row" class="calender-day-view-weekdays">
         <div class="calender-day-view-weekday-header-left-vertical-line"></div>
-        <div role="columnheader" class="calender-day-view-weekday">
-          <div class="calender-day-view-header-cell-left-line"></div>
-          <h3>
-            <div
-              class="text-xs font-weight-medium w-fit calender-day-view-day-name">{{ selectedDate.getDay() | weekdayToName : false : true | uppercase  }}</div>
-            <div class="w-fit calender-day-view-date"
-                 [ngClass]="{ 'calender-day-view-date-today': todayDate.getDate() === selectedDateOnly && todayDate.getMonth() === selectedDate.getMonth() }">
-              {{ selectedDateOnly }}
-            </div>
-          </h3>
-        </div>
-        <div role="columnheader" class="calender-day-view-weekday flex-1">
-          <h3>
-            <div class="text-xs font-weight-medium w-fit calender-day-view-day-name"></div>
-            <div class="w-fit calender-day-view-date"></div>
-          </h3>
-        </div>
+        <ng-container *ngIf="headerList?.length; else todayHeader">
+          <div role="columnheader" class="calender-day-view-weekday flex-1" *ngFor="let header of headerList">
+            <div class="calender-day-view-header-cell-left-line"></div>
+            <h3>
+              <div class="text-xs font-weight-medium w-fit calender-day-view-day-name">{{ header.name | titlecase }}</div>
+            </h3>
+          </div>
+        </ng-container>
+
+        <ng-template #todayHeader>
+          <div role="columnheader" class="calender-day-view-weekday">
+            <div class="calender-day-view-header-cell-left-line"></div>
+            <h3>
+              <div
+                class="text-xs font-weight-medium w-fit calender-day-view-day-name">{{ selectedDate.getDay() | weekdayToName : false : true | uppercase  }}</div>
+              <div class="w-fit calender-day-view-date"
+                   [ngClass]="{ 'calender-day-view-date-today': todayDate.getDate() === selectedDateOnly && todayDate.getMonth() === selectedDate.getMonth() }">
+                {{ selectedDateOnly }}
+              </div>
+            </h3>
+          </div>
+
+          <div role="columnheader" class="calender-day-view-weekday flex-1">
+            <h3>
+              <div class="text-xs font-weight-medium w-fit calender-day-view-day-name"></div>
+              <div class="w-fit calender-day-view-date"></div>
+            </h3>
+          </div>
+        </ng-template>
       </div>
 
       <div class="">
@@ -50,11 +62,21 @@
             </div>
           </div>
           <div class="calender-day-view-events-left-vertical-line"></div>
-          <div role="gridcell" class="calender-day-view-body-grid-column">
-            <div></div>
-            <div role="presentation">
+          <ng-container *ngIf="headerList.length; else singleGridCol;">
+            <div role="gridcell" class="calender-day-view-body-grid-column" *ngFor="let h of headerList">
+              <div></div>
+              <div role="presentation">
+              </div>
             </div>
-          </div>
+          </ng-container>
+
+          <ng-template #singleGridCol>
+            <div role="gridcell" class="calender-day-view-body-grid-column">
+              <div></div>
+              <div role="presentation">
+              </div>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
