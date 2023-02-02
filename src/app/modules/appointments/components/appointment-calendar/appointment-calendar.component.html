@@ -64,7 +64,10 @@
       </ng-container>
 
       <ng-container *ngSwitchCase="'day'">
-        <dfm-calendar-day-view></dfm-calendar-day-view>
+        <dfm-calendar-day-view
+          (selectedDateEvent)="updateDate($event)"
+          [changeDate$$]="changeDate$$"
+        ></dfm-calendar-day-view>
       </ng-container>
     </ng-container>
   </section>
