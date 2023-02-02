@@ -3,7 +3,6 @@ import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
-import _default from 'chart.js/dist/plugins/plugin.tooltip';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AppointmentStatus, Status } from '../../../../shared/models/status';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getStatusEnum';
@@ -40,6 +39,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   public clearSelected$$ = new Subject<void>();
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: AppointmentStatus | null } | null>(null);
+
+  public calendarView$$ = new BehaviorSubject<boolean>(false);
 
   public selectedAppointmentIDs: string[] = [];
 
@@ -222,5 +223,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     const ids = new Set<number>();
     result.forEach((item) => ids.add(+item.value));
     this.filteredAppointments$$.next([...this.appointments$$.value.filter((appointment: Appointment) => ids.has(+appointment.id))]);
+  }
+
+  public toggleView(): void {
+    this.calendarView$$.next(!this.calendarView$$.value);
   }
 }
