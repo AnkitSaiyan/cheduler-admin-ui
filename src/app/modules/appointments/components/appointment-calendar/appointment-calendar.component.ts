@@ -71,4 +71,10 @@ export class AppointmentCalendarComponent implements OnInit {
     this.newDate$$.next(newDate);
     this.selectedDate = newDate;
   }
+
+  public updateToToday() {
+    if (this.selectedDate?.toDateString() !== new Date().toDateString()) {
+      this.newDate$$.next(new Date());
+    }
+  }
 }

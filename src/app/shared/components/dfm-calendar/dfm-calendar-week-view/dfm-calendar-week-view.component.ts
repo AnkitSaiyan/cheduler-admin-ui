@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { BehaviorSubject, filter, take, takeUntil } from 'rxjs';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { BehaviorSubject, filter, takeUntil } from 'rxjs';
 import { getAllDaysOfWeek } from '../../../models/calendar.model';
 import { DestroyableComponent } from '../../destroyable.component';
 
@@ -18,6 +18,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
   @Input()
   public changeWeek$$ = new BehaviorSubject<number>(0);
+
+  @Input()
+  public newDate$$ = new BehaviorSubject<Date | null>(null);
 
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
@@ -45,6 +48,16 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
       )
       .subscribe((offset) => {
         this.changeWeek(offset);
+      });
+
+    this.newDate$$
+      .asObservable()
+      .pipe()
+      .subscribe((date) => {
+        if (date) {
+          this.updateDate(date);
+          this.updateCalendarDays();
+        }
       });
   }
 

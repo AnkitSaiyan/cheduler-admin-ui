@@ -20,6 +20,9 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
   @Input()
   public changeMonth$$ = new BehaviorSubject<number>(0);
 
+  @Input()
+  public newDate$$ = new BehaviorSubject<Date | null>(null);
+
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
 
@@ -29,7 +32,6 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
   constructor() {}
 
   public ngOnChanges() {
-    console.log(this.selectedDate);
     if (!this.selectedDate) {
       this.selectedDate = new Date();
     }
@@ -43,6 +45,16 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
       .pipe(filter((offset) => !!offset))
       .subscribe((offset) => {
         this.changeMonth(offset);
+      });
+
+    this.newDate$$
+      .asObservable()
+      .pipe()
+      .subscribe((date) => {
+        if (date) {
+          this.updateDate(date);
+          this.updateCalendarDays();
+        }
       });
   }
 
@@ -66,6 +78,11 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
     this.emitDate();
 
     this.changeMonth$$.next(0);
+  }
+
+  private updateDate(date: Date) {
+    this.selectedDate = new Date(date);
+    this.emitDate();
   }
 
   private updateCalendarDays() {

@@ -30,6 +30,7 @@
             color="secondary-gray"
             size="sm"
             class="h-100"
+            (click)="updateToToday()"
           >Today</dfm-button>
         </div>
 
@@ -54,6 +55,7 @@
           [changeMonth$$]="changeMonth$$"
           (dayViewEvent)="changeToDayView($event)"
           [selectedDate]="selectedDate"
+          [newDate$$]="newDate$$"
         >
         </dfm-calendar-month-view>
       </ng-container>
@@ -64,6 +66,7 @@
           [changeWeek$$]="changeWeek$$"
           (dayViewEvent)="changeToDayView($event)"
           [selectedDate]="selectedDate"
+          [newDate$$]="newDate$$"
         ></dfm-calendar-week-view>
       </ng-container>
 
