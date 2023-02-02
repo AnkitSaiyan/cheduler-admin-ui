@@ -35,7 +35,7 @@
   <div class="calender-week-view-body-container">
     <div role="presentation" class="calender-week-view-body">
       <div role="row" class="calender-week-view-time-slot-container">
-        <div class="calender-week-view-time-slot text-xs" *ngFor="let time of 60 | timeInInterval : true">
+        <div class="calender-week-view-time-slot text-sm" *ngFor="let time of 15 | timeInInterval : true">
           <span>{{ time }}</span>
           <div class="calender-week-view-horizontal-line"></div>
         </div>
@@ -44,7 +44,7 @@
       <div role="presentation" class="calender-week-view-events-container-main">
         <div role="row" class="calender-week-view-events-container">
           <div>
-            <div *ngFor="let i of 60 | timeInInterval" class="calender-week-view-horizontal-line">
+            <div *ngFor="let i of 15 | timeInInterval" class="calender-week-view-horizontal-line">
             </div>
           </div>
           <div class="calender-week-view-events-left-vertical-line"></div>
