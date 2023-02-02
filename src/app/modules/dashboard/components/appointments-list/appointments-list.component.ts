@@ -1,7 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
+import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
+import { ModalService } from 'src/app/core/services/modal.service';
+import { NotificationDataService } from 'src/app/core/services/notification-data.service';
+import { ConfirmActionModalComponent, DialogData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import { getReadStatusEnum } from 'src/app/shared/utils/getStatusEnum';
 
 @Component({
   selector: 'dfm-appointments-list',
@@ -131,7 +137,11 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
 
   public filteredAppointments$$: BehaviorSubject<any[]>;
 
-  constructor(private dashboardApiService: DashboardApiService) {
+  public searchControl = new FormControl('', []);
+
+  public readStatus = getReadStatusEnum();
+
+  constructor(private dashboardApiService: DashboardApiService, private appointmentApiSvc: AppointmentApiService, private modalSvc: ModalService, private notificationSvc: NotificationDataService) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
@@ -146,6 +156,15 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
       this.filteredAppointments$$.next(appointments);
     });
 
+    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
+      if (searchText) {
+        this.handleSearch(searchText.toLowerCase());
+      } else {
+        this.filteredAppointments$$.next([...this.appointments$$.value]);
+      }
+    });
+
+
   }
 
   public allSelected() {
@@ -158,5 +177,43 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
 
   public override ngOnDestroy() {
     super.ngOnDestroy();
+  }
+
+  
+  private handleSearch(searchText: string): void {
+    this.filteredAppointments$$.next([
+      ...this.appointments$$.value.filter((appointment) => {
+        return (
+          appointment.patientFname?.toLowerCase()?.includes(searchText) ||
+          appointment.patientLname?.toLowerCase()?.includes(searchText) ||
+          appointment.id?.toString()?.includes(searchText)
+        );
+      }),
+    ]);
+  }
+
+  public deleteAppointment(id: number) {
+    console.log('id: ', id);
+    const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
+      data: {
+        titleText: 'Confirmation',
+        bodyText: 'Are you sure you want to delete this Appointment?',
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+      } as DialogData,
+    });
+
+    dialogRef.closed
+      .pipe(
+        filter((res: boolean) => res),
+        switchMap(()=>this.appointmentApiSvc.deleteAppointment(id)),
+        take(1),
+      )
+      .subscribe((response)=>{
+          console.log('response: ', response);
+          if (response) {
+            this.notificationSvc.showNotification('Appointment deleted successfully');
+          }
+        });
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap } from 'rxjs';
 import { AddAppointmentRequestData, Appointment } from '../../shared/models/appointment.model';
 import { AppointmentStatus, ReadStatus, Status } from '../../shared/models/status';
 import { RoomType } from '../../shared/models/rooms.model';
@@ -8,6 +8,9 @@ import { Weekday } from '../../shared/models/calendar.model';
 import { PhysicianApiService } from './physician.api.service';
 import { StaffApiService } from './staff-api.service';
 import { Physician } from '../../shared/models/physician.model';
+import { BaseResponse } from 'src/app/shared/models/base-response.model';
+import { environment } from 'src/environments/environment';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -2390,7 +2393,7 @@ export class AppointmentApiService {
 
   private refreshAppointment = new Subject<void>();
 
-  constructor(private physicianApiSvc: PhysicianApiService, private staffApiSvc: StaffApiService) {}
+  constructor(private physicianApiSvc: PhysicianApiService, private staffApiSvc: StaffApiService, private http: HttpClient) {}
 
   public get appointment$(): Observable<Appointment[]> {
     return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(switchMap(() => of(this.appointments)));
@@ -2497,11 +2500,25 @@ export class AppointmentApiService {
       this.appointments.splice(index, 1);
       this.refreshAppointment.next();
     }
+
+    return this.http
+      .delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/appointment/${appointmentID}`)
+      .pipe(map((response) => response.data));
   }
 
   public getAppointmentByID(appointmentID: number): Observable<Appointment | undefined> {
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append('id', appointmentID);
     return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(
-      switchMap(() => of(this.appointments.find((appointment) => +appointment.id === +appointmentID))),
-    );
+      switchMap(() =>
+        this.http.get<BaseResponse<Appointment>>(`${environment.serverBaseUrl}/appointment`, {params: queryParams})
+        .pipe(
+          map((response) => response.data), 
+          catchError((e) =>{
+            console.log("error", e)
+            return of({} as Appointment)
+        })
+        )))
   }
+
 }
