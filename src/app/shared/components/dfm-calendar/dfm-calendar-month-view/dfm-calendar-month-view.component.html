@@ -1,0 +1,36 @@
+<table class="calender-month-view">
+  <thead class="calender-month-view-weekday">
+  <th>{{ weekDayEnum.SUN | weekdayToName : true | uppercase }}</th>
+  <th>{{ weekDayEnum.MON | weekdayToName : true | uppercase }}</th>
+  <th>{{ weekDayEnum.TUE | weekdayToName : true | uppercase }}</th>
+  <th>{{ weekDayEnum.WED | weekdayToName : true | uppercase }}</th>
+  <th>{{ weekDayEnum.THU | weekdayToName : true | uppercase }}</th>
+  <th>{{ weekDayEnum.FRI | weekdayToName : true | uppercase }}</th>
+  <th>{{ weekDayEnum.SAT | weekdayToName : true | uppercase }}</th>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let days of daysInMonthMatrix;">
+    <td class="calender-month-view-day-cell" *ngFor="let day of days">
+      <div
+        *ngIf="day && day <= 31"
+        class="calender-month-view-day text-sm"
+        [ngClass]="{
+            'calender-month-view-selected-day': selectedDate.getDate() === day && ((nowDate.getDate() === selectedDate.getDate() && nowDate.getMonth() !== selectedDate.getMonth()) || (selectedDate.getDate() !== nowDate.getDate())),
+            'calender-month-view-today font-weight-medium': nowDate.getDate() === day && nowDate.getMonth() === selectedDate.getMonth()
+        }"
+        (click)="changeToDayView(day)"
+      >
+        {{ day }}
+      </div>
+
+      <div
+        *ngIf="day && day > 31"
+        class="calender-month-view-day calender-month-view-day-light text-sm"
+      >
+        {{ day - 31 }}
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
