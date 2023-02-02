@@ -2,7 +2,7 @@
   <div role="presentation" class="calender-week-view-header">
     <div class="text-xs calender-week-view-time-format">
       <div>
-        GMT +5:30
+        {{ (selectedDate | date : 'OOOO')?.split('+')?.join(' +') }}
       </div>
     </div>
 

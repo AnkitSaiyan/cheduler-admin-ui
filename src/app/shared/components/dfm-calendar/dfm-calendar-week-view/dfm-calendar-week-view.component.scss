@@ -32,6 +32,7 @@ h3 {
 
       .calender-week-view-weekday-header-left-vertical-line {
         width: 8px;
+        min-width: 8px;
         height: 100%;
         align-self: end;
         -webkit-align-self: flex-end;
@@ -45,7 +46,7 @@ h3 {
         width: 80px;
         flex: 1;
         color: var(--dfm-main-500);
-        padding: 8px;
+        padding: 8px 0;
         position: relative;
         background: var(--dfm-table-odd-cell-bg);
 
@@ -58,7 +59,7 @@ h3 {
           border-left: 1px solid var(--dfm-main-200);
           bottom: 0;
           height: 100%;
-          margin-left: -8px;
+          //margin-left: -8px;
           position: absolute;
         }
 
@@ -158,6 +159,7 @@ h3 {
 
         .calender-week-view-events-left-vertical-line {
           width: 8px;
+          min-width: 8px;
           //border-right: 1px solid var(--dfm-main-200);
         }
 

@@ -8,8 +8,6 @@ import { getAllDaysOfWeek } from '../../../models/calendar.model';
   styleUrls: ['./dfm-calendar-week-view.component.scss'],
 })
 export class DfmCalendarWeekViewComponent implements OnInit {
-  public weekdays = [0, 1, 2, 3, 4, 5, 6];
-
   public daysOfWeekArr: number[] = [];
 
   public selectedDate = new Date();
