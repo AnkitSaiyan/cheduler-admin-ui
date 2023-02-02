@@ -1,1 +1,62 @@
-<p>dfm-calendar-day-view works!</p>
+<div role="grid">
+  <div role="presentation" class="calender-day-view-header">
+    <div class="text-xs calender-day-view-time-format">
+      <div>
+        {{ (selectedDate | date : 'OOOO')?.split('+')?.join(' +') }}
+      </div>
+    </div>
+
+    <div role="presentation" class="calender-day-view-weekday-header">
+      <div role="row" class="calender-day-view-weekdays">
+        <div class="calender-day-view-weekday-header-left-vertical-line"></div>
+        <div role="columnheader" class="calender-day-view-weekday">
+          <div class="calender-day-view-header-cell-left-line"></div>
+          <h3>
+            <div
+              class="text-xs font-weight-medium w-fit calender-day-view-day-name">{{ selectedDate.getDay() | weekdayToName : false : true | uppercase  }}</div>
+            <div class="w-fit calender-day-view-date"
+                 [ngClass]="{ 'calender-day-view-date-today': todayDate.getDate() === selectedDateOnly && todayDate.getMonth() === selectedDate.getMonth() }">
+              {{ selectedDateOnly }}
+            </div>
+          </h3>
+        </div>
+        <div role="columnheader" class="calender-day-view-weekday flex-1">
+          <h3>
+            <div class="text-xs font-weight-medium w-fit calender-day-view-day-name"></div>
+            <div class="w-fit calender-day-view-date"></div>
+          </h3>
+        </div>
+      </div>
+
+      <div class="">
+
+      </div>
+    </div>
+  </div>
+
+  <div class="calender-day-view-body-container">
+    <div role="presentation" class="calender-day-view-body">
+      <div role="row" class="calender-day-view-time-slot-container">
+        <div class="calender-day-view-time-slot text-sm" *ngFor="let time of 15 | timeInInterval : true">
+          <span>{{ time }}</span>
+          <div class="calender-day-view-horizontal-line"></div>
+        </div>
+      </div>
+
+      <div role="presentation" class="calender-day-view-events-container-main">
+        <div role="row" class="calender-day-view-events-container">
+          <div>
+            <div *ngFor="let i of 15 | timeInInterval" class="calender-day-view-horizontal-line">
+            </div>
+          </div>
+          <div class="calender-day-view-events-left-vertical-line"></div>
+          <div role="gridcell" class="calender-day-view-body-grid-column">
+            <div></div>
+            <div role="presentation">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
