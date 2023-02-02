@@ -17,7 +17,6 @@ export class WeekdayToNamePipe implements PipeTransform {
   };
 
   public transform(weekday: Weekday | any[], short = false, startWithSunday = false): any {
-    console.log(weekday);
     if (typeof weekday === 'number') {
       switch (weekday) {
         case Weekday.MON:

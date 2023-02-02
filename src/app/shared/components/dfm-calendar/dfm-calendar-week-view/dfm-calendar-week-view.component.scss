@@ -74,13 +74,18 @@ h3 {
           &:hover {
             cursor: pointer;
             background: var(--dfm-main-200);
-            color: black;
+            color: var(--dfm-main-500);
           }
         }
 
         .calender-week-view-date-today {
           background: coral;
           color: white;
+        }
+
+        .calender-month-view-selected-day {
+          background: var(--dfm-main-200);
+          color: var(--dfm-main-500);
         }
       }
     }

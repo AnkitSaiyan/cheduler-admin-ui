@@ -1,66 +1,90 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { BehaviorSubject, filter, take, takeUntil } from 'rxjs';
 import { getAllDaysOfWeek } from '../../../models/calendar.model';
+import { DestroyableComponent } from '../../destroyable.component';
 
 @Component({
   selector: 'dfm-calendar-week-view',
   templateUrl: './dfm-calendar-week-view.component.html',
   styleUrls: ['./dfm-calendar-week-view.component.scss'],
 })
-export class DfmCalendarWeekViewComponent implements OnInit {
+export class DfmCalendarWeekViewComponent extends DestroyableComponent implements OnInit, OnChanges, OnDestroy {
   public daysOfWeekArr: number[] = [];
-
-  public selectedDate = new Date();
 
   public todayDate = new Date();
 
   @Input()
-  public changeDate$$ = new BehaviorSubject<number>(0);
+  public selectedDate!: Date;
+
+  @Input()
+  public changeWeek$$ = new BehaviorSubject<number>(0);
 
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
 
-  constructor() {}
+  @Output()
+  public dayViewEvent = new EventEmitter<number>();
+
+  constructor() {
+    super();
+  }
+
+  public ngOnChanges() {
+    if (!this.selectedDate) {
+      this.selectedDate = new Date();
+    }
+  }
 
   public ngOnInit(): void {
-    this.changeDate$$
-      .asObservable()
-      .pipe()
+    this.updateCalendarDays();
+
+    this.changeWeek$$
+      .pipe(
+        filter((offset) => !!offset),
+        takeUntil(this.destroy$$),
+      )
       .subscribe((offset) => {
         this.changeWeek(offset);
       });
   }
 
+  public override ngOnDestroy() {
+    super.ngOnDestroy();
+  }
+
   public changeWeek(offset: number) {
+    console.log(offset);
     if (offset !== 0) {
-      this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + offset * 7));
+      const date = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + offset * 7));
+      this.updateDate(date);
+      this.changeWeek$$.next(0);
     }
 
     this.updateCalendarDays();
-    this.emitDate();
-
-    // const year = this.selectedDate.getFullYear();
-    // const month = this.selectedDate.getMonth();
-    //
-    //
-    // // checking if prev or next month has today's date
-    // if (getDaysOfMonth(year, month + offset) < this.selectedDate.getDate()) {
-    //   this.selectedDate.setDate(1);
-    // }
-    //
-    // this.selectedDate.setMonth(this.selectedDate.getMonth() + offset);
-    //
-    // // if selected month is today's month then selected today's date by default
-    // if (this.selectedDate.getMonth() === new Date().getMonth()) {
-    //   this.selectedDate.setDate(new Date().getDate());
-    // }
+    // this.emitDate();
   }
 
   private updateCalendarDays() {
     this.daysOfWeekArr = getAllDaysOfWeek(this.selectedDate);
   }
 
+  private updateDate(date: Date) {
+    this.selectedDate = date;
+    this.emitDate();
+  }
+
   private emitDate() {
     this.selectedDateEvent.emit(this.selectedDate);
+  }
+
+  public changeToDayView(day: number, weekday: number) {
+    // updating month if selected date is of another month's
+    if (day < this.selectedDate.getDate() && weekday > this.selectedDate.getDay()) {
+      this.updateDate(new Date(this.selectedDate.setMonth(this.selectedDate.getMonth() + 1)));
+    } else if (day > this.selectedDate.getDate() && weekday < this.selectedDate.getDay()) {
+      this.updateDate(new Date(this.selectedDate.setMonth(this.selectedDate.getMonth() - 1)));
+    }
+
+    this.dayViewEvent.emit(day);
   }
 }
