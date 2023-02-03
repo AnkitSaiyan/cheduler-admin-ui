@@ -2502,14 +2502,14 @@ export class AppointmentApiService {
   // }
   public saveNewApointment$(requestData: AddAppointmentRequestData){
     const {id, ...restData} = requestData;
-    return this.http.post<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment`, restData).pipe(
+    return this.http.post<BaseResponse<Appointment>>(`${environment.serverBaseUrl}/appointment`, restData).pipe(
       map(response => response.data)
     )
   }
 
   public updateApointment$(requestData: AddAppointmentRequestData){
     const {id, ...restData} = requestData;
-    return this.http.put<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
+    return this.http.put<BaseResponse<Appointment>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
       map(response => response.data)
     )
   }
@@ -2541,7 +2541,7 @@ export class AppointmentApiService {
 
   public deleteAppointment(appointmentID: number) {
     return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/appointment/${appointmentID}`).pipe(
-      map(response => response)
+      map(response => response.data)
     )
 
     // const index = this.appointments.findIndex((appointment) => appointment.id === +appointmentID);
