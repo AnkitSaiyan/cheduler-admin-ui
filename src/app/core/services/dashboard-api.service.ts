@@ -28,7 +28,7 @@ export class DashboardApiService {
   private fetchAllAppointments(): Observable<Appointment[]> {
     return this.http
       .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment/getnewandunconfirmedlist`)
-      // .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/dashboard/appointment`)
+      // .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/dashboard/appointments`)
       .pipe(map((response) => response.data));
   }
 
@@ -64,7 +64,7 @@ export class DashboardApiService {
     return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/postit`).pipe(map((response) => response.data));
   }
 
-  public upsertAppointment$(requestData: AddAppointmentRequestData): Observable<string> {
+  // public upsertAppointment$(requestData: AddAppointmentRequestData): Observable<string> {
     // this.appointments = requestData;
     // if (requestData.id) {
     //   const index = this.appointments.findIndex((appointments) => appointments.id === requestData.id);
@@ -130,9 +130,23 @@ export class DashboardApiService {
     // }
 
     // this.http.post<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/`)
-    this.refreshAppointment.next();
+  //   this.refreshAppointment.next();
 
-    return of('Saved');
+  //   return of('Saved');
+  // }
+
+  public saveAppointment$(requestData: AddAppointmentRequestData){
+    const {id, ...restData} = requestData;
+    return this.http.post<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment`, restData).pipe(
+      map(response => response.data)
+    )
+  }
+
+  public updateAppointment$(requestData: AddAppointmentRequestData){
+    const {id, ...restData} = requestData;
+    return this.http.put<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
+      map(response => response.data)
+    )
   }
 }
 

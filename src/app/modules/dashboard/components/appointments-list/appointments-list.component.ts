@@ -157,6 +157,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
+      console.log('searchText: ', searchText);
       if (searchText) {
         this.handleSearch(searchText.toLowerCase());
       } else {
