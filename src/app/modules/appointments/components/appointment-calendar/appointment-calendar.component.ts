@@ -76,7 +76,7 @@ export class AppointmentCalendarComponent implements OnInit {
     this.calendarViewFormControl.setValue('day');
     const newDate = new Date(this.selectedDate.setDate(date));
     this.newDate$$.next(newDate);
-    this.selectedDate = newDate;
+    this.selectedDate = new Date(newDate);
   }
 
   public updateToToday() {

@@ -63,6 +63,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   private updateDate(date: Date) {
     this.selectedDate = date;
     this.selectedDateOnly = date.getDate();
+    this.emitDate();
   }
 
   private emitDate(): void {
