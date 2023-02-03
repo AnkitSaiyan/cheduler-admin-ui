@@ -134,19 +134,5 @@ export class DashboardApiService {
 
   //   return of('Saved');
   // }
-
-  public saveAppointment$(requestData: AddAppointmentRequestData){
-    const {id, ...restData} = requestData;
-    return this.http.post<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment`, restData).pipe(
-      map(response => response.data)
-    )
-  }
-
-  public updateAppointment$(requestData: AddAppointmentRequestData){
-    const {id, ...restData} = requestData;
-    return this.http.put<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
-      map(response => response.data)
-    )
-  }
 }
 
