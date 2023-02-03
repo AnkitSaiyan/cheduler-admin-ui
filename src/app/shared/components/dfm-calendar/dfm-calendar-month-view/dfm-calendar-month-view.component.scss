@@ -85,6 +85,10 @@ table, th, tr, td {
             overflow-y: auto;
             max-height: 40vh;
 
+            &::-webkit-scrollbar {
+              width: 16px;
+            }
+
             .calender-month-view-day-exam-details-expanded-patient-details-container {
               display: flex;
               flex-direction: column;
@@ -102,9 +106,10 @@ table, th, tr, td {
                 border-bottom: 1px solid var(--dfm-main-200);
                 margin: 0 8px;
                 position: absolute;
-                bottom: -8px;
+                bottom: 0;
                 left: 0;
                 right: 0;
+                z-index: 1;
               }
             }
           }

@@ -306,7 +306,8 @@ ngb-timepicker {
 
 .popover {
   border: none;
-  box-shadow: 0 .125rem .75rem rgba(0, 0, 0, .075);
+  box-shadow: 0 .125rem 1.00rem rgba(0, 0, 0, .075);
+  border: 1px solid var(--dfm-main-200);
   max-width: inherit;
 }
 
