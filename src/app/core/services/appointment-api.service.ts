@@ -2399,7 +2399,7 @@ export class AppointmentApiService {
   }
   
   private fetchAllAppointments(): Observable<Appointment[]>{
-    return this.http.get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment/getnewandunconfirmedlist`).pipe(
+    return this.http.get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment`).pipe(
       map(response => response.data)
     );
   }
