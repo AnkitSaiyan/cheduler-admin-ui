@@ -20,8 +20,7 @@
           <ng-template #eventDetails>
             <div class="calender-month-view-day-exam-details-expanded">
                 <span class="calender-month-view-day-exam-details-expanded-title">
-                  Exams ({{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length }}
-                  )
+                  Exams ({{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length }})
                 </span>
               <div class="calender-month-view-day-exam-details-expanded-patients-container">
                 <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0"
@@ -68,7 +67,7 @@
           </ng-template>
 
           <div class="calender-month-view-day-exam-event-circle">
-            {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length }}
+            {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length }}
           </div>
 
           <div class="calender-month-view-day-exam-event-details" [ngbPopover]="eventDetails" triggers="mouseenter" [autoClose]="'outside'">
