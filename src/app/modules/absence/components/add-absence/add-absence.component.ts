@@ -64,7 +64,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
   public roomList$$ = new BehaviorSubject<NameValue[]>([] as NameValue[])
 
-  public staffList: NameValue[] = [];
+  // public staffList: NameValue[] = [];
 
   public startTimes: NameValue[];
 
@@ -81,6 +81,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     weekly: 'Weeks',
     monthly: 'Months',
   };
+
+  
+  public staffs$$ = new BehaviorSubject<NameValue[]>([] as NameValue[]);
+
 
   constructor(
     private modalSvc: ModalService,
@@ -112,12 +116,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     });
 
     this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
-      staffs.forEach((staff) =>
-        this.staffList.push({
-          name: `${staff.firstname} ${staff.lastname}`,
-          value: staff.id,
-        }),
-      );
+      this.staffs$$.next(staffs.map((staff) => ({ name: staff.firstname, value: staff.id })) as NameValue[]);
+
     });
 
     this.absenceForm
@@ -217,7 +217,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       startedAt: new Date(startedAt.year, startedAt.month, startedAt.day, +startTime.slice(0, 2), +startTime.slice(3, 5)).toISOString(),
       endedAt: new Date(endedAt.year, endedAt.month, endedAt.day, +endTime.slice(0, 2), +endTime.slice(3, 5)).toISOString(),
       repeatDays: '',
-      repeatFrequency: rest.repeatFrequency ? +rest.repeatFrequency.split(' ')[0] : 0,
+      repeatFrequency:  0,
     };
 
     if (repeatDays.length) {
@@ -236,7 +236,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     console.log(addAbsenceReqData);
 
     this.absenceApiSvc
-      .upsertAbsence$(addAbsenceReqData)
+      .addNewAbsence$(addAbsenceReqData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         this.notificationSvc.showNotification(`Absence ${this.modalData.edit ? 'updated' : 'added'} successfully`);

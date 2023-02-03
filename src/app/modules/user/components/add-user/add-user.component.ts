@@ -111,7 +111,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
     console.log(addUserReqData);
 
     this.userApiSvc
-      .upsertStaff$(addUserReqData)
+      .addNewStaff$(addUserReqData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         this.notificationSvc.showNotification(`User ${this.modalData.edit ? 'updated' : 'added'} successfully`);

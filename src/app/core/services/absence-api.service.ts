@@ -641,25 +641,16 @@ export class AbsenceApiService {
 
   public deleteAbsence(absenceID: number) {
     console.log("called");
-    
-    // const index = this.absences.findIndex((absence) => absence.id === +absenceID);
-    // if (index !== -1) {
-    //   this.absences.splice(index, 1);
-    //   this.refreshAbsences$$.next();
-    // }
-
-    return this.http.delete<any>(`${environment.serverBaseUrl}/${absenceID}`).pipe(
+    return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/${absenceID}`).pipe(
       tap(()=>{this.refreshAbsences$$.next()}),
-      map((response) => response.data)
+      map((response) => response)
     )
   }
 
-  public upsertAbsence$(requestData: AddAbsenceRequestDate): Observable<any> {
-    // if (!requestData) {
-    //   return of('');
-    // }
+  public addNewAbsence$(requestData: AddAbsenceRequestDate): Observable<any> {
+    const { id, ...restdata} = requestData;
 
-    return this.http.post<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences`, requestData).pipe(
+    return this.http.post<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences`, restdata).pipe(
         tap(()=>{this.refreshAbsences$$.next()}),
         map((response) => response.data)
       )
@@ -725,8 +716,15 @@ export class AbsenceApiService {
     // });}
     // }
 
-    this.refreshAbsences$$.next();
+    // this.refreshAbsences$$.next();
 
-    return of('created');
+    // return of('created');
+  }
+
+  public updateAbsence(requestData: AddAbsenceRequestDate): Observable<any>{
+    const {id, ...restData} = requestData;
+    return this.http.put<BaseResponse<AddAbsenceRequestDate>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
+      map(response => response.data)
+    )
   }
 }

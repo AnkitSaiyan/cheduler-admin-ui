@@ -130,7 +130,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
       });
 
     this.addStaffForm
-      .get('practiceAvailabilityToggle')
+      ?.get('practiceAvailabilityToggle')
       ?.valueChanges.pipe(
         filter((value: boolean) => value),
         distinctUntilChanged(),
@@ -372,7 +372,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
     console.log(addStaffReqData);
 
     this.staffApiSvc
-      .upsertStaff$(addStaffReqData)
+      .addNewStaff$(addStaffReqData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         this.notificationSvc.showNotification(`Staff ${this.edit ? 'updated' : 'added'} successfully`);
