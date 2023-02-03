@@ -23,6 +23,9 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
   @Input()
   public newDate$$ = new BehaviorSubject<Date | null>(null);
 
+  @Input()
+  public dataGroupedByDate!: { [key: string]: any[] };
+
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
 
@@ -39,6 +42,8 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 
   public ngOnInit(): void {
     this.updateCalendarDays();
+
+    console.log(this.dataGroupedByDate);
 
     this.changeMonth$$
       .asObservable()

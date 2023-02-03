@@ -3,6 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
+import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AppointmentStatus, Status } from '../../../../shared/models/status';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getStatusEnum';
@@ -37,6 +38,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public filteredAppointments$$: BehaviorSubject<any[]>;
 
+  public appointmentsGroupedByDate: { [key: string]: Appointment[] } = {};
+
   public clearSelected$$ = new Subject<void>();
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: AppointmentStatus | null } | null>(null);
@@ -59,6 +62,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private route: ActivatedRoute,
     private modalSvc: ModalService,
     private roomApiSvc: RoomsApiService,
+    private datePipe: DatePipe,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -71,6 +75,15 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
+      appointments.forEach((appointment) => {
+        const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
+        if (dateString) {
+          if (!this.appointmentsGroupedByDate[dateString]) {
+            this.appointmentsGroupedByDate[dateString] = [];
+          }
+          this.appointmentsGroupedByDate[dateString].push(appointment);
+        }
+      });
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {

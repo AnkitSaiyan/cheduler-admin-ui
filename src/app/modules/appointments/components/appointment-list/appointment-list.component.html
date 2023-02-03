@@ -209,7 +209,10 @@
     </ng-container>
 
     <ng-container *ngIf="calendarView$$ | async">
-      <dfm-appointment-calendar class="h-100" [headerList]="roomList"></dfm-appointment-calendar>
+      <dfm-appointment-calendar class="h-100"
+                                [headerList]="roomList"
+                                [appointmentsGroupedByDate]="appointmentsGroupedByDate">
+      </dfm-appointment-calendar>
     </ng-container>
   </section>
 

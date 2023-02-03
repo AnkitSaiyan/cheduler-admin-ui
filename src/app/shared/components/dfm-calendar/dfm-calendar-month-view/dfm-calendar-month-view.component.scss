@@ -25,27 +25,124 @@ table, th, tr, td {
   .calender-month-view-day-cell {
     transition: all 500ms linear;
     vertical-align: top;
+    position: relative;
 
-    .calender-month-view-day {
-      transition: all 150ms linear;
-      text-align: center;
-      width: 32px;
-      height: 32px;
-      float: right;
-      border-radius: 50%;
-      line-height: 16px;
-      padding: 8px;
+    .calender-month-view-day-cell-content {
+      width: 100%;
+      height: 100%;
+      position: relative;
 
-      &:hover {
+      .calender-month-view-day-exam-event-container {
+        position: absolute;
+        top: 40px;
+        bottom: -8px;
+        left: 0px;
+        right: -8px;
+        display: flex;
+        border-left: 4px solid #175CD3;
+        border-bottom-left-radius: 8px;
+        background: #EFF8FF;
+
+        .calender-month-view-day-exam-event-circle {
+          position: absolute;
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          left: -13px;
+          top: -8px;
+          background: #175CD3;
+          color: white;
+          text-align: center;
+          font-size: 0.8rem;
+          font-weight: 600;
+          line-height: 22px;
+        }
+
+        .calender-month-view-day-exam-event-title {
+          font-weight: 600;
+          color: #175CD3;
+        }
+
+        .calender-month-view-day-exam-event-time {
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: var(--dfm-main-500);
+        }
+
+        .calender-month-view-day-exam-details-expanded {
+          min-width: 300px;
+          display: flex;
+          flex-direction: column;
+          row-gap: 8px;
+
+          .calender-month-view-day-exam-details-expanded-title {
+            font-weight: 600;
+          }
+
+          .calender-month-view-day-exam-details-expanded-patients-container {
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            max-height: 40vh;
+
+            .calender-month-view-day-exam-details-expanded-patient-details-container {
+              display: flex;
+              flex-direction: column;
+
+              .calender-month-view-day-exam-details-expanded-patient-details {
+                display: flex;
+                flex-direction: column;
+                padding: 8px;
+                //&:hover {
+                //  background: var(--dfm-main-100);
+                //}
+              }
+
+              .calender-month-view-day-exam-details-expanded-patient-details-divider {
+                border-bottom: 1px solid var(--dfm-main-200);
+                margin: 0 8px;
+                position: absolute;
+                bottom: -8px;
+                left: 0;
+                right: 0;
+              }
+            }
+          }
+        }
+      }
+
+      .calender-month-view-day {
+        transition: all 150ms linear;
+        text-align: center;
+        width: 32px;
+        height: 32px;
+        float: right;
+        border-radius: 50%;
+        line-height: 16px;
+        padding: 8px;
+        position: relative;
+
+        &:hover {
+          cursor: pointer;
+          background: var(--dfm-main-200);
+          color: black;
+        }
+      }
+
+      .calender-month-view-day-exam-event-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        padding: 4px 8px;
+        font-size: 0.9rem;
         cursor: pointer;
-        background: var(--dfm-main-200);
-        color: black;
       }
     }
+  }
 
-    .calender-month-view-day-light {
-      color: var(--dfm-main-300);
-    }
+  .calender-month-view-day-light {
+    color: var(--dfm-main-300);
   }
 
   .calender-month-view-today {

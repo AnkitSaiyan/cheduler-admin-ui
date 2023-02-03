@@ -4,7 +4,14 @@ import { DesignSystemModule, TableModule } from 'diflexmo-angular-design';
 import { NgChartsModule } from 'ng2-charts';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NgbDatepickerModule, NgbDropdownModule, NgbModalModule, NgbTimepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbAccordionModule,
+  NgbDatepickerModule,
+  NgbDropdownModule,
+  NgbModalModule,
+  NgbPopoverModule,
+  NgbTimepickerModule,
+} from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from './components/destroyable.component';
 import { StatusNamePipe } from './pipes/status-name.pipe';
 import { DashIfNothingPipe } from './pipes/dash-if-nothing.pipe';
@@ -25,6 +32,7 @@ import { AppendTextToInputDirective } from './directives/append-text-to-input.di
 import { DfmCalendarMonthViewComponent } from './components/dfm-calendar/dfm-calendar-month-view/dfm-calendar-month-view.component';
 import { DfmCalendarWeekViewComponent } from './components/dfm-calendar/dfm-calendar-week-view/dfm-calendar-week-view.component';
 import { DfmCalendarDayViewComponent } from './components/dfm-calendar/dfm-calendar-day-view/dfm-calendar-day-view.component';
+import { NumberToDatePipe } from './pipes/number-to-date.pipe';
 
 @NgModule({
   declarations: [
@@ -48,8 +56,9 @@ import { DfmCalendarDayViewComponent } from './components/dfm-calendar/dfm-calen
     DfmCalendarMonthViewComponent,
     DfmCalendarWeekViewComponent,
     DfmCalendarDayViewComponent,
+    NumberToDatePipe,
   ],
-  imports: [CommonModule, DesignSystemModule, ReactiveFormsModule],
+  imports: [CommonModule, DesignSystemModule, ReactiveFormsModule, NgbDropdownModule, NgbPopoverModule, NgbAccordionModule],
   exports: [
     DesignSystemModule,
     TableModule,
@@ -78,6 +87,9 @@ import { DfmCalendarDayViewComponent } from './components/dfm-calendar/dfm-calen
     DfmCalendarMonthViewComponent,
     DfmCalendarWeekViewComponent,
     DfmCalendarDayViewComponent,
+    NumberToDatePipe,
+    NgbPopoverModule,
+    NgbAccordionModule,
   ],
 })
 export class SharedModule {}

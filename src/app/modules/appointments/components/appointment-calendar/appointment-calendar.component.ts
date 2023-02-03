@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { NameValue } from '../../../../shared/components/search-modal.component';
+import { Appointment } from '../../../../shared/models/appointment.model';
 
 @Component({
   selector: 'dfm-appointment-calendar',
@@ -38,6 +39,9 @@ export class AppointmentCalendarComponent implements OnInit {
 
   @Input()
   public headerList!: NameValue[];
+
+  @Input()
+  public appointmentsGroupedByDate!: { [key: string]: Appointment[] };
 
   constructor() {}
 
