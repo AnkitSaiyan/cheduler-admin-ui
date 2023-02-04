@@ -93,12 +93,25 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 
     console.log(addPhysicianReqData);
 
-    this.physicianApiSvc
-      .upsertPhysician$(addPhysicianReqData)
+    if (this.modalData.edit) {
+      this.physicianApiSvc
+      .updatePhysician$(addPhysicianReqData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         this.notificationSvc.showNotification(`Physician ${this.modalData.edit ? 'updated' : 'added'} successfully`);
         this.closeModal(true);
       });
+    }else{
+      this.physicianApiSvc
+        .addPhysician$(addPhysicianReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Physician ${this.modalData.edit ? 'updated' : 'added'} successfully`);
+          this.closeModal(true);
+        });
+    }
+
+
+  
   }
 }

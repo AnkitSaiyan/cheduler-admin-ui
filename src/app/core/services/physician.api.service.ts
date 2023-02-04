@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { Status } from '../../shared/models/status';
 import { AddPhysicianRequestData, Physician } from '../../shared/models/physician.model';
+import { HttpClient } from '@angular/common/http';
+import { BaseResponse } from 'src/app/shared/models/base-response.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -142,10 +145,14 @@ export class PhysicianApiService {
 
   private refreshPhysicians$$ = new Subject<void>();
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   public get physicians$(): Observable<Physician[]> {
-    return combineLatest([this.refreshPhysicians$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.physicians)));
+    return combineLatest([this.refreshPhysicians$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllPhysicians()));
+  }
+
+  private fetchAllPhysicians(): Observable<any[]> {
+    return this.http.get<BaseResponse<any[]>>(`${environment.serverBaseUrl}/doctor`).pipe(map((response) => response.data));
   }
 
   public getPhysicianByID(physicianID: number): Observable<Physician | undefined> {
@@ -179,53 +186,73 @@ export class PhysicianApiService {
     return of(true);
   }
 
-  public upsertPhysician$(requestData: AddPhysicianRequestData): Observable<string> {
-    if (!requestData) {
-      return of('');
-    }
+  // public upsertPhysician$(requestData: AddPhysicianRequestData): Observable<string> {
+  //   if (!requestData) {
+  //     return of('');
+  //   }
 
-    if (requestData?.id) {
-      const index = this.physicians.findIndex((physician) => physician.id === requestData.id);
-      if (index !== -1) {
-        this.physicians[index] = {
-          ...this.physicians[index],
-          id: requestData.id,
-          firstname: requestData.firstname,
-          lastname: requestData.lastname,
-          email: requestData.email,
-          rizivNumber: requestData.rizivNumber,
-          gsm: requestData?.gsm,
-          telephone: requestData.telephone,
-          address: requestData.address,
-          notifyDoctor: requestData.notifyDoctor,
-          status: Status.Active,
-        };
-      }
-    } else {
-      this.physicians.push({
-        id: Math.random(),
-        firstname: requestData.firstname,
-        lastname: requestData.lastname,
-        email: requestData.email,
-        rizivNumber: requestData.rizivNumber,
-        gsm: requestData?.gsm,
-        telephone: requestData.telephone,
-        address: requestData.address,
-        notifyDoctor: requestData.notifyDoctor,
-        status: Status.Active,
-      });
-    }
+  //   if (requestData?.id) {
+  //     const index = this.physicians.findIndex((physician) => physician.id === requestData.id);
+  //     if (index !== -1) {
+  //       this.physicians[index] = {
+  //         ...this.physicians[index],
+  //         id: requestData.id,
+  //         firstname: requestData.firstname,
+  //         lastname: requestData.lastname,
+  //         email: requestData.email,
+  //         rizivNumber: requestData.rizivNumber,
+  //         gsm: requestData?.gsm,
+  //         telephone: requestData.telephone,
+  //         address: requestData.address,
+  //         notifyDoctor: requestData.notifyDoctor,
+  //         status: Status.Active,
+  //       };
+  //     }
+  //   } else {
+  //     this.physicians.push({
+  //       id: Math.random(),
+  //       firstname: requestData.firstname,
+  //       lastname: requestData.lastname,
+  //       email: requestData.email,
+  //       rizivNumber: requestData.rizivNumber,
+  //       gsm: requestData?.gsm,
+  //       telephone: requestData.telephone,
+  //       address: requestData.address,
+  //       notifyDoctor: requestData.notifyDoctor,
+  //       status: Status.Active,
+  //     });
+  //   }
 
-    this.refreshPhysicians$$.next();
+  //   this.refreshPhysicians$$.next();
 
-    return of('created');
+  //   return of('created');
+  // }
+
+  public addPhysician$(requestData: AddPhysicianRequestData): Observable<AddPhysicianRequestData>{
+    return this.http.post<BaseResponse<Physician>>(`${environment.serverBaseUrl}/doctor`, requestData).pipe(
+      map(response => response.data),
+      tap(()=>{this.refreshPhysicians$$.next()})
+    )
+  }
+
+  public updatePhysician$(requestData: AddPhysicianRequestData): Observable<AddPhysicianRequestData>{
+    const {id, ...restData} = requestData;
+    return this.http.put<BaseResponse<Physician>>(`${environment.serverBaseUrl}/doctor/${id}`, restData).pipe(
+      map(response => response.data),
+      tap(()=>{this.refreshPhysicians$$.next()})
+    )
   }
 
   public deletePhysician(physicianID: number) {
-    const index = this.physicians.findIndex((physician) => physician.id === +physicianID);
-    if (index !== -1) {
-      this.physicians.splice(index, 1);
-      this.refreshPhysicians$$.next();
-    }
+    // const index = this.physicians.findIndex((physician) => physician.id === +physicianID);
+    // if (index !== -1) {
+    //   this.physicians.splice(index, 1);
+    //   this.refreshPhysicians$$.next();
+    // }
+
+    return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/doctor/${physicianID}`).pipe(
+      map(response => response.data),
+      tap(()=>{this.refreshPhysicians$$.next()})
+    )
   }
 }

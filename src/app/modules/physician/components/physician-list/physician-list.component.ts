@@ -150,11 +150,13 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(()=>this.physicianApiSvc.deletePhysician(id)),
         take(1),
       )
-      .subscribe(() => {
-        this.physicianApiSvc.deletePhysician(id);
-        this.notificationSvc.showNotification('Physician deleted successfully');
+      .subscribe((response) => {
+        if (response) {
+          this.notificationSvc.showNotification('Physician deleted successfully');
+        }
       });
   }
 
