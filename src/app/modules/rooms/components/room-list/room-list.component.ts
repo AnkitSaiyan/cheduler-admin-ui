@@ -144,10 +144,10 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(() => this.roomApiSvc.deleteRoom(id)),
         take(1),
       )
       .subscribe(() => {
-        this.roomApiSvc.deleteRoom(id);
         this.notificationSvc.showNotification('Room deleted successfully');
       });
   }

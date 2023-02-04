@@ -276,13 +276,23 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     }
 
     console.log(addRoomReqData);
-
-    this.roomApiSvc
-      .upsertRoom$(addRoomReqData)
+    if (this.modalData.edit) {
+      this.roomApiSvc
+      .editRoom$(addRoomReqData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         this.notificationSvc.showNotification(`Room ${this.modalData.edit ? 'updated' : 'added'} successfully`);
         this.closeModal(true);
-      });
+      }); 
+    }else{
+      this.roomApiSvc
+      .addRoom$(addRoomReqData)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.notificationSvc.showNotification(`Room ${this.modalData.edit ? 'updated' : 'added'} successfully`);
+        this.closeModal(true);
+      }); 
+    }
+   
   }
 }
