@@ -2396,7 +2396,13 @@ export class AppointmentApiService {
   constructor(private physicianApiSvc: PhysicianApiService, private staffApiSvc: StaffApiService, private http: HttpClient) {}
 
   public get appointment$(): Observable<Appointment[]> {
-    return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(switchMap(() => of(this.appointments)));
+    return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
+  }
+  
+  private fetchAllAppointments(): Observable<Appointment[]>{
+    return this.http.get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment`).pipe(
+      map(response => response.data)
+    );
   }
 
   // public upsertAppointment$(requestData: AddAppointmentRequestData): Observable<string> {
