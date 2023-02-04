@@ -17,13 +17,13 @@ export interface PostIt {
 export class DashboardApiService {
   constructor(private http: HttpClient) {}
 
-  private refreshAppointment = new Subject<void>();
-  private refreshNotification = new Subject<void>();
-  private refreshRoomAbsence = new Subject<void>();
-  private refreshPost = new Subject<void>();
+  private refreshAppointment$$ = new Subject<void>();
+  private refreshNotification$$ = new Subject<void>();
+  private refreshRoomAbsence$$ = new Subject<void>();
+  private refreshPost$$ = new Subject<void>();
 
   public get appointment$(): Observable<Appointment[]> {
-    return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
+    return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
   }
 
   private fetchAllAppointments(): Observable<Appointment[]> {
@@ -34,7 +34,7 @@ export class DashboardApiService {
   }
 
   public get notification$(): Observable<Notification[]> {
-    return combineLatest([this.refreshNotification.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllNotifications()));
+    return combineLatest([this.refreshNotification$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllNotifications()));
   }
 
   private fetchAllNotifications(): Observable<Notification[]> {
@@ -42,7 +42,7 @@ export class DashboardApiService {
   }
 
   public get roomAbsence$(): Observable<Room[]> {
-    return combineLatest([this.refreshRoomAbsence.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRoomAbsence()));
+    return combineLatest([this.refreshRoomAbsence$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRoomAbsence()));
   }
 
   private fetchRoomAbsence(): Observable<Room[]> {
@@ -50,7 +50,7 @@ export class DashboardApiService {
   }
 
   public get recentPatient$(): Observable<Appointment[]> {
-    return combineLatest([this.refreshRoomAbsence.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRecentPatients()));
+    return combineLatest([this.refreshRoomAbsence$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRecentPatients()));
   }
 
   private fetchRecentPatients(): Observable<Appointment[]> {
@@ -58,7 +58,7 @@ export class DashboardApiService {
   }
 
   public get posts$(): Observable<PostIt[]> {
-    return combineLatest([this.refreshPost.pipe(startWith(''))]).pipe(switchMap(() => this.fetchPosts()));
+    return combineLatest([this.refreshPost$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchPosts()));
   }
 
   private fetchPosts(): Observable<PostIt[]> {
@@ -131,7 +131,7 @@ export class DashboardApiService {
     // }
 
     // this.http.post<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/`)
-  //   this.refreshAppointment.next();
+  //   this.refreshAppointment$$.next();
 
   //   return of('Saved');
   // }
