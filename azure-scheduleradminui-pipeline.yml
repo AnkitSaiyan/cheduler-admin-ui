@@ -21,16 +21,24 @@ jobs:
   - checkout: self
     submodules: true
   - task: Npm@1
+    displayName: 'npm install'
     inputs:
       command: 'custom'
       customCommand: 'install --force'
       customRegistry: 'useFeed'
       customFeed: '18e540ed-207f-4a1e-8e3b-014618dd9c9a'
   - task: Npm@1
+    displayName: 'npm build'
     inputs:
       command: 'custom'
       customCommand: 'run build --configuration=production'
+  - task: Bash@3
+    displayName: 'Copy staticwebapp.config.json'
+    inputs:
+      targetType: 'inline'
+      script: 'cp ./staticwebapp.config.json ./dist/diflexmo-admin/staticwebapp.config.json'
   - task: AzureStaticWebApp@0
+    displayName: 'Deploy static web app'
     inputs:
       skip_app_build: true
       #app_build_command: 'npm install --force && npm run build --configuration=production'
