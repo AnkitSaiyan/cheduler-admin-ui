@@ -99,8 +99,8 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
             
     this.dashboardApiService.recentPatient$.pipe(takeUntil(this.destroy$$)).subscribe((recentPatient) => {
       console.log('101 rercent patients: ', recentPatient);
-      this.recentPatients$$.next(recentPatient['appointment']);
-      this.filteredRecentPatients$$.next(recentPatient['appointment']);
+      this.recentPatients$$.next(recentPatient);
+      this.filteredRecentPatients$$.next(recentPatient);
     });
   }
 }
