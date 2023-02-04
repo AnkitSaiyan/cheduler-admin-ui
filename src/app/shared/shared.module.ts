@@ -22,6 +22,9 @@ import { ApprovalTypeNamePipe } from './pipes/approval-type-name.pipe';
 import { SumPipe } from './pipes/sum.pipe';
 import { RepeatTypeToNamePipe } from './pipes/repeat-type-to-name.pipe';
 import { AppendTextToInputDirective } from './directives/append-text-to-input.directive';
+import { DfmCalendarMonthViewComponent } from './components/dfm-calendar/dfm-calendar-month-view/dfm-calendar-month-view.component';
+import { DfmCalendarWeekViewComponent } from './components/dfm-calendar/dfm-calendar-week-view/dfm-calendar-week-view.component';
+import { DfmCalendarDayViewComponent } from './components/dfm-calendar/dfm-calendar-day-view/dfm-calendar-day-view.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +45,9 @@ import { AppendTextToInputDirective } from './directives/append-text-to-input.di
     SumPipe,
     RepeatTypeToNamePipe,
     AppendTextToInputDirective,
+    DfmCalendarMonthViewComponent,
+    DfmCalendarWeekViewComponent,
+    DfmCalendarDayViewComponent,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule],
   exports: [
@@ -69,6 +75,9 @@ import { AppendTextToInputDirective } from './directives/append-text-to-input.di
     SumPipe,
     RepeatTypeToNamePipe,
     AppendTextToInputDirective,
+    DfmCalendarMonthViewComponent,
+    DfmCalendarWeekViewComponent,
+    DfmCalendarDayViewComponent,
   ],
 })
 export class SharedModule {}
