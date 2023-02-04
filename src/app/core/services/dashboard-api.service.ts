@@ -20,6 +20,7 @@ export class DashboardApiService {
   private refreshAppointment = new Subject<void>();
   private refreshNotification = new Subject<void>();
   private refreshRoomAbsence = new Subject<void>();
+  private refreshPost = new Subject<void>();
 
   public get appointment$(): Observable<Appointment[]> {
     return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
@@ -57,7 +58,7 @@ export class DashboardApiService {
   }
 
   public get posts$(): Observable<PostIt[]> {
-    return combineLatest([this.refreshRoomAbsence.pipe(startWith(''))]).pipe(switchMap(() => this.fetchPosts()));
+    return combineLatest([this.refreshPost.pipe(startWith(''))]).pipe(switchMap(() => this.fetchPosts()));
   }
 
   private fetchPosts(): Observable<PostIt[]> {
