@@ -15,7 +15,7 @@
         placeholder="Search"
         icon="search-sm"
         class="flex-1"
-        formControlName="searchControl"
+        [formControl]="searchControl"
       ></dfm-input>
 
       <dfm-input
@@ -23,6 +23,7 @@
         placeholder="Advanced Search"
         icon="search-sm"
         class="flex-1"
+        [formControl]="searchControl"
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper">
