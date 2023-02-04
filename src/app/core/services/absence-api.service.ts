@@ -642,89 +642,24 @@ export class AbsenceApiService {
   public deleteAbsence(absenceID: number) {
     console.log("called");
     return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/${absenceID}`).pipe(
-      tap(()=>{this.refreshAbsences$$.next()}),
-      map((response) => response)
+      map((response) => response),
+      tap(()=>{this.refreshAbsences$$.next()})
     )
   }
 
-  public addNewAbsence$(requestData: AddAbsenceRequestDate): Observable<AddAbsenceRequestDate> {
+  public addNewAbsence$(requestData: AddAbsenceRequestDate): Observable<Absence> {
     const { id, ...restdata} = requestData;
-
     return this.http.post<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences`, restdata).pipe(
-        tap(()=>{this.refreshAbsences$$.next()}),
-        map((response) => response.data)
+        map((response) => response.data),
+        tap(()=>{this.refreshAbsences$$.next()})
       )
-    
-
-    // if (requestData?.id) {
-    //   const index = this.absences.findIndex((absence) => absence.id === requestData.id);
-    //   if (index !== -1) {
-    //     this.absences[index] = {
-    //       ...this.absences[index],
-    //       id: requestData.id,
-    //       name: requestData.name,
-    //       startedAt: new Date(requestData.startedAt),
-    //       endedAt: new Date(requestData.endedAt),
-    //       isRepeat: requestData.isRepeat,
-    //       isHoliday: requestData.isHoliday,
-    //       priority: requestData.priority,
-    //       repeatType: requestData?.repeatType ?? this.absences[index].repeatType,
-    //       repeatFrequency: requestData.repeatFrequency,
-    //       repeatDays: requestData?.repeatDays ?? this.absences[index].repeatDays,
-    //       info: requestData.info,
-    //       roomList: requestData.roomList,
-    //       staffList: requestData.staffList,
-    //       status: this.absences[index].status,
-    //     };
-    //   }
-    // } else {
-    //   this.http.post<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absence`, {
-    //     name: requestData.name,
-    //     startedAt: new Date(requestData.startedAt),
-    //     endedAt: new Date(requestData.endedAt),
-    //     isRepeat: requestData.isRepeat,
-    //     isHoliday: requestData.isHoliday,
-    //     priority: requestData.priority,
-    //     repeatType: requestData?.repeatType,
-    //     repeatFrequency: requestData?.repeatFrequency,
-    //     repeatDays: requestData?.repeatDays,
-    //     info: requestData.info,
-    //     status: Status.Active,
-    //     staffList: requestData.staffList,
-    //     roomList: requestData.roomList,
-    //     staff: [],
-    //     rooms: [],
-    //   }).pipe(map(response => response))
-
-    // {  this.absences.push({
-    //   id: Math.random(),
-    //   name: requestData.name,
-    //   startedAt: new Date(requestData.startedAt),
-    //   endedAt: new Date(requestData.endedAt),
-    //   isRepeat: requestData.isRepeat,
-    //   isHoliday: requestData.isHoliday,
-    //   priority: requestData.priority,
-    //   repeatType: requestData?.repeatType,
-    //   repeatFrequency: requestData?.repeatFrequency,
-    //   repeatDays: requestData?.repeatDays,
-    //   info: requestData.info,
-    //   status: Status.Active,
-    //   staffList: requestData.staffList,
-    //   roomList: requestData.roomList,
-    //   staff: [],
-    //   rooms: [],
-    // });}
-    // }
-
-    // this.refreshAbsences$$.next();
-
-    // return of('created');
   }
 
-  public updateAbsence(requestData: AddAbsenceRequestDate): Observable<AddAbsenceRequestDate>{
+  public updateAbsence(requestData: AddAbsenceRequestDate): Observable<Absence>{
     const {id, ...restData} = requestData;
-    return this.http.put<BaseResponse<AddAbsenceRequestDate>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
-      map(response => response.data)
+    return this.http.put<BaseResponse<Absence>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
+      map(response => response.data),
+      tap(()=>{this.refreshAbsences$$.next()})
     )
   }
 }
