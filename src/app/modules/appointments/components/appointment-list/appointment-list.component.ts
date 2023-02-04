@@ -61,10 +61,11 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
   }
 
-  public ngOnInit(): void {
+  public ngOnInit() {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
+      console.log('appointments: ', appointments);
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
     });

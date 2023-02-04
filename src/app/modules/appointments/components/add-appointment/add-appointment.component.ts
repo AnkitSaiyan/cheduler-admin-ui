@@ -205,7 +205,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
     console.log(requestData);
 
-    from(this.appointmentApiSvc.upsertAppointment$(requestData))
+    this.appointmentApiSvc.saveNewApointment$(requestData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         this.notificationSvc.showNotification(`Appointment ${this.appointment$$.value?.id ? 'updated' : 'saved'} successfully`);
