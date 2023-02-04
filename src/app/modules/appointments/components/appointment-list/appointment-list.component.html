@@ -104,12 +104,12 @@
           <dfm-table-body-cell>{{ item.startedAt | date : 'y-MM-dd hh:mmaa' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item.endedAt | date : 'y-MM-dd hh:mmaa' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item.patientFname  | titlecase }} {{ item.patientLname | titlecase }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ item.doctor.firstname  | titlecase }} {{ item.doctor.lastname | titlecase }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item.doctor?.firstname  | titlecase }} {{ item.doctor?.lastname | titlecase }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item.id | dashIfNothing }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ '' | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item?.createdAt | dashIfNothing }}</dfm-table-body-cell>
 
           <dfm-table-body-cell>
-            <span>{{ item.read === readStatus.Read ? 'Yes' : 'No' }}</span>
+            <span>{{ item.readStatus === readStatus.Read ? 'Yes' : 'No' }}</span>
           </dfm-table-body-cell>
 
           <dfm-table-body-cell>

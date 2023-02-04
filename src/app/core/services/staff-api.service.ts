@@ -485,6 +485,6 @@ export class StaffApiService {
   }
 
   public getUsersByType(userType: UserType): Observable<User[]> {
-    return of(this.staffLists).pipe(map((staffs) => staffs.filter((staff) => staff.userType === userType)));
+    return this.staffList$.pipe(map((staffs) => staffs.filter((staff) => staff.userType === userType)));
   }
 }

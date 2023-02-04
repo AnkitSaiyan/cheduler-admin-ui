@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { BehaviorSubject, filter } from 'rxjs';
 import { getDaysOfMonth, getWeekdayWiseDays, Weekday } from '../../../models/calendar.model';
 
 @Component({
@@ -7,31 +7,54 @@ import { getDaysOfMonth, getWeekdayWiseDays, Weekday } from '../../../models/cal
   templateUrl: './dfm-calendar-month-view.component.html',
   styleUrls: ['./dfm-calendar-month-view.component.scss'],
 })
-export class DfmCalendarMonthViewComponent implements OnInit {
+export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
   public weekDayEnum = Weekday;
-
-  public selectedDate = new Date();
 
   public nowDate = new Date();
 
   public daysInMonthMatrix: number[][] = [];
 
   @Input()
-  public changeDate$$ = new BehaviorSubject<number>(0);
+  public selectedDate!: Date;
+
+  @Input()
+  public changeMonth$$ = new BehaviorSubject<number>(0);
+
+  @Input()
+  public newDate$$ = new BehaviorSubject<Date | null>(null);
 
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
 
+  @Output()
+  public dayViewEvent = new EventEmitter<number>();
+
   constructor() {}
 
-  public ngOnInit(): void {
-    this.emitDate();
+  public ngOnChanges() {
+    if (!this.selectedDate) {
+      this.selectedDate = new Date();
+    }
+  }
 
-    this.changeDate$$
+  public ngOnInit(): void {
+    this.updateCalendarDays();
+
+    this.changeMonth$$
       .asObservable()
-      .pipe()
+      .pipe(filter((offset) => !!offset))
       .subscribe((offset) => {
         this.changeMonth(offset);
+      });
+
+    this.newDate$$
+      .asObservable()
+      .pipe()
+      .subscribe((date) => {
+        if (date) {
+          this.updateDate(date);
+          this.updateCalendarDays();
+        }
       });
   }
 
@@ -53,6 +76,13 @@ export class DfmCalendarMonthViewComponent implements OnInit {
 
     this.updateCalendarDays();
     this.emitDate();
+
+    this.changeMonth$$.next(0);
+  }
+
+  private updateDate(date: Date) {
+    this.selectedDate = new Date(date);
+    this.emitDate();
   }
 
   private updateCalendarDays() {
@@ -61,5 +91,9 @@ export class DfmCalendarMonthViewComponent implements OnInit {
 
   private emitDate() {
     this.selectedDateEvent.emit(this.selectedDate);
+  }
+
+  public changeToDayView(day: number) {
+    this.dayViewEvent.emit(day);
   }
 }

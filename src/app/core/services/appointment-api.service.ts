@@ -2399,106 +2399,119 @@ export class AppointmentApiService {
   }
   
   private fetchAllAppointments(): Observable<Appointment[]>{
-    return this.http.get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment/getnewandunconfirmedlist`).pipe(
+    return this.http.get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment`).pipe(
       map(response => response.data)
     );
   }
 
-  public upsertAppointment$(requestData: AddAppointmentRequestData): any {
-    // this.appointments = requestData;
-    if (requestData.id) {
-      const index = this.appointments.findIndex((appointments) => appointments.id === requestData.id);
-      if (index !== -1) {
-        console.log('2405 called');
+  // public upsertAppointment$(requestData: AddAppointmentRequestData): any {
+  //   // this.appointments = requestData;
+  //   if (requestData.id) {
+  //     const index = this.appointments.findIndex((appointments) => appointments.id === requestData.id);
+  //     if (index !== -1) {
+  //       console.log('2405 called');
 
-        this.appointments[index] = {
-          ...this.appointments[index],
-          patientFname: requestData.patientFname ?? this.appointments[index].patientFname,
-          patientLname: requestData.patientLname ?? this.appointments[index].patientLname,
-          patientEmail: requestData.patientEmail ?? this.appointments[index].patientEmail,
-          patientTel: requestData.patientTel ?? this.appointments[index].patientTel,
-          doctorId: requestData.doctorId ?? this.appointments[index].doctorId,
-          userId: requestData.userId ?? this.appointments[index].userId,
-          approval: requestData.approval ?? this.appointments[index].approval,
-          examList: requestData.examList ?? this.appointments[index].examList,
-          startedAt: requestData.startedAt ?? this.appointments[index].startedAt,
-          endedAt: requestData.startedAt
-            ? new Date(new Date(requestData.startedAt).setDate(new Date(requestData.startedAt).getDate() + 2))
-            : this.appointments[index].endedAt,
-          roomType: requestData.roomType ?? this.appointments[index].roomType,
-          comments: requestData.comments ?? this.appointments[index].comments,
-        };
+  //       this.appointments[index] = {
+  //         ...this.appointments[index],
+  //         patientFname: requestData.patientFname ?? this.appointments[index].patientFname,
+  //         patientLname: requestData.patientLname ?? this.appointments[index].patientLname,
+  //         patientEmail: requestData.patientEmail ?? this.appointments[index].patientEmail,
+  //         patientTel: requestData.patientTel ?? this.appointments[index].patientTel,
+  //         doctorId: requestData.doctorId ?? this.appointments[index].doctorId,
+  //         userId: requestData.userId ?? this.appointments[index].userId,
+  //         approval: requestData.approval ?? this.appointments[index].approval,
+  //         examList: requestData.examList ?? this.appointments[index].examList,
+  //         startedAt: requestData.startedAt ?? this.appointments[index].startedAt,
+  //         endedAt: requestData.startedAt
+  //           ? new Date(new Date(requestData.startedAt).setDate(new Date(requestData.startedAt).getDate() + 2))
+  //           : this.appointments[index].endedAt,
+  //         roomType: requestData.roomType ?? this.appointments[index].roomType,
+  //         comments: requestData.comments ?? this.appointments[index].comments,
+  //       };
 
-        if (requestData.doctorId) {
-          this.physicianApiSvc.getPhysicianByID(+requestData.doctorId).subscribe((doctor) => {
-            this.appointments[index].doctor = doctor as Physician;
-          });
-        }
+  //       if (requestData.doctorId) {
+  //         this.physicianApiSvc.getPhysicianByID(+requestData.doctorId).subscribe((doctor) => {
+  //           this.appointments[index].doctor = doctor as Physician;
+  //         });
+  //       }
 
-        if (requestData.userId) {
-          this.staffApiSvc.getStaffByID(+requestData.userId).subscribe((user) => {
-            this.appointments[index].user = user as User;
-          });
-        }
-      }
-    } else {
+  //       if (requestData.userId) {
+  //         this.staffApiSvc.getStaffByID(+requestData.userId).subscribe((user) => {
+  //           this.appointments[index].user = user as User;
+  //         });
+  //       }
+  //     }
+  //   } else {
 
-      console.log('2457 called');
-      console.log('requestData: ', requestData);
-      console.log('environment.serverBaseUrl: ', `${environment.serverBaseUrl}/appointment/addappointmentbypatient`);
+  //     console.log('2457 called');
+  //     console.log('requestData: ', requestData);
+  //     console.log('environment.serverBaseUrl: ', `${environment.serverBaseUrl}/appointment/addappointmentbypatient`);
     
       
-      // return patientAddedAppointment;
-      // this.appointments.push({
-      //   id: Math.floor(Math.random() * 100),
-      //   patientFname: requestData.patientFname,
-      //   patientLname: requestData.patientLname,
-      //   patientEmail: requestData.patientEmail,
-      //   patientTel: requestData.patientTel,
-      //   doctorId: requestData.doctorId,
-      //   doctor: {} as Physician,
-      //   userId: requestData.userId,
-      //   user: {} as User,
-      //   approval: requestData.approval ?? AppointmentStatus.Pending,
-      //   examList: requestData.examList,
-      //   startedAt: requestData.startedAt,
-      //   endedAt: new Date(new Date(requestData.startedAt).setDate(new Date(requestData.startedAt).getDate() + 2)),
-      //   roomType: requestData.roomType,
-      //   comments: requestData.comments ?? '',
-      //   readStatus: ReadStatus.Unread,
-      //   rejectReason: '',
-      // });
+  //     // return patientAddedAppointment;
+  //     // this.appointments.push({
+  //     //   id: Math.floor(Math.random() * 100),
+  //     //   patientFname: requestData.patientFname,
+  //     //   patientLname: requestData.patientLname,
+  //     //   patientEmail: requestData.patientEmail,
+  //     //   patientTel: requestData.patientTel,
+  //     //   doctorId: requestData.doctorId,
+  //     //   doctor: {} as Physician,
+  //     //   userId: requestData.userId,
+  //     //   user: {} as User,
+  //     //   approval: requestData.approval ?? AppointmentStatus.Pending,
+  //     //   examList: requestData.examList,
+  //     //   startedAt: requestData.startedAt,
+  //     //   endedAt: new Date(new Date(requestData.startedAt).setDate(new Date(requestData.startedAt).getDate() + 2)),
+  //     //   roomType: requestData.roomType,
+  //     //   comments: requestData.comments ?? '',
+  //     //   readStatus: ReadStatus.Unread,
+  //     //   rejectReason: '',
+  //     // });
 
-      this.physicianApiSvc.getPhysicianByID(+requestData.doctorId).subscribe((doctor) => {
-        this.appointments[this.appointments.length - 1].doctor = doctor as Physician;
-      });
+  //     this.physicianApiSvc.getPhysicianByID(+requestData.doctorId).subscribe((doctor) => {
+  //       this.appointments[this.appointments.length - 1].doctor = doctor as Physician;
+  //     });
 
-      this.staffApiSvc.getStaffByID(+requestData.userId).subscribe((user) => {
-        this.appointments[this.appointments.length - 1].user = user as User;
-      });
+  //     this.staffApiSvc.getStaffByID(+requestData.userId).subscribe((user) => {
+  //       this.appointments[this.appointments.length - 1].user = user as User;
+  //     });
 
-       return this.http.post<AddAppointmentRequestData>(
-        `${environment.serverBaseUrl}/appointment/addappointmentbypatient`,
-        {
-          // id: Math.floor(Math.random() * 100),
-          patientFname: requestData.patientFname,
-          patientLname: requestData.patientLname,
-          patientEmail: requestData.patientEmail,
-          patientTel: requestData.patientTel,
-          doctorId: requestData.doctorId,
-          referringPhysician: 'test',
-          examForAppointments: [{
-            examId: 1
-          }],
-          comments: requestData.comments ?? '',
-          startedAt: requestData.startedAt,
-        },
-      )
-    }
+  //      return this.http.post<AddAppointmentRequestData>(
+  //       `${environment.serverBaseUrl}/appointment/addappointmentbypatient`,
+  //       {
+  //         // id: Math.floor(Math.random() * 100),
+  //         patientFname: requestData.patientFname,
+  //         patientLname: requestData.patientLname,
+  //         patientEmail: requestData.patientEmail,
+  //         patientTel: requestData.patientTel,
+  //         doctorId: requestData.doctorId,
+  //         referringPhysician: 'test',
+  //         examForAppointments: [{
+  //           examId: 1
+  //         }],
+  //         comments: requestData.comments ?? '',
+  //         startedAt: requestData.startedAt,
+  //       },
+  //     )
+  //   }
 
-    this.refreshAppointment.next();
+  //   this.refreshAppointment.next();
 
-    return of('Saved');
+  //   return of('Saved');
+  // }
+  public saveNewApointment$(requestData: AddAppointmentRequestData){
+    const {id, ...restData} = requestData;
+    return this.http.post<BaseResponse<Appointment>>(`${environment.serverBaseUrl}/appointment`, restData).pipe(
+      map(response => response.data)
+    )
+  }
+
+  public updateApointment$(requestData: AddAppointmentRequestData){
+    const {id, ...restData} = requestData;
+    return this.http.put<BaseResponse<Appointment>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
+      map(response => response.data)
+    )
   }
 
   public changeAppointmentStatus$(changes: { id: number | string; newStatus: AppointmentStatus | null }[]): Observable<boolean> {
@@ -2527,16 +2540,16 @@ export class AppointmentApiService {
   }
 
   public deleteAppointment(appointmentID: number) {
-    return this.http.delete(`${environment.serverBaseUrl}/appointment/${appointmentID}`).pipe(
-      map(response => response)
+    return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/appointment/${appointmentID}`).pipe(
+      map(response => response.data)
     )
 
-    const index = this.appointments.findIndex((appointment) => appointment.id === +appointmentID);
-    if (index !== -1) {
-      this.appointments.splice(index, 1);
-      // this.http.delete(`${environment.serverBaseUrl}/appointment`, {body: appointmentID})
-      this.refreshAppointment.next();
-    }
+    // const index = this.appointments.findIndex((appointment) => appointment.id === +appointmentID);
+    // if (index !== -1) {
+    //   this.appointments.splice(index, 1);
+    //   // this.http.delete(`${environment.serverBaseUrl}/appointment`, {body: appointmentID})
+    //   this.refreshAppointment.next();
+    // }
   }
 
    public getAppointmentByID(appointmentID: number): Observable<Appointment> {
