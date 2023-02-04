@@ -245,7 +245,8 @@ export class RoomsApiService {
     // }
 
     return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/room/${roomID}`).pipe(
-      map(response => response.data)
+      map(response => response.data),
+      tap(()=> {this.refreshRooms$$.next()})
     )
   }
 }
