@@ -15,6 +15,7 @@
         placeholder="Search"
         icon="search-sm"
         class="flex-1"
+        [formControl]="searchControl"
       ></dfm-input>
 
       <dfm-input
@@ -22,6 +23,7 @@
         placeholder="Advanced Search"
         icon="search-sm"
         class="flex-1"
+        [formControl]="searchControl"
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper">
@@ -60,6 +62,8 @@
         color="primary"
         size="md"
         class="text-nowrap"
+        routerLink="/appointment/add"
+        [state]="{ comingFromRoute: 'dashboard' }"
       >Add Appointment
       </dfm-button>
     </div>
@@ -109,11 +113,13 @@
         <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
       </ng-template>
       <ng-template #bodyRowTemplate let-item>
-        <dfm-table-body-cell>{{ item.getStarted | date  : 'short' }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.end | date : 'mediumTime' }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.name }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.applicationNo }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.read }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.startedAt | date  : 'short' }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.endedAt | date : 'mediumTime' }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.patientFname  | titlecase }} {{ item.patientLname | titlecase }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.id }}</dfm-table-body-cell>
+        <dfm-table-body-cell>
+          <span>{{ item.readStatus === readStatus.Read ? 'Yes' : 'No' }}</span>
+        </dfm-table-body-cell>
         <dfm-table-body-cell>
           <dfm-badge
             *ngIf="item.confirm"
@@ -150,12 +156,15 @@
               color="link-gray"
               size="md"
               trailingIcon="pencil-02"
+              [routerLink]="['/appointment', item.id, 'edit']"
+              [state]="{ comingFromRoute: 'dashboard', edit: true }"
             ></dfm-button>
             <dfm-button
               color="link-gray"
               size="md"
               trailingIcon="trash-01"
-            ></dfm-button>
+              (click)="deleteAppointment(item.id)">
+            </dfm-button>
           </div>
         </dfm-table-body-cell>
       </ng-template>
