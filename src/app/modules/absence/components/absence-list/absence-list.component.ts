@@ -52,6 +52,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe((absences) => {
+      console.log('absences: ', absences);
       this.absences$$.next(absences);
       this.filteredAbsences$$.next(absences);
     });

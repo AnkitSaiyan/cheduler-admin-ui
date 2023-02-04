@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, of, pipe, startWith, Subject, switchMap, tap } from 'rxjs';
 import { Absence, AddAbsenceRequestDate, PriorityType } from '../../shared/models/absence.model';
 import { Status } from '../../shared/models/status';
 import { RoomType } from '../../shared/models/rooms.model';
 import { AvailabilityType, UserType } from '../../shared/models/user.model';
 import { Weekday } from '../../shared/models/calendar.model';
 import { StaffApiService } from './staff-api.service';
-
+import { DashboardApiService } from './dashboard-api.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from "../../../environments/environment";
+import { BaseResponse } from 'src/app/shared/models/base-response.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -610,72 +613,117 @@ export class AbsenceApiService {
 
   private refreshAbsences$$ = new Subject<void>();
 
-  constructor(private staffApiSvc: StaffApiService) {}
+  constructor(private staffApiSvc: StaffApiService, private http: HttpClient) {}
 
   public get absences$(): Observable<Absence[]> {
-    return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.absences)));
+    return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAbsence()));
   }
 
-  public getAbsenceByID$(absenceID: number): Observable<Absence | undefined> {
+  
+  private fetchAllAbsence(): Observable<Absence[]> {
+    return this.http
+      .get<BaseResponse<Absence[]>>(`${environment.serverBaseUrl}/absences`)
+      .pipe(map((response) => response.data));
+  }
+
+
+  public getAbsenceByID$(absenceID: number): Observable<Absence> {
     return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(
-      switchMap(() => of(this.absences.find((absence) => +absence.id === +absenceID))),
-    );
+        switchMap(() => this.fetchAbsenceById(absenceID))
+      )
+    }
+
+  private fetchAbsenceById(absenceID: number): Observable<Absence> {
+    return this.http
+    .get<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences/${absenceID}`)
+    .pipe(map((response) => response.data));
   }
 
   public deleteAbsence(absenceID: number) {
-    const index = this.absences.findIndex((absence) => absence.id === +absenceID);
-    if (index !== -1) {
-      this.absences.splice(index, 1);
-      this.refreshAbsences$$.next();
-    }
+    console.log("called");
+    
+    // const index = this.absences.findIndex((absence) => absence.id === +absenceID);
+    // if (index !== -1) {
+    //   this.absences.splice(index, 1);
+    //   this.refreshAbsences$$.next();
+    // }
+
+    return this.http.delete<any>(`${environment.serverBaseUrl}/${absenceID}`).pipe(
+      tap(()=>{this.refreshAbsences$$.next()}),
+      map((response) => response.data)
+    )
   }
 
-  public upsertAbsence$(requestData: AddAbsenceRequestDate): Observable<string> {
-    if (!requestData) {
-      return of('');
-    }
+  public upsertAbsence$(requestData: AddAbsenceRequestDate): Observable<any> {
+    // if (!requestData) {
+    //   return of('');
+    // }
 
-    if (requestData?.id) {
-      const index = this.absences.findIndex((absence) => absence.id === requestData.id);
-      if (index !== -1) {
-        this.absences[index] = {
-          ...this.absences[index],
-          id: requestData.id,
-          name: requestData.name,
-          startedAt: new Date(requestData.startedAt),
-          endedAt: new Date(requestData.endedAt),
-          isRepeat: requestData.isRepeat,
-          isHoliday: requestData.isHoliday,
-          priority: requestData.priority,
-          repeatType: requestData?.repeatType ?? this.absences[index].repeatType,
-          repeatFrequency: requestData.repeatFrequency,
-          repeatDays: requestData?.repeatDays ?? this.absences[index].repeatDays,
-          info: requestData.info,
-          roomList: requestData.roomList,
-          staffList: requestData.staffList,
-          status: this.absences[index].status,
-        };
-      }
-    } else {
-      this.absences.push({
-        id: Math.random(),
-        name: requestData.name,
-        startedAt: new Date(requestData.startedAt),
-        endedAt: new Date(requestData.endedAt),
-        isRepeat: requestData.isRepeat,
-        isHoliday: requestData.isHoliday,
-        priority: requestData.priority,
-        repeatType: requestData?.repeatType,
-        repeatFrequency: requestData?.repeatFrequency,
-        repeatDays: requestData?.repeatDays,
-        info: requestData.info,
-        status: Status.Active,
-        staffList: requestData.staffList,
-        roomList: requestData.roomList,
-        staff: [],
-        rooms: [],
-      });
-    }
+    return this.http.post<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences`, requestData).pipe(
+        tap(()=>{this.refreshAbsences$$.next()}),
+        map((response) => response.data)
+      )
+    
+
+    // if (requestData?.id) {
+    //   const index = this.absences.findIndex((absence) => absence.id === requestData.id);
+    //   if (index !== -1) {
+    //     this.absences[index] = {
+    //       ...this.absences[index],
+    //       id: requestData.id,
+    //       name: requestData.name,
+    //       startedAt: new Date(requestData.startedAt),
+    //       endedAt: new Date(requestData.endedAt),
+    //       isRepeat: requestData.isRepeat,
+    //       isHoliday: requestData.isHoliday,
+    //       priority: requestData.priority,
+    //       repeatType: requestData?.repeatType ?? this.absences[index].repeatType,
+    //       repeatFrequency: requestData.repeatFrequency,
+    //       repeatDays: requestData?.repeatDays ?? this.absences[index].repeatDays,
+    //       info: requestData.info,
+    //       roomList: requestData.roomList,
+    //       staffList: requestData.staffList,
+    //       status: this.absences[index].status,
+    //     };
+    //   }
+    // } else {
+    //   this.http.post<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absence`, {
+    //     name: requestData.name,
+    //     startedAt: new Date(requestData.startedAt),
+    //     endedAt: new Date(requestData.endedAt),
+    //     isRepeat: requestData.isRepeat,
+    //     isHoliday: requestData.isHoliday,
+    //     priority: requestData.priority,
+    //     repeatType: requestData?.repeatType,
+    //     repeatFrequency: requestData?.repeatFrequency,
+    //     repeatDays: requestData?.repeatDays,
+    //     info: requestData.info,
+    //     status: Status.Active,
+    //     staffList: requestData.staffList,
+    //     roomList: requestData.roomList,
+    //     staff: [],
+    //     rooms: [],
+    //   }).pipe(map(response => response))
+
+    // {  this.absences.push({
+    //   id: Math.random(),
+    //   name: requestData.name,
+    //   startedAt: new Date(requestData.startedAt),
+    //   endedAt: new Date(requestData.endedAt),
+    //   isRepeat: requestData.isRepeat,
+    //   isHoliday: requestData.isHoliday,
+    //   priority: requestData.priority,
+    //   repeatType: requestData?.repeatType,
+    //   repeatFrequency: requestData?.repeatFrequency,
+    //   repeatDays: requestData?.repeatDays,
+    //   info: requestData.info,
+    //   status: Status.Active,
+    //   staffList: requestData.staffList,
+    //   roomList: requestData.roomList,
+    //   staff: [],
+    //   rooms: [],
+    // });}
+    // }
 
     this.refreshAbsences$$.next();
 

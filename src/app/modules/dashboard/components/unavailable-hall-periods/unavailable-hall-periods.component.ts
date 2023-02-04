@@ -1,57 +1,65 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, takeUntil } from 'rxjs';
+import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
+import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 
 @Component({
   selector: 'dfm-unavailable-hall-periods',
   templateUrl: './unavailable-hall-periods.component.html',
   styleUrls: ['./unavailable-hall-periods.component.scss']
 })
-export class UnavailableHallPeriodsComponent implements OnInit {
+export class UnavailableHallPeriodsComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public columns: string[] = ['Room Name', 'Get Started', 'End', 'Absence Name'];
 
-  public recentPatients: any = [
-    {
-      roomName: 'Maaike',
-      absenceName: 'Hannibal Smith',
-      end: new Date(),
-      getStarted: new Date(),
-    },
-    {
-      roomName: 'Maaike',
-      absenceName: 'Bannie Smith',
-      end: new Date(),
-      getStarted: new Date(),
-    },
-    {
-      roomName: 'Maaike',
-      absenceName: 'Kate Smith',
-      end: new Date(),
-      getStarted: new Date(),
-    },
-    {
-      roomName: 'Maaike',
-      absenceName: 'Hannibal Smith',
-      end: new Date(),
-      getStarted: new Date(),
-    },
-    {
-      roomName: 'Maaike',
-      absenceName: 'Hannibal Smith',
-      end: new Date(),
-      getStarted: new Date(),
-    },
-    {
-      roomName: 'Maaike',
-      absenceName: 'Hannibal Smith',
-      end: new Date(),
-      getStarted: new Date(),
-    },
-    {
-      roomName: 'Maaike',
-      absenceName: 'Hannibal Smith',
-      end: new Date(),
-      getStarted: new Date(),
-    },
-  ];
+    
+  private roomAbsence$$: BehaviorSubject<any[]>;
+
+  public filteredRoomAbsence$$: BehaviorSubject<any[]>;
+
+  // public recentPatients: any = [
+  //   {
+  //     roomName: 'Maaike',
+  //     absenceName: 'Hannibal Smith',
+  //     end: new Date(),
+  //     getStarted: new Date(),
+  //   },
+  //   {
+  //     roomName: 'Maaike',
+  //     absenceName: 'Bannie Smith',
+  //     end: new Date(),
+  //     getStarted: new Date(),
+  //   },
+  //   {
+  //     roomName: 'Maaike',
+  //     absenceName: 'Kate Smith',
+  //     end: new Date(),
+  //     getStarted: new Date(),
+  //   },
+  //   {
+  //     roomName: 'Maaike',
+  //     absenceName: 'Hannibal Smith',
+  //     end: new Date(),
+  //     getStarted: new Date(),
+  //   },
+  //   {
+  //     roomName: 'Maaike',
+  //     absenceName: 'Hannibal Smith',
+  //     end: new Date(),
+  //     getStarted: new Date(),
+  //   },
+  //   {
+  //     roomName: 'Maaike',
+  //     absenceName: 'Hannibal Smith',
+  //     end: new Date(),
+  //     getStarted: new Date(),
+  //   },
+  //   {
+  //     roomName: 'Maaike',
+  //     absenceName: 'Hannibal Smith',
+  //     end: new Date(),
+  //     getStarted: new Date(),
+  //   },
+  // ];
 
   public downloadItems: any[] = [
     {
@@ -75,7 +83,20 @@ export class UnavailableHallPeriodsComponent implements OnInit {
       description: 'Print appointments'
     }
   ];
+
+  constructor(private dashboardApiService: DashboardApiService) {
+    super();
+    this.roomAbsence$$ = new BehaviorSubject<any[]>([]);
+    this.filteredRoomAbsence$$ = new BehaviorSubject<any[]>([]);
+  }
+
+  
   ngOnInit(): void {
+        
+    this.dashboardApiService.roomAbsence$.pipe(takeUntil(this.destroy$$)).subscribe((roomAbsence) => {
+      this.roomAbsence$$.next(roomAbsence['roomAbsence']);
+      this.filteredRoomAbsence$$.next(roomAbsence['roomAbsence']);
+    });
   }
 
 }

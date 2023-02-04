@@ -1,5 +1,5 @@
 <div class="d-flex flex-column dfm-gap-8 dfm-y-16 h-100">
-  <section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-m-16">
+  <section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-m-16" *ngIf="filteredPosts$$ | async as posts">
     <header class="d-flex align-items-center dfm-gap-8">
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
@@ -48,9 +48,9 @@
     </div>
   </section>
 
-  <section class="h-100">
+  <section class="h-100" *ngIf="filteredPosts$$ | async as posts">
     <mdb-carousel [controls]="true" [indicators]="true" [dark]="true">
-      <mdb-carousel-item *ngFor="let post of posts; let i = index" class="h-100" [interval]="5000">
+      <mdb-carousel-item  *ngFor="let post of posts; let i = index" class="h-100" [interval]="5000">
         <div class="d-flex flex-column dfm-gap-16 dfm-px-24 dfm-pt-16 dfm-pb-24 justify-content-between rounded-3 shadow-sm post-it-card"
              [ngStyle]="{ 'background': i % 2 === 0 ? '#EBE9FE' : '#FDF8F2' }">
           <header class="overflow-y-auto hide-scrollbar">
@@ -63,8 +63,8 @@
                 <dfm-button-icon color="secondary-gray" size="sm" icon="trash-01"></dfm-button-icon>
               </div>
 
-              <span class="text-xs">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus corporis ducimus eaque ipsam maiores, perspiciatis placeat quam quas recusandae rerum unde vel vero! Dolores eum modi mollitia nam quia? Tenetur?
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus aliquid dicta, eligendi exercitationem facilis fugiat ipsa ipsam minus nemo nesciunt nisi numquam optio praesentium quae qui rem sequi unde voluptatum.
+              <span class="text-xs">
+                {{post.message}}
               </span>
             </div>
           </header>
@@ -78,14 +78,14 @@
                    height="32">
 
               <div *ngIf="!post.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
-                {{ post.author.toString()[0].toUpperCase() }}
+                <!-- {{ post.author.toString()[0].toUpperCase() }} -->
               </div>
             </div>
 
             <div class="d-flex flex-column text-sm">
               <div class="d-flex align-items-center flex-wrap">
                 <span class="font-weight-medium dfm-me-8">{{ post.author }}</span>
-                <span class="text-xs dfm-text-main-500">({{post.post}})</span>
+                <span class="text-xs dfm-text-main-500">({{post.message}})</span>
               </div>
               <span class="text-xs dfm-text-main-600">{{ post.postDate | date : 'M.d.yy, h:mm' }}</span>
             </div>

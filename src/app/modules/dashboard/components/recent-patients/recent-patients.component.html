@@ -53,7 +53,7 @@
     </div>
   </section>
 
-  <section class="table-wrapper">
+  <section class="table-wrapper" *ngIf="filteredRecentPatients$$ | async as recentPatients">
     <dfm-table [items]="recentPatients">
       <ng-template #headerRowTemplate>
         <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>

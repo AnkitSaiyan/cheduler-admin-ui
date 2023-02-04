@@ -66,8 +66,8 @@
     </div>
   </section>
 
-  <section class="table-wrapper">
-    <dfm-table [items]="recentPatients">
+  <section class="table-wrapper" *ngIf="filteredRoomAbsence$$ | async as roomAbsence">
+    <dfm-table [items]="roomAbsence">
       <ng-template #headerRowTemplate>
         <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
       </ng-template>
@@ -75,8 +75,8 @@
         <dfm-table-body-cell>
           <span class="font-weight-normal">{{ item.roomName }}</span>
         </dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.getStarted | date : 'short' }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.end | date : 'short' }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.startDate | date : 'short' }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.endDate | date : 'short' }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <span class="font-weight-medium">{{ item.absenceName }}</span>
         </dfm-table-body-cell>

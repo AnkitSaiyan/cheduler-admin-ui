@@ -103,7 +103,7 @@
     </div>
   </section>
 
-  <section class="table-wrapper">
+  <section class="table-wrapper" *ngIf="filteredAppointments$$ | async as appointments">
     <dfm-table [items]="appointments" [selectable]="true">
       <ng-template #headerRowTemplate>
         <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
