@@ -647,7 +647,7 @@ export class AbsenceApiService {
     )
   }
 
-  public addNewAbsence$(requestData: AddAbsenceRequestDate): Observable<any> {
+  public addNewAbsence$(requestData: AddAbsenceRequestDate): Observable<AddAbsenceRequestDate> {
     const { id, ...restdata} = requestData;
 
     return this.http.post<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences`, restdata).pipe(
@@ -721,7 +721,7 @@ export class AbsenceApiService {
     // return of('created');
   }
 
-  public updateAbsence(requestData: AddAbsenceRequestDate): Observable<any>{
+  public updateAbsence(requestData: AddAbsenceRequestDate): Observable<AddAbsenceRequestDate>{
     const {id, ...restData} = requestData;
     return this.http.put<BaseResponse<AddAbsenceRequestDate>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
       map(response => response.data)
