@@ -35,7 +35,7 @@
   <div class="calender-week-view-body-container">
     <div role="presentation" class="calender-week-view-body">
       <div role="row" class="calender-week-view-time-slot-container">
-        <div class="calender-week-view-time-slot text-sm" *ngFor="let time of 15 | timeInInterval : true">
+        <div class="calender-week-view-time-slot text-sm" *ngFor="let time of timeInterval | timeInInterval : true">
           <span>{{ time }}</span>
           <div class="calender-week-view-horizontal-line"></div>
         </div>
@@ -44,13 +44,16 @@
       <div role="presentation" class="calender-week-view-events-container-main">
         <div role="row" class="calender-week-view-events-container">
           <div>
-            <div *ngFor="let i of 15 | timeInInterval" class="calender-week-view-horizontal-line">
+            <div *ngFor="let i of timeInterval | timeInInterval" class="calender-week-view-horizontal-line">
             </div>
           </div>
           <div class="calender-week-view-events-left-vertical-line"></div>
           <div *ngFor="let day of daysOfWeekArr" role="gridcell" class="calender-week-view-body-grid-column">
-            <div></div>
-            <div role="presentation">
+            <div class="calender-week-view-body-grid-absolute"></div>
+            <div #eventContainer class="calender-week-view-body-events-container" role="presentation" [id]="day + '-' + (selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()">
+              <div>
+
+              </div>
             </div>
           </div>
         </div>

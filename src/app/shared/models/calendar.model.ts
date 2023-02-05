@@ -107,3 +107,23 @@ export function getAllDaysOfWeek(selectedDate: Date): number[] {
 
   return daysOfWeekArr;
 }
+
+export function getDurationMinutes(start: Date, end: Date): number {
+  if (start && end) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    const startH = startDate.getHours();
+    const endH = endDate.getHours();
+
+    if (startH === endH) {
+      return endDate.getMinutes() - startDate.getMinutes();
+    }
+
+    const hours = endH - (startH + 1);
+    const minutes = 60 - startDate.getMinutes() + endDate.getMinutes();
+    return Math.abs(hours * 60 + minutes);
+  }
+
+  return 0;
+}

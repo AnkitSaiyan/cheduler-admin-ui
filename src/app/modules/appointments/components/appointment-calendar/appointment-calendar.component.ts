@@ -43,10 +43,15 @@ export class AppointmentCalendarComponent implements OnInit {
   @Input()
   public appointmentsGroupedByDate!: { [key: string]: Appointment[] };
 
+  @Input()
+  public appointmentsGroupedByDateAndTIme!: { [key: string]: { group: number; data: any }[] };
+
   constructor() {}
 
   public ngOnInit(): void {
-    this.calendarViewFormControl.setValue('month');
+    this.calendarViewFormControl.setValue('week');
+
+    console.log(this.appointmentsGroupedByDateAndTIme);
 
     this.calendarViewFormControl.valueChanges.pipe().subscribe((value) => {
       this.newDate$$.next(this.selectedDate);

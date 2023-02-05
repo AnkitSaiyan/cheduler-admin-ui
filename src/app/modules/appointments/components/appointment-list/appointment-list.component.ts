@@ -1,9 +1,10 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
+import _default from 'chart.js/dist/plugins/plugin.tooltip';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AppointmentStatus, Status } from '../../../../shared/models/status';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getStatusEnum';
@@ -15,6 +16,7 @@ import { DownloadService } from '../../../../core/services/download.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { getDurationMinutes } from '../../../../shared/models/calendar.model';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -40,11 +42,13 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public appointmentsGroupedByDate: { [key: string]: Appointment[] } = {};
 
+  public appointmentsGroupedByDateAndTime: { [key: string]: { group: number; data: Appointment }[] } = {};
+
   public clearSelected$$ = new Subject<void>();
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: AppointmentStatus | null } | null>(null);
 
-  public calendarView$$ = new BehaviorSubject<boolean>(false);
+  public calendarView$$ = new BehaviorSubject<boolean>(true);
 
   public selectedAppointmentIDs: string[] = [];
 
@@ -75,13 +79,60 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
+
+      appointments.sort((ap1, ap2) => ap1.startedAt.getTime() - ap2.startedAt.getTime());
+
+      console.log(appointments);
+
+      let startDate: Date;
+      let endDate: Date;
+      let group: number;
+      let sameGroup: boolean;
+      // const dateToAppointmentAndGroupObj: { [key: string]: { group: number; data: Appointment }[] } = {};
+      // debugger;
       appointments.forEach((appointment) => {
         const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
+
         if (dateString) {
           if (!this.appointmentsGroupedByDate[dateString]) {
             this.appointmentsGroupedByDate[dateString] = [];
           }
+
+          if (!this.appointmentsGroupedByDateAndTime[dateString]) {
+            this.appointmentsGroupedByDateAndTime[dateString] = [];
+
+            startDate = new Date(appointment.startedAt);
+            endDate = new Date(appointment.endedAt);
+            group = 0;
+            sameGroup = false;
+          } else {
+            const currSD = new Date(appointment.startedAt);
+            const currED = new Date(appointment.endedAt);
+
+            if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
+              sameGroup = true;
+              if (currED > endDate) {
+                endDate = currED;
+              }
+            } else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
+              sameGroup = true;
+              if (currED > endDate) {
+                endDate = currED;
+              }
+            } else {
+              startDate = currSD;
+              endDate = currED;
+              sameGroup = false;
+            }
+          }
+
+          console.log(endDate);
+          if (!sameGroup) {
+            group++;
+          }
+
           this.appointmentsGroupedByDate[dateString].push(appointment);
+          this.appointmentsGroupedByDateAndTime[dateString].push({ group, data: appointment });
         }
       });
     });

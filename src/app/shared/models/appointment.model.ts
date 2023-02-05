@@ -19,7 +19,7 @@ export interface Appointment {
   rejectReason: string;
   readStatus: ReadStatus;
   startedAt: Date;
-  endedAt?: Date;
+  endedAt: Date;
   createdBy?: number;
   updatedBy?: number;
   cancelTillTime?: string;
