@@ -1,8 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
 import { DashboardApiService, PostIt } from 'src/app/core/services/dashboard-api.service';
+import { ModalService } from 'src/app/core/services/modal.service';
+import { NotificationDataService } from 'src/app/core/services/notification-data.service';
+import { ConfirmActionModalComponent, DialogData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import { AddPostComponent } from './add-post/add-post.component';
 
 @Component({
   selector: 'dfm-post-it',
@@ -10,7 +14,6 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
   styleUrls: ['./post-it.component.scss'],
 })
 export class PostItComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  postItForm!: FormGroup;
   // public posts: any[] = [];
   // public posts = [
   //   {
@@ -81,14 +84,13 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
 
   public filteredPosts$$: BehaviorSubject<any[]>;
 
-  constructor(private dashboardApiService: DashboardApiService, private formBuilder: FormBuilder) {
+  constructor(private dashboardApiService: DashboardApiService, private formBuilder: FormBuilder, private modalSvc: ModalService, private notificationSvc: NotificationDataService) {
     super();
     this.posts$$ = new BehaviorSubject<any[]>([]);
     this.filteredPosts$$ = new BehaviorSubject<any[]>([]);
   }
 
   ngOnInit(): void {
-    this.createPostItForm();
     this.dashboardApiService.posts$.pipe(takeUntil(this.destroy$$)).subscribe((posts) => {
       console.log('posts: ', posts);
       this.posts$$.next(posts);
@@ -96,9 +98,48 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
     });
   }
 
-  createPostItForm(){
-    this.postItForm = this.formBuilder.group({
-      message: ['']
-    })
+  public addPost() {
+    const dialogRef = this.modalSvc.open(AddPostComponent, {
+      data: {
+        titleText: 'Post it',
+        confirmButtonText: 'Add',
+        cancelButtonText: 'Cancel',
+      } as DialogData,
+    });
+
+    dialogRef.closed
+      .pipe(
+        switchMap((response: string)=>this.dashboardApiService.addPost({message: response})),
+        take(1),
+      )
+      .subscribe((response)=>{
+          if (response) {
+            this.notificationSvc.showNotification('Post Added successfully');
+          }
+        });
+  }
+
+  public reomvePost(id: number) {
+    const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
+      data: {
+        titleText: 'Confirmation',
+        bodyText: 'Are you sure you want to delete this Post?',
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+      } as DialogData,
+    });
+
+    dialogRef.closed
+      .pipe(
+        filter((res: boolean) => res),
+        switchMap(()=>this.dashboardApiService.deletePost(id)),
+        take(1),
+      )
+      .subscribe((response)=>{
+          console.log('response: ', response);
+          if (response) {
+            this.notificationSvc.showNotification('Post deleted successfully');
+          }
+        });
   }
 }

@@ -20,6 +20,7 @@ import { ConsultationsDoughnutChartComponent } from './components/charts/consult
 import { EmployeeAbsencesComponent } from './components/employee-absences/employee-absences.component';
 import { PostItComponent } from './components/post-it/post-it.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AddPostComponent } from './components/post-it/add-post/add-post.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     ConsultationsDoughnutChartComponent,
     EmployeeAbsencesComponent,
     PostItComponent,
+    AddPostComponent,
   ],
   imports: [CommonModule, DashboardRoutingModule, SharedModule, FormsModule, ReactiveFormsModule],
 })

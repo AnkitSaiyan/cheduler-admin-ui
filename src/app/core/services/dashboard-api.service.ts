@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { Absence } from 'src/app/shared/models/absence.model';
 import { AddAppointmentRequestData, Appointment } from 'src/app/shared/models/appointment.model';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
@@ -135,5 +135,19 @@ export class DashboardApiService {
 
   //   return of('Saved');
   // }
+
+  addPost(requestData: PostIt): Observable<PostIt>{
+    return this.http.post<BaseResponse<PostIt>>(`${environment.serverBaseUrl}/postit`, requestData).pipe(
+      map(response => response.data),
+      tap(()=>{this.refreshPost$$.next()})
+    )
+  }
+
+  deletePost(id: number): Observable<PostIt>{
+    return this.http.delete<BaseResponse<PostIt>>(`${environment.serverBaseUrl}/postit/${id}`).pipe(
+      map(response => response.data),
+      tap(()=>{this.refreshPost$$.next()})
+    )
+  }
 }
 
