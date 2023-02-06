@@ -17,47 +17,48 @@ export interface PostIt {
 export class DashboardApiService {
   constructor(private http: HttpClient) {}
 
-  private refreshAppointment = new Subject<void>();
-  private refreshNotification = new Subject<void>();
-  private refreshRoomAbsence = new Subject<void>();
+  private refreshAppointment$$ = new Subject<void>();
+  private refreshNotification$$ = new Subject<void>();
+  private refreshRoomAbsence$$ = new Subject<void>();
+  private refreshPost$$ = new Subject<void>();
 
   public get appointment$(): Observable<Appointment[]> {
-    return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
+    return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
   }
 
   private fetchAllAppointments(): Observable<Appointment[]> {
     return this.http
-      .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment/getnewandunconfirmedlist`)
+      .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment`)
       // .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/dashboard/appointments`)
       .pipe(map((response) => response.data));
   }
 
-  public get notification$(): Observable<any[]> {
-    return combineLatest([this.refreshNotification.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllNotifications()));
+  public get notification$(): Observable<Notification[]> {
+    return combineLatest([this.refreshNotification$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllNotifications()));
   }
 
-  private fetchAllNotifications(): Observable<any[]> {
-    return this.http.get<BaseResponse<any[]>>(`${environment.serverBaseUrl}/dashboard/notifications`).pipe(map((response) => response.data));
+  private fetchAllNotifications(): Observable<Notification[]> {
+    return this.http.get<BaseResponse<Notification[]>>(`${environment.serverBaseUrl}/dashboard/notifications`).pipe(map((response) => response.data));
   }
 
-  public get roomAbsence$(): Observable<any[]> {
-    return combineLatest([this.refreshRoomAbsence.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRoomAbsence()));
+  public get roomAbsence$(): Observable<Room[]> {
+    return combineLatest([this.refreshRoomAbsence$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRoomAbsence()));
   }
 
   private fetchRoomAbsence(): Observable<Room[]> {
     return this.http.get<BaseResponse<Room[]>>(`${environment.serverBaseUrl}/dashboard/roomabsences`).pipe(map((response) => response.data));
   }
 
-  public get recentPatient$(): Observable<any[]> {
-    return combineLatest([this.refreshRoomAbsence.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRecentPatients()));
+  public get recentPatient$(): Observable<Appointment[]> {
+    return combineLatest([this.refreshRoomAbsence$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRecentPatients()));
   }
 
-  private fetchRecentPatients(): Observable<Room[]> {
-    return this.http.get<BaseResponse<Room[]>>(`${environment.serverBaseUrl}/dashboard/recentpatients`).pipe(map((response) => response.data));
+  private fetchRecentPatients(): Observable<Appointment[]> {
+    return this.http.get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.serverBaseUrl}/dashboard/recentpatients`).pipe(map((response) => response.data?.appointment));
   }
 
-  public get posts$(): Observable<any[]> {
-    return combineLatest([this.refreshRoomAbsence.pipe(startWith(''))]).pipe(switchMap(() => this.fetchPosts()));
+  public get posts$(): Observable<PostIt[]> {
+    return combineLatest([this.refreshPost$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchPosts()));
   }
 
   private fetchPosts(): Observable<PostIt[]> {
@@ -130,23 +131,9 @@ export class DashboardApiService {
     // }
 
     // this.http.post<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/`)
-  //   this.refreshAppointment.next();
+  //   this.refreshAppointment$$.next();
 
   //   return of('Saved');
   // }
-
-  public saveAppointment$(requestData: AddAppointmentRequestData){
-    const {id, ...restData} = requestData;
-    return this.http.post<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment`, restData).pipe(
-      map(response => response.data)
-    )
-  }
-
-  public updateAppointment$(requestData: AddAppointmentRequestData){
-    const {id, ...restData} = requestData;
-    return this.http.put<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
-      map(response => response.data)
-    )
-  }
 }
 

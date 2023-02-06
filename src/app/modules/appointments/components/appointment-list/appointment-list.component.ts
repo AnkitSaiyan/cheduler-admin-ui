@@ -1,5 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
@@ -40,7 +40,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: AppointmentStatus | null } | null>(null);
 
-  public calendarView$$ = new BehaviorSubject<boolean>(false);
+  public calendarView$$ = new BehaviorSubject<boolean>(true);
 
   public selectedAppointmentIDs: string[] = [];
 
@@ -61,10 +61,11 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
   }
 
-  public ngOnInit(): void {
+  public ngOnInit() {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
+      console.log('appointments: ', appointments);
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
     });

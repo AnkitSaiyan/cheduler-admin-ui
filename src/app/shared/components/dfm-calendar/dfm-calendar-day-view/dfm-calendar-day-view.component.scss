@@ -1,0 +1,188 @@
+h3 {
+  margin: 0;
+}
+
+.calender-day-view-header {
+  box-sizing: border-box;
+  display: flex;
+
+  .calender-day-view-time-format {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    vertical-align: middle;
+    min-width: 64px;
+    //max-width: 80px;
+    font-size: 0.7rem;
+
+    div {
+      white-space: nowrap;
+      height: 24px;
+    }
+  }
+
+  .calender-day-view-weekday-header {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .calender-day-view-weekdays {
+      display: flex;
+      width: 100%;
+
+      .calender-day-view-weekday-header-left-vertical-line {
+        width: 8px;
+        height: 100%;
+        align-self: end;
+        -webkit-align-self: flex-end;
+        //border-right: 1px solid var(--dfm-main-200);;
+      }
+
+      .calender-day-view-weekday {
+        text-align: center;
+        text-align: -webkit-center;
+        min-width: 112px;
+        width: 112px;
+        color: var(--dfm-main-500);
+        padding: 8px 0;
+        position: relative;
+        background: var(--dfm-table-odd-cell-bg);
+
+        .calender-day-view-day-name {
+          height: 28px;
+          line-height: 32px;
+        }
+
+        .calender-day-view-header-cell-left-line {
+          border-left: 1px solid var(--dfm-main-200);
+          bottom: 0;
+          height: 100%;
+          //margin-left: -8px;
+          position: absolute;
+        }
+
+        .calender-day-view-date {
+          transition: all 150ms linear;
+          border-radius: 50%;
+          height: 40px;
+          width: 40px;
+          line-height: 40px;
+          font-size: 1.5rem;
+
+          //&:hover {
+          //  cursor: pointer;
+          //  background: var(--dfm-main-200);
+          //  color: black;
+          //}
+        }
+
+        .calender-day-view-date-today {
+          background: coral;
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+.calender-day-view-body-container {
+  max-height: calc(100vh - 368px);
+  overflow-y: overlay;
+
+  .calender-day-view-body {
+    display: flex;
+    width: 100%;
+
+    &::before {
+      content: "";
+      height: 2px;
+      position: absolute;
+      width: calc(100% - 64px);
+      border-bottom: 1px solid var(--dfm-main-200);
+      //left: 96px;
+    }
+
+    .calender-day-view-time-slot-container {
+      height: auto;
+      overflow-y: hidden;
+      min-width: 64px;
+      display: flex;
+      flex-direction: column;
+
+      .calender-day-view-time-slot {
+        min-height: 48px;
+        padding-right: 8px;
+        text-align: right;
+        position: relative;
+
+        span {
+          position: relative;
+          top: -16px;
+          font-size: 10px;
+        }
+      }
+    }
+
+    .calender-day-view-events-container-main {
+      overflow-x: auto;
+      //overflow-y: scroll;
+      display: flex;
+      align-items: flex-start;
+      -webkit-align-items: flex-start;
+      flex: 1;
+
+      .calender-day-view-events-container {
+        min-width: 100%;
+        display: inline-flex;
+        vertical-align: top;
+        position: relative;
+
+        .calender-day-view-horizontal-line {
+          //position: absolute;
+          //width: calc(100vw - 128px);
+          height: 48px;
+          //top: -12px;
+          //left: 64px;
+
+          &::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            margin-top: -4px;
+            z-index: 1;
+            pointer-events: none;
+            border-bottom: 1px solid var(--dfm-main-200);
+          }
+        }
+
+        .calender-day-view-events-left-vertical-line {
+          width: 8px;
+          //border-right: 1px solid var(--dfm-main-200);
+        }
+
+        .calender-day-view-body-grid-column {
+          min-width: 80px;
+          width: 80px;
+          flex: 1;
+          border-left: 1px solid var(--dfm-main-200);
+          padding-right: 12px;
+          position: relative;
+
+          div:first-child {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+          }
+
+          div:last-child {
+            position: relative;
+            height: 100%;
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
