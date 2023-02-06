@@ -11,6 +11,7 @@
       <dfm-button
         size="md"
         color="primary"
+        (click)="addPost()"
       >
         Add
       </dfm-button>
@@ -60,7 +61,7 @@
                       [ngStyle]="{ 'color': i % 2 === 0 ? '#5720B7' : '#531422' }">{{ i + 1 }} / {{ posts.length }}
                 </span>
 
-                <dfm-button-icon color="secondary-gray" size="sm" icon="trash-01"></dfm-button-icon>
+                <dfm-button-icon color="secondary-gray" size="sm" icon="trash-01" (click)="reomvePost(i)"></dfm-button-icon>
               </div>
 
               <span class="text-xs">
