@@ -116,7 +116,7 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
         this.staffDetails$$.next(staffDetails);
       });
 
-    this.userApiSvc.generalUserTypes.pipe(takeUntil(this.destroy$$)).subscribe((generalUserTypes) => {
+    this.userApiSvc.generalUserTypes$.pipe(takeUntil(this.destroy$$)).subscribe((generalUserTypes) => {
       this.generalUserTypes$$.next(generalUserTypes);
     });
 

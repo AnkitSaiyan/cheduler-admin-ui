@@ -8,7 +8,7 @@
     </header>
   </section>
 
-  <section class="d-flex flex-column dfm-gap-8">
+  <section class="d-flex flex-column dfm-gap-8" *ngIf="filteredTopTenDoctors$$ | async as top10Doctors">
     <div *ngFor="let doctorDetails of top10Doctors" class="d-flex dfm-gap-12 align-items-center">
       <div class="rounded-circle avatar-container">
         <img *ngIf="doctorDetails.avatar" [src]="doctorDetails.avatar"
@@ -18,12 +18,13 @@
              height="32">
 
         <div *ngIf="!doctorDetails.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
-          {{ doctorDetails.name.toString()[0].toUpperCase() }}
+          {{ doctorDetails.firstname.toString()[0].toUpperCase() }}
         </div>
       </div>
       <div class="text-sm d-flex flex-column">
-        <span class="font-weight-medium">{{ doctorDetails.name }}</span>
-        <span class="dfm-text-main-400">{{ doctorDetails.post }}</span>
+        <span class="font-weight-medium">{{ doctorDetails.firstname }} {{doctorDetails.lastname}}</span>
+        <span class="dfm-text-main-400"> Radiologiest</span>
+        <!-- <span class="dfm-text-main-400">{{ doctorDetails.post }}</span> -->
       </div>
     </div>
   </section>

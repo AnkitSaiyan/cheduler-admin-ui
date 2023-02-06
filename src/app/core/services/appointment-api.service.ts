@@ -2398,11 +2398,9 @@ export class AppointmentApiService {
   public get appointment$(): Observable<Appointment[]> {
     return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
   }
-  
-  private fetchAllAppointments(): Observable<Appointment[]>{
-    return this.http.get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment`).pipe(
-      map(response => response.data)
-    );
+
+  private fetchAllAppointments(): Observable<Appointment[]> {
+    return this.http.get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment`).pipe(map((response) => response.data));
   }
 
   // public upsertAppointment$(requestData: AddAppointmentRequestData): Observable<string> {
@@ -2501,11 +2499,11 @@ export class AppointmentApiService {
   }
 
   public deleteAppointment(appointmentID: number) {
-    const index = this.appointments.findIndex((appointment) => appointment.id === +appointmentID);
-    if (index !== -1) {
-      this.appointments.splice(index, 1);
-      this.refreshAppointment.next();
-    }
+    // const index = this.appointments.findIndex((appointment) => appointment.id === +appointmentID);
+    // if (index !== -1) {
+    //   this.appointments.splice(index, 1);
+    //   this.refreshAppointment.next();
+    // }
 
     return this.http
       .delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/appointment/${appointmentID}`)
@@ -2518,28 +2516,33 @@ export class AppointmentApiService {
     queryParams = queryParams.append('id', appointmentID);
     return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(
       switchMap(() =>
-        this.http.get<BaseResponse<Appointment>>(`${environment.serverBaseUrl}/appointment`, {params: queryParams})
-        .pipe(
-          map((response) => response.data), 
-          catchError((e) =>{
-            console.log("error", e)
-            return of({} as Appointment)
-        })
-        )))
+        this.http.get<BaseResponse<Appointment>>(`${environment.serverBaseUrl}/appointment`, { params: queryParams }).pipe(
+          map((response) => {
+            if (Array.isArray(response.data)) {
+              return response.data[0]
+            }
+            return response.data;
+          }),
+          catchError((e) => {
+            console.log('error', e);
+            return of({} as Appointment);
+          }),
+        ),
+      ),
+    );
   }
 
-  public saveAppointment$(requestData: AddAppointmentRequestData){
-    const {id, ...restData} = requestData;
-    return this.http.post<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment`, restData).pipe(
-      map(response => response.data)
-    )
+  public saveAppointment$(requestData: AddAppointmentRequestData) {
+    const { id, ...restData } = requestData;
+    return this.http
+      .post<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment`, restData)
+      .pipe(map((response) => response.data));
   }
 
-  public updateAppointment$(requestData: AddAppointmentRequestData){
-    const {id, ...restData} = requestData;
-    return this.http.put<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
-      map(response => response.data)
-    )
+  public updateAppointment$(requestData: AddAppointmentRequestData) {
+    const { id, ...restData } = requestData;
+    return this.http
+      .put<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment/${id}`, restData)
+      .pipe(map((response) => response.data));
   }
-
 }

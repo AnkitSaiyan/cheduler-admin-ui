@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { AvailabilityType, User, UserType } from '../../shared/models/user.model';
 import { Status } from '../../shared/models/status';
 import { AddStaffRequestData } from '../../shared/models/staff.model';
@@ -394,9 +394,7 @@ export class StaffApiService {
   }
 
   private fetchStaffList(): Observable<User[]> {
-    return this.http
-      .get<BaseResponse<User[]>>(`${environment.serverBaseUrl}/user?pageNo=1`)
-      .pipe(map((response) => response.data));
+    return this.http.get<BaseResponse<User[]>>(`${environment.serverBaseUrl}/user?pageNo=1`).pipe(map((response) => response.data));
   }
 
   // public upsertStaff$(requestData: AddStaffRequestData): Observable<string> {
@@ -453,8 +451,6 @@ export class StaffApiService {
   //   return of('created');
   // }
 
-
-
   //TODO: CHANGE STAFF LIST HAVE TO IMPLEMENT
 
   public changeStaffStatus$(changes: { id: number | string; newStatus: Status | null }[]): Observable<boolean> {
@@ -482,28 +478,28 @@ export class StaffApiService {
     return of(true);
   }
 
-  public addNewStaff$(requestData: AddStaffRequestData): Observable<any>{
+  public addNewStaff$(requestData: AddStaffRequestData): Observable<any> {
     console.log('requestData add: ', requestData);
-    const { id, ...restData} = requestData;
-    return this.http.post<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user`, restData).pipe(
-      map(response => response.data)
-    )
+    const { id, ...restData } = requestData;
+    return this.http.post<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user`, restData).pipe(map((response) => response.data));
   }
 
-  public updateStaff(requestData: AddStaffRequestData): Observable<any>{
+  public updateStaff(requestData: AddStaffRequestData): Observable<any> {
     console.log('requestData for update: ', requestData);
-    const { id, ...restData} = requestData;
-    return this.http.post<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user/${id}`, restData).pipe(
-      map(response => response.data)
-    )
+    const { id, ...restData } = requestData;
+    return this.http
+      .post<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user/${id}`, restData)
+      .pipe(map((response) => response.data));
   }
 
   public deleteStaff(staffID: number) {
-    return this.http
-      .delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/user/${staffID}`)
-      .pipe(map((response) => response));
+    return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/user/${staffID}`).pipe(
+      map((response) => response),
+      tap(() => {
+        this.refreshStaffs$$.next('');
+      }),
+    );
   }
-
 
   public getStaffByID(staffId: number): Observable<User | undefined> {
     console.log('staffID: ', staffId);
@@ -511,14 +507,15 @@ export class StaffApiService {
     queryParams = queryParams.append('id', staffId);
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
       switchMap(() =>
-        this.http.get<BaseResponse<User>>(`${environment.serverBaseUrl}/user`, {params: queryParams})
-        .pipe(
-          map((response) => response.data), 
-          catchError((e) =>{
-            console.log("error", e)
-            return of({} as User)
-        })
-        )))
+        this.http.get<BaseResponse<User>>(`${environment.serverBaseUrl}/user`, { params: queryParams }).pipe(
+          map((response) => response.data),
+          catchError((e) => {
+            console.log('error', e);
+            return of({} as User);
+          }),
+        ),
+      ),
+    );
   }
 
   public getUsersByType(userType: UserType): Observable<User[]> {
