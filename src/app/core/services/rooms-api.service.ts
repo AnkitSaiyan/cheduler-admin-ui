@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
-import { AddRoomRequestData, Room, RoomType } from '../../shared/models/rooms.model';
+import { AddRoomRequestData, Room, RoomsGroupedByType, RoomType } from '../../shared/models/rooms.model';
 import { Status } from '../../shared/models/status';
 import { AvailabilityType } from '../../shared/models/user.model';
 import { PracticeAvailability } from '../../shared/models/practice.model';
