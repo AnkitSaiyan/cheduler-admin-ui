@@ -1,5 +1,5 @@
 <div class="d-flex flex-column dfm-gap-8 dfm-y-16 h-100">
-  <section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-m-16">
+  <section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-m-16" *ngIf="filteredPosts$$ | async as posts">
     <header class="d-flex align-items-center dfm-gap-8">
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
@@ -11,6 +11,7 @@
       <dfm-button
         size="md"
         color="primary"
+        (click)="addPost()"
       >
         Add
       </dfm-button>
@@ -24,6 +25,7 @@
       placeholder="Search post it" class="post-search-it-placeholder"
       icon="search-sm"
     ></dfm-input>
+
     <div class="d-flex flex-row justify-content-between dfm-gap-16">
       <dfm-input
         size="md"
@@ -32,9 +34,9 @@
       ></dfm-input>
 
       <dfm-button-icon
-        color="tertiary-gray"
-        size="sm"
-        icon="copy-01"
+        color="secondary-gray"
+        size="md"
+        icon="copy-03"
       ></dfm-button-icon>
 
       <dfm-button
@@ -47,46 +49,46 @@
     </div>
   </section>
 
-  <section class="h-100">
+  <section class="h-100" *ngIf="filteredPosts$$ | async as posts">
     <mdb-carousel [controls]="true" [indicators]="true" [dark]="true">
-      <mdb-carousel-item *ngFor="let post of posts; let i = index" class="h-100" [interval]="5000">
+      <mdb-carousel-item  *ngFor="let post of posts; let i = index" class="h-100">
         <div class="d-flex flex-column dfm-gap-16 dfm-px-24 dfm-pt-16 dfm-pb-24 justify-content-between rounded-3 shadow-sm post-it-card"
              [ngStyle]="{ 'background': i % 2 === 0 ? '#EBE9FE' : '#FDF8F2' }">
-          <header>
+          <header class="overflow-y-auto hide-scrollbar">
             <div class="d-flex flex-column dfm-gap-16 h-100">
               <div class="d-flex dfm-gap-16 align-items-center justify-content-between">
                 <span class="font-weight-medium"
                       [ngStyle]="{ 'color': i % 2 === 0 ? '#5720B7' : '#531422' }">{{ i + 1 }} / {{ posts.length }}
                 </span>
 
-                <dfm-button-icon color="secondary-gray" size="sm" icon="trash-01"></dfm-button-icon>
+                <dfm-button-icon color="secondary-gray" size="sm" icon="trash-01" (click)="reomvePost(i)"></dfm-button-icon>
               </div>
 
-              <span class="text-xs">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus corporis ducimus eaque ipsam maiores, perspiciatis placeat quam quas recusandae rerum unde vel vero! Dolores eum modi mollitia nam quia? Tenetur?
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus aliquid dicta, eligendi exercitationem facilis fugiat ipsa ipsam minus nemo nesciunt nisi numquam optio praesentium quae qui rem sequi unde voluptatum.
+              <span class="text-xs">
+                {{post?.message}}
               </span>
             </div>
           </header>
 
           <div class="d-flex align-items-center dfm-gap-8 carousel-footer-content">
             <div class="rounded-circle avatar-container">
-              <img *ngIf="post.avatar" [src]="post.avatar"
+              <img *ngIf="post?.avatar" [src]="post?.avatar"
                    class="rounded-circle border-1"
                    alt="Doctor's avatar"
                    width="32"
                    height="32">
 
-              <div *ngIf="!post.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
-                {{ post.author.toString()[0].toUpperCase() }}
+              <div *ngIf="!post?.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+                <!-- {{ post.author.toString()[0].toUpperCase() }} -->
               </div>
             </div>
 
             <div class="d-flex flex-column text-sm">
               <div class="d-flex align-items-center flex-wrap">
-                <span class="font-weight-medium dfm-me-8">{{ post.author }}</span>
-                <span class="text-xs dfm-text-main-500">({{post.post}})</span>
+                <span class="font-weight-medium dfm-me-8">Maaike Penoit</span>
+                <span class="text-xs dfm-text-main-500">General User</span>
               </div>
-              <span class="text-xs dfm-text-main-600">{{ post.postDate | date : 'M.d.yy, h:mm' }}</span>
+              <span class="text-xs dfm-text-main-600">{{ post?.createdAt | date : 'M.d.yy, h:mm' }}</span>
             </div>
           </div>
         </div>

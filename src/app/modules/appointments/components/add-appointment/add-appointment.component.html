@@ -1,0 +1,184 @@
+<div class="d-flex flex-column dfm-gap-16 ad-ap-main-wrapper">
+  <section class="d-flex align-items-center justify-content-between dfm-gap-16">
+    <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-ap-title-buttons">
+      <dfm-button
+        color="link"
+        size="lg"
+        [routerLink]="[comingFromRoute === 'dashboard' ? '/dashboard' : '/appointment']"
+      >
+      {{ comingFromRoute === 'dashboard' ? 'Dashboard' : 'Appointment' }}
+      </dfm-button>
+
+      <div style="width: 16px; height: 16px" class="h-fit">
+        <dfm-icon name="chevron-right"></dfm-icon>
+      </div>
+
+      <dfm-button
+        color="link"
+        size="lg"
+        *ngIf="comingFromRoute === 'dashboard'"
+        [routerLink]="[comingFromRoute === 'dashboard' ? '/dashboard' : '/appointment']"
+      >
+      {{ comingFromRoute === 'dashboard' ? 'Appointment' : '' }}
+      </dfm-button>
+
+      <div style="width: 16px; height: 16px" class="h-fit" *ngIf="comingFromRoute === 'dashboard'">
+        <dfm-icon name="chevron-right"></dfm-icon>
+      </div>
+
+      <div class="d-flex align-items-center dfm-gap-8" *ngIf="comingFromRoute === 'view' && appointment$$.value?.id">
+        <dfm-button
+          color="link"
+          size="lg"
+          [routerLink]="['../', 'view']"
+        >View
+        </dfm-button>
+
+        <div style="width: 16px; height: 16px" class="h-fit">
+          <dfm-icon name="chevron-right"></dfm-icon>
+        </div>
+      </div>
+
+      <dfm-button
+        color="link-gray"
+        size="lg"
+      >{{ edit ? 'Edit' : 'Add' }}
+      </dfm-button>
+    </div>
+
+    <div class="dfm-gap-16 ad-ap-action-buttons">
+      <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/appointment']">Cancel</dfm-button>
+      <dfm-button
+        color="primary"
+        size="md"
+        class="text-nowrap"
+        (click)="saveAppointment()"
+      >{{ edit ? 'Save Changes' : 'Add Appointment' }}
+      </dfm-button>
+    </div>
+
+    <!--  Mobile View  -->
+    <div class="hidden dfm-gap-8 align-items-center ad-ap-title-buttons-mv">
+      <div class="rounded-circle overflow-hidden">
+        <dfm-button-icon
+          color="tertiary-gray"
+          size="sm"
+          icon="chevron-left"
+          [routerLink]="comingFromRoute === 'view' ? '../view' : '/appointment'"
+        >
+        </dfm-button-icon>
+      </div>
+
+      <dfm-button
+        color="link"
+        size="lg"
+        routerLink="./"
+      > {{ edit ? 'Edit' : 'Add' }} Appointment
+      </dfm-button>
+    </div>
+    <!--  **  -->
+  </section>
+
+  <section class="dfm-card dfm-p-16 ad-ap-section2 hide-scrollbar">
+    <form [formGroup]="appointmentForm" *ngIf="appointment$$ | async" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+      <div class="d-flex dfm-gap-32 align-items-center">
+        <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="Patient First Name *"
+                   formControlName="patientFname">
+        </dfm-input>
+
+        <dfm-input class="flex-1" size="md" placeholder="Enter last name" label="Patient Last Name *"
+                   formControlName="patientLname">
+        </dfm-input>
+
+        <dfm-input class="flex-1" size="md" placeholder="Enter Telephone" label="Enter telephone *" type="number"
+                   formControlName="patientTel">
+        </dfm-input>
+      </div>
+
+      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
+        <dfm-input class="flex-1 min-w-128" size="md" placeholder="Enter Patient Email" label="Patient Email *"
+                   formControlName="patientEmail">
+        </dfm-input>
+
+        <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
+          <dfm-input-dropdown [items]="physicianList" class="flex-1" size="md" placeholder="Select doctor" label="Doctor"
+                              formControlName="doctorId">
+          </dfm-input-dropdown>
+        </div>
+
+        <div class="ad-ab-from-date flex-1 dfm-gap-8 w-full">
+          <span class="text-sm font-weight-medium dfm-text-main-700">Date *</span>
+
+          <div class="d-flex align-items-center dfm-gap-16 flex-1 ad-ap-dates">
+            <div class="dfm-button-group-wrapper h-fit flex-1">
+              <div class="input-as-dfm-input flex-1">
+                <input
+                  class="w-full min-w-128"
+                  formControlName="startedAt"
+                  placeholder="yyyy-mm-dd"
+                  ngbDatepicker
+                  #date="ngbDatepicker"
+                />
+              </div>
+              <div>
+                <dfm-button-icon
+                  color="tertiary-gray"
+                  size="md"
+                  icon="calendar-date"
+                  (click)="date.toggle()"
+                ></dfm-button-icon>
+              </div>
+            </div>
+
+            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128">
+              <dfm-input-dropdown #time
+                                  [items]="timings"
+                                  [typeToSearch]="true"
+                                  [typeToSearchText]="time.value"
+                                  (searchInput)="handleTimeInput($event)"
+                                  formControlName="startTime"
+                                  size="md"
+                                  placeholder="hh:mm">
+              </dfm-input-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column dfm-gap-16 flex-1">
+        <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Room Type *</span>
+        <div class="w-fit d-flex justify-content-between dfm-gap-24">
+          <dfm-radio-button class="font-weight-normal" label="Public" [checkedValue]="roomType.Public"
+                            formControlName="roomType"></dfm-radio-button>
+          <dfm-radio-button class="font-weight-normal" label="Private" [checkedValue]="roomType.Private"
+                            formControlName="roomType"></dfm-radio-button>
+        </div>
+      </div>
+
+      <div class="dfm-input-multi-dropdown-wrapper ad-ap-multi-dropdown">
+        <dfm-input-dropdown #exams
+                            [items]="examList"
+                            [multiple]="true"
+                            [placeholder]="!!exams.value?.length ? exams.value.length + ' Selected' : 'Select Exams'"
+                            formControlName="examList"
+                            size="md"
+                            label="Exams *">
+        </dfm-input-dropdown>
+      </div>
+
+      <div class="dfm-input-dropdown-wrapper">
+        <dfm-input-dropdown #generalUsers
+                            [items]="userList"
+                            [placeholder]="!!generalUsers.value?.length ? generalUsers.value.length + ' Selected' : 'Select General Users'"
+                            formControlName="userId"
+                            size="md"
+                            label="General Users *">
+        </dfm-input-dropdown>
+      </div>
+
+      <dfm-text-area label="Comments / Clinical data" placeholder="Enter comments"
+                     formControlName="comments"></dfm-text-area>
+    </form>
+  </section>
+
+</div>

@@ -1,0 +1,312 @@
+<div class="d-flex flex-column dfm-gap-16 dfm-px-8 ad-ex-main-wrapper">
+  <section class="d-flex align-items-center justify-content-between dfm-gap-16">
+    <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-ex-title-buttons">
+      <dfm-button
+        color="link"
+        size="lg"
+        routerLink="/exam"
+      >Exam
+      </dfm-button>
+
+      <div style="width: 16px; height: 16px" class="h-fit">
+        <dfm-icon name="chevron-right"></dfm-icon>
+      </div>
+
+      <div class="d-flex align-items-center dfm-gap-8" *ngIf="comingFromRoute === 'view' && examDetails$$.value?.id">
+        <dfm-button
+          color="link"
+          size="lg"
+          [routerLink]="['../', 'view']"
+        >View
+        </dfm-button>
+
+        <div style="width: 16px; height: 16px" class="h-fit">
+          <dfm-icon name="chevron-right"></dfm-icon>
+        </div>
+      </div>
+
+      <dfm-button
+        color="link-gray"
+        size="lg"
+      >{{ comingFromRoute ? 'Edit' : 'Add' }}
+      </dfm-button>
+    </div>
+
+    <div class="dfm-gap-16 ad-ex-action-buttons">
+      <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/exam']">Cancel
+      </dfm-button>
+      <dfm-button
+        color="primary"
+        size="md"
+        class="text-nowrap"
+        (click)="saveExam()"
+      >{{ comingFromRoute ? 'Save Changes' : 'Add Exam' }}
+      </dfm-button>
+    </div>
+
+    <!--  Mobile View  -->
+    <div class="hidden dfm-gap-8 align-items-center ad-ex-title-buttons-mv">
+      <div class="rounded-circle overflow-hidden">
+        <dfm-button-icon
+          color="tertiary-gray"
+          size="sm"
+          icon="chevron-left"
+          [routerLink]="comingFromRoute === 'view' ? '../view' : '/exam'"
+        >
+        </dfm-button-icon>
+      </div>
+
+      <dfm-button
+        color="link"
+        size="lg"
+        routerLink="./"
+      > {{ edit ? 'Edit' : 'Add' }} Exam
+      </dfm-button>
+    </div>
+    <!--  **  -->
+  </section>
+
+  <section class="dfm-card overflow-y-auto hide-scrollbar ad-ex-section2">
+    <form [formGroup]="createExamForm" class="dfm-p-16 d-flex flex-column dfm-gap-32"
+          *ngIf="staffsGroupedByTypes$$ | async as staffsGroupedByType">
+      <div class="d-flex flex-column dfm-gap-16 ad-ex-form-exam-info">
+        <div class="d-flex dfm-gap-24 flex-wrap ad-ex-name-expense-room">
+          <dfm-input class="ad-ex-name" size="md" placeholder="Enter Exam Name" label="Exam Name *" formControlName="name">
+          </dfm-input>
+
+          <dfm-input class="ad-ex-duration" type="number" size="md" placeholder="Enter Duration" label="Expensive (Mins) *"
+                     formControlName="expensive">
+          </dfm-input>
+
+          <div class="dfm-input-dropdown-wrapper">
+            <dfm-input-dropdown class="flex-1" size="md" placeholder="Select room type" label="Room Type *" formControlName="roomType"
+                                [items]="roomTypes"></dfm-input-dropdown>
+          </div>
+        </div>
+
+        <div class="d-flex dfm-gap-8 flex-column" *ngIf="!!createExamForm.get('roomType')?.value">
+          <span class="text-sm font-weight-medium dfm-text-main-700">{{ formValues.roomType | titlecase }} Rooms *</span>
+
+          <div class="d-flex dfm-gap-24 flex-wrap" formArrayName="roomsForExam">
+            <div [formGroupName]="rowIndex"
+                 *ngFor="let roomForExamControl of roomsForExamControls; let rowIndex = index"
+                 class="d-flex flex-row dfm-gap-8 align-items-baseline">
+              <dfm-checkbox formControlName="selectRoom" size="md"
+                            [label]="roomForExamControl.value?.roomName"></dfm-checkbox>
+              <div class="ad-ex-duration">
+                <dfm-input type="number" size="md" placeholder="Duration (Mins)" formControlName="duration">
+                </dfm-input>
+              </div>
+            </div>
+          </div>
+
+          <span *ngIf="formErrors.selectRoomErr"
+                class="dfm-text-danger-500 text-sm">At least one room is required.</span>
+          <span *ngIf="formErrors.expensiveErr && !formErrors.selectRoomErr" class="dfm-text-danger-500 text-sm">Expensive of the exam and total minutes of rooms should be the same.</span>
+        </div>
+
+        <dfm-text-area size="md" placeholder="Enter Info" label="Info" class="ad-ex-info-input" formControlName="info">
+        </dfm-text-area>
+
+        <div class="d-flex flex-1 dfm-gap-24">
+          <div class="dfm-input-multi-dropdown-wrapper flex-1">
+            <dfm-input-dropdown #uncombinableDropdown size="md" [multiple]="true"
+                                [placeholder]="!!uncombinableDropdown.value?.length ? uncombinableDropdown.value.length + ' Selected' : 'Select Exam'"
+                                label="Uncombinable" [items]="exams"
+                                formControlName="uncombinables">
+            </dfm-input-dropdown>
+          </div>
+
+          <div class="dfm-input-multi-dropdown-wrapper flex-1">
+            <dfm-input-dropdown #mandatoryStaffsDropdown size="md" [multiple]="true"
+                                [placeholder]="!!mandatoryStaffsDropdown.value?.length ? mandatoryStaffsDropdown.value.length + ' Selected' : 'Select Staff'"
+                                label="Mandatory Staffs *" [items]="staffsGroupedByType.mandatory"
+                                formControlName="mandatoryStaffs">
+            </dfm-input-dropdown>
+          </div>
+        </div>
+
+        <span class="text-sm font-weight-medium dfm-text-main-700">General Staff</span>
+
+        <div class="ad-ex-general-staff">
+          <div class="d-flex dfm-gap-16">
+            <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
+              <dfm-input-dropdown class="flex-1" size="md" label="Select No." placeholder="Select" formControlName="assistantCount" [items]="count">
+              </dfm-input-dropdown>
+            </div>
+
+            <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
+              <dfm-input-dropdown #assistantDropdown size="md" label="Assistant" placeholder="Select Staff" [multiple]="true" formControlName="assistants"
+                                  [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : 'Select Staff'"
+                                  [items]="staffsGroupedByType.assistants">
+              </dfm-input-dropdown>
+            </div>
+          </div>
+
+          <div class="d-flex dfm-gap-16">
+            <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
+              <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="radiologistCount" [items]="count">
+              </dfm-input-dropdown>
+            </div>
+
+            <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
+              <dfm-input-dropdown #radiologistDropdown size="md" label="Radiologists" placeholder="Select Staff" [multiple]="true" formControlName="radiologists"
+                                  [placeholder]="!!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : 'Select Staff'"
+                                  [items]="staffsGroupedByType.radiologists">
+              </dfm-input-dropdown>
+            </div>
+          </div>
+
+          <div class="d-flex dfm-gap-16">
+            <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
+              <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="nursingCount" [items]="count">
+              </dfm-input-dropdown>
+            </div>
+
+            <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
+              <dfm-input-dropdown #nursingDropdown size="md" label="Nursing" placeholder="Select Staff" [multiple]="true" formControlName="nursing"
+                                  [placeholder]="!!nursingDropdown.value?.length ? nursingDropdown.value.length + ' Selected' : 'Select Staff'"
+                                  [items]="staffsGroupedByType.nursing">
+              </dfm-input-dropdown>
+            </div>
+          </div>
+
+          <div class="d-flex dfm-gap-16">
+            <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
+              <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="secretaryCount" [items]="count">
+              </dfm-input-dropdown>
+            </div>
+
+            <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
+              <dfm-input-dropdown #secretaryDropdown size="md" label="Secretary" placeholder="Select Staff" [multiple]="true" formControlName="secretaries"
+                                  [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ' Selected' : 'Select Staff'"
+                                  [items]="staffsGroupedByType.secretaries">
+              </dfm-input-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column dfm-gap-16">
+        <div class="d-flex flex-column dfm-gap-8">
+          <span class="text-md font-weight-semi-bold">Add Practice Data</span>
+
+          <div class="w-fit">
+            <dfm-radio-button
+              label="Always"
+              hint="Corresponds to the opening hours of the practice"
+              size="sm"
+              [checkedValue]="false"
+              formControlName="practiceAvailabilityToggle"
+              (change)="handleRadioButtonChange(false)"
+            ></dfm-radio-button>
+
+            <dfm-radio-button
+              label="Get Detailed"
+              hint="Use only for exceptions"
+              size="sm"
+              formControlName="practiceAvailabilityToggle"
+              [checkedValue]="true"
+              (change)="handleRadioButtonChange(true)"
+            ></dfm-radio-button>
+          </div>
+        </div>
+
+        <div *ngIf="formValues.practiceAvailabilityToggle" class="d-flex flex-column dfm-gap-24">
+          <div class="d-flex flex-column dfm-gap-8">
+            <span class="text-sm font-weight-semi-bold">Choose Day</span>
+
+            <div class="d-flex dfm-gap-16 weekday-header ad-ex-weekdays-tab hide-scrollbar">
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)"
+                         class="pointer"
+                         (click)="selectWeekday(weekdayEnum.ALL)">VIEW ALL
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.MON)"
+                         class="pointer"
+                         (click)="selectWeekday(weekdayEnum.MON)">MON
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.TUE)"
+                         class="pointer"
+                         (click)="selectWeekday(weekdayEnum.TUE)">TUE
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.WED)"
+                         class="pointer"
+                         (click)="selectWeekday(weekdayEnum.WED)">WED
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.THU)"
+                         class="pointer"
+                         (click)="selectWeekday(weekdayEnum.THU)">THU
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.FRI)"
+                         class="pointer"
+                         (click)="selectWeekday(weekdayEnum.FRI)">FRI
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SAT)"
+                         class="pointer"
+                         (click)="selectWeekday(weekdayEnum.SAT)">SAT
+              </dfm-badge>
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SUN)"
+                         class="pointer"
+                         (click)="selectWeekday(weekdayEnum.SUN)">SUN
+              </dfm-badge>
+            </div>
+          </div>
+
+          <div formGroupName="practiceAvailability" class="d-flex flex-column dfm-gap-32 ad-ex-availability-form-fields">
+            <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray()"
+                 [formArrayName]="getFormArrayName(controlArray)"
+                 class="d-flex flex-column flex-wrap dfm-gap-16">
+              <span class="text-sm font-weight-semi-bold">
+                {{ getFormArrayName(controlArray) | weekdayToName }}
+              </span>
+
+              <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
+                   class="d-flex flex-column dfm-gap-16">
+                <div class="d-flex dfm-gap-32 align-items-end">
+                  <div class="d-flex flex-column dfm-gap-8">
+                    <!--                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">-->
+
+                    <!--                    </dfm-input-dropdown>-->
+                    <label class="text-sm font-weight-medium">Start Time</label>
+                    <ngb-timepicker formControlName="dayStart" size="small" [spinners]="false"></ngb-timepicker>
+                    <span class="text-sm text-red"
+                          *ngIf="controls.get('dayStart')?.hasError('startTimeErr')">Start Time must be smaller.</span>
+                  </div>
+
+                  <div class="d-flex flex-column dfm-gap-8">
+                    <label class="text-sm font-weight-medium">End Time</label>
+                    <ngb-timepicker formControlName="dayEnd" size="small" [spinners]="false"></ngb-timepicker>
+                    <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>
+                  </div>
+
+                  <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                                   class="dfm-mb-4"
+                                   (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
+                <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+                <span class="text-sm dfm-text-main-600">Click to add slot</span>
+              </div>
+            </div>
+          </div>
+
+          <!--          <div formArrayName="practiceAvailability" class="d-flex dfm-gap-16" *ngIf="!!formValues.practiceAvailability">-->
+          <!--            <div [formGroupName]="i" *ngFor="let control of practiceAvailabilityControls; let i = index" class="d-flex flex-column dfm-gap-8">-->
+          <!--              <span>{{ control.value?.weekday | weekdayToName  }}</span>-->
+
+          <!--              <div class="d-flex dfm-gap-16 flex-wrap">-->
+          <!--                <dfm-input size="sm" placeholder="Enter First Name" label="First Name *" formControlName="dayStart">-->
+          <!--                </dfm-input>-->
+
+          <!--                <dfm-input size="sm" placeholder="Enter Last Name" label="Last Name *" formControlName="dayEnd">-->
+          <!--                </dfm-input>-->
+          <!--              </div>-->
+          <!--            </div>-->
+          <!--          </div>-->
+        </div>
+      </div>
+    </form>
+  </section>
+</div>

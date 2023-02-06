@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Status } from '../models/status';
+import { AppointmentStatus, Status } from '../models/status';
 
 @Component({
   selector: 'dfm-confirm-status-change-banner',
@@ -110,22 +110,48 @@ import { Status } from '../models/status';
 export class ConfirmStatusChangeBannerComponent implements OnInit {
   @Input() public display;
 
-  @Output() private confirmationEvent = new EventEmitter<{ proceed: boolean; newStatus: Status | null }>();
+  @Input() public statusType: 'status' | 'appointment' = 'status';
+
+  @Output() private confirmationEvent = new EventEmitter<{ proceed: boolean; newStatus: any | null }>();
 
   public statusDropdownControl = new FormControl(null, []);
 
-  public statuses = [
-    {
-      name: 'Active',
-      value: Status.Active,
-    },
-    {
-      name: 'Inactive',
-      value: Status.Inactive,
-    },
-  ] as any[];
+  public statuses!: any[];
 
-  public ngOnInit() {}
+  public ngOnInit() {
+    switch (this.statusType) {
+      case 'appointment':
+        this.statuses = [
+          {
+            name: 'Pending',
+            value: AppointmentStatus.Pending,
+          },
+          {
+            name: 'Approved',
+            value: AppointmentStatus.Approved,
+          },
+          {
+            name: 'Cancelled',
+            value: AppointmentStatus.Cancelled,
+          },
+        ] as any[];
+        break;
+      case 'status':
+        this.statuses = [
+          {
+            name: 'Active',
+            value: Status.Active,
+          },
+          {
+            name: 'Inactive',
+            value: Status.Inactive,
+          },
+        ] as any[];
+        break;
+      default:
+        this.statuses = [];
+    }
+  }
 
   public handleClick(proceed: boolean) {
     if (!proceed) {

@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { combineLatest, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap } from 'rxjs';
 import { AvailabilityType, User, UserType } from '../../shared/models/user.model';
 import { Status } from '../../shared/models/status';
 import { AddStaffRequestData } from '../../shared/models/staff.model';
-import { WeekdayModel } from '../../shared/models/weekday.model';
+import { Weekday } from '../../shared/models/calendar.model';
 import { PracticeAvailability } from '../../shared/models/practice.model';
+import { BaseResponse } from 'src/app/shared/models/base-response.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -28,79 +30,79 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -122,7 +124,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.MON,
+          weekday: Weekday.MON,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -144,7 +146,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -166,7 +168,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.SAT,
+          weekday: Weekday.SAT,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -176,7 +178,7 @@ export class StaffApiService {
       id: 5,
       firstname: 'Jennifer',
       lastname: 'Woodley',
-      userType: UserType.General,
+      userType: UserType.Assistant,
       email: 'jennifer@deflexmo.be',
       telephone: '9812345678',
       address: '',
@@ -188,13 +190,13 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.THU,
+          weekday: Weekday.THU,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -204,7 +206,7 @@ export class StaffApiService {
       id: 6,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserType.General,
+      userType: UserType.Nursing,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
@@ -216,19 +218,19 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.SUN,
+          weekday: Weekday.SUN,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -250,7 +252,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -272,7 +274,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -297,7 +299,7 @@ export class StaffApiService {
       id: 10,
       firstname: 'Maaike',
       lastname: 'Benooit',
-      userType: UserType.General,
+      userType: UserType.Radiologist,
       email: 'maaike@deflexmo.be',
       telephone: '9812345678',
       address: '',
@@ -309,7 +311,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -331,7 +333,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.WED,
+          weekday: Weekday.WED,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -353,7 +355,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.FRI,
+          weekday: Weekday.FRI,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -375,7 +377,7 @@ export class StaffApiService {
       practiceAvailability: [
         {
           id: 60,
-          weekday: WeekdayModel.THU,
+          weekday: Weekday.THU,
           dayStart: new Date(),
           dayEnd: new Date(),
         },
@@ -388,60 +390,72 @@ export class StaffApiService {
   constructor(private http: HttpClient) {}
 
   public get staffList$(): Observable<User[]> {
-    return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.staffLists)));
+    return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchStaffList()));
   }
 
-  public upsertStaff$(requestData: AddStaffRequestData): Observable<string> {
-    if (!requestData) {
-      return of('');
-    }
-
-    if (requestData.id) {
-      const index = this.staffLists.findIndex((staff) => staff.id === requestData.id);
-      if (index !== -1) {
-        this.staffLists[index] = {
-          ...this.staffLists[index],
-          id: requestData.id,
-          firstname: requestData.firstname,
-          lastname: requestData.lastname,
-          userType: requestData.userType,
-          email: requestData.email,
-          telephone: requestData.telephone,
-          address: requestData?.address ?? '',
-          status: Status.Active,
-          availabilityType: AvailabilityType.Available,
-          deletedBy: null,
-          gsm: '',
-          examList: requestData.examLists,
-          practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
-          info: requestData?.info ?? '',
-        };
-
-        console.log(requestData.practiceAvailability);
-      }
-    } else {
-      this.staffLists.push({
-        id: Math.random(),
-        firstname: requestData.firstname,
-        lastname: requestData.lastname,
-        userType: requestData.userType,
-        email: requestData.email,
-        telephone: requestData.telephone,
-        address: requestData?.address ?? '',
-        status: Status.Active,
-        availabilityType: AvailabilityType.Available,
-        deletedBy: null,
-        gsm: '',
-        examList: requestData.examLists,
-        practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
-        info: requestData?.info ?? '',
-      });
-    }
-
-    this.refreshStaffs$$.next('');
-
-    return of('created');
+  private fetchStaffList(): Observable<User[]> {
+    return this.http
+      .get<BaseResponse<User[]>>(`${environment.serverBaseUrl}/user?pageNo=1`)
+      .pipe(map((response) => response.data));
   }
+
+  // public upsertStaff$(requestData: AddStaffRequestData): Observable<string> {
+  //   if (!requestData) {
+  //     return of('');
+  //   }
+
+  //   console.log(requestData);
+  //   if (requestData.id) {
+  //     const index = this.staffLists.findIndex((staff) => staff.id === requestData.id);
+  //     if (index !== -1) {
+  //       console.log(index);
+  //       this.staffLists[index] = {
+  //         ...this.staffLists[index],
+  //         id: requestData.id,
+  //         firstname: requestData.firstname,
+  //         lastname: requestData.lastname,
+  //         userType: requestData.userType,
+  //         email: requestData.email,
+  //         telephone: requestData.telephone,
+  //         address: requestData?.address ?? this.staffLists[index].address,
+  //         status: this.staffLists[index].status,
+  //         availabilityType: this.staffLists[index].availabilityType,
+  //         deletedBy: null,
+  //         gsm: requestData.gsm ?? this.staffLists[index].gsm,
+  //         examList: requestData?.examLists ?? this.staffLists[index].examList,
+  //         practiceAvailability: requestData.practiceAvailability ?? (this.staffLists[index].practiceAvailability as PracticeAvailability[]),
+  //         info: requestData?.info ?? this.staffLists[index].info,
+  //       };
+
+  //       console.log(requestData);
+  //     }
+  //   } else {
+  //     this.staffLists.push({
+  //       id: Math.random(),
+  //       firstname: requestData.firstname,
+  //       lastname: requestData.lastname,
+  //       userType: requestData.userType,
+  //       email: requestData.email,
+  //       telephone: requestData.telephone,
+  //       address: requestData?.address ?? '',
+  //       status: Status.Active,
+  //       availabilityType: AvailabilityType.Available,
+  //       deletedBy: null,
+  //       gsm: requestData.gsm ?? '',
+  //       examList: requestData?.examLists ?? [],
+  //       practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
+  //       info: requestData?.info ?? '',
+  //     });
+  //   }
+
+  //   this.refreshStaffs$$.next('');
+
+  //   return of('created');
+  // }
+
+
+
+  //TODO: CHANGE STAFF LIST HAVE TO IMPLEMENT
 
   public changeStaffStatus$(changes: { id: number | string; newStatus: Status | null }[]): Observable<boolean> {
     if (!changes.length) {
@@ -468,15 +482,46 @@ export class StaffApiService {
     return of(true);
   }
 
-  public deleteStaff(staffID: number) {
-    const index = this.staffLists.findIndex((staff) => staff.id === +staffID);
-    if (index !== -1) {
-      this.staffLists.splice(index, 1);
-      this.refreshStaffs$$.next('');
-    }
+  public addNewStaff$(requestData: AddStaffRequestData): Observable<any>{
+    console.log('requestData add: ', requestData);
+    const { id, ...restData} = requestData;
+    return this.http.post<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user`, restData).pipe(
+      map(response => response.data)
+    )
   }
 
-  public getStaffByID(staffID: number): Observable<User | undefined> {
-    return of(this.staffLists.find((staff) => +staff.id === +staffID));
+  public updateStaff(requestData: AddStaffRequestData): Observable<any>{
+    console.log('requestData for update: ', requestData);
+    const { id, ...restData} = requestData;
+    return this.http.post<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user/${id}`, restData).pipe(
+      map(response => response.data)
+    )
+  }
+
+  public deleteStaff(staffID: number) {
+    return this.http
+      .delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/user/${staffID}`)
+      .pipe(map((response) => response));
+  }
+
+
+  public getStaffByID(staffId: number): Observable<User | undefined> {
+    console.log('staffID: ', staffId);
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append('id', staffId);
+    return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
+      switchMap(() =>
+        this.http.get<BaseResponse<User>>(`${environment.serverBaseUrl}/user`, {params: queryParams})
+        .pipe(
+          map((response) => response.data), 
+          catchError((e) =>{
+            console.log("error", e)
+            return of({} as User)
+        })
+        )))
+  }
+
+  public getUsersByType(userType: UserType): Observable<User[]> {
+    return this.fetchStaffList().pipe(map((staffs) => staffs.filter((staff) => staff.userType === userType)));
   }
 }

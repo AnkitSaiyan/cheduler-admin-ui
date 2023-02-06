@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { take, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { WeekdayModel } from '../../../../shared/models/weekday.model';
+import { Weekday } from '../../../../shared/models/calendar.model';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AddPhysicianRequestData, Physician } from '../../../../shared/models/physician.model';
@@ -30,7 +30,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 
   public modalData!: { edit: boolean; physicianDetails: Physician };
 
-  public weekdayEnum = WeekdayModel;
+  public weekdayEnum = Weekday;
 
   constructor(
     private modalSvc: ModalService,

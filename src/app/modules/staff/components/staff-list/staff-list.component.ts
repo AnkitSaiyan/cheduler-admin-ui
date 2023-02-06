@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { TableItem } from 'diflexmo-angular-design';
@@ -19,6 +19,10 @@ import { User } from '../../../../shared/models/user.model';
   styleUrls: ['./staff-list.component.scss'],
 })
 export class StaffListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  @HostListener('document:click', ['$event']) onClick() {
+    this.toggleMenu(true);
+  }
+
   @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
 
   public searchControl = new FormControl('', []);
@@ -157,7 +161,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       data: {
         titleText: 'Confirmation',
         bodyText: 'Are you sure you want to delete this Staff?',
-        confirmButtonText: 'Proceed',
+        confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
     });

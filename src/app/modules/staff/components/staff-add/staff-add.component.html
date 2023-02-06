@@ -141,42 +141,42 @@
             <span class="text-sm font-weight-semi-bold">Choose Day</span>
 
             <div class="d-flex dfm-gap-16 weekday-header sf-ad-weekdays-tab hide-scrollbar">
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.ALL ? 'primary' : 'gray'"
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)"
                          class="pointer"
-                         (click)="selectWeekday(weekday.ALL)">VIEW ALL
+                         (click)="selectWeekday(weekdayEnum.ALL)">VIEW ALL
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.MON ? 'primary' : 'gray'"
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.MON)"
                          class="pointer"
-                         (click)="selectWeekday(weekday.MON)">MON
+                         (click)="selectWeekday(weekdayEnum.MON)">MON
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.TUE ? 'primary' : 'gray'"
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.TUE)"
                          class="pointer"
-                         (click)="selectWeekday(weekday.TUE)">TUE
+                         (click)="selectWeekday(weekdayEnum.TUE)">TUE
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.WED ? 'primary' : 'gray'"
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.WED)"
                          class="pointer"
-                         (click)="selectWeekday(weekday.WED)">WED
+                         (click)="selectWeekday(weekdayEnum.WED)">WED
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.THU ? 'primary' : 'gray'"
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.THU)"
                          class="pointer"
-                         (click)="selectWeekday(weekday.THU)">THU
+                         (click)="selectWeekday(weekdayEnum.THU)">THU
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.FRI ? 'primary' : 'gray'"
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.FRI)"
                          class="pointer"
-                         (click)="selectWeekday(weekday.FRI)">FRI
+                         (click)="selectWeekday(weekdayEnum.FRI)">FRI
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.SAT ? 'primary' : 'gray'"
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SAT)"
                          class="pointer"
-                         (click)="selectWeekday(weekday.SAT)">SAT
+                         (click)="selectWeekday(weekdayEnum.SAT)">SAT
               </dfm-badge>
-              <dfm-badge size="sm" [color]="formValues.selectedWeekday === weekday.SUN ? 'primary' : 'gray'"
+              <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SUN)"
                          class="pointer"
-                         (click)="selectWeekday(weekday.SUN)">SUN
+                         (click)="selectWeekday(weekdayEnum.SUN)">SUN
               </dfm-badge>
             </div>
           </div>
 
-          <div formGroupName="practiceAvailability" class="d-flex flex-column dfm-gap-32">
+          <div formGroupName="practiceAvailability" class="d-flex flex-column dfm-gap-32 sf-add-practice-availability-form-fields">
             <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray()"
                  [formArrayName]="getFormArrayName(controlArray)"
                  class="d-flex flex-column flex-wrap dfm-gap-16">
@@ -186,7 +186,7 @@
 
               <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
                    class="d-flex flex-column dfm-gap-16">
-                <div class="d-flex dfm-gap-16 align-items-end">
+                <div class="d-flex dfm-gap-32 align-items-end">
                   <div class="d-flex flex-column dfm-gap-8">
 <!--                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">-->
 

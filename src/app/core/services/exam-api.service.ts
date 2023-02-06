@@ -1,6 +1,11 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { Exam } from '../../shared/models/exam.model';
+import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
+import { BaseResponse } from 'src/app/shared/models/base-response.model';
+import { environment } from 'src/environments/environment';
+import { CreateExamRequestData, Exam } from '../../shared/models/exam.model';
+import { Status } from '../../shared/models/status';
+import { AvailabilityType } from '../../shared/models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -16,12 +21,12 @@ export class ExamApiService {
       radiologistCount: 1,
       nursingCount: 1,
       secretaryCount: 1,
-      availabilityType: 1,
-      status: 1,
+      availabilityType: AvailabilityType.Available,
+      status: Status.Active,
       usersList: [],
       roomsForExam: [],
       uncombinables: [],
-      practiceAvailability: null,
+      practiceAvailability: [],
     },
     {
       id: 2,
@@ -32,12 +37,12 @@ export class ExamApiService {
       radiologistCount: 2,
       nursingCount: 1,
       secretaryCount: 1,
-      availabilityType: 1,
-      status: 1,
+      availabilityType: AvailabilityType.Available,
+      status: Status.Inactive,
       usersList: [],
       roomsForExam: [],
       uncombinables: [],
-      practiceAvailability: null,
+      practiceAvailability: [],
     },
     {
       id: 3,
@@ -48,12 +53,12 @@ export class ExamApiService {
       radiologistCount: 2,
       nursingCount: 1,
       secretaryCount: 1,
-      availabilityType: 1,
-      status: 1,
+      availabilityType: AvailabilityType.Unavailable,
+      status: Status.Inactive,
       usersList: [],
       roomsForExam: [],
       uncombinables: [],
-      practiceAvailability: null,
+      practiceAvailability: [],
     },
     {
       id: 4,
@@ -64,12 +69,12 @@ export class ExamApiService {
       radiologistCount: 2,
       nursingCount: 1,
       secretaryCount: 1,
-      availabilityType: 1,
-      status: 0,
+      availabilityType: AvailabilityType.Unavailable,
+      status: Status.Active,
       usersList: [],
       roomsForExam: [],
       uncombinables: [],
-      practiceAvailability: null,
+      practiceAvailability: [],
     },
     {
       id: 5,
@@ -80,12 +85,12 @@ export class ExamApiService {
       radiologistCount: 2,
       nursingCount: 1,
       secretaryCount: 1,
-      availabilityType: 1,
-      status: 1,
+      availabilityType: AvailabilityType.Unavailable,
+      status: Status.Active,
       usersList: [],
       roomsForExam: [],
       uncombinables: [],
-      practiceAvailability: null,
+      practiceAvailability: [],
     },
     {
       id: 6,
@@ -96,12 +101,12 @@ export class ExamApiService {
       radiologistCount: 2,
       nursingCount: 1,
       secretaryCount: 1,
-      availabilityType: 1,
-      status: 1,
+      availabilityType: AvailabilityType.Available,
+      status: Status.Active,
       usersList: [],
       roomsForExam: [],
       uncombinables: [],
-      practiceAvailability: null,
+      practiceAvailability: [],
     },
     {
       id: 7,
@@ -112,12 +117,12 @@ export class ExamApiService {
       radiologistCount: 2,
       nursingCount: 1,
       secretaryCount: 1,
-      availabilityType: 0,
-      status: 0,
+      availabilityType: AvailabilityType.Unavailable,
+      status: Status.Inactive,
       usersList: [],
       roomsForExam: [],
       uncombinables: [],
-      practiceAvailability: null,
+      practiceAvailability: [],
     },
     {
       id: 8,
@@ -128,18 +133,109 @@ export class ExamApiService {
       radiologistCount: 2,
       nursingCount: 1,
       secretaryCount: 1,
-      availabilityType: 1,
-      status: 1,
+      availabilityType: AvailabilityType.Available,
+      status: Status.Inactive,
       usersList: [],
       roomsForExam: [],
       uncombinables: [],
-      practiceAvailability: null,
+      practiceAvailability: [],
     },
   ];
 
-  constructor() {}
+  private refreshExams$$ = new Subject<void>();
+
+  constructor(private http: HttpClient) {}
 
   public get exams$(): Observable<Exam[]> {
-    return of(this.exams);
+    return combineLatest([this.refreshExams$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllExams()));
+  }
+
+  private fetchAllExams(): Observable<Exam[]> {
+    return this.http.get<BaseResponse<Exam[]>>(`${environment.serverBaseUrl}/exam?pageNo=1`).pipe(map((response) => response.data));
+  }
+
+  public changeExamStatus$(changes: { id: number | string; newStatus: Status | null }[]): Observable<boolean> {
+    if (!changes.length) {
+      return of(false);
+    }
+
+    let changed = false;
+    changes.forEach((change) => {
+      const index = this.exams.findIndex((exam) => exam.id === +change.id);
+      if (index !== -1 && change.newStatus !== null) {
+        this.exams[index] = {
+          ...this.exams[index],
+          status: change.newStatus,
+        };
+
+        if (!changed) {
+          changed = true;
+        }
+      }
+    });
+
+    this.refreshExams$$.next();
+
+    return of(true);
+  }
+
+  public deleteExam(examID: number) {
+    // const index = this.exams.findIndex((exam) => exam.id === +examID);
+    // if (index !== -1) {
+    //   this.exams.splice(index, 1);
+    //   this.refreshExams$$.next();
+    // }
+
+    return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/exam/${examID}`).pipe(
+      map((response) => response.data),
+      tap(() => {
+        this.refreshExams$$.next();
+      }),
+    );
+  }
+
+  public getExamByID(examID: number): Observable<Exam | undefined> {
+    // return combineLatest([this.refreshExams$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.exams.find((exam) => +exam.id === +examID))));
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append("id", examID);
+    return this.http.get<BaseResponse<Exam>>(`${environment.serverBaseUrl}/exam/${examID}`).pipe(
+      map(response => response.data)
+    )
+  }
+
+  // public createExam$(requestData: CreateExamRequestData): Observable<string> {
+  //   if (requestData.id) {
+  //     const index = this.exams.findIndex((exam) => exam.id === requestData.id);
+  //     if (index !== -1) {
+  //       this.exams[index] = {
+  //         ...this.exams[index],
+  //         ...requestData,
+  //         practiceAvailability: requestData.practiceAvailability?.length ? requestData.practiceAvailability : this.exams[index].practiceAvailability,
+  //       };
+  //     }
+  //   } else {
+  //     this.exams.push({
+  //       ...requestData,
+  //       id: Math.random(),
+  //       availabilityType: AvailabilityType.Available,
+  //       status: Status.Active,
+  //       info: requestData.info ?? '',
+  //     });
+  //   }
+
+  //   return of('Created');
+  // }
+
+  public createExam$(requestData: CreateExamRequestData): Observable<any> {
+    return this.http
+      .post<BaseResponse<CreateExamRequestData>>(`${environment.serverBaseUrl}/exam`, requestData)
+      .pipe(map((response) => response.data));
+  }
+
+  public updateExam$(requestData: CreateExamRequestData): Observable<any> {
+    const { id, ...restData } = requestData;
+    return this.http
+      .post<BaseResponse<CreateExamRequestData>>(`${environment.serverBaseUrl}/exam/${id}`, restData)
+      .pipe(map((response) => response.data));
   }
 }

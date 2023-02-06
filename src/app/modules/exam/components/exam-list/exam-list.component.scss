@@ -1,0 +1,79 @@
+.ex-li-button-dropdown-group {
+  background: transparent;
+  div:last-child {
+    max-width: 152px;
+  }
+}
+
+@media (max-width: 680px) {
+  .sf-li-main-wrapper {
+    padding: 0;
+  }
+
+  .ex-li-section-1 {
+    justify-content: space-between;
+  }
+
+  .ex-li-search, .ex-li-button-dropdown-group {
+    display: none !important;
+  }
+
+  .ex-li-title-buttons {
+    display: block;
+  }
+
+  .ex-li-plus-btn {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 1000;
+    height: 44px;
+    width: 44px;
+  }
+
+  .ex-li-menus {
+    min-width: fit-content !important;
+    max-width: 44px;
+    border: none;
+    border-radius: 12px;
+    flex-direction: column;
+    padding: 2px;
+
+    div + div {
+      border-top: 1px solid var(--dfm-main-200);
+    }
+
+    div {
+      padding: 8px;
+    }
+  }
+
+  .ex-li-plus-btn-menu {
+    position: fixed;
+    bottom: 144px;
+    right: 28px;
+  }
+
+  .ex-li-action-buttons-menu {
+    right: 28px;
+    top: -48px;
+  }
+
+  .ex-li-action-buttons {
+    display: none !important;
+  }
+
+  .ex-li-vertical-dots-btn {
+    display: block;
+  }
+
+  .menu-point-forward {
+    position: absolute;
+    background: white;
+    transform: rotateZ(45deg);
+    right: -8px;
+    bottom: 8px;
+    border-radius: 4px;
+  }
+}

@@ -1,17 +1,14 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import _default from 'chart.js/dist/core/core.interaction';
-import x = _default.modes.x;
 
 @Pipe({
   name: 'timeInInterval',
 })
 export class TimeInIntervalPipe implements PipeTransform {
-  public transform(interval: number = 30): any {
+  public transform(interval: number = 30, formatted = false): string[] {
     const times: any[] = []; // time array
-    let startTime = 0; // start time
     const ap = ['AM', 'PM']; // AM-PM
 
-    for (let i = 0; startTime < 24 * 60; i++) {
+    for (let startTime = 0; startTime < 24 * 60; startTime += interval) {
       // getting hours of day in 0-24 format
       const hour = Math.floor(startTime / 60);
 
@@ -19,9 +16,21 @@ export class TimeInIntervalPipe implements PipeTransform {
       const minute = startTime % 60;
 
       // pushing data in array in [00:00 - 12:00 AM/PM format]
-      const time = `${`0${hour % 12}`.slice(-2)}:${`0${minute}`.slice(-2)}${ap[Math.floor(hour / 12)]}`;
-      times[i] = { value: time, name: time };
-      startTime += interval;
+      const hourString = `0${hour % 12 === 0 ? '12' : hour % 12}`.slice(-2);
+      const minuteString = `0${minute}`.slice(-2);
+      let time: string;
+
+      if (formatted) {
+        time = `${hourString[0] === '0' ? hourString[1] : hourString}${
+          interval === 60 && (minuteString === '00' || minuteString === '0') ? '' : `:${minuteString}`
+        } `;
+      } else {
+        time = `${hourString}:${minuteString}`;
+      }
+
+      time += ap[Math.floor(hour / 12)];
+
+      times.push(time);
     }
 
     return times;

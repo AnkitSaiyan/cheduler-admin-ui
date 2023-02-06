@@ -2,8 +2,8 @@ section.ph-vw-section2 {
   &>div {
     max-height: 256px;
     min-width: 256px;
-    width: 100%;
-    max-width: 33vw;
+    width: 512px;
+    max-width: 512px;
   }
 }
 
@@ -37,6 +37,8 @@ section.ph-vw-section2 {
 
   section.ph-vw-section2 {
     margin-top: 56px;
+    width: 100% !important;
+
     &>div {
       width: 100%;
       max-width: 100%;
@@ -52,7 +54,7 @@ section.ph-vw-section2 {
     padding: 16px 24px;
     display: flex;
     align-items: center;
-    z-index: 10000;
+    z-index: 1000;
 
     &>dfm-button {
       height: 44px;

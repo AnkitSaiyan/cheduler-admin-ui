@@ -66,6 +66,12 @@
 .font-weight-mobile-view{
   font-weight: 600;
 }
+
+@media (max-width: 390px) {
+  .ap-li-section2-action-bar-mv {
+    gap: 8px;
+  }
+}
 // ======================Media Query for Mobile view Ends=================
 
 

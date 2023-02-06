@@ -33,6 +33,7 @@ dfm-input-dropdown {
 
 // button group wrapper
 .dfm-button-group-wrapper {
+  display: flex;
   background: white;
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
@@ -48,7 +49,7 @@ dfm-input-dropdown {
   background: white;
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
-  //height: 40px;
+  height: fit-content;
   margin-top: 28px;
 }
 
@@ -56,7 +57,7 @@ dfm-input-dropdown {
   background: white;
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
-  //height: 40px;
+  height: fit-content;
 }
 
 // use this for multi type dropdown
@@ -64,22 +65,26 @@ dfm-input-dropdown {
   background: white;
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
-  //height: 40px;
+  height: fit-content;
   margin-top: 28px;
-  margin-bottom: 40px;
+  margin-bottom: 28px;
 }
 
 .dfm-input-multi-dropdown-wrapper-wo-label {
   background: white;
   border: 1px solid var(--dfm-input-border);
   border-radius: 8px;
-  //height: 40px;
+  height: fit-content;
   margin-bottom: 40px;
 }
 
 dfm-input-dropdown {
   dfm-error {
     position: absolute !important;
+  }
+
+  input {
+    padding-right: 40px !important;
   }
 }
 
@@ -88,6 +93,14 @@ dfm-input-dropdown {
     button {
       background: transparent !important;
     }
+  }
+}
+
+dfm-input-dropdown {
+  .dropdown-menu {
+    max-height: 256px !important;
+    overflow-y: auto;
+    background: white;
   }
 }
 
@@ -143,7 +156,7 @@ dfm-notification {
   .dfm-notification {
     //animation: fromRight 1s ease !important;
     top: 152px !important;
-    right: 32px !important;
+    right: 0 !important;
     z-index: 2000 !important;
 
     .dfm-notification-body {
@@ -185,6 +198,57 @@ dfm-notification {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
+  }
+}
+
+.input-type-file-primary-md {
+  background: var(--dfm-primary);
+  color: var(--dfm-secondary);
+  border-radius: 8px;
+  text-align: center;
+  padding: 8px 16px;
+  cursor: pointer;
+
+  &:hover {
+    color: white;
+  }
+
+  &:active {
+    border: 1px solid var(--dfm-primary);
+  }
+}
+
+.input-type-file-secondary-md {
+  background: var(--dfm-secondary);
+  color: var(--dfm-primary);
+  border-radius: 8px;
+  text-align: center;
+  padding: 8px 16px;
+  cursor: pointer;
+
+  &:hover {
+    color: black;
+  }
+
+  &:active {
+    border: 1px solid var(--dfm-secondary);
+  }
+}
+
+.dfm-datepicker-dropdown-single {
+  dfm-datepicker {
+    .default-date-options-container {
+      display: none !important;
+    }
+
+    .datepicker-months > div:last-child {
+      display: none !important;
+    }
+
+    .actions-bar {
+      flex-direction: column !important;
+      row-gap: 8px;
+    }
   }
 }
 
@@ -237,6 +301,19 @@ button:disabled {
   }
 }
 
+.input-as-dfm-input {
+  input {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+
+    &:focus {
+      outline: none;
+      border-color: var(--dfm-input-border-focus);
+    }
+  }
+}
+
 .carousel-control-prev, .carousel-control-next {
   display: block;
   width: auto;
@@ -281,6 +358,109 @@ button:disabled {
   }
 }
 
+ngb-datepicker {
+  border: none !important;
+  box-shadow: 0 .125rem .50rem rgba(0, 0, 0, .075);
+  padding: 8px !important;
+
+  .ngb-dp-header {
+    background: white !important;
+    padding: 8px !important;
+
+    .ngb-dp-arrow {
+      width: auto;
+      height: auto;
+
+      button {
+        color: var(--dfm-main-300);
+        border: none;
+        border-radius: 50%;
+        font-weight: normal;
+        font-size: 1rem;
+        width: 40px;
+        height: 40px;
+        margin: 0;
+        padding: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &:active, &:hover {
+          color: var(--dfm-primary);
+          background: var(--dfm-main-100);
+        }
+
+        span {
+          margin-right: 0;
+        }
+      }
+    }
+
+    .ngb-dp-navigation-select {
+      column-gap: 8px;
+
+      select {
+        padding-right: 0;
+        border: none;
+        cursor: pointer;
+
+        &:focus {
+          outline: 0;
+          border: 1px solid var(--dfm-input-border-focus);
+        }
+      }
+    }
+  }
+
+  .ngb-dp-content {
+    border: none !important;
+
+    ngb-datepicker-month {
+      & > div {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+
+        & > div {
+          border: none !important;
+          width: 2.5rem !important;
+          height: 2.5rem !important;
+
+          &.ngb-dp-weekday {
+            color: black !important;
+            font-style: normal;
+            font-weight: 400;
+          }
+
+          & > div {
+            margin: 0 !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            border-radius: 50% !important;
+            font-weight: 300;
+
+            &:hover, &.bg-primary {
+              background: var(--dfm-primary) !important;
+              color: var(--dfm-secondary) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.nav-configuration-menu {
+  dfm-navigation-item {
+    a {
+      width: 100% !important;
+      border-radius: 0 !important;
+    }
+  }
+}
+
+
 // Custom Global styling ==============================================================
 .overflow-y-auto {
   overflow-y: auto;
@@ -324,8 +504,20 @@ button:disabled {
   min-width: fit-content;
 }
 
+.min-w-128 {
+  min-width: 128px;
+}
+
 .max-w-fit {
   max-width: fit-content;
+}
+
+.max-w-128 {
+  max-width: 128px;
+}
+
+.max-w-192 {
+  max-width: 192px;
 }
 
 .text-red {
@@ -336,7 +528,6 @@ button:disabled {
   display: none;
 }
 
-.text-tr
 .x-circle {
   display: flex;
   justify-content: center;
@@ -419,6 +610,10 @@ button:disabled {
   transform: rotateZ(0deg);
 }
 
+.bg-transparent {
+  background: transparent;
+}
+
 .modal-backdrop-remove-mv {
   @media (max-width: 680px) {
     opacity: 0 !important;
@@ -451,7 +646,6 @@ button:disabled {
     .dfm-notification {
       margin: auto !important;
       top: 128px !important;
-      right: 4px !important;
     }
   }
 
@@ -462,6 +656,14 @@ button:disabled {
 
   .font-weight-mobile-view {
     font-weight: 600;
+  }
+
+  .st-mg-text-area {
+    dfm-text-area {
+      text-area {
+        height: 240px !important;
+      }
+    }
   }
 }
 
