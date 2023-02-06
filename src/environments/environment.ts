@@ -2,9 +2,14 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
+interface Environment {
+  production: boolean;
+  serverBaseUrl: string;
+}
+
+export const environment: Environment = {
   production: false,
-  serverBaseUrl: 'https://diflexmo-scheduler-api-dev.azurewebsites.net/api'
+  serverBaseUrl: 'https://diflexmo-scheduler-api-dev.azurewebsites.net/api',
 };
 
 /*
