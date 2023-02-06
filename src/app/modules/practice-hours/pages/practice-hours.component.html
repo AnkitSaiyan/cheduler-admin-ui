@@ -1,0 +1,117 @@
+<div class="d-flex flex-column dfm-gap-16 pr-hr-main-wrapper">
+  <section>
+    <div class="d-flex align-items-center justify-content-between dfm-gap-16 pr-hr-title-buttons">
+      <dfm-button
+        color="link"
+        size="lg"
+        routerLink="./"
+      >Practice Hours
+      </dfm-button>
+
+      <div class="d-flex dfm-gap-16 align-items-center">
+        <dfm-button color="secondary" size="md">Cancel</dfm-button>
+        <dfm-button color="primary" size="md" (click)="savePracticeHours()">Save Changes</dfm-button>
+      </div>
+    </div>
+
+    <!--  Mobile view  -->
+    <div class="hidden dfm-gap-8 align-items-center pr-hr-title-buttons-mv">
+      <div class="rounded-circle overflow-hidden">
+        <dfm-button-icon
+          color="tertiary-gray"
+          size="sm"
+          icon="chevron-left"
+        >
+        </dfm-button-icon>
+      </div>
+
+      <dfm-button color="link" size="lg">Practice Hours</dfm-button>
+    </div>
+    <!--    -->
+  </section>
+
+  <section class="dfm-card dfm-p-16 pr-hr-section2 hide-scrollbar">
+    <form [formGroup]="practiceHourForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+      <div class="d-flex flex-column dfm-gap-8">
+        <span class="text-sm font-weight-semi-bold">Choose Day</span>
+
+        <div class="d-flex dfm-gap-16 weekday-header pr-hr-weekdays-tab hide-scrollbar">
+          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)"
+                     class="pointer"
+                     (click)="selectWeekday(weekdayEnum.ALL)">VIEW ALL
+          </dfm-badge>
+          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.MON)"
+                     class="pointer"
+                     (click)="selectWeekday(weekdayEnum.MON)">MON
+          </dfm-badge>
+          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.TUE)"
+                     class="pointer"
+                     (click)="selectWeekday(weekdayEnum.TUE)">TUE
+          </dfm-badge>
+          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.WED)"
+                     class="pointer"
+                     (click)="selectWeekday(weekdayEnum.WED)">WED
+          </dfm-badge>
+          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.THU)"
+                     class="pointer"
+                     (click)="selectWeekday(weekdayEnum.THU)">THU
+          </dfm-badge>
+          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.FRI)"
+                     class="pointer"
+                     (click)="selectWeekday(weekdayEnum.FRI)">FRI
+          </dfm-badge>
+          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SAT)"
+                     class="pointer"
+                     (click)="selectWeekday(weekdayEnum.SAT)">SAT
+          </dfm-badge>
+          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SUN)"
+                     class="pointer"
+                     (click)="selectWeekday(weekdayEnum.SUN)">SUN
+          </dfm-badge>
+        </div>
+      </div>
+
+      <div formGroupName="practiceHours" class="d-flex flex-column dfm-gap-32 pr-hr-form-fields">
+        <div *ngFor="let controlArray of practiceHoursWeekWiseControlsArray()"
+             [formArrayName]="getFormArrayName(controlArray)"
+             class="d-flex flex-column flex-wrap dfm-gap-16">
+              <span class="text-sm font-weight-semi-bold">
+                {{ getFormArrayName(controlArray) | weekdayToName }}
+              </span>
+
+          <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
+               class="d-flex flex-column dfm-gap-16">
+            <div class="d-flex dfm-gap-32 align-items-end">
+              <div class="d-flex flex-column dfm-gap-8">
+                <!--                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">-->
+
+                <!--                    </dfm-input-dropdown>-->
+                <label class="text-sm font-weight-medium">Start Time</label>
+                <ngb-timepicker formControlName="dayStart" size="small" [spinners]="false"></ngb-timepicker>
+                <span class="text-sm text-red"
+                      *ngIf="controls.get('dayStart')?.hasError('startTimeErr')">Start Time must be smaller.</span>
+              </div>
+
+              <div class="d-flex flex-column dfm-gap-8">
+                <label class="text-sm font-weight-medium">End Time</label>
+                <ngb-timepicker formControlName="dayEnd" size="small" [spinners]="false"></ngb-timepicker>
+                <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>
+              </div>
+
+              <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                               class="dfm-mb-4"
+                               (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
+            <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+            <span class="text-sm dfm-text-main-600">Click to add slot</span>
+          </div>
+        </div>
+      </div>
+
+      <dfm-button class="hidden pr-hr-save-changes-btn-mv" color="primary" size="md" (click)="savePracticeHours()">Save Changes</dfm-button>
+    </form>
+  </section>
+</div>

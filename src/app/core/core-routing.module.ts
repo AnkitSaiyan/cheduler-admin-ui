@@ -19,12 +19,45 @@ const routes: Routes = [
         path: 'room',
         loadChildren: async () => (await import('../modules/rooms/rooms.module')).RoomsModule,
       },
+      {
+        path: 'physician',
+        loadChildren: async () => (await import('../modules/physician/physician.module')).PhysicianModule,
+      },
+      {
+        path: 'site-management',
+        loadChildren: async () => (await import('../modules/site-management/site-management.module')).SiteManagementModule,
+      },
+      {
+        path: 'practice-hours',
+        loadChildren: async () => (await import('../modules/practice-hours/practice-hours.module')).PracticeHoursModule,
+      },
+      {
+        path: 'user',
+        loadChildren: async () => (await import('../modules/user/user.module')).UserModule,
+      },
+      {
+        path: 'exam',
+        loadChildren: async () => (await import('../modules/exam/exam.module')).ExamModule,
+      },
+      {
+        path: 'absence',
+        loadChildren: async () => (await import('../modules/absence/absence.module')).AbsenceModule,
+      },
+      {
+        path: 'appointment',
+        loadChildren: async () => (await import('../modules/appointments/appointments.module')).AppointmentsModule,
+      },
+      {
+        path: '',
+        redirectTo: '/dashboard',
+        pathMatch: 'full',
+      },
+      {
+        path: '**',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
     ],
-  },
-  {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
   },
 ];
 

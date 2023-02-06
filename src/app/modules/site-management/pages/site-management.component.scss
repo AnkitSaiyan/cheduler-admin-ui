@@ -1,0 +1,95 @@
+.st-mg-main-wrapper {
+  transition: all ease 200ms;
+
+  .st-mg-section2 {
+    // viewport - nav - padding - sec1 height - sec gap - extra
+    max-height: calc(100vh - 48px - 24px - 40px - 16px - 16px);
+    overflow-y: auto;
+  }
+
+  .st-mg-logo-container {
+    height: 52px;
+    width: 52px;
+    margin-top: 16px;
+    padding: 4px;
+
+    img {
+      object-fit: contain;
+    }
+  }
+
+  .st-mg-site-name, .st-mg-warning-text {
+    width: 592px;
+  }
+
+  .st-mg-appointment-cancellation {
+    dfm-input, .st-mg-time-duration-type {
+      max-width: 128px;
+    }
+  }
+}
+
+@media (max-width: 1440px) {
+  .st-mg-main-wrapper {
+    max-height: calc(100vh - 36px - 24px - 40px - 16px - 16px);
+  }
+}
+
+@media (max-width: 680px) {
+  .st-mg-main-wrapper {
+    max-height: calc(100vh - 38px - 24px - 36px - 16px - 16px - 20px);
+
+    .st-mg-title-buttons-mv {
+      display: flex;
+    }
+
+    .st-mg-title-buttons {
+      display: none !important;
+    }
+
+    .st-mg-section2 {
+      background: transparent;
+      padding: 0;
+      box-shadow: none;
+      border-radius: 0;
+
+      form {
+        .st-mg-choose-file-container {
+          margin: 0;
+        }
+
+        .st-mg-contact-info {
+          dfm-input {
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+        }
+
+        dfm-text-area {
+          width: 100% !important;
+        }
+
+        & > div {
+          flex-direction: column;
+          width: 100%;
+
+          .st-mg-heading-subheading {
+            flex-direction: column;
+            width: 100%;
+            gap: 16px;
+            margin-bottom: 8px;
+          }
+
+          dfm-input {
+            width: 100%;
+          }
+        }
+
+        .st-mg-save-changes-btn-mv {
+          display: flex;
+          margin-left: auto;
+        }
+      }
+    }
+  }
+}

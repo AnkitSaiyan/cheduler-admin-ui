@@ -1,0 +1,247 @@
+<div class="bg-white rounded-4 ad-ab-main-wrapper dfm-px-16">
+  <section class="modal-header">
+    <h5 class="modal-title ad-ab-title-buttons">{{ modalData.edit ? 'Edit' : 'Add' }} Absence</h5>
+    <dfm-button-icon class="ad-ab-title-buttons" color="tertiary-gray" icon="x-close"
+                     (click)="closeModal(false)"></dfm-button-icon>
+
+    <div class="hidden dfm-gap-8 align-items-center ad-ab-title-buttons-mv">
+      <div class="rounded-circle overflow-hidden">
+        <dfm-button-icon
+          color="tertiary-gray"
+          size="sm"
+          icon="chevron-left"
+          (click)="closeModal(false)"
+        >
+        </dfm-button-icon>
+      </div>
+
+      <dfm-button
+        color="link"
+        size="lg"
+      > {{ modalData.edit ? 'Edit' : 'Add' }} Absence
+      </dfm-button>
+    </div>
+  </section>
+
+  <section class="modal-body dfm-pb-24 ad-ab-section2">
+    <form [formGroup]="absenceForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+      <div>
+        <dfm-input class="flex-1" size="md" placeholder="Enter absence name" label="Name *" formControlName="name">
+        </dfm-input>
+      </div>
+
+      <div class="d-flex dfm-gap-32 align-items-center ad-ab-dates">
+        <div class="ad-ab-from-date flex-1">
+          <span class="text-sm font-weight-medium dfm-text-main-700">From *</span>
+
+          <div class="d-flex align-items-center dfm-gap-16 flex-1">
+            <div class="dfm-button-group-wrapper h-fit flex-1">
+              <div class="input-as-dfm-input flex-1">
+                <input
+                  class="w-full min-w-128"
+                  formControlName="startedAt"
+                  placeholder="yyyy-mm-dd"
+                  ngbDatepicker
+                  #startedAt="ngbDatepicker"
+                />
+              </div>
+              <div>
+                <dfm-button-icon
+                  color="tertiary-gray"
+                  size="md"
+                  icon="calendar-date"
+                  (click)="startedAt.toggle()"
+                ></dfm-button-icon>
+              </div>
+            </div>
+
+            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
+              <dfm-input-dropdown #startTime
+                                  [items]="startTimes"
+                                  [typeToSearch]="true"
+                                  [typeToSearchText]="startTime.value"
+                                  (searchInput)="handleTimeInput($event, 'startTime')"
+                                  formControlName="startTime"
+                                  size="md"
+                                  placeholder="hh:mm">
+              </dfm-input-dropdown>
+            </div>
+          </div>
+        </div>
+
+        <div class="ad-ab-to-date flex-1">
+          <span class="text-sm font-weight-medium dfm-text-main-700">Until *</span>
+
+          <div class="d-flex align-items-center dfm-gap-16">
+            <div class="dfm-button-group-wrapper flex-1">
+              <div class="input-as-dfm-input flex-1">
+                <input
+                  class="w-full min-w-128"
+                  formControlName="endedAt"
+                  placeholder="yyyy-mm-dd"
+                  ngbDatepicker
+                  #endedAt="ngbDatepicker"
+                />
+              </div>
+              <div>
+                <dfm-button-icon
+                  color="tertiary-gray"
+                  size="md"
+                  icon="calendar-date"
+                  (click)="endedAt.toggle()"
+                ></dfm-button-icon>
+              </div>
+            </div>
+
+            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
+              <dfm-input-dropdown #endTime
+                                  [items]="endTimes"
+                                  [typeToSearch]="true"
+                                  [typeToSearchText]="endTime.value"
+                                  (searchInput)="handleTimeInput($event, 'endTime')"
+                                  formControlName="endTime"
+                                  size="md"
+                                  placeholder="hh:mm">
+              </dfm-input-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex dfm-gap-32 flex-wrap ad-ab-radio-group">
+        <div class="d-flex flex-column dfm-gap-16 flex-1 ad-ab-repeat-radio">
+          <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Repeat</span>
+
+          <div class="w-fit d-flex justify-content-between dfm-gap-24">
+            <dfm-radio-button class="font-weight-normal" label="All Day" [checkedValue]="false"
+                              formControlName="isRepeat"></dfm-radio-button>
+            <dfm-radio-button class="font-weight-normal" label="Repeat" [checkedValue]="true"
+                              formControlName="isRepeat"></dfm-radio-button>
+          </div>
+        </div>
+
+        <div class="d-flex flex-column dfm-gap-16 flex-1">
+          <span
+            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Public Holiday</span>
+          <div class="w-fit d-flex justify-content-between dfm-gap-24">
+            <dfm-radio-button class="font-weight-normal" label="Yes" [checkedValue]="true"
+                              formControlName="isHoliday"></dfm-radio-button>
+            <dfm-radio-button class="font-weight-normal" label="No" [checkedValue]="false"
+                              formControlName="isHoliday"></dfm-radio-button>
+          </div>
+        </div>
+
+        <div class="d-flex flex-column dfm-gap-16 flex-1">
+          <span
+            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
+          <div class="w-fit d-flex justify-content-between dfm-gap-24">
+            <dfm-radio-button class="font-weight-normal" label="High" [checkedValue]="priorityType.High"
+                              formControlName="priority"></dfm-radio-button>
+            <dfm-radio-button class="font-weight-normal" label="Medium" [checkedValue]="priorityType.Medium"
+                              formControlName="priority"></dfm-radio-button>
+            <dfm-radio-button class="font-weight-normal" label="Low" [checkedValue]="priorityType.Low"
+                              formControlName="priority"></dfm-radio-button>
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="formValues.isRepeat">
+        <div class="d-flex dfm-gap-32 flex-wrap align-items-start ad-ab-repeat-form">
+          <div class="dfm-input-dropdown-wrapper flex-1">
+            <dfm-input-dropdown #repeatType [items]="repeatTypes" size="md" label="Repeat Type *"
+                                placeholder="Select repeat type" formControlName="repeatType" (select)="handleChange(repeatFrequency)">
+            </dfm-input-dropdown>
+          </div>
+
+          <div class="flex-1">
+            <dfm-input
+                       #repeatFrequency
+                       class="flex-1"
+                       formControlName="repeatFrequency"
+                       label="Repeat Every"
+                       placeholder="Enter repeat count"
+                       size="md"
+                       type="text"
+                       [readonly]="!repeatType.value"
+                       (focusin)="handleFocusIn(repeatFrequency)"
+                       (focusout)="handleFocusOut(repeatFrequency)"
+            >
+            </dfm-input>
+          </div>
+
+          <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
+            <dfm-input-dropdown #repeatEveryDropdown
+                                [items]="repeatType.value ? repeatEvery[repeatType.value] : []"
+                                [multiple]="true"
+                                [placeholder]="!!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + ' Selected' : 'Select repeat every'"
+                                size="md"
+                                label="Repeat On *"
+                                formControlName="repeatDays">
+            </dfm-input-dropdown>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="d-flex dfm-gap-32 flex-wrap flex-1">
+        <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-rooms" *ngIf="roomList$$ | async as roomList">
+          <dfm-input-dropdown #roomDropdown
+                              [items]="roomList"
+                              [multiple]="true"
+                              [placeholder]="!!roomDropdown.value?.length ? roomDropdown.value.length + ' Selected' : 'Select Rooms'"
+                              size="md"
+                              formControlName="roomList"
+                              label="Rooms involving the Absentee *">
+          </dfm-input-dropdown>
+        </div>
+
+        <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-staffs">
+          <dfm-input-dropdown #staffDropDown
+                              [items]="staffList"
+                              [multiple]="true"
+                              size="md"
+                              formControlName="staffList"
+                              label="Staff *"
+                              [placeholder]="!!staffDropDown.value?.length ? staffDropDown.value.length + ' Selected' : 'Select Staffs'">
+          </dfm-input-dropdown>
+        </div>
+      </div>
+
+      <div>
+        <dfm-text-area label="Info *" placeholder="Enter absence info" formControlName="info"></dfm-text-area>
+      </div>
+      <!--      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">-->
+      <!--        <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="First Name *" formControlName="firstname">-->
+      <!--        </dfm-input>-->
+
+      <!--        <dfm-input class="flex-1" size="md" placeholder="Enter last name" label="Last Name *" formControlName="lastname">-->
+      <!--        </dfm-input>-->
+      <!--      </div>-->
+
+      <!--      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">-->
+      <!--        <dfm-input class="flex-1" size="md" placeholder="Enter email" label="Email *" formControlName="email">-->
+      <!--        </dfm-input>-->
+
+      <!--        <dfm-input class="flex-1" size="md" placeholder="Enter rizv no" label="Rizv Number *" formControlName="rizivNumber">-->
+      <!--        </dfm-input>-->
+      <!--      </div>-->
+
+      <!--      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">-->
+      <!--        <dfm-input type="number" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone *" formControlName="telephone">-->
+      <!--        </dfm-input>-->
+
+      <!--        <dfm-input class="flex-1" size="md" placeholder="Enter GSM" label="GSM *" formControlName="gsm">-->
+      <!--        </dfm-input>-->
+      <!--      </div>-->
+
+      <!--      <div>-->
+      <!--        <dfm-checkbox formControlName="notifyDoctor" label="Email the doctor if a patient makes an appointment that he has prescribed."></dfm-checkbox>-->
+      <!--      </div>-->
+    </form>
+  </section>
+
+  <section class="modal-footer ad-ab-footer-buttons">
+    <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
+    <dfm-button color="primary" size="md"
+                (click)="saveAbsence()">{{ modalData.edit ? 'Save Changes' : 'Add Absence' }}</dfm-button>
+  </section>
+</div>

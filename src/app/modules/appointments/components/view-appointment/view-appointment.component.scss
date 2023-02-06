@@ -1,0 +1,70 @@
+.vw-ap-sec2-card {
+  //max-height: 344px;
+  min-width: 336px;
+}
+
+section.vw-ap-section3  {
+  // sec is section
+  // page height - top nav - content padding - sec1 height - sec gap - sec2 height - sec gap - extra space
+  max-height: calc(100vh - 64px - 24px - 24px - 24px - 256px - 24px - 24px);
+}
+
+@media (max-width: 1440px) {
+  section.vw-ap-section3 {
+    max-height: calc(100vh - 36px - 24px - 24px - 24px - 256px - 24px - 24px);
+  }
+
+  section.vw-ap-section2 > div {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 680px) {
+  .vw-ap-main-wrapper {
+    padding: 0;
+  }
+
+  section.vw-ap-section1 {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 36px;
+    padding: 24px;
+    background: var(--dfm-body-bg);
+
+    .vw-ap-title-buttons, .vw-ap-action-buttons {
+      display: none !important;
+    }
+
+    .vw-ap-title-buttons-mv {
+      display: flex;
+    }
+  }
+
+  section.vw-ap-section2 {
+    margin-top: 56px;
+  }
+
+  section.vw-ap-section3 {
+    // page height - top nav - content padding - sec1 height - sec gap - sec gap - bottom bar height
+    max-height: calc(100vh - 36px - 24px - 24px - 24px - 24px - 65px);
+  }
+
+  .vw-ap-action-buttons-mv {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    column-gap: 16px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    z-index: 10000;
+
+    &>dfm-button {
+      height: 44px;
+      flex: 1;
+    }
+  }
+}
+

@@ -5,7 +5,7 @@ import { Status, StatusName } from '../models/status';
   name: 'statusName',
 })
 export class StatusNamePipe implements PipeTransform {
-  public transform(statusCode: Status): StatusName | '' {
+  public transform(statusCode: Status | undefined | null): StatusName | '' {
     console.log(statusCode);
     switch (statusCode) {
       case Status.Active:

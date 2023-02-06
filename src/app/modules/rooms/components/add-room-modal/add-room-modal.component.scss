@@ -6,6 +6,22 @@
     // viewport - m-top - modal header height - modal footer header - p-bottom - m-bottom - extra
     max-height: calc(100vh - 24px - 76px - 64px - 16px - 24px - 48px);
     overflow-y: auto;
+
+    .ad-rm-availability-form-fields {
+      max-height: 672px;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+@media (max-width: 1000px) {
+  .ad-rm-availability-form-fields {
+    max-height: 100% !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .ad-rm-weekdays-tab {
+    overflow-x: auto;
   }
 }
 

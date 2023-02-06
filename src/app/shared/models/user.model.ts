@@ -8,7 +8,7 @@ export enum AvailabilityType {
 
 export enum UserType {
   Scheduler = 'scheduler',
-  General = 'General',
+  General = 'general',
   Radiologist = 'radiologist',
   Nursing = 'nursing',
   Assistant = 'assistant',
@@ -20,7 +20,7 @@ export interface User {
   firstname: string;
   lastname: string;
   email: string;
-  telephone: string;
+  telephone: string | number;
   address: string;
   availabilityType: AvailabilityType | null;
   gsm: string;
@@ -30,4 +30,7 @@ export interface User {
   examList: number[];
   practiceAvailability: PracticeAvailability[];
   info?: string;
+  exams?: any[];
+  rights?: any[];
+  rizivNumber?: string;
 }
