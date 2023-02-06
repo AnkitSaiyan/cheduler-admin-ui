@@ -30,7 +30,7 @@ export interface Absence {
   roomList: number[];
   staffList: number[];
   rooms: Room[];
-  staff: User[];
+  user: User[];
 }
 
 export interface AddAbsenceRequestDate {

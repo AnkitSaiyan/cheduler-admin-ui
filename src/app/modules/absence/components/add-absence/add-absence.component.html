@@ -194,7 +194,7 @@
           </dfm-input-dropdown>
         </div>
 
-        <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-staffs">
+        <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-staffs" *ngIf="staffs$$ | async as staffList">
           <dfm-input-dropdown #staffDropDown
                               [items]="staffList"
                               [multiple]="true"
