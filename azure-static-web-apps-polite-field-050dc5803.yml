@@ -1,4 +1,4 @@
-name: Azure Static Web Apps CI/CD
+name: Diflexmo scheduler admin UI
 
 pr:
   branches:
@@ -20,13 +20,30 @@ jobs:
   steps:
   - checkout: self
     submodules: true
-  - task: AzureStaticWebApp@0
+  - task: Npm@1
+    displayName: 'npm install'
     inputs:
+      command: 'custom'
+      customCommand: 'install --force'
+      customRegistry: 'useFeed'
+      customFeed: '18e540ed-207f-4a1e-8e3b-014618dd9c9a'
+  - task: Npm@1
+    displayName: 'npm build'
+    inputs:
+      command: 'custom'
+      customCommand: 'run build --configuration=production'
+  - task: Bash@3
+    displayName: 'Copy staticwebapp.config.json'
+    inputs:
+      targetType: 'inline'
+      script: 'cp ./staticwebapp.config.json ./dist/diflexmo-admin/staticwebapp.config.json'
+  - task: AzureStaticWebApp@0
+    displayName: 'Deploy static web app'
+    inputs:
+      skip_app_build: true
+      #app_build_command: 'npm install --force && npm run build --configuration=production'
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_POLITE_FIELD_050DC5803)
 ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
 # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-      app_location: "/" # App source code path
-      api_location: "" # Api source code path - optional
-      output_location: "" # Built app content directory - optional
+      app_location: "./dist/diflexmo-admin" # App source code path
 ###### End of Repository/Build Configurations ######
-
