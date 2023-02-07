@@ -113,6 +113,7 @@ export function stringToTimeArray(timeString: string | undefined, splitBy: strin
   if (!timeString) {
     return [0, 0, 0];
   }
+  console.log('timeString: ', timeString);
 
   const timeStringArray = timeString.split(splitBy);
   console.log("timeStringArray", !Number.isNaN(+timeStringArray[0]))

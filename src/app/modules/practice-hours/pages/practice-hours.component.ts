@@ -238,7 +238,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
                 ...a,
                 {
                   ...control.value,
-                  dayStart: new Date(new Date().setHours(control.value.dayStart.hour, control.value.dayStart.minute)),
+                  dayStart: this.timeStringArray(control.value.dayStart),
                   dayEnd: new Date(new Date().setHours(control.value.dayEnd.hour, control.value.dayEnd.minute)),
                 },
               ];
@@ -260,5 +260,8 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
           this.notificationSvc.showNotification(`${this.practiceHoursData$$.value?.length ? 'Changes updated' : 'Saved'} successfully`);
         }
       });
+  }
+  timeStringArray(dayStart: any): Date {
+    throw new Error('Method not implemented.');
   }
 }

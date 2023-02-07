@@ -488,8 +488,10 @@ export class StaffApiService {
     console.log('requestData for update: ', requestData);
     const { id, ...restData } = requestData;
     return this.http
-      .post<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user/${id}`, restData)
-      .pipe(map((response) => response.data));
+      .put<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user/${id}`, restData)
+      .pipe(map((response) => response.data),
+        tap(()=>(this.refreshStaffs$$.next('')))
+      );
   }
 
   public deleteStaff(staffID: number) {
@@ -503,11 +505,9 @@ export class StaffApiService {
 
   public getStaffByID(staffId: number): Observable<User | undefined> {
     console.log('staffID: ', staffId);
-    let queryParams = new HttpParams();
-    queryParams = queryParams.append('id', staffId);
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
       switchMap(() =>
-        this.http.get<BaseResponse<User>>(`${environment.serverBaseUrl}/user`, { params: queryParams }).pipe(
+        this.http.get<BaseResponse<User>>(`${environment.serverBaseUrl}/user/${staffId}`).pipe(
           map((response) => response.data),
           catchError((e) => {
             console.log('error', e);
@@ -519,6 +519,8 @@ export class StaffApiService {
   }
 
   public getUsersByType(userType: UserType): Observable<User[]> {
-    return this.fetchStaffList().pipe(map((staffs) => staffs.filter((staff) => staff.userType === userType)));
+    return this.fetchStaffList().pipe(map((staffs) => staffs.filter((staff) => {
+      console.log('staff: ', staff);
+      return staff.userType === userType})));
   }
 }

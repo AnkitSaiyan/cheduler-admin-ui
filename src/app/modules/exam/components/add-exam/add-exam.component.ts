@@ -502,21 +502,21 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public saveExam(): void {
-    if (this.createExamForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.createExamForm.updateValueAndValidity();
-      return;
-    }
+    // if (this.createExamForm.invalid) {
+    //   this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+    //   this.createExamForm.updateValueAndValidity();
+    //   return;
+    // }
 
-    if (this.formValues.roomsForExam?.every((room) => !room.selectRoom)) {
-      this.formErrors.selectRoomErr = true;
-      this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
-      return;
-    }
+    // if (this.formValues.roomsForExam?.every((room) => !room.selectRoom)) {
+    //   this.formErrors.selectRoomErr = true;
+    //   this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
+    //   return;
+    // }
 
-    if (this.formErrors.expensiveErr) {
-      this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
-    }
+    // if (this.formErrors.expensiveErr) {
+    //   this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
+    // }
 
     const createExamRequestData: CreateExamRequestData = {
       name: this.formValues.name,
@@ -574,7 +574,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       .updateExam$(createExamRequestData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.notificationSvc.showNotification(`Exam added successfully`);
+        this.notificationSvc.showNotification(`Exam updated successfully`);
         let route: string;
         if (this.comingFromRoute === 'view') {
           route = '../view';

@@ -241,7 +241,7 @@ export class RoomsApiService {
 
   public editRoom$(requestData: AddRoomRequestData): Observable<AddRoomRequestData> {
     const { id, ...restData} = requestData;
-    return this.http.post<BaseResponse<Room>>(`${environment.serverBaseUrl}/room/${id}`, restData).pipe(
+    return this.http.put<BaseResponse<Room>>(`${environment.serverBaseUrl}/room/${id}`, restData).pipe(
       map(response => response.data),
       tap(()=>{this.refreshRooms$$.next()})
     )
