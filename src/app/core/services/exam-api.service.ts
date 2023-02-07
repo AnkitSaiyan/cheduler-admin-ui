@@ -200,7 +200,7 @@ export class ExamApiService {
     // return combineLatest([this.refreshExams$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.exams.find((exam) => +exam.id === +examID))));
     let queryParams = new HttpParams();
     queryParams = queryParams.append("id", examID);
-    return this.http.get<BaseResponse<Exam>>(`${environment.serverBaseUrl}/exam/${examID}`).pipe(
+    return this.http.get<BaseResponse<Exam>>(`${environment.serverBaseUrl}/exam`, {params: queryParams}).pipe(
       map(response => response.data)
     )
   }

@@ -156,8 +156,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         console.log("examID", examID)
         if (examID){
           return this.examApiSvc.getExamByID(+examID)
+        }else{
+          return this.examApiSvc.getExamByID(0)
         }
-        return of(undefined)
       }))
       .subscribe((examDetails) => {
         this.createForm(examDetails);
@@ -213,14 +214,14 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     });
 
     this.createExamForm
-      .get('roomType')
+      ?.get('roomType')
       ?.valueChanges.pipe(takeUntil(this.destroy$$))
       .subscribe((roomType) => {
         this.createRoomsForExamFormArray(roomType);
       });
 
     this.createExamForm
-      .get('expensive')
+      ?.get('expensive')
       ?.valueChanges.pipe(
         filter((value) => !!value),
         takeUntil(this.destroy$$),
@@ -228,7 +229,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       .subscribe((value) => this.toggleExpensiveError(+value));
 
     this.createExamForm
-      .get('practiceAvailabilityToggle')
+      ?.get('practiceAvailabilityToggle')
       ?.valueChanges.pipe(
         filter((value: boolean) => value),
         distinctUntilChanged(),
@@ -574,7 +575,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       .updateExam$(createExamRequestData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.notificationSvc.showNotification(`Exam updated successfully`);
+        this.notificationSvc.showNotification(`Exam added successfully`);
         let route: string;
         if (this.comingFromRoute === 'view') {
           route = '../view';
