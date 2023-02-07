@@ -193,7 +193,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       startTime: [time, [Validators.required]],
       roomType: [appointment?.roomType ?? null, [Validators.required]],
       examList: [appointment?.examList?.map((examID) => examID?.toString()) ?? [], [Validators.required]],
-      userId: [appointment?.userId?.toString() ?? null, [Validators.required]],
+      userId: [appointment?.userId?.toString() ?? null, ],
       comments: [appointment?.comments ?? '', []],
     });
   }
@@ -219,10 +219,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
     console.log(requestData);
 
-    from(this.appointmentApiSvc.saveAppointment$(requestData))
+    if (this.edit) {
+      this.appointmentApiSvc.updateAppointment$(requestData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.notificationSvc.showNotification(`Appointment ${this.appointment$$.value?.id ? 'updated' : 'saved'} successfully`);
+        this.notificationSvc.showNotification(`Appointment updated successfully`);
         let route: string;
         console.log('this.comingFromRoute: ', this.comingFromRoute);
         if (this.comingFromRoute === 'view') {
@@ -234,6 +235,23 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         console.log(route);
         this.router.navigate([route], { relativeTo: this.route });
       });
+    }else{
+      this.appointmentApiSvc.saveAppointment$(requestData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Appointment saved successfully`);
+          let route: string;
+          console.log('this.comingFromRoute: ', this.comingFromRoute);
+          if (this.comingFromRoute === 'view') {
+            route = '../view';
+          } else {
+            route = this.edit ? '/appointment' : '/dashboard';
+          }
+  
+          console.log(route);
+          this.router.navigate([route], { relativeTo: this.route });
+        });
+    }    
   }
 
   public handleTimeInput(time: string) {

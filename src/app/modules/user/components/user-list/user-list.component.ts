@@ -119,6 +119,13 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         }
         this.clearSelected$$.next();
       });
+
+
+      this.userApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
+        console.log('appointments: ', appointments);
+        this.users$$.next(appointments);
+        this.filteredUsers$$.next(appointments);
+      });
   }
 
   public override ngOnDestroy() {
@@ -162,10 +169,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(()=>this.userApiSvc.deleteStaff(id)),
         take(1),
       )
       .subscribe(() => {
-        this.userApiSvc.deleteStaff(id);
         this.notificationSvc.showNotification('User deleted successfully');
       });
   }

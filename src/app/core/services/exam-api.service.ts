@@ -180,6 +180,7 @@ export class ExamApiService {
   }
 
   public deleteExam(examID: number) {
+    console.log('examID: ', examID);
     // const index = this.exams.findIndex((exam) => exam.id === +examID);
     // if (index !== -1) {
     //   this.exams.splice(index, 1);
@@ -195,6 +196,7 @@ export class ExamApiService {
   }
 
   public getExamByID(examID: number): Observable<Exam | undefined> {
+    console.log("examId", examID)
     // return combineLatest([this.refreshExams$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.exams.find((exam) => +exam.id === +examID))));
     let queryParams = new HttpParams();
     queryParams = queryParams.append("id", examID);
@@ -226,16 +228,18 @@ export class ExamApiService {
   //   return of('Created');
   // }
 
-  public createExam$(requestData: CreateExamRequestData): Observable<any> {
+  public createExam$(requestData: CreateExamRequestData): Observable<CreateExamRequestData> {
     return this.http
       .post<BaseResponse<CreateExamRequestData>>(`${environment.serverBaseUrl}/exam`, requestData)
       .pipe(map((response) => response.data));
   }
 
-  public updateExam$(requestData: CreateExamRequestData): Observable<any> {
+  public updateExam$(requestData: CreateExamRequestData): Observable<CreateExamRequestData> {
     const { id, ...restData } = requestData;
     return this.http
-      .post<BaseResponse<CreateExamRequestData>>(`${environment.serverBaseUrl}/exam/${id}`, restData)
-      .pipe(map((response) => response.data));
+      .put<BaseResponse<CreateExamRequestData>>(`${environment.serverBaseUrl}/exam/${id}`, restData)
+      .pipe(map((response) => response.data),
+        tap(()=>{this.refreshExams$$.next()})
+      )
   }
 }

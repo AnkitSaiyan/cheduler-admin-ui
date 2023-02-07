@@ -120,6 +120,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
   }
 
   public reomvePost(id: number) {
+    console.log('id: ', id);
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
@@ -131,7 +132,6 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
 
     dialogRef.closed
       .pipe(
-        filter((res: boolean) => res),
         switchMap(()=>this.dashboardApiService.deletePost(id)),
         take(1),
       )

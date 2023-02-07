@@ -4,7 +4,10 @@ import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap 
 import { Absence } from 'src/app/shared/models/absence.model';
 import { AddAppointmentRequestData, Appointment } from 'src/app/shared/models/appointment.model';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
+import { Exam } from 'src/app/shared/models/exam.model';
+import { Physician } from 'src/app/shared/models/physician.model';
 import { Room } from 'src/app/shared/models/rooms.model';
+import { AppointmentStatus } from 'src/app/shared/models/status';
 import { environment } from '../../../environments/environment';
 
 export interface PostIt {
@@ -21,6 +24,16 @@ export class DashboardApiService {
   private refreshNotification$$ = new Subject<void>();
   private refreshRoomAbsence$$ = new Subject<void>();
   private refreshPost$$ = new Subject<void>();
+  private refreshDoctors$$ = new Subject<void>();
+  private upcommingAppointments$$ = new Subject<void>();
+  private refreshAppointmentStatus$$ = new Subject<void>();
+  private refreshWeeklyAppointment$$ = new Subject<void>();
+  private refreshCompletedAppointment$$ = new Subject<void>();
+  private refreshWeeklyCanceledAppointment$$ = new Subject<void>();
+  private refreshWeeklyPatients$$ = new Subject<void>();
+  private refreshCompleteAppointmentGrowth$$ = new Subject<void>();
+  private refreshCanceledAppointmentGrowth$$ = new Subject<void>();
+  private refreshYearlyAppointments$$ = new Subject<void>();
 
   public get appointment$(): Observable<Appointment[]> {
     return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
@@ -149,5 +162,119 @@ export class DashboardApiService {
       tap(()=>{this.refreshPost$$.next()})
     )
   }
+
+  public get upcommingAppointment$(): Observable<Appointment[]> {
+    return combineLatest([this.upcommingAppointments$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllUpcomingAppointment()));
+  }
+
+  private fetchAllUpcomingAppointment(): Observable<Appointment[]> {
+    return this.http
+      .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/dashboard/upcomingappointments`)
+      .pipe(map((response) => response.data));
+  }
+
+  public get doctors$(): Observable<Physician[]> {
+    return combineLatest([this.refreshDoctors$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllRefferingDoctors()));
+  }
+
+  private fetchAllRefferingDoctors(): Observable<Physician[]> {
+    return this.http
+      .get<BaseResponse<Physician[]>>(`${environment.serverBaseUrl}/dashboard/doctors`)
+      .pipe(map((response) => response.data));
+  }
+
+  public get exams$(): Observable<Exam[]> {
+    return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllExams()));
+  }
+
+  private fetchAllExams(): Observable<Exam[]> {
+    return this.http
+      .get<BaseResponse<Exam[]>>(`${environment.serverBaseUrl}/dashboard/exams`)
+      .pipe(map((response) => response.data));
+  }
+
+  public get appointmentStatus$(): Observable<AppointmentStatus> {
+    return combineLatest([this.refreshAppointmentStatus$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointmentStatus()));
+  }
+
+  private fetchAllAppointmentStatus(): Observable<AppointmentStatus> {
+    return this.http
+      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/appointmentsstatus`)
+      .pipe(map((response) => response.data));
+  }
+
+  public get weeklyAppointments$(): Observable<AppointmentStatus> {
+    return combineLatest([this.refreshWeeklyAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllWeeklyAppointments()));
+  }
+
+  private fetchAllWeeklyAppointments(): Observable<AppointmentStatus> {
+    return this.http
+      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklyappointments`)
+      .pipe(map((response) => response.data));
+  }
+
+  public get weeklyCompletedAppointments$(): Observable<AppointmentStatus> {
+    return combineLatest([this.refreshCompletedAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllWeeklyCompletedAppointments()));
+  }
+
+  private fetchAllWeeklyCompletedAppointments(): Observable<AppointmentStatus> {
+    return this.http
+      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklycompletedappointments`)
+      .pipe(map((response) => response.data));
+  }
+
+  public get weeklycancelledappointments$(): Observable<AppointmentStatus> {
+    return combineLatest([this.refreshWeeklyCanceledAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllWeeklycancelledappointments()));
+  }
+
+  private fetchAllWeeklycancelledappointments(): Observable<AppointmentStatus> {
+    return this.http
+      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklycancelledappointments`)
+      .pipe(map((response) => response.data));
+  }
+
+  public get weeklyPatients$(): Observable<AppointmentStatus> {
+    return combineLatest([this.refreshWeeklyCanceledAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchWeeklypatients()));
+  }
+
+  private fetchWeeklypatients(): Observable<AppointmentStatus> {
+    return this.http
+      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklypatients`)
+      .pipe(map((response) => response.data));
+  }
+
+
+  public get completeAppointmentGrowth$(): Observable<AppointmentStatus> {
+    return combineLatest([this.refreshCompleteAppointmentGrowth$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchCompleteAppointmentGrowth()));
+  }
+
+  private fetchCompleteAppointmentGrowth(): Observable<AppointmentStatus> {
+    return this.http
+      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/completeappointmentgrowth`)
+      .pipe(map((response) => response.data));
+  }
+
+  public get cancelledAppointmentGrowth$(): Observable<AppointmentStatus> {
+    return combineLatest([this.refreshCanceledAppointmentGrowth$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchCancelledAppointmentGrowth()));
+  }
+
+  private fetchCancelledAppointmentGrowth(): Observable<AppointmentStatus> {
+    return this.http
+      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/cancelledappointmentgrowth`)
+      .pipe(map((response) => response.data));
+  }
+
+  public get yearlyAppointments$(): Observable<AppointmentStatus> {
+    return combineLatest([this.refreshYearlyAppointments$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchYearlyAppointments()));
+  }
+
+  private fetchYearlyAppointments(): Observable<AppointmentStatus> {
+    return this.http
+      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/yearlyappointments`)
+      .pipe(map((response) => response.data));
+  }
+
+
+
 }
 

@@ -169,11 +169,14 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(()=>this.staffApiSvc.deleteStaff(id)),
         take(1),
       )
-      .subscribe(() => {
-        this.staffApiSvc.deleteStaff(id);
-        this.notificationSvc.showNotification('Staff deleted successfully');
+      .subscribe((response) => {
+        if (response) {
+          
+          this.notificationSvc.showNotification('Staff deleted successfully');
+        }
       });
   }
 

@@ -184,7 +184,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         [Validators.required],
       ],
       endTime: [endTime, [Validators.required]],
-      isRepeat: [!!absenceDetails?.isRepeat, []],
+      // isRepeat: [!!absenceDetails?.isRepeat, []],
+      isRepeat: true,
       isHoliday: [!!absenceDetails?.isHoliday, []],
       repeatType: [absenceDetails?.repeatType ?? null, []],
       repeatDays: [absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '', []],
@@ -214,10 +215,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
     const addAbsenceReqData: AddAbsenceRequestDate = {
       ...rest,
-      startedAt: new Date(startedAt.year, startedAt.month, startedAt.day, +startTime.slice(0, 2), +startTime.slice(3, 5)).toISOString(),
-      endedAt: new Date(endedAt.year, endedAt.month, endedAt.day, +endTime.slice(0, 2), +endTime.slice(3, 5)).toISOString(),
+      startedAt: "05-02-2023",
+      endedAt: "05-02-2023",
       repeatDays: '',
-      repeatFrequency:  0,
+      repeatFrequency: 0,
     };
 
     if (repeatDays.length) {
@@ -234,14 +235,24 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     }
 
     console.log(addAbsenceReqData);
-
-    this.absenceApiSvc
-      .addNewAbsence$(addAbsenceReqData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Absence ${this.modalData.edit ? 'updated' : 'added'} successfully`);
-        this.closeModal(true);
-      });
+    if (this.modalData.edit) {
+      
+      this.absenceApiSvc
+        .updateAbsence(addAbsenceReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Absence updated successfully`);
+          this.closeModal(true);
+        });
+    }else{
+      this.absenceApiSvc
+        .addNewAbsence$(addAbsenceReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Absence added successfully`);
+          this.closeModal(true);
+        });
+    }
   }
 
   private getRepeatEveryItems(repeatType: RepeatType): NameValue[] {

@@ -1,18 +1,18 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, switchMap, take, takeUntil } from 'rxjs';
+import {BehaviorSubject, debounceTime, distinctUntilChanged, filter, of, switchMap, take, takeUntil} from 'rxjs';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { set } from 'husky';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Weekday } from '../../../../shared/models/calendar.model';
+import {stringToTimeArray, Weekday} from '../../../../shared/models/calendar.model';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { COMING_FROM_ROUTE, EDIT, EXAM_ID } from '../../../../shared/utils/const';
-import { PracticeAvailability } from '../../../../shared/models/practice.model';
+import {PracticeAvailability, PracticeAvailabilityServer} from '../../../../shared/models/practice.model';
 import { StaffsGroupedByType } from '../../../../shared/models/staff.model';
 import { Room, RoomsGroupedByType, RoomType } from '../../../../shared/models/rooms.model';
 import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
@@ -152,7 +152,13 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   public ngOnInit(): void {
     this.routerStateSvc
       .listenForParamChange$(EXAM_ID)
-      .pipe(switchMap((examID) => this.examApiSvc.getExamByID(+examID)))
+      .pipe(switchMap((examID) => {
+        console.log("examID", examID)
+        if (examID){
+          return this.examApiSvc.getExamByID(+examID)
+        }
+        return of(undefined)
+      }))
       .subscribe((examDetails) => {
         this.createForm(examDetails);
         this.loading$$.next(false);
@@ -173,6 +179,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     });
 
     this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
+      console.log('staffs: ', staffs);
       const staffGroupedByType: StaffsGroupedByType = {
         radiologists: [],
         assistants: [],
@@ -237,6 +244,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   private createForm(examDetails?: Exam | undefined): void {
+    console.log("examDetails", examDetails)
     this.createExamForm = this.fb.group({
       name: [examDetails?.name, [Validators.required]],
       expensive: [examDetails?.expensive, [Validators.required, Validators.min(1)]],
@@ -388,9 +396,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   //   }
   // }
 
-  private addPracticeAvailabilityControls(practice?: PracticeAvailability): void {
+  private addPracticeAvailabilityControls(practice?: PracticeAvailabilityServer): void {
     const fg = this.createExamForm.get('practiceAvailability') as FormGroup;
     const weekday = this.formValues.selectedWeekday;
+    console.log("practice 403", practice);
+    console.log("weekday", weekday);
     switch (weekday) {
       case Weekday.ALL:
         Object.values(this.weekdayEnum).forEach((day) => {
@@ -410,12 +420,12 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
               this.getPracticeAvailabilityFormGroup(
                 practice?.weekday,
                 {
-                  hour: practice?.dayStart?.getHours() ?? 0,
-                  minute: practice?.dayStart?.getMinutes() ?? 0,
+                  hour: stringToTimeArray(practice?.dayStart)[0],
+                  minute: stringToTimeArray(practice?.dayStart)[1],
                 },
                 {
-                  hour: practice?.dayEnd?.getHours() ?? 0,
-                  minute: practice?.dayEnd?.getMinutes() ?? 0,
+                  hour: stringToTimeArray(practice?.dayEnd)[0],
+                  minute: stringToTimeArray(practice?.dayEnd)[1],
                 },
               ),
             ]),
@@ -425,12 +435,12 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
             this.getPracticeAvailabilityFormGroup(
               practice.weekday,
               {
-                hour: practice.dayStart.getHours(),
-                minute: practice.dayStart.getMinutes(),
+                hour: stringToTimeArray(practice.dayStart)[0],
+                minute: stringToTimeArray(practice.dayStart)[1],
               },
               {
-                hour: practice.dayEnd.getHours(),
-                minute: practice.dayEnd.getMinutes(),
+                hour: stringToTimeArray(practice?.dayEnd)[0],
+                minute: stringToTimeArray(practice?.dayEnd)[1],
               },
             ),
           );
@@ -492,21 +502,21 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public saveExam(): void {
-    if (this.createExamForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.createExamForm.updateValueAndValidity();
-      return;
-    }
+    // if (this.createExamForm.invalid) {
+    //   this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+    //   this.createExamForm.updateValueAndValidity();
+    //   return;
+    // }
 
-    if (this.formValues.roomsForExam?.every((room) => !room.selectRoom)) {
-      this.formErrors.selectRoomErr = true;
-      this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
-      return;
-    }
+    // if (this.formValues.roomsForExam?.every((room) => !room.selectRoom)) {
+    //   this.formErrors.selectRoomErr = true;
+    //   this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
+    //   return;
+    // }
 
-    if (this.formErrors.expensiveErr) {
-      this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
-    }
+    // if (this.formErrors.expensiveErr) {
+    //   this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
+    // }
 
     const createExamRequestData: CreateExamRequestData = {
       name: this.formValues.name,
@@ -559,12 +569,12 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
 
     console.log(createExamRequestData);
-
-    this.examApiSvc
-      .createExam$(createExamRequestData)
+    if (this.edit) {
+      this.examApiSvc
+      .updateExam$(createExamRequestData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.notificationSvc.showNotification(`Exam ${this.edit ? 'updated' : 'added'} successfully`);
+        this.notificationSvc.showNotification(`Exam updated successfully`);
         let route: string;
         if (this.comingFromRoute === 'view') {
           route = '../view';
@@ -575,6 +585,25 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         console.log(route);
         this.router.navigate([route], { relativeTo: this.route });
       });
+
+    }else{
+      this.examApiSvc
+      .createExam$(createExamRequestData)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.notificationSvc.showNotification(`Exam updated successfully`);
+        let route: string;
+        if (this.comingFromRoute === 'view') {
+          route = '../view';
+        } else {
+          route = this.edit ? '/exam' : '../';
+        }
+
+        console.log(route);
+        this.router.navigate([route], { relativeTo: this.route });
+      });
+    }
+
   }
 
   public getBadgeColor(weekday: Weekday): BadgeColor {
