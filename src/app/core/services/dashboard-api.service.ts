@@ -20,7 +20,7 @@ export interface PostIt {
 export class DashboardApiService {
   constructor(private http: HttpClient) {}
 
-  private refreshAppointment$$ = new Subject<void>();
+  public refreshAppointment$$ = new Subject<void>();
   private refreshNotification$$ = new Subject<void>();
   private refreshRoomAbsence$$ = new Subject<void>();
   private refreshPost$$ = new Subject<void>();
