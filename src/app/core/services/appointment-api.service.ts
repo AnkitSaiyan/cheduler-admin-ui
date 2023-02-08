@@ -11,7 +11,7 @@ import { Physician } from '../../shared/models/physician.model';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { DashboardApiService } from "./dashboard-api.service";
+import { DashboardApiService } from './dashboard-api.service';
 
 @Injectable({
   providedIn: 'root',
@@ -2394,7 +2394,12 @@ export class AppointmentApiService {
 
   private refreshAppointment = new Subject<void>();
 
-  constructor(private physicianApiSvc: PhysicianApiService, private staffApiSvc: StaffApiService, private http: HttpClient, private dashboardApiService: DashboardApiService) {}
+  constructor(
+    private physicianApiSvc: PhysicianApiService,
+    private staffApiSvc: StaffApiService,
+    private http: HttpClient,
+    private dashboardApiService: DashboardApiService,
+  ) {}
 
   public get appointment$(): Observable<Appointment[]> {
     return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
@@ -2508,8 +2513,9 @@ export class AppointmentApiService {
 
     return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/appointment/${appointmentID}`).pipe(
       map((response) => response.data),
-      tap(() => {this.refreshAppointment.next();
-        this.dashboardApiService.refreshAppointment$$.next()
+      tap(() => {
+        this.refreshAppointment.next();
+        this.dashboardApiService.refreshAppointments();
       }),
     );
   }
@@ -2523,7 +2529,7 @@ export class AppointmentApiService {
         this.http.get<BaseResponse<Appointment>>(`${environment.serverBaseUrl}/appointment`, { params: queryParams }).pipe(
           map((response) => {
             if (Array.isArray(response.data)) {
-              return response.data[0]
+              return response.data[0];
             }
             return response.data;
           }),
@@ -2538,17 +2544,16 @@ export class AppointmentApiService {
 
   public saveAppointment$(requestData: AddAppointmentRequestData) {
     const { id, ...restData } = requestData;
-    return this.http
-      .post<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment`, restData)
-      .pipe(map((response) => response.data));
+    return this.http.post<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment`, restData).pipe(
+      map((response) => response.data)
+    );
   }
 
   public updateAppointment$(requestData: AddAppointmentRequestData) {
     const { id, ...restData } = requestData;
-    return this.http
-      .put<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment/${id}`, restData)
-      .pipe(map((response) => response.data),
-        tap(()=>this.refreshAppointment.next())
-      );
+    return this.http.put<BaseResponse<AddAppointmentRequestData>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
+      map((response) => response.data),
+      tap(() => this.refreshAppointment.next()),
+    );
   }
 }

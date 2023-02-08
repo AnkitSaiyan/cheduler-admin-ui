@@ -20,7 +20,7 @@ export interface PostIt {
 export class DashboardApiService {
   constructor(private http: HttpClient) {}
 
-  public refreshAppointment$$ = new Subject<void>();
+  private refreshAppointment$$ = new Subject<void>();
   private refreshNotification$$ = new Subject<void>();
   private refreshRoomAbsence$$ = new Subject<void>();
   private refreshPost$$ = new Subject<void>();
@@ -272,6 +272,10 @@ export class DashboardApiService {
     return this.http
       .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/yearlyappointments`)
       .pipe(map((response) => response.data));
+  }
+
+  public refreshAppointments(){
+    this.refreshAppointment$$.next();
   }
 
 

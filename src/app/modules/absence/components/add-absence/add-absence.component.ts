@@ -215,8 +215,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
     const addAbsenceReqData: AddAbsenceRequestDate = {
       ...rest,
-      startedAt: "05-02-2023",
-      endedAt: "05-02-2023",
+      startedAt: new Date(startedAt.year, startedAt.month, startedAt.day, +startTime.slice(0, 2), +startTime.slice(3, 5)).toISOString(),
+      endedAt: new Date(endedAt.year, endedAt.month, endedAt.day, +endTime.slice(0, 2), +endTime.slice(3, 5)).toISOString(),
       repeatDays: '',
       repeatFrequency: 0,
     };
