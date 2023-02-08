@@ -109,7 +109,7 @@
           <dfm-table-body-cell>{{ '' | dashIfNothing }}</dfm-table-body-cell>
 
           <dfm-table-body-cell>
-            <span>{{ item.read === readStatus.Read ? 'Yes' : 'No' }}</span>
+            <span>{{ item.readStatus === readStatus.Read ? 'Yes' : 'No' }}</span>
           </dfm-table-body-cell>
 
           <dfm-table-body-cell>
@@ -212,7 +212,9 @@
       <dfm-appointment-calendar class="h-100"
                                 [headerList]="roomList"
                                 [appointmentsGroupedByDate]="appointmentsGroupedByDate"
-                                [appointmentsGroupedByDateAndTIme]="appointmentsGroupedByDateAndTime">
+                                [appointmentsGroupedByDateAndTIme]="appointmentsGroupedByDateAndTime"
+                                [appointmentGroupedByDateAndRoom]="appointmentGroupedByDateAndRoom"
+      >
       </dfm-appointment-calendar>
     </ng-container>
   </section>

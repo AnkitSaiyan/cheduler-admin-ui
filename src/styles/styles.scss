@@ -619,6 +619,29 @@ ngb-datepicker {
   line-height: 40px;
 }
 
+.circle-gray-200-32 {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 50%;
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+  background: var(--bs-gray-200);
+  color: var(--dfm-main-600);
+  text-align: center;
+}
+
+.circle-gray-200-24 {
+  min-width: 24px;
+  height: 24px;
+  line-height: 24px;
+  border-radius: 50%;
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+  background: var(--bs-gray-200);
+  color: var(--dfm-main-600);
+  text-align: center;
+  font-size: 0.8rem;
+}
+
 .chart-arrow-up {
   transform: rotateZ(45deg);
 
@@ -658,6 +681,10 @@ ngb-datepicker {
 
 .bg-transparent {
   background: transparent;
+}
+
+.ml-auto {
+  margin-left: auto;
 }
 
 .modal-backdrop-remove-mv {

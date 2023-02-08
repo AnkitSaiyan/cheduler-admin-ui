@@ -2426,12 +2426,12 @@ export class AppointmentApiService {
     },
   ];
 
-  private refreshAppointment = new Subject<void>();
+  private refreshAppointment$$ = new Subject<void>();
 
   constructor(private physicianApiSvc: PhysicianApiService, private staffApiSvc: StaffApiService) {}
 
   public get appointment$(): Observable<Appointment[]> {
-    return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(switchMap(() => of(this.appointments)));
+    return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.appointments)));
   }
 
   public upsertAppointment$(requestData: AddAppointmentRequestData): Observable<string> {
@@ -2470,6 +2470,12 @@ export class AppointmentApiService {
         }
       }
     } else {
+      const endedAt = new Date(requestData.startedAt);
+      const hour = new Date(requestData.startedAt)?.getHours();
+      if (hour) {
+        endedAt.setHours(+hour + 1);
+      }
+
       this.appointments.push({
         id: Math.floor(Math.random() * 100),
         patientFname: requestData.patientFname,
@@ -2483,7 +2489,7 @@ export class AppointmentApiService {
         approval: requestData.approval ?? AppointmentStatus.Pending,
         examList: requestData.examList,
         startedAt: requestData.startedAt,
-        endedAt: new Date(new Date(requestData.startedAt).setDate(new Date(requestData.startedAt).getDate() + 2)),
+        endedAt,
         roomType: requestData.roomType,
         comments: requestData.comments ?? '',
         readStatus: ReadStatus.Unread,
@@ -2499,7 +2505,7 @@ export class AppointmentApiService {
       });
     }
 
-    this.refreshAppointment.next();
+    this.refreshAppointment$$.next();
 
     return of('Saved');
   }
@@ -2524,7 +2530,7 @@ export class AppointmentApiService {
       }
     });
 
-    this.refreshAppointment.next();
+    this.refreshAppointment$$.next();
 
     return of(true);
   }
@@ -2533,13 +2539,32 @@ export class AppointmentApiService {
     const index = this.appointments.findIndex((appointment) => appointment.id === +appointmentID);
     if (index !== -1) {
       this.appointments.splice(index, 1);
-      this.refreshAppointment.next();
+      this.refreshAppointment$$.next();
     }
   }
 
   public getAppointmentByID(appointmentID: number): Observable<Appointment | undefined> {
-    return combineLatest([this.refreshAppointment.pipe(startWith(''))]).pipe(
+    return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
       switchMap(() => of(this.appointments.find((appointment) => +appointment.id === +appointmentID))),
     );
+  }
+
+  public updateReadStatus(appointmentID: number) {
+    const index = this.appointments.findIndex((appointment) => +appointment.id === +appointmentID);
+    if (index !== -1) {
+      console.log(this.appointments[index]);
+      this.appointments[index].readStatus = ReadStatus.Read;
+      this.refreshAppointment$$.next();
+      console.log(this.appointments[index]);
+    }
+  }
+
+  public changeRadiologist(appointmentID: number, radiologistID: number) {
+    const index = this.appointments.findIndex((appointment) => +appointment.id === +appointmentID);
+    if (index !== -1) {
+      console.log(this.appointments[index]);
+      this.appointments[index].doctorId = radiologistID;
+      this.refreshAppointment$$.next();
+    }
   }
 }

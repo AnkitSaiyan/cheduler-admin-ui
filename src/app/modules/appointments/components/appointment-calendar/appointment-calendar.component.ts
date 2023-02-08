@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { Appointment } from '../../../../shared/models/appointment.model';
+import { Exam } from '../../../../shared/models/exam.model';
 
 @Component({
   selector: 'dfm-appointment-calendar',
@@ -44,14 +45,21 @@ export class AppointmentCalendarComponent implements OnInit {
   public appointmentsGroupedByDate!: { [key: string]: Appointment[] };
 
   @Input()
-  public appointmentsGroupedByDateAndTIme!: { [key: string]: { group: number; data: any }[] };
+  public appointmentsGroupedByDateAndTIme!: { [key: string]: any[][] };
+
+  @Input() appointmentGroupedByDateAndRoom!: {
+    [key: string]: {
+      [key: number]: {
+        appointment: Appointment;
+        exams: Exam[];
+      }[];
+    };
+  };
 
   constructor() {}
 
   public ngOnInit(): void {
-    this.calendarViewFormControl.setValue('week');
-
-    console.log(this.appointmentsGroupedByDateAndTIme);
+    this.calendarViewFormControl.setValue('day');
 
     this.calendarViewFormControl.valueChanges.pipe().subscribe((value) => {
       this.newDate$$.next(this.selectedDate);

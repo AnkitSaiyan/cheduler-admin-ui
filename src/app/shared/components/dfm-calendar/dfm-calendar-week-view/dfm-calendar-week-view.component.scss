@@ -206,6 +206,52 @@ h3 {
   background: var(--dfm-blue-light);
   box-shadow: 0 0.125rem 0.25rem rgb(30 30 28 / 8%);
 
+  .calender-week-view-event-details-expanded {
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+
+    .calender-week-view-event-details-expanded-title {
+      font-weight: 600;
+    }
+
+    .calender-week-view-event-patients-container {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      max-height: 40vh;
+
+      &::-webkit-scrollbar {
+        width: 12px;
+      }
+
+      .calender-week-view-event-patients-container {
+        display: flex;
+        flex-direction: column;
+
+        .calender-week-view-event-patient-details {
+          display: flex;
+          flex-direction: column;
+          padding: 8px;
+          //&:hover {
+          //  background: var(--dfm-main-100);
+          //}
+        }
+
+        .calender-week-view-event-patient-details-divider {
+          border-bottom: 1px solid var(--dfm-main-200);
+          margin: 0 8px;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 1;
+        }
+      }
+    }
+  }
+
   .calender-week-view-event-circle-icon {
     position: absolute;
     width: 22px;

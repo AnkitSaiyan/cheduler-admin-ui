@@ -12,6 +12,7 @@ import {
   NgbPopoverModule,
   NgbTimepickerModule,
 } from '@ng-bootstrap/ng-bootstrap';
+import { RouterLink } from '@angular/router';
 import { DestroyableComponent } from './components/destroyable.component';
 import { StatusNamePipe } from './pipes/status-name.pipe';
 import { DashIfNothingPipe } from './pipes/dash-if-nothing.pipe';
@@ -33,6 +34,7 @@ import { DfmCalendarMonthViewComponent } from './components/dfm-calendar/dfm-cal
 import { DfmCalendarWeekViewComponent } from './components/dfm-calendar/dfm-calendar-week-view/dfm-calendar-week-view.component';
 import { DfmCalendarDayViewComponent } from './components/dfm-calendar/dfm-calendar-day-view/dfm-calendar-day-view.component';
 import { NumberToDatePipe } from './pipes/number-to-date.pipe';
+import { LargestPipe } from './pipes/largest.pipe';
 
 @NgModule({
   declarations: [
@@ -57,8 +59,9 @@ import { NumberToDatePipe } from './pipes/number-to-date.pipe';
     DfmCalendarWeekViewComponent,
     DfmCalendarDayViewComponent,
     NumberToDatePipe,
+    LargestPipe,
   ],
-  imports: [CommonModule, DesignSystemModule, ReactiveFormsModule, NgbDropdownModule, NgbPopoverModule, NgbAccordionModule],
+  imports: [CommonModule, DesignSystemModule, ReactiveFormsModule, NgbDropdownModule, NgbPopoverModule, NgbAccordionModule, RouterLink],
   exports: [
     DesignSystemModule,
     TableModule,
@@ -90,6 +93,7 @@ import { NumberToDatePipe } from './pipes/number-to-date.pipe';
     NumberToDatePipe,
     NgbPopoverModule,
     NgbAccordionModule,
+    LargestPipe,
   ],
 })
 export class SharedModule {}

@@ -1,10 +1,9 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
-import _default from 'chart.js/dist/plugins/plugin.tooltip';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AppointmentStatus, Status } from '../../../../shared/models/status';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getStatusEnum';
@@ -17,6 +16,7 @@ import { AppointmentApiService } from '../../../../core/services/appointment-api
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { getDurationMinutes } from '../../../../shared/models/calendar.model';
+import { Exam } from '../../../../shared/models/exam.model';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -42,7 +42,16 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public appointmentsGroupedByDate: { [key: string]: Appointment[] } = {};
 
-  public appointmentsGroupedByDateAndTime: { [key: string]: { group: number; data: Appointment }[] } = {};
+  public appointmentsGroupedByDateAndTime: { [key: string]: Appointment[][] } = {};
+
+  public appointmentGroupedByDateAndRoom: {
+    [key: string]: {
+      [key: number]: {
+        appointment: Appointment;
+        exams: Exam[];
+      }[];
+    };
+  } = {};
 
   public clearSelected$$ = new Subject<void>();
 
@@ -84,57 +93,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
       console.log(appointments);
 
-      let startDate: Date;
-      let endDate: Date;
-      let group: number;
-      let sameGroup: boolean;
-      // const dateToAppointmentAndGroupObj: { [key: string]: { group: number; data: Appointment }[] } = {};
-      // debugger;
-      appointments.forEach((appointment) => {
-        const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
-
-        if (dateString) {
-          if (!this.appointmentsGroupedByDate[dateString]) {
-            this.appointmentsGroupedByDate[dateString] = [];
-          }
-
-          if (!this.appointmentsGroupedByDateAndTime[dateString]) {
-            this.appointmentsGroupedByDateAndTime[dateString] = [];
-
-            startDate = new Date(appointment.startedAt);
-            endDate = new Date(appointment.endedAt);
-            group = 0;
-            sameGroup = false;
-          } else {
-            const currSD = new Date(appointment.startedAt);
-            const currED = new Date(appointment.endedAt);
-
-            if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
-              sameGroup = true;
-              if (currED > endDate) {
-                endDate = currED;
-              }
-            } else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
-              sameGroup = true;
-              if (currED > endDate) {
-                endDate = currED;
-              }
-            } else {
-              startDate = currSD;
-              endDate = currED;
-              sameGroup = false;
-            }
-          }
-
-          console.log(endDate);
-          if (!sameGroup) {
-            group++;
-          }
-
-          this.appointmentsGroupedByDate[dateString].push(appointment);
-          this.appointmentsGroupedByDateAndTime[dateString].push({ group, data: appointment });
-        }
-      });
+      this.groupAppointmentsForCalendar(...appointments);
+      this.groupAppointmentByDateAndRoom(...appointments);
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
@@ -298,5 +258,111 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public toggleView(): void {
     this.calendarView$$.next(!this.calendarView$$.value);
+  }
+
+  private groupAppointmentsForCalendar(...appointments: Appointment[]) {
+    let startDate: Date;
+    let endDate: Date;
+    // let group: number;
+    let sameGroup: boolean;
+    let groupedAppointments: Appointment[] = [];
+    let lastDateString: string;
+
+    this.appointmentsGroupedByDate = {};
+    this.appointmentsGroupedByDateAndTime = {};
+    this.appointmentGroupedByDateAndRoom = {};
+    // debugger;
+    appointments.push({} as Appointment);
+    appointments.forEach((appointment, index) => {
+      if (Object.keys(appointment).length) {
+        const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
+
+        if (dateString) {
+          if (!this.appointmentsGroupedByDate[dateString]) {
+            this.appointmentsGroupedByDate[dateString] = [];
+          }
+
+          if (!this.appointmentsGroupedByDateAndTime[dateString]) {
+            this.appointmentsGroupedByDateAndTime[dateString] = [];
+
+            startDate = new Date(appointment.startedAt);
+            endDate = new Date(appointment.endedAt);
+            // group = 0;
+            sameGroup = false;
+          } else {
+            const currSD = new Date(appointment.startedAt);
+            const currED = new Date(appointment.endedAt);
+
+            if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
+              sameGroup = true;
+              if (currED > endDate) {
+                endDate = currED;
+              }
+            } else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
+              sameGroup = true;
+              if (currED > endDate) {
+                endDate = currED;
+              }
+            } else {
+              startDate = currSD;
+              endDate = currED;
+              sameGroup = false;
+            }
+          }
+
+          if (!sameGroup) {
+            // group++;
+
+            if (index !== 0) {
+              this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
+              groupedAppointments = [];
+            }
+          }
+
+          lastDateString = dateString;
+
+          groupedAppointments.push(appointment);
+          this.appointmentsGroupedByDate[dateString].push(appointment);
+        }
+      } else {
+        this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
+      }
+    });
+  }
+
+  private groupAppointmentByDateAndRoom(...appointments: Appointment[]) {
+    // const groupBy: {
+    //   [key: string]: {
+    //     [key: number]: {
+    //       appointment: Appointment;
+    //       exam: Exam[];
+    //     };
+    //   };
+    // } = {};
+
+    appointments.forEach((appointment) => {
+      const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
+
+      if (dateString) {
+        if (!this.appointmentGroupedByDateAndRoom[dateString]) {
+          this.appointmentGroupedByDateAndRoom[dateString] = {};
+        }
+
+        appointment.exams?.forEach((exam) => {
+          exam.rooms?.forEach((room) => {
+            if (!this.appointmentGroupedByDateAndRoom[dateString][room.id]) {
+              this.appointmentGroupedByDateAndRoom[dateString][room.id] = [];
+            }
+
+            this.appointmentGroupedByDateAndRoom[dateString][room.id].push({
+              appointment,
+              exams: appointment.exams ?? [],
+            });
+          });
+        });
+      }
+    });
+
+    console.log(groupBy);
   }
 }

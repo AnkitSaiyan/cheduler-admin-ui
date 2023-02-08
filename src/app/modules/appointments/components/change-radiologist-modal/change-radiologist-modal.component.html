@@ -1,0 +1,21 @@
+<div class="bg-white rounded-4 change-radiologist-modal">
+  <div class="modal-header">
+    <h5 class="modal-title">Change Radiologist</h5>
+    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
+  </div>
+
+  <div class="modal-body dfm-mb-8">
+    <div class="dfm-input-dropdown-wrapper-wo-label">
+      <dfm-input-dropdown size="md"
+                          placeholder="Select Radiologist*"
+                          [items]="radiologists"
+                          [formControl]="radiologistFormControl">
+      </dfm-input-dropdown>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <dfm-button color="secondary" size="md" (click)="close(false)">Cancel</dfm-button>
+    <dfm-button color="primary" size="md" (click)="close(true)">Change</dfm-button>
+  </div>
+</div>
