@@ -1,12 +1,33 @@
+.calender-day-view {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: inherit;
+
+  .calender-day-view-absolute {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    .calender-day-view-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+  }
+}
+
 h3 {
   margin: 0;
 }
 
 .calender-day-view-header {
-  box-sizing: border-box;
   display: flex;
 
-  .calender-day-view-time-format {
+  .calender-day-view-time-zone {
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -93,12 +114,13 @@ h3 {
   .calender-day-view-body {
     display: flex;
     width: 100%;
+    position: relative;
 
     &::before {
       content: "";
       height: 2px;
       position: absolute;
-      width: calc(100% - 64px);
+      width: 100%;
       border-bottom: 1px solid var(--dfm-main-200);
       //left: 96px;
     }
@@ -169,6 +191,7 @@ h3 {
           border-left: 1px solid var(--dfm-main-200);
           padding-right: 12px;
           position: relative;
+          //overflow: hidden;
 
           .calender-day-view-body-grid-absolute {
             position: absolute;
@@ -182,6 +205,7 @@ h3 {
             position: relative;
             height: 100%;
             width: 100%;
+            //overflow-y: hidden;
           }
         }
       }
@@ -278,8 +302,9 @@ h3 {
     }
 
     .calender-day-view-event-more-button {
-      width: 24px;
-      height: 24px;
+      width: 40px;
+      height: 40px;
+      padding: 8px;
       border-radius: 50%;
       color: var(--dfm-primary) !important;
       align-self: end;
@@ -287,6 +312,11 @@ h3 {
 
       svg {
         color: var(--dfm-primary) !important;
+      }
+
+      &:hover {
+        transition: all 150ms linear;
+        background: var(--dfm-main-200);
       }
     }
   }

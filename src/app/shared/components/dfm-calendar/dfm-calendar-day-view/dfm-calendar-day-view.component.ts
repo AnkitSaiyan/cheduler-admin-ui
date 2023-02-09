@@ -130,6 +130,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
       }
     });
 
+    // debugger;
     const durationMinutes = getDurationMinutes(groupedData[0].startedAt, endDate);
 
     return durationMinutes * this.pixelsPerMin;
@@ -178,16 +179,14 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     this.lastOpenedMenuRef = null;
   }
 
-  public handleMoreButtonClick(moreMenu: NgbDropdown) {
-    if (this.lastOpenedMenuRef && this.lastOpenedMenuRef.isOpen()) {
+  public toggleMoreMenu(moreMenu: NgbDropdown) {
+    moreMenu.toggle();
+
+    if (this.lastOpenedMenuRef && this.lastOpenedMenuRef !== moreMenu) {
       this.lastOpenedMenuRef.close();
     }
 
-    if (this.lastOpenedMenuRef === moreMenu) {
-      this.lastOpenedMenuRef = null;
-    }
-
-    if (!this.lastOpenedMenuRef && this.lastOpenedMenuRef !== moreMenu) {
+    if (this.lastOpenedMenuRef !== moreMenu) {
       this.lastOpenedMenuRef = moreMenu;
     }
   }

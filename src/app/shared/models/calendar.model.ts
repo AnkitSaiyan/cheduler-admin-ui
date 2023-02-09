@@ -114,12 +114,17 @@ export function getAllDaysOfWeek(selectedDate: Date): number[][] {
 }
 
 export function getDurationMinutes(start: Date, end: Date): number {
+  // console.log(start, end)
   if (start && end) {
     const startDate = new Date(start);
     const endDate = new Date(end);
 
     const startH = startDate.getHours();
-    const endH = endDate.getHours();
+    let endH = endDate.getHours();
+
+    if (endH === 0) {
+      endH = 24;
+    }
 
     if (startH === endH) {
       return endDate.getMinutes() - startDate.getMinutes();
