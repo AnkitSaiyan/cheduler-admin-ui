@@ -1,5 +1,5 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { BehaviorSubject, filter, take } from 'rxjs';
+import { BehaviorSubject, filter, take, takeUntil } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { NameValue } from '../../search-modal.component';
@@ -11,6 +11,8 @@ import { NotificationDataService } from '../../../../core/services/notification-
 import { ModalService } from '../../../../core/services/modal.service';
 import { ConfirmActionModalComponent, DialogData } from '../../confirm-action-modal.component';
 import { ChangeRadiologistModalComponent } from '../../../../modules/appointments/components/change-radiologist-modal/change-radiologist-modal.component';
+import { AppointmentTimeChangeModalComponent } from '../../../../modules/appointments/components/appointment-time-change-modal/appointment-time-change-modal.component';
+import { ShareDataService } from '../../../../core/services/share-data.service';
 
 @Component({
   selector: 'dfm-calendar-day-view',
@@ -65,6 +67,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     private appointmentApiSvc: AppointmentApiService,
     private notificationSvc: NotificationDataService,
     private modalSvc: ModalService,
+    private shareDataSvc: ShareDataService,
   ) {}
 
   public ngOnChanges(changes: SimpleChanges) {
@@ -96,6 +99,13 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         if (date) {
           this.updateDate(date);
         }
+      });
+
+    this.shareDataSvc
+      .getChangeTimeModalData$()
+      .pipe()
+      .subscribe((data) => {
+        console.log(data);
       });
   }
 
@@ -203,5 +213,35 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         this.appointmentApiSvc.changeRadiologist(appointmentID, id);
         this.notificationSvc.showNotification('Radiologist updated');
       });
+  }
+
+  public openChangeTimeModal(appointment: Appointment, extend = true, eventContainer?: HTMLDivElement) {
+    const modalRef = this.modalSvc.open(AppointmentTimeChangeModalComponent, {
+      data: { extend, eventContainer },
+    });
+
+    modalRef.closed.pipe(take(1)).subscribe((res) => {
+      if (res) {
+        const startedAt = new Date(appointment.startedAt);
+        const endedAt = new Date(appointment.endedAt);
+        const hour = Math.floor(+res.minutes / 60);
+        const min = +res.minutes % 60;
+
+        if (res.top) {
+          startedAt.setMinutes(startedAt.getMinutes() + min * (extend ? -1 : 1));
+          if (hour) {
+            startedAt.setHours(startedAt.getHours() + hour * (extend ? -1 : 1));
+          }
+        } else {
+          endedAt.setMinutes(endedAt.getMinutes() + min * (extend ? 1 : -1));
+          if (hour) {
+            endedAt.setHours(endedAt.getHours() + hour * (extend ? 1 : -1));
+          }
+        }
+
+        this.appointmentApiSvc.updateTimings(appointment.id, startedAt, endedAt);
+        eventContainer?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
   }
 }

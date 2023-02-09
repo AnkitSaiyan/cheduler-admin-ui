@@ -1,0 +1,27 @@
+<div class="bg-white rounded-4 change-time-modal">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ extend ? 'Extend' : 'Shorten' }} Appointment</h5>
+    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
+  </div>
+
+  <div class="modal-body dfm-mb-16 d-flex flex-column dfm-gap-16" [formGroup]="timeChangeForm">
+    <dfm-input type="number" size="md" label="Amount of minutes*" placeholder="Enter minutes"
+               formControlName="minutes"></dfm-input>
+
+    <div class="d-flex flex-column dfm-gap-8 flex-1">
+      <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ extend ? 'Extend' : 'Shorten' }}
+        At</span>
+      <div class="w-fit d-flex justify-content-between dfm-gap-24">
+        <dfm-radio-button class="font-weight-normal" label="Top" formControlName="top"
+                          [checkedValue]="true"></dfm-radio-button>
+        <dfm-radio-button class="font-weight-normal" label="Bottom" formControlName="top"
+                          [checkedValue]="false"></dfm-radio-button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <dfm-button color="secondary" size="md" (click)="close(false)">Cancel</dfm-button>
+    <dfm-button color="primary" size="md" (click)="close(true)">Save</dfm-button>
+  </div>
+</div>

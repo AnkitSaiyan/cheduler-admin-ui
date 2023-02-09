@@ -2567,4 +2567,14 @@ export class AppointmentApiService {
       this.refreshAppointment$$.next();
     }
   }
+
+  public updateTimings(appointmentID: number, startDate: Date, endDate: Date) {
+    const index = this.appointments.findIndex((appointment) => +appointment.id === +appointmentID);
+    if (index !== -1) {
+      console.log(this.appointments[index]);
+      this.appointments[index].startedAt = startDate;
+      this.appointments[index].endedAt = endDate;
+      this.refreshAppointment$$.next();
+    }
+  }
 }

@@ -76,11 +76,8 @@
                         <ng-container
                           *ngFor="let data of roomData; let eventNo = index;">
 
-                          <div class="calender-day-view-event-container"
-                               [ngStyle]="{
-                          'top.px': getTop([data.appointment]),
-                          'height.px': getHeight([data.appointment])
-                       }"
+                          <div #eventContainer class="calender-day-view-event-container"
+                               [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': getHeight([data.appointment])}"
                           >
                             <!-- POP OVER -->
                             <ng-template #eventDetails>
@@ -197,13 +194,13 @@
                                           </button>
 
                                           <button ngbDropdownItem
-                                                  (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">
+                                                  (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); openChangeTimeModal(data.appointment, false, eventContainer)">
                                             <span>Shorten</span>
                                           </button>
 
                                           <button ngbDropdownItem
-                                                  (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">
-                                            <span>Expand</span>
+                                                  (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); openChangeTimeModal(data.appointment, true, eventContainer)">
+                                            <span>Extend</span>
                                           </button>
                                         </div>
                                       </div>

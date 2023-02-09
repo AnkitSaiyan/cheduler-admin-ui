@@ -225,6 +225,7 @@ h3 {
   background: var(--dfm-blue-light);
   box-shadow: 0 0.125rem 0.25rem rgb(30 30 28 / 8%);
   transition: 200ms all linear;
+  //overflow: hidden;
 
   &:hover {
     z-index: 2;
