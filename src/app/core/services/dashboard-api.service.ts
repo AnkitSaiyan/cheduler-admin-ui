@@ -274,6 +274,10 @@ export class DashboardApiService {
       .pipe(map((response) => response.data));
   }
 
+  public refreshAppointments(){
+    this.refreshAppointment$$.next();
+  }
+
 
 
 }

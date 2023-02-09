@@ -1,18 +1,17 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
-import {BehaviorSubject, debounceTime, distinctUntilChanged, filter, of, switchMap, take, takeUntil} from 'rxjs';
+import { BadgeColor } from 'diflexmo-angular-design';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, of, switchMap, take, takeUntil } from 'rxjs';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { set } from 'husky';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import {stringToTimeArray, Weekday} from '../../../../shared/models/calendar.model';
+import { stringToTimeArray, Weekday } from '../../../../shared/models/calendar.model';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { COMING_FROM_ROUTE, EDIT, EXAM_ID } from '../../../../shared/utils/const';
-import {PracticeAvailability, PracticeAvailabilityServer} from '../../../../shared/models/practice.model';
+import { PracticeAvailability, PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
 import { StaffsGroupedByType } from '../../../../shared/models/staff.model';
 import { Room, RoomsGroupedByType, RoomType } from '../../../../shared/models/rooms.model';
 import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
@@ -152,13 +151,14 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   public ngOnInit(): void {
     this.routerStateSvc
       .listenForParamChange$(EXAM_ID)
-      .pipe(switchMap((examID) => {
-        console.log("examID", examID)
-        if (examID){
-          return this.examApiSvc.getExamByID(+examID)
-        }
-        return of(undefined)
-      }))
+      .pipe(
+        switchMap((examID) => {
+          if (examID) {
+            return this.examApiSvc.getExamByID(+examID);
+          }
+          return of({} as Exam);
+        }),
+      )
       .subscribe((examDetails) => {
         this.createForm(examDetails);
         this.loading$$.next(false);
@@ -213,14 +213,14 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     });
 
     this.createExamForm
-      .get('roomType')
+      ?.get('roomType')
       ?.valueChanges.pipe(takeUntil(this.destroy$$))
       .subscribe((roomType) => {
         this.createRoomsForExamFormArray(roomType);
       });
 
     this.createExamForm
-      .get('expensive')
+      ?.get('expensive')
       ?.valueChanges.pipe(
         filter((value) => !!value),
         takeUntil(this.destroy$$),
@@ -228,7 +228,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       .subscribe((value) => this.toggleExpensiveError(+value));
 
     this.createExamForm
-      .get('practiceAvailabilityToggle')
+      ?.get('practiceAvailabilityToggle')
       ?.valueChanges.pipe(
         filter((value: boolean) => value),
         distinctUntilChanged(),
@@ -244,7 +244,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   private createForm(examDetails?: Exam | undefined): void {
-    console.log("examDetails", examDetails)
+    console.log('examDetails', examDetails);
     this.createExamForm = this.fb.group({
       name: [examDetails?.name, [Validators.required]],
       expensive: [examDetails?.expensive, [Validators.required, Validators.min(1)]],
@@ -399,8 +399,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   private addPracticeAvailabilityControls(practice?: PracticeAvailabilityServer): void {
     const fg = this.createExamForm.get('practiceAvailability') as FormGroup;
     const weekday = this.formValues.selectedWeekday;
-    console.log("practice 403", practice);
-    console.log("weekday", weekday);
+    console.log('practice 403', practice);
+    console.log('weekday', weekday);
     switch (weekday) {
       case Weekday.ALL:
         Object.values(this.weekdayEnum).forEach((day) => {
@@ -571,39 +571,37 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     console.log(createExamRequestData);
     if (this.edit) {
       this.examApiSvc
-      .updateExam$(createExamRequestData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Exam updated successfully`);
-        let route: string;
-        if (this.comingFromRoute === 'view') {
-          route = '../view';
-        } else {
-          route = this.edit ? '/exam' : '../';
-        }
+        .updateExam$(createExamRequestData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Exam added successfully`);
+          let route: string;
+          if (this.comingFromRoute === 'view') {
+            route = '../view';
+          } else {
+            route = this.edit ? '/exam' : '../';
+          }
 
-        console.log(route);
-        this.router.navigate([route], { relativeTo: this.route });
-      });
-
-    }else{
+          console.log(route);
+          this.router.navigate([route], { relativeTo: this.route });
+        });
+    } else {
       this.examApiSvc
-      .createExam$(createExamRequestData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Exam updated successfully`);
-        let route: string;
-        if (this.comingFromRoute === 'view') {
-          route = '../view';
-        } else {
-          route = this.edit ? '/exam' : '../';
-        }
+        .createExam$(createExamRequestData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Exam updated successfully`);
+          let route: string;
+          if (this.comingFromRoute === 'view') {
+            route = '../view';
+          } else {
+            route = this.edit ? '/exam' : '../';
+          }
 
-        console.log(route);
-        this.router.navigate([route], { relativeTo: this.route });
-      });
+          console.log(route);
+          this.router.navigate([route], { relativeTo: this.route });
+        });
     }
-
   }
 
   public getBadgeColor(weekday: Weekday): BadgeColor {

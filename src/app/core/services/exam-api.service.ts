@@ -201,7 +201,8 @@ export class ExamApiService {
     let queryParams = new HttpParams();
     queryParams = queryParams.append("id", examID);
     return this.http.get<BaseResponse<Exam>>(`${environment.serverBaseUrl}/exam/${examID}`).pipe(
-      map(response => response.data)
+      map(response => response.data),
+      tap(()=>{this.refreshExams$$.next()})
     )
   }
 

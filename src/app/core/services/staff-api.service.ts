@@ -481,7 +481,9 @@ export class StaffApiService {
   public addNewStaff$(requestData: AddStaffRequestData): Observable<any> {
     console.log('requestData add: ', requestData);
     const { id, ...restData } = requestData;
-    return this.http.post<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user`, restData).pipe(map((response) => response.data));
+    return this.http.post<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user`, restData).pipe(map((response) => response.data), tap(()=>{
+      this.refreshStaffs$$.next('');
+    }));
   }
 
   public updateStaff(requestData: AddStaffRequestData): Observable<any> {

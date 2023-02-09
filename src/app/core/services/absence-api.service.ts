@@ -658,7 +658,7 @@ export class AbsenceApiService {
 
   public updateAbsence(requestData: AddAbsenceRequestDate): Observable<Absence>{
     const {id, ...restData} = requestData;
-    return this.http.put<BaseResponse<Absence>>(`${environment.serverBaseUrl}/appointment/${id}`, restData).pipe(
+    return this.http.put<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences/${id}`, restData).pipe(
       map(response => response.data),
       tap(()=>{this.refreshAbsences$$.next()})
     )
