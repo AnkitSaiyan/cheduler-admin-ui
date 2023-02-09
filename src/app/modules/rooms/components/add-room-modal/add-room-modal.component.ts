@@ -80,7 +80,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   private createForm(roomDetails?: Room | undefined): void {
     this.addRoomForm = this.fb.group({
       name: [roomDetails?.name ?? '', [Validators.required]],
-      roomNo: [roomDetails?.roomNo ?? null, [Validators.required]],
+      roomNo: [roomDetails?.roomNo ?? Math.floor(Math.random() * 10), [Validators.required]],
       description: [roomDetails?.description ?? '', [Validators.required]],
       type: [roomDetails?.type ?? null, [Validators.required]],
       selectedWeekday: [this.weekdayEnum.ALL, []],
