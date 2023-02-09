@@ -55,7 +55,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
       const staffIdToNameMap = new Map<number, string>();
       staffs.forEach((staff) => staffIdToNameMap.set(+staff.id, `${staff.firstname} ${staff.lastname}`));
 
-      this.absenceDetails$$.value?.staffList.forEach((id) => {
+      this.absenceDetails$$.value?.userList.forEach((id) => {
         const name = staffIdToNameMap.get(+id);
         if (name) {
           this.staffNames.push(name);

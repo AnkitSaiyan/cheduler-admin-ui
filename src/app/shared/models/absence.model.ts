@@ -28,7 +28,7 @@ export interface Absence {
   repeatFrequency?: number;
   repeatDays?: string;
   roomList: number[];
-  staffList: number[];
+  userList: number[];
   rooms: Room[];
   user: User[];
 }
@@ -42,7 +42,7 @@ export interface AddAbsenceRequestDate {
   info: string;
   isRepeat: boolean;
   roomList: number[];
-  staffList: number[];
+  userList: number[];
   repeatType?: RepeatType;
   repeatFrequency?: number;
   repeatDays?: string;

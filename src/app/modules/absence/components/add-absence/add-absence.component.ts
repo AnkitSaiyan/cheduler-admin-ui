@@ -30,7 +30,7 @@ interface FormValues {
   repeatType: RepeatType;
   repeatFrequency: string;
   repeatDays: string[];
-  staffList: number[];
+  userList: number[];
   roomList: number[];
   info: string;
 }
@@ -190,7 +190,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       repeatType: [absenceDetails?.repeatType ?? null, []],
       repeatDays: [absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '', []],
       repeatFrequency: [absenceDetails?.repeatFrequency ?? null, []],
-      staffList: [absenceDetails?.staffList ?? [], [Validators.required]],
+      userList: [absenceDetails?.userList ?? [], [Validators.required]],
       roomList: [absenceDetails?.roomList ?? [], [Validators.required]],
       info: [absenceDetails?.info ?? '', [Validators.required]],
       priority: [absenceDetails?.priority ?? null, []],
@@ -203,11 +203,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public saveAbsence() {
-    if (this.absenceForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.absenceForm.updateValueAndValidity();
-      return;
-    }
+    // if (this.absenceForm.invalid) {
+    //   this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+    //   this.absenceForm.updateValueAndValidity();
+    //   return;
+    // }
 
     console.log(this.formValues);
 
@@ -215,8 +215,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
     const addAbsenceReqData: AddAbsenceRequestDate = {
       ...rest,
-      startedAt: "05-02-2023",
-      endedAt: "05-02-2023",
+      startedAt: new Date(startedAt.year, startedAt.month, startedAt.day, +startTime.slice(0, 2), +startTime.slice(3, 5)).toISOString(),
+      endedAt: new Date(endedAt.year, endedAt.month, endedAt.day, +endTime.slice(0, 2), +endTime.slice(3, 5)).toISOString(),
       repeatDays: '',
       repeatFrequency: 0,
     };
