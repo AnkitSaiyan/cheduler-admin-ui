@@ -214,10 +214,12 @@ h3 {
 }
 
 .calender-day-view-event-container {
-  position: absolute;
+  position: relative;
   left: 0px;
   right: 0px;
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   border-left: 4px solid var(--dfm-blue);
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
@@ -225,7 +227,7 @@ h3 {
   background: var(--dfm-blue-light);
   box-shadow: 0 0.125rem 0.25rem rgb(30 30 28 / 8%);
   transition: 200ms all linear;
-  //overflow: hidden;
+  cursor: pointer;
 
   &:hover {
     z-index: 2;
@@ -286,10 +288,10 @@ h3 {
     //align-items: center;
     gap: 4px;
     width: 100%;
+    height: 100%;
     //height: fit-content;
     padding: 16px 8px 8px 8px;
     font-size: 0.9rem;
-    cursor: pointer;
 
     .calender-day-view-event-title {
       font-weight: 600;
@@ -301,24 +303,24 @@ h3 {
       font-weight: 400;
       color: var(--dfm-main-500);
     }
+  }
 
-    .calender-day-view-event-more-button {
-      width: 40px;
-      height: 40px;
-      padding: 8px;
-      border-radius: 50%;
+  .calender-day-view-event-more-button {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    border-radius: 50%;
+    color: var(--dfm-primary) !important;
+    align-self: end;
+
+    svg {
       color: var(--dfm-primary) !important;
-      align-self: end;
-      margin-top: auto;
+    }
 
-      svg {
-        color: var(--dfm-primary) !important;
-      }
-
-      &:hover {
-        transition: all 150ms linear;
-        background: var(--dfm-main-200);
-      }
+    &:hover {
+      transition: all 150ms linear;
+      background: var(--dfm-main-200);
+      cursor: pointer;
     }
   }
 }
