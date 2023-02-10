@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { BadgeColor } from 'diflexmo-angular-design';
+import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, of, switchMap, take, takeUntil } from 'rxjs';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -502,21 +502,21 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public saveExam(): void {
-    // if (this.createExamForm.invalid) {
-    //   this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-    //   this.createExamForm.updateValueAndValidity();
-    //   return;
-    // }
+    if (this.createExamForm.invalid) {
+      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+      this.createExamForm.updateValueAndValidity();
+      return;
+    }
 
-    // if (this.formValues.roomsForExam?.every((room) => !room.selectRoom)) {
-    //   this.formErrors.selectRoomErr = true;
-    //   this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
-    //   return;
-    // }
+    if (this.formValues.roomsForExam?.every((room) => !room.selectRoom)) {
+      this.formErrors.selectRoomErr = true;
+      this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
+      return;
+    }
 
-    // if (this.formErrors.expensiveErr) {
-    //   this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
-    // }
+    if (this.formErrors.expensiveErr) {
+      this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
+    }
 
     const createExamRequestData: CreateExamRequestData = {
       name: this.formValues.name,

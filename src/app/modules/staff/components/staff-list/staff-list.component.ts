@@ -116,7 +116,8 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
           return [];
         }),
-        switchMap((changes) => this.staffApiSvc.changeStaffStatus$(changes)),
+        // TODO have to implement change status staff list
+        // switchMap((changes) => this.staffApiSvc.changeStaffStatus$(changes)),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
@@ -150,10 +151,10 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public changeStatus(changes: { id: number | string; newStatus: Status | null }[]) {
-    this.staffApiSvc
-      .changeStaffStatus$(changes)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
+    // this.staffApiSvc
+    //   .changeStaffStatus$(changes)
+    //   .pipe(takeUntil(this.destroy$$))
+    //   .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
   }
 
   public deleteStaff(id: number) {

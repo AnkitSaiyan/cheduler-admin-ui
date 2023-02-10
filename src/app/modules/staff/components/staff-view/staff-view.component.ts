@@ -15,8 +15,8 @@ import { ModalService } from '../../../../core/services/modal.service';
 
 interface TimeSlot {
   id?: number;
-  dayStart: Date;
-  dayEnd: Date;
+  dayStart: string;
+  dayEnd: string;
 }
 
 interface WeekWisePracticeAvailability {

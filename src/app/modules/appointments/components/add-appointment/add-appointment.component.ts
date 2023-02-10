@@ -178,7 +178,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       patientFname: [appointment?.patientFname ?? '', [Validators.required]],
       patientLname: [appointment?.patientLname ?? '', [Validators.required]],
       patientTel: [appointment?.patientTel ?? null, [Validators.required]],
-      patientEmail: [appointment?.patientEmail ?? '', []],
+      patientEmail: [appointment?.patientEmail ?? '', [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       doctorId: [appointment?.doctorId?.toString() ?? null, [Validators.required]],
       startedAt: [
         appointment?.startedAt
@@ -200,6 +200,12 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public saveAppointment(): void {
     console.log(this.formValues);
+    if (this.appointmentForm['controls']['patientEmail'].invalid) {
+      this.notificationSvc.showNotification('Please enter valid email', NotificationType.WARNING);
+      this.appointmentForm.updateValueAndValidity();
+      return;
+    }
+
     if (this.appointmentForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
       this.appointmentForm.updateValueAndValidity();

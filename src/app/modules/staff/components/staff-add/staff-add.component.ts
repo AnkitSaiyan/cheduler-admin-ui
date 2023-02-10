@@ -7,7 +7,7 @@ import { User, UserType } from '../../../../shared/models/user.model';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
-import { Weekday } from '../../../../shared/models/calendar.model';
+import { stringToTimeArray, Weekday } from '../../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AddStaffRequestData } from '../../../../shared/models/staff.model';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
@@ -247,12 +247,12 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
               this.getPracticeAvailabilityFormGroup(
                 practice?.weekday,
                 {
-                  hour: practice?.dayStart?.getHours() ?? 0,
-                  minute: practice?.dayStart?.getMinutes() ?? 0,
+                  hour: stringToTimeArray(practice?.dayStart)[0],
+                  minute: stringToTimeArray(practice?.dayStart)[1],
                 },
                 {
-                  hour: practice?.dayEnd?.getHours() ?? 0,
-                  minute: practice?.dayEnd?.getMinutes() ?? 0,
+                  hour: stringToTimeArray(practice?.dayEnd)[0],
+                  minute: stringToTimeArray(practice?.dayEnd)[1],
                 },
               ),
             ]),
@@ -262,12 +262,12 @@ export class StaffAddComponent extends DestroyableComponent implements OnInit, O
             this.getPracticeAvailabilityFormGroup(
               practice.weekday,
               {
-                hour: practice.dayStart.getHours(),
-                minute: practice.dayStart.getMinutes(),
+                hour: stringToTimeArray(practice.dayStart)[0],
+                minute: stringToTimeArray(practice.dayStart)[1],
               },
               {
-                hour: practice.dayEnd.getHours(),
-                minute: practice.dayEnd.getMinutes(),
+                hour: stringToTimeArray(practice?.dayEnd)[0],
+                minute: stringToTimeArray(practice?.dayEnd)[1],
               },
             ),
           );

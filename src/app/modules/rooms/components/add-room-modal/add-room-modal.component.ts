@@ -4,8 +4,8 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
-import { PracticeAvailability } from '../../../../shared/models/practice.model';
-import { Weekday } from '../../../../shared/models/calendar.model';
+import { PracticeAvailability, PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
+import { stringToTimeArray, Weekday } from '../../../../shared/models/calendar.model';
 import { AddRoomRequestData, Room, RoomType } from '../../../../shared/models/rooms.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
@@ -129,7 +129,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     return fg;
   }
 
-  private addPracticeAvailabilityControls(practice?: PracticeAvailability): void {
+  private addPracticeAvailabilityControls(practice?: PracticeAvailabilityServer): void {
     const fg = this.addRoomForm.get('practiceAvailability') as FormGroup;
     const weekday = this.formValues.selectedWeekday;
     switch (weekday) {
@@ -151,12 +151,12 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
               this.getPracticeAvailabilityFormGroup(
                 practice?.weekday,
                 {
-                  hour: practice?.dayStart?.getHours() ?? 0,
-                  minute: practice?.dayStart?.getMinutes() ?? 0,
+                  hour: stringToTimeArray(practice?.dayStart)[0],
+                  minute: stringToTimeArray(practice?.dayStart)[1],
                 },
                 {
-                  hour: practice?.dayEnd?.getHours() ?? 0,
-                  minute: practice?.dayEnd?.getMinutes() ?? 0,
+                  hour: stringToTimeArray(practice?.dayEnd)[0],
+                  minute: stringToTimeArray(practice?.dayEnd)[1],
                 },
               ),
             ]),
@@ -166,12 +166,12 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
             this.getPracticeAvailabilityFormGroup(
               practice.weekday,
               {
-                hour: practice.dayStart.getHours(),
-                minute: practice.dayStart.getMinutes(),
+                hour: stringToTimeArray(practice.dayStart)[0],
+                minute: stringToTimeArray(practice.dayStart)[1],
               },
               {
-                hour: practice.dayEnd.getHours(),
-                minute: practice.dayEnd.getMinutes(),
+                hour: stringToTimeArray(practice?.dayEnd)[0],
+                minute: stringToTimeArray(practice?.dayEnd)[1],
               },
             ),
           );

@@ -274,12 +274,14 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
           ...acc,
           ...formArray.controls.reduce((a, control) => {
             if (control.value.dayStart && control.value.dayEnd) {
+              console.log('control.value.dayStart: ', control.value.dayStart.hour);
+              console.log('control.value.minute: ', control.value.dayStart.minute);
               return [
                 ...a,
                 {
                   ...control.value,
                   dayStart: `${control.value.dayStart.hour}:${control.value.dayStart.minute}`,
-                  dayEnd: `${control.value.dayeEnd.hour}:${control.value.dayEnd.minute}`,
+                  dayEnd: `${control.value.dayEnd.hour}:${control.value.dayEnd.minute}`,
                 },
               ];
             }
