@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, filter, takeUntil } from 'rxjs';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
@@ -79,6 +79,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       weekday: [weekday ?? this.formValues.selectedWeekday, []],
       dayStart: [dayStart, []],
       dayEnd: [dayEnd, []],
+      isPriority: [false, []],
     });
 
     fg.get('dayStart')
@@ -223,6 +224,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public savePracticeHours(): void {
+    console.log(this.formValues);
     if (this.practiceHourForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
       this.practiceHourForm.updateValueAndValidity();
@@ -252,16 +254,23 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
     console.log(practiceHourRequestData);
 
-    this.practiceHourApiSvc
-      .savePracticeHours$(practiceHourRequestData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((resp) => {
-        if (resp) {
-          this.notificationSvc.showNotification(`${this.practiceHoursData$$.value?.length ? 'Changes updated' : 'Saved'} successfully`);
-        }
-      });
+    // this.practiceHourApiSvc
+    //   .savePracticeHours$(practiceHourRequestData)
+    //   .pipe(takeUntil(this.destroy$$))
+    //   .subscribe((resp) => {
+    //     if (resp) {
+    //       this.notificationSvc.showNotification(`${this.practiceHoursData$$.value?.length ? 'Changes updated' : 'Saved'} successfully`);
+    //     }
+    //   });
   }
+
   timeStringArray(dayStart: any): Date {
     throw new Error('Method not implemented.');
+  }
+
+  public handleRadioButtonClick(controlArray: FormArray, controls: AbstractControl<any>) {
+    console.log('in');
+    controlArray.controls.forEach((control) => control.patchValue({ isPriority: false }));
+    controls.get('isPriority')?.setValue(true);
   }
 }

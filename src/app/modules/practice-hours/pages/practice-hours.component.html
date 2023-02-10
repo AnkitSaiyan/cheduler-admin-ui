@@ -81,7 +81,7 @@
 
           <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
                class="d-flex flex-column dfm-gap-16">
-            <div class="d-flex dfm-gap-32 align-items-end">
+            <div class="d-flex dfm-gap-32 align-items-start">
               <div class="d-flex flex-column dfm-gap-8">
                 <!--                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">-->
 
@@ -98,6 +98,13 @@
                 <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>
               </div>
 
+              <div class="d-flex flex-column dfm-gap-16">
+                <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
+                <div class="w-fit d-flex justify-content-between dfm-gap-24">
+                  <dfm-checkbox class="font-weight-normal" formControlName="isPriority" (click)="handleRadioButtonClick(controlArray, controls)"></dfm-checkbox>
+                </div>
+              </div>
+
               <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
                                class="dfm-mb-4"
                                (click)="removeSlot(controlArray, i)"></dfm-button-icon>
@@ -111,7 +118,9 @@
         </div>
       </div>
 
-      <dfm-button class="hidden pr-hr-save-changes-btn-mv" color="primary" size="md" (click)="savePracticeHours()">Save Changes</dfm-button>
+      <dfm-button class="hidden pr-hr-save-changes-btn-mv" color="primary" size="md" (click)="savePracticeHours()">Save
+        Changes
+      </dfm-button>
     </form>
   </section>
 </div>
