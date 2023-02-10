@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, Form, FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, filter, takeUntil } from 'rxjs';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
 import { stringToTimeArray, Weekday } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
-import { PracticeAvailability, PracticeAvailabilityServer } from '../../../shared/models/practice.model';
+import { PracticeAvailabilityServer } from '../../../shared/models/practice.model';
 import { PracticeHoursApiService } from '../../../core/services/practice-hours-api.service';
 
 interface TimeDistributed {
@@ -54,7 +54,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
   public exceptionForm!: FormGroup;
 
-  public practiceHoursData$$ = new BehaviorSubject<PracticeAvailability[]>([]);
+  public practiceHoursData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
 
   public weekdayEnum = Weekday;
 
@@ -83,7 +83,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     return this.exceptionForm.value;
   }
 
-  private createForm(practiceHours?: PracticeAvailability[]): void {
+  private createForm(practiceHours?: PracticeAvailabilityServer[]): void {
     this.practiceHourForm = this.fb.group({
       selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceHours: this.fb.group({}),
@@ -268,7 +268,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       this.practiceHourForm.updateValueAndValidity();
     }
 
-    const practiceHourRequestData: PracticeAvailability[] = [
+    const practiceHourRequestData: PracticeAvailabilityServer[] = [
       ...this.practiceHoursWeekWiseControlsArray(true).reduce(
         (acc, formArray) => [
           ...acc,
@@ -278,15 +278,15 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
                 ...a,
                 {
                   ...control.value,
-                  dayStart: new Date(new Date().setHours(control.value.dayStart.hour, control.value.dayStart.minute)),
-                  dayEnd: new Date(new Date().setHours(control.value.dayEnd.hour, control.value.dayEnd.minute)),
+                  dayStart: `${control.value.dayStart.hour}:${control.value.dayStart.minute}`,
+                  dayEnd: `${control.value.dayeEnd.hour}:${control.value.dayEnd.minute}`,
                 },
               ];
             }
             return a;
-          }, [] as PracticeAvailability[]),
+          }, [] as PracticeAvailabilityServer[]),
         ],
-        [] as PracticeAvailability[],
+        [] as PracticeAvailabilityServer[],
       ),
     ];
 
