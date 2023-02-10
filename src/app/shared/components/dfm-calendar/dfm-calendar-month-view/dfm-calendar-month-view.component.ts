@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { BehaviorSubject, filter } from 'rxjs';
 import { getDaysOfMonth, getWeekdayWiseDays, Weekday } from '../../../models/calendar.model';
 
@@ -34,9 +34,17 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 
   constructor() {}
 
-  public ngOnChanges() {
+  public ngOnChanges(changes: SimpleChanges) {
     if (!this.selectedDate) {
       this.selectedDate = new Date();
+    }
+
+    console.log(changes);
+    const currentValue = changes['dataGroupedByDate']?.currentValue;
+    const previousValue = changes['dataGroupedByDate']?.previousValue;
+
+    if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
+      this.dataGroupedByDate = currentValue;
     }
   }
 

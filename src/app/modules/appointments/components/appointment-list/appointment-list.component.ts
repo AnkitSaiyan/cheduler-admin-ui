@@ -90,12 +90,14 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
 
-      appointments.sort((ap1, ap2) => ap1.startedAt.getTime() - ap2.startedAt.getTime());
+      appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
 
       console.log(appointments);
 
       this.groupAppointmentsForCalendar(...appointments);
       this.groupAppointmentByDateAndRoom(...appointments);
+
+      console.log(this.appointmentsGroupedByDate);
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
@@ -272,7 +274,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.appointmentsGroupedByDate = {};
     this.appointmentsGroupedByDateAndTime = {};
     this.appointmentGroupedByDateAndRoom = {};
-    // debugger;
+
     appointments.push({} as Appointment);
     appointments.forEach((appointment, index) => {
       if (Object.keys(appointment).length) {
