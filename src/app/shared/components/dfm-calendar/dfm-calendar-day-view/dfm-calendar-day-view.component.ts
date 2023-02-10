@@ -1,9 +1,9 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { BehaviorSubject, filter, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { NameValue } from '../../search-modal.component';
-import { Appointment } from '../../../models/appointment.model';
+import { Appointment, UpdateDurationRequestData } from '../../../models/appointment.model';
 import { Exam } from '../../../models/exam.model';
 import { getDurationMinutes } from '../../../models/calendar.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -178,7 +178,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         take(1),
       )
       .subscribe(() => {
-        this.appointmentApiSvc.deleteAppointment(id);
+        this.appointmentApiSvc.deleteAppointment$(id);
         this.notificationSvc.showNotification('Appointment deleted successfully');
       });
   }
@@ -220,28 +220,41 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
       data: { extend, eventContainer },
     });
 
-    modalRef.closed.pipe(take(1)).subscribe((res) => {
-      if (res) {
-        const startedAt = new Date(appointment.startedAt);
-        const endedAt = new Date(appointment.endedAt);
-        const hour = Math.floor(+res.minutes / 60);
-        const min = +res.minutes % 60;
+    modalRef.closed
+      .pipe(
+        filter((res) => !!res),
+        switchMap((res) => {
+          // Handled at backend will be removed once verified
+          // const startedAt = new Date(appointment.startedAt);
+          // const endedAt = new Date(appointment.endedAt);
+          // const hour = Math.floor(+res.minutes / 60);
+          // const min = +res.minutes % 60;
+          //
+          // if (res.top) {
+          //   startedAt.setMinutes(startedAt.getMinutes() + min * (extend ? -1 : 1));
+          //   if (hour) {
+          //     startedAt.setHours(startedAt.getHours() + hour * (extend ? -1 : 1));
+          //   }
+          // } else {
+          //   endedAt.setMinutes(endedAt.getMinutes() + min * (extend ? 1 : -1));
+          //   if (hour) {
+          //     endedAt.setHours(endedAt.getHours() + hour * (extend ? 1 : -1));
+          //   }
+          // }
 
-        if (res.top) {
-          startedAt.setMinutes(startedAt.getMinutes() + min * (extend ? -1 : 1));
-          if (hour) {
-            startedAt.setHours(startedAt.getHours() + hour * (extend ? -1 : 1));
-          }
-        } else {
-          endedAt.setMinutes(endedAt.getMinutes() + min * (extend ? 1 : -1));
-          if (hour) {
-            endedAt.setHours(endedAt.getHours() + hour * (extend ? 1 : -1));
-          }
-        }
+          const requestData = {
+            amountofMinutes: +res.minutes,
+            extensionType: extend ? 'prelong' : 'shorten',
+            from: res.top ? 'AtTheTop' : 'AtTheBottom',
+          } as UpdateDurationRequestData;
 
-        this.appointmentApiSvc.updateTimings(appointment.id, startedAt, endedAt);
-        eventContainer?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
+          eventContainer?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return this.appointmentApiSvc.updateAppointmentDuration(requestData);
+        }),
+        take(1),
+      )
+      .subscribe((res) => {
+        console.log(res);
+      });
   }
 }

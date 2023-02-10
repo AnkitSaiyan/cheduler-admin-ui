@@ -6,6 +6,8 @@ import { AppointmentStatus, ReadStatus } from './status';
 
 export interface Appointment {
   id: number;
+  createdAt: Date;
+  updatedAt: Date | null;
   doctorId: number;
   doctor: Physician;
   patientFname: string;
@@ -20,13 +22,13 @@ export interface Appointment {
   readStatus: ReadStatus;
   startedAt: Date;
   endedAt: Date;
-  createdBy?: number;
-  updatedBy?: number;
-  cancelTillTime?: string;
+  createdBy: number | null;
+  updatedBy: number | null;
+  cancelTillTime: string | null;
   user: User;
   userId: number;
   examList: number[];
-  exams?: Exam[];
+  exams: Exam[];
 }
 
 export interface AddAppointmentRequestData {
@@ -47,4 +49,15 @@ export interface AddAppointmentRequestData {
   readStatus?: number;
   endedAt?: Date | null;
   id?: number;
+}
+
+export type ExtensionType = 'shorten' | 'prelong';
+
+export type ChangePosition = 'AtTheTop' | 'AtTheBottom';
+
+export interface UpdateDurationRequestData {
+  id: number;
+  amountofMinutes: number;
+  from: ChangePosition;
+  extensionType: ExtensionType;
 }
