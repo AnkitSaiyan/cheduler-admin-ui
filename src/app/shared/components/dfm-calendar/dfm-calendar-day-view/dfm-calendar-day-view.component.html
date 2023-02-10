@@ -150,7 +150,7 @@
                               <div ngbDropdown #moreMenu="ngbDropdown" [autoClose]="false">
                                 <div ngbDropdownMenu class="view-more-menu">
                                   <button ngbDropdownItem
-                                          (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); changeRadiologists(data.appointment.id)">
+                                          (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); changeRadiologists(data.appointment)">
                                     <div class="icon-20">
                                       <dfm-icon name="home-03"></dfm-icon>
                                     </div>
@@ -209,7 +209,7 @@
                                   </button>
 
                                   <button ngbDropdownItem
-                                          (click)="$event.stopPropagation(); readAppointment(data.appointment.id); moreMenu.close()">
+                                          (click)="$event.stopPropagation(); readAppointment(data.appointment); moreMenu.close()">
                                     <div class="icon-20">
                                       <dfm-icon name="file-06"></dfm-icon>
                                     </div>
