@@ -13,14 +13,15 @@
              class="calender-week-view-weekday">
           <div class="calender-week-view-header-cell-left-line"></div>
           <h3>
-            <div class="text-xs font-weight-medium w-fit calender-week-view-day-name">{{ weekday | weekdayToName : true : true | uppercase }}</div>
+            <div
+              class="text-xs font-weight-medium w-fit calender-week-view-day-name">{{ weekday | weekdayToName : true : true | uppercase }}</div>
             <div class="w-fit calender-week-view-date"
                  [ngClass]="{
-                    'calender-week-view-date-today': todayDate.getDate() === day && todayDate.getMonth() === selectedDate.getMonth(),
-                    'calender-month-view-selected-day': selectedDate.getDate() === day && ((todayDate.getDate() === selectedDate.getDate() && todayDate.getMonth() !== selectedDate.getMonth()) || (selectedDate.getDate() !== todayDate.getDate()))
+                    'calender-week-view-date-today': todayDate.getDate() === day[0] && todayDate.getMonth() === day[1],
+                    'calender-month-view-selected-day': selectedDate.getDate() === day[0] && ((todayDate.getDate() === selectedDate.getDate() && todayDate.getMonth() !== day[1]) || (selectedDate.getDate() !== todayDate.getDate()))
                   }"
-                 (click)="changeToDayView(day, weekday)">
-              {{ day }}
+                 (click)="changeToDayView(day[0], weekday)">
+              {{ day[0] }}
             </div>
           </h3>
         </div>
@@ -35,7 +36,7 @@
   <div class="calender-week-view-body-container">
     <div role="presentation" class="calender-week-view-body">
       <div role="row" class="calender-week-view-time-slot-container">
-        <div class="calender-week-view-time-slot text-sm" *ngFor="let time of 15 | timeInInterval : true">
+        <div class="calender-week-view-time-slot text-sm" *ngFor="let time of timeInterval | timeInInterval : true">
           <span>{{ time }}</span>
           <div class="calender-week-view-horizontal-line"></div>
         </div>
@@ -44,13 +45,96 @@
       <div role="presentation" class="calender-week-view-events-container-main">
         <div role="row" class="calender-week-view-events-container">
           <div>
-            <div *ngFor="let i of 15 | timeInInterval" class="calender-week-view-horizontal-line">
+            <div *ngFor="let i of timeInterval | timeInInterval" class="calender-week-view-horizontal-line">
             </div>
           </div>
           <div class="calender-week-view-events-left-vertical-line"></div>
           <div *ngFor="let day of daysOfWeekArr" role="gridcell" class="calender-week-view-body-grid-column">
-            <div></div>
-            <div role="presentation">
+            <div class="calender-week-view-body-grid-absolute"></div>
+            <div #eventContainer
+                 class="calender-week-view-body-events-container"
+                 role="presentation">
+              <ng-container
+                *ngIf="dataGroupedByDateAndTime[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
+                <ng-container
+                  *ngFor="let groupedData of dataGroupedByDateAndTime[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
+
+                  <div class="calender-week-view-event-container"
+                       [ngStyle]="{
+                          'top.px': getTop(groupedData),
+                          'height.px': getHeight(groupedData)
+                       }"
+                  >
+                    <!-- POP OVER -->
+                    <ng-template #eventDetails>
+                      <div class="calender-week-view-event-details-expanded">
+                      <span class="calender-week-view-event-details-expanded-title">
+                        Appointments ({{ groupedData.length }})
+                      </span>
+
+                        <div class="calender-week-view-event-patients-container">
+                          <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0"
+                                         *ngFor="let data of groupedData; let i = index">
+                            <ngb-panel>
+                              <ng-template ngbPanelTitle>
+                                <div class="calender-week-view-event-patients-container">
+                                  <div class="calender-week-view-event-patient-details">
+                                    <span
+                                      class="font-weight-medium">{{ data.patientFname + ' ' + data.patientLname }}</span>
+                                    <span class="text-sm dfm-text-main-500">
+                                    {{ data.startedAt | date : 'HH:mm' }}
+                                      -
+                                      {{ data.endedAt | date : 'HH:mm' }}
+                                      (min)
+                                  </span>
+                                  </div>
+                                  <div class="calender-week-view-event-patient-details-divider"
+                                       *ngIf="i < groupedData.length - 1"></div>
+                                </div>
+                              </ng-template>
+
+                              <ng-template ngbPanelContent>
+                                <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
+                                  <span class="font-weight-medium"> Exam </span>
+                                  <span *ngIf="data.exams?.length">{{ data.exams | joinWithAnd : 'name'}}</span>
+                                  <span class="font-weight-medium dfm-mt-8"> Comments </span>
+                                  <span class=""> {{ data?.comments | dashIfNothing }} </span>
+                                  <span class="font-weight-medium dfm-mt-8">Staff</span>
+                                  <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
+                                    <div *ngFor="let user of exam?.user" class="d-flex align-items-center dfm-gap-8">
+                                      <div class="circle-gray-200-40">
+                                        {{ user?.firstname[0] | uppercase }}
+                                      </div>
+                                      <div class="d-flex flex-column">
+                                        <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
+                                        <span class="dfm-text-main-500">{{ user?.userType | titlecase }}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </ng-template>
+                            </ngb-panel>
+                          </ngb-accordion>
+                        </div>
+                      </div>
+                    </ng-template>
+                    <!-- POP OVER ENDS -->
+
+                    <div class="calender-week-view-event-circle-icon">{{ groupedData.length }}</div>
+
+                    <div class="calender-week-view-event-details-container"
+                         triggers="click"
+                         [ngbPopover]="eventDetails"
+                         [autoClose]="'outside'">
+                      <span class="calender-week-view-event-title">Appointments</span>
+                      <span class="calender-week-view-event-time">
+                        {{ groupedData[0].startedAt | date : 'hh:mm' }} -
+                        {{ groupedData | largest : 'endedAt' | date : 'hh:mm' }}
+                      </span>
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
             </div>
           </div>
         </div>

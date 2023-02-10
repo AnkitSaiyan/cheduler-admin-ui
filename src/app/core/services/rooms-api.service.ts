@@ -15,7 +15,7 @@ export class RoomsApiService {
   private rooms: Room[] = [
     {
       id: 1,
-      name: 'John Room',
+      name: 'John Room 1',
       description: 'Test Room',
       type: RoomType.Public,
       availabilityType: AvailabilityType.Available,
@@ -27,7 +27,7 @@ export class RoomsApiService {
     },
     {
       id: 2,
-      name: 'Tim Room',
+      name: 'Tim Room 1',
       description: 'General Room',
       type: RoomType.Private,
       availabilityType: AvailabilityType.Available,
@@ -39,7 +39,7 @@ export class RoomsApiService {
     },
     {
       id: 3,
-      name: 'John Room',
+      name: 'John Room 2',
       description: 'Test Room',
       type: RoomType.Public,
       availabilityType: AvailabilityType.Unavailable,
@@ -51,7 +51,7 @@ export class RoomsApiService {
     },
     {
       id: 4,
-      name: 'Tim Room',
+      name: 'Tim Room 2',
       description: 'General Room',
       type: RoomType.Private,
       availabilityType: AvailabilityType.Available,
@@ -63,7 +63,7 @@ export class RoomsApiService {
     },
     {
       id: 5,
-      name: 'John Room',
+      name: 'John Room 3',
       description: 'Test Room',
       type: RoomType.Public,
       availabilityType: AvailabilityType.Unavailable,
@@ -75,7 +75,7 @@ export class RoomsApiService {
     },
     {
       id: 6,
-      name: 'Tim Room',
+      name: 'Tim Room 3',
       description: 'General Room',
       type: RoomType.Private,
       availabilityType: AvailabilityType.Unavailable,
@@ -87,7 +87,7 @@ export class RoomsApiService {
     },
     {
       id: 7,
-      name: 'John Room',
+      name: 'John Room 4',
       description: 'Test Room',
       type: RoomType.Public,
       availabilityType: AvailabilityType.Available,
@@ -99,7 +99,7 @@ export class RoomsApiService {
     },
     {
       id: 8,
-      name: 'Tim Room',
+      name: 'Tim Room 4',
       description: 'General Room',
       type: RoomType.Private,
       availabilityType: AvailabilityType.Available,
@@ -111,7 +111,7 @@ export class RoomsApiService {
     },
     {
       id: 9,
-      name: 'John Room',
+      name: 'John Room 5',
       description: 'Test Room',
       type: RoomType.Public,
       availabilityType: AvailabilityType.Available,
@@ -123,7 +123,7 @@ export class RoomsApiService {
     },
     {
       id: 10,
-      name: 'Tim Room',
+      name: 'Tim Room 5',
       description: 'General Room',
       type: RoomType.Private,
       availabilityType: AvailabilityType.Available,

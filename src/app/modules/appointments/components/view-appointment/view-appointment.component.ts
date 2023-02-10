@@ -81,7 +81,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
         take(1),
       )
       .subscribe(() => {
-        this.appointmentApiSvc.deleteAppointment(id);
+        this.appointmentApiSvc.deleteAppointment$(id);
         this.notificationSvc.showNotification('Appointment deleted successfully');
         this.router.navigate(['/', 'appointment']);
       });

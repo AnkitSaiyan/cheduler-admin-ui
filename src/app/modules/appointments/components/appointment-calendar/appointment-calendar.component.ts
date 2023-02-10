@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { NameValue } from '../../../../shared/components/search-modal.component';
+import { Appointment } from '../../../../shared/models/appointment.model';
+import { Exam } from '../../../../shared/models/exam.model';
 
 @Component({
   selector: 'dfm-appointment-calendar',
@@ -36,10 +38,28 @@ export class AppointmentCalendarComponent implements OnInit {
 
   public newDate$$ = new BehaviorSubject<Date | null>(null);
 
+  @Input()
+  public headerList!: NameValue[];
+
+  @Input()
+  public appointmentsGroupedByDate!: { [key: string]: Appointment[] };
+
+  @Input()
+  public appointmentsGroupedByDateAndTIme!: { [key: string]: any[][] };
+
+  @Input() appointmentGroupedByDateAndRoom!: {
+    [key: string]: {
+      [key: number]: {
+        appointment: Appointment;
+        exams: Exam[];
+      }[];
+    };
+  };
+
   constructor() {}
 
   public ngOnInit(): void {
-    this.calendarViewFormControl.setValue('month');
+    this.calendarViewFormControl.setValue('day');
 
     this.calendarViewFormControl.valueChanges.pipe().subscribe((value) => {
       this.newDate$$.next(this.selectedDate);
@@ -69,7 +89,7 @@ export class AppointmentCalendarComponent implements OnInit {
     this.calendarViewFormControl.setValue('day');
     const newDate = new Date(this.selectedDate.setDate(date));
     this.newDate$$.next(newDate);
-    this.selectedDate = newDate;
+    this.selectedDate = new Date(newDate);
   }
 
   public updateToToday() {

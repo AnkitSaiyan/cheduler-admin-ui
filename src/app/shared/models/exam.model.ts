@@ -16,6 +16,7 @@ export interface Exam {
   availabilityType: AvailabilityType;
   count?: number;
   status: Status;
+  user?: User[];
   usersList: number[];
   roomsForExam: {
     duration: number;

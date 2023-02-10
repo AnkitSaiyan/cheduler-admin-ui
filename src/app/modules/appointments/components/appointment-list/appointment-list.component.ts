@@ -1,8 +1,9 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
+import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AppointmentStatus, Status } from '../../../../shared/models/status';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getStatusEnum';
@@ -13,6 +14,9 @@ import { NameValue, SearchModalComponent, SearchModalData } from '../../../../sh
 import { DownloadService } from '../../../../core/services/download.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { Appointment } from '../../../../shared/models/appointment.model';
+import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { getDurationMinutes } from '../../../../shared/models/calendar.model';
+import { Exam } from '../../../../shared/models/exam.model';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -36,6 +40,19 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public filteredAppointments$$: BehaviorSubject<any[]>;
 
+  public appointmentsGroupedByDate: { [key: string]: Appointment[] } = {};
+
+  public appointmentsGroupedByDateAndTime: { [key: string]: Appointment[][] } = {};
+
+  public appointmentGroupedByDateAndRoom: {
+    [key: string]: {
+      [key: number]: {
+        appointment: Appointment;
+        exams: Exam[];
+      }[];
+    };
+  } = {};
+
   public clearSelected$$ = new Subject<void>();
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: AppointmentStatus | null } | null>(null);
@@ -43,6 +60,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   public calendarView$$ = new BehaviorSubject<boolean>(true);
 
   public selectedAppointmentIDs: string[] = [];
+
+  public roomList: NameValue[] = [];
 
   public statusType = getAppointmentStatusEnum();
 
@@ -55,6 +74,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private router: Router,
     private route: ActivatedRoute,
     private modalSvc: ModalService,
+    private roomApiSvc: RoomsApiService,
+    private datePipe: DatePipe,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -68,6 +89,15 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       console.log('appointments: ', appointments);
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
+
+      appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
+
+      console.log(appointments);
+
+      this.groupAppointmentsForCalendar(...appointments);
+      this.groupAppointmentByDateAndRoom(...appointments);
+
+      console.log(this.appointmentsGroupedByDate);
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
@@ -111,6 +141,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         }
         this.clearSelected$$.next();
       });
+
+    this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
+      this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
+    });
   }
 
   public override ngOnDestroy() {
@@ -154,7 +188,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=> this.appointmentApiSvc.deleteAppointment(id)),
+        switchMap(() => this.appointmentApiSvc.deleteAppointment$(id)),
         take(1),
       )
       .subscribe(() => {
@@ -227,5 +261,111 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public toggleView(): void {
     this.calendarView$$.next(!this.calendarView$$.value);
+  }
+
+  private groupAppointmentsForCalendar(...appointments: Appointment[]) {
+    let startDate: Date;
+    let endDate: Date;
+    // let group: number;
+    let sameGroup: boolean;
+    let groupedAppointments: Appointment[] = [];
+    let lastDateString: string;
+
+    this.appointmentsGroupedByDate = {};
+    this.appointmentsGroupedByDateAndTime = {};
+    this.appointmentGroupedByDateAndRoom = {};
+
+    appointments.push({} as Appointment);
+    appointments.forEach((appointment, index) => {
+      if (Object.keys(appointment).length) {
+        const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
+
+        if (dateString) {
+          if (!this.appointmentsGroupedByDate[dateString]) {
+            this.appointmentsGroupedByDate[dateString] = [];
+          }
+
+          if (!this.appointmentsGroupedByDateAndTime[dateString]) {
+            this.appointmentsGroupedByDateAndTime[dateString] = [];
+
+            startDate = new Date(appointment.startedAt);
+            endDate = new Date(appointment.endedAt);
+            // group = 0;
+            sameGroup = false;
+          } else {
+            const currSD = new Date(appointment.startedAt);
+            const currED = new Date(appointment.endedAt);
+
+            if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
+              sameGroup = true;
+              if (currED > endDate) {
+                endDate = currED;
+              }
+            } else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
+              sameGroup = true;
+              if (currED > endDate) {
+                endDate = currED;
+              }
+            } else {
+              startDate = currSD;
+              endDate = currED;
+              sameGroup = false;
+            }
+          }
+
+          if (!sameGroup) {
+            // group++;
+
+            if (index !== 0) {
+              this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
+              groupedAppointments = [];
+            }
+          }
+
+          lastDateString = dateString;
+
+          groupedAppointments.push(appointment);
+          this.appointmentsGroupedByDate[dateString].push(appointment);
+        }
+      } else {
+        this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
+      }
+    });
+  }
+
+  private groupAppointmentByDateAndRoom(...appointments: Appointment[]) {
+    // const groupBy: {
+    //   [key: string]: {
+    //     [key: number]: {
+    //       appointment: Appointment;
+    //       exam: Exam[];
+    //     };
+    //   };
+    // } = {};
+
+    appointments.forEach((appointment) => {
+      const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
+
+      if (dateString) {
+        if (!this.appointmentGroupedByDateAndRoom[dateString]) {
+          this.appointmentGroupedByDateAndRoom[dateString] = {};
+        }
+
+        appointment.exams?.forEach((exam) => {
+          exam.rooms?.forEach((room) => {
+            if (!this.appointmentGroupedByDateAndRoom[dateString][room.id]) {
+              this.appointmentGroupedByDateAndRoom[dateString][room.id] = [];
+            }
+
+            this.appointmentGroupedByDateAndRoom[dateString][room.id].push({
+              appointment,
+              exams: appointment.exams ?? [],
+            });
+          });
+        });
+      }
+    });
+
+    console.log(groupBy);
   }
 }

@@ -89,23 +89,53 @@ export function getWeekdayWiseDays(date: Date): number[][] {
   return daysMatrix;
 }
 
-export function getAllDaysOfWeek(selectedDate: Date): number[] {
+export function getAllDaysOfWeek(selectedDate: Date): number[][] {
   const weekday = new Date(selectedDate).getDay();
   const date = new Date(selectedDate).getDate();
   const year = new Date(selectedDate).getFullYear();
   const month = new Date(selectedDate).getMonth();
 
-  const daysOfWeekArr: number[] = [];
+  const daysOfWeekArr: number[][] = [];
+
+  let tempDate = new Date(selectedDate);
+  tempDate = new Date(tempDate.setDate(tempDate.getDate() - weekday));
 
   for (let day = weekday; day >= 0; day--) {
-    daysOfWeekArr.push(getDateOfMonth(year, month, date - day));
+    daysOfWeekArr.push([getDateOfMonth(year, tempDate.getMonth(), date - day), tempDate.getMonth()]);
+    tempDate = new Date(tempDate.setDate(tempDate.getDate() + 1));
   }
 
   for (let day = weekday + 1; day < 7; day++) {
-    daysOfWeekArr.push(getDateOfMonth(year, month, date + (day - weekday)));
+    daysOfWeekArr.push([getDateOfMonth(year, month, date + (day - weekday)), tempDate.getMonth()]);
+    tempDate = new Date(tempDate.setDate(tempDate.getDate() + 1));
   }
 
   return daysOfWeekArr;
+}
+
+export function getDurationMinutes(start: Date, end: Date): number {
+  // console.log(start, end)
+  if (start && end) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    const startH = startDate.getHours();
+    let endH = endDate.getHours();
+
+    if (endH === 0) {
+      endH = 24;
+    }
+
+    if (startH === endH) {
+      return endDate.getMinutes() - startDate.getMinutes();
+    }
+
+    const hours = endH - (startH + 1);
+    const minutes = 60 - startDate.getMinutes() + endDate.getMinutes();
+    return Math.abs(hours * 60 + minutes);
+  }
+
+  return 0;
 }
 
 export function stringToTimeArray(timeString: string | undefined, splitBy: string = ':'): number[] {
