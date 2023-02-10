@@ -82,10 +82,11 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
   }
 
-  public ngOnInit(): void {
+  public ngOnInit() {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
+      console.log('appointments: ', appointments);
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
 
@@ -185,10 +186,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(()=> this.appointmentApiSvc.deleteAppointment(id)),
         take(1),
       )
       .subscribe(() => {
-        this.appointmentApiSvc.deleteAppointment(id);
         this.notificationSvc.showNotification('Appointment deleted successfully');
       });
   }

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -30,7 +30,7 @@ interface FormValues {
   repeatType: RepeatType;
   repeatFrequency: string;
   repeatDays: string[];
-  staffList: number[];
+  userList: number[];
   roomList: number[];
   info: string;
 }
@@ -62,9 +62,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     },
   ];
 
-  public roomList: NameValue[] = [];
+  public roomList$$ = new BehaviorSubject<NameValue[]>([] as NameValue[])
 
-  public staffList: NameValue[] = [];
+  // public staffList: NameValue[] = [];
 
   public startTimes: NameValue[];
 
@@ -81,6 +81,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     weekly: 'Weeks',
     monthly: 'Months',
   };
+
+  
+  public staffs$$ = new BehaviorSubject<NameValue[]>([] as NameValue[]);
+
 
   constructor(
     private modalSvc: ModalService,
@@ -108,16 +112,12 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      rooms.forEach((room) => this.roomList.push({ name: room.name, value: room.id }));
+      this.roomList$$.next(rooms.map((room) => ({ name: room.name, value: room.id })) as NameValue[]);
     });
 
     this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
-      staffs.forEach((staff) =>
-        this.staffList.push({
-          name: `${staff.firstname} ${staff.lastname}`,
-          value: staff.id,
-        }),
-      );
+      this.staffs$$.next(staffs.map((staff) => ({ name: staff.firstname, value: staff.id })) as NameValue[]);
+
     });
 
     this.absenceForm
@@ -184,12 +184,13 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         [Validators.required],
       ],
       endTime: [endTime, [Validators.required]],
-      isRepeat: [!!absenceDetails?.isRepeat, []],
+      // isRepeat: [!!absenceDetails?.isRepeat, []],
+      isRepeat: true,
       isHoliday: [!!absenceDetails?.isHoliday, []],
       repeatType: [absenceDetails?.repeatType ?? null, []],
       repeatDays: [absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '', []],
       repeatFrequency: [absenceDetails?.repeatFrequency ?? null, []],
-      staffList: [absenceDetails?.staffList ?? [], [Validators.required]],
+      userList: [absenceDetails?.userList ?? [], [Validators.required]],
       roomList: [absenceDetails?.roomList ?? [], [Validators.required]],
       info: [absenceDetails?.info ?? '', [Validators.required]],
       priority: [absenceDetails?.priority ?? null, []],
@@ -202,11 +203,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public saveAbsence() {
-    if (this.absenceForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.absenceForm.updateValueAndValidity();
-      return;
-    }
+    // if (this.absenceForm.invalid) {
+    //   this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+    //   this.absenceForm.updateValueAndValidity();
+    //   return;
+    // }
 
     console.log(this.formValues);
 
@@ -217,7 +218,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       startedAt: new Date(startedAt.year, startedAt.month, startedAt.day, +startTime.slice(0, 2), +startTime.slice(3, 5)).toISOString(),
       endedAt: new Date(endedAt.year, endedAt.month, endedAt.day, +endTime.slice(0, 2), +endTime.slice(3, 5)).toISOString(),
       repeatDays: '',
-      repeatFrequency: rest.repeatFrequency ? +rest.repeatFrequency.split(' ')[0] : 0,
+      repeatFrequency: 0,
     };
 
     if (repeatDays.length) {
@@ -234,14 +235,24 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     }
 
     console.log(addAbsenceReqData);
-
-    this.absenceApiSvc
-      .upsertAbsence$(addAbsenceReqData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Absence ${this.modalData.edit ? 'updated' : 'added'} successfully`);
-        this.closeModal(true);
-      });
+    if (this.modalData.edit) {
+      
+      this.absenceApiSvc
+        .updateAbsence(addAbsenceReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Absence updated successfully`);
+          this.closeModal(true);
+        });
+    }else{
+      this.absenceApiSvc
+        .addNewAbsence$(addAbsenceReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Absence added successfully`);
+          this.closeModal(true);
+        });
+    }
   }
 
   private getRepeatEveryItems(repeatType: RepeatType): NameValue[] {

@@ -8,9 +8,9 @@
     </header>
   </section>
 
-  <section class="d-flex flex-column dfm-gap-8">
+  <section class="d-flex flex-column dfm-gap-8" *ngIf="filteredExams$$ | async as topExaminations">
     <div *ngFor="let exam of topExaminations" class="d-flex dfm-gap-8 align-items-center">
-      <span>{{ exam }}</span>
+      <span>{{ exam.name }}</span>
     </div>
   </section>
 </div>
