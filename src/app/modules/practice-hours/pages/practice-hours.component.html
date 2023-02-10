@@ -30,107 +30,109 @@
     <!--    -->
   </section>
 
-  <section class="dfm-card dfm-p-16 pr-hr-section2 hide-scrollbar">
-    <form [formGroup]="practiceHourForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
-      <div class="d-flex flex-column dfm-gap-8">
-        <span class="text-sm font-weight-semi-bold">Choose Day</span>
+  <section class="dfm-card d-flex flex-column dfm-gap-24 dfm-p-16 pr-hr-section2 hide-scrollbar">
+    <div class="d-flex flex-column dfm-gap-8">
+      <span class="text-sm font-weight-semi-bold">Choose Day</span>
 
-        <div class="d-flex dfm-gap-16 weekday-header pr-hr-weekdays-tab hide-scrollbar">
-          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)"
-                     class="pointer"
-                     (click)="selectWeekday(weekdayEnum.ALL)">VIEW ALL
-          </dfm-badge>
-          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.MON)"
-                     class="pointer"
-                     (click)="selectWeekday(weekdayEnum.MON)">MON
-          </dfm-badge>
-          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.TUE)"
-                     class="pointer"
-                     (click)="selectWeekday(weekdayEnum.TUE)">TUE
-          </dfm-badge>
-          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.WED)"
-                     class="pointer"
-                     (click)="selectWeekday(weekdayEnum.WED)">WED
-          </dfm-badge>
-          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.THU)"
-                     class="pointer"
-                     (click)="selectWeekday(weekdayEnum.THU)">THU
-          </dfm-badge>
-          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.FRI)"
-                     class="pointer"
-                     (click)="selectWeekday(weekdayEnum.FRI)">FRI
-          </dfm-badge>
-          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SAT)"
-                     class="pointer"
-                     (click)="selectWeekday(weekdayEnum.SAT)">SAT
-          </dfm-badge>
-          <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SUN)"
-                     class="pointer"
-                     (click)="selectWeekday(weekdayEnum.SUN)">SUN
-          </dfm-badge>
+      <div class="d-flex dfm-gap-16 weekday-header pr-hr-weekdays-tab hide-scrollbar">
+        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)"
+                   class="pointer"
+                   (click)="selectWeekday(weekdayEnum.ALL)">VIEW ALL
+        </dfm-badge>
+        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.MON)"
+                   class="pointer"
+                   (click)="selectWeekday(weekdayEnum.MON)">MON
+        </dfm-badge>
+        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.TUE)"
+                   class="pointer"
+                   (click)="selectWeekday(weekdayEnum.TUE)">TUE
+        </dfm-badge>
+        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.WED)"
+                   class="pointer"
+                   (click)="selectWeekday(weekdayEnum.WED)">WED
+        </dfm-badge>
+        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.THU)"
+                   class="pointer"
+                   (click)="selectWeekday(weekdayEnum.THU)">THU
+        </dfm-badge>
+        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.FRI)"
+                   class="pointer"
+                   (click)="selectWeekday(weekdayEnum.FRI)">FRI
+        </dfm-badge>
+        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SAT)"
+                   class="pointer"
+                   (click)="selectWeekday(weekdayEnum.SAT)">SAT
+        </dfm-badge>
+        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SUN)"
+                   class="pointer"
+                   (click)="selectWeekday(weekdayEnum.SUN)">SUN
+        </dfm-badge>
 
-          <dfm-badge size="sm" [color]="getBadgeColor(8)"
-                     class="pointer"
-                     (click)="selectExceptionForm()">EXCEPTION
-          </dfm-badge>
-        </div>
+        <dfm-badge size="sm" [color]="getBadgeColor(8)"
+                   class="pointer"
+                   (click)="selectExceptionForm()">EXCEPTION
+        </dfm-badge>
       </div>
+    </div>
 
-      <div formGroupName="practiceHours" class="d-flex flex-column dfm-gap-32 pr-hr-form-fields">
-        <div *ngFor="let controlArray of practiceHoursWeekWiseControlsArray()"
-             [formArrayName]="getFormArrayName(controlArray)"
-             class="d-flex flex-column flex-wrap dfm-gap-16">
+    <ng-container *ngIf="!isExceptionFormSelected; else exceptionFormContainer">
+      <form [formGroup]="practiceHourForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+        <div formGroupName="practiceHours" class="d-flex flex-column dfm-gap-32 pr-hr-form-fields">
+          <div *ngFor="let controlArray of practiceHoursWeekWiseControlsArray()"
+               [formArrayName]="getFormArrayName(controlArray)"
+               class="d-flex flex-column flex-wrap dfm-gap-16">
               <span class="text-sm font-weight-semi-bold">
                 {{ getFormArrayName(controlArray) | weekdayToName }}
               </span>
 
-          <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
-               class="d-flex flex-column dfm-gap-16">
-            <div class="d-flex dfm-gap-32 align-items-start">
-              <div class="d-flex flex-column dfm-gap-8">
-                <!--                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">-->
+            <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
+                 class="d-flex flex-column dfm-gap-16">
+              <div class="d-flex dfm-gap-32 align-items-start">
+                <div class="d-flex flex-column dfm-gap-8">
+                  <!--                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">-->
 
-                <!--                    </dfm-input-dropdown>-->
-                <label class="text-sm font-weight-medium">Start Time</label>
-                <ngb-timepicker formControlName="dayStart" size="small" [spinners]="false"></ngb-timepicker>
-                <span class="text-sm text-red"
-                      *ngIf="controls.get('dayStart')?.hasError('startTimeErr')">Start Time must be smaller.</span>
-              </div>
+                  <!--                    </dfm-input-dropdown>-->
+                  <label class="text-sm font-weight-medium">Start Time</label>
+                  <ngb-timepicker formControlName="dayStart" size="small" [spinners]="false"></ngb-timepicker>
+                  <span class="text-sm text-red"
+                        *ngIf="controls.get('dayStart')?.hasError('startTimeErr')">Start Time must be smaller.</span>
+                </div>
 
-              <div class="d-flex flex-column dfm-gap-8">
-                <label class="text-sm font-weight-medium">End Time</label>
-                <ngb-timepicker formControlName="dayEnd" size="small" [spinners]="false"></ngb-timepicker>
-                <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>
-              </div>
+                <div class="d-flex flex-column dfm-gap-8">
+                  <label class="text-sm font-weight-medium">End Time</label>
+                  <ngb-timepicker formControlName="dayEnd" size="small" [spinners]="false"></ngb-timepicker>
+                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>
+                </div>
 
-              <div class="d-flex flex-column dfm-gap-16">
-                <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
-                <div class="w-fit d-flex justify-content-between dfm-gap-24">
-                  <dfm-checkbox class="font-weight-normal" formControlName="isPriority"
-                                (click)="handleRadioButtonClick(controlArray, controls)"></dfm-checkbox>
+                <div class="d-flex flex-column dfm-gap-16">
+                  <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
+                  <div class="w-fit d-flex justify-content-between dfm-gap-24">
+                    <dfm-checkbox class="font-weight-normal" formControlName="isPriority"
+                                  (click)="handleRadioButtonClick(controlArray, controls)"></dfm-checkbox>
+                  </div>
+                </div>
+
+                <div class="align-self-end dfm-mb-4">
+                  <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                                   (click)="removeSlot(controlArray, i)"></dfm-button-icon>
                 </div>
               </div>
+            </div>
 
-              <div class="align-self-end dfm-mb-4">
-                <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
-                                 (click)="removeSlot(controlArray, i)"></dfm-button-icon>
-              </div>
+            <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
+              <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+              <span class="text-sm dfm-text-main-600">Click to add slot</span>
             </div>
           </div>
-
-          <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
-            <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
-            <span class="text-sm dfm-text-main-600">Click to add slot</span>
-          </div>
         </div>
-      </div>
 
-      <dfm-button class="hidden pr-hr-save-changes-btn-mv" color="primary" size="md" (click)="savePracticeHours()">Save
-        Changes
-      </dfm-button>
-    </form>
+        <dfm-button class="hidden pr-hr-save-changes-btn-mv" color="primary" size="md" (click)="savePracticeHours()">Save
+          Changes
+        </dfm-button>
+      </form>
+    </ng-container>
 
-    <ng-container *ngIf="isExceptionFormSelected">
+    <ng-template #exceptionFormContainer>
       <form [formGroup]="exceptionForm" *ngIf="exceptionFormArray.controls as exceptionControls">
         <div formArrayName="exception" class="d-flex flex-column dfm-gap-24">
           <div class="d-flex dfm-gap-24 align-items-center" [formGroupName]="groupIndex" *ngFor="let control of exceptionControls; let groupIndex = index">
@@ -182,6 +184,6 @@
           </div>
         </div>
       </form>
-    </ng-container>
+    </ng-template>
   </section>
 </div>

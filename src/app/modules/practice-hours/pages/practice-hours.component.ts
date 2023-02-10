@@ -213,12 +213,12 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     controlArray.removeAt(i);
   }
 
-  public getBadgeColor(weekday: Weekday): BadgeColor {
-    if (this.practiceHourFormValues.selectedWeekday === weekday) {
+  public getBadgeColor(selectedTab: number): BadgeColor {
+    if (this.practiceHourFormValues.selectedWeekday === selectedTab) {
       return 'primary';
     }
 
-    if (weekday === Weekday.ALL) {
+    if (selectedTab === 0) {
       for (let i = 1; i <= 7; i++) {
         if (!this.practiceHourFormValues.practiceHours[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
           return 'gray';
@@ -228,7 +228,14 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       return 'success';
     }
 
-    const practiceHours = this.practiceHourFormValues.practiceHours[weekday.toString()];
+    if (+selectedTab === 8) {
+      const formArray = this.exceptionFormArray;
+      if (formArray.controls.every((control) => control.value.date?.day && control.value.startTime?.hour && control.value.endTime?.hour)) {
+        return 'success';
+      }
+    }
+
+    const practiceHours = this.practiceHourFormValues.practiceHours[selectedTab.toString()];
     if (practiceHours?.length && practiceHours.every((pa) => pa.dayEnd && pa.dayStart)) {
       return 'success';
     }
