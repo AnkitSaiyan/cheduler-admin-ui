@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { AbstractControl, Form, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, filter, takeUntil } from 'rxjs';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
@@ -14,7 +14,7 @@ interface TimeDistributed {
   second?: number;
 }
 
-interface FormValues {
+interface PracticeHourFormValues {
   selectedWeekday: Weekday;
   practiceHours: {
     [key: string]: {
@@ -34,9 +34,13 @@ interface FormValues {
 export class PracticeHoursComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public practiceHourForm!: FormGroup;
 
+  public exceptionForm!: FormGroup;
+
   public practiceHoursData$$ = new BehaviorSubject<PracticeAvailability[]>([]);
 
   public weekdayEnum = Weekday;
+
+  public isExceptionFormSelected = false;
 
   constructor(private fb: FormBuilder, private notificationSvc: NotificationDataService, private practiceHourApiSvc: PracticeHoursApiService) {
     super();
@@ -53,14 +57,22 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     super.ngOnDestroy();
   }
 
-  public get formValues(): FormValues {
+  public get practiceHourFormValues(): PracticeHourFormValues {
     return this.practiceHourForm.value;
+  }
+
+  public get exceptionFormValues() {
+    return this.exceptionForm.value;
   }
 
   private createForm(practiceHours?: PracticeAvailability[]): void {
     this.practiceHourForm = this.fb.group({
       selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceHours: this.fb.group({}),
+    });
+
+    this.exceptionForm = this.fb.group({
+      exception: this.fb.array([this.getExceptionFormGroup()]),
     });
 
     if (practiceHours?.length) {
@@ -76,7 +88,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   private getPracticeHoursFormGroup(weekday?: Weekday, dayStart?: TimeDistributed, dayEnd?: TimeDistributed, id?: number): FormGroup {
     const fg = this.fb.group({
       ...(id ? { id: [id ?? 0, []] } : {}),
-      weekday: [weekday ?? this.formValues.selectedWeekday, []],
+      weekday: [weekday ?? this.practiceHourFormValues.selectedWeekday, []],
       dayStart: [dayStart, []],
       dayEnd: [dayEnd, []],
       isPriority: [false, []],
@@ -105,7 +117,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
   private addPracticeHoursControls(practice?: PracticeAvailability): void {
     const fg = this.practiceHourForm.get('practiceHours') as FormGroup;
-    const weekday = this.formValues.selectedWeekday;
+    const weekday = this.practiceHourFormValues.selectedWeekday;
     switch (weekday) {
       case Weekday.ALL:
         Object.values(this.weekdayEnum).forEach((day) => {
@@ -118,9 +130,9 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
         });
         break;
       default:
-        if (!Object.keys(fg.value)?.length || (Object.keys(fg.value).length && !fg.get(this.formValues.selectedWeekday.toString()))) {
+        if (!Object.keys(fg.value)?.length || (Object.keys(fg.value).length && !fg.get(this.practiceHourFormValues.selectedWeekday.toString()))) {
           fg.addControl(
-            this.formValues.selectedWeekday.toString(),
+            this.practiceHourFormValues.selectedWeekday.toString(),
             this.fb.array([
               this.getPracticeHoursFormGroup(
                 practice?.weekday,
@@ -136,7 +148,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
               ),
             ]),
           );
-        } else if (fg.get(this.formValues.selectedWeekday.toString()) && practice) {
+        } else if (fg.get(this.practiceHourFormValues.selectedWeekday.toString()) && practice) {
           (fg.get(practice.weekday.toString()) as FormArray).push(
             this.getPracticeHoursFormGroup(
               practice.weekday,
@@ -159,8 +171,8 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     const controls: FormArray[] = [];
 
     const fg = this.practiceHourForm.get('practiceHours');
-    const { selectedWeekday } = this.formValues;
-    let keys = Object.keys(this.formValues.practiceHours);
+    const { selectedWeekday } = this.practiceHourFormValues;
+    let keys = Object.keys(this.practiceHourFormValues.practiceHours);
 
     if (!getAll) {
       keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL)];
@@ -183,13 +195,14 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public selectWeekday(selectedWeekday: Weekday): void {
-    if (this.formValues.selectedWeekday === selectedWeekday) {
+    if (this.practiceHourFormValues.selectedWeekday === selectedWeekday) {
       return;
     }
 
-    // const { weekday } = this.formValues;
+    // const { weekday } = this.practiceHourFormValues;
     this.practiceHourForm.patchValue({ selectedWeekday });
     this.addPracticeHoursControls();
+    this.isExceptionFormSelected = false;
   }
 
   public addSlot(controlArray: FormArray) {
@@ -201,13 +214,13 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public getBadgeColor(weekday: Weekday): BadgeColor {
-    if (this.formValues.selectedWeekday === weekday) {
+    if (this.practiceHourFormValues.selectedWeekday === weekday) {
       return 'primary';
     }
 
     if (weekday === Weekday.ALL) {
       for (let i = 1; i <= 7; i++) {
-        if (!this.formValues.practiceHours[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
+        if (!this.practiceHourFormValues.practiceHours[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
           return 'gray';
         }
       }
@@ -215,7 +228,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       return 'success';
     }
 
-    const practiceHours = this.formValues.practiceHours[weekday.toString()];
+    const practiceHours = this.practiceHourFormValues.practiceHours[weekday.toString()];
     if (practiceHours?.length && practiceHours.every((pa) => pa.dayEnd && pa.dayStart)) {
       return 'success';
     }
@@ -224,7 +237,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public savePracticeHours(): void {
-    console.log(this.formValues);
+    console.log(this.practiceHourFormValues);
     if (this.practiceHourForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
       this.practiceHourForm.updateValueAndValidity();
@@ -269,8 +282,54 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public handleRadioButtonClick(controlArray: FormArray, controls: AbstractControl<any>) {
-    console.log('in');
+    console.log('in`');
     controlArray.controls.forEach((control) => control.patchValue({ isPriority: false }));
     controls.get('isPriority')?.setValue(true);
+  }
+
+  private getExceptionFormGroup() {
+    const fg = this.fb.group({
+      date: [
+        {
+          day: null,
+          month: null,
+          year: null,
+        },
+        [],
+      ],
+      startTime: [
+        {
+          hour: null,
+          minute: null,
+        },
+        [],
+      ],
+      endTime: [
+        {
+          hour: null,
+          minute: null,
+        },
+        [],
+      ],
+    });
+
+    return fg;
+  }
+
+  public get exceptionFormArray(): FormArray {
+    return this.exceptionForm.get('exception') as FormArray;
+  }
+
+  public addExceptionSlot() {
+    this.exceptionFormArray.push(this.getExceptionFormGroup());
+  }
+
+  public removeExceptionSlot(i: number) {
+    this.exceptionFormArray.removeAt(i);
+  }
+
+  public selectExceptionForm() {
+    this.isExceptionFormSelected = true;
+    this.practiceHourForm.patchValue({ selectedWeekday: 8 });
   }
 }

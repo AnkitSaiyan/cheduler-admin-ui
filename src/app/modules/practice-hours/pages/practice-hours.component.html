@@ -68,6 +68,11 @@
                      class="pointer"
                      (click)="selectWeekday(weekdayEnum.SUN)">SUN
           </dfm-badge>
+
+          <dfm-badge size="sm" [color]="getBadgeColor(8)"
+                     class="pointer"
+                     (click)="selectExceptionForm()">EXCEPTION
+          </dfm-badge>
         </div>
       </div>
 
@@ -101,7 +106,8 @@
               <div class="d-flex flex-column dfm-gap-16">
                 <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
                 <div class="w-fit d-flex justify-content-between dfm-gap-24">
-                  <dfm-checkbox class="font-weight-normal" formControlName="isPriority" (click)="handleRadioButtonClick(controlArray, controls)"></dfm-checkbox>
+                  <dfm-checkbox class="font-weight-normal" formControlName="isPriority"
+                                (click)="handleRadioButtonClick(controlArray, controls)"></dfm-checkbox>
                 </div>
               </div>
 
@@ -123,5 +129,59 @@
         Changes
       </dfm-button>
     </form>
+
+    <ng-container *ngIf="isExceptionFormSelected">
+      <form [formGroup]="exceptionForm" *ngIf="exceptionFormArray.controls as exceptionControls">
+        <div formArrayName="exception" class="d-flex flex-column dfm-gap-24">
+          <div class="d-flex dfm-gap-24 align-items-center" [formGroupName]="groupIndex" *ngFor="let control of exceptionControls; let groupIndex = index">
+            <div class="d-flex flex-column dfm-gap-8">
+              <label class="text-sm font-weight-medium">Exception Date</label>
+
+              <div class="dfm-button-group-wrapper h-fit flex-1">
+                <div class="input-as-dfm-input flex-1">
+                  <input
+                    class="w-full min-w-128"
+                    formControlName="date"
+                    placeholder="yyyy-mm-dd"
+                    ngbDatepicker
+                    #startedAt="ngbDatepicker"
+                  />
+                </div>
+                <div>
+                  <dfm-button-icon
+                    color="tertiary-gray"
+                    size="md"
+                    icon="calendar-date"
+                    (click)="startedAt.toggle()"
+                  ></dfm-button-icon>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column dfm-gap-8">
+              <label class="text-sm font-weight-medium">Start Time</label>
+              <ngb-timepicker formControlName="startTime" size="small" [spinners]="false"></ngb-timepicker>
+              <!--                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>-->
+            </div>
+
+            <div class="d-flex flex-column dfm-gap-8">
+              <label class="text-sm font-weight-medium">End Time</label>
+              <ngb-timepicker formControlName="endTime" size="small" [spinners]="false"></ngb-timepicker>
+              <!--                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>-->
+            </div>
+
+            <div class="align-self-end dfm-mb-4">
+              <dfm-button-icon *ngIf="exceptionControls.length > 1" size="sm" icon="trash-01" color="tertiary"
+                               (click)="removeExceptionSlot(groupIndex)"></dfm-button-icon>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addExceptionSlot()">
+            <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+            <span class="text-sm dfm-text-main-600">Click to add exception</span>
+          </div>
+        </div>
+      </form>
+    </ng-container>
   </section>
 </div>
