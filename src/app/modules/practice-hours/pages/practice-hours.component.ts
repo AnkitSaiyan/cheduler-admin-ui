@@ -3,9 +3,9 @@ import { AbstractControl, Form, FormArray, FormBuilder, FormGroup } from '@angul
 import { BehaviorSubject, filter, takeUntil } from 'rxjs';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
-import { Weekday } from '../../../shared/models/calendar.model';
+import { stringToTimeArray, Weekday } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
-import { PracticeAvailability } from '../../../shared/models/practice.model';
+import { PracticeAvailability, PracticeAvailabilityServer } from '../../../shared/models/practice.model';
 import { PracticeHoursApiService } from '../../../core/services/practice-hours-api.service';
 
 interface TimeDistributed {
@@ -24,6 +24,24 @@ interface PracticeHourFormValues {
       dayEnd: TimeDistributed;
     }[];
   };
+}
+
+interface ExceptionFormValues {
+  exception: {
+    date: {
+      day: number;
+      month: number;
+      year: number;
+    };
+    startTime: {
+      hour: number;
+      minute: number;
+    };
+    endTime: {
+      hour: number;
+      minute: number;
+    };
+  }[];
 }
 
 @Component({
@@ -61,7 +79,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     return this.practiceHourForm.value;
   }
 
-  public get exceptionFormValues() {
+  public get exceptionFormValues(): ExceptionFormValues {
     return this.exceptionForm.value;
   }
 
@@ -115,7 +133,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     return fg;
   }
 
-  private addPracticeHoursControls(practice?: PracticeAvailability): void {
+  private addPracticeHoursControls(practice?: PracticeAvailabilityServer): void {
     const fg = this.practiceHourForm.get('practiceHours') as FormGroup;
     const weekday = this.practiceHourFormValues.selectedWeekday;
     switch (weekday) {
@@ -137,12 +155,12 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
               this.getPracticeHoursFormGroup(
                 practice?.weekday,
                 {
-                  hour: practice?.dayStart?.getHours() ?? 0,
-                  minute: practice?.dayStart?.getMinutes() ?? 0,
+                  hour: stringToTimeArray(practice?.dayStart)[0],
+                  minute: stringToTimeArray(practice?.dayStart)[1],
                 },
                 {
-                  hour: practice?.dayEnd?.getHours() ?? 0,
-                  minute: practice?.dayEnd?.getMinutes() ?? 0,
+                  hour: stringToTimeArray(practice?.dayEnd)[0],
+                  minute: stringToTimeArray(practice?.dayEnd)[1],
                 },
                 practice?.id,
               ),
@@ -153,12 +171,12 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
             this.getPracticeHoursFormGroup(
               practice.weekday,
               {
-                hour: practice.dayStart.getHours(),
-                minute: practice.dayStart.getMinutes(),
+                hour: stringToTimeArray(practice?.dayStart)[0],
+                minute: stringToTimeArray(practice?.dayStart)[1],
               },
               {
-                hour: practice.dayEnd.getHours(),
-                minute: practice.dayEnd.getMinutes(),
+                hour: stringToTimeArray(practice?.dayEnd)[0],
+                minute: stringToTimeArray(practice?.dayEnd)[1],
               },
               practice.id,
             ),
@@ -260,7 +278,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
                 ...a,
                 {
                   ...control.value,
-                  dayStart: this.timeStringArray(control.value.dayStart),
+                  dayStart: new Date(new Date().setHours(control.value.dayStart.hour, control.value.dayStart.minute)),
                   dayEnd: new Date(new Date().setHours(control.value.dayEnd.hour, control.value.dayEnd.minute)),
                 },
               ];
@@ -274,18 +292,14 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
     console.log(practiceHourRequestData);
 
-    // this.practiceHourApiSvc
-    //   .savePracticeHours$(practiceHourRequestData)
-    //   .pipe(takeUntil(this.destroy$$))
-    //   .subscribe((resp) => {
-    //     if (resp) {
-    //       this.notificationSvc.showNotification(`${this.practiceHoursData$$.value?.length ? 'Changes updated' : 'Saved'} successfully`);
-    //     }
-    //   });
-  }
-
-  timeStringArray(dayStart: any): Date {
-    throw new Error('Method not implemented.');
+    this.practiceHourApiSvc
+      .savePracticeHours$(practiceHourRequestData)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((resp) => {
+        if (resp) {
+          this.notificationSvc.showNotification(`${this.practiceHoursData$$.value?.length ? 'Changes updated' : 'Saved'} successfully`);
+        }
+      });
   }
 
   public handleRadioButtonClick(controlArray: FormArray, controls: AbstractControl<any>) {
