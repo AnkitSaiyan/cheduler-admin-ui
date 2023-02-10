@@ -105,9 +105,10 @@
                 </div>
               </div>
 
-              <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
-                               class="dfm-mb-4"
-                               (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+              <div class="align-self-end dfm-mb-4">
+                <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                                 (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+              </div>
             </div>
           </div>
 
