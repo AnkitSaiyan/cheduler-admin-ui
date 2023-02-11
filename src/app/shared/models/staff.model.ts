@@ -23,3 +23,10 @@ export interface StaffsGroupedByType {
   secretaries: NameValue[];
   mandatory: NameValue[];
 }
+
+export enum StaffType {
+  Radiologist = 'Radiologist',
+  Nursing = 'Nursing',
+  Assistant = 'Assistant',
+  Secretary = 'Secretary',
+}
