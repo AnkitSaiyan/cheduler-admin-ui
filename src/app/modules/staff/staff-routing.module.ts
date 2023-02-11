@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { StaffComponent } from './pages/staff.component';
 import { StaffListComponent } from './components/staff-list/staff-list.component';
-import { StaffAddComponent } from './components/staff-add/staff-add.component';
 import { STAFF_ID } from '../../shared/utils/const';
 import { StaffViewComponent } from './components/staff-view/staff-view.component';
+import { AddStaffComponent } from './components/add-staff/add-staff.component';
 
 const staffRoutes: Routes = [
   {
@@ -18,7 +18,7 @@ const staffRoutes: Routes = [
       },
       {
         path: 'add',
-        component: StaffAddComponent,
+        component: AddStaffComponent,
       },
       {
         path: `:${STAFF_ID}/view`,
@@ -26,7 +26,7 @@ const staffRoutes: Routes = [
       },
       {
         path: `:${STAFF_ID}/edit`,
-        component: StaffAddComponent,
+        component: AddStaffComponent,
       },
     ],
   },
