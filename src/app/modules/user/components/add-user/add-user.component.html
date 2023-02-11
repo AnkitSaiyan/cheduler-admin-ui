@@ -49,7 +49,7 @@
       <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
         <dfm-input class="flex-1" size="md" placeholder="Enter email" label="Email" formControlName="email">
         </dfm-input>
-
+        <small *ngIf="addUserForm.value.email.errors?.pattern" class="text-danger">Please provide a valid email address</small>
         <dfm-input type="number" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone"
                    formControlName="telephone">
         </dfm-input>
