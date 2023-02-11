@@ -24,7 +24,20 @@ export class SiteManagementApiService {
     // };
 
     // return of('Saved');
-    return this.http.post<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`, rest).pipe(
+    const formData = new FormData();
+    formData.append('Name', requestData.name)
+    formData.append('DisabledAppointment', String(requestData.disableAppointment))
+    formData.append('DosabledWarningText', String(requestData.disableWarningText))
+    formData.append('IntroductoryText', requestData.introductoryText)
+    formData.append('DoctorReferringConsent', String(requestData.doctorReferringConsent))
+    formData.append('Address', requestData.address)
+    formData.append('Email', requestData.email)
+    formData.append('Telephone', String(requestData.telephone))
+    formData.append('isSlotsCombinable', String(requestData.isSlotsCombinable))
+    formData.append('cancelAppointmentTime', String(requestData.cancelAppointmentTime))
+    formData.append('ReminderTime', String(requestData.reminderTime))
+
+    return this.http.post<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`, formData).pipe(
       map(response => response.data)
     )
   }

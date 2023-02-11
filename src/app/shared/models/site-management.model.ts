@@ -11,6 +11,8 @@ export interface SiteManagement {
   telephone: number;
   cancelAppointmentTime: number;
   file?: null | File;
+  isSlotsCombinable: boolean;
+  reminderTime: number;
 }
 
 export interface SiteManagementRequestData {
@@ -25,4 +27,6 @@ export interface SiteManagementRequestData {
   telephone: number;
   file?: null | File | Blob;
   id?: number;
+  isSlotsCombinable: boolean;
+  reminderTime: number;
 }
