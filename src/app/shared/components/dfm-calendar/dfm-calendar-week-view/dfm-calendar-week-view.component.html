@@ -59,10 +59,10 @@
                 <ng-container
                   *ngFor="let groupedData of dataGroupedByDateAndTime[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
 
-                  <div class="calender-week-view-event-container"
+                  <div *ngIf="getHeight(groupedData) as eventHeight" class="calender-week-view-event-container"
                        [ngStyle]="{
                           'top.px': getTop(groupedData),
-                          'height.px': getHeight(groupedData)
+                          'height.px': eventHeight
                        }"
                   >
                     <!-- POP OVER -->
@@ -123,10 +123,11 @@
                     <div class="calender-week-view-event-circle-icon">{{ groupedData.length }}</div>
 
                     <div class="calender-week-view-event-details-container"
+                         [ngClass]="{ 'calender-week-view-event-details-container-sm': eventHeight <= 40 }"
                          triggers="click"
                          [ngbPopover]="eventDetails"
                          [autoClose]="'outside'">
-                      <span class="calender-week-view-event-title">Appointments</span>
+                      <span class="calender-week-view-event-title" *ngIf="eventHeight >= 60">Appointments</span>
                       <span class="calender-week-view-event-time">
                         {{ groupedData[0].startedAt | date : 'hh:mm' }} -
                         {{ groupedData | largest : 'endedAt' | date : 'hh:mm' }}

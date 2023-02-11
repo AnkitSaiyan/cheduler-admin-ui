@@ -272,21 +272,41 @@ h3 {
     flex-direction: column;
     //justify-content: center;
     width: 100%;
-    padding: 16px 8px;
+    //padding: 12px 8px 12px 12px;
     font-size: 0.9rem;
     cursor: pointer;
+    overflow: hidden;
 
     .calender-week-view-event-title {
       font-weight: 600;
       color: var(--dfm-blue);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .calender-week-view-event-time {
       font-size: 0.8rem;
       font-weight: 500;
       color: var(--dfm-main-500);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 }
+
+.calender-week-view-event-details-container-sm {
+  padding: 0 8px;
+  align-self: center;
+}
+
+//.calender-week-view-event-container-sm {
+//  .calender-week-view-event-circle-icon {
+//    width: 20px;
+//    height: 20px;
+//
+//  }
+//}
 
 

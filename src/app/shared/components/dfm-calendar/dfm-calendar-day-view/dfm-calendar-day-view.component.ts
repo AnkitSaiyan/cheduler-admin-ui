@@ -1,9 +1,10 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, switchMap, take } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
+import { NotificationType } from 'diflexmo-angular-design';
 import { NameValue } from '../../search-modal.component';
-import { Appointment, UpdateDurationRequestData } from '../../../models/appointment.model';
+import { AddAppointmentRequestData, Appointment, UpdateDurationRequestData } from '../../../models/appointment.model';
 import { Exam } from '../../../models/exam.model';
 import { getDurationMinutes } from '../../../models/calendar.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -13,6 +14,8 @@ import { ConfirmActionModalComponent, DialogData } from '../../confirm-action-mo
 import { ChangeRadiologistModalComponent } from '../../../../modules/appointments/components/change-radiologist-modal/change-radiologist-modal.component';
 import { AppointmentTimeChangeModalComponent } from '../../../../modules/appointments/components/appointment-time-change-modal/appointment-time-change-modal.component';
 import { ShareDataService } from '../../../../core/services/share-data.service';
+import { getAddAppointmentRequestData } from '../../../utils/getAddAppointmentRequestData';
+import { ReadStatus } from '../../../models/status';
 
 @Component({
   selector: 'dfm-calendar-day-view',
@@ -156,33 +159,6 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     return top;
   }
 
-  public readAppointment(id: number) {
-    console.log(id);
-    this.appointmentApiSvc.updateReadStatus(id);
-    this.notificationSvc.showNotification('Appointment read status is updated');
-  }
-
-  public deleteAppointment(id: number) {
-    const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
-      data: {
-        titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Appointment?',
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-      } as DialogData,
-    });
-
-    dialogRef.closed
-      .pipe(
-        filter((res: boolean) => res),
-        take(1),
-      )
-      .subscribe(() => {
-        this.appointmentApiSvc.deleteAppointment$(id);
-        this.notificationSvc.showNotification('Appointment deleted successfully');
-      });
-  }
-
   private handleDocumentClick() {
     // closing menu
     this.lastOpenedMenuRef?.close();
@@ -201,21 +177,28 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     }
   }
 
-  public changeRadiologists(appointmentID: number) {
+  public changeRadiologists(appointment: Appointment) {
     const modalRef = this.modalSvc.open(ChangeRadiologistModalComponent);
 
     modalRef.closed
       .pipe(
         filter((res) => !!res),
+        switchMap((id) => {
+          const requestData = { ...getAddAppointmentRequestData(appointment, true, { userId: id }) };
+          return this.appointmentApiSvc.updateAppointment$(requestData);
+        }),
         take(1),
       )
-      .subscribe((id) => {
-        this.appointmentApiSvc.changeRadiologist(appointmentID, id);
+      .subscribe((res) => {
+        console.log(res);
         this.notificationSvc.showNotification('Radiologist updated');
       });
   }
 
   public openChangeTimeModal(appointment: Appointment, extend = true, eventContainer?: HTMLDivElement) {
+    const top = eventContainer?.style.top;
+    const height = eventContainer?.style.height;
+
     const modalRef = this.modalSvc.open(AppointmentTimeChangeModalComponent, {
       data: { extend, eventContainer },
     });
@@ -246,15 +229,75 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
             amountofMinutes: +res.minutes,
             extensionType: extend ? 'prelong' : 'shorten',
             from: res.top ? 'AtTheTop' : 'AtTheBottom',
+            id: appointment.id,
           } as UpdateDurationRequestData;
 
           eventContainer?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          return this.appointmentApiSvc.updateAppointmentDuration(requestData);
+          return this.appointmentApiSvc.updateAppointmentDuration$(requestData);
+        }),
+        take(1),
+      )
+      .subscribe(
+        (res) => {
+          console.log(res);
+        },
+        (err) => {
+          this.notificationSvc.showNotification(err?.message, NotificationType.DANGER);
+          if (eventContainer && top && height) {
+            // eslint-disable-next-line no-param-reassign
+            eventContainer.style.top = top;
+            // eslint-disable-next-line no-param-reassign
+            eventContainer.style.height = height;
+          }
+        },
+      );
+  }
+
+  public readAppointment(appointment: Appointment) {
+    const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
+      data: {
+        titleText: 'Read Status Confirmation',
+        confirmButtonText: 'Change',
+        bodyText: `Are you sure you want to mark the appointment with Appointment No: ${appointment.id} as read?`,
+      } as DialogData,
+    });
+
+    modalRef.closed
+      .pipe(
+        filter((res) => !!res),
+        switchMap(() => {
+          const requestData = {
+            ...getAddAppointmentRequestData(appointment, true, { readStatus: ReadStatus.Read }),
+          } as AddAppointmentRequestData;
+
+          return this.appointmentApiSvc.updateAppointment$(requestData);
         }),
         take(1),
       )
       .subscribe((res) => {
         console.log(res);
+        this.notificationSvc.showNotification('Appointment has been read');
+      });
+  }
+
+  public deleteAppointment(id: number) {
+    const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
+      data: {
+        titleText: 'Confirmation',
+        bodyText: 'Are you sure you want to delete this Appointment?',
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+      } as DialogData,
+    });
+
+    dialogRef.closed
+      .pipe(
+        filter((res: boolean) => res),
+        take(1),
+      )
+      .subscribe(() => {
+        this.appointmentApiSvc.deleteAppointment$(id);
+        this.notificationSvc.showNotification('Appointment deleted successfully');
       });
   }
 }

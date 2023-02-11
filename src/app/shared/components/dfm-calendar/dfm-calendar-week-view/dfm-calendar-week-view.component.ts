@@ -10,8 +10,6 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  Pipe,
-  PipeTransform,
   QueryList,
   Renderer2,
   ViewChildren,
