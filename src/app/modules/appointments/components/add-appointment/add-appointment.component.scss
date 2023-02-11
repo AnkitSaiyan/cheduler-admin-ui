@@ -12,6 +12,12 @@
   }
 }
 
+.time-slot-selected-text {
+  background: var(--dfm-primary);
+  color: white;
+}
+
+
 @media (max-width: 1440px) {
   .ad-ap-main-wrapper {
     max-height: calc(100vh - 36px - 24px - 40px - 16px - 16px);
