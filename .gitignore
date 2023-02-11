@@ -46,4 +46,4 @@ Thumbs.db
 documentation.json
 
 # registry
-.npmrc
+#.npmrc

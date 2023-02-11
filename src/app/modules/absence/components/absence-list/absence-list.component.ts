@@ -1,6 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -52,6 +52,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe((absences) => {
+      console.log('absences: ', absences);
       this.absences$$.next(absences);
       this.filteredAbsences$$.next(absences);
     });
@@ -105,11 +106,13 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(()=>this.absenceApiSvc.deleteAbsence(id)),
         take(1),
       )
-      .subscribe(() => {
-        this.absenceApiSvc.deleteAbsence(id);
-        this.notificationSvc.showNotification('Absence deleted successfully');
+      .subscribe((response) => {
+        if (response) {
+          this.notificationSvc.showNotification('Absence deleted successfully');
+        }
       });
   }
 

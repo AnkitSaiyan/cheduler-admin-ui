@@ -153,10 +153,10 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(()=>this.ExamApiSvc.deleteExam(id)),
         take(1),
       )
       .subscribe(() => {
-        this.ExamApiSvc.deleteExam(id);
         this.notificationSvc.showNotification('Exam deleted successfully');
       });
   }
