@@ -551,9 +551,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
                   ...a,
                   {
                     ...control.value,
-                    dayStart: new Date(new Date().setHours(control.value.dayStart.hour, control.value.dayStart.minute)),
-                    dayEnd: new Date(new Date().setHours(control.value.dayEnd.hour, control.value.dayEnd.minute)),
-                  },
+                    dayStart: `${control.value.dayStart.hour}:${control.value.dayStart.minute}`,
+                    dayEnd: `${control.value.dayEnd.hour}:${control.value.dayEnd.minute}`,
+                    },
                 ];
               }
               return a;

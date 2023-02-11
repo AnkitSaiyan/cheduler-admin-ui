@@ -254,8 +254,8 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
                   ...a,
                   {
                     ...control.value,
-                    dayStart: new Date(new Date().setHours(control.value.dayStart.hour, control.value.dayStart.minute)),
-                    dayEnd: new Date(new Date().setHours(control.value.dayEnd.hour, control.value.dayEnd.minute)),
+                    dayStart: `${control.value.dayStart.hour}:${control.value.dayStart.minute}`,
+                    dayEnd: `${control.value.dayEnd.hour}:${control.value.dayEnd.minute}`,
                   },
                 ];
               }
