@@ -61,6 +61,26 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public comingFromRoute = '';
 
+  public timeSlots: string[] = ['10:30-10:45', '11:00-11:15', '11:30-11:45', '11:45-12:00'];
+
+  public selectedTimeSlot: any[] = [];
+
+
+  examsData = [
+      {
+        name: 'Aanpasing steunzolen',
+        value: 1,
+      },
+      {
+        name: 'Levering steunzolen',
+        value: 2,
+      },
+      {
+        name: 'Maatname',
+        value: 3,
+      },
+    ];
+
   constructor(
     private fb: FormBuilder,
     private notificationSvc: NotificationDataService,
@@ -279,5 +299,21 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.appointmentForm.patchValue({
       startTime: formattedTime,
     });
+  }
+
+  
+  public selectSlot(slot, id) {
+    const index = this.selectedTimeSlot.findIndex((timeSlot) => +timeSlot.id === +id);
+    if (index !== -1) {
+      this.selectedTimeSlot.splice(index, 1, {slot, examId: id});
+    } else {
+      this.selectedTimeSlot.push({slot, examId: id});
+    }
+
+    console.log(this.selectedTimeSlot)
+  }
+
+  public isSlotSelected(slot: string, id: number): boolean {
+    return !!this.selectedTimeSlot.find((timeSlot) => timeSlot?.slot === slot && +timeSlot?.examId === +id);
   }
 }
