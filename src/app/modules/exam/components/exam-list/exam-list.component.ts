@@ -125,7 +125,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     this.filteredExams$$.next([
       ...this.exams$$.value.filter((exam) => {
         return (
-          exam.firstname?.toLowerCase()?.includes(searchText) ||
+          exam.name?.toLowerCase()?.includes(searchText) ||
           exam.lastname?.toLowerCase()?.includes(searchText) ||
           exam.email?.toLowerCase()?.includes(searchText) ||
           Statuses[+exam.status] === searchText

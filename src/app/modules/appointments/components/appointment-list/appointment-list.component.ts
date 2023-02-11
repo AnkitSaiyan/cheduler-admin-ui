@@ -162,6 +162,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         return (
           appointment.patientFname?.toLowerCase()?.includes(searchText) ||
           appointment.patientLname?.toLowerCase()?.includes(searchText) ||
+          appointment.doctor?.toLowerCase()?.includes(searchText) ||
           appointment.id?.toString()?.includes(searchText)
         );
       }),

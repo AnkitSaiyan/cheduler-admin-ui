@@ -178,7 +178,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       patientFname: [appointment?.patientFname ?? '', [Validators.required]],
       patientLname: [appointment?.patientLname ?? '', [Validators.required]],
       patientTel: [appointment?.patientTel ?? null, [Validators.required]],
-      patientEmail: [appointment?.patientEmail ?? '', []],
+      patientEmail: [appointment?.patientEmail ?? '', [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       doctorId: [appointment?.doctorId?.toString() ?? null, [Validators.required]],
       startedAt: [
         appointment?.startedAt
@@ -193,24 +193,25 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       startTime: [time, [Validators.required]],
       roomType: [appointment?.roomType ?? null, [Validators.required]],
       examList: [appointment?.examList?.map((examID) => examID?.toString()) ?? [], [Validators.required]],
-      userId: [appointment?.userId?.toString() ?? null, ],
+      userId: [appointment?.userId?.toString() ?? null, []],
       comments: [appointment?.comments ?? '', []],
     });
   }
 
   public saveAppointment(): void {
-    console.log(this.formValues);
     if (this.appointmentForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.appointmentForm.updateValueAndValidity();
+      this.appointmentForm.markAsDirty({ onlySelf: true });
       return;
     }
 
     const { startedAt, startTime, ...rest } = this.formValues;
 
+    const hour = startTime.slice(-2).toLowerCase() === 'pm' ? +startTime.slice(0, 2) + 12 : +startTime.slice(0, 2);
+
     const requestData: AddAppointmentRequestData = {
       ...rest,
-      startedAt: new Date(startedAt.year, startedAt.month, startedAt.day, +startTime.slice(0, 2), +startTime.slice(3, 5)),
+      startedAt: new Date(startedAt.year, startedAt.month - 1, startedAt.day, hour === 12 ? 0 : hour, +startTime.slice(3, 5)),
     };
 
     if (this.appointment$$.value && this.appointment$$.value?.id) {
@@ -220,26 +221,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     console.log(requestData);
 
     if (this.edit) {
-      this.appointmentApiSvc.updateAppointment$(requestData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Appointment updated successfully`);
-        let route: string;
-        console.log('this.comingFromRoute: ', this.comingFromRoute);
-        if (this.comingFromRoute === 'view') {
-          route = '../view';
-        } else {
-          route = this.edit ? '/appointment' : '/dashboard';
-        }
-
-        console.log(route);
-        this.router.navigate([route], { relativeTo: this.route });
-      });
-    }else{
-      this.appointmentApiSvc.saveAppointment$(requestData)
+      this.appointmentApiSvc
+        .updateAppointment$(requestData)
         .pipe(takeUntil(this.destroy$$))
         .subscribe(() => {
-          this.notificationSvc.showNotification(`Appointment saved successfully`);
+          this.notificationSvc.showNotification(`Appointment updated successfully`);
           let route: string;
           console.log('this.comingFromRoute: ', this.comingFromRoute);
           if (this.comingFromRoute === 'view') {
@@ -247,11 +233,29 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           } else {
             route = this.edit ? '/appointment' : '/dashboard';
           }
-  
-          console.log(route);
+
           this.router.navigate([route], { relativeTo: this.route });
         });
-    }    
+    } else {
+      this.appointmentApiSvc
+        .saveAppointment$(requestData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Appointment saved successfully`);
+          let route: string;
+          switch (this.comingFromRoute) {
+            case 'view':
+              route = '../view';
+              break;
+            case 'dashboard':
+              route = '/';
+              break;
+            default:
+              route = this.edit ? '/appointment' : '../';
+          }
+          this.router.navigate([route], { relativeTo: this.route });
+        });
+    }
   }
 
   public handleTimeInput(time: string) {

@@ -11,8 +11,8 @@ export enum Weekday {
 
 export interface TimeSlot {
   id?: number;
-  dayStart: Date;
-  dayEnd: Date;
+  dayStart: string;
+  dayEnd: string;
 }
 
 export interface WeekWisePracticeAvailability {

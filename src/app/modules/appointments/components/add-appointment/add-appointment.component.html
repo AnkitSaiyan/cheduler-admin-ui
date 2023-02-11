@@ -81,7 +81,7 @@
 
   <section class="dfm-card dfm-p-16 ad-ap-section2 hide-scrollbar">
     <form [formGroup]="appointmentForm" *ngIf="appointment$$ | async" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
-      <div class="d-flex dfm-gap-32 align-items-center">
+      <div class="d-flex dfm-gap-32 align-items-start">
         <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="Patient First Name *"
                    formControlName="patientFname">
         </dfm-input>
@@ -90,12 +90,12 @@
                    formControlName="patientLname">
         </dfm-input>
 
-        <dfm-input class="flex-1" size="md" placeholder="Enter Telephone" label="Enter telephone *" type="number"
+        <dfm-input class="flex-1" size="md" placeholder="Enter Telephone" label="Enter Telephone *" type="number"
                    formControlName="patientTel">
         </dfm-input>
       </div>
 
-      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
+      <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
         <dfm-input class="flex-1 min-w-128" size="md" placeholder="Enter Patient Email" label="Patient Email *"
                    formControlName="patientEmail">
         </dfm-input>
@@ -106,7 +106,7 @@
           </dfm-input-dropdown>
         </div>
 
-        <div class="ad-ab-from-date flex-1 dfm-gap-8 w-full">
+        <div class="d-flex flex-column dfm-gap-8 flex-1 dfm-gap-8 w-full">
           <span class="text-sm font-weight-medium dfm-text-main-700">Date *</span>
 
           <div class="d-flex align-items-center dfm-gap-16 flex-1 ad-ap-dates">
