@@ -1,6 +1,9 @@
 @mixin light {
   --dfm-body-bg: #{$gray-modern-100};
   --dfm-base-layout-bg: #{$gray-modern-100};
+
+  --dfm-blue: #175CD3;
+  --dfm-blue-light: #EFF8FF;
 }
 
 .light {

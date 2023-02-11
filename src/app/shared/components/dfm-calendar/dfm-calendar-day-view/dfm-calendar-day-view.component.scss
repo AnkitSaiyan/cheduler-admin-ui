@@ -1,12 +1,33 @@
+.calender-day-view {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: inherit;
+
+  .calender-day-view-absolute {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    .calender-day-view-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+  }
+}
+
 h3 {
   margin: 0;
 }
 
 .calender-day-view-header {
-  box-sizing: border-box;
   display: flex;
 
-  .calender-day-view-time-format {
+  .calender-day-view-time-zone {
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -32,6 +53,7 @@ h3 {
 
       .calender-day-view-weekday-header-left-vertical-line {
         width: 8px;
+        min-width: 8px;
         height: 100%;
         align-self: end;
         -webkit-align-self: flex-end;
@@ -49,8 +71,8 @@ h3 {
         background: var(--dfm-table-odd-cell-bg);
 
         .calender-day-view-day-name {
-          height: 28px;
-          line-height: 32px;
+          height: 40px;
+          line-height: 40px;
         }
 
         .calender-day-view-header-cell-left-line {
@@ -92,12 +114,13 @@ h3 {
   .calender-day-view-body {
     display: flex;
     width: 100%;
+    position: relative;
 
     &::before {
       content: "";
       height: 2px;
       position: absolute;
-      width: calc(100% - 64px);
+      width: 100%;
       border-bottom: 1px solid var(--dfm-main-200);
       //left: 96px;
     }
@@ -110,7 +133,7 @@ h3 {
       flex-direction: column;
 
       .calender-day-view-time-slot {
-        min-height: 48px;
+        min-height: 60px;
         padding-right: 8px;
         text-align: right;
         position: relative;
@@ -140,7 +163,7 @@ h3 {
         .calender-day-view-horizontal-line {
           //position: absolute;
           //width: calc(100vw - 128px);
-          height: 48px;
+          height: 60px;
           //top: -12px;
           //left: 64px;
 
@@ -157,6 +180,7 @@ h3 {
 
         .calender-day-view-events-left-vertical-line {
           width: 8px;
+          min-width: 8px;
           //border-right: 1px solid var(--dfm-main-200);
         }
 
@@ -167,8 +191,9 @@ h3 {
           border-left: 1px solid var(--dfm-main-200);
           padding-right: 12px;
           position: relative;
+          //overflow: hidden;
 
-          div:first-child {
+          .calender-day-view-body-grid-absolute {
             position: absolute;
             top: 0;
             bottom: 0;
@@ -176,13 +201,143 @@ h3 {
             right: 0;
           }
 
-          div:last-child {
+          .calender-day-view-body-events-container {
             position: relative;
             height: 100%;
             width: 100%;
+            //overflow-y: hidden;
           }
         }
       }
+    }
+  }
+}
+
+.calender-day-view-event-container {
+  position: relative;
+  left: 0px;
+  right: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-left: 4px solid var(--dfm-blue);
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  z-index: 1;
+  background: var(--dfm-blue-light);
+  box-shadow: 0 0.125rem 0.25rem rgb(30 30 28 / 8%);
+  transition: 200ms all linear;
+  cursor: pointer;
+
+  &:hover {
+    z-index: 2;
+    box-shadow: 0 0.125rem 1.25rem rgb(30 30 28 / 10%);
+  }
+
+  .calender-day-view-event-details-expanded {
+    min-width: 256px !important;
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    padding: 0 8px;
+
+    .calender-day-view-event-details-expanded-title {
+      font-weight: 600;
+    }
+
+    .calender-day-view-event-patients-container {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      max-height: 40vh;
+
+      &::-webkit-scrollbar {
+        width: 12px;
+      }
+
+      .calender-day-view-event-patients-container {
+        display: flex;
+        flex-direction: column;
+
+        .calender-day-view-event-patient-details {
+          display: flex;
+          flex-direction: column;
+          padding: 8px;
+          //&:hover {
+          //  background: var(--dfm-main-100);
+          //}
+        }
+
+        .calender-day-view-event-patient-details-divider {
+          border-bottom: 1px solid var(--dfm-main-200);
+          margin: 0 8px;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 1;
+        }
+      }
+    }
+  }
+
+  .calender-day-view-event-details-container {
+    display: flex;
+    flex-direction: column;
+    //justify-content: start;
+    //align-items: center;
+    gap: 4px;
+    width: 100%;
+    height: 100%;
+    //height: fit-content;
+    padding: 16px 8px 8px 8px;
+    font-size: 0.9rem;
+
+    .calender-day-view-event-title {
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .calender-day-view-event-time {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--dfm-main-500);
+    }
+  }
+
+  .calender-day-view-event-more-button {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    border-radius: 50%;
+    color: var(--dfm-primary) !important;
+    align-self: end;
+
+    svg {
+      color: var(--dfm-primary) !important;
+    }
+
+    &:hover {
+      transition: all 150ms linear;
+      background: var(--dfm-main-200);
+      cursor: pointer;
+    }
+  }
+}
+
+.view-more-menu {
+  border: 1px solid var(--dfm-main-100);
+  box-shadow: 0 0.125rem 0.25rem rgb(30 30 28 / 8%);
+
+  button {
+    display: flex;
+    padding: 8px 16px;
+    /* align-items: center; */
+    gap: 8px;
+
+    &:active {
+      background: white;
+      color: black;
     }
   }
 }

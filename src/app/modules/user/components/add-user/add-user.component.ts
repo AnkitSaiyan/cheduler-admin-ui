@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationType } from 'diflexmo-angular-design';
 import { take, takeUntil } from 'rxjs';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, PatternValidator, Validators } from '@angular/forms';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -67,7 +67,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       ],
       firstname: [userDetails?.firstname ?? '', [Validators.required]],
       lastname: [userDetails?.lastname ?? '', [Validators.required]],
-      email: [userDetails?.email ?? '', []],
+      email: [userDetails?.email ?? '', [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       telephone: [userDetails?.telephone, []],
       gsm: [userDetails?.gsm, []],
       address: [userDetails?.address, []],
@@ -80,6 +80,11 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
   }
 
   public saveUser() {
+    if (this.addUserForm['controls']['email'].invalid) {
+      this.notificationSvc.showNotification('Please enter valid email', NotificationType.WARNING);
+      this.addUserForm.updateValueAndValidity();
+      return;
+    }
     if (this.addUserForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
       this.addUserForm.updateValueAndValidity();
@@ -87,6 +92,26 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
     }
 
     console.log(this.formValues);
+
+    if (this.userType.General === this.addUserForm['controls']['userType'].value) {
+      if (this.modalData.edit) {
+        this.userApiSvc
+          .updateStaff(this.formValues)
+          .pipe(takeUntil(this.destroy$$))
+          .subscribe(() => {
+            this.notificationSvc.showNotification(`User updated successfully`);
+            this.closeModal(true);
+          });
+      } else {
+        this.userApiSvc
+          .addNewStaff$(this.formValues)
+          .pipe(takeUntil(this.destroy$$))
+          .subscribe(() => {
+            this.notificationSvc.showNotification(`User added successfully`);
+            this.closeModal(true);
+          });
+      }
+    }
 
     const { gsm, address, ...rest } = this.formValues;
 
@@ -112,22 +137,20 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     if (this.modalData.edit) {
       this.userApiSvc
-      .updateStaff(addUserReqData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`User updated successfully`);
-        this.closeModal(true);
-      });
-    }else{
+        .updateStaff(addUserReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`User updated successfully`);
+          this.closeModal(true);
+        });
+    } else {
       this.userApiSvc
-      .addNewStaff$(addUserReqData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`User added successfully`);
-        this.closeModal(true);
-      });
+        .addNewStaff$(addUserReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`User added successfully`);
+          this.closeModal(true);
+        });
     }
-
- 
   }
 }

@@ -22,6 +22,9 @@ interface FormValues {
   email: string;
   telephone: number;
   file: { file: Blob; loading: boolean };
+  isSlotsCombinable: boolean;
+  reminderTime: number;
+  reminderTimeType: TimeDurationType;
 }
 
 @Component({
@@ -109,6 +112,9 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       email: [siteManagementData?.email ?? '', []],
       telephone: [siteManagementData?.telephone, [Validators.required]],
       address: [siteManagementData?.address, [Validators.required]],
+      isSlotsCombinable: [+!!siteManagementData?.isSlotsCombinable, [Validators.required]],
+      reminderTime: [duration, []],
+      reminderTimeType: [durationType, []],
     });
   }
 
@@ -119,7 +125,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       return;
     }
 
-    const { heading, subHeading, bodyText, file, cancelAppointmentType, ...rest } = this.formValues;
+    const { heading, subHeading, bodyText, file, cancelAppointmentType, isSlotsCombinable, ...rest } = this.formValues;
 
     const requestData: SiteManagementRequestData = {
       ...rest,
@@ -136,6 +142,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
             return rest.cancelAppointmentTime;
         }
       })(),
+      isSlotsCombinable: false
     };
 
     requestData.introductoryText = JSON.stringify({

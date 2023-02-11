@@ -110,7 +110,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
           return [];
         }),
-        switchMap((changes) => this.userApiSvc.changeStaffStatus$(changes)),
+        // TODO have to implement change status
+        // switchMap((changes) => this.userApiSvc.changeStaffStatus$(changes)),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
@@ -141,19 +142,21 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     this.filteredUsers$$.next([
       ...this.users$$.value.filter((user) => {
         return (
-          user.firstname?.toLowerCase()?.includes(searchText) || user.lastname?.toLowerCase()?.includes(searchText)
-          // user.email?.toLowerCase()?.includes(searchText) ||
-          // user.userType?.toLowerCase()?.includes(searchText)
+          user.firstname?.toLowerCase()?.includes(searchText) || 
+          user.lastname?.toLowerCase()?.includes(searchText) ||
+          user.email?.toLowerCase()?.includes(searchText) ||
+          user.userType?.toLowerCase()?.includes(searchText) || 
+          user.telephone?.toLowerCase()?.includes(searchText)
         );
       }),
     ]);
   }
 
   public changeStatus(changes: { id: number | string; newStatus: Status | null }[]) {
-    this.userApiSvc
-      .changeStaffStatus$(changes)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
+    // this.userApiSvc
+    //   .changeStaffStatus$(changes)
+    //   .pipe(takeUntil(this.destroy$$))
+    //   .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
   }
 
   public deleteUser(id: number) {
