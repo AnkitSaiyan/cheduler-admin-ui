@@ -4,11 +4,25 @@
       <dfm-button
         color="link"
         size="lg"
-        routerLink="/appointment"
-      >Appointment
+        [routerLink]="[comingFromRoute === 'dashboard' ? '/dashboard' : '/appointment']"
+      >
+      {{ comingFromRoute === 'dashboard' ? 'Dashboard' : 'Appointment' }}
       </dfm-button>
 
       <div style="width: 16px; height: 16px" class="h-fit">
+        <dfm-icon name="chevron-right"></dfm-icon>
+      </div>
+
+      <dfm-button
+        color="link"
+        size="lg"
+        *ngIf="comingFromRoute === 'dashboard'"
+        [routerLink]="[comingFromRoute === 'dashboard' ? '/dashboard' : '/appointment']"
+      >
+      {{ comingFromRoute === 'dashboard' ? 'Appointment' : '' }}
+      </dfm-button>
+
+      <div style="width: 16px; height: 16px" class="h-fit" *ngIf="comingFromRoute === 'dashboard'">
         <dfm-icon name="chevron-right"></dfm-icon>
       </div>
 
@@ -28,7 +42,7 @@
       <dfm-button
         color="link-gray"
         size="lg"
-      >{{ comingFromRoute ? 'Edit' : 'Add' }}
+      >{{ edit ? 'Edit' : 'Add' }}
       </dfm-button>
     </div>
 
@@ -66,7 +80,7 @@
   </section>
 
   <section class="dfm-card dfm-p-16 ad-ap-section2 hide-scrollbar">
-    <form [formGroup]="appointmentForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+    <form [formGroup]="appointmentForm" *ngIf="appointment$$ | async" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-center">
         <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="Patient First Name *"
                    formControlName="patientFname">

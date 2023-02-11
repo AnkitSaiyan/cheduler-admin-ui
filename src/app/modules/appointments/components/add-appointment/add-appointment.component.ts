@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, from, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, from, switchMap, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -85,6 +85,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       this.comingFromRoute = state[COMING_FROM_ROUTE];
       this.edit = state[EDIT];
 
+      console.log('this.comingFromRoute: ', this.comingFromRoute);
       localStorage.setItem(COMING_FROM_ROUTE, this.comingFromRoute);
       if (typeof this.edit === 'boolean') {
         localStorage.setItem(EDIT, this.edit.toString());
@@ -99,6 +100,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     const comingFromRoute = localStorage.getItem(COMING_FROM_ROUTE);
     if (comingFromRoute) {
       this.comingFromRoute = comingFromRoute;
+      console.log('this.comingFromRoute: ', this.comingFromRoute);
     }
     const edit = localStorage.getItem(EDIT);
     if (edit) {
@@ -110,10 +112,22 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.routerStateSvc
       .listenForParamChange$(APPOINTMENT_ID)
       .pipe(
-        switchMap((appointmentID) => this.appointmentApiSvc.getAppointmentByID(+appointmentID)),
+        filter((appointmentID: string) => {
+          console.log('appointmentID in filter: ', appointmentID);
+          if (!appointmentID) {
+            this.appointment$$.next({});
+            this.createForm();
+          }
+          return !!appointmentID;
+        }),
+        switchMap((appointmentID) => {
+          console.log('appointmentID: ', appointmentID);
+          return this.appointmentApiSvc.getAppointmentByID(+appointmentID);
+        }),
         takeUntil(this.destroy$$),
       )
       .subscribe((appointment) => {
+        console.log('appointment: ', appointment);
         this.appointment$$.next(appointment ?? {});
         this.createForm(appointment);
       });
@@ -144,7 +158,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   public get formValues(): FormValues {
-    return this.appointmentForm.value;
+    return this.appointmentForm?.value;
   }
 
   private createForm(appointment?: Appointment | undefined | null): void {
@@ -178,8 +192,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       ],
       startTime: [time, [Validators.required]],
       roomType: [appointment?.roomType ?? null, [Validators.required]],
-      examList: [appointment?.examList.map((examID) => examID?.toString()) ?? [], [Validators.required]],
-      userId: [appointment?.userId?.toString() ?? null, [Validators.required]],
+      examList: [appointment?.examList?.map((examID) => examID?.toString()) ?? [], [Validators.required]],
+      userId: [appointment?.userId?.toString() ?? null, ],
       comments: [appointment?.comments ?? '', []],
     });
   }
@@ -205,20 +219,39 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
     console.log(requestData);
 
-    from(this.appointmentApiSvc.upsertAppointment$(requestData))
+    if (this.edit) {
+      this.appointmentApiSvc.updateAppointment$(requestData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.notificationSvc.showNotification(`Appointment ${this.appointment$$.value?.id ? 'updated' : 'saved'} successfully`);
+        this.notificationSvc.showNotification(`Appointment updated successfully`);
         let route: string;
+        console.log('this.comingFromRoute: ', this.comingFromRoute);
         if (this.comingFromRoute === 'view') {
           route = '../view';
         } else {
-          route = this.edit ? '/appointment' : '../';
+          route = this.edit ? '/appointment' : '/dashboard';
         }
 
         console.log(route);
         this.router.navigate([route], { relativeTo: this.route });
       });
+    }else{
+      this.appointmentApiSvc.saveAppointment$(requestData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Appointment saved successfully`);
+          let route: string;
+          console.log('this.comingFromRoute: ', this.comingFromRoute);
+          if (this.comingFromRoute === 'view') {
+            route = '../view';
+          } else {
+            route = this.edit ? '/appointment' : '/dashboard';
+          }
+  
+          console.log(route);
+          this.router.navigate([route], { relativeTo: this.route });
+        });
+    }    
   }
 
   public handleTimeInput(time: string) {

@@ -7,12 +7,12 @@ export enum AvailabilityType {
 }
 
 export enum UserType {
-  Scheduler = 'scheduler',
-  General = 'general',
-  Radiologist = 'radiologist',
-  Nursing = 'nursing',
-  Assistant = 'assistant',
-  Secretary = 'secretary',
+  Scheduler = 'Scheduler',
+  General = 'General',
+  Radiologist = 'Radiologist',
+  Nursing = 'Nursing',
+  Assistant = 'Assistant',
+  Secretary = 'Secretary',
 }
 
 export interface User {

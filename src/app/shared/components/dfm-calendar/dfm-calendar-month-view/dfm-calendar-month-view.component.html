@@ -12,23 +12,97 @@
   <tbody>
   <tr *ngFor="let days of daysInMonthMatrix;">
     <td class="calender-month-view-day-cell" *ngFor="let day of days">
-      <div
-        *ngIf="day && day <= 31"
-        class="calender-month-view-day text-sm"
-        [ngClass]="{
+      <div class="calender-month-view-day-cell-content">
+        <div
+          *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length"
+          class="calender-month-view-day-exam-event-container">
+
+          <ng-template #eventDetails>
+            <div class="calender-month-view-day-exam-details-expanded">
+                <span class="calender-month-view-day-exam-details-expanded-title">
+                  Appointments ({{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length }})
+                </span>
+              <div class="calender-month-view-day-exam-details-expanded-patients-container">
+                <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0"
+                               *ngFor="let ap of dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]; let i = index">
+                  <ngb-panel>
+                    <ng-template ngbPanelTitle>
+                      <div
+                        class="calender-month-view-day-exam-details-expanded-patient-details-container">
+                        <div class="calender-month-view-day-exam-details-expanded-patient-details">
+                          <span class="font-weight-medium">{{ ap.patientFname + ' ' + ap.patientLname }}</span>
+                          <span class="text-sm dfm-text-main-500">
+                            {{ (ap.startedAt | date : 'HH:mm') + ' - ' + (ap.endedAt | date : 'HH:mm') }} (min)
+                          </span>
+                        </div>
+                        <div class="calender-month-view-day-exam-details-expanded-patient-details-divider"
+                             *ngIf="i < dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length - 1"></div>
+                      </div>
+                    </ng-template>
+
+                    <ng-template ngbPanelContent>
+                     <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
+                       <span class="font-weight-medium"> Exam </span>
+                       <span *ngIf="ap.exams?.length">{{ ap.exams | joinWithAnd : 'name'}}</span>
+                       <span class="font-weight-medium dfm-mt-8"> Comments </span>
+                       <span class=""> {{ ap?.comments | dashIfNothing }} </span>
+                       <span class="font-weight-medium dfm-mt-8">Staff</span>
+                       <div *ngFor="let exam of ap.exams" class="dfm-ps-4 dfm-pt-4">
+                         <div *ngFor="let u of exam?.user" class="d-flex align-items-center dfm-gap-8">
+                           <div class="circle-gray-200-40">
+                             {{ u?.firstname[0] | uppercase }}
+                           </div>
+                           <div class="d-flex flex-column">
+                             <span>{{ u?.firstname | titlecase }} {{ u?.lastname | titlecase }}</span>
+                             <span class="dfm-text-main-500">{{ u?.userType | titlecase }}</span>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                    </ng-template>
+                  </ngb-panel>
+                </ngb-accordion>
+              </div>
+            </div>
+          </ng-template>
+
+          <div class="calender-month-view-event-circle-icon">
+            {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length }}
+          </div>
+
+          <div class="calender-month-view-day-exam-event-details" [ngbPopover]="eventDetails" triggers="click" [autoClose]="'outside'">
+            <span class="calender-month-view-day-exam-event-title">{{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length === 1 ? 'Appointment' : 'Appointments' }}</span>
+            <span class="calender-month-view-day-exam-event-time"
+                  *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length === 1">
+              {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()][0]?.startedAt | date : 'HH:mm' }}
+              -
+              {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()][0]?.endedAt | date : 'HH:mm' }}
+            </span>
+            <span class="calender-month-view-day-exam-event-time"
+                  *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length !== 1">
+              Multiple timings
+            </span>
+          </div>
+        </div>
+
+        <div
+          *ngIf="day && day <= 31"
+          class="calender-month-view-day text-sm"
+          [ngClass]="{
             'calender-month-view-selected-day': selectedDate.getDate() === day && ((nowDate.getDate() === selectedDate.getDate() && nowDate.getMonth() !== selectedDate.getMonth()) || (selectedDate.getDate() !== nowDate.getDate())),
             'calender-month-view-today font-weight-medium': nowDate.getDate() === day && nowDate.getMonth() === selectedDate.getMonth()
         }"
-        (click)="changeToDayView(day)"
-      >
-        {{ day }}
-      </div>
+          (click)="changeToDayView(day)"
+        >
+          {{ day }}
+        </div>
 
-      <div
-        *ngIf="day && day > 31"
-        class="calender-month-view-day calender-month-view-day-light text-sm"
-      >
-        {{ day - 31 }}
+        <div
+          *ngIf="day && day > 31"
+          class="calender-month-view-day calender-month-view-day-light text-sm"
+        >
+          {{ day - 31 }}
+        </div>
       </div>
     </td>
   </tr>
