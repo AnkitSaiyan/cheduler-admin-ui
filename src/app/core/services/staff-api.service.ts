@@ -1,391 +1,23 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
-import { AvailabilityType, User, UserType } from '../../shared/models/user.model';
-import { Status } from '../../shared/models/status';
-import { AddStaffRequestData } from '../../shared/models/staff.model';
-import { Weekday } from '../../shared/models/calendar.model';
-import { PracticeAvailability } from '../../shared/models/practice.model';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
+import { User, UserType } from '../../shared/models/user.model';
+import { AddStaffRequestData, StaffType } from '../../shared/models/staff.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StaffApiService {
-  // private staffLists: User[] = [
-  //   {
-  //     id: 1,
-  //     firstname: 'Maaike',
-  //     lastname: 'Benooit',
-  //     userType: UserType.Radiologist,
-  //     email: 'maaike@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Inactive,
-  //     availabilityType: AvailabilityType.Unavailable,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [1, 2, 3, 5, 6, 7, 8],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 2,
-  //     firstname: 'Maaike',
-  //     lastname: 'Benooit',
-  //     userType: UserType.General,
-  //     email: 'maaike@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Active,
-  //     availabilityType: AvailabilityType.Available,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [1],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.MON,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 3,
-  //     firstname: 'David',
-  //     lastname: 'Warner',
-  //     userType: UserType.General,
-  //     email: 'david@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Inactive,
-  //     availabilityType: AvailabilityType.Unavailable,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 4,
-  //     firstname: 'Maaike',
-  //     lastname: 'Benooit',
-  //     userType: UserType.General,
-  //     email: 'maaike@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Active,
-  //     availabilityType: AvailabilityType.Available,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.SAT,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 5,
-  //     firstname: 'Jennifer',
-  //     lastname: 'Woodley',
-  //     userType: UserType.Assistant,
-  //     email: 'jennifer@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Inactive,
-  //     availabilityType: AvailabilityType.Unavailable,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [1, 2],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.THU,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 6,
-  //     firstname: 'Maaike',
-  //     lastname: 'Benooit',
-  //     userType: UserType.Nursing,
-  //     email: 'maaike@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Active,
-  //     availabilityType: AvailabilityType.Available,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.SUN,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 7,
-  //     firstname: 'Maaike',
-  //     lastname: 'Benooit',
-  //     userType: UserType.Scheduler,
-  //     email: 'maaike@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Inactive,
-  //     availabilityType: AvailabilityType.Unavailable,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 8,
-  //     firstname: 'Maaike',
-  //     lastname: 'Benooit',
-  //     userType: UserType.General,
-  //     email: 'maaike@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Active,
-  //     availabilityType: AvailabilityType.Available,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 9,
-  //     firstname: 'Maaike',
-  //     lastname: 'Benooit',
-  //     userType: UserType.Assistant,
-  //     email: 'maaike@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Inactive,
-  //     availabilityType: AvailabilityType.Unavailable,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [],
-  //     practiceAvailability: [],
-  //   },
-  //   {
-  //     id: 10,
-  //     firstname: 'Maaike',
-  //     lastname: 'Benooit',
-  //     userType: UserType.Radiologist,
-  //     email: 'maaike@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Active,
-  //     availabilityType: AvailabilityType.Available,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 11,
-  //     firstname: 'Maaike',
-  //     lastname: 'Benooit',
-  //     userType: UserType.General,
-  //     email: 'maaike@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Active,
-  //     availabilityType: AvailabilityType.Available,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.WED,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 12,
-  //     firstname: 'Maaike',
-  //     lastname: 'Benooit',
-  //     userType: UserType.General,
-  //     email: 'maaike@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Active,
-  //     availabilityType: AvailabilityType.Available,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.FRI,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 13,
-  //     firstname: 'Maaike',
-  //     lastname: 'Benooit',
-  //     userType: UserType.Radiologist,
-  //     email: 'maaike@deflexmo.be',
-  //     telephone: '9812345678',
-  //     address: '',
-  //     status: Status.Inactive,
-  //     availabilityType: AvailabilityType.Available,
-  //     deletedBy: null,
-  //     gsm: '',
-  //     examList: [],
-  //     practiceAvailability: [
-  //       {
-  //         id: 60,
-  //         weekday: Weekday.THU,
-  //         dayStart: new Date(),
-  //         dayEnd: new Date(),
-  //       },
-  //     ],
-  //   },
-  // ];
-
   private refreshStaffs$$ = new Subject();
+
+  private readonly staffTypes$$ = new BehaviorSubject<StaffType[]>([
+    StaffType.Radiologist,
+    StaffType.Nursing,
+    StaffType.Assistant,
+    StaffType.Secretary,
+  ]);
 
   constructor(private http: HttpClient) {}
 
@@ -451,7 +83,7 @@ export class StaffApiService {
   //   return of('created');
   // }
 
-  //TODO: CHANGE STAFF LIST HAVE TO IMPLEMENT
+  // TODO: CHANGE STAFF LIST HAVE TO IMPLEMENT
 
   // public changeStaffStatus$(changes: { id: number | string; newStatus: Status | null }[]): Observable<boolean> {
   //   if (!changes.length) {
@@ -481,19 +113,21 @@ export class StaffApiService {
   public addNewStaff$(requestData: AddStaffRequestData): Observable<any> {
     console.log('requestData add: ', requestData);
     const { id, ...restData } = requestData;
-    return this.http.post<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user`, restData).pipe(map((response) => response.data), tap(()=>{
-      this.refreshStaffs$$.next('');
-    }));
+    return this.http.post<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user`, restData).pipe(
+      map((response) => response.data),
+      tap(() => {
+        this.refreshStaffs$$.next('');
+      }),
+    );
   }
 
   public updateStaff(requestData: AddStaffRequestData): Observable<any> {
     console.log('requestData for update: ', requestData);
     const { id, ...restData } = requestData;
-    return this.http
-      .put<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user/${id}`, restData)
-      .pipe(map((response) => response.data),
-        tap(()=>(this.refreshStaffs$$.next('')))
-      );
+    return this.http.put<BaseResponse<AddStaffRequestData>>(`${environment.serverBaseUrl}/user/${id}`, restData).pipe(
+      map((response) => response.data),
+      tap(() => this.refreshStaffs$$.next('')),
+    );
   }
 
   public deleteStaff(staffID: number) {
@@ -521,12 +155,21 @@ export class StaffApiService {
   }
 
   public getUsersByType(userType: UserType): Observable<User[]> {
-    return this.fetchStaffList().pipe(map((staffs) => staffs.filter((staff) => {
-      console.log('staff: ', staff);
-      return staff.userType === userType})));
+    return this.fetchStaffList().pipe(
+      map((staffs) =>
+        staffs.filter((staff) => {
+          console.log('staff: ', staff);
+          return staff.userType === userType;
+        }),
+      ),
+    );
   }
 
   public get radiologists$(): Observable<User[]> {
     return this.staffList$.pipe(map((staffs) => staffs.filter((staff) => staff.userType === UserType.Radiologist)));
+  }
+
+  public get staffTypes$(): Observable<StaffType[]> {
+    return this.staffTypes$$.asObservable();
   }
 }
