@@ -95,7 +95,7 @@
             <span class="flex-1">Doctor</span>
             <span
               class=" flex-1"
-              *ngIf="appointment.doctor.firstname && appointment.doctor.lastname">{{ appointment.doctor.firstname | titlecase }} {{ appointment.doctor.lastname | titlecase }}</span>
+              *ngIf="appointment.doctor">{{ appointment?.doctor | titlecase }}</span>
           </div>
 
           <div class="d-flex dfm-gap-8 justify-content-between">
@@ -124,7 +124,7 @@
             <span class="flex-1">Name</span>
             <span
               class=" flex-1 text-break"
-              *ngIf="appointment.doctor.firstname && appointment.doctor.lastname">{{ appointment.patientFname | titlecase }} {{ appointment.patientLname | titlecase }}</span>
+              *ngIf="appointment.patientFname && appointment.patientLname">{{ appointment.patientFname | titlecase }} {{ appointment.patientLname | titlecase }}</span>
           </div>
           <div class="d-flex dfm-gap-8 justify-content-between">
             <span class="flex-1">Email</span>

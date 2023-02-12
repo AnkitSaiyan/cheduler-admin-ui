@@ -9,7 +9,7 @@ export interface Appointment {
   createdAt: Date;
   updatedAt: Date | null;
   doctorId: number;
-  doctor: Physician;
+  doctor: string;
   patientFname: string;
   patientLname: string;
   patientEmail: string;
@@ -38,9 +38,9 @@ export interface AddAppointmentRequestData {
   patientLname: string;
   patientEmail: string;
   patientTel: number;
-  roomType: RoomType;
+  roomType?: RoomType;
   comments: string;
-  startedAt: Date;
+  startedAt: string;
   examList: number[];
   approval?: AppointmentStatus;
   createdBy?: number;
@@ -51,7 +51,7 @@ export interface AddAppointmentRequestData {
   id?: number;
 }
 
-export type ExtensionType = 'shorten' | 'prelong';
+export type ExtensionType = 'shorten' | 'extend';
 
 export type ChangePosition = 'AtTheTop' | 'AtTheBottom';
 
@@ -60,4 +60,37 @@ export interface UpdateDurationRequestData {
   amountofMinutes: number;
   from: ChangePosition;
   extensionType: ExtensionType;
+}
+
+//  Appointment SLots Models
+
+export interface Slot {
+  start: string;
+  end: string;
+  examId: number;
+}
+
+export interface AppointmentSlot {
+  title: string;
+  start: string;
+  end: string;
+  workStatus: WorkStatusesEnum;
+  workStatusText: WorkStatuses;
+  isAvailable: boolean;
+  slots: Slot[];
+}
+
+export type WorkStatuses = 'Working' | 'Holiday' | 'Off' | 'Past';
+
+export enum WorkStatusesEnum {
+  Working = 1,
+  Holiday,
+  Off,
+  Past,
+}
+
+export interface AppointmentSlotsRequestData {
+  fromDate: string;
+  toDate: string;
+  exams: number[];
 }

@@ -147,10 +147,10 @@ export class ExamApiService {
   constructor(private http: HttpClient) {}
 
   public get exams$(): Observable<Exam[]> {
-    return combineLatest([this.refreshExams$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllExams()));
+    return combineLatest([this.refreshExams$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchExams()));
   }
 
-  private fetchAllExams(): Observable<Exam[]> {
+  private fetchExams(): Observable<Exam[]> {
     return this.http.get<BaseResponse<Exam[]>>(`${environment.serverBaseUrl}/exam?pageNo=1`).pipe(map((response) => response.data));
   }
 
@@ -196,14 +196,16 @@ export class ExamApiService {
   }
 
   public getExamByID(examID: number): Observable<Exam | undefined> {
-    console.log("examId", examID)
+    console.log('examId', examID);
     // return combineLatest([this.refreshExams$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.exams.find((exam) => +exam.id === +examID))));
-    let queryParams = new HttpParams();
-    queryParams = queryParams.append("id", examID);
+    // let queryParams = new HttpParams();
+    // queryParams = queryParams.append('id', examID);
     return this.http.get<BaseResponse<Exam>>(`${environment.serverBaseUrl}/exam/${examID}`).pipe(
-      map(response => response.data),
-      tap(()=>{this.refreshExams$$.next()})
-    )
+      map((response) => response.data),
+      tap(() => {
+        this.refreshExams$$.next();
+      }),
+    );
   }
 
   // public createExam$(requestData: CreateExamRequestData): Observable<string> {
@@ -237,10 +239,19 @@ export class ExamApiService {
 
   public updateExam$(requestData: CreateExamRequestData): Observable<CreateExamRequestData> {
     const { id, ...restData } = requestData;
-    return this.http
-      .put<BaseResponse<CreateExamRequestData>>(`${environment.serverBaseUrl}/exam/${id}`, restData)
-      .pipe(map((response) => response.data),
-        tap(()=>{this.refreshExams$$.next()})
-      )
+    return this.http.put<BaseResponse<CreateExamRequestData>>(`${environment.serverBaseUrl}/exam/${id}`, restData).pipe(
+      map((response) => response.data),
+      tap(() => {
+        this.refreshExams$$.next();
+      }),
+    );
+  }
+
+  public get allExams$(): Observable<Exam[]> {
+    return combineLatest([this.refreshExams$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllExams$()));
+  }
+
+  private fetchAllExams$(): Observable<Exam[]> {
+    return this.http.get<BaseResponse<Exam[]>>(`${environment.serverBaseUrl}/common/getexams`).pipe(map((response) => response.data));
   }
 }

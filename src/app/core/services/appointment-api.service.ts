@@ -3,7 +3,13 @@ import { catchError, combineLatest, map, Observable, of, startWith, Subject, swi
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { AddAppointmentRequestData, Appointment, UpdateDurationRequestData } from '../../shared/models/appointment.model';
+import {
+  AddAppointmentRequestData,
+  Appointment,
+  AppointmentSlot,
+  AppointmentSlotsRequestData,
+  UpdateDurationRequestData,
+} from '../../shared/models/appointment.model';
 import { AppointmentStatus } from '../../shared/models/status';
 import { PhysicianApiService } from './physician.api.service';
 import { StaffApiService } from './staff-api.service';
@@ -109,5 +115,11 @@ export class AppointmentApiService {
       map((response) => response?.data),
       tap(() => this.refreshAppointment$$.next()),
     );
+  }
+
+  public getSlots$(requestData: AppointmentSlotsRequestData): Observable<AppointmentSlot[]> {
+    return this.http
+      .post<BaseResponse<AppointmentSlot[]>>(`${environment.serverBaseUrl}/patientappointment/slots`, requestData)
+      .pipe(map((res) => res?.data));
   }
 }

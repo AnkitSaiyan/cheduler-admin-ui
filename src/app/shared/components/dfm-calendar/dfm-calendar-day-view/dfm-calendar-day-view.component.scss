@@ -175,6 +175,7 @@ h3 {
             z-index: 1;
             pointer-events: none;
             border-bottom: 1px solid var(--dfm-main-200);
+            cursor: pointer;
           }
         }
 
@@ -339,5 +340,21 @@ h3 {
       background: white;
       color: black;
     }
+  }
+}
+
+.appointment-title {
+  font-weight: 500;
+  font-size: 0.6rem;
+  line-height: 20px;
+  color: black;
+  background: transparent;
+  pointer-events: none;
+  margin-left: 8px;
+}
+
+.ad-ap-modal-shadow {
+  .modal-content {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
   }
 }

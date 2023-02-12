@@ -69,7 +69,7 @@
                 <div *ngFor="let h of headerList" role="gridcell" class="calender-day-view-body-grid-column">
                   <div class="calender-day-view-body-grid-absolute"></div>
 
-                  <div class="calender-day-view-body-events-container" role="presentation">
+                  <div class="calender-day-view-body-events-container" role="presentation" #eventsContainer (dblclick)="addAppointment($event, eventsContainer)">
                     <ng-container *ngIf="dataGroupedByDateAndRoom[dateString] as dataGroupedByRoom">
                       <ng-container
                         *ngIf="dataGroupedByRoom && dataGroupedByRoom[h.value] as roomData">
