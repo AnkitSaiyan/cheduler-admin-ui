@@ -52,10 +52,10 @@ export class PhysicianViewComponent extends DestroyableComponent implements OnIn
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(()=>this.physicianApiSvc.deletePhysician(id)),
         take(1),
       )
       .subscribe(() => {
-        this.physicianApiSvc.deletePhysician(id);
         this.notificationSvc.showNotification('Physician deleted successfully');
         this.router.navigate(['/', 'physician']);
       });
@@ -69,6 +69,6 @@ export class PhysicianViewComponent extends DestroyableComponent implements OnIn
         centered: true,
         backdropClass: 'modal-backdrop-remove-mv',
       },
-    });
+    }).result;
   }
 }

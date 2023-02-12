@@ -55,10 +55,10 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(()=>this.userApiSvc.deleteStaff(id)),
         take(1),
       )
       .subscribe(() => {
-        this.userApiSvc.deleteStaff(id);
         this.notificationSvc.showNotification('User deleted successfully');
         this.router.navigate(['/', 'user']);
       });
@@ -72,6 +72,6 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
         centered: true,
         backdropClass: 'modal-backdrop-remove-mv',
       },
-    });
+    }).result;
   }
 }

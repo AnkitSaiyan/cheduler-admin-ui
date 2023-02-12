@@ -54,9 +54,8 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
     this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
       const staffIdToNameMap = new Map<number, string>();
       staffs.forEach((staff) => staffIdToNameMap.set(+staff.id, `${staff.firstname} ${staff.lastname}`));
-
-      this.absenceDetails$$.value?.userList.forEach((id) => {
-        const name = staffIdToNameMap.get(+id);
+      this.absenceDetails$$.value?.user.forEach((id) => {
+        const name = staffIdToNameMap.get(+id.id);
         if (name) {
           this.staffNames.push(name);
         }
@@ -64,18 +63,22 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
     });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
+      console.log('rooms: ', rooms);
       const roomIdToNameMap = new Map<number, string>();
+      console.log('roomIdToNameMap: ', roomIdToNameMap);
       rooms.forEach((room) => roomIdToNameMap.set(+room.id, room.name));
-      this.absenceDetails$$.value?.roomList.forEach((id) => {
-        const name = roomIdToNameMap.get(+id);
-        if (name) {
-          this.roomNames.push(name);
+      this.absenceDetails$$.value?.rooms.forEach((id) => {
+        const name = roomIdToNameMap.get(+id.name);
+        console.log('name: ', name);
+        if (id.name) {
+          this.roomNames.push(id.name);
         }
       });
     });
   }
 
   public deleteAbsence(id: number) {
+    console.log('id: ', id);
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
@@ -87,11 +90,11 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
     modalRef.closed
       .pipe(
-        filter((res: boolean) => res),
+        filter((res: boolean) => {console.log("res", res); return res;}),
+        switchMap(()=> this.absenceApiSvc.deleteAbsence(id)),
         take(1),
       )
       .subscribe(() => {
-        this.absenceApiSvc.deleteAbsence(id);
         this.notificationSvc.showNotification('Absence deleted successfully');
         this.router.navigate(['/', 'absence']);
       });
@@ -106,6 +109,6 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
         backdropClass: 'modal-backdrop-remove-mv',
         keyboard: false,
       },
-    });
+    }).result
   }
 }
