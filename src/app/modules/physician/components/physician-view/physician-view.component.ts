@@ -61,9 +61,9 @@ export class PhysicianViewComponent extends DestroyableComponent implements OnIn
       });
   }
 
-  public openEditPhysicianModal() {
+  public openEditPhysicianModal(physicianDetails?: Physician) {
     this.modalSvc.open(PhysicianAddComponent, {
-      data: { edit: !!this.physicianDetails$$.value?.id, physicianDetails: { ...this.physicianDetails$$.value } },
+      data: { edit: !!physicianDetails?.id, physicianDetails },
       options: {
         size: 'lg',
         centered: true,

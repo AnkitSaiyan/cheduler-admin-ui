@@ -380,22 +380,39 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     }
 
     console.log(addStaffReqData);
+    if (this.edit) {
+      this.staffApiSvc
+        .updateStaff(addStaffReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Staff updated successfully`);
+          let route: string;
+          if (this.comingFromRoute === 'view') {
+            route = '../view';
+          } else {
+            route = this.edit ? '/staff' : '../';
+          }
 
-    this.staffApiSvc
-      .addNewStaff$(addStaffReqData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Staff ${this.edit ? 'updated' : 'added'} successfully`);
-        let route: string;
-        if (this.comingFromRoute === 'view') {
-          route = '../view';
-        } else {
-          route = this.edit ? '/staff' : '../';
-        }
+          console.log(route);
+          this.router.navigate([route], { relativeTo: this.route });
+        });
+    } else {
+      this.staffApiSvc
+        .addNewStaff$(addStaffReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Staff updated successfully`);
+          let route: string;
+          if (this.comingFromRoute === 'view') {
+            route = '../view';
+          } else {
+            route = this.edit ? '/staff' : '../';
+          }
 
-        console.log(route);
-        this.router.navigate([route], { relativeTo: this.route });
-      });
+          console.log(route);
+          this.router.navigate([route], { relativeTo: this.route });
+        });
+    }
   }
 
   public getBadgeColor(weekday: Weekday): BadgeColor {

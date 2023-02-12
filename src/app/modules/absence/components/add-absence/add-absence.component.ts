@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, debounceTime, distinctUntilChanged, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
@@ -39,6 +39,7 @@ interface FormValues {
   selector: 'dfm-add-absence',
   templateUrl: './add-absence.component.html',
   styleUrls: ['./add-absence.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddAbsenceComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public absenceForm!: FormGroup;
