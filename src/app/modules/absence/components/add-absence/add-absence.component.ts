@@ -124,7 +124,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       .get('repeatType')
       ?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
       .subscribe((value) => {
-        this.absenceForm.get('repeatDays')?.setValue([]);
+        this.absenceForm.get('repeatDays')?.setValue(['']);
         if (this.formValues.repeatFrequency) {
           this.absenceForm
             .get('repeatFrequency')
@@ -166,7 +166,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         absenceDetails?.startedAt
           ? {
               year: new Date(absenceDetails.startedAt).getFullYear(),
-              month: new Date(absenceDetails.startedAt).getMonth() + 1,
+              month: new Date(absenceDetails.startedAt).getMonth(),
               day: new Date(absenceDetails.startedAt).getDate(),
             }
           : null,
@@ -177,15 +177,14 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         absenceDetails?.endedAt
           ? {
               year: new Date(absenceDetails.endedAt).getFullYear(),
-              month: new Date(absenceDetails.endedAt).getMonth() + 1,
+              month: new Date(absenceDetails.endedAt).getMonth(),
               day: new Date(absenceDetails.endedAt).getDate(),
             }
           : null,
         [Validators.required],
       ],
       endTime: [endTime, [Validators.required]],
-      // isRepeat: [!!absenceDetails?.isRepeat, []],
-      isRepeat: true,
+      isRepeat: [!!absenceDetails?.isRepeat, []],
       isHoliday: [!!absenceDetails?.isHoliday, []],
       repeatType: [absenceDetails?.repeatType ?? null, []],
       repeatDays: [absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '', []],
@@ -203,22 +202,23 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public saveAbsence() {
-    // if (this.absenceForm.invalid) {
-    //   this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-    //   this.absenceForm.updateValueAndValidity();
-    //   return;
-    // }
+    if (this.absenceForm.invalid) {
+      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+      this.absenceForm.updateValueAndValidity();
+      return;
+    }
 
     console.log(this.formValues);
 
     const { startedAt, endedAt, repeatDays, startTime, endTime, ...rest } = this.formValues;
 
+    console.log('rest.repeatFrequency: ', rest.repeatFrequency);
     const addAbsenceReqData: AddAbsenceRequestDate = {
       ...rest,
       startedAt: new Date(startedAt.year, startedAt.month, startedAt.day, +startTime.slice(0, 2), +startTime.slice(3, 5)).toISOString(),
       endedAt: new Date(endedAt.year, endedAt.month, endedAt.day, +endTime.slice(0, 2), +endTime.slice(3, 5)).toISOString(),
-      repeatDays: '',
-      repeatFrequency: 0,
+      repeatDays: this.absenceForm.get('repeatDays')?.value,
+      repeatFrequency: rest.repeatFrequency ? +rest.repeatFrequency : 0,
     };
 
     if (repeatDays.length) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
+import { catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { Status } from '../../shared/models/status';
 import { AddPhysicianRequestData, Physician } from '../../shared/models/physician.model';
 import { HttpClient } from '@angular/common/http';
@@ -156,9 +156,17 @@ export class PhysicianApiService {
   }
 
   public getPhysicianByID(physicianID: number): Observable<Physician | undefined> {
-    return combineLatest([this.refreshPhysicians$$.pipe(startWith(''))]).pipe(
-      switchMap(() => of(this.physicians.find((physician) => +physician.id === +physicianID))),
-    );
+      return combineLatest([this.refreshPhysicians$$.pipe(startWith(''))]).pipe(
+        switchMap(() =>
+          this.http.get<BaseResponse<Physician>>(`${environment.serverBaseUrl}/doctor/${physicianID}`).pipe(
+            map((response) => response.data),
+            catchError((e) => {
+              console.log('error', e);
+              return of({} as Physician);
+            }),
+          ),
+        ),
+      );
   }
 
   public changePhysicianStatus$(changes: { id: number | string; newStatus: Status | null }[]): Observable<boolean> {

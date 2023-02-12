@@ -660,7 +660,7 @@ export class AbsenceApiService {
     const {id, ...restData} = requestData;
     return this.http.put<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences/${id}`, restData).pipe(
       map(response => response.data),
-      tap(()=>{this.refreshAbsences$$.next()})
+      tap(()=>{this.refreshAbsences$$.next();})
     )
   }
 }
