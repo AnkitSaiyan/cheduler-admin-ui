@@ -52,23 +52,23 @@ export class PhysicianViewComponent extends DestroyableComponent implements OnIn
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(()=>this.physicianApiSvc.deletePhysician(id)),
         take(1),
       )
       .subscribe(() => {
-        this.physicianApiSvc.deletePhysician(id);
         this.notificationSvc.showNotification('Physician deleted successfully');
         this.router.navigate(['/', 'physician']);
       });
   }
 
-  public openEditPhysicianModal() {
+  public openEditPhysicianModal(physicianDetails?: Physician) {
     this.modalSvc.open(PhysicianAddComponent, {
-      data: { edit: !!this.physicianDetails$$.value?.id, physicianDetails: { ...this.physicianDetails$$.value } },
+      data: { edit: !!physicianDetails?.id, physicianDetails },
       options: {
         size: 'lg',
         centered: true,
         backdropClass: 'modal-backdrop-remove-mv',
       },
-    });
+    }).result;
   }
 }

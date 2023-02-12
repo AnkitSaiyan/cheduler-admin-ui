@@ -320,11 +320,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   public saveAppointment(): void {
-    if (this.appointmentForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.appointmentForm.markAsDirty({ onlySelf: true });
-      return;
-    }
+    // if (this.appointmentForm.invalid) {
+    //   this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+    //   this.appointmentForm.markAsDirty({ onlySelf: true });
+    //   return;
+    // }
 
     const { startedAt, startTime, ...rest } = this.formValues;
 

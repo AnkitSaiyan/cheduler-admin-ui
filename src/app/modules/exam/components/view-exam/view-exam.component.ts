@@ -183,10 +183,10 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(()=>this.examApiService.deleteExam(id)),
         take(1),
       )
       .subscribe(() => {
-        this.examApiService.deleteExam(id);
         this.notificationSvc.showNotification('Exam deleted successfully');
         this.router.navigate(['/', 'exam']);
       });

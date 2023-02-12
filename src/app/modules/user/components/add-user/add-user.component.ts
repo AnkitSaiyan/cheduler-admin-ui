@@ -93,7 +93,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     console.log(this.formValues);
 
-    if (this.userType.General === this.addUserForm['controls']['userType'].value) {
+    if (this.userType.General === this.addUserForm.get('userType')?.value) {
       if (this.modalData.edit) {
         this.userApiSvc
           .updateStaff(this.formValues)
@@ -117,7 +117,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     let addUserReqData: AddStaffRequestData = { ...rest };
 
-    if (this.formValues.userType === this.userType.Scheduler || this.modalData.userDetails.userType === this.userType.Scheduler) {
+    if (this.formValues?.userType === this.userType.Scheduler || this.modalData.userDetails?.userType === this.userType.Scheduler) {
       addUserReqData = {
         ...addUserReqData,
         gsm,

@@ -12,6 +12,7 @@ import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
+import { AddStaffComponent } from '../add-staff/add-staff.component';
 
 interface TimeSlot {
   id?: number;
@@ -158,10 +159,10 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(()=>this.staffApiSvc.deleteStaff(id)),
         take(1),
       )
       .subscribe(() => {
-        this.staffApiSvc.deleteStaff(id);
         this.notificationSvc.showNotification('Staff deleted successfully');
         this.router.navigate(['/', 'staff']);
       });

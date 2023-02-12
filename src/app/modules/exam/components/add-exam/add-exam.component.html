@@ -98,6 +98,9 @@
                 </dfm-input>
               </div>
             </div>
+            <div class="room-message" *ngIf="!roomsForExamControls.length">
+              No rooms are available
+            </div>
           </div>
 
           <span *ngIf="formErrors.selectRoomErr"
