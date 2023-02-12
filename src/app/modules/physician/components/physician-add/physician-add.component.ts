@@ -98,7 +98,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       .updatePhysician$(addPhysicianReqData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.notificationSvc.showNotification(`Physician ${this.modalData.edit ? 'updated' : 'added'} successfully`);
+        this.notificationSvc.showNotification(`Physician updated successfully`);
         this.closeModal(true);
       });
     }else{
@@ -106,7 +106,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
         .addPhysician$(addPhysicianReqData)
         .pipe(takeUntil(this.destroy$$))
         .subscribe(() => {
-          this.notificationSvc.showNotification(`Physician ${this.modalData.edit ? 'updated' : 'added'} successfully`);
+          this.notificationSvc.showNotification(`Physician added successfully`);
           this.closeModal(true);
         });
     }
