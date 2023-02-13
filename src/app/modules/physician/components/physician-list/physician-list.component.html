@@ -86,7 +86,7 @@
           </dfm-badge>
         </dfm-table-body-cell>
 
-        <dfm-table-body-cell>
+        <dfm-table-body-cell class="">
           <div class="d-flex dfm-gap-16 align-items-center ph-li-action-buttons">
             <dfm-button
               *ngIf="!item.status"
@@ -119,23 +119,26 @@
             ></dfm-button>
           </div>
 
-          <div class="position-relative">
+          <div class="">
             <div ngbDropdown #actionButtonsMenu="ngbDropdown">
               <div class="shadow-lg ph-li-action-buttons-menu ph-li-menus" ngbDropdownMenu
                    aria-labelledby="dropdownManual">
-                <div ngbDropdownItem *ngIf="item.status === statusType.Inactive"
+                <div ngbDropdownItem *ngIf="!item.status"
                      (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])">
                   <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
                 </div>
-                <div ngbDropdownItem *ngIf="item.status === statusType.Active"
+
+                <div ngbDropdownItem *ngIf="item.status"
                      (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])">
                   <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
                 </div>
+
                 <div ngbDropdownItem (click)="$event.stopPropagation(); openAddPhysicianModal(item)"
                      class="position-relative">
                   <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
                   <div class="menu-point-forward shadow-sm"></div>
                 </div>
+
                 <div ngbDropdownItem (click)="$event.stopPropagation(); deletePhysician(item.id)">
                   <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
                 </div>
