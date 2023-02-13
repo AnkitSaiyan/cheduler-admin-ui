@@ -148,6 +148,7 @@ h3 {
           //position: absolute;
           //width: calc(100vw - 128px);
           height: 60px;
+          cursor: pointer;
           //top: -12px;
           //left: 64px;
 
@@ -163,6 +164,8 @@ h3 {
         }
 
         .calender-week-view-horizontal-line-light {
+          cursor: pointer !important;
+
           &::after {
             content: "";
             position: absolute;
@@ -229,6 +232,12 @@ h3 {
   z-index: 1;
   background: var(--dfm-blue-light);
   box-shadow: 0 0.125rem 0.25rem rgb(30 30 28 / 8%);
+  transition: 200ms all linear;
+
+  &:hover {
+    z-index: 2;
+    box-shadow: 0 0.125rem 1.25rem rgb(30 30 28 / 10%);
+  }
 
   .calender-week-view-event-details-expanded {
     min-width: 300px;
@@ -323,6 +332,22 @@ h3 {
 .calender-week-view-event-details-container-sm {
   padding: 0 8px;
   align-self: center;
+}
+
+.appointment-title {
+  font-weight: 500;
+  font-size: 0.6rem;
+  line-height: 20px;
+  color: black;
+  background: transparent;
+  pointer-events: none;
+  margin-left: 8px;
+}
+
+.ad-ap-modal-shadow {
+  .modal-content {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  }
 }
 
 //.calender-week-view-event-container-sm {

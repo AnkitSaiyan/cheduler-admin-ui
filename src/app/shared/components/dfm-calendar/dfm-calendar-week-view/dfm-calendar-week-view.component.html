@@ -54,7 +54,8 @@
           <div class="calender-week-view-events-left-vertical-line"></div>
           <div *ngFor="let day of daysOfWeekArr" role="gridcell" class="calender-week-view-body-grid-column">
             <div class="calender-week-view-body-grid-absolute"></div>
-            <div #eventContainer
+            <div #eventsContainer
+                 (dblclick)="addAppointment($event, eventsContainer, day)"
                  class="calender-week-view-body-events-container"
                  role="presentation">
               <ng-container
