@@ -59,7 +59,7 @@ export class AppointmentCalendarComponent implements OnInit {
   constructor() {}
 
   public ngOnInit(): void {
-    this.calendarViewFormControl.setValue('day');
+    this.calendarViewFormControl.setValue('week');
 
     this.calendarViewFormControl.valueChanges.pipe().subscribe((value) => {
       this.newDate$$.next(this.selectedDate);
@@ -86,7 +86,7 @@ export class AppointmentCalendarComponent implements OnInit {
   }
 
   public changeToDayView(date: number) {
-    this.calendarViewFormControl.setValue('week');
+    this.calendarViewFormControl.setValue('day');
     const newDate = new Date(this.selectedDate.setDate(date));
     this.newDate$$.next(newDate);
     this.selectedDate = new Date(newDate);
