@@ -86,7 +86,7 @@ export class AppointmentCalendarComponent implements OnInit {
   }
 
   public changeToDayView(date: number) {
-    this.calendarViewFormControl.setValue('day');
+    this.calendarViewFormControl.setValue('week');
     const newDate = new Date(this.selectedDate.setDate(date));
     this.newDate$$.next(newDate);
     this.selectedDate = new Date(newDate);

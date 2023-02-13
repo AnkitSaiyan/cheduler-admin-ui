@@ -61,8 +61,10 @@
           <div role="presentation" class="calender-day-view-events-container-main">
             <div role="row" class="calender-day-view-events-container">
               <div>
-                <div *ngFor="let i of 15 | timeInInterval" class="calender-day-view-horizontal-line">
-                </div>
+                <ng-container *ngFor="let i of 15 | timeInInterval">
+                  <div class="calender-day-view-horizontal-line"></div>
+                  <div class="calender-day-view-horizontal-line-light"></div>
+                </ng-container>
               </div>
               <div class="calender-day-view-events-left-vertical-line"></div>
               <ng-container *ngIf="headerList.length; else singleGridCol;">

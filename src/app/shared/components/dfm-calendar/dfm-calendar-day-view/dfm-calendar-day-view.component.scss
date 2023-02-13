@@ -121,7 +121,7 @@ h3 {
       height: 2px;
       position: absolute;
       width: 100%;
-      border-bottom: 1px solid var(--dfm-main-200);
+      border-bottom: 1px solid var(--dfm-main-300);
       //left: 96px;
     }
 
@@ -174,8 +174,32 @@ h3 {
             margin-top: -4px;
             z-index: 1;
             pointer-events: none;
-            border-bottom: 1px solid var(--dfm-main-200);
+            border-bottom: 1px solid var(--dfm-main-300);
             cursor: pointer;
+          }
+        }
+
+        .calender-day-view-horizontal-line-light {
+          &::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            margin-top: -20px;
+            z-index: 1;
+            pointer-events: none;
+            border-bottom: 1px solid var(--dfm-main-100);
+            cursor: pointer !important;
+          }
+
+          &::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            margin-top: -40px;
+            z-index: 1;
+            pointer-events: none;
+            border-bottom: 1px solid var(--dfm-main-100);
+            cursor: pointer !important;
           }
         }
 
