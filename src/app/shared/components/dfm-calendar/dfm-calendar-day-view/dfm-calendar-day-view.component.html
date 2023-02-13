@@ -78,7 +78,7 @@
                         <ng-container
                           *ngFor="let data of roomData; let eventNo = index;">
 
-                          <div #eventContainer class="calender-day-view-event-container"
+                          <div #eventContainer class="calender-day-view-event-container" (dblclick)="$event.preventDefault()"
                                [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': getHeight([data.appointment])}"
                           >
                             <div class="overflow-hidden">
