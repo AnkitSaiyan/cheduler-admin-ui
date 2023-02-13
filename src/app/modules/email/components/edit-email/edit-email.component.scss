@@ -1,0 +1,141 @@
+.ad-ap-main-wrapper {
+  transition: all ease 200ms;
+
+  .ad-ap-action-buttons {
+    display: flex;
+  }
+
+  .ad-ap-section2 {
+    // viewport - nav - padding - sec1 height - sec gap - extra
+    max-height: calc(100vh - 48px - 24px - 40px - 16px - 16px);
+    overflow-y: auto;
+  }
+}
+
+.time-slot-text {
+  background: var(--dfm-main-100);
+  border-radius: 10px;
+  padding: 8px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 128px;
+  flex: 1;
+  transition: 200ms all ease-in-out;
+
+  &:hover {
+    //background: var(--dfm-main-200);
+    //color: var(--dfm-primary);
+    cursor: pointer;
+  }
+}
+
+.time-slot-disabled-text {
+  color: darkgray;
+
+  &:hover {
+    cursor: text;
+  }
+}
+
+.time-slot-selected-text {
+  background: var(--dfm-primary);
+  color: white;
+}
+
+.time-text {
+  border: 1px solid var(--dfm-main-300);
+  border-radius: 4px;
+  padding: 8px 8px 8px 12px;
+  width: 128px;
+}
+
+.ad-ap-slots-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+@media (max-width: 1440px) {
+  .ad-ap-main-wrapper {
+    max-height: calc(100vh - 36px - 24px - 40px - 16px - 16px);
+  }
+}
+
+@media (max-width: 1280px) {
+  .ad-ap-slots-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .ad-ap-main-wrapper {
+    max-height: calc(100vh - 38px - 24px - 36px - 16px - 16px - 20px);
+
+    .ad-ap-title-buttons-mv {
+      display: flex;
+    }
+
+    .ad-ap-title-buttons {
+      display: none !important;
+    }
+
+    .ad-ap-title-buttons {
+      display: none !important;
+    }
+
+    .ad-ap-title-buttons-mv {
+      display: flex;
+    }
+
+    .ad-ap-action-buttons {
+      background: white;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      column-gap: 16px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      z-index: 10000;
+
+      & > dfm-button {
+        height: 44px;
+        flex: 1;
+      }
+    }
+
+    .ad-ap-section2 {
+      background: transparent;
+      padding: 0;
+      box-shadow: none;
+      border-radius: 0;
+
+      form {
+        .ad-ap-multi-dropdown {
+          margin-bottom: 8px;
+        }
+
+        & > div {
+          flex-direction: column;
+          width: 100%;
+
+          dfm-input {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+  .ad-ap-slots-container {
+    margin-top: 16px;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 368px) {
+  .ad-ap-dates {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

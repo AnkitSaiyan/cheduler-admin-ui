@@ -1,0 +1,142 @@
+<div class="d-flex flex-column h-100 position-relative dfm-px-8 sf-ls-main-wrapper">
+  <section>
+    <div class="d-flex align-items-center dfm-gap-16 flex-1 us-li-section-1">
+      <dfm-input
+        class="flex-1 us-li-search"
+        size="md"
+        placeholder="Search by Template Name"
+        icon="search-sm"
+        [formControl]="searchControl"
+      ></dfm-input>
+
+      <div class="d-flex align-items-center dfm-button-group-wrapper us-li-button-dropdown-group">
+        <div class="dfm-button-icon-bg-transparent">
+          <dfm-button-icon color="tertiary-gray" size="md" icon="copy-03" (click)="copyToClipboard()"></dfm-button-icon>
+        </div>
+
+        <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
+          <dfm-input-dropdown
+            [items]="downloadItems"
+            [showDescription]="false"
+            [formControl]="downloadDropdownControl"
+            placeholder="Download"
+            size="md"
+          ></dfm-input-dropdown>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="overflow-y-auto us-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredEmails$$ | async as emails">
+    <dfm-table
+      [items]="emails"
+      [selectable]="true"
+      (selected)="handleCheckboxSelection($event)"
+      [clearSelected$]="clearSelected$$"
+      [rowClickable]="true"
+      class="dfm-table-wrapper"
+    >
+      <ng-template #headerRowTemplate>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+      </ng-template>
+
+      <ng-template #bodyRowTemplate let-item>
+        <dfm-table-body-cell>{{ item.title | titlecase | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.subject | titlecase | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>
+          <dfm-badge *ngIf="item.status === statusType.Active" color="success" size="sm" fontWeight="medium">
+            {{ item.status | statusName | dashIfNothing }}
+          </dfm-badge>
+
+          <dfm-badge *ngIf="item.status === statusType.Inactive" color="primary" size="sm">
+            {{ item.status | statusName | dashIfNothing }}
+          </dfm-badge>
+        </dfm-table-body-cell>
+
+        <dfm-table-body-cell>
+          <div class="d-flex dfm-gap-16 align-items-center us-li-action-buttons">
+            <dfm-button
+              *ngIf="item.status === statusType.Inactive"
+              color="link-gray"
+              size="sm"
+              trailingIcon="check-circle"
+              (click)="$event.stopPropagation(); changeStatus([{ id: item.id, newStatus: statusType.Active }])"
+            ></dfm-button>
+
+            <dfm-button
+              *ngIf="item.status === statusType.Active"
+              color="link-gray"
+              size="sm"
+              trailingIcon="x-circle"
+              (click)="$event.stopPropagation(); changeStatus([{ id: item.id, newStatus: statusType.Inactive }])"
+            ></dfm-button>
+
+            <dfm-button color="link-gray" size="sm" trailingIcon="pencil-02" routerLink="./edit" (click)="$event.stopPropagation()"></dfm-button>
+          </div>
+
+          <div class="position-relative">
+            <div ngbDropdown #actionButtonsMenu="ngbDropdown">
+              <div class="shadow-lg us-li-action-buttons-menu us-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
+                <div
+                  ngbDropdownItem
+                  *ngIf="item.status === statusType.Inactive"
+                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, newStatus: statusType.Active }])"
+                >
+                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+                </div>
+                <div
+                  ngbDropdownItem
+                  *ngIf="item.status === statusType.Active"
+                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, newStatus: statusType.Inactive }])"
+                >
+                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+                </div>
+                <div ngbDropdownItem (click)="$event.stopPropagation()" class="position-relative">
+                  <dfm-button trailingIcon="pencil-02" color="link-gray" routerLink="./edit"></dfm-button>
+                  <div class="menu-point-forward shadow-sm"></div>
+                </div>
+              </div>
+            </div>
+
+            <dfm-button
+              class="hidden us-li-vertical-dots-btn"
+              color="link-gray"
+              size="sm"
+              trailingIcon="dots-vertical"
+              (click)="$event.stopPropagation(); actionButtonsMenu.open()"
+            ></dfm-button>
+          </div>
+        </dfm-table-body-cell>
+      </ng-template>
+    </dfm-table>
+    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!emails.length">No data found</div>
+  </section>
+  <div ngbDropdown #optionsMenu="ngbDropdown">
+    <div class="shadow-lg us-li-plus-btn-menu us-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
+      <div ngbDropdownItem (click)="$event.stopPropagation()">
+        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
+      </div>
+      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
+        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
+      </div>
+      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
+        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
+      </div>
+    </div>
+  </div>
+
+  <dfm-button
+    color="secondary"
+    size="md"
+    class="hidden shadow-lg us-li-plus-btn rounded-2"
+    (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()"
+  >
+    <dfm-icon #showMoreButtonIcon name="plus" class="us-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
+  </dfm-button>
+</div>
+
+<dfm-confirm-status-change-banner
+  [display]="selectedUserIds.length"
+  (confirmationEvent)="handleConfirmation($event)"
+></dfm-confirm-status-change-banner>
+

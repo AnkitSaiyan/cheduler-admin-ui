@@ -48,6 +48,10 @@ const routes: Routes = [
         loadChildren: async () => (await import('../modules/appointments/appointments.module')).AppointmentsModule,
       },
       {
+        path: 'email',
+        loadChildren: async () => (await import('../modules/email/email.module')).EmailModule,
+      },
+      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full',
