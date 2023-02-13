@@ -1,22 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Exam } from '../../../../shared/models/exam.model';
-import { TimeSlot, Weekday, WeekWisePracticeAvailability } from '../../../../shared/models/calendar.model';
-import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { APPOINTMENT_ID, EXAM_ID } from '../../../../shared/utils/const';
-import { User, UserType } from '../../../../shared/models/user.model';
-import { PracticeAvailability } from '../../../../shared/models/practice.model';
+import { APPOINTMENT_ID } from '../../../../shared/utils/const';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
-import { Room } from '../../../../shared/models/rooms.model';
 
 @Component({
   selector: 'dfm-view-appointment',
@@ -42,26 +34,35 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
     this.routerStateSvc
       .listenForParamChange$(APPOINTMENT_ID)
       .pipe(
+        // filter((appointmentID) => !!appointmentID),
         switchMap((appointmentID) => this.appointmentApiSvc.getAppointmentByID(+appointmentID)),
+        tap((appointment) => {
+          this.appointment$$.next(appointment);
+
+          if (appointment?.exams?.length) {
+            const roomIdToName: { [key: string]: string } = {};
+
+            appointment.exams.forEach((exam) => {
+              if (exam.rooms?.length) {
+                exam?.rooms.forEach((room) => {
+                  if (!roomIdToName[room.id]) {
+                    roomIdToName[room.id] = room.name;
+                    this.rooms.push(room.name);
+                  }
+                });
+              }
+            });
+          }
+        }),
+        // switchMap((appointment) => {
+        //   if (appointment && appointment.id) {
+        //
+        //   }
+        // }),
         takeUntil(this.destroy$$),
       )
       .subscribe((appointment) => {
-        this.appointment$$.next(appointment);
-
-        if (appointment?.exams?.length) {
-          const roomIdToName: { [key: string]: string } = {};
-
-          appointment.exams.forEach((exam) => {
-            if (exam.rooms?.length) {
-              exam?.rooms.forEach((room) => {
-                if (!roomIdToName[room.id]) {
-                  roomIdToName[room.id] = room.name;
-                  this.rooms.push(room.name);
-                }
-              });
-            }
-          });
-        }
+        console.log(appointment);
       });
   }
 

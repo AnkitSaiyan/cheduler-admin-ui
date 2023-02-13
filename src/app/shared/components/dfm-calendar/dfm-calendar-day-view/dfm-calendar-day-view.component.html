@@ -78,8 +78,8 @@
                         <ng-container
                           *ngFor="let data of roomData; let eventNo = index;">
 
-                          <div #eventContainer class="calender-day-view-event-container" (dblclick)="$event.preventDefault()"
-                               [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': getHeight([data.appointment])}"
+                          <div *ngIf="getHeight([data.appointment]) as eventHeight" #eventContainer class="calender-day-view-event-container" (dblclick)="$event.preventDefault()"
+                               [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': 40 }"
                           >
                             <div class="overflow-hidden">
                               <!-- POP OVER -->
@@ -115,10 +115,11 @@
                               <!-- POP OVER ENDS -->
 
                               <div class="calender-day-view-event-details-container" (click)="$event.stopPropagation()"
+                                   [ngClass]="{ 'calender-day-view-event-details-container-sm': +eventHeight <= 40 }"
                                    [routerLink]="['/', 'appointment', data.appointment.id, 'view']">
                                 <div class="d-flex dfm-gap-4" triggers="hover" [ngbPopover]="eventDetails"
                                      [autoClose]="'outside'" container="body">
-                                  <div class="circle-gray-200-24">
+                                  <div class="circle-gray-200-24" *ngIf="+eventHeight > 40">
                                     {{ data.appointment.patientFname[0] | uppercase }}
                                   </div>
 
@@ -126,7 +127,8 @@
                                     <span class="calender-day-view-event-title">
                                       {{ data.appointment.patientFname + ' ' + data.appointment.patientLname }}
                                     </span>
-                                    <span class="calender-day-view-event-time">
+
+                                    <span class="calender-day-view-event-time" *ngIf="+eventHeight > 40">
                                       {{ data.appointment.startedAt | date : 'hh:mm' }} -
                                       {{ data.appointment.endedAt | date : 'hh:mm' }}
                                     </span>
@@ -149,6 +151,7 @@
                                   d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z"
                                   stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                               </svg>
+
                               <div ngbDropdown #moreMenu="ngbDropdown" [autoClose]="false">
                                 <div ngbDropdownMenu class="view-more-menu">
                                   <button ngbDropdownItem
@@ -159,21 +162,21 @@
                                     <span>Change Radiologist</span>
                                   </button>
 
-                                  <button ngbDropdownItem
-                                          (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">
-                                    <div class="icon-20" style="transform: rotateZ(180deg)">
-                                      <dfm-icon name="alert-circle"></dfm-icon>
-                                    </div>
-                                    <span>Detail Research</span>
-                                  </button>
+<!--                                  <button ngbDropdownItem-->
+<!--                                          (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">-->
+<!--                                    <div class="icon-20" style="transform: rotateZ(180deg)">-->
+<!--                                      <dfm-icon name="alert-circle"></dfm-icon>-->
+<!--                                    </div>-->
+<!--                                    <span>Detail Research</span>-->
+<!--                                  </button>-->
 
-                                  <button ngbDropdownItem
-                                          (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">
-                                    <div class="icon-20">
-                                      <dfm-icon name="home-03"></dfm-icon>
-                                    </div>
-                                    <span>Detail Appointment</span>
-                                  </button>
+<!--                                  <button ngbDropdownItem-->
+<!--                                          (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">-->
+<!--                                    <div class="icon-20">-->
+<!--                                      <dfm-icon name="home-03"></dfm-icon>-->
+<!--                                    </div>-->
+<!--                                    <span>Detail Appointment</span>-->
+<!--                                  </button>-->
 
                                   <button ngbDropdownItem
                                           (click)="$event.stopPropagation(); moveMenu.toggle()">
@@ -187,15 +190,15 @@
 
                                     <div ngbDropdown #moveMenu="ngbDropdown" placement="auto">
                                       <div ngbDropdownMenu class="view-more-menu">
-                                        <button ngbDropdownItem
-                                                (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">
-                                          <span>Proposals</span>
-                                        </button>
+<!--                                        <button ngbDropdownItem-->
+<!--                                                (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">-->
+<!--                                          <span>Proposals</span>-->
+<!--                                        </button>-->
 
-                                        <button ngbDropdownItem
-                                                (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">
-                                          <span>Manual</span>
-                                        </button>
+<!--                                        <button ngbDropdownItem-->
+<!--                                                (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">-->
+<!--                                          <span>Manual</span>-->
+<!--                                        </button>-->
 
                                         <button ngbDropdownItem
                                                 (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); openChangeTimeModal(data.appointment, false, eventContainer)">
@@ -208,14 +211,6 @@
                                         </button>
                                       </div>
                                     </div>
-                                  </button>
-
-                                  <button ngbDropdownItem
-                                          (click)="$event.stopPropagation(); readAppointment(data.appointment); moreMenu.close()">
-                                    <div class="icon-20">
-                                      <dfm-icon name="file-06"></dfm-icon>
-                                    </div>
-                                    <span>Read</span>
                                   </button>
 
                                   <button ngbDropdownItem (click)="$event.stopPropagation(); moreMenu.close();"

@@ -93,6 +93,7 @@
           </dfm-input-dropdown>
         </div>
       </div>
+
       <div class="exam-date d-flex flex-row">
         <div class="ad-ab-from-date flex-wrap-reverse dfm-gap-32 d-flex flex-1">
           <div class="dfm-input-multi-dropdown-wrapper min-w-256 ad-ap-multi-dropdown flex-1">
@@ -125,6 +126,8 @@
           </div>
         </div>
       </div>
+
+      <span class="font-weight-medium text-sm dfm-my-8" *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length">No slots found for selected Exams</span>
 
       <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="slots?.length">
         <div class="dfm-card d-flex flex-column dfm-p-16 card-item" *ngFor="let exam of exams.value">

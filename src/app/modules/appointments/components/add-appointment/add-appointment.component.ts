@@ -88,6 +88,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public isSlotUpdated = false;
 
+  public slots$$ = new BehaviorSubject<any>(null);
+
   constructor(
     private fb: FormBuilder,
     private notificationSvc: NotificationDataService,
