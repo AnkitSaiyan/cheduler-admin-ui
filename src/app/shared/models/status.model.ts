@@ -15,3 +15,8 @@ export enum ReadStatus {
   Unread,
   Read,
 }
+
+export interface ChangeStatusRequestData {
+  id: number;
+  status: number;
+}

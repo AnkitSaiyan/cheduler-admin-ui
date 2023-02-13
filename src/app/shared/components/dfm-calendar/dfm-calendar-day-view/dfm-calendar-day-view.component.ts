@@ -15,7 +15,7 @@ import { ChangeRadiologistModalComponent } from '../../../../modules/appointment
 import { AppointmentTimeChangeModalComponent } from '../../../../modules/appointments/components/appointment-time-change-modal/appointment-time-change-modal.component';
 import { ShareDataService } from '../../../../core/services/share-data.service';
 import { getAddAppointmentRequestData } from '../../../utils/getAddAppointmentRequestData';
-import { ReadStatus } from '../../../models/status';
+import { ReadStatus } from '../../../models/status.model';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 

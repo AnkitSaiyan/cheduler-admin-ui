@@ -1,4 +1,4 @@
-import { AppointmentStatus, ReadStatus, Status } from '../models/status';
+import { AppointmentStatus, ReadStatus, Status } from '../models/status.model';
 
 export function getStatusEnum(): typeof Status {
   return Status;

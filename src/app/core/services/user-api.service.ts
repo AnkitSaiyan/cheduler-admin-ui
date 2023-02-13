@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
-import { AvailabilityType, User, UserType } from '../../shared/models/user.model';
-import { Status } from '../../shared/models/status';
-import { Weekday } from '../../shared/models/calendar.model';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { AvailabilityType, User, UserType } from '../../shared/models/user.model';
+import { Status } from '../../shared/models/status.model';
+import { Weekday } from '../../shared/models/calendar.model';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +31,6 @@ export class UserApiService {
   ];
 
   private refreshGeneralUsers$$ = new Subject<void>();
-
 
   // private users: User[] = [
   //   {
@@ -66,22 +65,20 @@ export class UserApiService {
 
   constructor(private http: HttpClient) {}
 
-  
   public get generalUserTypes$(): Observable<User[]> {
     return combineLatest([this.refreshGeneralUsers$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchGeneralUserTypes()));
   }
 
   private fetchGeneralUserTypes(): Observable<User[]> {
-    return this.http
-      .get<BaseResponse<User[]>>(`${environment.serverBaseUrl}/user`)
-      .pipe(map((response) => response.data));
+    return this.http.get<BaseResponse<User[]>>(`${environment.serverBaseUrl}/user`).pipe(map((response) => response.data));
   }
 
-
-  deleteStaff(id: number): Observable<User>{
+  deleteStaff(id: number): Observable<User> {
     return this.http.delete<BaseResponse<User>>(`${environment.serverBaseUrl}/user/${id}`).pipe(
-      map(response => response.data),
-      tap(()=>{this.refreshGeneralUsers$$.next()})
-    )
+      map((response) => response.data),
+      tap(() => {
+        this.refreshGeneralUsers$$.next();
+      }),
+    );
   }
 }

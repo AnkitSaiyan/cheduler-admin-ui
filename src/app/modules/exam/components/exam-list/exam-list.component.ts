@@ -4,7 +4,7 @@ import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, t
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Status } from '../../../../shared/models/status';
+import { Status } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -153,7 +153,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.ExamApiSvc.deleteExam(id)),
+        switchMap(() => this.ExamApiSvc.deleteExam(id)),
         take(1),
       )
       .subscribe(() => {

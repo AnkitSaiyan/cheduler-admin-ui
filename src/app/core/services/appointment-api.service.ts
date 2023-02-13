@@ -10,7 +10,7 @@ import {
   AppointmentSlotsRequestData,
   UpdateDurationRequestData,
 } from '../../shared/models/appointment.model';
-import { AppointmentStatus } from '../../shared/models/status';
+import { AppointmentStatus } from '../../shared/models/status.model';
 import { PhysicianApiService } from './physician.api.service';
 import { StaffApiService } from './staff-api.service';
 import { DashboardApiService } from './dashboard-api.service';

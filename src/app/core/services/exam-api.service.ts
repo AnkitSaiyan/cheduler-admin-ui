@@ -4,7 +4,7 @@ import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap 
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { CreateExamRequestData, Exam } from '../../shared/models/exam.model';
-import { Status } from '../../shared/models/status';
+import { Status } from '../../shared/models/status.model';
 import { AvailabilityType } from '../../shared/models/user.model';
 
 @Injectable({

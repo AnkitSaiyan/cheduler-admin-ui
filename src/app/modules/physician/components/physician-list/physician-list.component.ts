@@ -1,9 +1,9 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
-import { TableItem } from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Status } from '../../../../shared/models/status';
+import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
@@ -96,11 +96,11 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedPhysicianIDs.map((id) => ({ id: +id, newStatus: value.newStatus }))];
+            return [...this.selectedPhysicianIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
           }
-
           return [];
         }),
+        filter((changes) => !!changes.length),
         switchMap((changes) => this.physicianApiSvc.changePhysicianStatus$(changes)),
         takeUntil(this.destroy$$),
       )
@@ -134,11 +134,14 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     ]);
   }
 
-  public changeStatus(changes: { id: number | string; newStatus: Status | null }[]) {
+  public changeStatus(changes: ChangeStatusRequestData[]) {
     this.physicianApiSvc
       .changePhysicianStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
+      .subscribe(
+        () => this.notificationSvc.showNotification('Status has changed successfully'),
+        (err) => this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER),
+      );
   }
 
   public deletePhysician(id: number) {
@@ -154,7 +157,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.physicianApiSvc.deletePhysician(id)),
+        switchMap(() => this.physicianApiSvc.deletePhysician(id)),
         take(1),
       )
       .subscribe((response) => {

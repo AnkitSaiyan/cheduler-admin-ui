@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Status, StatusName } from '../models/status';
+import { Status, StatusName } from '../models/status.model';
 
 @Pipe({
   name: 'statusName',

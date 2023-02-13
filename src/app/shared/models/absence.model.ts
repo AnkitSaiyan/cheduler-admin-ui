@@ -1,4 +1,4 @@
-import { Status } from './status';
+import { Status } from './status.model';
 import { Room } from './rooms.model';
 import { User } from './user.model';
 

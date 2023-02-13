@@ -1,5 +1,5 @@
 import { AvailabilityType } from './user.model';
-import { Status } from './status';
+import { Status } from './status.model';
 import { PracticeAvailability } from './practice.model';
 
 export enum RoomType {

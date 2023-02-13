@@ -1,5 +1,5 @@
 import { AvailabilityType, User } from './user.model';
-import { Status } from './status';
+import { Status } from './status.model';
 import { Room, RoomType } from './rooms.model';
 import { Weekday } from './calendar.model';
 import { PracticeAvailability } from './practice.model';

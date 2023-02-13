@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { AppointmentStatus } from '../models/status';
+import { AppointmentStatus } from '../models/status.model';
 
 @Pipe({
   name: 'approvalTypeName',

@@ -4,7 +4,7 @@ import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, t
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Status } from '../../../../shared/models/status';
+import { Status } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -121,12 +121,11 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         this.clearSelected$$.next();
       });
 
-
-      this.userApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-        console.log('appointments: ', appointments);
-        this.users$$.next(appointments);
-        this.filteredUsers$$.next(appointments);
-      });
+    this.userApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
+      console.log('appointments: ', appointments);
+      this.users$$.next(appointments);
+      this.filteredUsers$$.next(appointments);
+    });
   }
 
   public override ngOnDestroy() {
@@ -142,10 +141,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     this.filteredUsers$$.next([
       ...this.users$$.value.filter((user) => {
         return (
-          user.firstname?.toLowerCase()?.includes(searchText) || 
+          user.firstname?.toLowerCase()?.includes(searchText) ||
           user.lastname?.toLowerCase()?.includes(searchText) ||
           user.email?.toLowerCase()?.includes(searchText) ||
-          user.userType?.toLowerCase()?.includes(searchText) || 
+          user.userType?.toLowerCase()?.includes(searchText) ||
           user.telephone?.toLowerCase()?.includes(searchText)
         );
       }),
@@ -172,7 +171,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.userApiSvc.deleteStaff(id)),
+        switchMap(() => this.userApiSvc.deleteStaff(id)),
         take(1),
       )
       .subscribe(() => {

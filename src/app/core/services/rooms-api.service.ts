@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
-import { AddRoomRequestData, Room, RoomsGroupedByType, RoomType } from '../../shared/models/rooms.model';
-import { Status } from '../../shared/models/status';
-import { AvailabilityType } from '../../shared/models/user.model';
-import { PracticeAvailability } from '../../shared/models/practice.model';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { AddRoomRequestData, Room, RoomsGroupedByType, RoomType } from '../../shared/models/rooms.model';
+import { Status } from '../../shared/models/status.model';
+import { AvailabilityType } from '../../shared/models/user.model';
+import { PracticeAvailability } from '../../shared/models/practice.model';
 
 @Injectable({
   providedIn: 'root',
@@ -155,16 +155,12 @@ export class RoomsApiService {
   }
 
   private fetchAllRooms(): Observable<Room[]> {
-    return this.http.get<BaseResponse<Room[]>>(`${environment.serverBaseUrl}/room`).pipe(
-      map(response => response.data)
-    )
+    return this.http.get<BaseResponse<Room[]>>(`${environment.serverBaseUrl}/room`).pipe(map((response) => response.data));
   }
 
   public getRoomByID(roomID: number): Observable<Room | undefined> {
     // return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.rooms.find((room) => +room.id === +roomID))));
-    return this.http.get<BaseResponse<Room>>(`${environment.serverBaseUrl}/room/${roomID}`).pipe(
-      map(response => response.data)
-    )
+    return this.http.get<BaseResponse<Room>>(`${environment.serverBaseUrl}/room/${roomID}`).pipe(map((response) => response.data));
   }
 
   public changeRoomStatus$(changes: { id: number | string; newStatus: Status | null }[]): Observable<boolean> {
@@ -234,17 +230,21 @@ export class RoomsApiService {
 
   public addRoom$(requestData: AddRoomRequestData): Observable<AddRoomRequestData> {
     return this.http.post<BaseResponse<Room>>(`${environment.serverBaseUrl}/room`, requestData).pipe(
-      map(response => response.data),
-      tap(()=>{this.refreshRooms$$.next()})
-    )
+      map((response) => response.data),
+      tap(() => {
+        this.refreshRooms$$.next();
+      }),
+    );
   }
 
   public editRoom$(requestData: AddRoomRequestData): Observable<AddRoomRequestData> {
-    const { id, ...restData} = requestData;
+    const { id, ...restData } = requestData;
     return this.http.put<BaseResponse<Room>>(`${environment.serverBaseUrl}/room/${id}`, restData).pipe(
-      map(response => response.data),
-      tap(()=>{this.refreshRooms$$.next()})
-    )
+      map((response) => response.data),
+      tap(() => {
+        this.refreshRooms$$.next();
+      }),
+    );
   }
 
   public deleteRoom(roomID: number) {
@@ -255,9 +255,11 @@ export class RoomsApiService {
     // }
 
     return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/room/${roomID}`).pipe(
-      map(response => response.data),
-      tap(()=> {this.refreshRooms$$.next()})
-    )
+      map((response) => response.data),
+      tap(() => {
+        this.refreshRooms$$.next();
+      }),
+    );
   }
 
   public getRoomTypes(): Observable<{ name: string; value: string }[]> {

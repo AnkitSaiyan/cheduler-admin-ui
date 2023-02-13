@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, map, Observable, of, pipe, startWith, Subject, switchMap, tap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { Absence, AddAbsenceRequestDate, PriorityType } from '../../shared/models/absence.model';
-import { Status } from '../../shared/models/status';
+import { Status } from '../../shared/models/status.model';
 import { RoomType } from '../../shared/models/rooms.model';
 import { AvailabilityType, UserType } from '../../shared/models/user.model';
 import { Weekday } from '../../shared/models/calendar.model';
 import { StaffApiService } from './staff-api.service';
 import { DashboardApiService } from './dashboard-api.service';
-import { HttpClient } from '@angular/common/http';
-import { environment } from "../../../environments/environment";
-import { BaseResponse } from 'src/app/shared/models/base-response.model';
+import { environment } from '../../../environments/environment';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -619,48 +620,46 @@ export class AbsenceApiService {
     return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAbsence()));
   }
 
-  
   private fetchAllAbsence(): Observable<Absence[]> {
-    return this.http
-      .get<BaseResponse<Absence[]>>(`${environment.serverBaseUrl}/absences`)
-      .pipe(map((response) => response.data));
+    return this.http.get<BaseResponse<Absence[]>>(`${environment.serverBaseUrl}/absences`).pipe(map((response) => response.data));
   }
 
-
   public getAbsenceByID$(absenceID: number): Observable<Absence> {
-    return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(
-        switchMap(() => this.fetchAbsenceById(absenceID))
-      )
-    }
+    return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAbsenceById(absenceID)));
+  }
 
   private fetchAbsenceById(absenceID: number): Observable<Absence> {
-    return this.http
-    .get<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences/${absenceID}`)
-    .pipe(map((response) => response.data));
+    return this.http.get<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences/${absenceID}`).pipe(map((response) => response.data));
   }
 
   public deleteAbsence(absenceID: number) {
     console.log('absenceID: ', absenceID);
-    console.log("called");
+    console.log('called');
     return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/absences/${absenceID}`).pipe(
       map((response) => response.data),
-      tap(()=>{this.refreshAbsences$$.next()})
-    )
+      tap(() => {
+        this.refreshAbsences$$.next();
+      }),
+    );
   }
 
   public addNewAbsence$(requestData: AddAbsenceRequestDate): Observable<Absence> {
-    const { id, ...restdata} = requestData;
+    const { id, ...restdata } = requestData;
     return this.http.post<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences`, restdata).pipe(
-        map((response) => response.data),
-        tap(()=>{this.refreshAbsences$$.next()})
-      )
+      map((response) => response.data),
+      tap(() => {
+        this.refreshAbsences$$.next();
+      }),
+    );
   }
 
-  public updateAbsence(requestData: AddAbsenceRequestDate): Observable<Absence>{
-    const {id, ...restData} = requestData;
+  public updateAbsence(requestData: AddAbsenceRequestDate): Observable<Absence> {
+    const { id, ...restData } = requestData;
     return this.http.put<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences/${id}`, restData).pipe(
-      map(response => response.data),
-      tap(()=>{this.refreshAbsences$$.next();})
-    )
+      map((response) => response.data),
+      tap(() => {
+        this.refreshAbsences$$.next();
+      }),
+    );
   }
 }

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { AppointmentStatus, Status } from '../models/status';
+import { AppointmentStatus, Status } from '../models/status.model';
 
 @Component({
   selector: 'dfm-confirm-status-change-banner',
@@ -112,7 +112,7 @@ export class ConfirmStatusChangeBannerComponent implements OnInit {
 
   @Input() public statusType: 'status' | 'appointment' = 'status';
 
-  @Output() private confirmationEvent = new EventEmitter<{ proceed: boolean; newStatus: any | null }>();
+  @Output() private confirmationEvent = new EventEmitter<{ proceed: boolean; newStatus: number | null }>();
 
   public statusDropdownControl = new FormControl(null, []);
 

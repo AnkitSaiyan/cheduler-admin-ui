@@ -72,36 +72,36 @@
         <dfm-table-body-cell>{{ item.email | dashIfNothing }}</dfm-table-body-cell>
 
         <dfm-table-body-cell>
-          <dfm-badge *ngIf="item.status === statusType.Active"
+          <dfm-badge *ngIf="item.status"
                      color="success"
                      size="sm"
                      fontWeight="medium">
-            {{ item.status | statusName | dashIfNothing }}
+            {{ +item.status | statusName | dashIfNothing }}
           </dfm-badge>
 
-          <dfm-badge *ngIf="item.status === statusType.Inactive"
+          <dfm-badge *ngIf="!item.status"
                      color="primary"
                      size="sm">
-            {{ item.status | statusName | dashIfNothing }}
+            {{ +item.status | statusName | dashIfNothing }}
           </dfm-badge>
         </dfm-table-body-cell>
 
         <dfm-table-body-cell>
           <div class="d-flex dfm-gap-16 align-items-center ph-li-action-buttons">
             <dfm-button
-              *ngIf="item.status === statusType.Inactive"
+              *ngIf="!item.status"
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Active }])"
+              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
             ></dfm-button>
 
             <dfm-button
-              *ngIf="item.status === statusType.Active"
+              *ngIf="item.status"
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Inactive }])"
+              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
             ></dfm-button>
 
             <dfm-button
@@ -124,11 +124,11 @@
               <div class="shadow-lg ph-li-action-buttons-menu ph-li-menus" ngbDropdownMenu
                    aria-labelledby="dropdownManual">
                 <div ngbDropdownItem *ngIf="item.status === statusType.Inactive"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Active }])">
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])">
                   <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
                 </div>
                 <div ngbDropdownItem *ngIf="item.status === statusType.Active"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Inactive }])">
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])">
                   <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
                 </div>
                 <div ngbDropdownItem (click)="$event.stopPropagation(); openAddPhysicianModal(item)"

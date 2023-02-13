@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Status } from '../../../../shared/models/status';
+import { Status } from '../../../../shared/models/status.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -170,12 +170,11 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.staffApiSvc.deleteStaff(id)),
+        switchMap(() => this.staffApiSvc.deleteStaff(id)),
         take(1),
       )
       .subscribe((response) => {
         if (response) {
-          
           this.notificationSvc.showNotification('Staff deleted successfully');
         }
       });
