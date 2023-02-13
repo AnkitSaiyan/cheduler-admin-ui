@@ -123,24 +123,23 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         }
       });
 
-    this.afterBannerClosed$$
-      .pipe(
-        map((value) => {
-          if (value?.proceed) {
-            return [...this.selectedAppointmentIDs.map((id) => ({ id: +id, newStatus: value.newStatus }))];
-          }
-
-          return [];
-        }),
-        switchMap((changes) => this.appointmentApiSvc.changeAppointmentStatus$(changes)),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((value) => {
-        if (value) {
-          this.notificationSvc.showNotification('Status has changed successfully');
+    this.afterBannerClosed$$.pipe(
+      map((value) => {
+        if (value?.proceed) {
+          return [...this.selectedAppointmentIDs.map((id) => ({ id: +id, newStatus: value.newStatus }))];
         }
-        this.clearSelected$$.next();
-      });
+
+        return [];
+      }),
+      switchMap((changes) => this.appointmentApiSvc.changeAppointmentStatus$(changes)),
+      takeUntil(this.destroy$$),
+    );
+    // .subscribe((value) => {
+    //   if (value) {
+    //     this.notificationSvc.showNotification('Status has changed successfully');
+    //   }
+    //   this.clearSelected$$.next();
+    // });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
       this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));

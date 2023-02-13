@@ -79,7 +79,7 @@
                           *ngFor="let data of roomData; let eventNo = index;">
 
                           <div *ngIf="getHeight([data.appointment]) as eventHeight" #eventContainer class="calender-day-view-event-container" (dblclick)="$event.preventDefault()"
-                               [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': 40 }"
+                               [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
                           >
                             <div class="overflow-hidden">
                               <!-- POP OVER -->
@@ -115,7 +115,7 @@
                               <!-- POP OVER ENDS -->
 
                               <div class="calender-day-view-event-details-container" (click)="$event.stopPropagation()"
-                                   [ngClass]="{ 'calender-day-view-event-details-container-sm': +eventHeight <= 40 }"
+                                   [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto': +eventHeight <= 40 }"
                                    [routerLink]="['/', 'appointment', data.appointment.id, 'view']">
                                 <div class="d-flex dfm-gap-4" triggers="hover" [ngbPopover]="eventDetails"
                                      [autoClose]="'outside'" container="body">
