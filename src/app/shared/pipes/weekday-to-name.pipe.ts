@@ -19,16 +19,16 @@ export class WeekdayToNamePipe implements PipeTransform {
   public transform(weekday: Weekday | any[], short = false, startWithSunday = false): any {
     if (typeof weekday === 'number') {
       switch (weekday) {
+        case Weekday.SUN:
         case Weekday.MON:
         case Weekday.TUE:
         case Weekday.WED:
         case Weekday.THU:
         case Weekday.FRI:
         case Weekday.SAT:
-        case Weekday.SUN:
           return (short ? this.weekdays[weekday].slice(0, 3) : this.weekdays[weekday]) as string;
         default:
-          if (startWithSunday && weekday === 0) {
+          if (startWithSunday && weekday === 7) {
             return (short ? this.weekdays[weekday].slice(0, 3) : this.weekdays[weekday]) as string;
           }
           return '';

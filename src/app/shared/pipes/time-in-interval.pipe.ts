@@ -16,7 +16,7 @@ export class TimeInIntervalPipe implements PipeTransform {
       const minute = startTime % 60;
 
       // pushing data in array in [00:00 - 12:00 AM/PM format]
-      const hourString = `0${hour % format === 0 ? '12' : hour % format}`.slice(-2);
+      const hourString = `0${hour % format === 0 && format === 12 ? '12' : hour % format}`.slice(-2);
       const minuteString = `0${minute}`.slice(-2);
       let time: string;
 
@@ -33,6 +33,14 @@ export class TimeInIntervalPipe implements PipeTransform {
       }
 
       times.push(time);
+    }
+
+    if (format === 24) {
+      times.push('24:00');
+    } else if (formatted) {
+      times.push('24:00 PM');
+    } else {
+      times.push('24:00PM');
     }
 
     return times;

@@ -3,16 +3,21 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/for
 import { BehaviorSubject, filter, takeUntil } from 'rxjs';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
-import { stringToTimeArray, Weekday } from '../../../shared/models/calendar.model';
+import { Weekday } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
 import { PracticeAvailabilityServer } from '../../../shared/models/practice.model';
 import { PracticeHoursApiService } from '../../../core/services/practice-hours-api.service';
+import { formatTime } from '../../../shared/utils/formatTime';
+import { NameValue } from '../../../shared/components/search-modal.component';
+import { NameValuePairPipe } from '../../../shared/pipes/name-value-pair.pipe';
+import { TimeInIntervalPipe } from '../../../shared/pipes/time-in-interval.pipe';
+import { getNumberArray } from '../../../shared/utils/getNumberArray';
 
-interface TimeDistributed {
-  hour: number;
-  minute: number;
-  second?: number;
-}
+// interface TimeDistributed {
+//   hour: number;
+//   minute: number;
+//   second?: number;
+// }
 
 interface PracticeHourFormValues {
   selectedWeekday: Weekday;
@@ -20,8 +25,8 @@ interface PracticeHourFormValues {
     [key: string]: {
       id?: number;
       weekday: Weekday;
-      dayStart: TimeDistributed;
-      dayEnd: TimeDistributed;
+      dayStart: string;
+      dayEnd: string;
     }[];
   };
 }
@@ -60,15 +65,32 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
   public isExceptionFormSelected = false;
 
-  constructor(private fb: FormBuilder, private notificationSvc: NotificationDataService, private practiceHourApiSvc: PracticeHoursApiService) {
+  public timings: NameValue[] = [];
+
+  public readonly interval: number = 5;
+
+  public submitting$$ = new BehaviorSubject<boolean>(false);
+
+  constructor(
+    private fb: FormBuilder,
+    private notificationSvc: NotificationDataService,
+    private practiceHourApiSvc: PracticeHoursApiService,
+    private nameValuePipe: NameValuePairPipe,
+    private timeInIntervalPipe: TimeInIntervalPipe,
+  ) {
     super();
   }
 
   public ngOnInit(): void {
-    this.practiceHourApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practicehours) => {
-      this.practiceHoursData$$.next(practicehours);
-      this.createForm(practicehours);
+    this.createForm();
+
+    this.practiceHourApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
+      console.log(practiceHours);
+      this.practiceHoursData$$.next(practiceHours);
+      this.createPracticeControls(practiceHours);
     });
+
+    this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
   }
 
   public override ngOnDestroy() {
@@ -76,24 +98,33 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public get practiceHourFormValues(): PracticeHourFormValues {
-    return this.practiceHourForm.value;
+    return this.practiceHourForm?.value;
   }
 
   public get exceptionFormValues(): ExceptionFormValues {
     return this.exceptionForm.value;
   }
 
-  private createForm(practiceHours?: PracticeAvailabilityServer[]): void {
-    this.practiceHourForm = this.fb.group({
-      selectedWeekday: [this.weekdayEnum.ALL, []],
-      practiceHours: this.fb.group({}),
-    });
+  private createForm(): void {
+    if (!this.practiceHourForm) {
+      this.practiceHourForm = this.fb.group({
+        selectedWeekday: [this.weekdayEnum.ALL, []],
+        practiceHours: this.fb.group({}),
+      });
+    }
 
-    this.exceptionForm = this.fb.group({
-      exception: this.fb.array([this.getExceptionFormGroup()]),
-    });
+    if (!this.exceptionForm) {
+      this.exceptionForm = this.fb.group({
+        exception: this.fb.array([this.getExceptionFormGroup()]),
+      });
+    }
+  }
 
+  private createPracticeControls(practiceHours?: PracticeAvailabilityServer[]) {
     if (practiceHours?.length) {
+      // this.practiceHourForm.removeControl('practiceHours');
+      // this.practiceHourForm.addControl('practiceHours', this.fb.group({}));
+
       practiceHours.forEach((practice) => {
         this.practiceHourForm.patchValue({ selectedWeekday: practice.weekday });
         this.addPracticeHoursControls(practice);
@@ -103,13 +134,37 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     }
   }
 
-  private getPracticeHoursFormGroup(weekday?: Weekday, dayStart?: TimeDistributed, dayEnd?: TimeDistributed, id?: number): FormGroup {
+  private getPracticeHoursFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string, id?: number): FormGroup {
+    let start = '';
+    if (dayStart) {
+      if (dayStart.toLowerCase().includes('pm')) {
+        const s = +dayStart.slice(0, 2);
+        if (s < 12) {
+          start = `${s + 12}:${dayStart.slice(3, 5)}`;
+        }
+      } else {
+        start = dayStart.slice(0, 5);
+      }
+    }
+
+    let end = '';
+    if (dayEnd) {
+      if (dayEnd.toLowerCase().includes('pm')) {
+        const e = +dayEnd.slice(0, 2);
+        if (e < 12) {
+          end = `${e + 12}:${dayEnd.slice(3, 5)}`;
+        }
+      } else {
+        end = dayEnd.slice(0, 5);
+      }
+    }
+
     const fg = this.fb.group({
       ...(id ? { id: [id ?? 0, []] } : {}),
       weekday: [weekday ?? this.practiceHourFormValues.selectedWeekday, []],
-      dayStart: [dayStart, []],
-      dayEnd: [dayEnd, []],
-      isPriority: [false, []],
+      dayStart: [start, []],
+      dayEnd: [end, []],
+      // isPriority: [false, []],
     });
 
     fg.get('dayStart')
@@ -136,52 +191,28 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   private addPracticeHoursControls(practice?: PracticeAvailabilityServer): void {
     const fg = this.practiceHourForm.get('practiceHours') as FormGroup;
     const weekday = this.practiceHourFormValues.selectedWeekday;
-    switch (weekday) {
-      case Weekday.ALL:
-        Object.values(this.weekdayEnum).forEach((day) => {
-          if (typeof day === 'number' && day > 0) {
-            const fa = fg.get(day.toString()) as FormArray;
-            if (!fa || !fa.length) {
-              fg.addControl(day.toString(), this.fb.array([this.getPracticeHoursFormGroup(day)]));
-            }
-          }
-        });
-        break;
-      default:
-        if (!Object.keys(fg.value)?.length || (Object.keys(fg.value).length && !fg.get(this.practiceHourFormValues.selectedWeekday.toString()))) {
-          fg.addControl(
-            this.practiceHourFormValues.selectedWeekday.toString(),
-            this.fb.array([
-              this.getPracticeHoursFormGroup(
-                practice?.weekday,
-                {
-                  hour: stringToTimeArray(practice?.dayStart)[0],
-                  minute: stringToTimeArray(practice?.dayStart)[1],
-                },
-                {
-                  hour: stringToTimeArray(practice?.dayEnd)[0],
-                  minute: stringToTimeArray(practice?.dayEnd)[1],
-                },
-                practice?.id,
-              ),
-            ]),
-          );
-        } else if (fg.get(this.practiceHourFormValues.selectedWeekday.toString()) && practice) {
-          (fg.get(practice.weekday.toString()) as FormArray).push(
-            this.getPracticeHoursFormGroup(
-              practice.weekday,
-              {
-                hour: stringToTimeArray(practice?.dayStart)[0],
-                minute: stringToTimeArray(practice?.dayStart)[1],
-              },
-              {
-                hour: stringToTimeArray(practice?.dayEnd)[0],
-                minute: stringToTimeArray(practice?.dayEnd)[1],
-              },
-              practice.id,
-            ),
-          );
+
+    if (weekday === Weekday.ALL) {
+      getNumberArray(6).forEach((day) => {
+        const fa = fg.get(day.toString()) as FormArray;
+        if (!fa || !fa.length) {
+          fg.addControl(day.toString(), this.fb.array([this.getPracticeHoursFormGroup(day)]));
         }
+      });
+
+      const fa = fg.get('0') as FormArray;
+      if (!fa || !fa.length) {
+        fg.addControl('0'.toString(), this.fb.array([this.getPracticeHoursFormGroup(0)]));
+      }
+    } else if (!Object.keys(fg.value)?.length || (Object.keys(fg.value).length && !fg.get(this.practiceHourFormValues.selectedWeekday.toString()))) {
+      fg.addControl(
+        this.practiceHourFormValues.selectedWeekday.toString(),
+        this.fb.array([this.getPracticeHoursFormGroup(practice?.weekday, practice?.dayStart, practice?.dayEnd, practice?.id)]),
+      );
+    } else if (fg.get(this.practiceHourFormValues.selectedWeekday.toString()) && practice) {
+      (fg.get(practice.weekday.toString()) as FormArray).push(
+        this.getPracticeHoursFormGroup(practice.weekday, practice?.dayStart, practice?.dayEnd, practice.id),
+      );
     }
   }
 
@@ -194,6 +225,13 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
     if (!getAll) {
       keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL)];
+
+      // putting sunday in the end
+      if (selectedWeekday === Weekday.ALL) {
+        const sunDay = keys[0];
+        keys.splice(0, 1);
+        keys.push(sunDay);
+      }
     }
 
     if (keys?.length) {
@@ -232,12 +270,12 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public getBadgeColor(selectedTab: number): BadgeColor {
-    if (this.practiceHourFormValues.selectedWeekday === selectedTab) {
+    if (this.practiceHourFormValues?.selectedWeekday === selectedTab) {
       return 'primary';
     }
 
-    if (selectedTab === 0) {
-      for (let i = 1; i <= 7; i++) {
+    if (selectedTab === Weekday.ALL) {
+      for (let i = 0; i < 7; i++) {
         if (!this.practiceHourFormValues.practiceHours[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
           return 'gray';
         }
@@ -262,11 +300,12 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public savePracticeHours(): void {
-    console.log(this.practiceHourFormValues);
     if (this.practiceHourForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
       this.practiceHourForm.updateValueAndValidity();
     }
+
+    this.submitting$$.next(true);
 
     const practiceHourRequestData: PracticeAvailabilityServer[] = [
       ...this.practiceHoursWeekWiseControlsArray(true).reduce(
@@ -274,14 +313,12 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
           ...acc,
           ...formArray.controls.reduce((a, control) => {
             if (control.value.dayStart && control.value.dayEnd) {
-              console.log('control.value.dayStart: ', control.value.dayStart.hour);
-              console.log('control.value.minute: ', control.value.dayStart.minute);
               return [
                 ...a,
                 {
                   ...control.value,
-                  dayStart: `${control.value.dayStart.hour}:${control.value.dayStart.minute}`,
-                  dayEnd: `${control.value.dayEnd.hour}:${control.value.dayEnd.minute}`,
+                  dayStart: control.value.dayStart,
+                  dayEnd: control.value.dayEnd,
                 },
               ];
             }
@@ -297,11 +334,13 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     this.practiceHourApiSvc
       .savePracticeHours$(practiceHourRequestData)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((resp) => {
-        if (resp) {
+      .subscribe(
+        () => {
           this.notificationSvc.showNotification(`${this.practiceHoursData$$.value?.length ? 'Changes updated' : 'Saved'} successfully`);
-        }
-      });
+          this.submitting$$.next(false);
+        },
+        () => this.submitting$$.next(false),
+      );
   }
 
   public handleRadioButtonClick(controlArray: FormArray, controls: AbstractControl<any>) {
@@ -354,5 +393,24 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   public selectExceptionForm() {
     this.isExceptionFormSelected = true;
     this.practiceHourForm.patchValue({ selectedWeekday: 8 });
+  }
+
+  public handleTimeInput(time: string, control: AbstractControl | null | undefined) {
+    const formattedTime = formatTime(time, 24, 5);
+
+    if (!formattedTime) {
+      return;
+    }
+
+    const nameValue = {
+      name: formattedTime,
+      value: formattedTime,
+    };
+
+    if (!this.timings.find((t) => t.value === formattedTime)) {
+      this.timings.splice(0, 0, nameValue);
+    }
+
+    control?.setValue(formattedTime);
   }
 }

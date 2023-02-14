@@ -88,6 +88,15 @@ dfm-input-dropdown {
   }
 }
 
+.dfm-dropdown-input-pr-10 {
+  dfm-input-dropdown {
+    input {
+      padding-right: 10px !important;
+    }
+  }
+
+}
+
 .dfm-button-icon-bg-transparent {
   dfm-button-icon {
     button {

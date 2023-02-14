@@ -4,12 +4,14 @@
   .pr-hr-section2 {
     // viewport - nav - padding - sec1 height - sec gap - extra
     max-height: calc(100vh - 48px - 24px - 40px - 16px - 16px);
+    min-height: 512px;
     overflow-y: auto;
   }
 
   .pr-hr-form-fields {
-    max-height: 672px;
+    max-height: 800px;
     flex-wrap: wrap;
+    transition: 150ms all linear;
   }
 }
 
@@ -19,12 +21,24 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 1240px) {
   .pr-hr-form-fields {
     max-height: 100% !important;
     flex-wrap: nowrap !important;
   }
+
+  .pr-hr-time-dropdown {
+    transition: 150ms all linear;
+    max-width: fit-content;
+  }
 }
+
+//@media (max-width: 720px) {
+//  .pr-hr-form-fields {
+//    max-height: 100% !important;
+//    flex-wrap: nowrap !important;
+//  }
+//}
 
 @media (max-width: 680px) {
   .pr-hr-main-wrapper {
@@ -45,10 +59,8 @@
       box-shadow: none;
       border-radius: 0;
 
-      form {
-        .pr-hr-weekdays-tab {
-          overflow-x: auto;
-        }
+      .pr-hr-weekdays-tab {
+        overflow-x: scroll !important;
       }
     }
 

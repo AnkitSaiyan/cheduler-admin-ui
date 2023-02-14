@@ -1,11 +1,11 @@
-export function formatTime(timeString: string): string {
+export function formatTime(timeString: string, format: 12 | 24 = 12, interval = 30): string {
   if (!timeString) {
     return '';
   }
 
   const [hourPart, minutePart]: string[] = timeString.split(':');
 
-  console.log(hourPart, minutePart);
+  // console.log(hourPart, minutePart);
 
   if (!hourPart || !minutePart) {
     return '';
@@ -20,14 +20,29 @@ export function formatTime(timeString: string): string {
   }
 
   let ap = '';
-  if (+hourPart >= 12 && +hourPart < 24) {
-    ap = 'PM';
-  } else {
-    ap = 'AM';
+  if (format === 12) {
+    if (+hourPart >= 12 && +hourPart < 24) {
+      ap = 'PM';
+    } else {
+      ap = 'AM';
+    }
   }
 
-  const hour = hourPart === '12' ? hourPart : `0${Math.floor(+hourPart % 12).toString()}`.slice(-2);
-  const min = +minutePart.slice(0, 2) > 60 ? '00' : `0${minutePart.slice(0, 2).toString()}`.slice(-2);
+  let minuteInInterval = +minutePart.slice(0, 2);
+  if (minuteInInterval < 60) {
+    if (minuteInInterval % interval) {
+      console.log(minuteInInterval);
+      minuteInInterval -= minuteInInterval % interval;
+      console.log(minuteInInterval);
+    }
+  }
 
-  return `${hour}:${min}${ap}`;
+  const hour = hourPart === '12' ? hourPart : `0${Math.floor(format === 12 ? +hourPart % 12 : +hourPart).toString()}`.slice(-2);
+  const min = +minutePart.slice(0, 2) > 60 ? '00' : `0${minuteInInterval}`.slice(-2);
+
+  if (format === 12) {
+    return `${hour}:${min}${ap}`;
+  }
+
+  return `${hour}:${min}`;
 }

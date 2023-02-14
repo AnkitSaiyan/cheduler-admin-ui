@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable, of } from 'rxjs';
+import { map, Observable, of, Subject, combineLatest, startWith, switchMap, tap } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { PracticeAvailabilityServer } from '../../shared/models/practice.model';
@@ -9,34 +9,22 @@ import { PracticeAvailabilityServer } from '../../shared/models/practice.model';
   providedIn: 'root',
 })
 export class PracticeHoursApiService {
-  private practiceHours: PracticeAvailabilityServer[] = [];
+  private refreshPracticeHours$$ = new Subject<void>();
 
   constructor(private http: HttpClient) {}
 
   public get practiceHours$(): Observable<PracticeAvailabilityServer[]> {
-    return of(this.practiceHours);
+    return combineLatest([this.refreshPracticeHours$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchPractices$()));
+  }
+
+  private fetchPractices$(): Observable<any> {
+    return this.http.get<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.serverBaseUrl}/practice`).pipe(map((response) => response.data));
   }
 
   public savePracticeHours$(requestData: PracticeAvailabilityServer[]): Observable<PracticeAvailabilityServer[]> {
-    // if (requestData?.length) {
-    //   requestData.forEach((practice) => {
-    //     if (practice?.id) {
-    //       const index = this.practiceHours.findIndex((pa) => pa.id === practice.id);
-    //       if (index !== -1) {
-    //         this.practiceHours[index] = { ...practice };
-    //       }
-    //     } else {
-    //       this.practiceHours.push({
-    //         ...practice,
-    //         id: Math.random(),
-    //       });
-    //     }
-    //   });
-
-    //   return of('saved');
-    // }
-    return this.http
-      .post<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.serverBaseUrl}/practice`, requestData)
-      .pipe(map((response) => response.data));
+    return this.http.post<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.serverBaseUrl}/practice`, requestData).pipe(
+      map((response) => response.data),
+      // tap(() => this.refreshPracticeHours$$.next()),
+    );
   }
 }
