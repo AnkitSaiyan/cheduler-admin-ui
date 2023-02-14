@@ -23,6 +23,6 @@ export interface AddPhysicianRequestData {
   telephone: number;
   gsm: string;
   notifyDoctor: boolean;
-  count?: number;
+  status: Status;
   id?: number;
 }

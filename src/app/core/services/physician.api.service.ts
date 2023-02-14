@@ -47,7 +47,7 @@ export class PhysicianApiService {
     );
   }
 
-  public addPhysician$(requestData: AddPhysicianRequestData): Observable<AddPhysicianRequestData> {
+  public addPhysician$(requestData: AddPhysicianRequestData): Observable<Physician> {
     return this.http.post<BaseResponse<Physician>>(`${environment.serverBaseUrl}/doctor`, requestData).pipe(
       map((response) => response.data),
       tap(() => {
@@ -56,7 +56,7 @@ export class PhysicianApiService {
     );
   }
 
-  public updatePhysician$(requestData: AddPhysicianRequestData): Observable<AddPhysicianRequestData> {
+  public updatePhysician$(requestData: AddPhysicianRequestData): Observable<Physician> {
     const { id, ...restData } = requestData;
     return this.http.put<BaseResponse<Physician>>(`${environment.serverBaseUrl}/doctor/${id}`, restData).pipe(
       map((response) => response.data),

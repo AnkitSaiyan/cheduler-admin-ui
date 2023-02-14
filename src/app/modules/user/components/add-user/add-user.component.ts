@@ -73,6 +73,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       telephone: [userDetails?.telephone, []],
       gsm: [userDetails?.gsm, []],
       address: [userDetails?.address, []],
+      status: [userDetails?.status, []],
     });
   }
 
@@ -127,7 +128,10 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
             this.loading$$.next(false);
             this.closeModal(true);
           },
-          () => this.loading$$.next(false),
+          (err) => {
+            this.loading$$.next(false);
+            this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+          },
         );
     } else {
       this.userApiSvc
@@ -139,7 +143,10 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
             this.loading$$.next(false);
             this.closeModal(true);
           },
-          () => this.loading$$.next(false),
+          (err) => {
+            this.loading$$.next(false);
+            this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+          },
         );
     }
   }

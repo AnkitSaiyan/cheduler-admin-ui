@@ -123,9 +123,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        if (value) {
-          this.notificationSvc.showNotification('Status has changed successfully');
-        }
+        this.notificationSvc.showNotification('Status has changed successfully');
         this.clearSelected$$.next();
       });
 

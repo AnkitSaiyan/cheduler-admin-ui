@@ -7,6 +7,7 @@ import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AddPhysicianRequestData, Physician } from '../../../../shared/models/physician.model';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
+import { Status } from '../../../../shared/models/status.model';
 
 interface FormValues {
   firstname: string;
@@ -17,6 +18,7 @@ interface FormValues {
   telephone: number;
   gsm: string;
   notifyDoctor: boolean;
+  status: Status;
 }
 
 @Component({
@@ -65,6 +67,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       gsm: [physicianDetails?.gsm, [Validators.required]],
       address: [physicianDetails?.address, []],
       notifyDoctor: [!!physicianDetails?.notifyDoctor, []],
+      status: [physicianDetails?.status, []],
     });
   }
 
