@@ -101,8 +101,9 @@
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Status</span>
-          <span class="font-weight-medium flex-1"
-                [ngClass]="physicianDetails.status === 0 ? 'dfm-text-danger-600' : 'dfm-text-success-600'">{{ physicianDetails.status | statusName }}</span>
+          <span class="font-weight-medium flex-1" [ngClass]="physicianDetails?.status ? 'dfm-text-success-600' : 'dfm-text-danger-600'">
+            {{ (physicianDetails.status ? 1 : 0 ) | statusName }}
+          </span>
         </div>
       </div>
     </div>

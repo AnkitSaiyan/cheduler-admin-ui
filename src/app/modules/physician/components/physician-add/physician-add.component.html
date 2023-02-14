@@ -60,7 +60,7 @@
 
   <section class="modal-footer ad-ph-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
-    <dfm-button color="primary" size="md"
+    <dfm-button color="primary" size="md" [disabled]="(loading$$ | async) === true"
                 (click)="savePhysician()">{{ modalData.edit ? 'Save Changes' : 'Add Physician' }}</dfm-button>
   </section>
 </div>

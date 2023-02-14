@@ -20,8 +20,10 @@ export class PhysicianApiService {
     return combineLatest([this.refreshPhysicians$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllPhysicians()));
   }
 
-  private fetchAllPhysicians(): Observable<any[]> {
-    return this.http.get<BaseResponse<any[]>>(`${environment.serverBaseUrl}/doctor`).pipe(map((response) => response.data));
+  private fetchAllPhysicians(): Observable<Physician[]> {
+    return this.http
+      .get<BaseResponse<Physician[]>>(`${environment.serverBaseUrl}/doctor`)
+      .pipe(map((response) => response.data?.sort((p1, p2) => p2.id - p1.id)));
   }
 
   public getPhysicianByID(physicianID: number): Observable<Physician | undefined> {

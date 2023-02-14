@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { take, takeUntil } from 'rxjs';
+import { BehaviorSubject, take, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Weekday } from '../../../../shared/models/calendar.model';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AddPhysicianRequestData, Physician } from '../../../../shared/models/physician.model';
@@ -30,7 +29,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 
   public modalData!: { edit: boolean; physicianDetails: Physician };
 
-  public weekdayEnum = Weekday;
+  public loading$$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private modalSvc: ModalService,
@@ -81,7 +80,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       return;
     }
 
-    console.log(this.formValues);
+    this.loading$$.next(true);
 
     const addPhysicianReqData: AddPhysicianRequestData = {
       ...this.formValues,
@@ -95,23 +94,28 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 
     if (this.modalData.edit) {
       this.physicianApiSvc
-      .updatePhysician$(addPhysicianReqData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Physician updated successfully`);
-        this.closeModal(true);
-      });
-    }else{
+        .updatePhysician$(addPhysicianReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(
+          () => {
+            this.notificationSvc.showNotification(`Physician updated successfully`);
+            this.closeModal(true);
+            this.loading$$.next(false);
+          },
+          () => this.loading$$.next(false),
+        );
+    } else {
       this.physicianApiSvc
         .addPhysician$(addPhysicianReqData)
         .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`Physician added successfully`);
-          this.closeModal(true);
-        });
+        .subscribe(
+          () => {
+            this.notificationSvc.showNotification(`Physician added successfully`);
+            this.closeModal(true);
+            this.loading$$.next(false);
+          },
+          () => this.loading$$.next(false),
+        );
     }
-
-
-  
   }
 }
