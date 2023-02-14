@@ -1,8 +1,9 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { ButtonComponent, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
@@ -28,6 +29,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
 
+  @ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
+
+  // @ViewChild('actionsMenuButton') private actionsMenuButton!: ButtonComponent;
+
   public searchControl = new FormControl('', []);
 
   public downloadDropdownControl = new FormControl('', []);
@@ -48,6 +53,8 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public statusType = getStatusEnum();
 
+  public loading$$ = new BehaviorSubject(false);
+
   constructor(
     private physicianApiSvc: PhysicianApiService,
     private notificationSvc: NotificationDataService,
@@ -64,10 +71,16 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
   ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
-    this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
-      this.physicians$$.next(physicians);
-      this.filteredPhysicians$$.next(physicians);
-    });
+    this.physicianApiSvc.physicians$
+      .pipe(
+        tap(() => this.loading$$.next(true)),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe((physicians) => {
+        this.physicians$$.next(physicians);
+        this.filteredPhysicians$$.next(physicians);
+        this.loading$$.next(false);
+      });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
       if (searchText) {
@@ -109,6 +122,12 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
           this.notificationSvc.showNotification('Status has changed successfully');
         }
         this.clearSelected$$.next();
+      });
+
+    interval(0)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.closeMenus();
       });
   }
 
@@ -235,5 +254,14 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         backdropClass: 'modal-backdrop-remove-mv',
       },
     });
+  }
+
+  private closeMenus() {
+    if (window.innerWidth >= 680) {
+      if (this.optionMenu && this.optionMenu.isOpen()) {
+        this.optionMenu.close();
+        this.toggleMenu(true);
+      }
+    }
   }
 }

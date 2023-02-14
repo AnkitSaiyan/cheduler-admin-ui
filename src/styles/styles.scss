@@ -311,6 +311,12 @@ ngb-timepicker {
   max-width: inherit;
 }
 
+.popover-p-0 {
+  .popover-body {
+    padding: 0;
+  }
+}
+
 // others ===================================================================
 button:disabled {
   background: #D0D5DD !important;
