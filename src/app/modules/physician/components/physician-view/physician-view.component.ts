@@ -72,6 +72,6 @@ export class PhysicianViewComponent extends DestroyableComponent implements OnIn
         centered: true,
         backdropClass: 'modal-backdrop-remove-mv',
       },
-    }).result;
+    });
   }
 }

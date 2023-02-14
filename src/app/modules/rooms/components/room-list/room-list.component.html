@@ -93,7 +93,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Active }])"
+              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
             ></dfm-button>
 
             <dfm-button
@@ -101,7 +101,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Inactive }])"
+              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
             ></dfm-button>
 
             <dfm-button
@@ -124,11 +124,11 @@
               <div class="shadow-lg rm-li-action-buttons-menu rm-li-menus" ngbDropdownMenu
                    aria-labelledby="dropdownManual">
                 <div ngbDropdownItem *ngIf="item.status === statusType.Inactive"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Active }])">
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])">
                   <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
                 </div>
                 <div ngbDropdownItem *ngIf="item.status === statusType.Active"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Inactive }])">
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])">
                   <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
                 </div>
                 <div ngbDropdownItem (click)="$event.stopPropagation(); openAddRoomModal(item)"

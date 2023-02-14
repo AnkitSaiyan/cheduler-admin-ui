@@ -9,9 +9,13 @@
   }
 
   .pr-hr-form-fields {
-    max-height: 800px;
-    flex-wrap: wrap;
+    row-gap: 32px;
     transition: 150ms all linear;
+  }
+
+  .pr-hr-time-dropdown {
+    transition: 150ms all linear;
+    max-width: fit-content;
   }
 }
 
@@ -23,13 +27,6 @@
 
 @media (max-width: 1240px) {
   .pr-hr-form-fields {
-    max-height: 100% !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .pr-hr-time-dropdown {
-    transition: 150ms all linear;
-    max-width: fit-content;
   }
 }
 

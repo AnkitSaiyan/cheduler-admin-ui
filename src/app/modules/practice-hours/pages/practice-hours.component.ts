@@ -121,14 +121,27 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   private createPracticeControls(practiceHours?: PracticeAvailabilityServer[]) {
+    const weekdays = new Set([0, 1, 2, 3, 4, 5, 6]);
+
     if (practiceHours?.length) {
       // this.practiceHourForm.removeControl('practiceHours');
       // this.practiceHourForm.addControl('practiceHours', this.fb.group({}));
+      practiceHours.sort((p1, p2) => p1.weekday - p2.weekday);
 
       practiceHours.forEach((practice) => {
         this.practiceHourForm.patchValue({ selectedWeekday: practice.weekday });
         this.addPracticeHoursControls(practice);
+        if (weekdays.has(practice.weekday)) {
+          weekdays.delete(practice.weekday);
+        }
       });
+
+      weekdays.forEach((weekday) => {
+        this.practiceHourForm.patchValue({ selectedWeekday: weekday });
+        this.addPracticeHoursControls();
+      });
+
+      this.practiceHourForm.patchValue({ selectedWeekday: Weekday.ALL });
     } else {
       this.addPracticeHoursControls();
     }
@@ -216,29 +229,33 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     }
   }
 
-  public practiceHoursWeekWiseControlsArray(getAll = false): FormArray[] {
+  public practiceHoursWeekWiseControlsArray(getAll = false, column: 1 | 2 | 0 = 0): FormArray[] {
     const controls: FormArray[] = [];
 
     const fg = this.practiceHourForm.get('practiceHours');
     const { selectedWeekday } = this.practiceHourFormValues;
-    let keys = Object.keys(this.practiceHourFormValues.practiceHours);
+    let keys = [1, 2, 3, 4, 5, 6, 0];
 
     if (!getAll) {
-      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL)];
-
-      // putting sunday in the end
       if (selectedWeekday === Weekday.ALL) {
-        const sunDay = keys[0];
-        keys.splice(0, 1);
-        keys.push(sunDay);
+        switch (column) {
+          case 1:
+            keys = [1, 2, 3, 4];
+            break;
+          default:
+            keys = [5, 6, 0];
+            break;
+        }
+      } else {
+        keys = [selectedWeekday];
       }
     }
 
     if (keys?.length) {
       keys.forEach((key) => {
-        const fa = fg?.get(key) as FormArray;
+        const fa = fg?.get(key.toString()) as FormArray;
         if (fa?.length) {
-          controls.push(fg?.get(key) as FormArray);
+          controls.push(fg?.get(key.toString()) as FormArray);
         }
       });
     }

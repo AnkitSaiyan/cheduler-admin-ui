@@ -4,7 +4,7 @@ import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, t
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Status } from '../../../../shared/models/status.model';
+import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -95,18 +95,22 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedRooms.map((id) => ({ id: +id, newStatus: value.newStatus }))];
+            return [...this.selectedRooms.map((id) => ({ id: +id, status: value.newStatus as number }))];
           }
 
           return [];
+        }),
+        filter((changes) => {
+          if (!changes.length) {
+            this.clearSelected$$.next();
+          }
+          return !!changes.length;
         }),
         switchMap((changes) => this.roomApiSvc.changeRoomStatus$(changes)),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        if (value) {
-          this.notificationSvc.showNotification('Status has changed successfully');
-        }
+        this.notificationSvc.showNotification('Status has changed successfully');
         this.clearSelected$$.next();
       });
   }
@@ -128,7 +132,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     ]);
   }
 
-  public changeStatus(changes: { id: number | string; newStatus: Status | null }[]) {
+  public changeStatus(changes: ChangeStatusRequestData[]) {
     this.roomApiSvc
       .changeRoomStatus$(changes)
       .pipe(takeUntil(this.destroy$$))

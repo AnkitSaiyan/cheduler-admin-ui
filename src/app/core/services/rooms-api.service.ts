@@ -4,137 +4,12 @@ import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AddRoomRequestData, Room, RoomsGroupedByType, RoomType } from '../../shared/models/rooms.model';
-import { Status } from '../../shared/models/status.model';
-import { AvailabilityType } from '../../shared/models/user.model';
-import { PracticeAvailability } from '../../shared/models/practice.model';
+import { ChangeStatusRequestData } from '../../shared/models/status.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoomsApiService {
-  private rooms: Room[] = [
-    {
-      id: 1,
-      name: 'John Room 1',
-      description: 'Test Room',
-      type: RoomType.Public,
-      availabilityType: AvailabilityType.Available,
-      status: Status.Inactive,
-      placeInAgenda: 0,
-      roomNo: 1,
-      practiceAvailability: [],
-      examLists: [1, 2],
-    },
-    {
-      id: 2,
-      name: 'Tim Room 1',
-      description: 'General Room',
-      type: RoomType.Private,
-      availabilityType: AvailabilityType.Available,
-      status: Status.Active,
-      placeInAgenda: 0,
-      roomNo: 1,
-      practiceAvailability: [],
-      examLists: [3, 4],
-    },
-    {
-      id: 3,
-      name: 'John Room 2',
-      description: 'Test Room',
-      type: RoomType.Public,
-      availabilityType: AvailabilityType.Unavailable,
-      status: Status.Inactive,
-      placeInAgenda: 0,
-      roomNo: 1,
-      practiceAvailability: [],
-      examLists: [],
-    },
-    {
-      id: 4,
-      name: 'Tim Room 2',
-      description: 'General Room',
-      type: RoomType.Private,
-      availabilityType: AvailabilityType.Available,
-      status: Status.Active,
-      placeInAgenda: 0,
-      roomNo: 1,
-      practiceAvailability: [],
-      examLists: [],
-    },
-    {
-      id: 5,
-      name: 'John Room 3',
-      description: 'Test Room',
-      type: RoomType.Public,
-      availabilityType: AvailabilityType.Unavailable,
-      status: Status.Inactive,
-      placeInAgenda: 0,
-      roomNo: 1,
-      practiceAvailability: [],
-      examLists: [],
-    },
-    {
-      id: 6,
-      name: 'Tim Room 3',
-      description: 'General Room',
-      type: RoomType.Private,
-      availabilityType: AvailabilityType.Unavailable,
-      status: Status.Active,
-      placeInAgenda: 0,
-      roomNo: 1,
-      practiceAvailability: [],
-      examLists: [],
-    },
-    {
-      id: 7,
-      name: 'John Room 4',
-      description: 'Test Room',
-      type: RoomType.Public,
-      availabilityType: AvailabilityType.Available,
-      status: Status.Inactive,
-      placeInAgenda: 0,
-      roomNo: 1,
-      practiceAvailability: [],
-      examLists: [],
-    },
-    {
-      id: 8,
-      name: 'Tim Room 4',
-      description: 'General Room',
-      type: RoomType.Private,
-      availabilityType: AvailabilityType.Available,
-      status: Status.Active,
-      placeInAgenda: 0,
-      roomNo: 1,
-      practiceAvailability: [],
-      examLists: [],
-    },
-    {
-      id: 9,
-      name: 'John Room 5',
-      description: 'Test Room',
-      type: RoomType.Public,
-      availabilityType: AvailabilityType.Available,
-      status: Status.Inactive,
-      placeInAgenda: 0,
-      roomNo: 1,
-      practiceAvailability: [],
-      examLists: [],
-    },
-    {
-      id: 10,
-      name: 'Tim Room 5',
-      description: 'General Room',
-      type: RoomType.Private,
-      availabilityType: AvailabilityType.Available,
-      status: Status.Active,
-      placeInAgenda: 0,
-      roomNo: 1,
-      practiceAvailability: [],
-      examLists: [],
-    },
-  ];
-
   private roomTypes: { name: string; value: string }[] = [
     {
       name: 'Private',
@@ -148,6 +23,8 @@ export class RoomsApiService {
 
   private refreshRooms$$ = new Subject<void>();
 
+  private readonly roomUrl = `${environment.serverBaseUrl}/room`;
+
   constructor(private http: HttpClient) {}
 
   public get rooms$(): Observable<Room[]> {
@@ -155,110 +32,40 @@ export class RoomsApiService {
   }
 
   private fetchAllRooms(): Observable<Room[]> {
-    return this.http.get<BaseResponse<Room[]>>(`${environment.serverBaseUrl}/room`).pipe(map((response) => response.data));
+    return this.http.get<BaseResponse<Room[]>>(`${this.roomUrl}`).pipe(map((response) => response.data));
   }
 
   public getRoomByID(roomID: number): Observable<Room | undefined> {
     // return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.rooms.find((room) => +room.id === +roomID))));
-    return this.http.get<BaseResponse<Room>>(`${environment.serverBaseUrl}/room/${roomID}`).pipe(map((response) => response.data));
+    return this.http.get<BaseResponse<Room>>(`${this.roomUrl}/${roomID}`).pipe(map((response) => response.data));
   }
 
-  public changeRoomStatus$(changes: { id: number | string; newStatus: Status | null }[]): Observable<boolean> {
-    if (!changes.length) {
-      return of(false);
-    }
-
-    let changed = false;
-    changes.forEach((change) => {
-      const index = this.rooms.findIndex((room) => room.id === +change.id);
-      if (index !== -1 && change.newStatus !== null) {
-        this.rooms[index] = {
-          ...this.rooms[index],
-          status: change.newStatus,
-        };
-
-        if (!changed) {
-          changed = true;
-        }
-      }
-    });
-
-    this.refreshRooms$$.next();
-
-    return of(true);
+  public changeRoomStatus$(requestData: ChangeStatusRequestData[]): Observable<null> {
+    return this.http.put<BaseResponse<any>>(`${this.roomUrl}/updateroomstatus`, requestData).pipe(
+      map((resp) => resp?.data),
+      tap(() => this.refreshRooms$$.next()),
+    );
   }
-
-  // public upsertRoom$(requestData: AddRoomRequestData): Observable<string> {
-  //   if (!requestData) {
-  //     return of('');
-  //   }
-
-  //   if (requestData?.id) {
-  //     const index = this.rooms.findIndex((room) => room.id === requestData.id);
-  //     if (index !== -1) {
-  //       this.rooms[index] = {
-  //         ...this.rooms[index],
-  //         id: requestData.id,
-  //         name: requestData.name,
-  //         description: requestData.description,
-  //         type: requestData.type,
-  //         roomNo: requestData?.roomNo ?? 1,
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
-  //       };
-
-  //       console.log(requestData.practiceAvailability);
-  //     }
-  //   } else {
-  //     this.rooms.push({
-  //       id: Math.random(),
-  //       name: requestData.name,
-  //       description: requestData.description,
-  //       type: requestData.type,
-  //       roomNo: requestData?.roomNo ?? 1,
-  //       status: Status.Active,
-  //       availabilityType: AvailabilityType.Available,
-  //       practiceAvailability: requestData.practiceAvailability ?? ([] as PracticeAvailability[]),
-  //     });
-  //   }
-
-  //   this.refreshRooms$$.next();
-
-  //   return of('created');
-  // }
 
   public addRoom$(requestData: AddRoomRequestData): Observable<AddRoomRequestData> {
-    return this.http.post<BaseResponse<Room>>(`${environment.serverBaseUrl}/room`, requestData).pipe(
+    return this.http.post<BaseResponse<Room>>(`${this.roomUrl}`, requestData).pipe(
       map((response) => response.data),
-      tap(() => {
-        this.refreshRooms$$.next();
-      }),
+      tap(() => this.refreshRooms$$.next()),
     );
   }
 
   public editRoom$(requestData: AddRoomRequestData): Observable<AddRoomRequestData> {
     const { id, ...restData } = requestData;
-    return this.http.put<BaseResponse<Room>>(`${environment.serverBaseUrl}/room/${id}`, restData).pipe(
+    return this.http.put<BaseResponse<Room>>(`${this.roomUrl}/${id}`, restData).pipe(
       map((response) => response.data),
-      tap(() => {
-        this.refreshRooms$$.next();
-      }),
+      tap(() => this.refreshRooms$$.next()),
     );
   }
 
   public deleteRoom(roomID: number) {
-    // const index = this.rooms.findIndex((room) => room.id === +roomID);
-    // if (index !== -1) {
-    //   this.rooms.splice(index, 1);
-    //   this.refreshRooms$$.next();
-    // }
-
-    return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/room/${roomID}`).pipe(
+    return this.http.delete<BaseResponse<Boolean>>(`${this.roomUrl}/${roomID}`).pipe(
       map((response) => response.data),
-      tap(() => {
-        this.refreshRooms$$.next();
-      }),
+      tap(() => this.refreshRooms$$.next()),
     );
   }
 
