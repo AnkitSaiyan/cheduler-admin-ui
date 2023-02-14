@@ -181,10 +181,11 @@
     </div>
   </div>
 
-  <dfm-button color="secondary" size="md" class="hidden shadow-lg ph-li-plus-btn rounded-2"
-              (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">
-    <dfm-icon #showMoreButtonIcon name="plus" class="ph-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
-  </dfm-button>
+  <div class="hidden shadow-lg ph-li-plus-btn rounded-2" (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">
+    <dfm-button color="secondary" size="md" class="h-full">
+      <dfm-icon #showMoreButtonIcon name="plus" class="ph-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
+    </dfm-button>
+  </div>
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedPhysicianIDs.length"
