@@ -1,10 +1,11 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TableItem } from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Status } from '../../../../shared/models/status.model';
+import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -28,6 +29,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
 
+  @ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
+
   public searchControl = new FormControl('', []);
 
   public downloadDropdownControl = new FormControl('', []);
@@ -50,6 +53,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   public userType = getUserTypeEnum();
 
+  public loading$$ = new BehaviorSubject(true);
+
   constructor(
     private userApiSvc: StaffApiService,
     private notificationSvc: NotificationDataService,
@@ -68,15 +73,19 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       this.downloadItems = types;
     });
 
-    this.userApiSvc.staffList$
+    this.userApiSvc.userLists$
       .pipe(
-        map((users) => users.filter((user) => [UserType.Scheduler, UserType.Secretary, UserType.General].includes(user.userType))),
+        tap(() => this.loading$$.next(true)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((users) => {
-        this.users$$.next(users);
-        this.filteredUsers$$.next(users);
-      });
+      .subscribe(
+        (users) => {
+          this.users$$.next(users);
+          this.filteredUsers$$.next(users);
+          this.loading$$.next(false);
+        },
+        (err) => this.loading$$.next(false),
+      );
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
       if (searchText) {
@@ -105,13 +114,13 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedUserIds.map((id) => ({ id: +id, newStatus: value.newStatus }))];
+            return [...this.selectedUserIds.map((id) => ({ id: +id, status: value.newStatus as number }))];
           }
 
           return [];
         }),
-        // TODO have to implement change status
-        // switchMap((changes) => this.userApiSvc.changeStaffStatus$(changes)),
+        filter((changes) => !!changes.length),
+        switchMap((changes) => this.userApiSvc.changeUserStatus$(changes)),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
@@ -121,11 +130,11 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         this.clearSelected$$.next();
       });
 
-    this.userApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-      console.log('appointments: ', appointments);
-      this.users$$.next(appointments);
-      this.filteredUsers$$.next(appointments);
-    });
+    interval(0)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.closeMenus();
+      });
   }
 
   public override ngOnDestroy() {
@@ -151,11 +160,14 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     ]);
   }
 
-  public changeStatus(changes: { id: number | string; newStatus: Status | null }[]) {
-    // this.userApiSvc
-    //   .changeStaffStatus$(changes)
-    //   .pipe(takeUntil(this.destroy$$))
-    //   .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
+  public changeStatus(changes: ChangeStatusRequestData[]) {
+    this.userApiSvc
+      .changeUserStatus$(changes)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(
+        () => this.notificationSvc.showNotification('Status has changed successfully'),
+        (err) => this.notificationSvc.showNotification(err, NotificationType.DANGER),
+      );
   }
 
   public deleteUser(id: number) {
@@ -251,5 +263,14 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         backdropClass: 'modal-backdrop-remove-mv',
       },
     });
+  }
+
+  private closeMenus() {
+    if (window.innerWidth >= 680) {
+      if (this.optionMenu && this.optionMenu.isOpen()) {
+        this.optionMenu.close();
+        this.toggleMenu(true);
+      }
+    }
   }
 }

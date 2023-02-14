@@ -1,6 +1,6 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
-import { ButtonComponent, NotificationType, TableItem } from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
@@ -53,7 +53,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public statusType = getStatusEnum();
 
-  public loading$$ = new BehaviorSubject(false);
+  public loading$$ = new BehaviorSubject(true);
 
   constructor(
     private physicianApiSvc: PhysicianApiService,
@@ -68,7 +68,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     this.filteredPhysicians$$ = new BehaviorSubject<any[]>([]);
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.physicianApiSvc.physicians$
