@@ -119,38 +119,50 @@
             ></dfm-button>
           </div>
 
-          <div class="position-relative">
-            <div ngbDropdown #actionButtonsMenu="ngbDropdown">
-              <div class="shadow-lg rm-li-action-buttons-menu rm-li-menus" ngbDropdownMenu
-                   aria-labelledby="dropdownManual">
-                <div ngbDropdownItem *ngIf="item.status === statusType.Inactive"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])">
-                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-                </div>
-                <div ngbDropdownItem *ngIf="item.status === statusType.Active"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])">
-                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-                </div>
-                <div ngbDropdownItem (click)="$event.stopPropagation(); openAddRoomModal(item)"
-                     class="position-relative">
-                  <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
-                  <div class="menu-point-forward shadow-sm"></div>
-                </div>
-                <div ngbDropdownItem (click)="$event.stopPropagation(); deleteRoom(item.id)">
-                  <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
-                </div>
+          <!-- Action Menu -->
+          <dfm-button
+            [ngbPopover]="actionMenu"
+            autoClose="autoClose"
+            triggers="click"
+            container="body"
+            placement="left"
+            popoverClass="popover-p-0"
+            [openDelay]="200"
+            class="hidden rm-li-vertical-dots-btn"
+            color="link-gray"
+            size="sm"
+            trailingIcon="dots-vertical"
+            (click)="$event.stopPropagation(); toggleMenu(true)"
+          ></dfm-button>
+
+          <ng-template #actionMenu>
+            <div class="rm-li-menus"
+                 aria-labelledby="dropdownManual">
+              <div *ngIf="!item.status"
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
+                   ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+              </div>
+
+              <div *ngIf="item.status"
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
+                   ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+              </div>
+
+              <div (click)="$event.stopPropagation(); openAddRoomModal(item)" ngbPopover="Edit"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
+              </div>
+
+              <div (click)="$event.stopPropagation(); deleteRoom(item.id)" ngbPopover="Delete"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>
+          </ng-template>
+          <!-- Action Menu ends -->
 
-            <dfm-button
-              class="hidden rm-li-vertical-dots-btn"
-              color="link-gray"
-              size="sm"
-              trailingIcon="dots-vertical"
-              (click)="$event.stopPropagation(); actionButtonsMenu.open();"
-            ></dfm-button>
-
-          </div>
         </dfm-table-body-cell>
       </ng-template>
     </dfm-table>
@@ -172,10 +184,12 @@
     </div>
   </div>
 
-  <dfm-button color="secondary" size="md" class="hidden shadow-lg rm-li-plus-btn rounded-2"
-              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">
-    <dfm-icon #showMoreButtonIcon name="plus" class="rm-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
-  </dfm-button>
+  <div class="hidden shadow-lg rm-li-plus-btn rounded-2">
+    <dfm-button color="secondary" size="md" class="h-full"
+                (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">
+      <dfm-icon #showMoreButtonIcon name="plus" class="rm-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
+    </dfm-button>
+  </div>
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedRooms.length"

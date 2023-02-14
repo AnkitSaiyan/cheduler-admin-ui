@@ -1,8 +1,9 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
+import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
@@ -26,6 +27,8 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
   }
 
   @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
+
+  @ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
 
   public searchControl = new FormControl('', []);
 
@@ -112,6 +115,12 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
       .subscribe((value) => {
         this.notificationSvc.showNotification('Status has changed successfully');
         this.clearSelected$$.next();
+      });
+
+    interval(0)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.closeMenus();
       });
   }
 
@@ -230,5 +239,14 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
         backdropClass: 'modal-backdrop-remove-mv',
       },
     });
+  }
+
+  private closeMenus() {
+    if (window.innerWidth >= 680) {
+      if (this.optionMenu && this.optionMenu.isOpen()) {
+        this.optionMenu.close();
+        this.toggleMenu(true);
+      }
+    }
   }
 }
