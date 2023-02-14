@@ -67,7 +67,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       gsm: [physicianDetails?.gsm, [Validators.required]],
       address: [physicianDetails?.address, []],
       notifyDoctor: [!!physicianDetails?.notifyDoctor, []],
-      status: [physicianDetails?.status, []],
+      status: [!!physicianDetails?.status, []],
     });
   }
 
@@ -87,6 +87,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 
     const addPhysicianReqData: AddPhysicianRequestData = {
       ...this.formValues,
+      status: +this.formValues.status,
     };
 
     if (this.modalData?.physicianDetails?.id) {

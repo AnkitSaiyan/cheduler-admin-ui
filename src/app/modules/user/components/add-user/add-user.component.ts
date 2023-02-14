@@ -9,6 +9,7 @@ import { User, UserType } from '../../../../shared/models/user.model';
 import { getUserTypeEnum } from '../../../../shared/utils/getUserTypeEnum';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { AddStaffRequestData } from '../../../../shared/models/staff.model';
+import { Status } from '../../../../shared/models/status.model';
 
 interface FormValues {
   userType: UserType.General | UserType.Scheduler;
@@ -18,6 +19,7 @@ interface FormValues {
   address: string;
   telephone: number;
   gsm: string;
+  status: Status;
 }
 
 @Component({
@@ -73,7 +75,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       telephone: [userDetails?.telephone, []],
       gsm: [userDetails?.gsm, []],
       address: [userDetails?.address, []],
-      status: [userDetails?.status, []],
+      status: [!!userDetails?.status, []],
     });
   }
 
@@ -96,9 +98,9 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     this.loading$$.next(true);
 
-    const { gsm, address, ...rest } = this.formValues;
+    const { gsm, address, status, ...rest } = this.formValues;
 
-    let addUserReqData: AddStaffRequestData = { ...rest };
+    let addUserReqData: AddStaffRequestData = { ...rest, status: +status };
 
     if (this.formValues?.userType === this.userType.Scheduler || this.modalData.userDetails?.userType === this.userType.Scheduler) {
       addUserReqData = {
