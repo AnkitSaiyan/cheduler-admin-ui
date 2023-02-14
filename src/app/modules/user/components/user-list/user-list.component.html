@@ -93,6 +93,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
+              ngbPopover="Status" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave" popoverClass="popover-p-1" [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
             ></dfm-button>
 
@@ -101,6 +102,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
+              ngbPopover="Status" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave" popoverClass="popover-p-1" [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
             ></dfm-button>
 
@@ -108,6 +110,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
+              ngbPopover="Edit" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave" popoverClass="popover-p-1" [openDelay]="200"
               (click)="$event.stopPropagation(); openAddUserModal(item)"
             ></dfm-button>
 
@@ -115,6 +118,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
+              ngbPopover="Delete" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave" popoverClass="popover-p-1" [openDelay]="200"
               (click)="$event.stopPropagation(); deleteUser(item.id)"
             ></dfm-button>
           </div>
@@ -126,7 +130,9 @@
             triggers="click"
             container="body"
             placement="left"
-            popoverClass="popover-p-0"
+            triggers="mouseenter:mouseleave" 
+            popoverClass="popover-p-1" 
+            [openDelay]="200"
             class="hidden us-li-vertical-dots-btn"
             color="link-gray"
             size="sm"
@@ -138,20 +144,19 @@
             <div class="us-li-menus"
                  aria-labelledby="dropdownManual">
               <div *ngIf="!item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])">
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])" ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-1" [openDelay]="200">
                 <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
               </div>
 
-              <div *ngIf="item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])">
+              <div *ngIf="item.status" (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])" ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-1" [openDelay]="200">
                 <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); openAddUserModal(item)">
+              <div (click)="$event.stopPropagation(); openAddUserModal(item)" ngbPopover="Edit" triggers="mouseenter:mouseleave" popoverClass="popover-p-1" [openDelay]="200">
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); deleteUser(item.id)">
+              <div (click)="$event.stopPropagation(); deleteUser(item.id)" ngbPopover="Delete" triggers="mouseenter:mouseleave" popoverClass="popover-p-1" [openDelay]="200">
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>
