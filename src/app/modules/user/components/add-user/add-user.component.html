@@ -67,7 +67,7 @@
 
   <section class="modal-footer ad-us-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
-    <dfm-button color="primary" size="md"
+    <dfm-button color="primary" size="md" [disabled]="(loading$$ | async) === true"
                 (click)="saveUser()">{{ modalData.edit ? 'Save Changes' : 'Add User' }}</dfm-button>
   </section>
 </div>

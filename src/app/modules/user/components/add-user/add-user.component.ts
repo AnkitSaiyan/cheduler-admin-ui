@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationType } from 'diflexmo-angular-design';
-import { take, takeUntil } from 'rxjs';
-import { FormBuilder, FormGroup, PatternValidator, Validators } from '@angular/forms';
+import { BehaviorSubject, take, takeUntil } from 'rxjs';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -31,6 +31,8 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
   public modalData!: { edit: boolean; userDetails: User };
 
   public userType = getUserTypeEnum();
+
+  public loading$$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private modalSvc: ModalService,
@@ -91,7 +93,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       return;
     }
 
-    console.log(this.formValues);
+    this.loading$$.next(true);
 
     const { gsm, address, ...rest } = this.formValues;
 
@@ -119,18 +121,26 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       this.userApiSvc
         .updateStaff(addUserReqData)
         .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`User updated successfully`);
-          this.closeModal(true);
-        });
+        .subscribe(
+          () => {
+            this.notificationSvc.showNotification(`User updated successfully`);
+            this.loading$$.next(false);
+            this.closeModal(true);
+          },
+          () => this.loading$$.next(false),
+        );
     } else {
       this.userApiSvc
         .addNewStaff$(addUserReqData)
         .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`User added successfully`);
-          this.closeModal(true);
-        });
+        .subscribe(
+          () => {
+            this.notificationSvc.showNotification(`User added successfully`);
+            this.loading$$.next(false);
+            this.closeModal(true);
+          },
+          () => this.loading$$.next(false),
+        );
     }
   }
 }
