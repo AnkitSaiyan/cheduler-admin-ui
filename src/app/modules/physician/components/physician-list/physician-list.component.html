@@ -94,6 +94,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
+              ngbPopover="Status" triggers="mouseenter:mouseleave"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
             ></dfm-button>
 
@@ -102,6 +103,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
+              ngbPopover="Status" triggers="mouseenter:mouseleave"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
             ></dfm-button>
 
@@ -109,6 +111,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
+              ngbPopover="Edit" triggers="mouseenter:mouseleave"
               (click)="$event.stopPropagation(); openAddPhysicianModal(item);"
             ></dfm-button>
 
@@ -116,6 +119,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
+              ngbPopover="Delete" triggers="mouseenter:mouseleave"
               (click)="$event.stopPropagation(); deletePhysician(item.id)"
             ></dfm-button>
           </div>
@@ -139,20 +143,20 @@
             <div class="ph-li-menus"
                  aria-labelledby="dropdownManual">
               <div *ngIf="!item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])">
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])" ngbPopover="Status" triggers="mouseenter:mouseleave">
                 <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
               </div>
 
               <div *ngIf="item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])">
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])" ngbPopover="Status" triggers="mouseenter:mouseleave">
                 <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); openAddPhysicianModal(item)">
+              <div (click)="$event.stopPropagation(); openAddPhysicianModal(item)" ngbPopover="Edit" triggers="mouseenter:mouseleave">
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); deletePhysician(item.id)">
+              <div (click)="$event.stopPropagation(); deletePhysician(item.id)" ngbPopover="Delete" triggers="mouseenter:mouseleave">
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>
