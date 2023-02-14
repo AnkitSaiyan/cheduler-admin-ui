@@ -119,7 +119,12 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
           return [];
         }),
-        filter((changes) => !!changes.length),
+        filter((changes) => {
+          if (!changes.length) {
+            this.clearSelected$$.next();
+          }
+          return !!changes.length;
+        }),
         switchMap((changes) => this.userApiSvc.changeUserStatus$(changes)),
         takeUntil(this.destroy$$),
       )

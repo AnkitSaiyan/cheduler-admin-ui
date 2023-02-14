@@ -113,7 +113,12 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
           }
           return [];
         }),
-        filter((changes) => !!changes.length),
+        filter((changes) => {
+          if (!changes.length) {
+            this.clearSelected$$.next();
+          }
+          return !!changes.length;
+        }),
         switchMap((changes) => this.physicianApiSvc.changePhysicianStatus$(changes)),
         takeUntil(this.destroy$$),
       )
