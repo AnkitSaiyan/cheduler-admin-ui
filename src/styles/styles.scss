@@ -317,6 +317,12 @@ ngb-timepicker {
   }
 }
 
+.popover-p-1 {
+  .popover-body {
+    padding: 8px;
+  }
+}
+
 // others ===================================================================
 button:disabled {
   background: #D0D5DD !important;
