@@ -36,7 +36,7 @@
   <div class="calender-week-view-body-container">
     <div role="presentation" class="calender-week-view-body">
       <div role="row" class="calender-week-view-time-slot-container">
-        <div class="calender-week-view-time-slot text-sm" *ngFor="let time of timeInterval | timeInInterval : true">
+        <div class="calender-week-view-time-slot text-sm" *ngFor="let time of timeInterval | timeInInterval : 12 : true">
           <span>{{ time }}</span>
           <div class="calender-week-view-horizontal-line"></div>
         </div>

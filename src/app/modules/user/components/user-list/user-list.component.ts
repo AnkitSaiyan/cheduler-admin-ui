@@ -12,7 +12,7 @@ import { NotificationDataService } from '../../../../core/services/notification-
 import { ModalService } from '../../../../core/services/modal.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { User, UserType } from '../../../../shared/models/user.model';
+import { User } from '../../../../shared/models/user.model';
 import { DownloadService } from '../../../../core/services/download.service';
 import { getUserTypeEnum } from '../../../../shared/utils/getUserTypeEnum';
 import { AddUserComponent } from '../add-user/add-user.component';

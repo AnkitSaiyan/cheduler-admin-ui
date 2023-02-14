@@ -4,7 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'timeInInterval',
 })
 export class TimeInIntervalPipe implements PipeTransform {
-  public transform(interval: number = 30, formatted = false): string[] {
+  public transform(interval: number = 30, format: 12 | 24 = 24, formatted = false): string[] {
     const times: any[] = []; // time array
     const ap = ['AM', 'PM']; // AM-PM
 
@@ -16,7 +16,7 @@ export class TimeInIntervalPipe implements PipeTransform {
       const minute = startTime % 60;
 
       // pushing data in array in [00:00 - 12:00 AM/PM format]
-      const hourString = `0${hour % 12 === 0 ? '12' : hour % 12}`.slice(-2);
+      const hourString = `0${hour % format === 0 ? '12' : hour % format}`.slice(-2);
       const minuteString = `0${minute}`.slice(-2);
       let time: string;
 
@@ -28,7 +28,9 @@ export class TimeInIntervalPipe implements PipeTransform {
         time = `${hourString}:${minuteString}`;
       }
 
-      time += ap[Math.floor(hour / 12)];
+      if (format === 12) {
+        time += ap[Math.floor(hour / 12)];
+      }
 
       times.push(time);
     }
