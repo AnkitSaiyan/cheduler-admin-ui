@@ -6,7 +6,7 @@ import { Status } from './status.model';
 export interface AddStaffRequestData {
   firstname: string;
   lastname: string;
-  email: string;
+  email: string | null;
   telephone: string | number;
   address?: string;
   userType: UserType;

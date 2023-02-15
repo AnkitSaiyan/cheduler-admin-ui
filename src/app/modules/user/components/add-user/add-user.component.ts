@@ -10,6 +10,7 @@ import { getUserTypeEnum } from '../../../../shared/utils/getUserTypeEnum';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { AddStaffRequestData } from '../../../../shared/models/staff.model';
 import { Status } from '../../../../shared/models/status.model';
+import { EMAIL_REGEX } from '../../../../shared/utils/const';
 
 interface FormValues {
   userType: UserType.General | UserType.Scheduler;
@@ -71,7 +72,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       ],
       firstname: [userDetails?.firstname ?? '', [Validators.required]],
       lastname: [userDetails?.lastname ?? '', [Validators.required]],
-      email: [userDetails?.email ?? '', [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
+      email: [userDetails?.email ?? '', []],
       telephone: [userDetails?.telephone, []],
       gsm: [userDetails?.gsm, []],
       address: [userDetails?.address, []],
@@ -85,11 +86,6 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
   }
 
   public saveUser() {
-    if (this.addUserForm.get('email')?.invalid) {
-      this.notificationSvc.showNotification('Please enter valid email', NotificationType.WARNING);
-      this.addUserForm.markAsTouched();
-      return;
-    }
     if (this.addUserForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
       this.addUserForm.markAsTouched();
@@ -116,6 +112,10 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     if (this.modalData?.userDetails?.id) {
       addUserReqData.id = this.modalData.userDetails.id;
+    }
+
+    if (!addUserReqData.email) {
+      addUserReqData.email = null;
     }
 
     console.log(addUserReqData);
@@ -150,6 +150,22 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
             this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
           },
         );
+    }
+  }
+
+  public handleEmailInput(e: Event): void {
+    const inputText = (e.target as HTMLInputElement).value;
+
+    if (!inputText) {
+      return;
+    }
+
+    if (!inputText.match(EMAIL_REGEX)) {
+      this.addUserForm.get('email')?.setErrors({
+        email: true,
+      });
+    } else {
+      this.addUserForm.get('email')?.setErrors(null);
     }
   }
 }
