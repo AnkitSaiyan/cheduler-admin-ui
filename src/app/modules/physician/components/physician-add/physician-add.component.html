@@ -25,10 +25,10 @@
   <section class="modal-body dfm-pb-24 ad-ph-section2">
     <form [formGroup]="addPhysicianForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
-        <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="First Name *" formControlName="firstname">
+        <dfm-input #firstname [dfmNameInput]="firstname" class="flex-1" size="md" placeholder="Enter first name" label="First Name *" formControlName="firstname">
         </dfm-input>
 
-        <dfm-input class="flex-1" size="md" placeholder="Enter last name" label="Last Name *" formControlName="lastname">
+        <dfm-input #lastname [dfmNameInput]="lastname" class="flex-1" size="md" placeholder="Enter last name" label="Last Name *" formControlName="lastname">
         </dfm-input>
       </div>
 
