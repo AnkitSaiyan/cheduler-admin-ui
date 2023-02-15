@@ -180,6 +180,10 @@
   .room-table-td:last-child {
     z-index: 0;
   }
+
+  .room-table-wrapper {
+    max-height: calc(100vh - 48px - 40px - 65px - 16px - 24px);
+  }
 }
 
 .example-list {

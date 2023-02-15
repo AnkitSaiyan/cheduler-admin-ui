@@ -140,7 +140,6 @@
               container="body"
               placement="left"
               popoverClass="popover-p-0"
-              [openDelay]="200"
               class="hidden rm-li-vertical-dots-btn"
               color="link-gray"
               size="sm"
@@ -320,26 +319,26 @@
     <!--      </ng-template>-->
     <!--    </dfm-table>-->
   </section>
-  <div ngbDropdown #optionsMenu="ngbDropdown">
-    <div class="shadow-lg rm-li-plus-btn-menu rm-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
-      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">
-        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
-      </div>
-    </div>
-  </div>
+<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+<!--    <div class="shadow-lg rm-li-plus-btn-menu rm-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
 
-  <div class="hidden shadow-lg rm-li-plus-btn rounded-2">
-    <dfm-button color="secondary" size="md" class="h-full"
-                (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">
-      <dfm-icon #showMoreButtonIcon name="plus" class="rm-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
-    </dfm-button>
-  </div>
+<!--  <div class="hidden shadow-lg rm-li-plus-btn rounded-2">-->
+<!--    <dfm-button color="secondary" size="md" class="h-full"-->
+<!--                (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
+<!--      <dfm-icon #showMoreButtonIcon name="plus" class="rm-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+<!--    </dfm-button>-->
+<!--  </div>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedRooms.length"

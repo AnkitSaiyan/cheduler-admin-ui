@@ -41,6 +41,7 @@ section.us-vw-section2 {
     flex-direction: column;
 
     &>div {
+      min-width: auto;
       width: 100%;
       max-width: 100%;
     }

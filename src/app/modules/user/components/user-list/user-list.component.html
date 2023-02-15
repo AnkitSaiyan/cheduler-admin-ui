@@ -131,7 +131,6 @@
             container="body"
             placement="left"
             popoverClass="popover-p-0"
-            [openDelay]="200"
             class="hidden us-li-vertical-dots-btn"
             color="link-gray"
             size="sm"
@@ -171,26 +170,26 @@
       No user found
     </div>
   </section>
-  <div ngbDropdown #optionsMenu="ngbDropdown">
-    <div class="shadow-lg us-li-plus-btn-menu us-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
-      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">
-        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
-      </div>
-    </div>
-  </div>
+<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+<!--    <div class="shadow-lg us-li-plus-btn-menu us-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
 
-  <div class="hidden us-li-plus-btn shadow-lg rounded-2"
-       (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">
-    <dfm-button color="secondary" size="md" class="h-full">
-      <dfm-icon #showMoreButtonIcon name="plus" class="us-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
-    </dfm-button>
-  </div>
+<!--  <div class="hidden us-li-plus-btn shadow-lg rounded-2"-->
+<!--       (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">-->
+<!--    <dfm-button color="secondary" size="md" class="h-full">-->
+<!--      <dfm-icon #showMoreButtonIcon name="plus" class="us-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+<!--    </dfm-button>-->
+<!--  </div>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedUserIds.length"
