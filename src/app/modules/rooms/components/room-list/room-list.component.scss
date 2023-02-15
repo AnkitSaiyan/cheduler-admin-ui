@@ -43,6 +43,7 @@
           position: sticky;
           top: -1px;
           z-index: 2;
+          white-space: nowrap;
 
           &:first-child {
             //width: fit-content;
@@ -117,6 +118,10 @@
     display: none !important;
   }
 
+  .rm-li-search-mv {
+    display: block;
+  }
+
   .rm-li-title-buttons {
     display: block;
   }
@@ -182,7 +187,7 @@
   }
 
   .room-table-wrapper {
-    max-height: calc(100vh - 48px - 40px - 65px - 16px - 24px);
+    max-height: calc(100vh - 48px - 40px - 65px - 16px - 24px - 44px - 24px);
   }
 }
 

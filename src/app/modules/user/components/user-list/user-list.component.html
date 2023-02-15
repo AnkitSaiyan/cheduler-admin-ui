@@ -1,4 +1,4 @@
-<div class="d-flex flex-column h-100 position-relative dfm-px-8 sf-ls-main-wrapper">
+<div class="d-flex flex-column h-100 position-relative dfm-px-8 us-li-main-wrapper">
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 us-li-section-1">
       <dfm-button
@@ -50,7 +50,15 @@
     </div>
   </section>
 
-  <section class="overflow-y-auto us-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredUsers$$ | async as users">
+  <dfm-input
+    size="md"
+    placeholder="Search by User Name"
+    icon="search-sm"
+    class="w-full hidden us-li-search-mv"
+    [formControl]="searchControl"
+  ></dfm-input>
+
+  <section class="overflow-y-auto us-li-table-wrapper dfm-pb-8" *ngIf="filteredUsers$$ | async as users">
     <dfm-table [items]="users" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewUser($event)"
                class="dfm-table-wrapper">
@@ -93,7 +101,8 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
-              ngbPopover="Status" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200"
+              ngbPopover="Status" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
             ></dfm-button>
 
@@ -102,7 +111,8 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
-              ngbPopover="Status" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200"
+              ngbPopover="Status" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
             ></dfm-button>
 
@@ -110,7 +120,8 @@
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
-              ngbPopover="Edit" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200"
+              ngbPopover="Edit" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); openAddUserModal(item)"
             ></dfm-button>
 
@@ -118,7 +129,8 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
-              ngbPopover="Delete" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200"
+              ngbPopover="Delete" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); deleteUser(item.id)"
             ></dfm-button>
           </div>
@@ -142,19 +154,24 @@
             <div class="us-li-menus"
                  aria-labelledby="dropdownManual">
               <div *ngIf="!item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])" ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
+                   ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
               </div>
 
-              <div *ngIf="item.status" (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])" ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+              <div *ngIf="item.status"
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
+                   ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); openAddUserModal(item)" ngbPopover="Edit" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+              <div (click)="$event.stopPropagation(); openAddUserModal(item)" ngbPopover="Edit"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); deleteUser(item.id)" ngbPopover="Delete" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+              <div (click)="$event.stopPropagation(); deleteUser(item.id)" ngbPopover="Delete"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>
@@ -170,26 +187,26 @@
       No user found
     </div>
   </section>
-<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
-<!--    <div class="shadow-lg us-li-plus-btn-menu us-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
-<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
+  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+  <!--    <div class="shadow-lg us-li-plus-btn-menu us-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
 
-<!--  <div class="hidden us-li-plus-btn shadow-lg rounded-2"-->
-<!--       (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">-->
-<!--    <dfm-button color="secondary" size="md" class="h-full">-->
-<!--      <dfm-icon #showMoreButtonIcon name="plus" class="us-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
-<!--    </dfm-button>-->
-<!--  </div>-->
+  <!--  <div class="hidden us-li-plus-btn shadow-lg rounded-2"-->
+  <!--       (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">-->
+  <!--    <dfm-button color="secondary" size="md" class="h-full">-->
+  <!--      <dfm-icon #showMoreButtonIcon name="plus" class="us-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+  <!--    </dfm-button>-->
+  <!--  </div>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedUserIds.length"

@@ -1,13 +1,23 @@
+.us-li-main-wrapper {
+  padding: 0;
+  gap: 16px;
+
+  .us-li-table-wrapper {
+  }
+}
+
 .us-li-button-dropdown-group {
   background: transparent;
+
   div:last-child {
     max-width: 152px;
   }
 }
 
 @media (max-width: 680px) {
-  .sf-ls-main-wrapper {
+  .us-li-main-wrapper {
     padding: 0;
+    gap: 16px;
   }
 
   .us-li-section-1 {
@@ -16,6 +26,10 @@
 
   .us-li-search, .us-li-button-dropdown-group {
     display: none !important;
+  }
+
+  .us-li-search-mv {
+    display: block;
   }
 
   .us-li-title-buttons {

@@ -18,6 +18,14 @@
     display: none !important;
   }
 
+  .ph-li-search-mv {
+    display: block;
+
+    &::placeholder {
+      font-size: 0.6rem !important;
+    }
+  }
+
   .ph-li-title-buttons {
     display: block;
   }

@@ -1,4 +1,4 @@
-<div class="d-flex flex-column h-100 position-relative dfm-px-8 rm-li-main-wrapper">
+<div class="d-flex flex-column dfm-gap-16 h-100 position-relative dfm-px-8 rm-li-main-wrapper">
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 rm-li-section-1">
       <dfm-button
@@ -58,7 +58,15 @@
     </div>
   </section>
 
-  <section class="rm-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredRooms$$ | async as rooms">
+  <dfm-input
+    class="w-full hidden rm-li-search-mv"
+    size="md"
+    placeholder="Search by Room Name and Description"
+    icon="search-sm"
+    [formControl]="searchControl"
+  ></dfm-input>
+
+  <section class="rm-li-table-wrapper dfm-pb-8" *ngIf="filteredRooms$$ | async as rooms">
     <div class="room-table-wrapper">
       <table class="room-table">
         <thead class="room-table-header">
