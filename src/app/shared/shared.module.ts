@@ -37,6 +37,7 @@ import { DfmCalendarDayViewComponent } from './components/dfm-calendar/dfm-calen
 import { NumberToDatePipe } from './pipes/number-to-date.pipe';
 import { LargestPipe } from './pipes/largest.pipe';
 import { NameInputDirective } from './directives/name-input.directive';
+import { EmailInputDirective } from './directives/email-input.directive';
 
 @NgModule({
   declarations: [
@@ -63,6 +64,7 @@ import { NameInputDirective } from './directives/name-input.directive';
     NumberToDatePipe,
     LargestPipe,
     NameInputDirective,
+    EmailInputDirective,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule, NgbDropdownModule, NgbPopoverModule, NgbAccordionModule, RouterLink],
   exports: [
@@ -99,6 +101,7 @@ import { NameInputDirective } from './directives/name-input.directive';
     LargestPipe,
     DragDropModule,
     NameInputDirective,
+    EmailInputDirective,
   ],
 })
 export class SharedModule {}
