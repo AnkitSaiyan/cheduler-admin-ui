@@ -67,8 +67,8 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     // creating week-wise slots
     practiceAvailabilities.forEach((practice) => {
       const timeSlot: TimeSlot = {
-        dayStart: practice.dayStart,
-        dayEnd: practice.dayEnd,
+        dayStart: this.getTimeIn24Hour(practice.dayStart),
+        dayEnd: this.getTimeIn24Hour(practice.dayEnd),
         id: practice.id,
       };
 
@@ -80,9 +80,9 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     });
 
     // sorting slots by start time
-    for (let weekday = 1; weekday <= 7; weekday++) {
+    for (let weekday = 0; weekday < 7; weekday++) {
       if (weekdayToSlotsObj[weekday.toString()]?.length) {
-        weekdayToSlotsObj[weekday.toString()].sort((a, b) => new Date(a.dayStart).getTime() - new Date(b.dayStart).getTime());
+        weekdayToSlotsObj[weekday.toString()].sort((a, b) => this.timeStringToNo(a.dayStart) - this.timeStringToNo(b.dayStart));
       }
     }
 
@@ -121,6 +121,31 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     }
 
     return practiceAvailability;
+  }
+
+  private getTimeIn24Hour(timeString: string): string {
+    let start = '';
+
+    if (timeString) {
+      if (timeString.toLowerCase().includes('pm')) {
+        const s = +timeString.slice(0, 2);
+        if (s < 12) {
+          start = `${s + 12}:${timeString.slice(3, 5)}`;
+        }
+      } else {
+        start = timeString.slice(0, 5);
+      }
+    }
+
+    return start;
+  }
+
+  private timeStringToNo(timeString: string): number {
+    if (timeString && timeString.includes(':')) {
+      return +timeString.split(':').join('');
+    }
+
+    return 0;
   }
 
   public deleteRoom(id: number) {
