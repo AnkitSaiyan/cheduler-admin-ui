@@ -12,3 +12,7 @@ export const APPOINTMENT_ID = 'appointmentID';
 export const COMING_FROM_ROUTE = 'comingFromRoute';
 export const EDIT = 'edit';
 export const Statuses = Object.freeze(['inactive', 'active']);
+
+// RegExp Const
+
+export const EMAIL_REGEX: RegExp = /(.+)@(.+){2,}\.(.+){2,}/;

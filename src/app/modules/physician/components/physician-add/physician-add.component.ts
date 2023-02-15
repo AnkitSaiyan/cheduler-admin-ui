@@ -8,6 +8,7 @@ import { NotificationDataService } from '../../../../core/services/notification-
 import { AddPhysicianRequestData, Physician } from '../../../../shared/models/physician.model';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { Status } from '../../../../shared/models/status.model';
+import { EMAIL_REGEX } from '../../../../shared/utils/const';
 
 interface FormValues {
   firstname: string;
@@ -61,10 +62,10 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
     this.addPhysicianForm = this.fb.group({
       firstname: [physicianDetails?.firstname ?? '', [Validators.required]],
       lastname: [physicianDetails?.lastname ?? '', [Validators.required]],
-      email: [physicianDetails?.email ?? '', [Validators.required]],
-      rizivNumber: [physicianDetails?.rizivNumber ?? null, [Validators.required]],
+      email: [physicianDetails?.email ?? '', []],
+      rizivNumber: [physicianDetails?.rizivNumber ?? null, []],
       telephone: [physicianDetails?.telephone, [Validators.required]],
-      gsm: [physicianDetails?.gsm, [Validators.required]],
+      gsm: [physicianDetails?.gsm, []],
       address: [physicianDetails?.address, []],
       notifyDoctor: [!!physicianDetails?.notifyDoctor, []],
       status: [this.modalData.edit ? !!physicianDetails?.status : false, []],
@@ -92,6 +93,10 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 
     if (this.modalData?.physicianDetails?.id) {
       addPhysicianReqData.id = this.modalData.physicianDetails.id;
+    }
+
+    if (!addPhysicianReqData.email) {
+      addPhysicianReqData.email = null;
     }
 
     console.log(addPhysicianReqData);
@@ -122,4 +127,22 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
         );
     }
   }
+
+  public handleEmailInput(e: Event): void {
+    const inputText = (e.target as HTMLInputElement).value;
+
+    if (!inputText) {
+      return;
+    }
+
+    if (!inputText.match(EMAIL_REGEX)) {
+      this.addPhysicianForm.get('email')?.setErrors({
+        email: true,
+      });
+    } else {
+      this.addPhysicianForm.get('email')?.setErrors(null);
+    }
+  }
+
+  public handleNumberFocusOut($event: FocusEvent) {}
 }

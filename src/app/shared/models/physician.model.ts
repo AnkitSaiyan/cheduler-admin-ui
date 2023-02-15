@@ -17,7 +17,7 @@ export interface Physician {
 export interface AddPhysicianRequestData {
   firstname: string;
   lastname: string;
-  email: string;
+  email: string | null;
   address: string;
   rizivNumber: string;
   telephone: number;

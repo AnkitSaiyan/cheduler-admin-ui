@@ -38,6 +38,7 @@ import { NumberToDatePipe } from './pipes/number-to-date.pipe';
 import { LargestPipe } from './pipes/largest.pipe';
 import { NameInputDirective } from './directives/name-input.directive';
 import { EmailInputDirective } from './directives/email-input.directive';
+import { NumberInputDirective } from './directives/number-input.directive';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { EmailInputDirective } from './directives/email-input.directive';
     LargestPipe,
     NameInputDirective,
     EmailInputDirective,
+    NumberInputDirective,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule, NgbDropdownModule, NgbPopoverModule, NgbAccordionModule, RouterLink],
   exports: [
@@ -102,6 +104,7 @@ import { EmailInputDirective } from './directives/email-input.directive';
     DragDropModule,
     NameInputDirective,
     EmailInputDirective,
+    NumberInputDirective,
   ],
 })
 export class SharedModule {}

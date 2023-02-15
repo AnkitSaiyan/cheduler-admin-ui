@@ -16,15 +16,19 @@ export class NameInputDirective {
   @Input()
   public dfmNameInput!: InputComponent;
 
-  private alphabetOnly: RegExp = /^[A-Za-z]+$/;
+  private alphabetOnly: RegExp = /^[A-Za-z\s]+$/;
 
   constructor(private elementRef: ElementRef, private r: Renderer2) {}
 
   private handleChange(e: InputEvent) {
     const inputText = this.dfmNameInput.value as string;
 
-    if (inputText && !inputText.match(this.alphabetOnly)) {
+    if ((inputText && !inputText.match(this.alphabetOnly)) || (inputText[inputText.length - 2] === ' ' && inputText[inputText.length - 1] === ' ')) {
       this.dfmNameInput.value = inputText.slice(0, -1);
+    }
+
+    if (this.dfmNameInput.value.length === 1) {
+      this.dfmNameInput.value = this.dfmNameInput.value.trim();
     }
   }
 }
