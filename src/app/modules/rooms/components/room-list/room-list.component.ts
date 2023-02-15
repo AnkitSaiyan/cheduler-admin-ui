@@ -274,9 +274,9 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     this.filteredRooms$$.next([...this.rooms$$.value.filter((room: Room) => ids.has(+room.id))]);
   }
 
-  public openAddRoomModal(roomDetails?: Room) {
+  public async openAddRoomModal(roomDetails?: Room) {
     this.modalSvc.open(AddRoomModalComponent, {
-      data: { edit: !!roomDetails?.id, roomDetails },
+      data: { edit: !!roomDetails?.id, roomID: roomDetails?.id },
       options: {
         size: 'lg',
         centered: true,

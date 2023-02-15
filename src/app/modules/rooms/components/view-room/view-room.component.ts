@@ -136,7 +136,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=> this.roomApiSvc.deleteRoom(id)),
+        switchMap(() => this.roomApiSvc.deleteRoom(id)),
         take(1),
       )
       .subscribe(() => {
@@ -147,12 +147,12 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
 
   public openEditRoomModal() {
     this.modalSvc.open(AddRoomModalComponent, {
-      data: { edit: !!this.roomDetails$$.value?.id, roomDetails: { ...this.roomDetails$$.value } },
+      data: { edit: !!this.roomDetails$$.value?.id, roomID: this.roomDetails$$.value?.id },
       options: {
         size: 'lg',
         centered: true,
         backdropClass: 'modal-backdrop-remove-mv',
       },
-    }).result;
+    });
   }
 }

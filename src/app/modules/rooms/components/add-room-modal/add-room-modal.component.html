@@ -1,7 +1,8 @@
 <div class="bg-white rounded-4 ad-rm-main-wrapper dfm-px-16">
   <section class="modal-header">
-    <h5 class="modal-title ad-rm-title-buttons">{{ modalData.edit ? 'Edit' : 'Add' }} Room</h5>
-    <dfm-button-icon class="ad-rm-title-buttons" color="tertiary-gray" icon="x-close" (click)="closeModal(false)"></dfm-button-icon>
+    <h5 class="modal-title ad-rm-title-buttons">{{ modalData?.edit ? 'Edit' : 'Add' }} Room</h5>
+    <dfm-button-icon class="ad-rm-title-buttons" color="tertiary-gray" icon="x-close"
+                     (click)="closeModal(false)"></dfm-button-icon>
 
     <div class="hidden dfm-gap-8 align-items-center ad-rm-title-buttons-mv">
       <div class="rounded-circle overflow-hidden">
@@ -17,19 +18,19 @@
       <dfm-button
         color="link"
         size="lg"
-      > {{ modalData.edit ? 'Edit' : 'Add' }} Room
+      > {{ modalData?.edit ? 'Edit' : 'Add' }} Room
       </dfm-button>
     </div>
   </section>
 
   <section class="modal-body dfm-pb-24 ad-rm-section2">
-    <form [formGroup]="addRoomForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+    <form [formGroup]="addRoomForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16" *ngIf="room$$ | async">
       <div class="d-flex dfm-gap-32 flex-wrap">
         <dfm-input class="flex-1" size="md" placeholder="Enter room name" label="Room Name *" formControlName="name">
         </dfm-input>
 
         <dfm-input type="number" class="flex-1" size="md" placeholder="Enter room no." label="Room No. *"
-                   formControlName="placeInAgenda" [disabled]="true">
+                   formControlName="placeInAgenda">
         </dfm-input>
       </div>
 
@@ -117,7 +118,8 @@
         </div>
 
         <div formGroupName="practiceAvailability" class="d-flex dfm-gap-32 flex-wrap ad-rm-availability-form-fields">
-          <div class="d-flex flex-column dfm-gap-32" *ngIf="[1, 2, 3, 4].includes(formValues.selectedWeekday) || formValues.selectedWeekday === weekdayEnum.ALL">
+          <div class="d-flex flex-column dfm-gap-32"
+               *ngIf="[1, 2, 3, 4].includes(formValues.selectedWeekday) || formValues.selectedWeekday === weekdayEnum.ALL">
             <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray(false, 1)"
                  [formArrayName]="getFormArrayName(controlArray)"
                  class="d-flex flex-column flex-wrap dfm-gap-16">
@@ -182,7 +184,8 @@
               </div>
             </div>
           </div>
-          <div class="d-flex flex-column dfm-gap-32" *ngIf="[5, 6, 0].includes(formValues.selectedWeekday) || formValues.selectedWeekday === weekdayEnum.ALL">
+          <div class="d-flex flex-column dfm-gap-32"
+               *ngIf="[5, 6, 0].includes(formValues.selectedWeekday) || formValues.selectedWeekday === weekdayEnum.ALL">
             <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray(false, 2)"
                  [formArrayName]="getFormArrayName(controlArray)"
                  class="d-flex flex-column flex-wrap dfm-gap-16">
@@ -269,6 +272,6 @@
   <section class="modal-footer ad-rm-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
     <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true"
-                (click)="saveRoom()">{{ modalData.edit ? 'Save Changes' : 'Add Room' }}</dfm-button>
+                (click)="saveRoom()">{{ modalData?.edit ? 'Save Changes' : 'Add Room' }}</dfm-button>
   </section>
 </div>

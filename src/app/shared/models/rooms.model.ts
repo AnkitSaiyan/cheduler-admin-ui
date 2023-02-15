@@ -26,7 +26,7 @@ export interface AddRoomRequestData {
   type: RoomType;
   placeInAgenda: number;
   status?: Status;
-  availabilityType?: AvailabilityType;
+  availabilityType: AvailabilityType;
   roomNo?: number;
   practiceAvailability?: PracticeAvailability[];
   id?: number;
