@@ -316,5 +316,11 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
   drop(event: CdkDragDrop<Room[]>) {
     moveItemInArray(this.rooms$$.value, event.previousIndex, event.currentIndex);
+    this.updatePlaceInAgenda(event.currentIndex, event.previousIndex);
+  }
+
+  private updatePlaceInAgenda(currentIndex: number, previousIndex: number) {
+    // const [start, end] = currentIndex < previousIndex ? [currentIndex, previousIndex] : [previousIndex, currentIndex];
+    // const smallestPlaceInAgenda = currentIndex < previousIndex ? this.rooms$$.value[] : this.rooms$$.value[previousIndex]
   }
 }
