@@ -50,7 +50,7 @@
           color="primary"
           size="md"
           class="text-nowrap"
-          [disabled]="false"
+          [disabled]="(loading$$ | async) === true"
           (click)="openAddRoomModal()"
         >Add Room
         </dfm-button>
@@ -72,8 +72,9 @@
 
         <tbody class="room-table-body" cdkDropList (cdkDropListDropped)="drop($event)">
         <tr *ngFor="let room of (filteredRooms$$ | async)" class="room-table-row"
+            [ngClass]="{ 'room-table-row-disabled': (loading$$ | async) === true }"
             [routerLink]="['./', room.id, 'view']"
-            cdkDrag>
+            cdkDrag [cdkDragDisabled]="(loading$$ | async) === true">
           <td class="room-table-td">
             <dfm-checkbox class="w-fit d-flex dfm-me-0" #rowCheckbox
                           (click)="$event.stopPropagation(); handleCheckboxSelection(+room.id)"></dfm-checkbox>

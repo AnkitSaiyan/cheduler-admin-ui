@@ -36,3 +36,8 @@ export interface RoomsGroupedByType {
   public: Room[];
   private: Room[];
 }
+
+export interface UpdateRoomPlaceInAgendaRequestData {
+  id: number;
+  placeInAgenda: number;
+}
