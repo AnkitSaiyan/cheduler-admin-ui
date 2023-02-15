@@ -11,13 +11,17 @@
       max-height: 672px;
       flex-wrap: wrap;
     }
+
+    .ad-rm-time-dropdown {
+      width: 128px;
+    }
   }
 }
 
 @media (max-width: 1000px) {
   .ad-rm-availability-form-fields {
-    max-height: 100% !important;
-    flex-wrap: nowrap !important;
+    //max-height: 100% !important;
+    //flex-wrap: nowrap !important;
   }
 
   .ad-rm-weekdays-tab {

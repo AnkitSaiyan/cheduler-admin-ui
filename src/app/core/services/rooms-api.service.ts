@@ -32,12 +32,22 @@ export class RoomsApiService {
   }
 
   private fetchAllRooms(): Observable<Room[]> {
-    return this.http.get<BaseResponse<Room[]>>(`${this.roomUrl}`).pipe(map((response) => response.data));
+    return this.http.get<BaseResponse<Room[]>>(`${this.roomUrl}`).pipe(
+      map((response) =>
+        response.data.sort((r1, r2) => {
+          return r1.placeInAgenda - r2.placeInAgenda;
+        }),
+      ),
+    );
   }
 
-  public getRoomByID(roomID: number): Observable<Room | undefined> {
+  public getRoomByID(roomID: number): Observable<Room> {
     // return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.rooms.find((room) => +room.id === +roomID))));
-    return this.http.get<BaseResponse<Room>>(`${this.roomUrl}/${roomID}`).pipe(map((response) => response.data));
+    return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(
+      switchMap(() => {
+        return this.http.get<BaseResponse<Room>>(`${this.roomUrl}/${roomID}`).pipe(map((response) => response.data));
+      }),
+    );
   }
 
   public changeRoomStatus$(requestData: ChangeStatusRequestData[]): Observable<null> {
@@ -47,14 +57,14 @@ export class RoomsApiService {
     );
   }
 
-  public addRoom$(requestData: AddRoomRequestData): Observable<AddRoomRequestData> {
+  public addRoom$(requestData: AddRoomRequestData): Observable<Room> {
     return this.http.post<BaseResponse<Room>>(`${this.roomUrl}`, requestData).pipe(
       map((response) => response.data),
       tap(() => this.refreshRooms$$.next()),
     );
   }
 
-  public editRoom$(requestData: AddRoomRequestData): Observable<AddRoomRequestData> {
+  public editRoom$(requestData: AddRoomRequestData): Observable<Room> {
     const { id, ...restData } = requestData;
     return this.http.put<BaseResponse<Room>>(`${this.roomUrl}/${id}`, restData).pipe(
       map((response) => response.data),

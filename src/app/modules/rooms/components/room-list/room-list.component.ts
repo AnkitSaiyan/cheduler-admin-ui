@@ -1,16 +1,17 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TableItem } from 'diflexmo-angular-design';
+import { CheckboxComponent, TableItem } from 'diflexmo-angular-design';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
-import { SearchModalData, SearchModalComponent } from '../../../../shared/components/search-modal.component';
+import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { DownloadService } from '../../../../core/services/download.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room } from '../../../../shared/models/rooms.model';
@@ -30,23 +31,29 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
   @ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
 
+  @ViewChild('headerCheckBox') private headerCheckbox!: CheckboxComponent;
+
+  @ViewChildren('rowCheckbox') private rowCheckboxes!: QueryList<CheckboxComponent>;
+
   public searchControl = new FormControl('', []);
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Name', 'Description', 'Type', 'Status', 'Actions'];
+  private rooms$$: BehaviorSubject<Room[]>;
 
-  public downloadItems: any[] = [];
-
-  private rooms$$: BehaviorSubject<any[]>;
-
-  public filteredRooms$$: BehaviorSubject<any[]>;
+  public filteredRooms$$: BehaviorSubject<Room[]>;
 
   public clearSelected$$ = new Subject<void>();
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
 
-  public selectedRooms: string[] = [];
+  public loading$$ = new BehaviorSubject(true);
+
+  public columns: string[] = ['Name', 'Description', 'Place-In Agenda', 'Type', 'Status', 'Actions'];
+
+  public downloadItems: any[] = [];
+
+  public selectedRooms: number[] = [];
 
   public statusType = getStatusEnum();
 
@@ -66,10 +73,19 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
   public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
-    this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      this.rooms$$.next(rooms);
-      this.filteredRooms$$.next(rooms);
-    });
+    this.roomApiSvc.rooms$
+      .pipe(
+        tap(() => this.loading$$.next(false)),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe(
+        (rooms) => {
+          this.rooms$$.next(rooms);
+          this.filteredRooms$$.next(rooms);
+          this.loading$$.next(false);
+        },
+        () => this.loading$$.next(false),
+      );
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
       if (searchText) {
@@ -93,6 +109,11 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
             this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
         }
       });
+
+    this.clearSelected$$.pipe(takeUntil(this.destroy$$)).subscribe(() => {
+      this.selectedRooms = [];
+      this.toggleCheckboxes();
+    });
 
     this.afterBannerClosed$$
       .pipe(
@@ -128,9 +149,30 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     super.ngOnDestroy();
   }
 
-  public handleCheckboxSelection(selected: string[]) {
-    this.toggleMenu(true);
-    this.selectedRooms = [...selected];
+  public handleCheckboxSelection(roomID: number) {
+    // this.toggleMenu(true);
+
+    if (roomID !== -1) {
+      const index = this.selectedRooms.indexOf(roomID);
+
+      if (index === -1) {
+        this.selectedRooms.push(roomID);
+      } else {
+        this.selectedRooms.splice(index, 1);
+      }
+
+      if (this.selectedRooms.length === this.rooms$$.value.length) {
+        this.headerCheckbox.value = true;
+      } else if (this.headerCheckbox.value) {
+        this.headerCheckbox.value = false;
+      }
+    } else if (this.selectedRooms.length !== this.rooms$$.value.length) {
+      this.selectedRooms = [...this.rooms$$.value.map((room) => +room.id)];
+      this.toggleCheckboxes(true);
+    } else {
+      this.selectedRooms = [];
+      this.toggleCheckboxes();
+    }
   }
 
   private handleSearch(searchText: string): void {
@@ -248,5 +290,31 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
         this.toggleMenu(true);
       }
     }
+  }
+
+  private toggleCheckboxes(select = false) {
+    if (this.rowCheckboxes) {
+      this.rowCheckboxes.forEach((checkbox) => {
+        if (select) {
+          // eslint-disable-next-line no-param-reassign
+          checkbox.value = true;
+        } else if (checkbox.value) {
+          // eslint-disable-next-line no-param-reassign
+          checkbox.value = false;
+        }
+      });
+    }
+
+    if (this.headerCheckbox) {
+      if (!select) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        const { headerCheckbox } = this;
+        headerCheckbox.value = false;
+      }
+    }
+  }
+
+  drop(event: CdkDragDrop<Room[]>) {
+    moveItemInArray(this.rooms$$.value, event.previousIndex, event.currentIndex);
   }
 }

@@ -32,7 +32,6 @@ export class PhysicianApiService {
         this.http.get<BaseResponse<Physician>>(`${environment.serverBaseUrl}/doctor/${physicianID}`).pipe(
           map((response) => response.data),
           catchError((e) => {
-            console.log('error', e);
             return of({} as Physician);
           }),
         ),

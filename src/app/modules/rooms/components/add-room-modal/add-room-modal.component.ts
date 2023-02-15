@@ -1,32 +1,32 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { distinctUntilChanged, filter, take, takeUntil } from 'rxjs';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, distinctUntilChanged, filter, take, takeUntil } from 'rxjs';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { PracticeAvailability, PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
-import { stringToTimeArray, Weekday } from '../../../../shared/models/calendar.model';
+import { Weekday } from '../../../../shared/models/calendar.model';
 import { AddRoomRequestData, Room, RoomType } from '../../../../shared/models/rooms.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-
-interface TimeDistributed {
-  hour: number;
-  minute: number;
-  second?: number;
-}
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { formatTime } from '../../../../shared/utils/formatTime';
 
 interface FormValues {
   name: string;
   description: string;
   type: RoomType;
-  roomNo: number;
+  placeInAgenda: number;
   practiceAvailabilityToggle?: boolean;
   practiceAvailability: {
     [key: string]: {
       weekday: Weekday;
-      dayStart: TimeDistributed;
-      dayEnd: TimeDistributed;
+      dayStart: string;
+      dayEnd: string;
+      startTimings: NameValue[];
+      endTimings: NameValue[];
     }[];
   };
   selectedWeekday: Weekday;
@@ -40,15 +40,25 @@ interface FormValues {
 export class AddRoomModalComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public addRoomForm!: FormGroup;
 
+  public submitting$$ = new BehaviorSubject<boolean>(false);
+
   public modalData!: { edit: boolean; roomDetails: Room };
 
   public weekdayEnum = Weekday;
+
+  private timings: NameValue[] = [];
+
+  public filteredTimings: NameValue[] = [];
+
+  public readonly interval: number = 5;
 
   constructor(
     private modalSvc: ModalService,
     private fb: FormBuilder,
     private notificationSvc: NotificationDataService,
     private roomApiSvc: RoomsApiService,
+    private nameValuePipe: NameValuePairPipe,
+    private timeInIntervalPipe: TimeInIntervalPipe,
   ) {
     super();
   }
@@ -59,6 +69,13 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
       this.createForm(this.modalData?.roomDetails);
     });
 
+    this.roomApiSvc
+      .getRoomByID(0)
+      .pipe(take(1))
+      .subscribe((room) => {
+        this.addRoomForm.patchValue({ placeInAgenda: room.placeInAgenda });
+      });
+
     this.addRoomForm
       .get('practiceAvailabilityToggle')
       ?.valueChanges.pipe(
@@ -67,6 +84,9 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
         takeUntil(this.destroy$$),
       )
       .subscribe(() => this.addPracticeAvailabilityControls());
+
+    this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
+    this.filteredTimings = [...this.timings];
   }
 
   public override ngOnDestroy() {
@@ -80,7 +100,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   private createForm(roomDetails?: Room | undefined): void {
     this.addRoomForm = this.fb.group({
       name: [roomDetails?.name ?? '', [Validators.required]],
-      roomNo: [roomDetails?.roomNo ?? Math.floor(Math.random() * 10), [Validators.required]],
+      placeInAgenda: [roomDetails?.placeInAgenda, [Validators.required]],
       description: [roomDetails?.description ?? '', [Validators.required]],
       type: [roomDetails?.type ?? null, [Validators.required]],
       selectedWeekday: [this.weekdayEnum.ALL, []],
@@ -101,11 +121,37 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     this.addRoomForm.patchValue({ practiceAvailabilityToggle: toggle });
   }
 
-  private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: TimeDistributed, dayEnd?: TimeDistributed): FormGroup {
+  private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string): FormGroup {
+    let start = '';
+    if (dayStart) {
+      if (dayStart.toLowerCase().includes('pm')) {
+        const s = +dayStart.slice(0, 2);
+        if (s < 12) {
+          start = `${s + 12}:${dayStart.slice(3, 5)}`;
+        }
+      } else {
+        start = dayStart.slice(0, 5);
+      }
+    }
+
+    let end = '';
+    if (dayEnd) {
+      if (dayEnd.toLowerCase().includes('pm')) {
+        const e = +dayEnd.slice(0, 2);
+        if (e < 12) {
+          end = `${e + 12}:${dayEnd.slice(3, 5)}`;
+        }
+      } else {
+        end = dayEnd.slice(0, 5);
+      }
+    }
+
     const fg = this.fb.group({
       weekday: [weekday ?? this.formValues.selectedWeekday, []],
-      dayStart: [dayStart, []],
-      dayEnd: [dayEnd, []],
+      dayStart: [start, []],
+      dayEnd: [end, []],
+      startTimings: [this.filteredTimings, []],
+      endTimings: [this.filteredTimings, []],
     });
 
     fg.get('dayStart')
@@ -135,7 +181,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     switch (weekday) {
       case Weekday.ALL:
         Object.values(this.weekdayEnum).forEach((day) => {
-          if (typeof day === 'number' && day > 0) {
+          if (typeof day === 'number' && day < 7) {
             const fa = fg.get(day.toString()) as FormArray;
             if (!fa || !fa.length) {
               fg.addControl(day.toString(), this.fb.array([this.getPracticeAvailabilityFormGroup(day)]));
@@ -147,53 +193,44 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
         if (!Object.keys(fg.value)?.length || (Object.keys(fg.value).length && !fg.get(this.formValues.selectedWeekday.toString()))) {
           fg.addControl(
             this.formValues.selectedWeekday.toString(),
-            this.fb.array([
-              this.getPracticeAvailabilityFormGroup(
-                practice?.weekday,
-                {
-                  hour: stringToTimeArray(practice?.dayStart)[0],
-                  minute: stringToTimeArray(practice?.dayStart)[1],
-                },
-                {
-                  hour: stringToTimeArray(practice?.dayEnd)[0],
-                  minute: stringToTimeArray(practice?.dayEnd)[1],
-                },
-              ),
-            ]),
+            this.fb.array([this.getPracticeAvailabilityFormGroup(practice?.weekday, practice?.dayStart, practice?.dayEnd)]),
           );
         } else if (fg.get(this.formValues.selectedWeekday.toString()) && practice) {
           (fg.get(practice.weekday.toString()) as FormArray).push(
-            this.getPracticeAvailabilityFormGroup(
-              practice.weekday,
-              {
-                hour: stringToTimeArray(practice.dayStart)[0],
-                minute: stringToTimeArray(practice.dayStart)[1],
-              },
-              {
-                hour: stringToTimeArray(practice?.dayEnd)[0],
-                minute: stringToTimeArray(practice?.dayEnd)[1],
-              },
-            ),
+            this.getPracticeAvailabilityFormGroup(practice.weekday, practice.dayStart, practice.dayEnd),
           );
         }
     }
   }
 
-  public practiceAvailabilityWeekWiseControlsArray(all = false): FormArray[] {
+  public practiceAvailabilityWeekWiseControlsArray(all = false, column: 1 | 2 | 0 = 0): FormArray[] {
     const controls: FormArray[] = [];
 
     const fg = this.addRoomForm.get('practiceAvailability');
     const { selectedWeekday } = this.formValues;
-    let keys = Object.keys(this.formValues.practiceAvailability);
+
+    let keys = [1, 2, 3, 4, 5, 6, 0];
+
     if (!all) {
-      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL)];
+      if (selectedWeekday === Weekday.ALL) {
+        switch (column) {
+          case 1:
+            keys = [1, 2, 3, 4];
+            break;
+          default:
+            keys = [5, 6, 0];
+            break;
+        }
+      } else {
+        keys = [selectedWeekday];
+      }
     }
 
     if (keys?.length) {
       keys.forEach((key) => {
-        const fa = fg?.get(key) as FormArray;
+        const fa = fg?.get(key.toString()) as FormArray;
         if (fa?.length) {
-          controls.push(fg?.get(key) as FormArray);
+          controls.push(fg?.get(key.toString()) as FormArray);
         }
       });
     }
@@ -239,7 +276,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
       return;
     }
 
-    console.log(this.formValues);
+    this.submitting$$.next(true);
 
     const { practiceAvailabilityToggle, practiceAvailability, selectedWeekday, ...rest } = this.formValues;
     const addRoomReqData: AddRoomRequestData = {
@@ -254,8 +291,8 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
                   ...a,
                   {
                     ...control.value,
-                    dayStart: `${control.value.dayStart.hour}:${control.value.dayStart.minute}`,
-                    dayEnd: `${control.value.dayEnd.hour}:${control.value.dayEnd.minute}`,
+                    dayStart: control.value.dayStart,
+                    dayEnd: control.value.dayEnd,
                   },
                 ];
               }
@@ -278,22 +315,29 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     console.log(addRoomReqData);
     if (this.modalData.edit) {
       this.roomApiSvc
-      .editRoom$(addRoomReqData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Room ${this.modalData.edit ? 'updated' : 'added'} successfully`);
-        this.closeModal(true);
-      }); 
-    }else{
+        .editRoom$(addRoomReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(
+          () => {
+            this.notificationSvc.showNotification(`Room ${this.modalData.edit ? 'updated' : 'added'} successfully`);
+            this.closeModal(true);
+            this.submitting$$.next(false);
+          },
+          () => this.submitting$$.next(false),
+        );
+    } else {
       this.roomApiSvc
-      .addRoom$(addRoomReqData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Room ${this.modalData.edit ? 'updated' : 'added'} successfully`);
-        this.closeModal(true);
-      }); 
+        .addRoom$(addRoomReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(
+          () => {
+            this.notificationSvc.showNotification(`Room ${this.modalData.edit ? 'updated' : 'added'} successfully`);
+            this.closeModal(true);
+            this.submitting$$.next(false);
+          },
+          () => this.submitting$$.next(false),
+        );
     }
-   
   }
 
   public getBadgeColor(weekday: Weekday): BadgeColor {
@@ -302,7 +346,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     }
 
     if (weekday === Weekday.ALL) {
-      for (let i = 1; i <= 7; i++) {
+      for (let i = 0; i < 7; i++) {
         if (!this.formValues.practiceAvailability[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
           return 'gray';
         }
@@ -317,5 +361,34 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     }
 
     return 'gray';
+  }
+
+  public handleTimeInput(time: string, control: AbstractControl | null | undefined, timingValueControl: AbstractControl | null | undefined) {
+    this.searchInput(time, timingValueControl);
+
+    const formattedTime = formatTime(time, 24, 5);
+
+    if (!formattedTime) {
+      return;
+    }
+
+    const nameValue = {
+      name: formattedTime,
+      value: formattedTime,
+    };
+
+    if (!this.filteredTimings.find((t) => t.value === formattedTime)) {
+      this.filteredTimings.splice(0, 0, nameValue);
+    }
+
+    control?.setValue(formattedTime, { emitEvent: false });
+  }
+
+  private searchInput(time: string, timingValueControl: AbstractControl | null | undefined) {
+    if (time.toString()) {
+      timingValueControl?.setValue([...this.timings.filter((timing) => timing.value.includes(time))]);
+    } else {
+      timingValueControl?.setValue([...this.timings]);
+    }
   }
 }

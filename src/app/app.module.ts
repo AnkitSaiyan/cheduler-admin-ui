@@ -10,10 +10,11 @@ import { WeekdayToNamePipe } from './shared/pipes/weekday-to-name.pipe';
 import { MonthToNamePipe } from './shared/pipes/month-to-name.pipe';
 import { TimeInIntervalPipe } from './shared/pipes/time-in-interval.pipe';
 import { NameValuePairPipe } from './shared/pipes/name-value-pair.pipe';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, ReactiveFormsModule, FormsModule, AppRoutingModule, HttpClientModule, DesignSystemCoreModule],
+  imports: [BrowserModule, ReactiveFormsModule, FormsModule, AppRoutingModule, HttpClientModule, DesignSystemCoreModule, BrowserAnimationsModule],
   bootstrap: [AppComponent],
   providers: [WeekdayToNamePipe, MonthToNamePipe, DatePipe, TimeInIntervalPipe, NameValuePairPipe],
 })

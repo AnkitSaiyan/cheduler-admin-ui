@@ -58,117 +58,266 @@
     </div>
   </section>
 
-  <section class="overflow-y-auto rm-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredRooms$$ | async as rooms">
-    <dfm-table [items]="rooms" [selectable]="true" (selected)="handleCheckboxSelection($event)"
-               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewRoom($event)"
-               class="dfm-table-wrapper">
-      <ng-template #headerRowTemplate>
-        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
-      </ng-template>
+  <section class="rm-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredRooms$$ | async as rooms">
+    <div class="room-table-wrapper">
+      <table class="room-table">
+        <thead class="room-table-header">
+        <tr class="room-table-header-row">
+          <th class="room-table-th">
+            <dfm-checkbox class="w-fit d-flex dfm-me-0" #headerCheckBox (click)="$event.stopPropagation(); handleCheckboxSelection(-1)"></dfm-checkbox>
+          </th>
+          <th *ngFor="let column of columns" class="room-table-th">{{ column }}</th>
+        </tr>
+        </thead>
 
-      <ng-template #bodyRowTemplate let-item>
-        <dfm-table-body-cell>{{ item.name | titlecase | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.description | titlecase | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.type | titlecase | dashIfNothing }}</dfm-table-body-cell>
+        <tbody class="room-table-body" cdkDropList (cdkDropListDropped)="drop($event)">
+        <tr *ngFor="let room of (filteredRooms$$ | async)" class="room-table-row"
+            [routerLink]="['./', room.id, 'view']"
+            cdkDrag>
+          <td class="room-table-td">
+            <dfm-checkbox class="w-fit d-flex dfm-me-0" #rowCheckbox
+                          (click)="$event.stopPropagation(); handleCheckboxSelection(+room.id)"></dfm-checkbox>
+          </td>
+          <td class="room-table-td">{{ room.name | titlecase | dashIfNothing }}</td>
+          <td class="room-table-td">{{ room.description | titlecase | dashIfNothing }}</td>
+          <td class="room-table-td">{{ room.placeInAgenda | dashIfNothing }}</td>
+          <td class="room-table-td">{{ room.type | titlecase | dashIfNothing }}</td>
 
-        <dfm-table-body-cell>
-          <dfm-badge *ngIf="item.status === statusType.Active"
-                     color="success"
-                     size="sm"
-                     fontWeight="medium">
-            {{ item.status | statusName | dashIfNothing }}
-          </dfm-badge>
+          <td class="room-table-td">
+            <dfm-badge *ngIf="room.status === statusType.Active"
+                       color="success"
+                       size="sm"
+                       fontWeight="medium">
+              {{ room.status | statusName | dashIfNothing }}
+            </dfm-badge>
 
-          <dfm-badge *ngIf="item.status === statusType.Inactive"
-                     color="primary"
-                     size="sm">
-            {{ item.status | statusName | dashIfNothing }}
-          </dfm-badge>
-        </dfm-table-body-cell>
+            <dfm-badge *ngIf="room.status === statusType.Inactive"
+                       color="primary"
+                       size="sm">
+              {{ room.status | statusName | dashIfNothing }}
+            </dfm-badge>
+          </td>
 
-        <dfm-table-body-cell>
-          <div class="d-flex dfm-gap-16 align-items-center rm-li-action-buttons">
-            <dfm-button
-              *ngIf="item.status === statusType.Inactive"
-              color="link-gray"
-              size="sm"
-              trailingIcon="check-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-            ></dfm-button>
+          <td class="room-table-td">
+            <div class="d-flex dfm-gap-16 align-items-center rm-li-action-buttons">
+              <dfm-button
+                *ngIf="room.status === statusType.Inactive"
+                color="link-gray"
+                size="sm"
+                trailingIcon="check-circle"
+                (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Active }])"
+              ></dfm-button>
 
-            <dfm-button
-              *ngIf="item.status === statusType.Active"
-              color="link-gray"
-              size="sm"
-              trailingIcon="x-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-            ></dfm-button>
+              <dfm-button
+                *ngIf="room.status === statusType.Active"
+                color="link-gray"
+                size="sm"
+                trailingIcon="x-circle"
+                (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Inactive }])"
+              ></dfm-button>
 
-            <dfm-button
-              color="link-gray"
-              size="sm"
-              trailingIcon="pencil-02"
-              (click)="$event.stopPropagation(); openAddRoomModal(item);"
-            ></dfm-button>
+              <dfm-button
+                color="link-gray"
+                size="sm"
+                trailingIcon="pencil-02"
+                (click)="$event.stopPropagation(); openAddRoomModal(room);"
+              ></dfm-button>
 
-            <dfm-button
-              color="link-gray"
-              size="sm"
-              trailingIcon="trash-01"
-              (click)="$event.stopPropagation(); deleteRoom(item.id)"
-            ></dfm-button>
-          </div>
-
-          <!-- Action Menu -->
-          <dfm-button
-            [ngbPopover]="actionMenu"
-            autoClose="autoClose"
-            triggers="click"
-            container="body"
-            placement="left"
-            popoverClass="popover-p-0"
-            [openDelay]="200"
-            class="hidden rm-li-vertical-dots-btn"
-            color="link-gray"
-            size="sm"
-            trailingIcon="dots-vertical"
-            (click)="$event.stopPropagation(); toggleMenu(true)"
-          ></dfm-button>
-
-          <ng-template #actionMenu>
-            <div class="rm-li-menus"
-                 aria-labelledby="dropdownManual">
-              <div *ngIf="!item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-                   ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
-                <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-              </div>
-
-              <div *ngIf="item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-                   ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
-                <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-              </div>
-
-              <div (click)="$event.stopPropagation(); openAddRoomModal(item)" ngbPopover="Edit"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
-                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
-              </div>
-
-              <div (click)="$event.stopPropagation(); deleteRoom(item.id)" ngbPopover="Delete"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
-                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
-              </div>
+              <dfm-button
+                color="link-gray"
+                size="sm"
+                trailingIcon="trash-01"
+                (click)="$event.stopPropagation(); deleteRoom(room.id)"
+              ></dfm-button>
             </div>
-          </ng-template>
-          <!-- Action Menu ends -->
 
-        </dfm-table-body-cell>
-      </ng-template>
-    </dfm-table>
-    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!rooms.length">
+            <!-- Action Menu -->
+            <dfm-button
+              [ngbPopover]="actionMenu"
+              autoClose="autoClose"
+              triggers="click"
+              container="body"
+              placement="left"
+              popoverClass="popover-p-0"
+              [openDelay]="200"
+              class="hidden rm-li-vertical-dots-btn"
+              color="link-gray"
+              size="sm"
+              trailingIcon="dots-vertical"
+              (click)="$event.stopPropagation(); toggleMenu(true)"
+            ></dfm-button>
+
+            <ng-template #actionMenu>
+              <div class="rm-li-menus"
+                   aria-labelledby="dropdownManual">
+                <div *ngIf="!room.status"
+                     (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Active }])"
+                     ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+                </div>
+
+                <div *ngIf="room.status"
+                     (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Inactive }])"
+                     ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+                </div>
+
+                <div (click)="$event.stopPropagation(); openAddRoomModal(room)" ngbPopover="Edit"
+                     triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                  <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
+                </div>
+
+                <div (click)="$event.stopPropagation(); deleteRoom(room.id)" ngbPopover="Delete"
+                     triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                  <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
+                </div>
+              </div>
+            </ng-template>
+            <!-- Action Menu ends -->
+
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!rooms.length && (loading$$ | async) === false">
       No data found
     </div>
+    <!--    <table class="table table-bordered table-striped text-center">-->
+    <!--      <thead>-->
+    <!--      <tr>-->
+    <!--        <th scope="col">-->
+    <!--          Id-->
+    <!--        </th>-->
+    <!--        <th scope="col">-->
+    <!--          Name-->
+    <!--        </th>-->
+    <!--        <th scope="col">-->
+    <!--          Price-->
+    <!--        </th>-->
+    <!--      </tr>-->
+    <!--      </thead>-->
+    <!--      <tbody cdkDropList (cdkDropListDropped)="drop($event)">-->
+    <!--      <tr cdkDrag cdkDragLockAxis="y" *ngFor="let data of dataSource">-->
+    <!--        <td cdkDragHandle>{{data.id}}</td>-->
+    <!--        <td>{{data.name}}</td>-->
+    <!--        <td>{{data.price}}</td>-->
+
+    <!--        &lt;!&ndash; Preview &ndash;&gt;-->
+    <!--        <div *cdkDragPreview matchSize="true" class="container dragdrop-placeholder">-->
+    <!--          {{data.name}}-->
+    <!--        </div>-->
+    <!--      </tr>-->
+    <!--      </tbody>-->
+    <!--    </table>-->
+
+    <!--    <dfm-table [items]="rooms" [selectable]="true"-->
+    <!--               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewRoom($event)"-->
+    <!--               class="dfm-table-wrapper">-->
+    <!--      <ng-template #headerRowTemplate>-->
+    <!--        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>-->
+    <!--      </ng-template>-->
+
+    <!--      <ng-template #bodyRowTemplate let-item>-->
+    <!--        <dfm-table-body-cell>{{ item.name | titlecase | dashIfNothing }}</dfm-table-body-cell>-->
+    <!--        <dfm-table-body-cell>{{ item.description | titlecase | dashIfNothing }}</dfm-table-body-cell>-->
+    <!--        <dfm-table-body-cell>{{ item.type | titlecase | dashIfNothing }}</dfm-table-body-cell>-->
+
+    <!--        <dfm-table-body-cell>-->
+    <!--          <dfm-badge *ngIf="item.status === statusType.Active"-->
+    <!--                     color="success"-->
+    <!--                     size="sm"-->
+    <!--                     fontWeight="medium">-->
+    <!--            {{ item.status | statusName | dashIfNothing }}-->
+    <!--          </dfm-badge>-->
+
+    <!--          <dfm-badge *ngIf="item.status === statusType.Inactive"-->
+    <!--                     color="primary"-->
+    <!--                     size="sm">-->
+    <!--            {{ item.status | statusName | dashIfNothing }}-->
+    <!--          </dfm-badge>-->
+    <!--        </dfm-table-body-cell>-->
+
+    <!--        <dfm-table-body-cell>-->
+    <!--          <div class="d-flex dfm-gap-16 align-items-center rm-li-action-buttons">-->
+    <!--            <dfm-button-->
+    <!--              *ngIf="item.status === statusType.Inactive"-->
+    <!--              color="link-gray"-->
+    <!--              size="sm"-->
+    <!--              trailingIcon="check-circle"-->
+    <!--              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"-->
+    <!--            ></dfm-button>-->
+
+    <!--            <dfm-button-->
+    <!--              *ngIf="item.status === statusType.Active"-->
+    <!--              color="link-gray"-->
+    <!--              size="sm"-->
+    <!--              trailingIcon="x-circle"-->
+    <!--              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"-->
+    <!--            ></dfm-button>-->
+
+    <!--            <dfm-button-->
+    <!--              color="link-gray"-->
+    <!--              size="sm"-->
+    <!--              trailingIcon="pencil-02"-->
+    <!--              (click)="$event.stopPropagation(); openAddRoomModal(item);"-->
+    <!--            ></dfm-button>-->
+
+    <!--            <dfm-button-->
+    <!--              color="link-gray"-->
+    <!--              size="sm"-->
+    <!--              trailingIcon="trash-01"-->
+    <!--              (click)="$event.stopPropagation(); deleteRoom(item.id)"-->
+    <!--            ></dfm-button>-->
+    <!--          </div>-->
+
+    <!--          &lt;!&ndash; Action Menu &ndash;&gt;-->
+    <!--          <dfm-button-->
+    <!--            [ngbPopover]="actionMenu"-->
+    <!--            autoClose="autoClose"-->
+    <!--            triggers="click"-->
+    <!--            container="body"-->
+    <!--            placement="left"-->
+    <!--            popoverClass="popover-p-0"-->
+    <!--            [openDelay]="200"-->
+    <!--            class="hidden rm-li-vertical-dots-btn"-->
+    <!--            color="link-gray"-->
+    <!--            size="sm"-->
+    <!--            trailingIcon="dots-vertical"-->
+    <!--            (click)="$event.stopPropagation(); toggleMenu(true)"-->
+    <!--          ></dfm-button>-->
+
+    <!--          <ng-template #actionMenu>-->
+    <!--            <div class="rm-li-menus"-->
+    <!--                 aria-labelledby="dropdownManual">-->
+    <!--              <div *ngIf="!item.status"-->
+    <!--                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"-->
+    <!--                   ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">-->
+    <!--                <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>-->
+    <!--              </div>-->
+
+    <!--              <div *ngIf="item.status"-->
+    <!--                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"-->
+    <!--                   ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">-->
+    <!--                <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>-->
+    <!--              </div>-->
+
+    <!--              <div (click)="$event.stopPropagation(); openAddRoomModal(item)" ngbPopover="Edit"-->
+    <!--                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">-->
+    <!--                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>-->
+    <!--              </div>-->
+
+    <!--              <div (click)="$event.stopPropagation(); deleteRoom(item.id)" ngbPopover="Delete"-->
+    <!--                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">-->
+    <!--                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>-->
+    <!--              </div>-->
+    <!--            </div>-->
+    <!--          </ng-template>-->
+    <!--          &lt;!&ndash; Action Menu ends &ndash;&gt;-->
+
+    <!--        </dfm-table-body-cell>-->
+    <!--      </ng-template>-->
+    <!--    </dfm-table>-->
   </section>
   <div ngbDropdown #optionsMenu="ngbDropdown">
     <div class="shadow-lg rm-li-plus-btn-menu rm-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
