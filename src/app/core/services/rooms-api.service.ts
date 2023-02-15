@@ -3,7 +3,7 @@ import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap 
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { AddRoomRequestData, Room, RoomsGroupedByType, RoomType } from '../../shared/models/rooms.model';
+import { AddRoomRequestData, Room, RoomsGroupedByType, RoomType, UpdateRoomPlaceInAgendaRequestData } from '../../shared/models/rooms.model';
 import { ChangeStatusRequestData } from '../../shared/models/status.model';
 
 @Injectable({
@@ -96,6 +96,13 @@ export class RoomsApiService {
         });
         return roomsGroupedByType;
       }),
+    );
+  }
+
+  public updatePlaceInAgenda$(requestData: UpdateRoomPlaceInAgendaRequestData[]): Observable<null> {
+    return this.http.put<BaseResponse<any>>(`${this.roomUrl}`, requestData).pipe(
+      map((resp) => resp?.data),
+      tap(() => this.refreshRooms$$.next()),
     );
   }
 }

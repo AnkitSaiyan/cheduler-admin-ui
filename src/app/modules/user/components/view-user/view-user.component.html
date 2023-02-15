@@ -77,7 +77,8 @@
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Category</span>
-          <span class="font-weight-medium flex-1">{{ userDetails.userType === userType.General ? 'General' : 'Scheduler' }}</span>
+          <span
+            class="font-weight-medium flex-1">{{ userDetails.userType === userType.General ? 'General' : 'Scheduler' }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
@@ -101,34 +102,36 @@
           <span class="font-weight-medium flex-1 text-break">{{ userDetails?.rizivNumber | dashIfNothing }}</span>
         </div> -->
 
-        <div class="d-flex dfm-gap-8 justify-content-between">
+        <div class="d-flex dfm-gap-8 justify-content-between"
+             *ngIf="userDetails.userType === userType.Scheduler || userDetails.userType === userType.Secretary">
           <span class="flex-1">GSM</span>
           <span class="font-weight-medium flex-1 text-break">{{ userDetails.gsm | dashIfNothing }}</span>
         </div>
 
-        <div class="d-flex dfm-gap-8 justify-content-between">
+        <div class="d-flex dfm-gap-8 justify-content-between"
+             *ngIf="userDetails.userType === userType.Scheduler || userDetails.userType === userType.Secretary">
           <span class="flex-1">Address</span>
           <span class="font-weight-medium flex-1 text-break">{{ userDetails.address | dashIfNothing }}</span>
         </div>
       </div>
     </div>
 
-    <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
-      <header class="d-flex align-items-center dfm-gap-8">
-        <div class="dfm-button-gray-400">
-          <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
-        </div>
-        <span class="font-weight-medium text-break">Rights</span>
-      </header>
+    <!--    <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">-->
+    <!--      <header class="d-flex align-items-center dfm-gap-8">-->
+    <!--        <div class="dfm-button-gray-400">-->
+    <!--          <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>-->
+    <!--        </div>-->
+    <!--        <span class="font-weight-medium text-break">Rights</span>-->
+    <!--      </header>-->
 
-      <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-        <div class="d-flex dfm-gap-8 justify-content-between" *ngFor="let rights of userDetails.rights;">
-          <!--          <span>{{ }}</span>-->
-        </div>
+    <!--      <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">-->
+    <!--        <div class="d-flex dfm-gap-8 justify-content-between" *ngFor="let rights of userDetails.rights;">-->
+    <!--          &lt;!&ndash;          <span>{{ }}</span>&ndash;&gt;-->
+    <!--        </div>-->
 
-        <span class="dfm-text-main-600" *ngIf="!userDetails?.rights?.length">No rights found</span>
-      </div>
-    </div>
+    <!--        <span class="dfm-text-main-600" *ngIf="!userDetails?.rights?.length">No rights found</span>-->
+    <!--      </div>-->
+    <!--    </div>-->
   </section>
 
   <div class="hidden bg-white us-vw-action-buttons-mv">

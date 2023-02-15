@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CheckboxComponent, TableItem } from 'diflexmo-angular-design';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import _default from 'chart.js/dist/core/core.interaction';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
@@ -14,8 +15,9 @@ import { ConfirmActionModalComponent, DialogData } from '../../../../shared/comp
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { DownloadService } from '../../../../core/services/download.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { Room } from '../../../../shared/models/rooms.model';
+import { Room, UpdateRoomPlaceInAgendaRequestData } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
+import index = _default.modes.index;
 
 @Component({
   selector: 'dfm-room-list',
@@ -272,9 +274,9 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     this.filteredRooms$$.next([...this.rooms$$.value.filter((room: Room) => ids.has(+room.id))]);
   }
 
-  public openAddRoomModal(roomDetails?: Room) {
+  public async openAddRoomModal(roomDetails?: Room) {
     this.modalSvc.open(AddRoomModalComponent, {
-      data: { edit: !!roomDetails?.id, roomDetails },
+      data: { edit: !!roomDetails?.id, roomID: roomDetails?.id },
       options: {
         size: 'lg',
         centered: true,
@@ -316,5 +318,55 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
   drop(event: CdkDragDrop<Room[]>) {
     moveItemInArray(this.rooms$$.value, event.previousIndex, event.currentIndex);
+    this.updatePlaceInAgenda(event.currentIndex, event.previousIndex);
+  }
+
+  private updatePlaceInAgenda(currentIndex: number, previousIndex: number) {
+    const [start, end] = currentIndex < previousIndex ? [currentIndex, previousIndex] : [previousIndex, currentIndex];
+
+    const requestData: UpdateRoomPlaceInAgendaRequestData[] = [];
+    const rooms = this.rooms$$.value;
+
+    let smallestPlaceInAgenda: number = rooms[currentIndex].placeInAgenda;
+
+    for (let i = start; i < end; i++) {
+      if (rooms[i + 1].placeInAgenda < rooms[i].placeInAgenda) {
+        smallestPlaceInAgenda = rooms[i].placeInAgenda;
+        rooms[i].placeInAgenda = rooms[i + 1].placeInAgenda;
+        rooms[i + 1].placeInAgenda = smallestPlaceInAgenda;
+      } else if (smallestPlaceInAgenda < rooms[i].placeInAgenda) {
+        const temp = rooms[i].placeInAgenda;
+        rooms[i].placeInAgenda = smallestPlaceInAgenda;
+        smallestPlaceInAgenda = temp;
+
+        if (i + 2 === end) {
+          rooms[i + 2].placeInAgenda = rooms[i + 1].placeInAgenda;
+          rooms[i + 1].placeInAgenda = smallestPlaceInAgenda;
+        }
+      }
+
+      requestData.push({
+        id: rooms[i].id,
+        placeInAgenda: rooms[i].placeInAgenda,
+      });
+    }
+
+    requestData.push({
+      id: rooms[end].id,
+      placeInAgenda: rooms[end].placeInAgenda,
+    });
+
+    this.loading$$.next(true);
+
+    this.roomApiSvc
+      .updatePlaceInAgenda$(requestData)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(
+        (res) => {
+          console.log(res);
+          this.loading$$.next(false);
+        },
+        () => this.loading$$.next(false),
+      );
   }
 }

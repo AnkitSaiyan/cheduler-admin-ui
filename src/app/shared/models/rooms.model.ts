@@ -26,7 +26,7 @@ export interface AddRoomRequestData {
   type: RoomType;
   placeInAgenda: number;
   status?: Status;
-  availabilityType?: AvailabilityType;
+  availabilityType: AvailabilityType;
   roomNo?: number;
   practiceAvailability?: PracticeAvailability[];
   id?: number;
@@ -35,4 +35,9 @@ export interface AddRoomRequestData {
 export interface RoomsGroupedByType {
   public: Room[];
   private: Room[];
+}
+
+export interface UpdateRoomPlaceInAgendaRequestData {
+  id: number;
+  placeInAgenda: number;
 }

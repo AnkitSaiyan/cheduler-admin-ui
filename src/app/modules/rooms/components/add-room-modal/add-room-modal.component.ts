@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, distinctUntilChanged, filter, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, of, switchMap, take, takeUntil } from 'rxjs';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -19,7 +19,7 @@ interface FormValues {
   description: string;
   type: RoomType;
   placeInAgenda: number;
-  practiceAvailabilityToggle?: boolean;
+  practiceAvailabilityToggle: boolean;
   practiceAvailability: {
     [key: string]: {
       weekday: Weekday;
@@ -40,9 +40,11 @@ interface FormValues {
 export class AddRoomModalComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public addRoomForm!: FormGroup;
 
+  public room$$ = new BehaviorSubject<Room | undefined>(undefined);
+
   public submitting$$ = new BehaviorSubject<boolean>(false);
 
-  public modalData!: { edit: boolean; roomDetails: Room };
+  public modalData!: { edit: boolean; roomID: number };
 
   public weekdayEnum = Weekday;
 
@@ -61,29 +63,32 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     private timeInIntervalPipe: TimeInIntervalPipe,
   ) {
     super();
+    this.modalSvc.dialogData$
+      .pipe(
+        switchMap((modalData) => {
+          this.modalData = modalData;
+          if (modalData?.edit && modalData?.roomID) {
+            return this.roomApiSvc.getRoomByID(modalData.roomID);
+          }
+          return of({} as Room);
+        }),
+        take(1),
+      )
+      .subscribe((room) => {
+        this.room$$.next(room);
+        this.createForm(room);
+      });
   }
 
   public ngOnInit(): void {
-    this.modalSvc.dialogData$.pipe(take(1)).subscribe((data) => {
-      this.modalData = data;
-      this.createForm(this.modalData?.roomDetails);
-    });
-
-    this.roomApiSvc
-      .getRoomByID(0)
-      .pipe(take(1))
-      .subscribe((room) => {
-        this.addRoomForm.patchValue({ placeInAgenda: room.placeInAgenda });
-      });
-
-    this.addRoomForm
-      .get('practiceAvailabilityToggle')
-      ?.valueChanges.pipe(
-        filter((value: boolean) => value),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe(() => this.addPracticeAvailabilityControls());
+    if (!this.modalData.edit) {
+      this.roomApiSvc
+        .getRoomByID(0)
+        .pipe(take(1))
+        .subscribe((room) => {
+          this.addRoomForm.patchValue({ placeInAgenda: room.placeInAgenda });
+        });
+    }
 
     this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
     this.filteredTimings = [...this.timings];
@@ -100,25 +105,37 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   private createForm(roomDetails?: Room | undefined): void {
     this.addRoomForm = this.fb.group({
       name: [roomDetails?.name ?? '', [Validators.required]],
-      placeInAgenda: [roomDetails?.placeInAgenda, [Validators.required]],
+      placeInAgenda: [{ value: roomDetails?.placeInAgenda, disabled: true }, [Validators.required]],
       description: [roomDetails?.description ?? '', [Validators.required]],
       type: [roomDetails?.type ?? null, [Validators.required]],
       selectedWeekday: [this.weekdayEnum.ALL, []],
-      practiceAvailabilityToggle: [!!roomDetails?.practiceAvailability?.length, []],
+      practiceAvailabilityToggle: [!!roomDetails?.availabilityType, []],
       practiceAvailability: this.fb.group({}),
     });
 
     if (roomDetails?.practiceAvailability?.length) {
+      const weekdays = new Set([0, 1, 2, 3, 4, 5, 6]);
+
       roomDetails.practiceAvailability.forEach((practice) => {
         this.addRoomForm.patchValue({ selectedWeekday: practice.weekday });
         this.addPracticeAvailabilityControls(practice);
       });
+
+      weekdays.forEach((weekday) => {
+        this.addRoomForm.patchValue({ selectedWeekday: weekday });
+        this.addPracticeAvailabilityControls();
+      });
+
+      this.addRoomForm.patchValue({ selectedWeekday: Weekday.ALL });
     }
   }
 
   public toggleAvailabilityForm(toggle: boolean): void {
     //  set practice availability toggle
-    this.addRoomForm.patchValue({ practiceAvailabilityToggle: toggle });
+    this.addRoomForm.get('practiceAvailabilityToggle')?.setValue(toggle, { emitEvent: false });
+    if (toggle) {
+      this.addPracticeAvailabilityControls();
+    }
   }
 
   private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string): FormGroup {
@@ -176,6 +193,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   }
 
   private addPracticeAvailabilityControls(practice?: PracticeAvailabilityServer): void {
+    console.log('in');
     const fg = this.addRoomForm.get('practiceAvailability') as FormGroup;
     const weekday = this.formValues.selectedWeekday;
     switch (weekday) {
@@ -281,6 +299,8 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     const { practiceAvailabilityToggle, practiceAvailability, selectedWeekday, ...rest } = this.formValues;
     const addRoomReqData: AddRoomRequestData = {
       ...rest,
+      availabilityType: +this.formValues.practiceAvailabilityToggle,
+      placeInAgenda: this.addRoomForm.get('placeInAgenda')?.value,
       practiceAvailability: [
         ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
           (acc, formArray) => [
@@ -290,7 +310,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
                 return [
                   ...a,
                   {
-                    ...control.value,
+                    weekday: control.value.weekday,
                     dayStart: control.value.dayStart,
                     dayEnd: control.value.dayEnd,
                   },
@@ -308,11 +328,12 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
       addRoomReqData.practiceAvailability = [];
     }
 
-    if (this.modalData?.roomDetails?.id) {
-      addRoomReqData.id = this.modalData.roomDetails.id;
+    if (this.modalData?.roomID) {
+      addRoomReqData.id = this.modalData.roomID;
     }
 
     console.log(addRoomReqData);
+
     if (this.modalData.edit) {
       this.roomApiSvc
         .editRoom$(addRoomReqData)

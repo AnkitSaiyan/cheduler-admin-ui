@@ -75,7 +75,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       telephone: [userDetails?.telephone, []],
       gsm: [userDetails?.gsm, []],
       address: [userDetails?.address, []],
-      status: [!!userDetails?.status, []],
+      status: [this.modalData.edit ? !!userDetails?.status : Status.Inactive, []],
     });
   }
 
