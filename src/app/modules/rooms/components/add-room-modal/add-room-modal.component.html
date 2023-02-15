@@ -35,7 +35,7 @@
       </div>
 
       <div class="d-flex dfm-gap-32 flex-wrap align-items-center flex-1">
-        <dfm-input class="flex-1 w-full" size="md" placeholder="Enter room description" label="Description *"
+        <dfm-input class="flex-1 w-full" size="md" placeholder="Enter room description" label="Description"
                    formControlName="description">
         </dfm-input>
 
@@ -117,7 +117,7 @@
           </div>
         </div>
 
-        <div formGroupName="practiceAvailability" class="d-flex dfm-gap-32 flex-wrap ad-rm-availability-form-fields">
+        <div formGroupName="practiceAvailability" class="d-flex dfm-gap-32 ad-rm-availability-form-fields">
           <div class="d-flex flex-column dfm-gap-32"
                *ngIf="[1, 2, 3, 4].includes(formValues.selectedWeekday) || formValues.selectedWeekday === weekdayEnum.ALL">
             <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray(false, 1)"
@@ -146,7 +146,7 @@
                   <!--                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>-->
                   <!--                </div>-->
 
-                  <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-rm-time-dropdown min-w-128">
+                  <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-rm-time-dropdown">
                     <dfm-input-dropdown #time
                                         [items]="controls?.get('startTimings')?.value"
                                         [typeToSearch]="true"
@@ -159,7 +159,7 @@
                     </dfm-input-dropdown>
                   </div>
 
-                  <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-rm-time-dropdown min-w-128">
+                  <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-rm-time-dropdown">
                     <dfm-input-dropdown #time
                                         [items]="controls?.get('endTimings')?.value"
                                         [typeToSearch]="true"
@@ -184,6 +184,7 @@
               </div>
             </div>
           </div>
+
           <div class="d-flex flex-column dfm-gap-32"
                *ngIf="[5, 6, 0].includes(formValues.selectedWeekday) || formValues.selectedWeekday === weekdayEnum.ALL">
             <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray(false, 2)"
@@ -212,7 +213,7 @@
                   <!--                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>-->
                   <!--                </div>-->
 
-                  <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-rm-time-dropdown min-w-128">
+                  <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-rm-time-dropdown">
                     <dfm-input-dropdown #time
                                         [items]="controls?.get('startTimings')?.value"
                                         [typeToSearch]="true"
@@ -225,7 +226,7 @@
                     </dfm-input-dropdown>
                   </div>
 
-                  <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-rm-time-dropdown min-w-128">
+                  <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-rm-time-dropdown">
                     <dfm-input-dropdown #time
                                         [items]="controls?.get('endTimings')?.value"
                                         [typeToSearch]="true"

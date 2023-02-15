@@ -9,11 +9,12 @@
 
     .ad-rm-availability-form-fields {
       max-height: 672px;
-      flex-wrap: wrap;
+      //flex-wrap: wrap;
     }
 
     .ad-rm-time-dropdown {
-      width: 128px;
+      width: 120px;
+      min-width: 120px;
     }
   }
 }

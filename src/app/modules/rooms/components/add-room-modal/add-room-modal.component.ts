@@ -106,7 +106,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     this.addRoomForm = this.fb.group({
       name: [roomDetails?.name ?? '', [Validators.required]],
       placeInAgenda: [{ value: roomDetails?.placeInAgenda, disabled: true }, [Validators.required]],
-      description: [roomDetails?.description ?? '', [Validators.required]],
+      description: [roomDetails?.description ?? '', []],
       type: [roomDetails?.type ?? null, [Validators.required]],
       selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceAvailabilityToggle: [!!roomDetails?.availabilityType, []],
@@ -145,6 +145,8 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
         const s = +dayStart.slice(0, 2);
         if (s < 12) {
           start = `${s + 12}:${dayStart.slice(3, 5)}`;
+        } else {
+          start = `${s}:${dayStart.slice(3, 5)}`;
         }
       } else {
         start = dayStart.slice(0, 5);
@@ -162,6 +164,8 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
         end = dayEnd.slice(0, 5);
       }
     }
+
+    console.log(dayStart, dayEnd, start, end);
 
     const fg = this.fb.group({
       weekday: [weekday ?? this.formValues.selectedWeekday, []],

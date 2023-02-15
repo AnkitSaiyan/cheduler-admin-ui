@@ -131,6 +131,8 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
         const s = +timeString.slice(0, 2);
         if (s < 12) {
           start = `${s + 12}:${timeString.slice(3, 5)}`;
+        } else {
+          start = `${s}:${timeString.slice(3, 5)}`;
         }
       } else {
         start = timeString.slice(0, 5);
