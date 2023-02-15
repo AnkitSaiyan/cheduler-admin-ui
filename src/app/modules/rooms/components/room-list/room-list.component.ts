@@ -49,7 +49,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
   public loading$$ = new BehaviorSubject(true);
 
-  public columns: string[] = ['Name', 'Description', 'Place-In Agenda', 'Type', 'Status', 'Actions'];
+  public columns: string[] = ['Name', 'Description', 'Place In Agenda', 'Type', 'Status', 'Actions'];
 
   public downloadItems: any[] = [];
 
