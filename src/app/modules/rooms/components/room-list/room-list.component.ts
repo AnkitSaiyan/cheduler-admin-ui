@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CheckboxComponent, TableItem } from 'diflexmo-angular-design';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import _default from 'chart.js/dist/core/core.interaction';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
@@ -17,7 +16,6 @@ import { DownloadService } from '../../../../core/services/download.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room, UpdateRoomPlaceInAgendaRequestData } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
-import index = _default.modes.index;
 
 @Component({
   selector: 'dfm-room-list',

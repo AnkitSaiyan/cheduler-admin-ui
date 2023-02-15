@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, of, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, of, switchMap, take, takeUntil } from 'rxjs';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -13,6 +13,7 @@ import { NameValue } from '../../../../shared/components/search-modal.component'
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { formatTime } from '../../../../shared/utils/formatTime';
+import { Status } from '../../../../shared/models/status.model';
 
 interface FormValues {
   name: string;
@@ -111,6 +112,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
       selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceAvailabilityToggle: [!!roomDetails?.availabilityType, []],
       practiceAvailability: this.fb.group({}),
+      status: [this.modalData.edit ? roomDetails?.status : Status.Inactive, []],
     });
 
     if (roomDetails?.practiceAvailability?.length) {

@@ -117,7 +117,7 @@
           </div>
         </div>
 
-        <div formGroupName="practiceAvailability" class="d-flex dfm-gap-32 ad-rm-availability-form-fields">
+        <div formGroupName="practiceAvailability" class="d-flex dfm-gap-32 flex-wrap ad-rm-availability-form-fields">
           <div class="d-flex flex-column dfm-gap-32"
                *ngIf="[1, 2, 3, 4].includes(formValues.selectedWeekday) || formValues.selectedWeekday === weekdayEnum.ALL">
             <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray(false, 1)"
@@ -129,7 +129,7 @@
 
               <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
                    class="d-flex flex-column dfm-gap-16">
-                <div class="d-flex dfm-gap-32 align-items-end">
+                <div class="d-flex dfm-gap-16 align-items-end">
                   <!--                <div class="d-flex flex-column dfm-gap-8">-->
                   <!--                  &lt;!&ndash;                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">&ndash;&gt;-->
 
@@ -196,7 +196,7 @@
 
               <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
                    class="d-flex flex-column dfm-gap-16">
-                <div class="d-flex dfm-gap-32 align-items-end">
+                <div class="d-flex dfm-gap-16 align-items-end">
                   <!--                <div class="d-flex flex-column dfm-gap-8">-->
                   <!--                  &lt;!&ndash;                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">&ndash;&gt;-->
 

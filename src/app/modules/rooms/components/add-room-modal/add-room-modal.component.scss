@@ -14,7 +14,7 @@
 
     .ad-rm-time-dropdown {
       width: 120px;
-      min-width: 120px;
+      min-width: 92px;
     }
   }
 }
@@ -51,6 +51,10 @@
     .ad-rm-section2 {
       // viewport - nav bar height - modal header height - modal footer header - extra space
       max-height: calc(100vh - 40px - 76px - 64px - 16px);
+    }
+
+    .ad-rm-time-dropdown {
+      width: 100% !important;
     }
 
     form {
