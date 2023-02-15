@@ -27,6 +27,8 @@ interface PracticeHourFormValues {
       weekday: Weekday;
       dayStart: string;
       dayEnd: string;
+      startTimings: NameValue[];
+      endTimings: NameValue[];
     }[];
   };
 }
@@ -61,15 +63,17 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
   public practiceHoursData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
 
+  public submitting$$ = new BehaviorSubject<boolean>(false);
+
   public weekdayEnum = Weekday;
 
   public isExceptionFormSelected = false;
 
   public timings: NameValue[] = [];
 
-  public readonly interval: number = 5;
+  public filteredTimings: NameValue[] = [];
 
-  public submitting$$ = new BehaviorSubject<boolean>(false);
+  public readonly interval: number = 5;
 
   constructor(
     private fb: FormBuilder,
@@ -91,6 +95,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     });
 
     this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
+    this.filteredTimings = [...this.timings];
   }
 
   public override ngOnDestroy() {
@@ -150,25 +155,37 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   private getPracticeHoursFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string, id?: number): FormGroup {
     let start = '';
     if (dayStart) {
+      const s = +dayStart.slice(0, 2);
       if (dayStart.toLowerCase().includes('pm')) {
-        const s = +dayStart.slice(0, 2);
         if (s < 12) {
           start = `${s + 12}:${dayStart.slice(3, 5)}`;
+        } else {
+          start = `${s}:${dayStart.slice(3, 5)}`;
         }
-      } else {
-        start = dayStart.slice(0, 5);
+      } else if (dayStart.toLowerCase().includes('am')) {
+        if (s === 12) {
+          start = `00:${dayStart.slice(3, 5)}`;
+        } else {
+          start = dayStart.slice(0, 5);
+        }
       }
     }
 
     let end = '';
     if (dayEnd) {
+      const e = +dayEnd.slice(0, 2);
       if (dayEnd.toLowerCase().includes('pm')) {
-        const e = +dayEnd.slice(0, 2);
         if (e < 12) {
           end = `${e + 12}:${dayEnd.slice(3, 5)}`;
+        } else {
+          end = `${e}:${dayEnd.slice(3, 5)}`;
         }
-      } else {
-        end = dayEnd.slice(0, 5);
+      } else if (dayEnd.toLowerCase().includes('am')) {
+        if (e === 12) {
+          end = `00:${dayEnd.slice(3, 5)}`;
+        } else {
+          end = dayEnd.slice(0, 5);
+        }
       }
     }
 
@@ -177,6 +194,8 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       weekday: [weekday ?? this.practiceHourFormValues.selectedWeekday, []],
       dayStart: [start, []],
       dayEnd: [end, []],
+      startTimings: [this.filteredTimings, []],
+      endTimings: [this.filteredTimings, []],
       // isPriority: [false, []],
     });
 
@@ -279,7 +298,11 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public addSlot(controlArray: FormArray) {
-    controlArray.push(this.getPracticeHoursFormGroup(this.getFormArrayName(controlArray)));
+    if (controlArray.controls.every((control) => control.value.dayStart && control.value.dayEnd)) {
+      controlArray.push(this.getPracticeHoursFormGroup(this.getFormArrayName(controlArray)));
+    } else {
+      this.notificationSvc.showNotification('Please fill current slot before adding new', NotificationType.WARNING);
+    }
   }
 
   public removeSlot(controlArray: FormArray, i: number) {
@@ -333,7 +356,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
               return [
                 ...a,
                 {
-                  ...control.value,
+                  weekday: control.value.weekday,
                   dayStart: control.value.dayStart,
                   dayEnd: control.value.dayEnd,
                 },
@@ -412,7 +435,9 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     this.practiceHourForm.patchValue({ selectedWeekday: 8 });
   }
 
-  public handleTimeInput(time: string, control: AbstractControl | null | undefined) {
+  public handleTimeInput(time: string, control: AbstractControl | null | undefined, timingValueControl: AbstractControl | null | undefined) {
+    this.searchInput(time, timingValueControl);
+
     const formattedTime = formatTime(time, 24, 5);
 
     if (!formattedTime) {
@@ -424,10 +449,18 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       value: formattedTime,
     };
 
-    if (!this.timings.find((t) => t.value === formattedTime)) {
-      this.timings.splice(0, 0, nameValue);
+    if (!this.filteredTimings.find((t) => t.value === formattedTime)) {
+      this.filteredTimings.splice(0, 0, nameValue);
     }
 
     control?.setValue(formattedTime);
+  }
+
+  private searchInput(time: string, timingValueControl: AbstractControl | null | undefined) {
+    if (time.toString()) {
+      timingValueControl?.setValue([...this.timings.filter((timing) => timing.value.includes(time))]);
+    } else {
+      timingValueControl?.setValue([...this.timings]);
+    }
   }
 }

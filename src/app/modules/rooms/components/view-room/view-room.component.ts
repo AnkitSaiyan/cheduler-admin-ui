@@ -124,22 +124,26 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
   }
 
   private getTimeIn24Hour(timeString: string): string {
-    let start = '';
+    let time = '';
 
     if (timeString) {
+      const hour = +timeString.slice(0, 2);
       if (timeString.toLowerCase().includes('pm')) {
-        const s = +timeString.slice(0, 2);
-        if (s < 12) {
-          start = `${s + 12}:${timeString.slice(3, 5)}`;
+        if (hour < 12) {
+          time = `${hour + 12}:${timeString.slice(3, 5)}`;
         } else {
-          start = `${s}:${timeString.slice(3, 5)}`;
+          time = `${hour}:${timeString.slice(3, 5)}`;
         }
-      } else {
-        start = timeString.slice(0, 5);
+      } else if (timeString.toLowerCase().includes('am')) {
+        if (hour === 12) {
+          time = `00:${timeString.slice(3, 5)}`;
+        } else {
+          time = timeString.slice(0, 5);
+        }
       }
     }
 
-    return start;
+    return time;
   }
 
   private timeStringToNo(timeString: string): number {

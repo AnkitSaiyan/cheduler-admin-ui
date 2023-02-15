@@ -82,9 +82,7 @@
             <div [formArrayName]="getFormArrayName(controlArray)"
                  *ngIf="[1,2,3,4].includes(getFormArrayName(controlArray))"
                  class="d-flex flex-column dfm-gap-16 flex-1">
-            <span class="text-sm font-weight-semi-bold w-fit">
-              {{ getFormArrayName(controlArray) | weekdayToName }}
-            </span>
+              <span class="text-sm font-weight-semi-bold w-fit">{{ getFormArrayName(controlArray) | weekdayToName }}</span>
 
               <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
                    class="d-flex flex-column dfm-gap-16 flex-1 min-w-128">
@@ -107,10 +105,10 @@
 
                   <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
                     <dfm-input-dropdown #time
-                                        [items]="timings"
+                                        [items]="controls?.get('startTimings')?.value"
                                         [typeToSearch]="true"
                                         [typeToSearchText]="time.value"
-                                        (searchInput)="handleTimeInput($event, controls?.get('dayStart'))"
+                                        (searchInput)="handleTimeInput($event, controls?.get('dayStart'), controls?.get('startTimings'))"
                                         label="Start Time"
                                         formControlName="dayStart"
                                         size="md"
@@ -120,10 +118,10 @@
 
                   <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
                     <dfm-input-dropdown #time
-                                        [items]="timings"
+                                        [items]="controls?.get('endTimings')?.value"
                                         [typeToSearch]="true"
                                         [typeToSearchText]="time.value"
-                                        (searchInput)="handleTimeInput($event, controls?.get('dayEnd'))"
+                                        (searchInput)="handleTimeInput($event, controls?.get('dayEnd'), controls?.get('endTimings'))"
                                         label="End Time"
                                         formControlName="dayEnd"
                                         size="md"
@@ -178,10 +176,10 @@
 
                   <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
                     <dfm-input-dropdown #time
-                                        [items]="timings"
+                                        [items]="controls?.get('startTimings')?.value"
                                         [typeToSearch]="true"
                                         [typeToSearchText]="time.value"
-                                        (searchInput)="handleTimeInput($event, controls?.get('dayStart'))"
+                                        (searchInput)="handleTimeInput($event, controls?.get('dayStart'), controls?.get('startTimings'))"
                                         label="Start Time"
                                         formControlName="dayStart"
                                         size="md"
@@ -191,10 +189,10 @@
 
                   <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
                     <dfm-input-dropdown #time
-                                        [items]="timings"
+                                        [items]="controls?.get('endTimings')?.value"
                                         [typeToSearch]="true"
                                         [typeToSearchText]="time.value"
-                                        (searchInput)="handleTimeInput($event, controls?.get('dayEnd'))"
+                                        (searchInput)="handleTimeInput($event, controls?.get('dayEnd'), controls?.get('endTimings'))"
                                         label="End Time"
                                         formControlName="dayEnd"
                                         size="md"
