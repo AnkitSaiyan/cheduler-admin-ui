@@ -362,25 +362,25 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
   public getBadgeColor(weekday: Weekday): BadgeColor {
     if (this.formValues.selectedWeekday === weekday) {
-      return 'primary';
+      return 'secondary';
     }
 
     if (weekday === Weekday.ALL) {
       for (let i = 0; i < 7; i++) {
         if (!this.formValues.practiceAvailability[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
-          return 'gray';
+          return 'primary';
         }
       }
 
-      return 'success';
+      return 'gray';
     }
 
     const practiceHours = this.formValues.practiceAvailability[weekday.toString()];
     if (practiceHours?.length && practiceHours.every((pa) => pa.dayEnd && pa.dayStart)) {
-      return 'success';
+      return 'gray';
     }
 
-    return 'gray';
+    return 'primary';
   }
 
   public handleTimeInput(time: string, control: AbstractControl | null | undefined, timingValueControl: AbstractControl | null | undefined) {

@@ -266,32 +266,32 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
   public getBadgeColor(selectedTab: number): BadgeColor {
     if (this.practiceHourFormValues?.selectedWeekday === selectedTab) {
-      return 'primary';
+      return 'secondary';
     }
 
     if (selectedTab === Weekday.ALL) {
       for (let i = 0; i < 7; i++) {
         if (!this.practiceHourFormValues.practiceHours[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
-          return 'gray';
+          return 'primary';
         }
       }
 
-      return 'success';
+      return 'gray';
     }
 
     if (+selectedTab === 8) {
       const formArray = this.exceptionFormArray;
       if (formArray.controls.every((control) => control.value.date?.day && control.value.startTime?.hour && control.value.endTime?.hour)) {
-        return 'success';
+        return 'gray';
       }
     }
 
     const practiceHours = this.practiceHourFormValues.practiceHours[selectedTab.toString()];
     if (practiceHours?.length && practiceHours.every((pa) => pa.dayEnd && pa.dayStart)) {
-      return 'success';
+      return 'gray';
     }
 
-    return 'gray';
+    return 'primary';
   }
 
   public savePracticeHours(): void {
