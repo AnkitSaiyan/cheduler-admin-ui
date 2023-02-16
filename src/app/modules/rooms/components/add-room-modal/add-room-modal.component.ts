@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, of, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, of, switchMap, take, takeUntil } from 'rxjs';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -158,21 +158,15 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     });
 
     fg.get('dayStart')
-      ?.valueChanges.pipe(
-        filter((time) => !!time),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe(() => {
-        // this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
+      ?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe((value) => {
+        this.handleError(value as string, fg.get('dayStart'));
       });
 
     fg.get('dayEnd')
-      ?.valueChanges.pipe(
-        filter((time) => !!time),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe(() => {
-        // this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
+      ?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe((value) => {
+        this.handleError(value as string, fg.get('dayEnd'));
       });
 
     return fg;

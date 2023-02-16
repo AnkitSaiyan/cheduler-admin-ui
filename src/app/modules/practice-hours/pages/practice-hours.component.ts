@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, takeUntil } from 'rxjs';
 import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
-import { log10 } from 'chart.js/helpers';
+import formatters from 'chart.js/dist/core/core.ticks';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
 import { Weekday } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
@@ -172,6 +172,18 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       // isPriority: [false, []],
     });
 
+    fg.get('dayStart')
+      ?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe((value) => {
+        this.handleError(value as string, fg.get('dayStart'));
+      });
+
+    fg.get('dayEnd')
+      ?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe((value) => {
+        this.handleError(value as string, fg.get('dayEnd'));
+      });
+
     return fg;
   }
 
@@ -299,7 +311,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
     if (this.isFormInvalid(controlArrays)) {
       this.notificationSvc.showNotification('Form is not valid.', NotificationType.WARNING);
-      // this.practiceHourForm.markAsTouched();
+      return;
     }
 
     this.submitting$$.next(true);
@@ -415,6 +427,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public handleTimeFocusOut(time: string, control: AbstractControl | null | undefined) {
+    console.log('in');
     this.handleError(time, control);
   }
 
