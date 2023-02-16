@@ -13,7 +13,7 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
-import { get24HourTimeString } from '../../../../shared/utils/time';
+import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
 
 @Component({
   selector: 'dfm-view-room',
@@ -83,7 +83,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     // sorting slots by start time
     for (let weekday = 0; weekday < 7; weekday++) {
       if (weekdayToSlotsObj[weekday.toString()]?.length) {
-        weekdayToSlotsObj[weekday.toString()].sort((a, b) => this.timeStringToNo(a.dayStart) - this.timeStringToNo(b.dayStart));
+        weekdayToSlotsObj[weekday.toString()].sort((a, b) => timeToNumber(a.dayStart) - timeToNumber(b.dayStart));
       }
     }
 
@@ -122,14 +122,6 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     }
 
     return practiceAvailability;
-  }
-
-  private timeStringToNo(timeString: string): number {
-    if (timeString && timeString.includes(':')) {
-      return +timeString.split(':').join('');
-    }
-
-    return 0;
   }
 
   public deleteRoom(id: number) {

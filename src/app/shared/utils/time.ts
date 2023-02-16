@@ -31,9 +31,7 @@ export function formatTime(timeString: string, format: 12 | 24 = 12, interval = 
   let minuteInInterval = +minutePart.slice(0, 2);
   if (minuteInInterval < 60) {
     if (minuteInInterval % interval) {
-      console.log(minuteInInterval);
       minuteInInterval -= minuteInInterval % interval;
-      console.log(minuteInInterval);
     }
   }
 
@@ -68,4 +66,30 @@ export function get24HourTimeString(timeString: string | undefined): string {
   }
 
   return time;
+}
+
+export function timeToNumber(timeString: string): number {
+  if (timeString && timeString.includes(':')) {
+    const timeInNo = +timeString.split(':').join('');
+
+    if (!Number.isNaN(timeInNo)) {
+      return timeInNo;
+    }
+  }
+
+  return 0;
+}
+
+export function checkTimeRangeOverlapping(start1: string, end1: string, start2: string, end2: string): boolean {
+  const a = timeToNumber(start1);
+  const b = timeToNumber(end1);
+
+  const c = timeToNumber(start2);
+  const d = timeToNumber(end2);
+
+  if (b <= c || d <= a) {
+    return false;
+  }
+
+  return true;
 }
