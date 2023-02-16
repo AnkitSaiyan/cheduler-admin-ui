@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { Status } from '../../../../shared/models/status.model';
-import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
+import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { DownloadService } from '../../../../core/services/download.service';

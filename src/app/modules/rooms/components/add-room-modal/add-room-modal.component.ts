@@ -12,9 +12,8 @@ import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { formatTime } from '../../../../shared/utils/formatTime';
 import { Status } from '../../../../shared/models/status.model';
-import { get24HourTimeString } from '../../../../shared/utils/time';
+import { formatTime, get24HourTimeString } from '../../../../shared/utils/time';
 
 interface FormValues {
   name: string;

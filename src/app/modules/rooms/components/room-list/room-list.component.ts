@@ -7,7 +7,7 @@ import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
-import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
+import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';

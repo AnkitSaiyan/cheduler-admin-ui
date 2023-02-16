@@ -7,14 +7,13 @@ import { Weekday } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
 import { PracticeAvailabilityServer } from '../../../shared/models/practice.model';
 import { PracticeHoursApiService } from '../../../core/services/practice-hours-api.service';
-import { formatTime } from '../../../shared/utils/formatTime';
+import { formatTime, get24HourTimeString } from '../../../shared/utils/time';
 import { NameValue } from '../../../shared/components/search-modal.component';
 import { NameValuePairPipe } from '../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../shared/pipes/time-in-interval.pipe';
 import { getNumberArray } from '../../../shared/utils/getNumberArray';
 import { toggleControlError } from '../../../shared/utils/toggleControlError';
 import { TIME_24 } from '../../../shared/utils/const';
-import { get24HourTimeString } from '../../../shared/utils/time';
 
 // interface TimeDistributed {
 //   hour: number;

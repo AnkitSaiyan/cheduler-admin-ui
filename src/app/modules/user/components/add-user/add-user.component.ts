@@ -6,7 +6,7 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { User, UserType } from '../../../../shared/models/user.model';
-import { getUserTypeEnum } from '../../../../shared/utils/getUserTypeEnum';
+import { getUserTypeEnum } from '../../../../shared/utils/getEnums';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { AddStaffRequestData } from '../../../../shared/models/staff.model';
 import { Status } from '../../../../shared/models/status.model';

@@ -7,7 +7,7 @@ import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
+import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { DownloadService } from '../../../../core/services/download.service';

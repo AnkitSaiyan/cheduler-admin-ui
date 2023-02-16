@@ -14,7 +14,7 @@ import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { formatTime } from '../../../../shared/utils/formatTime';
+import { formatTime } from '../../../../shared/utils/time';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { UserType } from '../../../../shared/models/user.model';
 import { AddAppointmentRequestData, Appointment, AppointmentSlotsRequestData, Slot } from '../../../../shared/models/appointment.model';

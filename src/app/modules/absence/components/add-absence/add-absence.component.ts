@@ -16,7 +16,7 @@ import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
-import { formatTime } from '../../../../shared/utils/formatTime';
+import { formatTime } from '../../../../shared/utils/time';
 
 interface FormValues {
   name: string;
@@ -63,7 +63,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     },
   ];
 
-  public roomList$$ = new BehaviorSubject<NameValue[]>([] as NameValue[])
+  public roomList$$ = new BehaviorSubject<NameValue[]>([] as NameValue[]);
 
   // public staffList: NameValue[] = [];
 
@@ -83,9 +83,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     monthly: 'Months',
   };
 
-  
   public staffs$$ = new BehaviorSubject<NameValue[]>([] as NameValue[]);
-
 
   constructor(
     private modalSvc: ModalService,
@@ -118,7 +116,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
     this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
       this.staffs$$.next(staffs.map((staff) => ({ name: staff.firstname, value: staff.id })) as NameValue[]);
-
     });
 
     this.absenceForm
@@ -237,7 +234,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
     console.log(addAbsenceReqData);
     if (this.modalData.edit) {
-      
       this.absenceApiSvc
         .updateAbsence(addAbsenceReqData)
         .pipe(takeUntil(this.destroy$$))
@@ -245,7 +241,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
           this.notificationSvc.showNotification(`Absence updated successfully`);
           this.closeModal(true);
         });
-    }else{
+    } else {
       this.absenceApiSvc
         .addNewAbsence$(addAbsenceReqData)
         .pipe(takeUntil(this.destroy$$))

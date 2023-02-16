@@ -4,7 +4,7 @@ import { FormControl } from '@angular/forms';
 import { TableItem } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
+import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { Status } from '../../../../shared/models/status.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';

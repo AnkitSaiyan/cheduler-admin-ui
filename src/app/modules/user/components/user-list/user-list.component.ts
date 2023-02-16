@@ -6,7 +6,7 @@ import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
-import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
+import { getStatusEnum, getUserTypeEnum } from '../../../../shared/utils/getEnums';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -14,7 +14,6 @@ import { ConfirmActionModalComponent, DialogData } from '../../../../shared/comp
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { User } from '../../../../shared/models/user.model';
 import { DownloadService } from '../../../../core/services/download.service';
-import { getUserTypeEnum } from '../../../../shared/utils/getUserTypeEnum';
 import { AddUserComponent } from '../add-user/add-user.component';
 
 @Component({
