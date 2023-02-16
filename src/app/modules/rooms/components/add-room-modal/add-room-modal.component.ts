@@ -14,6 +14,7 @@ import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { formatTime } from '../../../../shared/utils/formatTime';
 import { Status } from '../../../../shared/models/status.model';
+import { get24HourTimeString } from '../../../../shared/utils/time';
 
 interface FormValues {
   name: string;
@@ -141,48 +142,10 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   }
 
   private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string): FormGroup {
-    let start = '';
-    if (dayStart) {
-      const s = +dayStart.slice(0, 2);
-      if (dayStart.toLowerCase().includes('pm')) {
-        if (s < 12) {
-          start = `${s + 12}:${dayStart.slice(3, 5)}`;
-        } else {
-          start = `${s}:${dayStart.slice(3, 5)}`;
-        }
-      } else if (dayStart.toLowerCase().includes('am')) {
-        if (s === 12) {
-          start = `00:${dayStart.slice(3, 5)}`;
-        } else {
-          start = dayStart.slice(0, 5);
-        }
-      }
-    }
-
-    let end = '';
-    if (dayEnd) {
-      const e = +dayEnd.slice(0, 2);
-      if (dayEnd.toLowerCase().includes('pm')) {
-        if (e < 12) {
-          end = `${e + 12}:${dayEnd.slice(3, 5)}`;
-        } else {
-          end = `${e}:${dayEnd.slice(3, 5)}`;
-        }
-      } else if (dayEnd.toLowerCase().includes('am')) {
-        if (e === 12) {
-          end = `00:${dayEnd.slice(3, 5)}`;
-        } else {
-          end = dayEnd.slice(0, 5);
-        }
-      }
-    }
-
-    console.log(dayStart, dayEnd, start, end);
-
     const fg = this.fb.group({
       weekday: [weekday ?? this.formValues.selectedWeekday, []],
-      dayStart: [start, []],
-      dayEnd: [end, []],
+      dayStart: [get24HourTimeString(dayStart), []],
+      dayEnd: [get24HourTimeString(dayEnd), []],
       startTimings: [this.filteredTimings, []],
       endTimings: [this.filteredTimings, []],
     });
@@ -209,7 +172,6 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   }
 
   private addPracticeAvailabilityControls(practice?: PracticeAvailabilityServer): void {
-    console.log('in');
     const fg = this.addRoomForm.get('practiceAvailability') as FormGroup;
     const weekday = this.formValues.selectedWeekday;
     switch (weekday) {

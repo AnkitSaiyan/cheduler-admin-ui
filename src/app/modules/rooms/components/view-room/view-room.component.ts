@@ -13,6 +13,7 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
+import { get24HourTimeString } from '../../../../shared/utils/time';
 
 @Component({
   selector: 'dfm-view-room',
@@ -67,8 +68,8 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     // creating week-wise slots
     practiceAvailabilities.forEach((practice) => {
       const timeSlot: TimeSlot = {
-        dayStart: this.getTimeIn24Hour(practice.dayStart),
-        dayEnd: this.getTimeIn24Hour(practice.dayEnd),
+        dayStart: get24HourTimeString(practice.dayStart),
+        dayEnd: get24HourTimeString(practice.dayEnd),
         id: practice.id,
       };
 
@@ -121,29 +122,6 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     }
 
     return practiceAvailability;
-  }
-
-  private getTimeIn24Hour(timeString: string): string {
-    let time = '';
-
-    if (timeString) {
-      const hour = +timeString.slice(0, 2);
-      if (timeString.toLowerCase().includes('pm')) {
-        if (hour < 12) {
-          time = `${hour + 12}:${timeString.slice(3, 5)}`;
-        } else {
-          time = `${hour}:${timeString.slice(3, 5)}`;
-        }
-      } else if (timeString.toLowerCase().includes('am')) {
-        if (hour === 12) {
-          time = `00:${timeString.slice(3, 5)}`;
-        } else {
-          time = timeString.slice(0, 5);
-        }
-      }
-    }
-
-    return time;
   }
 
   private timeStringToNo(timeString: string): number {

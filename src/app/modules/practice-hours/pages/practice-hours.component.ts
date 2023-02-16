@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject, filter, takeUntil } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
 import { Weekday } from '../../../shared/models/calendar.model';
@@ -12,6 +12,9 @@ import { NameValue } from '../../../shared/components/search-modal.component';
 import { NameValuePairPipe } from '../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../shared/pipes/time-in-interval.pipe';
 import { getNumberArray } from '../../../shared/utils/getNumberArray';
+import { toggleControlError } from '../../../shared/utils/toggleControlError';
+import { TIME_24 } from '../../../shared/utils/const';
+import { get24HourTimeString } from '../../../shared/utils/time';
 
 // interface TimeDistributed {
 //   hour: number;
@@ -74,6 +77,8 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   public filteredTimings: NameValue[] = [];
 
   public readonly interval: number = 5;
+
+  public readonly invalidTimeError: string = 'invalidTime';
 
   constructor(
     private fb: FormBuilder,
@@ -153,69 +158,15 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   private getPracticeHoursFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string, id?: number): FormGroup {
-    let start = '';
-    if (dayStart) {
-      const s = +dayStart.slice(0, 2);
-      if (dayStart.toLowerCase().includes('pm')) {
-        if (s < 12) {
-          start = `${s + 12}:${dayStart.slice(3, 5)}`;
-        } else {
-          start = `${s}:${dayStart.slice(3, 5)}`;
-        }
-      } else if (dayStart.toLowerCase().includes('am')) {
-        if (s === 12) {
-          start = `00:${dayStart.slice(3, 5)}`;
-        } else {
-          start = dayStart.slice(0, 5);
-        }
-      }
-    }
-
-    let end = '';
-    if (dayEnd) {
-      const e = +dayEnd.slice(0, 2);
-      if (dayEnd.toLowerCase().includes('pm')) {
-        if (e < 12) {
-          end = `${e + 12}:${dayEnd.slice(3, 5)}`;
-        } else {
-          end = `${e}:${dayEnd.slice(3, 5)}`;
-        }
-      } else if (dayEnd.toLowerCase().includes('am')) {
-        if (e === 12) {
-          end = `00:${dayEnd.slice(3, 5)}`;
-        } else {
-          end = dayEnd.slice(0, 5);
-        }
-      }
-    }
-
     const fg = this.fb.group({
       ...(id ? { id: [id ?? 0, []] } : {}),
       weekday: [weekday ?? this.practiceHourFormValues.selectedWeekday, []],
-      dayStart: [start, []],
-      dayEnd: [end, []],
+      dayStart: [get24HourTimeString(dayStart), []],
+      dayEnd: [get24HourTimeString(dayEnd), []],
       startTimings: [this.filteredTimings, []],
       endTimings: [this.filteredTimings, []],
       // isPriority: [false, []],
     });
-
-    fg.get('dayStart')
-      ?.valueChanges.pipe(
-        filter((time) => !!time),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe(() => {
-        // this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
-      });
-
-    fg.get('dayEnd')
-      ?.valueChanges.pipe(
-        filter((time) => !!time),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe(() => {
-        // this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
-      });
 
     return fg;
   }
@@ -340,15 +291,22 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public savePracticeHours(): void {
-    if (this.practiceHourForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.practiceHourForm.updateValueAndValidity();
+    const controlArrays: FormArray[] = this.practiceHoursWeekWiseControlsArray(true);
+
+    for (let i = 0; i < controlArrays.length; i++) {
+      for (let j = 0; j < controlArrays[i].length; j++) {
+        if (controlArrays[i].controls[j].get('dayStart')?.errors || controlArrays[i].controls[j].get('dayEnd')?.errors) {
+          this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+          this.practiceHourForm.markAsTouched();
+          return;
+        }
+      }
     }
 
     this.submitting$$.next(true);
 
     const practiceHourRequestData: PracticeAvailabilityServer[] = [
-      ...this.practiceHoursWeekWiseControlsArray(true).reduce(
+      ...controlArrays.reduce(
         (acc, formArray) => [
           ...acc,
           ...formArray.controls.reduce((a, control) => {
@@ -436,8 +394,36 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public handleTimeInput(time: string, control: AbstractControl | null | undefined, timingValueControl: AbstractControl | null | undefined) {
-    this.searchInput(time, timingValueControl);
+    this.searchTime(time, timingValueControl);
+    this.formatTime(time, control);
+  }
 
+  public handleTimeFocusOut(time: string, control: AbstractControl | null | undefined) {
+    this.handleError(time, control);
+  }
+
+  private searchTime(time: string, timingValueControl: AbstractControl | null | undefined) {
+    if (!time) {
+      return;
+    }
+
+    timingValueControl?.setValue([...this.timings.filter((timing) => timing.value.includes(time))]);
+  }
+
+  private handleError(time: string, control: AbstractControl | null | undefined) {
+    if (!time) {
+      toggleControlError(control, this.invalidTimeError, false);
+      return;
+    }
+
+    if (!time.match(TIME_24)) {
+      toggleControlError(control, this.invalidTimeError);
+    } else {
+      toggleControlError(control, this.invalidTimeError, false);
+    }
+  }
+
+  private formatTime(time: string, control: AbstractControl | null | undefined) {
     const formattedTime = formatTime(time, 24, 5);
 
     if (!formattedTime) {
@@ -454,13 +440,5 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     }
 
     control?.setValue(formattedTime);
-  }
-
-  private searchInput(time: string, timingValueControl: AbstractControl | null | undefined) {
-    if (time.toString()) {
-      timingValueControl?.setValue([...this.timings.filter((timing) => timing.value.includes(time))]);
-    } else {
-      timingValueControl?.setValue([...this.timings]);
-    }
   }
 }
