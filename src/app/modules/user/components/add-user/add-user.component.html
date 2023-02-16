@@ -50,14 +50,18 @@
 
       <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
         <div class="d-flex flex-column flex-1 w-full">
-          <dfm-input [required]="formValues.userType === userType.Scheduler" class="flex-1" size="md"
-                     placeholder="Enter email" [label]="formValues.userType === userType.General ? 'Email' : 'Email *'"
-                     formControlName="email" (focusout)="handleEmailInput($event)">
+          <dfm-input
+            [required]="modalData?.userDetails?.userType ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler"
+            [label]="modalData?.userDetails?.userType ? (modalData.userDetails.userType === userType.General ? 'Email' : 'Email *' ) : (formValues.userType === userType.General ? 'Email' : 'Email *')"
+            class="flex-1" size="md"
+            placeholder="Enter email"
+            formControlName="email" (focusout)="handleEmailInput($event)">
           </dfm-input>
           <small *ngIf="addUserForm.get('email')?.hasError('email')" class="validation-error">Email is Invalid.</small>
         </div>
 
-        <dfm-input #phone [dfmNumberInput]="phone" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone"
+        <dfm-input #phone [dfmNumberInput]="phone" class="flex-1" size="md" placeholder="Enter telephone"
+                   label="Telephone"
                    formControlName="telephone">
         </dfm-input>
       </div>

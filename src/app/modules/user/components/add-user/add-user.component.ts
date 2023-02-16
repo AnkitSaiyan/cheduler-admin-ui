@@ -44,14 +44,15 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
     private userApiSvc: StaffApiService,
   ) {
     super();
-  }
 
-  public ngOnInit(): void {
     this.modalSvc.dialogData$.pipe(take(1)).subscribe((data) => {
       this.modalData = data;
+      console.log(this.modalData);
       this.createForm(this.modalData?.userDetails);
     });
   }
+
+  public ngOnInit(): void {}
 
   public override ngOnDestroy() {
     super.ngOnDestroy();
