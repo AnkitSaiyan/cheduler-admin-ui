@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, filter, of, switchMap, take, takeUntil } from 'rxjs';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
+import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { PracticeAvailability, PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
@@ -13,7 +13,9 @@ import { NameValue } from '../../../../shared/components/search-modal.component'
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { Status } from '../../../../shared/models/status.model';
-import { formatTime, get24HourTimeString } from '../../../../shared/utils/time';
+import { checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
+import { toggleControlError } from '../../../../shared/utils/toggleControlError';
+import { TIME_24 } from '../../../../shared/utils/const';
 
 interface FormValues {
   name: string;
@@ -54,6 +56,12 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   public filteredTimings: NameValue[] = [];
 
   public readonly interval: number = 5;
+
+  public readonly invalidTimeError: string = 'invalidTime';
+
+  public readonly invalidSlotRangeError: string = 'invalidSlot';
+
+  public readonly slotExistsError: string = 'slotExists';
 
   constructor(
     private modalSvc: ModalService,
@@ -265,9 +273,11 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   }
 
   public saveRoom() {
-    if (this.addRoomForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.addRoomForm.updateValueAndValidity();
+    const controlArrays: FormArray[] = this.practiceAvailabilityWeekWiseControlsArray(true);
+
+    if (this.addRoomForm.invalid || this.isFormInvalid(controlArrays)) {
+      this.notificationSvc.showNotification('Form is not valid.', NotificationType.WARNING);
+      this.addRoomForm.markAsTouched();
       return;
     }
 
@@ -279,7 +289,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
       availabilityType: +this.formValues.practiceAvailabilityToggle,
       placeInAgenda: this.addRoomForm.get('placeInAgenda')?.value,
       practiceAvailability: [
-        ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
+        ...controlArrays.reduce(
           (acc, formArray) => [
             ...acc,
             ...formArray.controls.reduce((a, control) => {
@@ -338,6 +348,18 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     }
   }
 
+  private isFormInvalid(controlArrays: FormArray[]): boolean {
+    for (let i = 0; i < controlArrays.length; i++) {
+      for (let j = 0; j < controlArrays[i].length; j++) {
+        if (controlArrays[i].controls[j].get('dayStart')?.errors || controlArrays[i].controls[j].get('dayEnd')?.errors) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
   public getBadgeColor(weekday: Weekday): BadgeColor {
     if (this.formValues.selectedWeekday === weekday) {
       return 'primary';
@@ -362,8 +384,89 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   }
 
   public handleTimeInput(time: string, control: AbstractControl | null | undefined, timingValueControl: AbstractControl | null | undefined) {
-    this.searchInput(time, timingValueControl);
+    this.searchTime(time, timingValueControl);
+    this.formatTime(time, control, timingValueControl);
+  }
 
+  public handleTimeFocusOut(time: string, control: AbstractControl | null | undefined) {
+    this.handleError(time, control);
+  }
+
+  private searchTime(time: string, timingValueControl: AbstractControl | null | undefined) {
+    if (!time) {
+      return;
+    }
+
+    timingValueControl?.setValue([...this.timings.filter((timing) => timing.value.includes(time))]);
+  }
+
+  private handleError(time: string, control: AbstractControl | null | undefined) {
+    //  Handling invalid time input
+
+    if (!time) {
+      toggleControlError(control, this.invalidTimeError, false);
+      return;
+    }
+
+    if (!time.match(TIME_24)) {
+      toggleControlError(control, this.invalidTimeError);
+      return;
+    }
+
+    toggleControlError(control, this.invalidTimeError, false);
+
+    // Handling slot errors
+
+    const controlArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
+
+    for (let i = 0; i < controlArrays.length; i++) {
+      for (let j = 0; j < controlArrays[i].length; j++) {
+        const dayStart = controlArrays[i].controls[j].get('dayStart');
+        const dayEnd = controlArrays[i].controls[j].get('dayEnd');
+
+        if (dayStart?.value && dayEnd?.value) {
+          if (timeToNumber(dayStart.value) >= timeToNumber(dayEnd?.value)) {
+            toggleControlError(dayStart, this.invalidSlotRangeError);
+            toggleControlError(dayEnd, this.invalidSlotRangeError);
+            return;
+          }
+        }
+
+        toggleControlError(dayStart, this.invalidSlotRangeError, false);
+        toggleControlError(dayEnd, this.invalidSlotRangeError, false);
+      }
+    }
+
+    controlArrays.forEach((formArray) => {
+      const { controls } = formArray;
+      if (formArray.length > 1 && controls[1].value.dayStart && controls[1].value.dayEnd) {
+        const sortedControls = [...controls].sort((a, b) => timeToNumber(a.value.daysStart) - timeToNumber(b.value.dayStart));
+
+        const first = sortedControls[0];
+
+        for (let j = 1; j < formArray.length; j++) {
+          const curr = sortedControls[j];
+
+          if (curr.value.dayStart && curr.value.dayEnd) {
+            if (checkTimeRangeOverlapping(first.value.dayStart, first.value.dayEnd, curr.value.dayStart, curr.value.dayEnd)) {
+              toggleControlError(curr.get('dayStart'), this.slotExistsError);
+              toggleControlError(curr.get('dayEnd'), this.slotExistsError);
+              toggleControlError(first.get('dayStart'), this.slotExistsError);
+              toggleControlError(first.get('dayEnd'), this.slotExistsError);
+            } else {
+              toggleControlError(curr.get('dayStart'), this.slotExistsError, false);
+              toggleControlError(curr.get('dayEnd'), this.slotExistsError, false);
+              toggleControlError(first.get('dayStart'), this.slotExistsError, false);
+              toggleControlError(first.get('dayEnd'), this.slotExistsError, false);
+            }
+          }
+        }
+      }
+    });
+  }
+
+  private formatTime(time: string, control: AbstractControl | null | undefined, timingValueControl: AbstractControl | null | undefined) {
+    // debugger;
     const formattedTime = formatTime(time, 24, 5);
 
     if (!formattedTime) {
@@ -375,18 +478,10 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
       value: formattedTime,
     };
 
-    if (!this.filteredTimings.find((t) => t.value === formattedTime)) {
-      this.filteredTimings.splice(0, 0, nameValue);
+    if (!timingValueControl?.value?.find((t) => t?.value === formattedTime)) {
+      timingValueControl?.setValue(timingValueControl?.value?.splice(0, 0, nameValue));
     }
 
-    control?.setValue(formattedTime, { emitEvent: false });
-  }
-
-  private searchInput(time: string, timingValueControl: AbstractControl | null | undefined) {
-    if (time.toString()) {
-      timingValueControl?.setValue([...this.timings.filter((timing) => timing.value.includes(time))]);
-    } else {
-      timingValueControl?.setValue([...this.timings]);
-    }
+    control?.setValue(formattedTime);
   }
 }
