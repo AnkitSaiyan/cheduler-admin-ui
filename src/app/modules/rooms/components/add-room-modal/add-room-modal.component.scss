@@ -4,6 +4,7 @@
 
   .ad-rm-section2 {
     // viewport - m-top - modal header height - modal footer header - p-bottom - m-bottom - extra
+    min-height: 320px;
     max-height: calc(100vh - 24px - 76px - 64px - 16px - 24px - 48px);
     overflow-y: auto;
 

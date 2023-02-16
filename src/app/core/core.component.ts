@@ -37,8 +37,8 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     staff: 'user-01',
     room: 'building-01',
     physician: 'medical-circle',
-    'site-management': 'tool-02',
-    'practice-hours': 'clock',
+    'Site Management': 'tool-02',
+    'Practice Hours': 'clock',
     user: 'user-01',
     exams: 'user-x-01',
   };
@@ -64,7 +64,17 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     if (this.notConfigurationRoutes.includes(currentRouteName)) {
       this.configurationMenuTitle = 'Configuration';
     } else {
-      this.configurationMenuTitle = currentRouteName;
+      switch (currentRouteName) {
+        case 'site-management':
+        case 'practice-hours':
+          this.configurationMenuTitle = currentRouteName
+            .split('-')
+            .map((text) => `${text[0].toUpperCase()}${text.slice(1)}`)
+            .join(' ');
+          break;
+        default:
+          this.configurationMenuTitle = currentRouteName;
+      }
     }
 
     this.configurationMenuIconName = this.navTitleToIconObj[currentRouteName] ?? 'tool-02';
