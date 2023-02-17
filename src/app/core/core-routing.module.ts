@@ -48,6 +48,10 @@ const routes: Routes = [
         loadChildren: async () => (await import('../modules/appointments/appointments.module')).AppointmentsModule,
       },
       {
+        path: 'priority-slots',
+        loadChildren: async () => (await import('../modules/priority-slots/priority-slots.module')).PrioritySlotsModule,
+      },
+      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full',

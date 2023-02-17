@@ -698,6 +698,18 @@ ngb-datepicker {
   border: none;
 }
 
+.priority-slots-modal-footer {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  column-gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  margin-top: 38px !important;
+}
+
 .download-dropdown-max-w-144 {
   max-width: 144px;
 }
