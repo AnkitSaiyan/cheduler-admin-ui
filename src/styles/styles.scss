@@ -51,9 +51,19 @@ $diflexmo-admin-theme: mat.define-light-theme((
 //  display: none !important;
 //}
 
+$nav-bar-height: 64px;
+$nav-bar-1440-height: 46px;
+$nav-bar-mobile-top-height: 36px;
+$nav-bar-mobile-bottom-height: 56px;
+$body-content-padding-y-total: 48px;
+
 *, body, html {
   box-sizing: border-box;
   font-family: Montserrat;
+
+  --content-height: calc(100vh - $nav-bar-height - $body-content-padding-y-total);
+  --content-height-1440: calc(100vh - $nav-bar-1440-height - $body-content-padding-y-total);
+  --content-height-mobile: calc(100vh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total);
 }
 
 // custom styles for dfm elements ===========================================================
