@@ -10,6 +10,7 @@ export interface AddStaffRequestData {
   telephone: string | number;
   address?: string;
   userType: UserType;
+  availabilityType?: number;
   practiceAvailability?: PracticeAvailability[];
   examLists?: number[];
   gsm?: string;
