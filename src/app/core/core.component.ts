@@ -52,14 +52,15 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
   public navigationItems: NavigationItem[] = [
     new NavigationItem('Dashboard', 'home-03', '/dashboard', true),
     new NavigationItem('Appointment', 'file-06', '/appointment', false),
-    new NavigationItem('Absence', 'user-01', '/absence', false),
+    new NavigationItem('Absence', 'user-x-01', '/absence', false),
     new NavigationItem('Configuration', 'tool-02', undefined, false, [
-      new NavigationItem('User', 'clock', '/user', false),
+      new NavigationItem('User', 'user-circle', '/user', false),
       new NavigationItem('Rooms', 'building-01', '/room', false),
       new NavigationItem('Staff', 'user-01', '/staff', false),
       new NavigationItem('Physician', 'medical-circle', '/physician', false),
-      new NavigationItem('Site Management', 'tool-02', '/site-management', false),
+      new NavigationItem('Exam', 'microscope', '/exam', false),
       new NavigationItem('Practice Hours', 'clock', '/practice-hours', false),
+      new NavigationItem('Site Management', 'tool-01', '/site-management', false),
     ]),
   ];
 
