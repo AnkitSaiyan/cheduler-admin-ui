@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, debounceTime, takeUntil } from 'rxjs';
 import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
@@ -90,6 +90,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     private practiceHourApiSvc: PracticeHoursApiService,
     private nameValuePipe: NameValuePairPipe,
     private timeInIntervalPipe: TimeInIntervalPipe,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
   }
@@ -159,6 +160,8 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     } else {
       this.addPracticeHoursControls();
     }
+
+    this.cdr.detectChanges();
   }
 
   private getPracticeHoursFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string, id?: number): FormGroup {
