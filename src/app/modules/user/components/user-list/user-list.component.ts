@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
+import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { getStatusEnum, getUserTypeEnum } from '../../../../shared/utils/getEnums';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -13,7 +13,7 @@ import { ModalService } from '../../../../core/services/modal.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { User } from '../../../../shared/models/user.model';
-import { DownloadService } from '../../../../core/services/download.service';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 import { AddUserComponent } from '../add-user/add-user.component';
 
 @Component({
@@ -36,7 +36,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   public columns: string[] = ['First Name', 'Last Name', 'Email', 'Telephone', 'Category', 'Status', 'Actions'];
 
-  public downloadItems: any[] = [];
+  public downloadItems: DownloadType[] = [];
 
   private users$$: BehaviorSubject<any[]>;
 
@@ -53,6 +53,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
   public userType = getUserTypeEnum();
 
   public loading$$ = new BehaviorSubject(true);
+
+  public fileName: string = '';
 
   constructor(
     private userApiSvc: StaffApiService,
@@ -100,13 +102,19 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+        if (!this.users$$.value.length) {
+          this.notificationSvc.showNotification('No user found', NotificationType.INFO);
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          value as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.users$$.value.map((u: User) => [u.firstname, u.lastname, u.email, u.telephone?.toString(), u.userType, StatusToName[u.status]]),
+          'users',
+        );
+
+        this.downloadDropdownControl.setValue('');
       });
 
     this.afterBannerClosed$$
