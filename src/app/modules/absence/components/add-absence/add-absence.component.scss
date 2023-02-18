@@ -28,6 +28,10 @@
 @media (max-width: 992px) {
   .ad-ab-dates {
     flex-wrap: wrap;
+
+    &>div {
+      max-width: 100%;
+    }
   }
 
   .ad-ab-radio-group {
@@ -51,7 +55,8 @@
     padding: 0;
 
     form {
-      .ad-ab-from-date, .ad-ab-to-date {
+      .ad-ab-from-date, .ad-ab-to-date, .ad-ab-absence-name {
+        max-width: 100% !important;
         width: 100%;
       }
 

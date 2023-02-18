@@ -23,12 +23,11 @@
     display: none !important;
   }
 
-  .ab-li-title-buttons {
+  .ab-li-title-buttons, .ab-li-search-mv, .ab-li-plus-btn {
     display: block;
   }
 
   .ab-li-plus-btn {
-    display: block;
     position: absolute;
     bottom: 0;
     right: 0;
