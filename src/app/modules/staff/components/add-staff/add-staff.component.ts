@@ -151,7 +151,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     this.examApiSvc.exams$
       .pipe(
-        map((exams) => exams.map(({ name, id }) => ({ name, value: id }))),
+        map((exams) => exams.filter((exam) => !!exam.status).map(({ name, id }) => ({ name, value: id }))),
         takeUntil(this.destroy$$),
       )
       .subscribe((exams) => {
