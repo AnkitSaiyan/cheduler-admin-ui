@@ -71,7 +71,7 @@
 
       <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">First Name</span>
+          <span class="flex-1">Name</span>
           <span class="flex-1">{{ absenceDetails.name | titlecase }}</span>
         </div>
 
@@ -153,7 +153,7 @@
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Repeat Every</span>
           <span class="flex-1">{{ absenceDetails.repeatFrequency }}
-            <span>{{ absenceDetails.repeatType | repeatTypeToName | dashIfNothing }}</span>
+            <span *ngIf="absenceDetails.repeatFrequency">{{ absenceDetails.repeatType | repeatTypeToName }}</span>
           </span>
         </div>
 

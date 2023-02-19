@@ -590,6 +590,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       ],
       status: this.formValues.status,
       availabilityType: AvailabilityType.Unavailable,
+      uncombinables: this.formValues.uncombinables ?? [],
       practiceAvailability: [
         ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
           (acc, formArray) => [

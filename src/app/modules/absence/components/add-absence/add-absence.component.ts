@@ -231,7 +231,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         absenceDetails?.isRepeat && absenceDetails?.repeatFrequency && absenceDetails.repeatType
           ? `${absenceDetails.repeatFrequency} ${this.repeatTypeToName[absenceDetails.repeatType]}`
           : null,
-        [],
+        [Validators.min(1)],
       ],
       userList: [absenceDetails?.user?.length ? absenceDetails.user.map(({ id }) => id?.toString()) : [], []],
       roomList: [absenceDetails?.rooms?.length ? absenceDetails?.rooms.map(({ id }) => id?.toString()) : [], []],

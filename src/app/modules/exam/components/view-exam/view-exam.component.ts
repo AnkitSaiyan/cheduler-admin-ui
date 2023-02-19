@@ -14,6 +14,8 @@ import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { Exam } from '../../../../shared/models/exam.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { get24HourTimeString } from '../../../../shared/utils/time';
 
 @Component({
   selector: 'dfm-view-exam',
@@ -26,11 +28,11 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
   public roomIdToNameMap = new Map<number, string>();
 
   public staffsGroupedByTypes: {
-    mandatory: string[];
-    radiologists: string[];
-    assistants: string[];
-    nursing: string[];
-    secretaries: string[];
+    mandatory: NameValue[];
+    radiologists: NameValue[];
+    assistants: NameValue[];
+    nursing: NameValue[];
+    secretaries: NameValue[];
   } = {
     mandatory: [],
     radiologists: [],
@@ -66,6 +68,10 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
       .subscribe((examDetails) => {
         this.examDetails$$.next(examDetails);
 
+        if (examDetails?.user && examDetails.user?.length) {
+          this.saveStaffDetails(examDetails.user);
+        }
+
         if (examDetails?.practiceAvailability?.length) {
           this.practiceAvailability$$.next([...this.getPracticeAvailability(examDetails.practiceAvailability)]);
         }
@@ -74,35 +80,32 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
     this.roomApiService.rooms$
       .pipe(takeUntil(this.destroy$$))
       .subscribe((rooms) => rooms.forEach((room) => this.roomIdToNameMap.set(+room.id, room.name)));
+  }
 
-    this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
-      const staffIdToDetailsMap = new Map<number, User>();
-      staffs.forEach((staff) => staffIdToDetailsMap.set(staff.id, staff));
+  private saveStaffDetails(users: User[]) {
+    users.forEach((user) => {
+      const nameValue: NameValue = {
+        name: `${user.firstname} ${user.lastname}`,
+        value: user.id,
+      };
 
-      this.examDetails$$.value?.usersList?.forEach((userID) => {
-        const staff = staffIdToDetailsMap.get(userID);
-
-        if (staff) {
-          const name = `${staff.firstname} ${staff.lastname}`;
-          switch (staff.userType) {
-            case UserType.Assistant:
-              this.staffsGroupedByTypes.assistants.push(name);
-              break;
-            case UserType.Radiologist:
-              this.staffsGroupedByTypes.radiologists.push(name);
-              break;
-            case UserType.Nursing:
-              this.staffsGroupedByTypes.nursing.push(name);
-              break;
-            case UserType.Secretary:
-            case UserType.Scheduler:
-              this.staffsGroupedByTypes.secretaries.push(name);
-              break;
-            default:
-              this.staffsGroupedByTypes.mandatory.push(name);
-          }
-        }
-      });
+      switch (user.userType) {
+        case UserType.Assistant:
+          this.staffsGroupedByTypes.assistants.push(nameValue);
+          break;
+        case UserType.Radiologist:
+          this.staffsGroupedByTypes.radiologists.push(nameValue);
+          break;
+        case UserType.Nursing:
+          this.staffsGroupedByTypes.nursing.push(nameValue);
+          break;
+        case UserType.Secretary:
+        case UserType.Scheduler:
+          this.staffsGroupedByTypes.secretaries.push(nameValue);
+          break;
+        default:
+          this.staffsGroupedByTypes.mandatory.push(nameValue);
+      }
     });
   }
 
@@ -114,8 +117,8 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
     // creating week-wise slots
     practiceAvailabilities.forEach((practice) => {
       const timeSlot: TimeSlot = {
-        dayStart: practice.dayStart,
-        dayEnd: practice.dayEnd,
+        dayStart: get24HourTimeString(practice.dayStart),
+        dayEnd: get24HourTimeString(practice.dayEnd),
         id: practice.id,
       };
 
@@ -140,8 +143,8 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 
       let done = true;
 
-      for (let weekday = 1; weekday <= 7; weekday++) {
-        if (weekdayToSlotsObj[weekday.toString()]?.length > slotNo) {
+      for (let weekday = 0; weekday < 7; weekday++) {
+        if (weekdayToSlotsObj[weekday.toString()]?.length) {
           allWeekTimeSlots[weekday.toString()] = { ...allWeekTimeSlots, ...weekdayToSlotsObj[weekday.toString()][slotNo] };
           if (done) {
             done = false;
@@ -163,7 +166,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
         thursday: { ...allWeekTimeSlots['4'] },
         friday: { ...allWeekTimeSlots['5'] },
         saturday: { ...allWeekTimeSlots['6'] },
-        sunday: { ...allWeekTimeSlots['7'] },
+        sunday: { ...allWeekTimeSlots['0'] },
       });
     }
 
@@ -183,7 +186,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.examApiService.deleteExam(id)),
+        switchMap(() => this.examApiService.deleteExam(id)),
         take(1),
       )
       .subscribe(() => {

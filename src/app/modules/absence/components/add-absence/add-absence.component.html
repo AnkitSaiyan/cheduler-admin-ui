@@ -182,7 +182,7 @@
             </dfm-input-dropdown>
           </div>
 
-          <div class="flex-1">
+          <div class="d-flex flex-column flex-1">
             <dfm-input
               #repeatFrequency
               class="flex-1"
@@ -197,6 +197,8 @@
               (focusout)="handleFocusOut()"
             >
             </dfm-input>
+            <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched">Repeat frequency
+              should be greater than 0</small>
           </div>
 
           <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-repeat-every"
