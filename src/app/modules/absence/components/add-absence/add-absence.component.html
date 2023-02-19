@@ -69,6 +69,7 @@
                                   [typeToSearch]="true"
                                   [typeToSearchText]="startTime.value"
                                   (searchInput)="handleTimeInput($event, 'startTime')"
+                                  (focusout)="handleTimeInput(startTime.search, 'startTime')"
                                   formControlName="startTime"
                                   size="md"
                                   placeholder="hh:mm">
@@ -119,6 +120,7 @@
                                   [typeToSearch]="true"
                                   [typeToSearchText]="endTime.value"
                                   (searchInput)="handleTimeInput($event, 'endTime')"
+                                  (focusout)="handleTimeInput(startTime.search, 'endTime')"
                                   [required]="formValues.isRepeat"
                                   formControlName="endTime"
                                   size="md"
@@ -203,6 +205,7 @@
                                 [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
                                 [multiple]="true"
                                 [placeholder]="!!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + ' Selected' : 'Select repeat every'"
+
                                 size="md"
                                 label="Repeat On *"
                                 [required]="formValues.isRepeat && formValues.repeatType !== 'daily'"

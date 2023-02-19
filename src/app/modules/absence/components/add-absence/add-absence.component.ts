@@ -346,7 +346,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public handleTimeInput(time: string, controlName: 'startTime' | 'endTime') {
-    const formattedTime = formatTime(time);
+    const formattedTime = formatTime(time, 24);
 
     console.log(formattedTime);
 
