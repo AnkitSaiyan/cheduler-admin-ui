@@ -18,12 +18,11 @@
     display: none !important;
   }
 
-  .ex-li-title-buttons {
+  .ex-li-title-buttons, .ex-li-search-mv, .ex-li-plus-btn {
     display: block;
   }
 
   .ex-li-plus-btn {
-    display: block;
     position: absolute;
     bottom: 0;
     right: 0;

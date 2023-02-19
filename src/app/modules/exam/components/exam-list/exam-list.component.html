@@ -1,4 +1,4 @@
-<div class="d-flex flex-column h-100 position-relative dfm-px-8 ex-li-main-wrapper">
+<div class="d-flex flex-column h-100 position-relative dfm-gap-16 dfm-px-8 ex-li-main-wrapper">
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 ex-li-section-1">
       <dfm-button
@@ -51,7 +51,15 @@
     </div>
   </section>
 
-  <section class="overflow-y-auto ex-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredExams$$ | async as exams">
+  <dfm-input
+    size="md"
+    placeholder="Search by Exam Name"
+    icon="search-sm"
+    class="w-full hidden ex-li-search-mv"
+    [formControl]="searchControl"
+  ></dfm-input>
+
+  <section class="overflow-y-auto ex-li-table-wrapper dfm-pb-8" *ngIf="filteredExams$$ | async as exams">
     <dfm-table [items]="exams" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewExam($event)"
                class="dfm-table-wrapper">
@@ -85,7 +93,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Active }])"
+              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
             ></dfm-button>
 
             <dfm-button
@@ -93,7 +101,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Inactive }])"
+              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
             ></dfm-button>
 
             <dfm-button
@@ -118,11 +126,11 @@
               <div class="shadow-lg ex-li-action-buttons-menu ex-li-menus" ngbDropdownMenu
                    aria-labelledby="dropdownManual">
                 <div ngbDropdownItem *ngIf="item.status === statusType.Inactive"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Active }])">
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])">
                   <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
                 </div>
                 <div ngbDropdownItem *ngIf="item.status === statusType.Active"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Inactive }])">
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])">
                   <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
                 </div>
                 <div ngbDropdownItem (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"
@@ -153,24 +161,24 @@
       No data found
     </div>
   </section>
-  <div ngbDropdown #optionsMenu="ngbDropdown">
-    <div class="shadow-lg ex-li-plus-btn-menu ex-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
-      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">
-        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
-      </div>
-    </div>
-  </div>
+<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+<!--    <div class="shadow-lg ex-li-plus-btn-menu ex-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
 
-  <dfm-button color="secondary" size="md" class="hidden shadow-lg ex-li-plus-btn rounded-2"
-              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">
-    <dfm-icon #showMoreButtonIcon name="plus" class="ex-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
-  </dfm-button>
+<!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg ex-li-plus-btn rounded-2"-->
+<!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
+<!--    <dfm-icon #showMoreButtonIcon name="plus" class="ex-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+<!--  </dfm-button>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedExamIDs.length"
