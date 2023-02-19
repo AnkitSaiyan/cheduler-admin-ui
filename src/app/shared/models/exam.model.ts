@@ -41,6 +41,8 @@ export interface CreateExamRequestData {
   nursingCount: number;
   secretaryCount: number;
   usersList: number[];
+  availabilityType: AvailabilityType;
   practiceAvailability: PracticeAvailability[];
+  status: Status;
   id?: number;
 }

@@ -135,6 +135,15 @@ dfm-input-dropdown {
   margin-bottom: 40px;
 }
 
+.dfm-input-multi-dropdown-wrapper-mb-0 {
+  background: white;
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  height: fit-content;
+  margin-top: 28px;
+  //margin-bottom: 28px;
+}
+
 dfm-input-dropdown {
   dfm-error {
     position: absolute !important;

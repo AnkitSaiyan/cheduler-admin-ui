@@ -18,6 +18,7 @@ import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pi
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { formatTime, timeToNumber } from '../../../../shared/utils/time';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
+import { Status } from '../../../../shared/models/status.model';
 
 interface FormValues {
   name: string;
