@@ -1,14 +1,14 @@
-import { Component, Directive, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
+import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadService, DownloadType } from '../../../../core/services/download.service';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 import { Statuses } from '../../../../shared/utils/const';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
@@ -55,6 +55,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     private route: ActivatedRoute,
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.exams$$ = new BehaviorSubject<any[]>([]);
@@ -82,14 +83,21 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         filter((value) => !!value),
         takeUntil(this.destroy$$),
       )
-      .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+      .subscribe((downloadAs) => {
+        if (!this.exams$$.value.length) {
+          this.notificationSvc.showNotification('No Exams found', NotificationType.INFO);
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          downloadAs as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.exams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), StatusToName[ex.status]]),
+          'exams',
+        );
+
+        this.downloadDropdownControl.setValue('');
+        this.cdr.detectChanges();
       });
 
     this.afterBannerClosed$$

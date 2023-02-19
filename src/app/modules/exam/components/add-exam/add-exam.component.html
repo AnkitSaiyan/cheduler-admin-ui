@@ -67,7 +67,7 @@
   </section>
 
   <section class="dfm-card overflow-y-auto hide-scrollbar ad-ex-section2" *ngIf="examDetails$$ | async">
-    <form [formGroup]="createExamForm" class="dfm-p-16 d-flex flex-column dfm-gap-32"
+    <form [formGroup]="examForm" class="dfm-p-16 d-flex flex-column dfm-gap-32"
           *ngIf="staffsGroupedByTypes$$ | async as staffsGroupedByType">
       <div class="d-flex flex-column dfm-gap-16 ad-ex-form-exam-info">
         <div class="d-flex dfm-gap-24 flex-wrap ad-ex-name-expense-room">
@@ -84,7 +84,7 @@
           </div>
         </div>
 
-        <div class="d-flex dfm-gap-8 flex-column" *ngIf="!!createExamForm.get('roomType')?.value">
+        <div class="d-flex dfm-gap-8 flex-column" *ngIf="!!examForm.get('roomType')?.value">
           <span class="text-sm font-weight-medium dfm-text-main-700">{{ formValues.roomType | titlecase }} Rooms *</span>
 
           <div class="d-flex dfm-gap-24 flex-wrap" formArrayName="roomsForExam">
@@ -255,59 +255,165 @@
             </div>
           </div>
 
-          <div formGroupName="practiceAvailability" class="d-flex flex-column dfm-gap-32 ad-ex-availability-form-fields">
-            <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray()"
-                 [formArrayName]="getFormArrayName(controlArray)"
-                 class="d-flex flex-column flex-wrap dfm-gap-16">
-              <span class="text-sm font-weight-semi-bold">
-                {{ getFormArrayName(controlArray) | weekdayToName }}
-              </span>
+          <div formGroupName="practiceAvailability" class="d-flex flex-wrap gap-5 ad-ex-availability-form-fields">
+            <div class="d-flex flex-column dfm-gap-24 ad-ex-form-fields"
+                 *ngIf="[1, 2, 3, 4].includes(formValues.selectedWeekday) || formValues.selectedWeekday === weekdayEnum.ALL">
+              <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray(false, 1)"
+                   class="d-flex flex-column dfm-gap-32">
+                <div [formArrayName]="getFormArrayName(controlArray)"
+                     *ngIf="[1,2,3,4].includes(getFormArrayName(controlArray))"
+                     class="d-flex flex-column dfm-gap-16 flex-1">
+              <span
+                class="text-sm font-weight-semi-bold w-fit">{{ getFormArrayName(controlArray) | weekdayToName }}</span>
 
-              <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
-                   class="d-flex flex-column dfm-gap-16">
-                <div class="d-flex dfm-gap-32 align-items-end">
-                  <div class="d-flex flex-column dfm-gap-8">
-                    <!--                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">-->
+                  <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
+                       class="d-flex flex-column dfm-gap-16 flex-1 min-w-128">
+                    <div class="d-flex flex-column w-full">
+                      <div class="d-flex dfm-gap-16 align-items-start flex-1">
+                        <div class="d-flex flex-column w-full">
+                          <div
+                            class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-ex-time-dropdown min-w-128">
+                            <dfm-input-dropdown #start
+                                                [items]="controls?.get('startTimings')?.value"
+                                                [typeToSearch]="true"
+                                                [typeToSearchText]="start.value"
+                                                (searchInput)="handleTimeInput($event,controls?.get('dayStart'),controls?.get('startTimings'), start)"
+                                                (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
+                                                label="Start Time"
+                                                formControlName="dayStart"
+                                                size="md"
+                                                placeholder="hh:mm">
+                            </dfm-input-dropdown>
+                          </div>
 
-                    <!--                    </dfm-input-dropdown>-->
-                    <label class="text-sm font-weight-medium">Start Time</label>
-                    <ngb-timepicker formControlName="dayStart" size="small" [spinners]="false"></ngb-timepicker>
-                    <span class="text-sm text-red"
-                          *ngIf="controls.get('dayStart')?.hasError('startTimeErr')">Start Time must be smaller.</span>
+                          <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">Invalid
+                            Time.</small>
+                        </div>
+
+
+                        <div class="d-flex flex-column w-full">
+                          <div
+                            class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-ex-time-dropdown min-w-128">
+                            <dfm-input-dropdown #end
+                                                [items]="controls?.get('endTimings')?.value"
+                                                [typeToSearch]="true"
+                                                [typeToSearchText]="end.value"
+                                                (searchInput)="handleTimeInput($event,controls?.get('dayEnd'),controls?.get('endTimings'), end)"
+                                                (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
+                                                label="End Time"
+                                                formControlName="dayEnd"
+                                                size="md"
+                                                placeholder="hh:mm">
+                            </dfm-input-dropdown>
+                          </div>
+
+                          <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">Invalid
+                            Time.</small>
+                        </div>
+
+                        <div class="dfm-mt-32">
+                          <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                                           (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+                        </div>
+                      </div>
+
+                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
+                        Start time should be smaller than End time.
+                      </small>
+
+                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
+                        Slot overlaps other slots.
+                      </small>
+                    </div>
                   </div>
 
-                  <div class="d-flex flex-column dfm-gap-8">
-                    <label class="text-sm font-weight-medium">End Time</label>
-                    <ngb-timepicker formControlName="dayEnd" size="small" [spinners]="false"></ngb-timepicker>
-                    <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>
+                  <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
+                    <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+                    <span class="text-sm dfm-text-main-600">Click to add slot</span>
                   </div>
-
-                  <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
-                                   class="dfm-mb-4"
-                                   (click)="removeSlot(controlArray, i)"></dfm-button-icon>
                 </div>
               </div>
+            </div>
 
-              <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
-                <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
-                <span class="text-sm dfm-text-main-600">Click to add slot</span>
+            <div class="d-flex flex-column dfm-gap-24 ad-ex-form-fields"
+                 *ngIf="[5, 6, 0].includes(formValues.selectedWeekday) || formValues.selectedWeekday === weekdayEnum.ALL">
+              <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray(false, 2)"
+                   class="d-flex flex-column dfm-gap-32">
+                <div [formArrayName]="getFormArrayName(controlArray)"
+                     *ngIf="[0, 5, 6].includes(getFormArrayName(controlArray))"
+                     class="d-flex flex-column dfm-gap-16 flex-1">
+            <span class="text-sm font-weight-semi-bold w-fit">
+              {{ getFormArrayName(controlArray) | weekdayToName }}
+            </span>
+
+                  <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
+                       class="d-flex flex-column dfm-gap-16 flex-1 min-w-128">
+                    <div class="d-flex flex-column flex-1 w-full">
+                      <div class="d-flex dfm-gap-16 align-items-start flex-1">
+                        <div class="d-flex flex-column w-full">
+                          <div
+                            class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-ex-time-dropdown min-w-128">
+                            <dfm-input-dropdown #start
+                                                [items]="controls?.get('startTimings')?.value"
+                                                [typeToSearch]="true"
+                                                [typeToSearchText]="start.value"
+                                                (searchInput)="handleTimeInput($event,controls?.get('dayStart'),controls?.get('startTimings'), start)"
+                                                (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
+                                                label="Start Time"
+                                                formControlName="dayStart"
+                                                size="md"
+                                                placeholder="hh:mm">
+                            </dfm-input-dropdown>
+                          </div>
+
+                          <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">Invalid
+                            Time.</small>
+                        </div>
+
+                        <div class="d-flex flex-column w-full">
+                          <div
+                            class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-ex-time-dropdown min-w-128">
+                            <dfm-input-dropdown #end
+                                                [items]="controls?.get('endTimings')?.value"
+                                                [typeToSearch]="true"
+                                                [typeToSearchText]="end.value"
+                                                (searchInput)="handleTimeInput($event, controls?.get('dayEnd'), controls?.get('endTimings'), end)"
+                                                (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
+                                                label="End Time"
+                                                formControlName="dayEnd"
+                                                size="md"
+                                                placeholder="hh:mm">
+                            </dfm-input-dropdown>
+                          </div>
+
+                          <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">Invalid
+                            Time.</small>
+                        </div>
+
+                        <div class="dfm-mt-32">
+                          <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                                           (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+                        </div>
+                      </div>
+
+                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
+                        Start time should be smaller than End time.
+                      </small>
+
+                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
+                        Slot overlaps other slots.
+                      </small>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
+                    <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+                    <span class="text-sm dfm-text-main-600">Click to add slot</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
-          <!--          <div formArrayName="practiceAvailability" class="d-flex dfm-gap-16" *ngIf="!!formValues.practiceAvailability">-->
-          <!--            <div [formGroupName]="i" *ngFor="let control of practiceAvailabilityControls; let i = index" class="d-flex flex-column dfm-gap-8">-->
-          <!--              <span>{{ control.value?.weekday | weekdayToName  }}</span>-->
-
-          <!--              <div class="d-flex dfm-gap-16 flex-wrap">-->
-          <!--                <dfm-input size="sm" placeholder="Enter First Name" label="First Name *" formControlName="dayStart">-->
-          <!--                </dfm-input>-->
-
-          <!--                <dfm-input size="sm" placeholder="Enter Last Name" label="Last Name *" formControlName="dayEnd">-->
-          <!--                </dfm-input>-->
-          <!--              </div>-->
-          <!--            </div>-->
-          <!--          </div>-->
         </div>
       </div>
     </form>

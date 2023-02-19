@@ -1,28 +1,28 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
+import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
 import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, of, switchMap, take, takeUntil } from 'rxjs';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { stringToTimeArray, Weekday } from '../../../../shared/models/calendar.model';
+import { Weekday } from '../../../../shared/models/calendar.model';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
-import { COMING_FROM_ROUTE, EDIT, EXAM_ID } from '../../../../shared/utils/const';
+import { COMING_FROM_ROUTE, EDIT, EXAM_ID, TIME_24 } from '../../../../shared/utils/const';
 import { PracticeAvailability, PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
 import { StaffsGroupedByType } from '../../../../shared/models/staff.model';
 import { Room, RoomsGroupedByType, RoomType } from '../../../../shared/models/rooms.model';
 import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { UserType } from '../../../../shared/models/user.model';
-
-interface TimeDistributed {
-  hour: number;
-  minute: number;
-  second?: number;
-}
+import { toggleControlError } from '../../../../shared/utils/toggleControlError';
+import { checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 
 interface FormValues {
   name: string;
@@ -49,8 +49,10 @@ interface FormValues {
   practiceAvailability: {
     [key: string]: {
       weekday: Weekday;
-      dayStart: TimeDistributed;
-      dayEnd: TimeDistributed;
+      dayStart: string;
+      dayEnd: string;
+      startTimings: NameValue[];
+      endTimings: NameValue[];
     }[];
   };
   selectedWeekday: Weekday;
@@ -62,9 +64,15 @@ interface FormValues {
   styleUrls: ['./add-exam.component.scss'],
 })
 export class AddExamComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public createExamForm!: FormGroup;
+  public examForm!: FormGroup;
 
   public examDetails$$ = new BehaviorSubject<Exam | undefined>(undefined);
+
+  public availableRooms$$ = new BehaviorSubject<RoomsGroupedByType>({ private: [], public: [] });
+
+  public loading$$ = new BehaviorSubject(false);
+
+  public submitting$$ = new BehaviorSubject(false);
 
   public staffsGroupedByTypes$$ = new BehaviorSubject<StaffsGroupedByType>({
     assistants: [],
@@ -73,10 +81,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     secretaries: [],
     mandatory: [],
   });
-
-  public availableRooms$$ = new BehaviorSubject<RoomsGroupedByType>({ private: [], public: [] });
-
-  public loading$$ = new BehaviorSubject(false);
 
   public exams: any[] = [];
 
@@ -108,6 +112,18 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     },
   ];
 
+  public timings: NameValue[] = [];
+
+  public filteredTimings: NameValue[] = [];
+
+  public readonly interval: number = 5;
+
+  public readonly invalidTimeError: string = 'invalidTime';
+
+  public readonly invalidSlotRangeError: string = 'invalidSlot';
+
+  public readonly slotExistsError: string = 'slotExists';
+
   constructor(
     private fb: FormBuilder,
     private userApiSvc: UserApiService,
@@ -118,6 +134,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     private router: Router,
     private route: ActivatedRoute,
     private routerStateSvc: RouterStateService,
+    private nameValuePipe: NameValuePairPipe,
+    private timeInIntervalPipe: TimeInIntervalPipe,
     private cdr: ChangeDetectorRef,
   ) {
     super();
@@ -149,6 +167,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public ngOnInit(): void {
+    this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
+    this.filteredTimings = [...this.timings];
+
     this.routerStateSvc
       .listenForParamChange$(EXAM_ID)
       .pipe(
@@ -212,14 +233,14 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       this.staffsGroupedByTypes$$.next({ ...staffGroupedByType });
     });
 
-    this.createExamForm
+    this.examForm
       ?.get('roomType')
       ?.valueChanges.pipe(takeUntil(this.destroy$$))
       .subscribe((roomType) => {
         this.createRoomsForExamFormArray(roomType);
       });
 
-    this.createExamForm
+    this.examForm
       ?.get('expensive')
       ?.valueChanges.pipe(
         filter((value) => !!value),
@@ -227,7 +248,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       )
       .subscribe((value) => this.toggleExpensiveError(+value));
 
-    this.createExamForm
+    this.examForm
       ?.get('practiceAvailabilityToggle')
       ?.valueChanges.pipe(
         filter((value: boolean) => value),
@@ -245,7 +266,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   private createForm(examDetails?: Exam | undefined): void {
     console.log('examDetails', examDetails);
-    this.createExamForm = this.fb.group({
+    this.examForm = this.fb.group({
       name: [examDetails?.name, [Validators.required]],
       expensive: [examDetails?.expensive, [Validators.required, Validators.min(1)]],
       roomType: [null, [Validators.required]],
@@ -267,10 +288,24 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     });
 
     if (examDetails?.practiceAvailability?.length) {
+      const weekdays = new Set([0, 1, 2, 3, 4, 5, 6]);
+
       examDetails.practiceAvailability.forEach((practice) => {
-        this.createExamForm.patchValue({ selectedWeekday: practice.weekday });
+        this.examForm.patchValue({ selectedWeekday: practice.weekday });
         this.addPracticeAvailabilityControls(practice);
+        if (weekdays.has(practice.weekday)) {
+          weekdays.delete(practice.weekday);
+        }
       });
+
+      weekdays.forEach((weekday) => {
+        this.examForm.patchValue({ selectedWeekday: weekday });
+        this.addPracticeAvailabilityControls();
+      });
+
+      this.examForm.patchValue({ selectedWeekday: Weekday.ALL });
+    } else {
+      this.addPracticeAvailabilityControls();
     }
 
     if (examDetails?.roomsForExam?.length) {
@@ -278,7 +313,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         .getRoomByID(examDetails.roomsForExam[0].roomId)
         .pipe(takeUntil(this.destroy$$))
         .subscribe((room) => {
-          this.createExamForm.patchValue({ roomType: room?.type }, { emitEvent: true });
+          this.examForm.patchValue({ roomType: room?.type }, { emitEvent: true });
         });
     }
   }
@@ -310,7 +345,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   private createRoomsForExamFormArray(roomType: RoomType) {
-    const fa = this.createExamForm.get('roomsForExam') as FormArray;
+    const fa = this.examForm.get('roomsForExam') as FormArray;
 
     fa.clear();
 
@@ -324,14 +359,16 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public get roomsForExamControls(): AbstractControl[] {
-    return (this.createExamForm.get('roomsForExam') as FormArray)?.controls;
+    return (this.examForm.get('roomsForExam') as FormArray)?.controls;
   }
 
-  private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: TimeDistributed, dayEnd?: TimeDistributed): FormGroup {
+  private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string): FormGroup {
     const fg = this.fb.group({
       weekday: [weekday ?? this.formValues.selectedWeekday, []],
-      dayStart: [dayStart, []],
-      dayEnd: [dayEnd, []],
+      dayStart: [get24HourTimeString(dayStart), []],
+      dayEnd: [get24HourTimeString(dayEnd), []],
+      startTimings: [[...this.filteredTimings], []],
+      endTimings: [[...this.filteredTimings], []],
     });
 
     fg.get('dayStart')
@@ -339,18 +376,14 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         filter((time) => !!time),
         takeUntil(this.destroy$$),
       )
-      .subscribe(() => {
-        // this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
-      });
+      .subscribe((value) => this.handleError(value as string, fg.get('dayStart')));
 
     fg.get('dayEnd')
       ?.valueChanges.pipe(
         filter((time) => !!time),
         takeUntil(this.destroy$$),
       )
-      .subscribe(() => {
-        // this.toggleTimeError(fg.get('dayStart'), fg.get('dayEnd'));
-      });
+      .subscribe((value) => this.handleError(value as string, fg.get('dayEnd')));
 
     return fg;
   }
@@ -358,6 +391,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   private toggleExpensiveError(expensive: number) {
     let totalRoomExpensive = 0;
     let validInput = false;
+
     this.formValues.roomsForExam.forEach((room) => {
       if (room.selectRoom && +room.duration) {
         totalRoomExpensive += +room.duration;
@@ -374,95 +408,61 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     this.formErrors.expensiveErr = totalRoomExpensive !== expensive;
   }
 
-  // private toggleTimeError(dayStart: AbstractControl | null, dayEnd: AbstractControl | null) {
-  //   if (!dayStart && !dayEnd) {
-  //     return;
-  //   }
-  //
-  //   if (
-  //     dayStart?.value?.hour > dayEnd?.value?.hour ||
-  //     (dayStart?.value?.hour === dayEnd?.value?.hour && dayStart?.value?.minute > dayEnd?.value?.minute)
-  //   ) {
-  //     dayStart?.setErrors({ startTimeErr: true });
-  //     dayEnd?.setErrors({ endTimeErr: true });
-  //   } else {
-  //     if (dayStart?.hasError('startTimeErr')) {
-  //       dayStart?.setErrors(null);
-  //     }
-  //
-  //     if (dayEnd?.hasError('endTimeErr')) {
-  //       dayEnd?.setErrors(null);
-  //     }
-  //   }
-  // }
-
   private addPracticeAvailabilityControls(practice?: PracticeAvailabilityServer): void {
-    const fg = this.createExamForm.get('practiceAvailability') as FormGroup;
+    const fg = this.examForm.get('practiceAvailability') as FormGroup;
     const weekday = this.formValues.selectedWeekday;
-    console.log('practice 403', practice);
-    console.log('weekday', weekday);
-    switch (weekday) {
-      case Weekday.ALL:
-        Object.values(this.weekdayEnum).forEach((day) => {
-          if (typeof day === 'number' && day > 0) {
-            const fa = fg.get(day.toString()) as FormArray;
-            if (!fa || !fa.length) {
-              fg.addControl(day.toString(), this.fb.array([this.getPracticeAvailabilityFormGroup(day)]));
-            }
-          }
-        });
-        break;
-      default:
-        if (!Object.keys(fg.value)?.length || (Object.keys(fg.value).length && !fg.get(this.formValues.selectedWeekday.toString()))) {
-          fg.addControl(
-            this.formValues.selectedWeekday.toString(),
-            this.fb.array([
-              this.getPracticeAvailabilityFormGroup(
-                practice?.weekday,
-                {
-                  hour: stringToTimeArray(practice?.dayStart)[0],
-                  minute: stringToTimeArray(practice?.dayStart)[1],
-                },
-                {
-                  hour: stringToTimeArray(practice?.dayEnd)[0],
-                  minute: stringToTimeArray(practice?.dayEnd)[1],
-                },
-              ),
-            ]),
-          );
-        } else if (fg.get(this.formValues.selectedWeekday.toString()) && practice) {
-          (fg.get(practice.weekday.toString()) as FormArray).push(
-            this.getPracticeAvailabilityFormGroup(
-              practice.weekday,
-              {
-                hour: stringToTimeArray(practice.dayStart)[0],
-                minute: stringToTimeArray(practice.dayStart)[1],
-              },
-              {
-                hour: stringToTimeArray(practice?.dayEnd)[0],
-                minute: stringToTimeArray(practice?.dayEnd)[1],
-              },
-            ),
-          );
+
+    if (weekday === Weekday.ALL) {
+      getNumberArray(6).forEach((day) => {
+        const fa = fg.get(day.toString()) as FormArray;
+        if (!fa || !fa.length) {
+          fg.addControl(day.toString(), this.fb.array([this.getPracticeAvailabilityFormGroup(day)]));
         }
+      });
+
+      const fa = fg.get('0') as FormArray;
+      if (!fa || !fa.length) {
+        fg.addControl('0'.toString(), this.fb.array([this.getPracticeAvailabilityFormGroup(0)]));
+      }
+    } else if (!Object.keys(fg.value)?.length || (Object.keys(fg.value).length && !fg.get(this.formValues.selectedWeekday.toString()))) {
+      fg.addControl(
+        this.formValues.selectedWeekday.toString(),
+        this.fb.array([this.getPracticeAvailabilityFormGroup(practice?.weekday, practice?.dayStart, practice?.dayEnd)]),
+      );
+    } else if (fg.get(this.formValues.selectedWeekday.toString()) && practice) {
+      (fg.get(practice.weekday.toString()) as FormArray).push(
+        this.getPracticeAvailabilityFormGroup(practice.weekday, practice.dayStart, practice.dayEnd),
+      );
     }
   }
 
-  public practiceAvailabilityWeekWiseControlsArray(all = false): FormArray[] {
+  public practiceAvailabilityWeekWiseControlsArray(all = false, column: 1 | 2 | 0 = 0): FormArray[] {
     const controls: FormArray[] = [];
 
-    const fg = this.createExamForm.get('practiceAvailability');
+    const fg = this.examForm.get('practiceAvailability');
     const { selectedWeekday } = this.formValues;
-    let keys = Object.keys(this.formValues.practiceAvailability);
+    let keys = [1, 2, 3, 4, 5, 6, 0];
+
     if (!all) {
-      keys = [...keys.filter((key) => key === selectedWeekday.toString() || selectedWeekday === Weekday.ALL)];
+      if (selectedWeekday === Weekday.ALL) {
+        switch (column) {
+          case 1:
+            keys = [1, 2, 3, 4];
+            break;
+          default:
+            keys = [5, 6, 0];
+            break;
+        }
+      } else {
+        keys = [selectedWeekday];
+      }
     }
 
     if (keys?.length) {
       keys.forEach((key) => {
-        const fa = fg?.get(key) as FormArray;
+        const fa = fg?.get(key.toString()) as FormArray;
         if (fa?.length) {
-          controls.push(fg?.get(key) as FormArray);
+          controls.push(fg?.get(key.toString()) as FormArray);
         }
       });
     }
@@ -471,7 +471,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public get formValues(): FormValues {
-    return this.createExamForm.value;
+    return this.examForm.value;
   }
 
   public getFormArrayName(controlArray: FormArray): Weekday {
@@ -480,7 +480,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   public handleRadioButtonChange(toggle: boolean): void {
     //  set practice availability toggle
-    this.createExamForm.patchValue({ practiceAvailabilityToggle: toggle });
+    this.examForm.patchValue({ practiceAvailabilityToggle: toggle });
   }
 
   public selectWeekday(selectedWeekday: Weekday): void {
@@ -489,7 +489,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
 
     // const { weekday } = this.formValues;
-    this.createExamForm.patchValue({ selectedWeekday });
+    this.examForm.patchValue({ selectedWeekday });
     this.addPracticeAvailabilityControls();
   }
 
@@ -502,9 +502,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public saveExam(): void {
-    if (this.createExamForm.invalid) {
+    if (this.examForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.createExamForm.updateValueAndValidity();
+      this.examForm.updateValueAndValidity();
       return;
     }
 
@@ -517,6 +517,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     if (this.formErrors.expensiveErr) {
       this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
     }
+
+    this.submitting$$.next(true);
 
     const createExamRequestData: CreateExamRequestData = {
       name: this.formValues.name,
@@ -553,7 +555,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
                     ...control.value,
                     dayStart: `${control.value.dayStart.hour}:${control.value.dayStart.minute}`,
                     dayEnd: `${control.value.dayEnd.hour}:${control.value.dayEnd.minute}`,
-                    },
+                  },
                 ];
               }
               return a;
@@ -569,72 +571,189 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
 
     console.log(createExamRequestData);
+
     if (this.edit) {
       this.examApiSvc
         .updateExam$(createExamRequestData)
         .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`Exam added successfully`);
-          let route: string;
-          if (this.comingFromRoute === 'view') {
-            route = '../view';
-          } else {
-            route = this.edit ? '/exam' : '../';
-          }
+        .subscribe(
+          () => {
+            this.notificationSvc.showNotification(`Exam added successfully`);
+            let route: string;
+            if (this.comingFromRoute === 'view') {
+              route = '../view';
+            } else {
+              route = this.edit ? '/exam' : '../';
+            }
 
-          console.log(route);
-          this.router.navigate([route], { relativeTo: this.route });
-        });
+            this.submitting$$.next(false);
+
+            this.router.navigate([route], { relativeTo: this.route });
+          },
+          (err) => {
+            this.submitting$$.next(false);
+            this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+          },
+        );
     } else {
       this.examApiSvc
         .createExam$(createExamRequestData)
         .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`Exam updated successfully`);
-          let route: string;
-          if (this.comingFromRoute === 'view') {
-            route = '../view';
-          } else {
-            route = this.edit ? '/exam' : '../';
-          }
+        .subscribe(
+          () => {
+            this.notificationSvc.showNotification(`Exam updated successfully`);
+            let route: string;
+            if (this.comingFromRoute === 'view') {
+              route = '../view';
+            } else {
+              route = this.edit ? '/exam' : '../';
+            }
 
-          console.log(route);
-          this.router.navigate([route], { relativeTo: this.route });
-        });
+            this.submitting$$.next(false);
+
+            this.router.navigate([route], { relativeTo: this.route });
+          },
+          (err) => {
+            this.submitting$$.next(false);
+            this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+          },
+        );
     }
   }
 
   public getBadgeColor(weekday: Weekday): BadgeColor {
     if (this.formValues.selectedWeekday === weekday) {
-      return 'primary';
+      return 'secondary';
     }
 
     if (weekday === Weekday.ALL) {
       for (let i = 1; i <= 7; i++) {
         if (!this.formValues.practiceAvailability[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
-          return 'gray';
+          return 'primary';
         }
       }
 
-      return 'success';
+      return 'gray';
     }
 
     const practiceHours = this.formValues.practiceAvailability[weekday.toString()];
     if (practiceHours?.length && practiceHours.every((pa) => pa.dayEnd && pa.dayStart)) {
-      return 'success';
+      return 'gray';
     }
 
-    return 'gray';
+    return 'primary';
   }
 
-  // handleClick(uncombinableDropdown: InputDropdownComponent) {
-  //   console.log(uncombinableDropdown as any);
-  //
-  //
-  //   setTimeout(() => {
-  //     if (!(uncombinableDropdown as any).isDropdownClosed) {
-  //       uncombinableDropdown.clickout();
-  //     }
-  //   }, 500);
-  // }
+  public handleTimeInput(
+    time: string,
+    control: AbstractControl | null | undefined,
+    timingValueControl: AbstractControl | null | undefined,
+    eleRef: InputDropdownComponent,
+  ) {
+    this.formatTime(time, control, timingValueControl, eleRef);
+    this.searchTime(time, timingValueControl);
+  }
+
+  public handleTimeFocusOut(time: string, control: AbstractControl | null | undefined) {
+    console.log('in');
+    this.handleError(time, control);
+  }
+
+  private searchTime(time: string, timingValueControl: AbstractControl | null | undefined) {
+    if (!time) {
+      return;
+    }
+
+    timingValueControl?.setValue([...this.timings.filter((timing) => timing.value.includes(time))]);
+  }
+
+  private handleError(time: string, control: AbstractControl | null | undefined) {
+    //  Handling invalid time input
+
+    if (!time) {
+      toggleControlError(control, this.invalidTimeError, false);
+      return;
+    }
+
+    if (!time.match(TIME_24)) {
+      toggleControlError(control, this.invalidTimeError);
+      return;
+    }
+
+    toggleControlError(control, this.invalidTimeError, false);
+
+    // Handling slot errors
+
+    const controlArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
+
+    for (let i = 0; i < controlArrays.length; i++) {
+      for (let j = 0; j < controlArrays[i].length; j++) {
+        const dayStart = controlArrays[i].controls[j].get('dayStart');
+        const dayEnd = controlArrays[i].controls[j].get('dayEnd');
+
+        if (dayStart?.value && dayEnd?.value) {
+          if (timeToNumber(dayStart.value) >= timeToNumber(dayEnd?.value)) {
+            toggleControlError(dayStart, this.invalidSlotRangeError);
+            toggleControlError(dayEnd, this.invalidSlotRangeError);
+            return;
+          }
+        }
+
+        toggleControlError(dayStart, this.invalidSlotRangeError, false);
+        toggleControlError(dayEnd, this.invalidSlotRangeError, false);
+      }
+    }
+
+    controlArrays.forEach((formArray) => {
+      const { controls } = formArray;
+      if (formArray.length > 1 && controls[1].value.dayStart && controls[1].value.dayEnd) {
+        const sortedControls = [...controls].sort((a, b) => timeToNumber(a.value.daysStart) - timeToNumber(b.value.dayStart));
+
+        const first = sortedControls[0];
+
+        for (let j = 1; j < formArray.length; j++) {
+          const curr = sortedControls[j];
+
+          if (curr.value.dayStart && curr.value.dayEnd) {
+            if (checkTimeRangeOverlapping(first.value.dayStart, first.value.dayEnd, curr.value.dayStart, curr.value.dayEnd)) {
+              toggleControlError(curr.get('dayStart'), this.slotExistsError);
+              toggleControlError(curr.get('dayEnd'), this.slotExistsError);
+              toggleControlError(first.get('dayStart'), this.slotExistsError);
+              toggleControlError(first.get('dayEnd'), this.slotExistsError);
+            } else {
+              toggleControlError(curr.get('dayStart'), this.slotExistsError, false);
+              toggleControlError(curr.get('dayEnd'), this.slotExistsError, false);
+              toggleControlError(first.get('dayStart'), this.slotExistsError, false);
+              toggleControlError(first.get('dayEnd'), this.slotExistsError, false);
+            }
+          }
+        }
+      }
+    });
+  }
+
+  private formatTime(
+    time: string,
+    control: AbstractControl | null | undefined,
+    timingValueControl: AbstractControl | null | undefined,
+    eleRef: InputDropdownComponent,
+  ) {
+    // debugger;
+    const formattedTime = formatTime(time, 24, 5);
+
+    if (!formattedTime) {
+      return;
+    }
+
+    const nameValue = {
+      name: formattedTime,
+      value: formattedTime,
+    };
+
+    if (!timingValueControl?.value?.find((t) => t?.value === formattedTime)) {
+      timingValueControl?.setValue(timingValueControl?.value?.splice(0, 0, nameValue));
+    }
+
+    control?.setValue(formattedTime);
+  }
 }
