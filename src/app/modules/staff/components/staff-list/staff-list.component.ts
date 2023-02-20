@@ -95,7 +95,9 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
           'staffs',
         );
 
-        this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        if (value !== 'PRINT') {
+          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        }
 
         this.downloadDropdownControl.setValue(null);
 

@@ -109,7 +109,9 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
           'physician',
         );
 
-        this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        if (value !== 'PRINT') {
+          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        }
 
         this.downloadDropdownControl.setValue(null);
 

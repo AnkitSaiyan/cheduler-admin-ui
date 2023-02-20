@@ -120,7 +120,9 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
           'rooms',
         );
 
-        this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        if (value !== 'PRINT') {
+          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        }
 
         this.downloadDropdownControl.setValue(null);
 

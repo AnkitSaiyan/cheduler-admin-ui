@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { TableItem } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
@@ -13,8 +13,6 @@ import { ConfirmActionModalComponent, DialogData } from '../../../../shared/comp
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { Absence } from '../../../../shared/models/absence.model';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
-import { User } from '../../../../shared/models/user.model';
-import { StatusToName } from '../../../../shared/models/status.model';
 
 @Component({
   selector: 'dfm-absence-list',
@@ -92,7 +90,9 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
           'absences',
         );
 
-        this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        if (value !== 'PRINT') {
+          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        }
 
         this.downloadDropdownControl.setValue('');
 

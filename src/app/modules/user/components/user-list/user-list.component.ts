@@ -121,7 +121,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
           'users',
         );
 
-        this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        if (value !== 'PRINT') {
+          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        }
 
         this.downloadDropdownControl.setValue(null);
 
