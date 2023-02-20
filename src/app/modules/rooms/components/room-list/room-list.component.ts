@@ -16,7 +16,6 @@ import { DownloadAsType, DownloadService } from '../../../../core/services/downl
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room, UpdateRoomPlaceInAgendaRequestData } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
-import { User } from '../../../../shared/models/user.model';
 
 @Component({
   selector: 'dfm-room-list',
@@ -25,6 +24,7 @@ import { User } from '../../../../shared/models/user.model';
 })
 export class RoomListComponent extends DestroyableComponent implements OnInit, OnDestroy {
   clipboardData: string = '';
+
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -59,6 +59,8 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
   public statusType = getStatusEnum();
 
+  public roomPlaceInToIndexMap = new Map<number, number>();
+
   constructor(
     private roomApiSvc: RoomsApiService,
     private notificationSvc: NotificationDataService,
@@ -85,6 +87,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
         (rooms) => {
           this.rooms$$.next(rooms);
           this.filteredRooms$$.next(rooms);
+          this.mapRoomPlaceInAgenda();
           this.loading$$.next(false);
         },
         () => this.loading$$.next(false),
@@ -308,7 +311,11 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
   public async openAddRoomModal(roomDetails?: Room) {
     this.modalSvc.open(AddRoomModalComponent, {
-      data: { edit: !!roomDetails?.id, roomID: roomDetails?.id },
+      data: {
+        edit: !!roomDetails?.id,
+        roomID: roomDetails?.id,
+        placeInAgendaIndex: roomDetails ? this.roomPlaceInToIndexMap.get(+roomDetails.placeInAgenda) : this.rooms$$.value.length + 1,
+      },
       options: {
         size: 'lg',
         centered: true,
@@ -402,5 +409,13 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
         },
         () => this.loading$$.next(false),
       );
+  }
+
+  private mapRoomPlaceInAgenda() {
+    this.roomPlaceInToIndexMap.clear();
+
+    this.rooms$$.value.forEach((room, index) => {
+      this.roomPlaceInToIndexMap.set(+room.placeInAgenda, index + 1);
+    });
   }
 }

@@ -23,6 +23,7 @@ interface FormValues {
   description: string;
   type: RoomType;
   placeInAgenda: number;
+  placeInAgendaIndex: number;
   practiceAvailabilityToggle: boolean;
   practiceAvailability: {
     [key: string]: {
@@ -48,7 +49,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
   public submitting$$ = new BehaviorSubject<boolean>(false);
 
-  public modalData!: { edit: boolean; roomID: number };
+  public modalData!: { edit: boolean; roomID: number; placeInAgendaIndex: number };
 
   public weekdayEnum = Weekday;
 
@@ -115,7 +116,8 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   private createForm(roomDetails?: Room | undefined): void {
     this.addRoomForm = this.fb.group({
       name: [roomDetails?.name ?? '', [Validators.required]],
-      placeInAgenda: [{ value: roomDetails?.placeInAgenda, disabled: true }, [Validators.required]],
+      placeInAgenda: [roomDetails?.placeInAgenda, []],
+      placeInAgendaIndex: [{ value: this.modalData?.placeInAgendaIndex, disabled: true }, [Validators.required]],
       description: [roomDetails?.description ?? '', []],
       type: [roomDetails?.type ?? null, [Validators.required]],
       selectedWeekday: [this.weekdayEnum.ALL, []],
@@ -282,11 +284,10 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
     this.submitting$$.next(true);
 
-    const { practiceAvailabilityToggle, practiceAvailability, selectedWeekday, ...rest } = this.formValues;
+    const { practiceAvailabilityToggle, practiceAvailability, selectedWeekday, placeInAgendaIndex, ...rest } = this.formValues;
     const addRoomReqData: AddRoomRequestData = {
       ...rest,
       availabilityType: +this.formValues.practiceAvailabilityToggle,
-      placeInAgenda: this.addRoomForm.get('placeInAgenda')?.value,
       practiceAvailability: [
         ...controlArrays.reduce(
           (acc, formArray) => [
