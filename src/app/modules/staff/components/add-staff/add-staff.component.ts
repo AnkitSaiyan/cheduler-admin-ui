@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, distinctUntilChanged, filter, map, of, switchMap, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, map, of, switchMap, takeUntil, tap } from 'rxjs';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User, UserType } from '../../../../shared/models/user.model';
@@ -227,6 +227,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     fg.get('dayStart')
       ?.valueChanges.pipe(
         filter((time) => !!time),
+        debounceTime(0),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => this.handleError(value as string, fg.get('dayStart')));
@@ -234,6 +235,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     fg.get('dayEnd')
       ?.valueChanges.pipe(
         filter((time) => !!time),
+        debounceTime(0),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => this.handleError(value as string, fg.get('dayEnd')));
