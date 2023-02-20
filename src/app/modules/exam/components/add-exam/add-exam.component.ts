@@ -268,11 +268,16 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     const radiologists: string[] = [];
     const nursing: string[] = [];
     const secretaries: string[] = [];
+    const mandatory: string[] = [];
 
     if (examDetails?.users?.length) {
       console.log('create form', examDetails.users);
 
       examDetails.users.forEach((u) => {
+        if (u.isMandate) {
+          mandatory.push(u.id.toString());
+        }
+
         switch (u.userType) {
           case UserType.Assistant:
             assistants.push(u.id.toString());
@@ -300,7 +305,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       roomsForExam: this.fb.array([]),
       info: [examDetails?.info, []],
       uncombinables: [examDetails?.uncombinables, []],
-      mandatoryStaffs: [[], []],
+      mandatoryStaffs: [mandatory, []],
       assistantCount: [examDetails?.assistantCount ?? '0', []],
       assistants: [assistants, []],
       radiologistCount: [examDetails?.radiologistCount ?? '0', []],
@@ -626,12 +631,13 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       nursingCount: this.formValues.nursingCount,
       radiologistCount: this.formValues.radiologistCount,
       secretaryCount: this.formValues.secretaryCount,
+      mandatoryUsers: [...(this.formValues.mandatoryStaffs ?? [])],
       usersList: [
         ...(this.formValues.assistants ?? []),
         ...(this.formValues.nursing ?? []),
         ...(this.formValues.radiologists ?? []),
         ...(this.formValues.secretaries ?? []),
-        ...(this.formValues.mandatoryStaffs ?? []),
+        // ...(this.formValues.mandatoryStaffs ?? []),
       ],
       roomsForExam: [
         ...this.formValues.roomsForExam

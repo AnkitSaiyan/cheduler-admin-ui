@@ -33,4 +33,5 @@ export interface User {
   exams?: any[];
   rights?: any[];
   rizivNumber?: string;
+  isMandate: boolean;
 }
