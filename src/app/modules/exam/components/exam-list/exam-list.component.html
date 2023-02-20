@@ -18,12 +18,12 @@
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper ex-li-button-dropdown-group">
-        <div class="dfm-button-icon-bg-transparent">
+        <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
           <dfm-button-icon
+            (click)="copyToClipboard()"
             color="tertiary-gray"
             size="md"
             icon="copy-03"
-            (click)="copyToClipboard()"
           ></dfm-button-icon>
         </div>
 
@@ -59,7 +59,7 @@
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section class="overflow-y-auto ex-li-table-wrapper dfm-pb-8" *ngIf="filteredExams$$ | async as exams">
+  <section #tableWrapper class="overflow-y-auto ex-li-table-wrapper dfm-pb-8" *ngIf="filteredExams$$ | async as exams">
     <dfm-table [items]="exams" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewExam($event)"
                class="dfm-table-wrapper">

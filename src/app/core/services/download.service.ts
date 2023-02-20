@@ -28,7 +28,7 @@ export class DownloadService {
       description: 'Download as Excel',
     },
     {
-      name: 'Pdf',
+      name: 'PDF',
       value: 'PDF',
       description: 'Download as PDF',
     },
@@ -62,6 +62,9 @@ export class DownloadService {
         this.generateExcel(headers, data).then((file) => {
           this.download(file, downloadAs, `${filename}_${new Date().toString()}.xlsx`);
         });
+        break;
+      case 'PRINT':
+        this.printPDF(headers, data);
         break;
       default:
         break;
@@ -144,5 +147,18 @@ export class DownloadService {
     anchorElement.click();
 
     document.body.removeChild(anchorElement);
+  }
+
+  private printPDF(headers: string[], data: string[][]) {
+    // eslint-disable-next-line new-cap
+    const pdf = new jsPDF();
+
+    autoTable(pdf, {
+      head: [headers],
+      body: data,
+    });
+
+    pdf.autoPrint();
+    pdf.output('dataurlnewwindow');
   }
 }

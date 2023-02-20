@@ -28,6 +28,9 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   @ViewChild('showMoreButtonIcon')
   private showMoreBtn!: ElementRef;
 
+  @ViewChild('tableWrapper')
+  private tableWrapper!: ElementRef;
+
   public searchControl = new FormControl('', []);
 
   public downloadDropdownControl = new FormControl('', []);
@@ -47,6 +50,8 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   public selectedExamIDs: string[] = [];
 
   public statusType = getStatusEnum();
+
+  public clipboardData: string = '';
 
   constructor(
     private examApiSvc: ExamApiService,
@@ -95,7 +100,9 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
           'exams',
         );
 
-        this.notificationSvc.showNotification(`${downloadAs} file downloaded successfully`);
+        if (downloadAs !== 'PRINT') {
+          this.notificationSvc.showNotification(`${downloadAs} file downloaded successfully`);
+        }
 
         this.downloadDropdownControl.setValue(null);
 
@@ -181,7 +188,21 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+      this.filteredExams$$.value.forEach((exam: Exam) => {
+        dataString += `${exam.name}\t${exam.expensive}\t${StatusToName[exam.status]}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public navigateToViewExam(e: TableItem) {
