@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
+import { read } from '@popperjs/core';
 import { SiteManagement, SiteManagementRequestData } from '../../../shared/models/site-management.model';
 import { TimeDurationType } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
@@ -56,7 +57,12 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     },
   ];
 
-  constructor(private fb: FormBuilder, private notificationSvc: NotificationDataService, private siteManagementApiSvc: SiteManagementApiService) {
+  constructor(
+    private fb: FormBuilder,
+    private notificationSvc: NotificationDataService,
+    private siteManagementApiSvc: SiteManagementApiService,
+    private cdr: ChangeDetectorRef,
+  ) {
     super();
   }
 
@@ -133,6 +139,22 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       reminderTime: [reminderDuration, []],
       reminderTimeType: [reminderDurationTYpe, []],
     });
+
+    if (siteManagementData?.logo) {
+      const reader = new FileReader();
+
+      reader.readAsBinaryString(siteManagementData.logo);
+
+      this.siteManagementForm.patchValue({
+        file: {
+          file: reader.result,
+          fileBlob: siteManagementData.logo,
+          loading: false,
+        },
+      });
+
+      this.cdr.detectChanges();
+    }
   }
 
   public saveSiteManagementData(): void {
