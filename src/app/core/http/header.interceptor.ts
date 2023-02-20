@@ -10,7 +10,7 @@ export class HeaderInterceptor implements HttpInterceptor {
   public intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     let SubDomain: string;
 
-    console.log(window.location.href.split('/'));
+    console.log(window.location.host.split('.'));
 
     if (environment.production) {
       SubDomain = 'red-sea-08bb7b903';
