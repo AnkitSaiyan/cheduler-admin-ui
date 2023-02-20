@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -63,6 +63,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     private route: ActivatedRoute,
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.users$$ = new BehaviorSubject<any[]>([]);
@@ -102,19 +103,29 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        if (!this.users$$.value.length) {
-          this.notificationSvc.showNotification('No user found', NotificationType.INFO);
+        if (!this.filteredUsers$$.value.length) {
           return;
         }
 
         this.downloadSvc.downloadJsonAs(
           value as DownloadAsType,
           this.columns.slice(0, -1),
-          this.users$$.value.map((u: User) => [u.firstname, u.lastname, u.email, u.telephone?.toString(), u.userType, StatusToName[u.status]]),
+          this.filteredUsers$$.value.map((u: User) => [
+            u.firstname,
+            u.lastname,
+            u.email,
+            u.telephone?.toString(),
+            u.userType,
+            StatusToName[u.status],
+          ]),
           'users',
         );
 
-        this.downloadDropdownControl.setValue('');
+        this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+
+        this.downloadDropdownControl.setValue(null);
+
+        this.cdr.detectChanges();
       });
 
     this.afterBannerClosed$$

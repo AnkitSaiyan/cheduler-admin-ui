@@ -1,21 +1,22 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
-import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
+import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadService } from '../../../../core/services/download.service';
+import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { Statuses } from '../../../../shared/utils/const';
 import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
+import { User } from '../../../../shared/models/user.model';
 
 @Component({
   selector: 'dfm-physician-list',
@@ -62,6 +63,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     private route: ActivatedRoute,
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.physicians$$ = new BehaviorSubject<any[]>([]);
@@ -96,13 +98,22 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+        if (!this.filteredPhysicians$$.value.length) {
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          value as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.filteredPhysicians$$.value.map((u: User) => [u.firstname, u.lastname, u.userType, u.email, StatusToName[+u.status]]),
+          'physician',
+        );
+
+        this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+
+        this.downloadDropdownControl.setValue(null);
+
+        this.cdr.detectChanges();
       });
 
     this.afterBannerClosed$$

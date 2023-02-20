@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
@@ -53,6 +53,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     private route: ActivatedRoute,
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.staffs$$ = new BehaviorSubject<any[]>([]);
@@ -83,19 +84,22 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        if (!this.staffs$$.value.length) {
-          this.notificationSvc.showNotification('No user found', NotificationType.INFO);
+        if (!this.filteredStaffs$$.value.length) {
           return;
         }
 
         this.downloadSvc.downloadJsonAs(
           value as DownloadAsType,
           this.columns.slice(0, -1),
-          this.staffs$$.value.map((u: User) => [u.firstname, u.lastname, u.userType, u.email, StatusToName[+u.status]]),
+          this.filteredStaffs$$.value.map((u: User) => [u.firstname, u.lastname, u.userType, u.email, StatusToName[+u.status]]),
           'staffs',
         );
 
-        this.downloadDropdownControl.setValue('');
+        this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+
+        this.downloadDropdownControl.setValue(null);
+
+        this.cdr.detectChanges();
       });
 
     this.afterBannerClosed$$

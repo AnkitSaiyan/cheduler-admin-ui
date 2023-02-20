@@ -69,7 +69,6 @@
                                   [typeToSearch]="true"
                                   [typeToSearchText]="startTime.value"
                                   (searchInput)="handleTimeInput($event, 'startTime')"
-                                  (focusout)="handleTimeInput(startTime.search, 'startTime')"
                                   formControlName="startTime"
                                   size="md"
                                   placeholder="hh:mm">
@@ -120,7 +119,6 @@
                                   [typeToSearch]="true"
                                   [typeToSearchText]="endTime.value"
                                   (searchInput)="handleTimeInput($event, 'endTime')"
-                                  (focusout)="handleTimeInput(startTime.search, 'endTime')"
                                   [required]="formValues.isRepeat"
                                   formControlName="endTime"
                                   size="md"
@@ -225,7 +223,7 @@
                               [placeholder]="!!roomDropdown.value?.length ? roomDropdown.value.length + ' Selected' : 'Select Rooms'"
                               size="md"
                               formControlName="roomList"
-                              label="Rooms involving the Absentee">
+                              label="Rooms">
           </dfm-input-dropdown>
         </div>
 

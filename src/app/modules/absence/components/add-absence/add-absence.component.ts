@@ -166,7 +166,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       this.absenceForm.get('endedAt')?.valueChanges,
     ])
       .pipe(debounceTime(0), takeUntil(this.destroy$$))
-      .subscribe(() => this.handleTimeChange());
+      .subscribe(() => {
+        console.log('in');
+        this.handleTimeChange();
+      });
   }
 
   public override ngOnDestroy() {
@@ -347,7 +350,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public handleTimeInput(time: string, controlName: 'startTime' | 'endTime') {
-    const formattedTime = formatTime(time, 24);
+    console.log(time);
+
+    const formattedTime = formatTime(time, 24, 5);
 
     console.log(formattedTime);
 
@@ -375,9 +380,12 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         return;
     }
 
-    this.absenceForm.patchValue({
-      [controlName]: formattedTime,
-    });
+    this.absenceForm.patchValue(
+      {
+        [controlName]: formattedTime,
+      },
+      { emitEvent: false },
+    );
   }
 
   public handleFocusOut() {

@@ -84,19 +84,21 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe((downloadAs) => {
-        if (!this.exams$$.value.length) {
-          this.notificationSvc.showNotification('No Exams found', NotificationType.INFO);
+        if (!this.filteredExams$$.value.length) {
           return;
         }
 
         this.downloadSvc.downloadJsonAs(
           downloadAs as DownloadAsType,
           this.columns.slice(0, -1),
-          this.exams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), StatusToName[ex.status]]),
+          this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), StatusToName[ex.status]]),
           'exams',
         );
 
-        this.downloadDropdownControl.setValue('');
+        this.notificationSvc.showNotification(`${downloadAs} file downloaded successfully`);
+
+        this.downloadDropdownControl.setValue(null);
+
         this.cdr.detectChanges();
       });
 

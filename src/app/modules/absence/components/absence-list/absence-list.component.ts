@@ -1,8 +1,9 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -44,6 +45,8 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     private route: ActivatedRoute,
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
+    private datePipe: DatePipe,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.absences$$ = new BehaviorSubject<any[]>([]);
@@ -73,19 +76,27 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        if (!this.absences$$.value.length) {
-          this.notificationSvc.showNotification('No absence found', NotificationType.INFO);
+        if (!this.filteredAbsences$$.value.length) {
           return;
         }
 
         this.downloadSvc.downloadJsonAs(
           value as DownloadAsType,
           this.columns.slice(0, -1),
-          this.absences$$.value.map((u: Absence) => [u.name, u.startedAt.toDateString(), u.endedAt?.toDateString() ?? '', u.info]),
+          this.filteredAbsences$$.value.map((u: Absence) => [
+            u.name,
+            u.startedAt ? new Date(u.startedAt)?.toDateString() : '',
+            u.endedAt ? new Date(u?.endedAt)?.toDateString() : '',
+            u.info,
+          ]),
           'absences',
         );
 
+        this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+
         this.downloadDropdownControl.setValue('');
+
+        this.cdr.detectChanges();
       });
   }
 
@@ -95,8 +106,12 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
   private handleSearch(searchText: string): void {
     this.filteredAbsences$$.next([
-      ...this.absences$$.value.filter((absence) => {
-        return absence.name?.toLowerCase()?.includes(searchText);
+      ...this.absences$$.value.filter((absence: Absence) => {
+        return (
+          absence.name?.toLowerCase()?.includes(searchText) ||
+          this.datePipe.transform(absence.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ||
+          this.datePipe.transform(absence.endedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText)
+        );
       }),
     ]);
   }
