@@ -18,13 +18,14 @@
     }
   }
 
-  .st-mg-site-name, .st-mg-warning-text {
-    width: 592px;
-  }
+  //.st-mg-site-name, .st-mg-warning-text {
+  //  width: 592px;
+  //}
 
   .st-mg-appointment-cancellation {
     dfm-input, .st-mg-time-duration-type {
       max-width: 128px;
+      min-width: 128px;
     }
   }
 }
@@ -36,6 +37,15 @@
 }
 
 @media (max-width: 680px) {
+  .temp-elements {
+    display: none;
+  }
+
+  .st-mg-appointment-cancellation {
+    min-width: auto;
+    max-width: 100%;
+  }
+
   .st-mg-main-wrapper {
     max-height: calc(100vh - 38px - 24px - 36px - 16px - 16px - 20px);
 
