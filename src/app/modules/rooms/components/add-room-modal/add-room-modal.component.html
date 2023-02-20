@@ -34,7 +34,7 @@
         </dfm-input>
       </div>
 
-      <div class="d-flex dfm-gap-32 flex-wrap align-items-center flex-1">
+      <div class="d-flex dfm-gap-32 flex-wrap align-items-start flex-1">
         <dfm-input class="flex-1 w-full" size="md" placeholder="Enter room description" label="Description"
                    formControlName="description">
         </dfm-input>
@@ -47,6 +47,10 @@
             <dfm-radio-button class="font-weight-normal" label="Private" [checkedValue]="'private'"
                               formControlName="type"></dfm-radio-button>
           </div>
+          <small class="validation-error"
+                 *ngIf="addRoomForm.get('type')?.hasError('required') && addRoomForm.get('type')?.touched">
+            The field is Required.
+          </small>
         </div>
         <!--        <dfm-input class="flex-1" size="md" placeholder="Enter Room no." label="Room No. *" formControlName="roomNo">-->
         <!--        </dfm-input>-->
@@ -177,11 +181,13 @@
                     </div>
                   </div>
 
-                  <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
+                  <small class="validation-error"
+                         *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
                     Start time should be smaller than End time.
                   </small>
 
-                  <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
+                  <small class="validation-error"
+                         *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
                     Slot overlaps other slots.
                   </small>
                 </div>
