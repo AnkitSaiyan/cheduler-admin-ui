@@ -76,7 +76,15 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   public submitting$$ = new BehaviorSubject(false);
 
-  public staffsGroupedByTypes$$ = new BehaviorSubject<StaffsGroupedByType | null>(null);
+  public assistants$$ = new BehaviorSubject<NameValue[] | null>(null);
+
+  public nursing$$ = new BehaviorSubject<NameValue[] | null>(null);
+
+  public radiologists$$ = new BehaviorSubject<NameValue[] | null>(null);
+
+  public secretaries$$ = new BehaviorSubject<NameValue[] | null>(null);
+
+  public mandatoryStaffs$$ = new BehaviorSubject<NameValue[] | null>(null);
 
   public exams: any[] = [];
 
@@ -184,42 +192,45 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
     this.staffApiSvc.staffList$
       .pipe(
+        debounceTime(400),
         map((staffs) => staffs.filter((staff) => staff.status)),
         takeUntil(this.destroy$$),
       )
       .subscribe((staffs) => {
-        const staffGroupedByType: StaffsGroupedByType = {
-          radiologists: [],
-          assistants: [],
-          nursing: [],
-          secretaries: [],
-          mandatory: [],
-        };
+        const radiologists: NameValue[] = [];
+        const assistants: NameValue[] = [];
+        const nursing: NameValue[] = [];
+        const secretaries: NameValue[] = [];
+        const mandatory: NameValue[] = [];
 
         staffs.forEach((staff) => {
           const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff?.id?.toString() };
 
-          staffGroupedByType.mandatory.push(nameValue);
+          mandatory.push(nameValue);
 
           switch (staff.userType) {
             case UserType.Assistant:
-              staffGroupedByType.assistants.push(nameValue);
+              assistants.push(nameValue);
               break;
             case UserType.Radiologist:
-              staffGroupedByType.radiologists.push(nameValue);
+              radiologists.push(nameValue);
               break;
             case UserType.Scheduler:
             case UserType.Secretary:
-              staffGroupedByType.secretaries.push(nameValue);
+              secretaries.push(nameValue);
               break;
             case UserType.Nursing:
-              staffGroupedByType.nursing.push(nameValue);
+              nursing.push(nameValue);
               break;
             default:
           }
         });
 
-        this.staffsGroupedByTypes$$.next({ ...staffGroupedByType });
+        this.radiologists$$.next([...radiologists]);
+        this.assistants$$.next([...assistants]);
+        this.nursing$$.next([...nursing]);
+        this.secretaries$$.next([...secretaries]);
+        this.mandatoryStaffs$$.next([...mandatory]);
       });
 
     this.examApiSvc.exams$
@@ -233,7 +244,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
     this.roomApiSvc
       .getRoomTypes()
-      .pipe(take(1))
+      .pipe(takeUntil(this.destroy$$))
       .subscribe((roomTypes) => (this.roomTypes = [...roomTypes]));
 
     this.roomApiSvc.roomsGroupedByType$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
@@ -253,8 +264,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     const nursing: string[] = [];
     const secretaries: string[] = [];
 
-    if (this.examDetails$$.value?.users?.length) {
-      this.examDetails$$.value.users.forEach((u) => {
+    if (examDetails?.users?.length) {
+      examDetails.users.forEach((u) => {
         switch (u.userType) {
           case UserType.Assistant:
             assistants.push(u.id.toString());
@@ -271,13 +282,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
             break;
           default:
         }
-      });
-
-      this.examForm.patchValue({
-        assistants,
-        radiologists,
-        nursing,
-        secretaries,
       });
     }
 
@@ -322,11 +326,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       });
 
       this.examForm.patchValue({ selectedWeekday: Weekday.ALL });
+
+      this.cdr.detectChanges();
     } else {
       this.addPracticeAvailabilityControls();
     }
-
-    this.cdr.detectChanges();
 
     this.examForm
       .get('roomType')
@@ -610,10 +614,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       name: this.formValues.name,
       expensive: this.formValues.expensive,
       info: this.formValues.info ?? null,
-      assistantCount: this.formValues.assistantCount,
-      nursingCount: this.formValues.nursingCount,
-      radiologistCount: this.formValues.radiologistCount,
-      secretaryCount: this.formValues.secretaryCount,
+      assistantCount: this.formValues.assistantCount ?? 0,
+      nursingCount: this.formValues.nursingCount ?? 0,
+      radiologistCount: this.formValues.radiologistCount ?? 0,
+      secretaryCount: this.formValues.secretaryCount ?? 0,
       usersList: [
         ...(this.formValues.assistants ?? []),
         ...(this.formValues.nursing ?? []),
