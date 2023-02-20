@@ -188,8 +188,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         takeUntil(this.destroy$$),
       )
       .subscribe((staffs) => {
-        console.log('staffs: ', staffs);
-
         const staffGroupedByType: StaffsGroupedByType = {
           radiologists: [],
           assistants: [],
@@ -250,15 +248,13 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   private createForm(examDetails?: Exam | undefined): void {
-    console.log('examDetails', examDetails);
-
     const assistants: string[] = [];
     const radiologists: string[] = [];
     const nursing: string[] = [];
     const secretaries: string[] = [];
 
-    if (examDetails?.users?.length) {
-      examDetails.users.forEach((u) => {
+    if (this.examDetails$$.value?.users?.length) {
+      this.examDetails$$.value.users.forEach((u) => {
         switch (u.userType) {
           case UserType.Assistant:
             assistants.push(u.id.toString());
@@ -276,6 +272,13 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
           default:
         }
       });
+
+      this.examForm.patchValue({
+        assistants,
+        radiologists,
+        nursing,
+        secretaries,
+      });
     }
 
     this.examForm = this.fb.group({
@@ -286,13 +289,13 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       info: [examDetails?.info, []],
       uncombinables: [examDetails?.uncombinables, []],
       mandatoryStaffs: [[], []],
-      assistantCount: [examDetails?.assistantCount?.toString() ?? '0', []],
+      assistantCount: [examDetails ? examDetails?.assistantCount?.toString() : null, []],
       assistants: [assistants, []],
-      radiologistCount: [examDetails?.assistantCount?.toString() ?? '0', []],
+      radiologistCount: [examDetails ? examDetails?.radiologistCount?.toString() : null, []],
       radiologists: [radiologists, []],
-      nursingCount: [examDetails?.nursingCount?.toString() ?? '0', []],
+      nursingCount: [examDetails ? examDetails?.nursingCount?.toString() : null, []],
       nursing: [nursing, []],
-      secretaryCount: [examDetails?.secretaryCount?.toString() ?? '0', []],
+      secretaryCount: [examDetails ? examDetails?.secretaryCount?.toString() : null, []],
       secretaries: [secretaries, []],
       selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceAvailabilityToggle: [!!examDetails?.practiceAvailability?.length, []],
@@ -607,10 +610,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       name: this.formValues.name,
       expensive: this.formValues.expensive,
       info: this.formValues.info ?? null,
-      assistantCount: +this.formValues.assistantCount ?? 0,
-      nursingCount: +this.formValues.nursingCount ?? 0,
-      radiologistCount: +this.formValues.radiologistCount ?? 0,
-      secretaryCount: +this.formValues.secretaryCount ?? 0,
+      assistantCount: this.formValues.assistantCount,
+      nursingCount: this.formValues.nursingCount,
+      radiologistCount: this.formValues.radiologistCount,
+      secretaryCount: this.formValues.secretaryCount,
       usersList: [
         ...(this.formValues.assistants ?? []),
         ...(this.formValues.nursing ?? []),
@@ -740,7 +743,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     timingValueControl: AbstractControl | null | undefined,
     eleRef: InputDropdownComponent,
   ) {
-    this.formatTime(time, control, timingValueControl, eleRef);
+    this.formatTime(time, control, timingValueControl);
     this.searchTime(time, timingValueControl);
   }
 
@@ -822,12 +825,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     });
   }
 
-  private formatTime(
-    time: string,
-    control: AbstractControl | null | undefined,
-    timingValueControl: AbstractControl | null | undefined,
-    eleRef: InputDropdownComponent,
-  ) {
+  private formatTime(time: string, control: AbstractControl | null | undefined, timingValueControl: AbstractControl | null | undefined) {
     // debugger;
     const formattedTime = formatTime(time, 24, 5);
 
