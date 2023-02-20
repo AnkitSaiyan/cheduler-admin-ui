@@ -94,7 +94,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
 
       let done = true;
 
-      for (let weekday = 1; weekday <= 7; weekday++) {
+      for (let weekday = 0; weekday < 7; weekday++) {
         if (weekdayToSlotsObj[weekday.toString()]?.length > slotNo) {
           allWeekTimeSlots[weekday.toString()] = { ...allWeekTimeSlots, ...weekdayToSlotsObj[weekday.toString()][slotNo] };
           if (done) {
@@ -117,7 +117,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
         thursday: { ...allWeekTimeSlots['4'] },
         friday: { ...allWeekTimeSlots['5'] },
         saturday: { ...allWeekTimeSlots['6'] },
-        sunday: { ...allWeekTimeSlots['7'] },
+        sunday: { ...allWeekTimeSlots['0'] },
       });
     }
 

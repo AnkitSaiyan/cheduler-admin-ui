@@ -2,16 +2,18 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TableItem } from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadService } from '../../../../core/services/download.service';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { Absence } from '../../../../shared/models/absence.model';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
+import { User } from '../../../../shared/models/user.model';
+import { StatusToName } from '../../../../shared/models/status.model';
 
 @Component({
   selector: 'dfm-absence-list',
@@ -29,7 +31,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
   public columns: string[] = ['Name', 'Start Date', 'End Date', 'Absence Info', 'Actions'];
 
-  public downloadItems: any[] = [];
+  public downloadItems: DownloadType[] = [];
 
   private absences$$: BehaviorSubject<any[]>;
 
@@ -48,7 +50,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     this.filteredAbsences$$ = new BehaviorSubject<any[]>([]);
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe((absences) => {
@@ -71,13 +73,19 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+        if (!this.absences$$.value.length) {
+          this.notificationSvc.showNotification('No absence found', NotificationType.INFO);
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          value as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.absences$$.value.map((u: Absence) => [u.name, u.startedAt.toDateString(), u.endedAt?.toDateString() ?? '', u.info]),
+          'absences',
+        );
+
+        this.downloadDropdownControl.setValue('');
       });
   }
 
@@ -106,7 +114,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.absenceApiSvc.deleteAbsence(id)),
+        switchMap(() => this.absenceApiSvc.deleteAbsence(id)),
         take(1),
       )
       .subscribe((response) => {

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, of, switchMap, take, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { User, UserType } from '../../../../shared/models/user.model';
@@ -14,6 +14,8 @@ import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { Exam } from '../../../../shared/models/exam.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
 
 @Component({
   selector: 'dfm-view-exam',
@@ -23,14 +25,12 @@ import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 export class ViewExamComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public examDetails$$ = new BehaviorSubject<Exam | undefined>(undefined);
 
-  public roomIdToNameMap = new Map<number, string>();
-
   public staffsGroupedByTypes: {
-    mandatory: string[];
-    radiologists: string[];
-    assistants: string[];
-    nursing: string[];
-    secretaries: string[];
+    mandatory: NameValue[];
+    radiologists: NameValue[];
+    assistants: NameValue[];
+    nursing: NameValue[];
+    secretaries: NameValue[];
   } = {
     mandatory: [],
     radiologists: [],
@@ -63,46 +63,43 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
         switchMap((examID) => this.examApiService.getExamByID(+examID)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((examDetails) => {
-        this.examDetails$$.next(examDetails);
+      .subscribe((exam) => {
+        this.examDetails$$.next(exam);
 
-        if (examDetails?.practiceAvailability?.length) {
-          this.practiceAvailability$$.next([...this.getPracticeAvailability(examDetails.practiceAvailability)]);
+        if (exam?.practiceAvailability?.length) {
+          this.practiceAvailability$$.next([...this.getPracticeAvailability(exam.practiceAvailability)]);
+        }
+
+        if (exam?.users?.length) {
+          this.saveStaffDetails(exam.users);
         }
       });
+  }
 
-    this.roomApiService.rooms$
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((rooms) => rooms.forEach((room) => this.roomIdToNameMap.set(+room.id, room.name)));
+  private saveStaffDetails(users: User[]) {
+    users.forEach((user) => {
+      const nameValue: NameValue = {
+        name: `${user.firstname} ${user.lastname}`,
+        value: user.id,
+      };
 
-    this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
-      const staffIdToDetailsMap = new Map<number, User>();
-      staffs.forEach((staff) => staffIdToDetailsMap.set(staff.id, staff));
-
-      this.examDetails$$.value?.usersList?.forEach((userID) => {
-        const staff = staffIdToDetailsMap.get(userID);
-
-        if (staff) {
-          const name = `${staff.firstname} ${staff.lastname}`;
-          switch (staff.userType) {
-            case UserType.Assistant:
-              this.staffsGroupedByTypes.assistants.push(name);
-              break;
-            case UserType.Radiologist:
-              this.staffsGroupedByTypes.radiologists.push(name);
-              break;
-            case UserType.Nursing:
-              this.staffsGroupedByTypes.nursing.push(name);
-              break;
-            case UserType.Secretary:
-            case UserType.Scheduler:
-              this.staffsGroupedByTypes.secretaries.push(name);
-              break;
-            default:
-              this.staffsGroupedByTypes.mandatory.push(name);
-          }
-        }
-      });
+      switch (user.userType) {
+        case UserType.Assistant:
+          this.staffsGroupedByTypes.assistants.push(nameValue);
+          break;
+        case UserType.Radiologist:
+          this.staffsGroupedByTypes.radiologists.push(nameValue);
+          break;
+        case UserType.Nursing:
+          this.staffsGroupedByTypes.nursing.push(nameValue);
+          break;
+        case UserType.Secretary:
+        case UserType.Scheduler:
+          this.staffsGroupedByTypes.secretaries.push(nameValue);
+          break;
+        default:
+          this.staffsGroupedByTypes.mandatory.push(nameValue);
+      }
     });
   }
 
@@ -114,22 +111,24 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
     // creating week-wise slots
     practiceAvailabilities.forEach((practice) => {
       const timeSlot: TimeSlot = {
-        dayStart: practice.dayStart,
-        dayEnd: practice.dayEnd,
+        dayStart: get24HourTimeString(practice.dayStart),
+        dayEnd: get24HourTimeString(practice.dayEnd),
         id: practice.id,
       };
 
-      if (!weekdayToSlotsObj[practice.weekday.toString()] && !weekdayToSlotsObj[practice.weekday.toString()]?.length) {
-        weekdayToSlotsObj[practice.weekday.toString()] = [];
+      const key = practice.weekday.toString();
+
+      if (!weekdayToSlotsObj[key] && !weekdayToSlotsObj[key]?.length) {
+        weekdayToSlotsObj[key] = [];
       }
 
-      weekdayToSlotsObj[practice.weekday.toString()].push(timeSlot);
+      weekdayToSlotsObj[key].push(timeSlot);
     });
 
     // sorting slots by start time
-    for (let weekday = 1; weekday <= 7; weekday++) {
+    for (let weekday = 0; weekday < 7; weekday++) {
       if (weekdayToSlotsObj[weekday.toString()]?.length) {
-        weekdayToSlotsObj[weekday.toString()].sort((a, b) => new Date(a.dayStart).getTime() - new Date(b.dayStart).getTime());
+        weekdayToSlotsObj[weekday.toString()].sort((a, b) => timeToNumber(a.dayStart) - timeToNumber(b.dayStart));
       }
     }
 
@@ -140,9 +139,11 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 
       let done = true;
 
-      for (let weekday = 1; weekday <= 7; weekday++) {
-        if (weekdayToSlotsObj[weekday.toString()]?.length > slotNo) {
-          allWeekTimeSlots[weekday.toString()] = { ...allWeekTimeSlots, ...weekdayToSlotsObj[weekday.toString()][slotNo] };
+      for (let weekday = 0; weekday < 7; weekday++) {
+        const key = weekday.toString();
+
+        if (weekdayToSlotsObj[key]?.length > slotNo) {
+          allWeekTimeSlots[key] = { ...allWeekTimeSlots, ...weekdayToSlotsObj[key][slotNo] };
           if (done) {
             done = false;
           }
@@ -163,7 +164,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
         thursday: { ...allWeekTimeSlots['4'] },
         friday: { ...allWeekTimeSlots['5'] },
         saturday: { ...allWeekTimeSlots['6'] },
-        sunday: { ...allWeekTimeSlots['7'] },
+        sunday: { ...allWeekTimeSlots['0'] },
       });
     }
 
@@ -183,7 +184,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.examApiService.deleteExam(id)),
+        switchMap(() => this.examApiService.deleteExam(id)),
         take(1),
       )
       .subscribe(() => {

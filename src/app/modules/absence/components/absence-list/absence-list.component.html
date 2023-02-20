@@ -1,4 +1,4 @@
-<div class="d-flex flex-column h-100 position-relative dfm-px-8 ab-li-main-wrapper">
+<div class="d-flex flex-column h-100 position-relative dfm-gap-16 dfm-px-8 ab-li-main-wrapper">
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 ab-li-section-1">
       <dfm-button
@@ -51,7 +51,15 @@
     </div>
   </section>
 
-  <section class="overflow-y-auto ab-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredAbsences$$ | async as absences">
+  <dfm-input
+    size="md"
+    placeholder="Search by Name"
+    icon="search-sm"
+    class="w-full hidden ab-li-search-mv"
+    [formControl]="searchControl"
+  ></dfm-input>
+
+  <section class="overflow-y-auto ab-li-table-wrapper dfm-pb-8" *ngIf="filteredAbsences$$ | async as absences">
     <dfm-table [items]="absences" [rowClickable]="true" (rowClicked)="navigateToViewAbsence($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
@@ -60,8 +68,8 @@
 
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-body-cell>{{ item.name | titlecase | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.startedAt | date: 'short' | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.endedAt | date: 'short' | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.startedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.endedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <div class="text-truncate ab-li-info-cell"> {{ item.info | dashIfNothing }} </div>
         </dfm-table-body-cell>
@@ -114,22 +122,22 @@
       No data found
     </div>
   </section>
-  <div ngbDropdown #optionsMenu="ngbDropdown">
-    <div class="shadow-lg ab-li-plus-btn-menu ab-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
-      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">
-        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
-      </div>
-    </div>
-  </div>
+<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+<!--    <div class="shadow-lg ab-li-plus-btn-menu ab-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
 
-  <dfm-button color="secondary" size="md" class="hidden shadow-lg ab-li-plus-btn rounded-2"
-              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">
-    <dfm-icon #showMoreButtonIcon name="plus" class="ab-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
-  </dfm-button>
+<!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg ab-li-plus-btn rounded-2"-->
+<!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
+<!--    <dfm-icon #showMoreButtonIcon name="plus" class="ab-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+<!--  </dfm-button>-->
 </div>

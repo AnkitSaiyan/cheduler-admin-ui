@@ -39,6 +39,7 @@
         color="primary"
         size="md"
         class="text-nowrap"
+        [disabled]="(submitting$$ | async) === true"
         (click)="saveExam()"
       >{{ comingFromRoute ? 'Save Changes' : 'Add Exam' }}
       </dfm-button>
@@ -67,34 +68,44 @@
   </section>
 
   <section class="dfm-card overflow-y-auto hide-scrollbar ad-ex-section2" *ngIf="examDetails$$ | async">
-    <form [formGroup]="createExamForm" class="dfm-p-16 d-flex flex-column dfm-gap-32"
+    <form [formGroup]="examForm" class="dfm-p-16 d-flex flex-column dfm-gap-32"
           *ngIf="staffsGroupedByTypes$$ | async as staffsGroupedByType">
       <div class="d-flex flex-column dfm-gap-16 ad-ex-form-exam-info">
         <div class="d-flex dfm-gap-24 flex-wrap ad-ex-name-expense-room">
-          <dfm-input class="ad-ex-name" size="md" placeholder="Enter Exam Name" label="Exam Name *" formControlName="name">
+          <dfm-input class="ad-ex-name" size="md" placeholder="Enter Exam Name" label="Exam Name *"
+                     formControlName="name">
           </dfm-input>
 
-          <dfm-input class="ad-ex-duration" type="number" size="md" placeholder="Enter Duration" label="Expensive (Mins) *"
-                     formControlName="expensive">
-          </dfm-input>
+          <div>
+            <dfm-input #expensive [dfmNumberInput]="expensive" class="ad-ex-duration" type="number" size="md"
+                       placeholder="Enter Duration"
+                       label="Expensive (Mins) *"
+                       formControlName="expensive">
+            </dfm-input>
+
+            <small class="validation-error" *ngIf="expensive.control.hasError('min')">Please enter at least 1
+              min</small>
+          </div>
 
           <div class="dfm-input-dropdown-wrapper">
-            <dfm-input-dropdown class="flex-1" size="md" placeholder="Select room type" label="Room Type *" formControlName="roomType"
+            <dfm-input-dropdown class="flex-1" size="md" placeholder="Select room type" label="Room Type *"
+                                formControlName="roomType"
                                 [items]="roomTypes"></dfm-input-dropdown>
           </div>
         </div>
 
-        <div class="d-flex dfm-gap-8 flex-column" *ngIf="!!createExamForm.get('roomType')?.value">
-          <span class="text-sm font-weight-medium dfm-text-main-700">{{ formValues.roomType | titlecase }} Rooms *</span>
+        <div class="d-flex dfm-gap-8 flex-column" *ngIf="!!examForm.get('roomType')?.value">
+          <span class="text-sm font-weight-medium dfm-text-main-700">{{ formValues.roomType | titlecase }}
+            Rooms *</span>
 
           <div class="d-flex dfm-gap-24 flex-wrap" formArrayName="roomsForExam">
             <div [formGroupName]="rowIndex"
                  *ngFor="let roomForExamControl of roomsForExamControls; let rowIndex = index"
-                 class="d-flex flex-row dfm-gap-8 align-items-baseline">
+                 class="d-flex flex-row dfm-gap-8 align-items-baseline ad-ex-room-list">
               <dfm-checkbox formControlName="selectRoom" size="md"
                             [label]="roomForExamControl.value?.roomName"></dfm-checkbox>
               <div class="ad-ex-duration">
-                <dfm-input type="number" size="md" placeholder="Duration (Mins)" formControlName="duration">
+                <dfm-input #duration [dfmNumberInput]="duration" type="text" size="md" placeholder="Duration (Mins)" formControlName="duration">
                 </dfm-input>
               </div>
             </div>
@@ -103,16 +114,19 @@
             </div>
           </div>
 
-          <span *ngIf="formErrors.selectRoomErr"
-                class="dfm-text-danger-500 text-sm">At least one room is required.</span>
-          <span *ngIf="formErrors.expensiveErr && !formErrors.selectRoomErr" class="dfm-text-danger-500 text-sm">Expensive of the exam and total minutes of rooms should be the same.</span>
+          <small *ngIf="formErrors.selectRoomErr" class="validation-error">
+            Please select at least one room.
+          </small>
+          <small *ngIf="formErrors.expensiveErr && !formErrors.selectRoomErr" class="validation-error">
+            Expensive of the exam and total minutes of rooms should be the same.
+          </small>
         </div>
 
         <dfm-text-area size="md" placeholder="Enter Info" label="Info" class="ad-ex-info-input" formControlName="info">
         </dfm-text-area>
 
         <div class="d-flex flex-1 dfm-gap-24">
-          <div class="dfm-input-multi-dropdown-wrapper flex-1">
+          <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1" [ngClass]="{ 'dfm-mb-32': uncombinableDropdown.value?.length }">
             <dfm-input-dropdown #uncombinableDropdown size="md" [multiple]="true"
                                 [placeholder]="!!uncombinableDropdown.value?.length ? uncombinableDropdown.value.length + ' Selected' : 'Select Exam'"
                                 label="Uncombinable" [items]="exams"
@@ -120,72 +134,110 @@
             </dfm-input-dropdown>
           </div>
 
-          <div class="dfm-input-multi-dropdown-wrapper flex-1">
+          <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1" [ngClass]="{ 'dfm-mb-32': mandatoryStaffsDropdown.value?.length }">
             <dfm-input-dropdown #mandatoryStaffsDropdown size="md" [multiple]="true"
                                 [placeholder]="!!mandatoryStaffsDropdown.value?.length ? mandatoryStaffsDropdown.value.length + ' Selected' : 'Select Staff'"
-                                label="Mandatory Staffs *" [items]="staffsGroupedByType.mandatory"
+                                label="Mandatory Staffs" [items]="staffsGroupedByType.mandatory"
                                 formControlName="mandatoryStaffs">
             </dfm-input-dropdown>
           </div>
         </div>
 
-        <span class="text-sm font-weight-medium dfm-text-main-700">General Staff</span>
+        <span class="text-sm font-weight-medium dfm-text-main-700 dfm-mt-16">General Staff</span>
 
-        <div class="ad-ex-general-staff">
-          <div class="d-flex dfm-gap-16">
-            <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
-              <dfm-input-dropdown class="flex-1" size="md" label="Select No." placeholder="Select" formControlName="assistantCount" [items]="count">
-              </dfm-input-dropdown>
+        <div class="ad-ex-general-staff" *ngIf="staffsGroupedByTypes$$">
+          <div class="d-flex flex-column flex-1">
+            <div class="d-flex dfm-gap-16">
+              <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
+                <dfm-input-dropdown class="flex-1" size="md" label="Select No." placeholder="Select"
+                                    formControlName="assistantCount"
+                                    [items]="staffsGroupedByType.assistants.length | numberArray : 0 | nameValuePair">
+                </dfm-input-dropdown>
+              </div>
+
+              <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
+                   [ngClass]="{ 'dfm-mb-32': assistantDropdown.value?.length }">
+                <dfm-input-dropdown #assistantDropdown size="md" label="Assistant" placeholder="Select Assistants"
+                                    [multiple]="true" formControlName="assistants"
+                                    [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : 'Select Assistants'"
+                                    [items]="staffsGroupedByType.assistants">
+                </dfm-input-dropdown>
+              </div>
             </div>
 
-            <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
-              <dfm-input-dropdown #assistantDropdown size="md" label="Assistant" placeholder="Select Staff" [multiple]="true" formControlName="assistants"
-                                  [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : 'Select Staff'"
-                                  [items]="staffsGroupedByType.assistants">
-              </dfm-input-dropdown>
-            </div>
+            <small class="validation-error" *ngIf="assistantDropdown.control.hasError('assistantCount')">
+              Please select at least {{ formValues.assistantCount }} Assistant(s).
+            </small>
           </div>
 
-          <div class="d-flex dfm-gap-16">
-            <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
-              <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="radiologistCount" [items]="count">
-              </dfm-input-dropdown>
+          <div class="d-flex flex-column flex-1">
+            <div class="d-flex dfm-gap-16">
+              <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
+                <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="radiologistCount"
+                                    [items]="staffsGroupedByType.radiologists.length | numberArray : 0 | nameValuePair">
+                </dfm-input-dropdown>
+              </div>
+
+              <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
+                   [ngClass]="{ 'dfm-mb-32': radiologistDropdown.value?.length }">
+                <dfm-input-dropdown #radiologistDropdown size="md" label="Radiologists"
+                                    placeholder="Select Radiologists"
+                                    [multiple]="true" formControlName="radiologists"
+                                    [placeholder]="!!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : 'Select Radiologists'"
+                                    [items]="staffsGroupedByType.radiologists">
+                </dfm-input-dropdown>
+              </div>
             </div>
 
-            <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
-              <dfm-input-dropdown #radiologistDropdown size="md" label="Radiologists" placeholder="Select Staff" [multiple]="true" formControlName="radiologists"
-                                  [placeholder]="!!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : 'Select Staff'"
-                                  [items]="staffsGroupedByType.radiologists">
-              </dfm-input-dropdown>
-            </div>
+            <small class="validation-error" *ngIf="radiologistDropdown.control.hasError('radiologistCount')">
+              Please select at least {{ formValues.radiologistCount }} Radiologist(s).
+            </small>
           </div>
 
-          <div class="d-flex dfm-gap-16">
-            <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
-              <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="nursingCount" [items]="count">
-              </dfm-input-dropdown>
+          <div class="d-flex flex-column flex-1">
+            <div class="d-flex dfm-gap-16">
+              <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
+                <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="nursingCount"
+                                    [items]="staffsGroupedByType.nursing.length | numberArray : 0 | nameValuePair">
+                </dfm-input-dropdown>
+              </div>
+
+              <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
+                   [ngClass]="{ 'dfm-mb-32': nursingDropdown.value?.length }">
+                <dfm-input-dropdown #nursingDropdown size="md" label="Nursing" placeholder="Select Nursing"
+                                    [multiple]="true" formControlName="nursing"
+                                    [placeholder]="!!nursingDropdown.value?.length ? nursingDropdown.value.length + ' Selected' : 'Select Nursing'"
+                                    [items]="staffsGroupedByType.nursing">
+                </dfm-input-dropdown>
+              </div>
             </div>
 
-            <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
-              <dfm-input-dropdown #nursingDropdown size="md" label="Nursing" placeholder="Select Staff" [multiple]="true" formControlName="nursing"
-                                  [placeholder]="!!nursingDropdown.value?.length ? nursingDropdown.value.length + ' Selected' : 'Select Staff'"
-                                  [items]="staffsGroupedByType.nursing">
-              </dfm-input-dropdown>
-            </div>
+            <small class="validation-error" *ngIf="nursingDropdown.control.hasError('nursingCount')">
+              Please select at least {{ formValues.nursingCount }} Nursing(s).
+            </small>
           </div>
 
-          <div class="d-flex dfm-gap-16">
-            <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
-              <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="secretaryCount" [items]="count">
-              </dfm-input-dropdown>
+          <div class="d-flex flex-column flex-1">
+            <div class="d-flex dfm-gap-16">
+              <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
+                <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="secretaryCount"
+                                    [items]="staffsGroupedByType.secretaries.length | numberArray : 0 | nameValuePair">
+                </dfm-input-dropdown>
+              </div>
+
+              <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
+                   [ngClass]="{ 'dfm-mb-32': secretaryDropdown.value?.length }">
+                <dfm-input-dropdown #secretaryDropdown size="md" label="Secretary" placeholder="Select Secretary"
+                                    [multiple]="true" formControlName="secretaries"
+                                    [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ' Selected' : 'Select Secretary'"
+                                    [items]="staffsGroupedByType.secretaries">
+                </dfm-input-dropdown>
+              </div>
             </div>
 
-            <div class="dfm-input-multi-dropdown-wrapper ad-ex-general-staff-dropdown">
-              <dfm-input-dropdown #secretaryDropdown size="md" label="Secretary" placeholder="Select Staff" [multiple]="true" formControlName="secretaries"
-                                  [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ' Selected' : 'Select Staff'"
-                                  [items]="staffsGroupedByType.secretaries">
-              </dfm-input-dropdown>
-            </div>
+            <small class="validation-error" *ngIf="secretaryDropdown.control.hasError('secretaryCount')">
+              Please select at least {{ formValues.secretaryCount }} Secretary(s).
+            </small>
           </div>
         </div>
       </div>
@@ -255,59 +307,169 @@
             </div>
           </div>
 
-          <div formGroupName="practiceAvailability" class="d-flex flex-column dfm-gap-32 ad-ex-availability-form-fields">
-            <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray()"
-                 [formArrayName]="getFormArrayName(controlArray)"
-                 class="d-flex flex-column flex-wrap dfm-gap-16">
-              <span class="text-sm font-weight-semi-bold">
-                {{ getFormArrayName(controlArray) | weekdayToName }}
-              </span>
+          <div formGroupName="practiceAvailability" class="d-flex flex-wrap dfm-gap-24 ad-ex-availability-form-fields">
+            <div class="d-flex flex-column dfm-gap-24 ad-ex-form-fields"
+                 *ngIf="[1, 2, 3, 4].includes(formValues.selectedWeekday) || formValues.selectedWeekday === weekdayEnum.ALL">
+              <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray(false, 1)"
+                   class="d-flex flex-column dfm-gap-32">
+                <div [formArrayName]="getFormArrayName(controlArray)"
+                     *ngIf="[1,2,3,4].includes(getFormArrayName(controlArray))"
+                     class="d-flex flex-column dfm-gap-16 flex-1">
+              <span
+                class="text-sm font-weight-semi-bold w-fit">{{ getFormArrayName(controlArray) | weekdayToName }}</span>
 
-              <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
-                   class="d-flex flex-column dfm-gap-16">
-                <div class="d-flex dfm-gap-32 align-items-end">
-                  <div class="d-flex flex-column dfm-gap-8">
-                    <!--                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">-->
+                  <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
+                       class="d-flex flex-column dfm-gap-16 flex-1 min-w-128">
+                    <div class="d-flex flex-column w-full">
+                      <div class="d-flex dfm-gap-16 align-items-start flex-1">
+                        <div class="d-flex flex-column w-full">
+                          <div
+                            class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-ex-time-dropdown min-w-128">
+                            <dfm-input-dropdown #start
+                                                [items]="controls?.get('startTimings')?.value"
+                                                [typeToSearch]="true"
+                                                [typeToSearchText]="start.value"
+                                                (searchInput)="handleTimeInput($event,controls?.get('dayStart'),controls?.get('startTimings'), start)"
+                                                (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
+                                                label="Start Time"
+                                                formControlName="dayStart"
+                                                size="md"
+                                                placeholder="hh:mm">
+                            </dfm-input-dropdown>
+                          </div>
 
-                    <!--                    </dfm-input-dropdown>-->
-                    <label class="text-sm font-weight-medium">Start Time</label>
-                    <ngb-timepicker formControlName="dayStart" size="small" [spinners]="false"></ngb-timepicker>
-                    <span class="text-sm text-red"
-                          *ngIf="controls.get('dayStart')?.hasError('startTimeErr')">Start Time must be smaller.</span>
+                          <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">Invalid
+                            Time.</small>
+                        </div>
+
+
+                        <div class="d-flex flex-column w-full">
+                          <div
+                            class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-ex-time-dropdown min-w-128">
+                            <dfm-input-dropdown #end
+                                                [items]="controls?.get('endTimings')?.value"
+                                                [typeToSearch]="true"
+                                                [typeToSearchText]="end.value"
+                                                (searchInput)="handleTimeInput($event,controls?.get('dayEnd'),controls?.get('endTimings'), end)"
+                                                (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
+                                                label="End Time"
+                                                formControlName="dayEnd"
+                                                size="md"
+                                                placeholder="hh:mm">
+                            </dfm-input-dropdown>
+                          </div>
+
+                          <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">Invalid
+                            Time.</small>
+                        </div>
+
+                        <div class="dfm-mt-32">
+                          <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                                           (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+                        </div>
+                      </div>
+
+                      <small class="validation-error"
+                             *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
+                        Start time should be smaller than End time.
+                      </small>
+
+                      <small class="validation-error"
+                             *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
+                        Slot overlaps other slots.
+                      </small>
+                    </div>
                   </div>
 
-                  <div class="d-flex flex-column dfm-gap-8">
-                    <label class="text-sm font-weight-medium">End Time</label>
-                    <ngb-timepicker formControlName="dayEnd" size="small" [spinners]="false"></ngb-timepicker>
-                    <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>
+                  <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
+                    <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+                    <span class="text-sm dfm-text-main-600">Click to add slot</span>
                   </div>
-
-                  <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
-                                   class="dfm-mb-4"
-                                   (click)="removeSlot(controlArray, i)"></dfm-button-icon>
                 </div>
               </div>
+            </div>
 
-              <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
-                <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
-                <span class="text-sm dfm-text-main-600">Click to add slot</span>
+            <div class="d-flex flex-column dfm-gap-24 ad-ex-form-fields"
+                 *ngIf="[5, 6, 0].includes(formValues.selectedWeekday) || formValues.selectedWeekday === weekdayEnum.ALL">
+              <div *ngFor="let controlArray of practiceAvailabilityWeekWiseControlsArray(false, 2)"
+                   class="d-flex flex-column dfm-gap-32">
+                <div [formArrayName]="getFormArrayName(controlArray)"
+                     *ngIf="[0, 5, 6].includes(getFormArrayName(controlArray))"
+                     class="d-flex flex-column dfm-gap-16 flex-1">
+            <span class="text-sm font-weight-semi-bold w-fit">
+              {{ getFormArrayName(controlArray) | weekdayToName }}
+            </span>
+
+                  <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
+                       class="d-flex flex-column dfm-gap-16 flex-1 min-w-128">
+                    <div class="d-flex flex-column flex-1 w-full">
+                      <div class="d-flex dfm-gap-16 align-items-start flex-1">
+                        <div class="d-flex flex-column w-full">
+                          <div
+                            class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-ex-time-dropdown min-w-128">
+                            <dfm-input-dropdown #start
+                                                [items]="controls?.get('startTimings')?.value"
+                                                [typeToSearch]="true"
+                                                [typeToSearchText]="start.value"
+                                                (searchInput)="handleTimeInput($event,controls?.get('dayStart'),controls?.get('startTimings'), start)"
+                                                (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
+                                                label="Start Time"
+                                                formControlName="dayStart"
+                                                size="md"
+                                                placeholder="hh:mm">
+                            </dfm-input-dropdown>
+                          </div>
+
+                          <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">Invalid
+                            Time.</small>
+                        </div>
+
+                        <div class="d-flex flex-column w-full">
+                          <div
+                            class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-ex-time-dropdown min-w-128">
+                            <dfm-input-dropdown #end
+                                                [items]="controls?.get('endTimings')?.value"
+                                                [typeToSearch]="true"
+                                                [typeToSearchText]="end.value"
+                                                (searchInput)="handleTimeInput($event, controls?.get('dayEnd'), controls?.get('endTimings'), end)"
+                                                (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
+                                                label="End Time"
+                                                formControlName="dayEnd"
+                                                size="md"
+                                                placeholder="hh:mm">
+                            </dfm-input-dropdown>
+                          </div>
+
+                          <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">Invalid
+                            Time.</small>
+                        </div>
+
+                        <div class="dfm-mt-32">
+                          <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                                           (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+                        </div>
+                      </div>
+
+                      <small class="validation-error"
+                             *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
+                        Start time should be smaller than End time.
+                      </small>
+
+                      <small class="validation-error"
+                             *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
+                        Slot overlaps other slots.
+                      </small>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
+                    <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+                    <span class="text-sm dfm-text-main-600">Click to add slot</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
-          <!--          <div formArrayName="practiceAvailability" class="d-flex dfm-gap-16" *ngIf="!!formValues.practiceAvailability">-->
-          <!--            <div [formGroupName]="i" *ngFor="let control of practiceAvailabilityControls; let i = index" class="d-flex flex-column dfm-gap-8">-->
-          <!--              <span>{{ control.value?.weekday | weekdayToName  }}</span>-->
-
-          <!--              <div class="d-flex dfm-gap-16 flex-wrap">-->
-          <!--                <dfm-input size="sm" placeholder="Enter First Name" label="First Name *" formControlName="dayStart">-->
-          <!--                </dfm-input>-->
-
-          <!--                <dfm-input size="sm" placeholder="Enter Last Name" label="Last Name *" formControlName="dayEnd">-->
-          <!--                </dfm-input>-->
-          <!--              </div>-->
-          <!--            </div>-->
-          <!--          </div>-->
         </div>
       </div>
     </form>

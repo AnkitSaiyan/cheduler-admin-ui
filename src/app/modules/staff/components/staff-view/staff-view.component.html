@@ -94,6 +94,12 @@
           <span class="flex-1">Info</span>
           <span class="font-weight-medium flex-1">{{ staffDetails?.info | dashIfNothing }}</span>
         </div>
+
+        <div class="d-flex dfm-gap-8 justify-content-between">
+          <span class="flex-1">Status</span>
+          <span class="font-weight-medium flex-1"
+                [ngClass]="staffDetails.status === 0 ? 'dfm-text-danger-600' : 'dfm-text-success-600'">{{ staffDetails.status | statusName }}</span>
+        </div>
       </div>
     </div>
 
@@ -102,7 +108,7 @@
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
         </div>
-        <span class="font-weight-medium text-break">Studies Involving Staff Member</span>
+        <span class="font-weight-medium text-break">Exams Involving Staff Member</span>
       </header>
 
       <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
@@ -110,7 +116,7 @@
           <span>{{ examIdToNameMap.get(+examID) | titlecase }}</span>
         </div>
 
-        <span class="dfm-text-main-600" *ngIf="!staffDetails.examList?.length">No studies found</span>
+        <span class="dfm-text-main-600" *ngIf="!staffDetails.examList?.length">No Exams found</span>
       </div>
     </div>
 
@@ -147,51 +153,51 @@
           <dfm-table-body-cell>{{ item.slotNo }}</dfm-table-body-cell>
           <dfm-table-body-cell>
             <div *ngIf="item.monday.dayStart && item.monday.dayEnd; else dash" class="d-flex dfm-gap-8">
-              <span> {{ item.monday.dayStart | date : 'h:mm a' }} </span>
+              <span> {{ item.monday.dayStart }} </span>
               -
-              <span> {{ item.monday.dayEnd | date : 'h:mm a' }} </span>
+              <span> {{ item.monday.dayEnd }} </span>
             </div>
           </dfm-table-body-cell>
           <dfm-table-body-cell>
             <div *ngIf="item.tuesday.dayStart && item.tuesday.dayEnd; else dash" class="d-flex dfm-gap-8">
-              <span> {{ item.tuesday.dayStart | date : 'h:mm a' }} </span>
+              <span> {{ item.tuesday.dayStart }} </span>
               -
-              <span> {{ item.tuesday.dayEnd | date : 'h:mm a' }} </span>
+              <span> {{ item.tuesday.dayEnd }} </span>
             </div>
           </dfm-table-body-cell>
           <dfm-table-body-cell>
             <div *ngIf="item.wednesday.dayStart && item.wednesday.dayEnd; else dash" class="d-flex dfm-gap-8">
-              <span> {{ item.wednesday.dayStart | date : 'h:mm a' }} </span>
+              <span> {{ item.wednesday.dayStart }} </span>
               -
-              <span> {{ item.wednesday.dayEnd | date : 'h:mm a' }} </span>
+              <span> {{ item.wednesday.dayEnd }} </span>
             </div>
           </dfm-table-body-cell>
           <dfm-table-body-cell>
             <div *ngIf="item.thursday.dayStart && item.thursday.dayEnd; else dash" class="d-flex dfm-gap-8">
-              <span> {{ item.thursday.dayStart | date : 'h:mm a' }} </span>
+              <span> {{ item.thursday.dayStart }} </span>
               -
-              <span> {{ item.thursday.dayEnd | date : 'h:mm a' }} </span>
+              <span> {{ item.thursday.dayEnd }} </span>
             </div>
           </dfm-table-body-cell>
           <dfm-table-body-cell>
             <div *ngIf="item.friday.dayStart && item.friday.dayEnd; else dash" class="d-flex dfm-gap-8">
-              <span> {{ item.friday.dayStart | date : 'h:mm a' }} </span>
+              <span> {{ item.friday.dayStart }} </span>
               -
-              <span> {{ item.friday.dayEnd | date : 'h:mm a' }} </span>
+              <span> {{ item.friday.dayEnd }} </span>
             </div>
           </dfm-table-body-cell>
           <dfm-table-body-cell>
             <div *ngIf="item.saturday.dayStart && item.saturday.dayEnd; else dash" class="d-flex dfm-gap-8">
-              <span> {{ item.saturday.dayStart | date : 'h:mm a' }} </span>
+              <span> {{ item.saturday.dayStart }} </span>
               -
-              <span> {{ item.saturday.dayEnd | date : 'h:mm a' }} </span>
+              <span> {{ item.saturday.dayEnd }} </span>
             </div>
           </dfm-table-body-cell>
           <dfm-table-body-cell>
             <div *ngIf="item.sunday.dayStart && item.sunday.dayEnd; else dash" class="d-flex dfm-gap-8">
-              <span> {{ item.sunday.dayStart | date : 'h:mm a' }} </span>
+              <span> {{ item.sunday.dayStart }} </span>
               -
-              <span> {{ item.sunday.dayEnd | date : 'h:mm a' }} </span>
+              <span> {{ item.sunday.dayEnd }} </span>
             </div>
           </dfm-table-body-cell>
         </ng-template>

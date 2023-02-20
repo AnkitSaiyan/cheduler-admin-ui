@@ -1,11 +1,26 @@
 .sf-li-button-dropdown-group {
   background: transparent;
+
   div:last-child {
     max-width: 152px;
   }
 }
 
+.ad-sf-form-fields {
+  row-gap: 32px;
+  transition: 150ms all linear;
+}
+
+.ad-sf-time-dropdown {
+  transition: 150ms all linear;
+  max-width: fit-content;
+}
+
 @media (max-width: 680px) {
+  .sf-li-search-mv {
+    display: block;
+  }
+
   .sf-ls-main-wrapper {
     padding: 0;
   }

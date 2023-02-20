@@ -5,13 +5,13 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { STAFF_ID } from '../../../../shared/utils/const';
+import { PRIORITY_ID } from '../../../../shared/utils/const';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { User } from '../../../../shared/models/user.model';
-import { AddUserComponent } from 'src/app/modules/user/components/add-user/add-user.component';
 import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-slots.component';
 import { getUserTypeEnum } from 'src/app/shared/utils/getEnums';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
+import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 
 @Component({
   selector: 'dfm-view-priority-slots',
@@ -19,35 +19,35 @@ import { getUserTypeEnum } from 'src/app/shared/utils/getEnums';
   styleUrls: ['./view-priority-slots.component.scss']
 })
 export class ViewPrioritySlotsComponent extends DestroyableComponent implements OnInit, OnDestroy  {
-  public userDetails$$ = new BehaviorSubject<User | undefined>(undefined);
+  public prioritySlotDetails$$ = new BehaviorSubject<PrioritySlot | undefined>(undefined);
 
   public userType = getUserTypeEnum();
 
   constructor(
-    private userApiSvc: StaffApiService,
     private routerStateSvc: RouterStateService,
     private notificationSvc: NotificationDataService,
     private router: Router,
     private modalSvc: ModalService,
+    private priorityApiSvc: PrioritySlotApiService
   ) {
     super();
   }
 
   public ngOnInit(): void {
     this.routerStateSvc
-      .listenForParamChange$(STAFF_ID)
+      .listenForParamChange$(PRIORITY_ID)
       .pipe(
-        switchMap((userID) => this.userApiSvc.getStaffByID(+userID)),
+        switchMap((prioritySlotID) => this.priorityApiSvc.getPrioritySlotsByID(+prioritySlotID)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((userDetails) => this.userDetails$$.next(userDetails));
+      .subscribe((priorityDetails) => this.prioritySlotDetails$$.next(priorityDetails));
   }
 
-  public deleteUser(id: number) {
+  public deletePriority(id: number) {
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this User?',
+        bodyText: 'Are you sure you want to delete this Priority Slot?',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
@@ -56,18 +56,18 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.userApiSvc.deleteStaff(id)),
+        switchMap(()=>this.priorityApiSvc.deletePrioritySlot$(id)),
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('User deleted successfully');
-        this.router.navigate(['/', 'user']);
+        this.notificationSvc.showNotification('Priority Slot deleted successfully');
+        this.router.navigate(['/', 'priority-slots']);
       });
   }
 
-  public openEditUserModal() {
+  public openEditPriorityModal() {
     this.modalSvc.open(AddPrioritySlotsComponent, {
-      data: { edit: !!this.userDetails$$.value?.id, userDetails: { ...this.userDetails$$.value } },
+      data: { edit: !!this.prioritySlotDetails$$.value?.id, priorityDetails: { ...this.prioritySlotDetails$$.value } },
       options: {
         size: 'lg',
         centered: true,

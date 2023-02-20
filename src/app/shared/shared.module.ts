@@ -39,6 +39,7 @@ import { LargestPipe } from './pipes/largest.pipe';
 import { NameInputDirective } from './directives/name-input.directive';
 import { EmailInputDirective } from './directives/email-input.directive';
 import { NumberInputDirective } from './directives/number-input.directive';
+import { NumberArrayPipe } from './pipes/number-array.pipe';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { NumberInputDirective } from './directives/number-input.directive';
     NameInputDirective,
     EmailInputDirective,
     NumberInputDirective,
+    NumberArrayPipe,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule, NgbDropdownModule, NgbPopoverModule, NgbAccordionModule, RouterLink],
   exports: [
@@ -105,6 +107,7 @@ import { NumberInputDirective } from './directives/number-input.directive';
     NameInputDirective,
     EmailInputDirective,
     NumberInputDirective,
+    NumberArrayPipe,
   ],
 })
 export class SharedModule {}

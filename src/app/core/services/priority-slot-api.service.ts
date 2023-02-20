@@ -6,25 +6,21 @@ import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PrioritySlotApiService {
   private refreshPrioritySlots$$ = new Subject<void>();
-  constructor(private http: HttpClient) { }
-  prioritySlots: string = `${environment.serverBaseUrl}/priorityslot`
-  
+  constructor(private http: HttpClient) {}
+  prioritySlots: string = `${environment.serverBaseUrl}/priorityslot`;
+
   public get prioritySlots$(): Observable<PrioritySlot[]> {
     return combineLatest([this.refreshPrioritySlots$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllPrioritySlots()));
   }
 
   private fetchAllPrioritySlots(): Observable<PrioritySlot[]> {
-    return this.http.get<BaseResponse<PrioritySlot[]>>(`${this.prioritySlots}`).pipe(
-      map(response => response.data)
-    )
+    return this.http.get<BaseResponse<PrioritySlot[]>>(`${this.prioritySlots}`).pipe(map((response) => response.data));
   }
 
-
-  
   public deletePrioritySlot$(slotID: number): Observable<boolean> {
     return this.http.delete<BaseResponse<boolean>>(`${this.prioritySlots}/${slotID}`).pipe(
       map((response) => response.data),
@@ -53,6 +49,31 @@ export class PrioritySlotApiService {
           }),
         ),
       ),
+    );
+  }
+
+  public savePrioritySlot$(requestData: PrioritySlot) {
+    let { id, ...restData } = requestData;
+    let queryParams = new HttpParams();
+    queryParams.append('id', 0);
+    requestData.id = id;
+    return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}`,restData, {params:queryParams}).pipe(
+      map((response) => response.data),
+      tap(() => this.refreshPrioritySlots$$.next()),
+    );
+  }
+
+  public updatePrioritySlot$(requestData: PrioritySlot) {
+    console.log("67 update slot called api");
+    
+    let { id, ...restData } = requestData;
+    let queryParams = new HttpParams();
+    queryParams.append('id', id);
+    console.log('id: ', id);
+    console.log('restData: ', restData);
+    return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}?id=${id}`, restData).pipe(
+      map((response) => response.data),
+      tap(() => this.refreshPrioritySlots$$.next()),
     );
   }
 }

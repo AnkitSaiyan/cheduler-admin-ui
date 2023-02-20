@@ -16,8 +16,9 @@ import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pi
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { StaffsGroupedByType } from 'src/app/shared/models/staff.model';
-import { UserType } from 'src/app/shared/models/user.model';
+import { User, UserType } from 'src/app/shared/models/user.model';
 import { formatTime } from 'src/app/shared/utils/time';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 
 interface FormValues {
   startedAt: any;
@@ -86,6 +87,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   public staffs$$ = new BehaviorSubject<NameValue[]>([] as NameValue[]);
   public isClicked: boolean = true;
   public isRepeatClicked: boolean = true;
+  staffDetails: User[] =[];
 
   constructor(
     private modalSvc: ModalService,
@@ -97,6 +99,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     private datePipe: DatePipe,
     private timeInIntervalPipe: TimeInIntervalPipe,
     private nameValuePairPipe: NameValuePairPipe,
+    private priorityApiSvc: PrioritySlotApiService,
   ) {
     super();
     const times = this.nameValuePairPipe.transform(this.timeInIntervalPipe.transform(30));
@@ -105,14 +108,16 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   public ngOnInit(): void {
-    
     this.modalSvc.dialogData$.pipe(take(1)).subscribe((data) => {
       this.modalData = data;
       this.createForm(this.modalData?.prioritySlotDetails);
-      console.log("this.prioritySlotForm.get('isRepeat')?.value: ", this.prioritySlotForm.get('isRepeat')?.value);
+      console.log('this.modalData?.prioritySlotDetails: ', this.modalData?.prioritySlotDetails);
+      // console.log("this.prioritySlotForm.get('isRepeat')?.value: ", this.prioritySlotForm.get('isRepeat')?.value);
     });
 
     this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
+      this.staffDetails = staffs;
+      console.log('this.staffDetails: ', this.staffDetails);
       const staffGroupedByType: StaffsGroupedByType = {
         radiologists: [],
         assistants: [],
@@ -174,6 +179,39 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       this.endTimes.push({ name: slotEndTime, value: slotEndTime });
     }
 
+    if (this.modalData?.prioritySlotDetails && prioritySlotDetails?.isRepeat) {
+      this.isRepeatClicked = true;
+      this.isClicked = false;
+    }
+
+    if (this.modalData?.prioritySlotDetails && !prioritySlotDetails?.isRepeat) {
+      this.isRepeatClicked = true;
+      this.isClicked = false;
+    }
+
+
+    const assistants: string[] = [];
+    const radiologists: string[] = [];
+    const nursing: string[] = [];
+    const secretaries: string[] = [];
+
+    if (this.staffDetails.length) {
+      console.log('this.staffDetails: ', this.staffDetails);
+      this.staffDetails.forEach((u) => {
+        switch (u.userType) {
+          case UserType.Radiologist:
+            radiologists.push(u.id.toString());
+            break;
+          default:
+        }
+      });
+
+      this.prioritySlotForm.patchValue({
+        radiologists,
+      });
+    }
+
+
     this.prioritySlotForm = this.fb.group({
       startedAt: [
         prioritySlotDetails?.startedAt
@@ -193,20 +231,18 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
               day: new Date(prioritySlotDetails.endedAt).getDate(),
             }
           : null,
-        [Validators.required],
+        [],
       ],
+
+
       isRepeat: [!!prioritySlotDetails?.isRepeat, []],
-      addPriority: this.fb.array([
-        {
-          slotStartTime: ['', [Validators.required]],
-          slotEndTime: ['', [Validators.required]],
-          priority: ['', [Validators.required]],
-        }
-      ]),
+      slotStartTime: [prioritySlotDetails?.slotStartTime, [Validators.required]],
+      slotEndTime: [slotEndTime, [Validators.required]],
+      priority: [prioritySlotDetails?.priority, [Validators.required]],
       repeatType: [prioritySlotDetails?.repeatType ?? null, []],
       repeatDays: [prioritySlotDetails?.repeatDays ? prioritySlotDetails.repeatDays.split(',') : '', []],
       repeatFrequency: [prioritySlotDetails?.repeatFrequency ?? null, []],
-      userList: [prioritySlotDetails?.userList ?? [], [Validators.required]],
+      userList: [radiologists ?? [], [Validators.required]],
     });
 
     // const fa = this.prioritySlotForm.get('addPriority') as FormArray;
@@ -219,28 +255,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     //   fa.push(this.newExam());
     // }
   }
-
-  public prioritySlotsCount(): FormArray {
-    return this.prioritySlotForm.get('addPriority') as FormArray;
-  }
-
-  private newPrioritySlots(): FormGroup {
-    return this.fb.group({
-      slotStartTime: ['', [Validators.required]],
-      slotEndTime: ['', [Validators.required]],
-      priority: ['', [Validators.required]],
-    });
-  }
-
-  public addPrioritySlot() {
-    this.prioritySlotsCount().push(this.newPrioritySlots());
-  }
-
-  // public removePrioritySlot(i: number) {
-  //   if (this.prioritySlotsCount().length > 1) {
-  //     this.prioritySlotsCount().removeAt(i);
-  //   }
-  // }
 
   public closeModal(res: boolean) {
     this.modalSvc.close(res);
@@ -270,7 +284,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     const addPriorityReqData: PrioritySlot = {
       ...rest,
       startedAt: new Date(startedAt.year, startedAt.month, startedAt.day, +slotStartTime.slice(0, 2), +slotStartTime.slice(3, 5)).toISOString(),
-      endedAt: new Date(endedAt.year, endedAt.month, endedAt.day, +slotEndTime.slice(0, 2), +slotEndTime.slice(3, 5)).toISOString(),
+      endedAt: (endedAt)? new Date(endedAt?.year, endedAt?.month, endedAt?.day, +slotEndTime.slice(0, 2), +slotEndTime.slice(3, 5)).toISOString() : '',
       repeatDays: this.prioritySlotForm.get('repeatDays')?.value,
       repeatFrequency: rest.repeatFrequency ? +rest.repeatFrequency : 0,
       id: 0,
@@ -292,24 +306,27 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     }
 
     console.log(addPriorityReqData);
-    // if (this.modalData.edit) {
+    if (this.modalData.edit) {
+      console.log("update called");
+      
+      this.priorityApiSvc
+        .updatePrioritySlot$(addPriorityReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Priority Slot updated successfully`);
+          this.closeModal(true);
+        });
+    }else{
+      console.log("save called");
 
-    //   this.absenceApiSvc
-    //     .updateAbsence(addPriorityReqData)
-    //     .pipe(takeUntil(this.destroy$$))
-    //     .subscribe(() => {
-    //       this.notificationSvc.showNotification(`Absence updated successfully`);
-    //       this.closeModal(true);
-    //     });
-    // }else{
-    //   this.absenceApiSvc
-    //     .addNewAbsence$(addPriorityReqData)
-    //     .pipe(takeUntil(this.destroy$$))
-    //     .subscribe(() => {
-    //       this.notificationSvc.showNotification(`Absence added successfully`);
-    //       this.closeModal(true);
-    //     });
-    // }
+      this.priorityApiSvc
+        .savePrioritySlot$(addPriorityReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(() => {
+          this.notificationSvc.showNotification(`Priority Slot added successfully`);
+          this.closeModal(true);
+        });
+    }
   }
 
   private getRepeatEveryItems(repeatType: RepeatType): NameValue[] {

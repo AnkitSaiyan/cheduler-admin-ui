@@ -1,14 +1,14 @@
-import { Component, Directive, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TableItem } from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Status } from '../../../../shared/models/status.model';
+import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadService } from '../../../../core/services/download.service';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 import { Statuses } from '../../../../shared/utils/const';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
@@ -34,7 +34,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
   public columns: string[] = ['Name', 'Expensive', 'Status', 'Actions'];
 
-  public downloadItems: any[] = [];
+  public downloadItems: DownloadType[] = [];
 
   private exams$$: BehaviorSubject<any[]>;
 
@@ -49,12 +49,13 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   public statusType = getStatusEnum();
 
   constructor(
-    private ExamApiSvc: ExamApiService,
+    private examApiSvc: ExamApiService,
     private notificationSvc: NotificationDataService,
     private router: Router,
     private route: ActivatedRoute,
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.exams$$ = new BehaviorSubject<any[]>([]);
@@ -64,7 +65,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
-    this.ExamApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
+    this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
       this.exams$$.next(exams);
       this.filteredExams$$.next(exams);
     });
@@ -82,32 +83,43 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         filter((value) => !!value),
         takeUntil(this.destroy$$),
       )
-      .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+      .subscribe((downloadAs) => {
+        if (!this.exams$$.value.length) {
+          this.notificationSvc.showNotification('No Exams found', NotificationType.INFO);
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          downloadAs as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.exams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), StatusToName[ex.status]]),
+          'exams',
+        );
+
+        this.downloadDropdownControl.setValue('');
+        this.cdr.detectChanges();
       });
 
     this.afterBannerClosed$$
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedExamIDs.map((id) => ({ id: +id, newStatus: value.newStatus }))];
+            return [...this.selectedExamIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
           }
 
           return [];
         }),
-        switchMap((changes) => this.ExamApiSvc.changeExamStatus$(changes)),
+        filter((changes) => {
+          if (!changes.length) {
+            this.clearSelected$$.next();
+          }
+          return !!changes.length;
+        }),
+        switchMap((changes) => this.examApiSvc.changeExamStatus$(changes)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((value) => {
-        if (value) {
-          this.notificationSvc.showNotification('Status has changed successfully');
-        }
+      .subscribe(() => {
+        this.notificationSvc.showNotification('Status has changed successfully');
         this.clearSelected$$.next();
       });
   }
@@ -134,8 +146,9 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     ]);
   }
 
-  public changeStatus(changes: { id: number | string; newStatus: Status | null }[]) {
-    this.ExamApiSvc.changeExamStatus$(changes)
+  public changeStatus(changes: ChangeStatusRequestData[]) {
+    this.examApiSvc
+      .changeExamStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
   }
@@ -153,7 +166,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(() => this.ExamApiSvc.deleteExam(id)),
+        switchMap(() => this.examApiSvc.deleteExam(id)),
         take(1),
       )
       .subscribe(() => {

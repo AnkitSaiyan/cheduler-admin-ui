@@ -11,8 +11,8 @@ export class NameValuePairPipe implements PipeTransform {
     }
 
     return arr.map((val) => ({
-      name: nameKey ? val[nameKey] : val,
-      value: valueKey ? val[valueKey]?.toString() : val,
+      name: nameKey ? val[nameKey]?.toString() : val?.toString(),
+      value: valueKey ? val[valueKey]?.toString() : val?.toString(),
       ...(descriptionKey ? { description: val[descriptionKey] } : {}),
     }));
   }

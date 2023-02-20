@@ -18,6 +18,10 @@ section.ad-sf-section2 {
     max-height: 672px;
     flex-wrap: wrap;
   }
+
+  .ad-sf-time-dropdown {
+    min-width: 96px;
+  }
 }
 
 @media (max-width: 1440px) {
@@ -37,6 +41,10 @@ section.ad-sf-section2 {
 @media (max-width: 680px) {
   .ad-sf-main-wrapper {
     padding: 0;
+  }
+
+  .ad-sf-email {
+    flex: 1;
   }
 
   .ad-sf-title-buttons {

@@ -19,9 +19,9 @@ export interface Absence {
   name: string;
   isHoliday: boolean;
   startedAt: Date;
-  endedAt: Date;
+  endedAt?: Date;
   priority: PriorityType;
-  info?: string;
+  info: string;
   status: Status;
   isRepeat?: boolean;
   repeatType?: RepeatType;
@@ -37,13 +37,13 @@ export interface AddAbsenceRequestDate {
   name: string;
   isHoliday: boolean;
   startedAt: string;
-  endedAt: string;
+  endedAt: string | null;
   priority: PriorityType;
   info: string;
   isRepeat: boolean;
   roomList: number[];
   userList: number[];
-  repeatType?: RepeatType;
+  repeatType: RepeatType | null;
   repeatFrequency?: number;
   repeatDays?: string;
   status?: Status;

@@ -13,6 +13,7 @@ import { SearchModalComponent, SearchModalData } from '../../../../shared/compon
 import { Absence } from '../../../../shared/models/absence.model';
 import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-slots.component';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
+import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 @Component({
   selector: 'dfm-list-priority-slots',
   templateUrl: './list-priority-slots.component.html',
@@ -87,17 +88,17 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
   private handleSearch(searchText: string): void {
     this.filteredPrioritySlots$$.next([
-      ...this.prioritySlots$$.value.filter((absence) => {
-        return absence.name?.toLowerCase()?.includes(searchText);
+      ...this.prioritySlots$$.value.filter((priority) => {
+        return priority.name?.toLowerCase()?.includes(searchText);
       }),
     ]);
   }
 
-  public deleteAbsence(id: number) {
+  public deletePrioritySlot(id: number) {
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Absence?',
+        bodyText: 'Are you sure you want to delete this Priority Slot?',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
@@ -106,12 +107,12 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.absenceApiSvc.deleteAbsence(id)),
+        switchMap(()=>this.priorityApiSvc.deletePrioritySlot$(id)),
         take(1),
       )
       .subscribe((response) => {
         if (response) {
-          this.notificationSvc.showNotification('Absence deleted successfully');
+          this.notificationSvc.showNotification('Priority Slot deleted successfully');
         }
       });
   }
@@ -139,40 +140,40 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     }
   }
 
-  public openSearchModal() {
-    this.toggleMenu();
+  // public openSearchModal() {
+  //   this.toggleMenu();
 
-    const modalRef = this.modalSvc.open(SearchModalComponent, {
-      options: { fullscreen: true },
-      data: {
-        items: [
-          ...this.prioritySlots$$.value.map(({ id, name }) => ({
-            name: `${name}`,
-            key: `${name}`,
-            value: id,
-          })),
-        ],
-        placeHolder: 'Search by Absence Name',
-      } as SearchModalData,
-    });
+  //   const modalRef = this.modalSvc.open(SearchModalComponent, {
+  //     options: { fullscreen: true },
+  //     data: {
+  //       items: [
+  //         ...this.prioritySlots$$.value.map(({ id, name }) => ({
+  //           name: `${name}`,
+  //           key: `${name}`,
+  //           value: id,
+  //         })),
+  //       ],
+  //       placeHolder: 'Search by Absence Name',
+  //     } as SearchModalData,
+  //   });
 
-    modalRef.closed.pipe(take(1)).subscribe((result) => this.filterAbsence(result));
-  }
+  //   modalRef.closed.pipe(take(1)).subscribe((result) => this.filterAbsence(result));
+  // }
 
-  private filterAbsence(result: { name: string; value: string }[]) {
-    if (!result?.length) {
-      this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value]);
-      return;
-    }
+  // private filterAbsence(result: { name: string; value: string }[]) {
+  //   if (!result?.length) {
+  //     this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value]);
+  //     return;
+  //   }
 
-    const ids = new Set<number>();
-    result.forEach((item) => ids.add(+item.value));
-    this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value.filter((absence: Absence) => ids.has(+absence.id))]);
-  }
+  //   const ids = new Set<number>();
+  //   result.forEach((item) => ids.add(+item.value));
+  //   this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value.filter((absence: Absence) => ids.has(+absence.id))]);
+  // }
 
-  public openAddAbsenceModal(absenceDetails?: Absence) {
+  public openAddPriorityModal(prioritySlotDetails?: PrioritySlot) {
     this.modalSvc.open(AddPrioritySlotsComponent, {
-      data: { edit: !!absenceDetails?.id, absenceDetails },
+      data: { edit: !!prioritySlotDetails?.id, prioritySlotDetails },
       options: {
         size: 'xl',
         centered: true,

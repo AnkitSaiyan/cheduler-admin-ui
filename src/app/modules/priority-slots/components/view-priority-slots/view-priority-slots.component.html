@@ -1,4 +1,4 @@
-<div *ngIf="userDetails$$ | async as userDetails" class="d-flex flex-column dfm-gap-24 dfm-px-8 us-vw-main-wrapper">
+<div *ngIf="prioritySlotDetails$$ | async as priorityDetails" class="d-flex flex-column dfm-gap-24 dfm-px-8 us-vw-main-wrapper">
     <section class="d-flex align-items-center justify-content-between dfm-gap-16 us-vw-section1">
       <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary us-vw-title-buttons">
         <dfm-button
@@ -22,7 +22,7 @@
           color="link"
           size="md"
           leadingIcon="pencil-02"
-          (click)="openEditUserModal()"
+          (click)="openEditPriorityModal()"
         >Edit Priority Slot
         </dfm-button>
   
@@ -31,7 +31,7 @@
           size="md"
           class="text-nowrap"
           leadingIcon="trash-01"
-          (click)="deleteUser(userDetails.id)"
+          (click)="deletePriority(priorityDetails.id)"
         >
           Delete Priority Slot
         </dfm-button>
@@ -59,7 +59,7 @@
       <!-- ** -->
     </section>
   
-    <section class="d-flex dfm-gap-24 us-vw-section2">
+    <section class="d-flex dfm-gap-24 us-vw-section2 w-50">
       <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
         <header class="d-flex align-items-center dfm-gap-8">
           <div class="dfm-button-gray-400">
@@ -72,47 +72,47 @@
           <div class="d-flex dfm-gap-8 justify-content-between">
             <span class="flex-1">Start Date</span>
             <span
-              class="font-weight-medium flex-1">{{ userDetails.firstname | titlecase }} {{ userDetails.lastname  | titlecase }}</span>
+              class="font-weight-medium flex-1">{{ priorityDetails.startedAt | titlecase }} </span>
           </div>
-  
+<!--   
           <div class="d-flex dfm-gap-8 justify-content-between">
             <span class="flex-1">Category</span>
             <span
-              class="font-weight-medium flex-1">{{ userDetails.userType === userType.General ? 'General' : 'Scheduler' }}</span>
+              class="font-weight-medium flex-1">{{ priorityDetails.userType === userType.General ? 'General' : 'Scheduler' }}</span>
+          </div>
+   -->
+          <div class="d-flex dfm-gap-8 justify-content-between">
+            <span class="flex-1">End Date</span>
+            <span class="font-weight-medium flex-1">{{ priorityDetails.endedAt }}</span>
           </div>
   
           <div class="d-flex dfm-gap-8 justify-content-between">
-            <span class="flex-1">Telephone</span>
-            <span class="font-weight-medium flex-1">{{ userDetails.telephone }}</span>
-          </div>
-  
-          <div class="d-flex dfm-gap-8 justify-content-between">
-            <span class="flex-1">Email</span>
-            <span class="font-weight-medium flex-1 text-break">{{ userDetails.email | dashIfNothing }}</span>
-          </div>
-  
-          <div class="d-flex dfm-gap-8 justify-content-between">
-            <span class="flex-1">Status</span>
-            <span class="font-weight-medium flex-1"
-                  [ngClass]="userDetails.status === 0 ? 'dfm-text-danger-600' : 'dfm-text-success-600'">{{ userDetails.status | statusName }}</span>
+            <span class="flex-1">Priority Slots</span>
+            <span class="font-weight-medium flex-1 text-break">{{ priorityDetails.priority | dashIfNothing }}</span>
           </div>
   
           <!-- <div class="d-flex dfm-gap-8 justify-content-between">
-            <span class="flex-1">Rizv Number</span>
-            <span class="font-weight-medium flex-1 text-break">{{ userDetails?.rizivNumber | dashIfNothing }}</span>
+            <span class="flex-1">Status</span>
+            <span class="font-weight-medium flex-1"
+                  [ngClass]="priorityDetails.status === 0 ? 'dfm-text-danger-600' : 'dfm-text-success-600'">{{ priorityDetails.status | statusName }}</span>
           </div> -->
   
+          <!-- <div class="d-flex dfm-gap-8 justify-content-between">
+            <span class="flex-1">Rizv Number</span>
+            <span class="font-weight-medium flex-1 text-break">{{ priorityDetails?.rizivNumber | dashIfNothing }}</span>
+          </div> -->
+<!--   
           <div class="d-flex dfm-gap-8 justify-content-between"
-               *ngIf="userDetails.userType === userType.Scheduler || userDetails.userType === userType.Secretary">
+               *ngIf="priorityDetails.userType === userType.Scheduler || priorityDetails.userType === userType.Secretary">
             <span class="flex-1">GSM</span>
-            <span class="font-weight-medium flex-1 text-break">{{ userDetails.gsm | dashIfNothing }}</span>
-          </div>
+            <span class="font-weight-medium flex-1 text-break">{{ priorityDetails.gsm | dashIfNothing }}</span>
+          </div> -->
   
-          <div class="d-flex dfm-gap-8 justify-content-between"
-               *ngIf="userDetails.userType === userType.Scheduler || userDetails.userType === userType.Secretary">
+          <!-- <div class="d-flex dfm-gap-8 justify-content-between"
+               *ngIf="priorityDetails.userType === userType.Scheduler || priorityDetails.userType === userType.Secretary">
             <span class="flex-1">Address</span>
-            <span class="font-weight-medium flex-1 text-break">{{ userDetails.address | dashIfNothing }}</span>
-          </div>
+            <span class="font-weight-medium flex-1 text-break">{{ priorityDetails.address | dashIfNothing }}</span>
+          </div> -->
         </div>
       </div>
   
@@ -125,18 +125,18 @@
       <!--      </header>-->
   
       <!--      <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">-->
-      <!--        <div class="d-flex dfm-gap-8 justify-content-between" *ngFor="let rights of userDetails.rights;">-->
+      <!--        <div class="d-flex dfm-gap-8 justify-content-between" *ngFor="let rights of priorityDetails.rights;">-->
       <!--          &lt;!&ndash;          <span>{{ }}</span>&ndash;&gt;-->
       <!--        </div>-->
   
-      <!--        <span class="dfm-text-main-600" *ngIf="!userDetails?.rights?.length">No rights found</span>-->
+      <!--        <span class="dfm-text-main-600" *ngIf="!priorityDetails?.rights?.length">No rights found</span>-->
       <!--      </div>-->
       <!--    </div>-->
     </section>
   
     <div class="hidden bg-white us-vw-action-buttons-mv">
-      <dfm-button color="secondary" size="sm" (click)="deleteUser(userDetails.id)">Delete</dfm-button>
-      <dfm-button color="primary" size="sm" (click)="openEditUserModal()">Edit User</dfm-button>
+      <dfm-button color="secondary" size="sm" (click)="deletePriority(priorityDetails.id)">Delete</dfm-button>
+      <dfm-button color="primary" size="sm" (click)="openEditPriorityModal()">Edit Priority Slot</dfm-button>
     </div>
   </div>
   

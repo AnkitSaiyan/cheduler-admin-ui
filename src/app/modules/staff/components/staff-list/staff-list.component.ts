@@ -1,17 +1,18 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { FormControl } from '@angular/forms';
-import { TableItem } from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Status } from '../../../../shared/models/status.model';
+import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { User } from '../../../../shared/models/user.model';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 
 @Component({
   selector: 'dfm-staff-list',
@@ -31,28 +32,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public columns: string[] = ['First Name', 'Last Name', 'Type', 'Email', 'Status', 'Actions'];
 
-  public downloadItems: any[] = [
-    {
-      name: 'CSV',
-      value: 'csv',
-      description: 'Download as CSV',
-    },
-    {
-      name: 'Excel',
-      value: 'xls',
-      description: 'Download as Excel',
-    },
-    {
-      name: 'Pdf',
-      value: 'pdf',
-      description: 'Download as PDF',
-    },
-    {
-      name: 'Print',
-      value: 'print',
-      description: 'Print appointments',
-    },
-  ];
+  public downloadItems: DownloadType[] = [];
 
   private staffs$$: BehaviorSubject<any[]>;
 
@@ -72,6 +52,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     private router: Router,
     private route: ActivatedRoute,
     private modalSvc: ModalService,
+    private downloadSvc: DownloadService,
   ) {
     super();
     this.staffs$$ = new BehaviorSubject<any[]>([]);
@@ -79,6 +60,10 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public ngOnInit(): void {
+    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((types) => {
+      this.downloadItems = types;
+    });
+
     this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
       this.staffs$$.next(staffs);
       this.filteredStaffs$$.next(staffs);
@@ -98,32 +83,41 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+        if (!this.staffs$$.value.length) {
+          this.notificationSvc.showNotification('No user found', NotificationType.INFO);
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          value as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.staffs$$.value.map((u: User) => [u.firstname, u.lastname, u.userType, u.email, StatusToName[+u.status]]),
+          'staffs',
+        );
+
+        this.downloadDropdownControl.setValue('');
       });
 
     this.afterBannerClosed$$
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedStaffIds.map((id) => ({ id: +id, newStatus: value.newStatus }))];
+            return [...this.selectedStaffIds.map((id) => ({ id: +id, status: value.newStatus as number }))];
           }
 
           return [];
         }),
-        // TODO have to implement change status staff list
-        // switchMap((changes) => this.staffApiSvc.changeStaffStatus$(changes)),
+        filter((changes) => {
+          if (!changes.length) {
+            this.clearSelected$$.next();
+          }
+          return !!changes.length;
+        }),
+        switchMap((changes) => this.staffApiSvc.changeUserStatus$(changes)),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        if (value) {
-          this.notificationSvc.showNotification('Status has changed successfully');
-        }
+        this.notificationSvc.showNotification('Status has changed successfully');
         this.clearSelected$$.next();
       });
   }
@@ -150,11 +144,14 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     ]);
   }
 
-  public changeStatus(changes: { id: number | string; newStatus: Status | null }[]) {
-    // this.staffApiSvc
-    //   .changeStaffStatus$(changes)
-    //   .pipe(takeUntil(this.destroy$$))
-    //   .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
+  public changeStatus(changes: ChangeStatusRequestData[]) {
+    this.staffApiSvc
+      .changeUserStatus$(changes)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(
+        () => this.notificationSvc.showNotification('Status has changed successfully'),
+        (err) => this.notificationSvc.showNotification(err, NotificationType.DANGER),
+      );
   }
 
   public deleteStaff(id: number) {

@@ -44,7 +44,7 @@
           size="md"
           class="text-nowrap"
           [disabled]="false"
-          (click)="openAddAbsenceModal()"
+          (click)="openAddPriorityModal()"
         >Add Priority Slot
         </dfm-button>
       </div>
@@ -62,7 +62,7 @@
         <dfm-table-body-cell>{{ item.startedAt | date: 'short' | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.endedAt | date: 'short' | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
-          <div class="text-truncate ab-li-info-cell"> {{ item.info | dashIfNothing }} </div>
+          <div class="text-truncate ab-li-info-cell"> {{ item.isRepeat | dashIfNothing }} </div>
         </dfm-table-body-cell>
 
         <dfm-table-body-cell>
@@ -71,14 +71,14 @@
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
-              (click)="$event.stopPropagation(); openAddAbsenceModal(item);"
+              (click)="$event.stopPropagation(); openAddPriorityModal(item);"
             ></dfm-button>
 
             <dfm-button
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
-              (click)="$event.stopPropagation(); deleteAbsence(item.id)"
+              (click)="$event.stopPropagation(); deletePrioritySlot(item.id)"
             ></dfm-button>
           </div>
 
@@ -86,12 +86,12 @@
             <div ngbDropdown #actionButtonsMenu="ngbDropdown">
               <div class="shadow-lg ab-li-action-buttons-menu ab-li-menus" ngbDropdownMenu
                    aria-labelledby="dropdownManual">
-                <div ngbDropdownItem (click)="$event.stopPropagation(); openAddAbsenceModal(item)"
+                <div ngbDropdownItem (click)="$event.stopPropagation(); openAddPriorityModal(item)"
                      class="position-relative">
                   <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
                   <div class="menu-point-forward shadow-sm"></div>
                 </div>
-                <div ngbDropdownItem (click)="$event.stopPropagation(); deleteAbsence(item.id)">
+                <div ngbDropdownItem (click)="$event.stopPropagation(); deletePrioritySlot(item.id)">
                   <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
                 </div>
               </div>
@@ -115,7 +115,8 @@
   </section>
   <div ngbDropdown #optionsMenu="ngbDropdown">
     <div class="shadow-lg ab-li-plus-btn-menu ab-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
-      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">
+      <!-- <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()"> -->
+      <div ngbDropdownItem (click)="$event.stopPropagation();">
         <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
       </div>
       <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">

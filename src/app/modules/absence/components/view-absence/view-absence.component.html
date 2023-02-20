@@ -71,18 +71,18 @@
 
       <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">First Name</span>
+          <span class="flex-1">Name</span>
           <span class="flex-1">{{ absenceDetails.name | titlecase }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Start Date</span>
-          <span class="flex-1">{{ absenceDetails.startedAt | date : 'short' }}</span>
+          <span class="flex-1">{{ absenceDetails.startedAt | date : 'dd/MM/yyyy, HH:mm' }}</span>
         </div>
 
-        <div class="d-flex dfm-gap-8 justify-content-between">
+        <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="absenceDetails.isRepeat">
           <span class="flex-1">End Date</span>
-          <span class="flex-1 text-truncate">{{ absenceDetails.endedAt | date : 'short' }}</span>
+          <span class="flex-1 text-truncate">{{ absenceDetails.endedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</span>
         </div>
 
         <!-- <div class="d-flex dfm-gap-8 justify-content-between">
@@ -98,12 +98,12 @@
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Staff</span>
-          <span class="flex-1 text-break" *ngIf="staffNames.length; else dash"> {{ staffNames | joinWithAnd }}</span>
+          <span class="flex-1 text-break"> {{ absenceDetails.user | joinWithAnd : 'firstname' | dashIfNothing }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Room</span>
-          <span class="flex-1 text-break" *ngIf="roomNames.length; else dash"> {{ roomNames | joinWithAnd }}</span>
+          <span class="flex-1 text-break">{{ absenceDetails.rooms | joinWithAnd : 'name' | titlecase | dashIfNothing }}</span>
         </div>
       </div>
     </div>
@@ -117,9 +117,7 @@
       </header>
 
       <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-        <div class="d-flex dfm-gap-8 justify-content-between">
-          <span>{{ absenceDetails.info | titlecase }}</span>
-        </div>
+        <span class="text-break" style="white-space: pre-wrap">{{ absenceDetails.info }}</span>
       </div>
     </div>
 
@@ -132,14 +130,19 @@
       </header>
 
       <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-        <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Start Date</span>
-          <span class="flex-1">{{ absenceDetails.startedAt | date : 'short' }}</span>
-        </div>
+        <!--        <div class="d-flex dfm-gap-8 justify-content-between">-->
+        <!--          <span class="flex-1">Start Date</span>-->
+        <!--          <span class="flex-1">{{ absenceDetails.startedAt | date : 'dd/MM/yyyy, HH:mm' }}</span>-->
+        <!--        </div>-->
+
+        <!--        <div class="d-flex dfm-gap-8 justify-content-between">-->
+        <!--          <span class="flex-1 text-nowrap">End Date</span>-->
+        <!--          <span class="flex-1 text-truncate">{{ absenceDetails.endedAt | date : 'dd/MM/yyyy, HH:mm' }}</span>-->
+        <!--        </div>-->
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1 text-nowrap">End Date</span>
-          <span class="flex-1 text-truncate">{{ absenceDetails.endedAt | date : 'short' }}</span>
+          <span class="flex-1">Holiday</span>
+          <span class="flex-1">{{ absenceDetails.isHoliday ? 'Yes' : 'No' | dashIfNothing }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
@@ -150,7 +153,7 @@
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Repeat Every</span>
           <span class="flex-1">{{ absenceDetails.repeatFrequency }}
-            <span>{{ absenceDetails.repeatType | repeatTypeToName | dashIfNothing }}</span>
+            <span *ngIf="absenceDetails.repeatFrequency">{{ absenceDetails.repeatType | repeatTypeToName }}</span>
           </span>
         </div>
 

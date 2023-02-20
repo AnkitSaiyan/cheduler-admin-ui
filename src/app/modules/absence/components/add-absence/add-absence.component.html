@@ -25,34 +25,42 @@
 
   <section class="modal-body dfm-pb-24 ad-ab-section2">
     <form [formGroup]="absenceForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
-      <div>
+      <div class="max-w-5 ad-ab-absence-name">
         <dfm-input class="flex-1" size="md" placeholder="Enter absence name" label="Name *" formControlName="name">
         </dfm-input>
       </div>
 
       <div class="d-flex dfm-gap-32 align-items-center ad-ab-dates">
-        <div class="ad-ab-from-date flex-1">
+        <div class="ad-ab-from-date flex-1 max-w-5">
           <span class="text-sm font-weight-medium dfm-text-main-700">From *</span>
 
-          <div class="d-flex align-items-center dfm-gap-16 flex-1">
-            <div class="dfm-button-group-wrapper h-fit flex-1">
-              <div class="input-as-dfm-input flex-1">
-                <input
-                  class="w-full min-w-128"
-                  formControlName="startedAt"
-                  placeholder="yyyy-mm-dd"
-                  ngbDatepicker
-                  #startedAt="ngbDatepicker"
-                />
+          <div class="d-flex align-items-start dfm-gap-16 flex-1">
+            <div class="flex-1 d-flex flex-column">
+              <div class="dfm-button-group-wrapper h-fit flex-1">
+                <div class="input-as-dfm-input flex-1">
+                  <input
+                    class="w-full min-w-128"
+                    formControlName="startedAt"
+                    placeholder="yyyy-mm-dd"
+                    ngbDatepicker
+                    #startedAt="ngbDatepicker"
+                    [minDate]="minFromDate"
+                  />
+                </div>
+                <div>
+                  <dfm-button-icon
+                    color="tertiary-gray"
+                    size="md"
+                    icon="calendar-date"
+                    (click)="startedAt.toggle()"
+                  ></dfm-button-icon>
+                </div>
               </div>
-              <div>
-                <dfm-button-icon
-                  color="tertiary-gray"
-                  size="md"
-                  icon="calendar-date"
-                  (click)="startedAt.toggle()"
-                ></dfm-button-icon>
-              </div>
+
+              <small class="validation-error"
+                     *ngIf="absenceForm.get('startedAt')?.hasError('required') && absenceForm.get('startedAt')?.touched">
+                This field is Required.
+              </small>
             </div>
 
             <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
@@ -61,36 +69,49 @@
                                   [typeToSearch]="true"
                                   [typeToSearchText]="startTime.value"
                                   (searchInput)="handleTimeInput($event, 'startTime')"
+                                  (focusout)="handleTimeInput(startTime.search, 'startTime')"
                                   formControlName="startTime"
                                   size="md"
                                   placeholder="hh:mm">
               </dfm-input-dropdown>
             </div>
           </div>
+
+          <small class="validation-error" *ngIf="startTime.control.hasError('time')">Start Time should be smaller than
+            End Time</small>
         </div>
 
-        <div class="ad-ab-to-date flex-1">
+        <div class="ad-ab-to-date flex-1 max-w-5" *ngIf="formValues.isRepeat">
           <span class="text-sm font-weight-medium dfm-text-main-700">Until *</span>
 
-          <div class="d-flex align-items-center dfm-gap-16">
-            <div class="dfm-button-group-wrapper flex-1">
-              <div class="input-as-dfm-input flex-1">
-                <input
-                  class="w-full min-w-128"
-                  formControlName="endedAt"
-                  placeholder="yyyy-mm-dd"
-                  ngbDatepicker
-                  #endedAt="ngbDatepicker"
-                />
+          <div class="d-flex align-items-start dfm-gap-16">
+            <div class="flex-1 d-flex flex-column">
+              <div class="dfm-button-group-wrapper flex-1">
+                <div class="input-as-dfm-input flex-1">
+                  <input
+                    class="w-full min-w-128"
+                    formControlName="endedAt"
+                    placeholder="yyyy-mm-dd"
+                    ngbDatepicker
+                    #endedAt="ngbDatepicker"
+                    [minDate]="formValues.startedAt"
+                    [required]="formValues.isRepeat"
+                  />
+                </div>
+                <div>
+                  <dfm-button-icon
+                    color="tertiary-gray"
+                    size="md"
+                    icon="calendar-date"
+                    (click)="endedAt.toggle()"
+                  ></dfm-button-icon>
+                </div>
               </div>
-              <div>
-                <dfm-button-icon
-                  color="tertiary-gray"
-                  size="md"
-                  icon="calendar-date"
-                  (click)="endedAt.toggle()"
-                ></dfm-button-icon>
-              </div>
+
+              <small class="validation-error"
+                     *ngIf="absenceForm.get('endedAt')?.hasError('required') && absenceForm.get('endedAt')?.touched">
+                This field is Required.
+              </small>
             </div>
 
             <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
@@ -99,12 +120,18 @@
                                   [typeToSearch]="true"
                                   [typeToSearchText]="endTime.value"
                                   (searchInput)="handleTimeInput($event, 'endTime')"
+                                  (focusout)="handleTimeInput(startTime.search, 'endTime')"
+                                  [required]="formValues.isRepeat"
                                   formControlName="endTime"
                                   size="md"
                                   placeholder="hh:mm">
               </dfm-input-dropdown>
             </div>
           </div>
+
+          <small class="validation-error" *ngIf="endTime.control.hasError('time')">
+            End Time should be greater than Start Time
+          </small>
         </div>
       </div>
 
@@ -130,59 +157,67 @@
                               formControlName="isHoliday"></dfm-radio-button>
           </div>
         </div>
-<!-- 
-        <div class="d-flex flex-column dfm-gap-16 flex-1">
-          <span
-            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
-          <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-radio-button class="font-weight-normal" label="High" [checkedValue]="priorityType.High"
-                              formControlName="priority"></dfm-radio-button>
-            <dfm-radio-button class="font-weight-normal" label="Medium" [checkedValue]="priorityType.Medium"
-                              formControlName="priority"></dfm-radio-button>
-            <dfm-radio-button class="font-weight-normal" label="Low" [checkedValue]="priorityType.Low"
-                              formControlName="priority"></dfm-radio-button>
-          </div>
-        </div> -->
+        <!--
+                <div class="d-flex flex-column dfm-gap-16 flex-1">
+                  <span
+                    class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
+                  <div class="w-fit d-flex justify-content-between dfm-gap-24">
+                    <dfm-radio-button class="font-weight-normal" label="High" [checkedValue]="priorityType.High"
+                                      formControlName="priority"></dfm-radio-button>
+                    <dfm-radio-button class="font-weight-normal" label="Medium" [checkedValue]="priorityType.Medium"
+                                      formControlName="priority"></dfm-radio-button>
+                    <dfm-radio-button class="font-weight-normal" label="Low" [checkedValue]="priorityType.Low"
+                                      formControlName="priority"></dfm-radio-button>
+                  </div>
+                </div> -->
       </div>
 
       <ng-container *ngIf="formValues.isRepeat">
         <div class="d-flex dfm-gap-32 flex-wrap align-items-start ad-ab-repeat-form">
           <div class="dfm-input-dropdown-wrapper flex-1">
             <dfm-input-dropdown #repeatType [items]="repeatTypes" size="md" label="Repeat Type *"
-                                placeholder="Select repeat type" formControlName="repeatType" (select)="handleChange(repeatFrequency)">
+                                [required]="formValues.isRepeat"
+                                placeholder="Select repeat type" formControlName="repeatType"
+                                (select)="handleChange(repeatFrequency)">
             </dfm-input-dropdown>
           </div>
 
-          <div class="flex-1">
+          <div class="d-flex flex-column flex-1">
             <dfm-input
-                       #repeatFrequency
-                       class="flex-1"
-                       formControlName="repeatFrequency"
-                       label="Repeat Every(Days)"
-                       placeholder="Enter repeat count"
-                       size="md"
-                       type="text"
-                       [readonly]="!repeatType.value"
-                       (focusin)="handleFocusIn(repeatFrequency)"
-                       (focusout)="handleFocusOut(repeatFrequency)"
+              #repeatFrequency
+              class="flex-1"
+              formControlName="repeatFrequency"
+              label="Repeat Every *"
+              placeholder="Enter repeat count"
+              size="md"
+              type="text"
+              required
+              [readonly]="!repeatType.value"
+              (focusin)="handleFocusIn()"
+              (focusout)="handleFocusOut()"
             >
             </dfm-input>
+            <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched">Repeat frequency
+              should be greater than 0</small>
           </div>
 
-          <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
+          <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-repeat-every"
+               *ngIf="repeatType.value && repeatType.value !== 'daily'">
             <dfm-input-dropdown #repeatEveryDropdown
-                                [items]="repeatType.value ? repeatEvery[repeatType.value] : ['']"
+                                [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
                                 [multiple]="true"
                                 [placeholder]="!!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + ' Selected' : 'Select repeat every'"
+
                                 size="md"
                                 label="Repeat On *"
+                                [required]="formValues.isRepeat && formValues.repeatType !== 'daily'"
                                 formControlName="repeatDays">
             </dfm-input-dropdown>
           </div>
         </div>
       </ng-container>
 
-      <div class="d-flex dfm-gap-32 flex-wrap flex-1">
+      <div class="d-flex dfm-gap-32 flex-wrap flex-1" *ngIf="!formValues.isHoliday">
         <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-rooms" *ngIf="roomList$$ | async as roomList">
           <dfm-input-dropdown #roomDropdown
                               [items]="roomList"
@@ -190,7 +225,7 @@
                               [placeholder]="!!roomDropdown.value?.length ? roomDropdown.value.length + ' Selected' : 'Select Rooms'"
                               size="md"
                               formControlName="roomList"
-                              label="Rooms involving the Absentee *">
+                              label="Rooms involving the Absentee">
           </dfm-input-dropdown>
         </div>
 
@@ -200,7 +235,7 @@
                               [multiple]="true"
                               size="md"
                               formControlName="userList"
-                              label="Staff *"
+                              label="Staff"
                               [placeholder]="!!staffDropDown.value?.length ? staffDropDown.value.length + ' Selected' : 'Select Staffs'">
           </dfm-input-dropdown>
         </div>
@@ -241,7 +276,7 @@
 
   <section class="modal-footer ad-ab-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
-    <dfm-button color="primary" size="md"
+    <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true"
                 (click)="saveAbsence()">{{ modalData.edit ? 'Save Changes' : 'Add Absence' }}</dfm-button>
   </section>
 </div>

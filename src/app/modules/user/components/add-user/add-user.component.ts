@@ -13,7 +13,7 @@ import { Status } from '../../../../shared/models/status.model';
 import { EMAIL_REGEX } from '../../../../shared/utils/const';
 
 interface FormValues {
-  userType: UserType.General | UserType.Scheduler;
+  userType: UserType;
   firstname: string;
   lastname: string;
   email: string;
@@ -99,7 +99,10 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     let addUserReqData: AddStaffRequestData = { ...rest, status: +status };
 
-    if (this.formValues?.userType === this.userType.Scheduler || this.modalData.userDetails?.userType === this.userType.Scheduler) {
+    if (
+      [UserType.Scheduler, UserType.Secretary].includes(this.formValues.userType) ||
+      [UserType.Scheduler, UserType.Secretary].includes(this.modalData.userDetails.userType)
+    ) {
       addUserReqData = {
         ...addUserReqData,
         gsm,

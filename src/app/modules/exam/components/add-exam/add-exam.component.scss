@@ -37,6 +37,10 @@ section.ad-ex-section2 {
     max-height: 672px;
     flex-wrap: wrap;
   }
+
+  .ad-ex-time-dropdown {
+    min-width: 96px;
+  }
 }
 
 @media (max-width: 1440px) {
@@ -50,7 +54,6 @@ section.ad-ex-section2 {
   .ad-ex-availability-form-fields {
     transition: all linear 200ms;
     max-height: 100% !important;
-    flex-wrap: nowrap !important;
   }
 }
 
@@ -129,6 +132,17 @@ section.ad-ex-section2 {
 
     .ad-ex-weekdays-tab {
       overflow-x: auto;
+    }
+  }
+
+  .ad-ex-room-list {
+    display: grid !important;
+    grid-template-columns: 1fr 2fr;
+
+    dfm-checkbox {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
   }
 }

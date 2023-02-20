@@ -16,6 +16,7 @@ import { Status } from '../../../../shared/models/status.model';
 import { checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
 import { TIME_24 } from '../../../../shared/utils/const';
+import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 
 interface FormValues {
   name: string;
@@ -175,28 +176,32 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   private addPracticeAvailabilityControls(practice?: PracticeAvailabilityServer): void {
     const fg = this.addRoomForm.get('practiceAvailability') as FormGroup;
     const weekday = this.formValues.selectedWeekday;
-    switch (weekday) {
-      case Weekday.ALL:
-        Object.values(this.weekdayEnum).forEach((day) => {
-          if (typeof day === 'number' && day < 7) {
-            const fa = fg.get(day.toString()) as FormArray;
-            if (!fa || !fa.length) {
-              fg.addControl(day.toString(), this.fb.array([this.getPracticeAvailabilityFormGroup(day)]));
-            }
-          }
-        });
-        break;
-      default:
-        if (!Object.keys(fg.value)?.length || (Object.keys(fg.value).length && !fg.get(this.formValues.selectedWeekday.toString()))) {
-          fg.addControl(
-            this.formValues.selectedWeekday.toString(),
-            this.fb.array([this.getPracticeAvailabilityFormGroup(practice?.weekday, practice?.dayStart, practice?.dayEnd)]),
-          );
-        } else if (fg.get(this.formValues.selectedWeekday.toString()) && practice) {
-          (fg.get(practice.weekday.toString()) as FormArray).push(
-            this.getPracticeAvailabilityFormGroup(practice.weekday, practice.dayStart, practice.dayEnd),
-          );
+
+    if (weekday === Weekday.ALL) {
+      getNumberArray(6).forEach((day) => {
+        const fa = fg.get(day.toString()) as FormArray;
+        if (!fa || !fa.length) {
+          fg.addControl(day.toString(), this.fb.array([this.getPracticeAvailabilityFormGroup(day)]));
         }
+      });
+
+      const fa = fg.get('0') as FormArray;
+      if (!fa || !fa.length) {
+        fg.addControl('0'.toString(), this.fb.array([this.getPracticeAvailabilityFormGroup(0)]));
+      }
+    } else {
+      const keys = Object.keys(fg.value);
+
+      if (!keys?.length || (keys.length && !fg.get(this.formValues.selectedWeekday.toString()))) {
+        fg.addControl(
+          this.formValues.selectedWeekday.toString(),
+          this.fb.array([this.getPracticeAvailabilityFormGroup(practice?.weekday, practice?.dayStart, practice?.dayEnd)]),
+        );
+      } else if (fg.get(this.formValues.selectedWeekday.toString()) && practice) {
+        (fg.get(practice.weekday.toString()) as FormArray).push(
+          this.getPracticeAvailabilityFormGroup(practice.weekday, practice.dayStart, practice.dayEnd),
+        );
+      }
     }
   }
 
