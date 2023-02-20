@@ -52,7 +52,7 @@ interface FormValues {
 export class AddStaffComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public addStaffForm!: FormGroup;
 
-  public exams$$ = new BehaviorSubject<any[]>([]);
+  public exams$$ = new BehaviorSubject<NameValue[] | null>(null);
 
   public staffTypes$$ = new BehaviorSubject<NameValue[]>([]);
 
@@ -152,7 +152,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     this.examApiSvc.exams$
       .pipe(
-        map((exams) => exams.filter((exam) => !!exam.status).map(({ name, id }) => ({ name, value: id }))),
+        map((exams) => exams.filter((exam) => !!exam.status).map(({ name, id }) => ({ name, value: id.toString() }))),
         takeUntil(this.destroy$$),
       )
       .subscribe((exams) => {
@@ -185,7 +185,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       telephone: [staffDetails?.telephone, []],
       userType: [staffDetails?.userType, [Validators.required]],
       info: [staffDetails?.info, []],
-      examList: [staffDetails?.examList, []],
+      examList: [staffDetails?.exams?.map((exam) => exam?.id?.toString()), []],
       status: [staffDetails?.status ?? Status.Active, []],
       selectedWeekday: [this.weekdayEnum.ALL, []],
       availabilityType: [!!staffDetails?.availabilityType, []],

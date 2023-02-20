@@ -143,7 +143,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     if (siteManagementData?.logo) {
       const reader = new FileReader();
 
-      reader.readAsBinaryString(siteManagementData.logo);
+      reader.readAsDataURL(siteManagementData.logo);
 
       this.siteManagementForm.patchValue({
         file: {
