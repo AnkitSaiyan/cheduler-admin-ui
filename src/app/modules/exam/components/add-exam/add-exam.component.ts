@@ -183,6 +183,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
           }
           return of({} as Exam);
         }),
+        take(1),
       )
       .subscribe((examDetails) => {
         this.createForm(examDetails);
@@ -206,21 +207,21 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         staffs.forEach((staff) => {
           const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff?.id?.toString() };
 
-          mandatory.push(nameValue);
+          mandatory.push({ ...nameValue });
 
           switch (staff.userType) {
             case UserType.Assistant:
-              assistants.push(nameValue);
+              assistants.push({ ...nameValue });
               break;
             case UserType.Radiologist:
-              radiologists.push(nameValue);
+              radiologists.push({ ...nameValue });
               break;
-            case UserType.Scheduler:
+            // case UserType.Scheduler:
             case UserType.Secretary:
-              secretaries.push(nameValue);
+              secretaries.push({ ...nameValue });
               break;
             case UserType.Nursing:
-              nursing.push(nameValue);
+              nursing.push({ ...nameValue });
               break;
             default:
           }
@@ -231,6 +232,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         this.nursing$$.next([...nursing]);
         this.secretaries$$.next([...secretaries]);
         this.mandatoryStaffs$$.next([...mandatory]);
+
+        console.log('staffs created nursing', nursing);
+        console.log('staffs created radiologists', radiologists);
+        console.log('staffs created sec', secretaries);
       });
 
     this.examApiSvc.exams$
@@ -265,6 +270,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     const secretaries: string[] = [];
 
     if (examDetails?.users?.length) {
+      console.log('create form', examDetails.users);
+
       examDetails.users.forEach((u) => {
         switch (u.userType) {
           case UserType.Assistant:
@@ -276,7 +283,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
           case UserType.Nursing:
             nursing.push(u.id.toString());
             break;
-          case UserType.Scheduler:
           case UserType.Secretary:
             secretaries.push(u.id.toString());
             break;
@@ -284,6 +290,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         }
       });
     }
+
+    console.log('create form nursing', nursing);
 
     this.examForm = this.fb.group({
       name: [examDetails?.name, [Validators.required]],
@@ -614,10 +622,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       name: this.formValues.name,
       expensive: this.formValues.expensive,
       info: this.formValues.info ?? null,
-      assistantCount: this.formValues.assistantCount ?? 0,
-      nursingCount: this.formValues.nursingCount ?? 0,
-      radiologistCount: this.formValues.radiologistCount ?? 0,
-      secretaryCount: this.formValues.secretaryCount ?? 0,
+      assistantCount: this.formValues.assistantCount,
+      nursingCount: this.formValues.nursingCount,
+      radiologistCount: this.formValues.radiologistCount,
+      secretaryCount: this.formValues.secretaryCount,
       usersList: [
         ...(this.formValues.assistants ?? []),
         ...(this.formValues.nursing ?? []),

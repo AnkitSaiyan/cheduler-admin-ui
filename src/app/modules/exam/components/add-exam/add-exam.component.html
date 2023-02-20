@@ -168,7 +168,7 @@
             </div>
 
             <small class="validation-error" *ngIf="assistantDropdown.control.hasError('assistantCount')">
-              Please select at least {{ formValues.assistantCount }} Assistant(s).
+              {{ formValues.assistantCount.toString() === '0' ? 'Please deselect Assistants' : 'Please select at least ' + formValues.assistantCount + ' Assistant(s).' }}
             </small>
           </div>
 
@@ -192,7 +192,7 @@
             </div>
 
             <small class="validation-error" *ngIf="radiologistDropdown.control.hasError('radiologistCount')">
-              Please select at least {{ formValues.radiologistCount }} Radiologist(s).
+              {{ formValues.radiologistCount.toString() === '0' ? 'Please deselect Radiologists' : 'Please select at least ' + formValues.radiologistCount + ' Radiologist(s).' }}
             </small>
           </div>
 
@@ -215,7 +215,7 @@
             </div>
 
             <small class="validation-error" *ngIf="nursingDropdown.control.hasError('nursingCount')">
-              Please select at least {{ formValues.nursingCount }} Nursing(s).
+              {{ formValues.nursingCount.toString() === '0' ? 'Please deselect Nursing' : 'Please select at least ' + formValues.nursingCount + ' Nursing.' }}
             </small>
           </div>
 
@@ -238,7 +238,7 @@
             </div>
 
             <small class="validation-error" *ngIf="secretaryDropdown.control.hasError('secretaryCount')">
-              Please select at least {{ formValues.secretaryCount }} Secretary(s).
+              {{ formValues.secretaryCount.toString() === '0' ? 'Please deselect Secretaries' : 'Please select at least ' + formValues.secretaryCount + ' Secretary(s).' }}
             </small>
           </div>
         </div>
