@@ -225,7 +225,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
 
       this.filteredUsers$$.value.forEach((user: User) => {
-        dataString += `${user.firstname}\t${user.lastname}\t${user.email}\t${user.telephone}\t${StatusToName[+user.status]}\n`;
+        dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.telephone ?? '—'}\t${user.userType ?? '—'}\t${StatusToName[+user.status]}\n`;
       });
 
       this.clipboardData = dataString;
