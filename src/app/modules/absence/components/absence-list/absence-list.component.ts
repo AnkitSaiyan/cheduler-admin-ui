@@ -21,6 +21,7 @@ import { AddAbsenceComponent } from '../add-absence/add-absence.component';
 })
 export class AbsenceListComponent extends DestroyableComponent implements OnInit, OnDestroy {
   clipboardData: string = '';
+
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -210,7 +211,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
   public openAddAbsenceModal(absenceDetails?: Absence) {
     this.modalSvc.open(AddAbsenceComponent, {
-      data: { edit: !!absenceDetails?.id, absenceDetails },
+      data: { edit: !!absenceDetails?.id, absenceID: absenceDetails?.id },
       options: {
         size: 'xl',
         centered: true,

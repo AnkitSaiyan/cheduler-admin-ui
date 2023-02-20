@@ -1,6 +1,6 @@
 <div class="bg-white rounded-4 ad-ab-main-wrapper dfm-px-16">
   <section class="modal-header">
-    <h5 class="modal-title ad-ab-title-buttons">{{ modalData.edit ? 'Edit' : 'Add' }} Absence</h5>
+    <h5 class="modal-title ad-ab-title-buttons">{{ modalData?.edit ? 'Edit' : 'Add' }} Absence</h5>
     <dfm-button-icon class="ad-ab-title-buttons" color="tertiary-gray" icon="x-close"
                      (click)="closeModal(false)"></dfm-button-icon>
 
@@ -18,15 +18,15 @@
       <dfm-button
         color="link"
         size="lg"
-      > {{ modalData.edit ? 'Edit' : 'Add' }} Absence
+      > {{ modalData?.edit ? 'Edit' : 'Add' }} Absence
       </dfm-button>
     </div>
   </section>
 
   <section class="modal-body dfm-pb-24 ad-ab-section2">
-    <form [formGroup]="absenceForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+    <form [formGroup]="absenceForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16" *ngIf="absence$$ | async as absence">
       <div class="max-w-5 ad-ab-absence-name">
-        <dfm-input class="flex-1" size="md" placeholder="Enter absence name" label="Name *" formControlName="name">
+        <dfm-input class="flex-1" size="md" placeholder="Enter absence title" label="Title *" formControlName="name">
         </dfm-input>
       </div>
 
@@ -275,6 +275,6 @@
   <section class="modal-footer ad-ab-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
     <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true"
-                (click)="saveAbsence()">{{ modalData.edit ? 'Save Changes' : 'Add Absence' }}</dfm-button>
+                (click)="saveAbsence()">{{ modalData?.edit ? 'Save Changes' : 'Add Absence' }}</dfm-button>
   </section>
 </div>
