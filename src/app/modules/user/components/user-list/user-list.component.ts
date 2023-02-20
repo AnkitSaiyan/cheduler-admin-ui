@@ -22,6 +22,7 @@ import { AddUserComponent } from '../add-user/add-user.component';
   styleUrls: ['./user-list.component.scss'],
 })
 export class UserListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  clipboardData: string = '';
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -220,7 +221,21 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+      this.filteredUsers$$.value.forEach((user: User) => {
+        dataString += `${user.firstname}\t${user.lastname}\t${user.email}\t${user.telephone}\t${StatusToName[+user.status]}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public navigateToViewUser(e: TableItem) {

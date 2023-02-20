@@ -20,6 +20,7 @@ import { AddAbsenceComponent } from '../add-absence/add-absence.component';
   styleUrls: ['./absence-list.component.scss'],
 })
 export class AbsenceListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  clipboardData: string = '';
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -140,7 +141,21 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+      this.filteredAbsences$$.value.forEach((absence: Absence) => {
+        dataString += `${absence.name}\t${absence.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public navigateToViewAbsence(e: TableItem) {

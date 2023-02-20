@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnIn
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CheckboxComponent, TableItem } from 'diflexmo-angular-design';
+import { CheckboxComponent, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -24,6 +24,7 @@ import { User } from '../../../../shared/models/user.model';
   styleUrls: ['./room-list.component.scss'],
 })
 export class RoomListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  clipboardData: string = '';
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -236,7 +237,21 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+      this.filteredRooms$$.value.forEach((room: Room) => {
+        dataString += `${room.name}\t${room.description}\t${room.placeInAgenda}\t ${room.type}\t ${StatusToName[+room.status]}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public navigateToViewRoom(e: TableItem) {

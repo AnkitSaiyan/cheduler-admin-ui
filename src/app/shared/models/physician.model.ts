@@ -11,7 +11,7 @@ export interface Physician {
   gsm: string;
   notifyDoctor: boolean;
   count?: number;
-  status?: Status;
+  status: Status;
 }
 
 export interface AddPhysicianRequestData {

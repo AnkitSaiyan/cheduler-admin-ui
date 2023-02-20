@@ -24,6 +24,7 @@ import { User } from '../../../../shared/models/user.model';
   styleUrls: ['./physician-list.component.scss'],
 })
 export class PhysicianListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  clipboardData: string = '';
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -207,7 +208,21 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+      this.filteredPhysicians$$.value.forEach((physician: Physician) => {
+        dataString += `${physician.firstname}\t${physician.lastname}\t ${physician.email}\t ${StatusToName[+physician.status]}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public navigateToViewPhysician(e: TableItem) {

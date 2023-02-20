@@ -20,6 +20,7 @@ import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/
   styleUrls: ['./staff-list.component.scss'],
 })
 export class StaffListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  clipboardData: string = '';
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -189,7 +190,21 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+      this.filteredStaffs$$.value.forEach((staff: User) => {
+        dataString += `${staff.firstname}\t${staff.lastname}\t ${staff.userType}\t ${staff.email}\t${StatusToName[+staff.status]}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public navigateToViewStaff(e: TableItem) {
