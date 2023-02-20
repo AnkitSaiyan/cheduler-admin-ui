@@ -7,9 +7,11 @@ import { TimeDurationType } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
 import { SiteManagementApiService } from '../../../core/services/site-management-api.service';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
+import { EMAIL_REGEX } from '../../../shared/utils/const';
 
 interface FormValues {
   name: string;
+  introductoryText: string;
   disableAppointment: boolean;
   disableWarningText: string;
   heading: string;
@@ -21,7 +23,7 @@ interface FormValues {
   address: string;
   email: string;
   telephone: number;
-  file: { file: Blob; loading: boolean };
+  file: { file: ArrayBuffer | string; loading: boolean; fileBlob: Blob };
   isSlotsCombinable: boolean;
   reminderTime: number;
   reminderTimeType: TimeDurationType;
@@ -36,6 +38,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
   public siteManagementForm!: FormGroup;
 
   public siteManagementData$$ = new BehaviorSubject<SiteManagement | undefined>(undefined);
+
+  public submitting$$ = new BehaviorSubject<boolean>(false);
 
   public timeDurations: { name: TimeDurationType; value: TimeDurationType }[] = [
     {
@@ -73,7 +77,9 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
   private createForm(siteManagementData?: SiteManagement | undefined): void {
     let duration = 0;
+    let reminderDuration = 0;
     let durationType: TimeDurationType = 'Hours';
+    let reminderDurationTYpe: TimeDurationType = 'Hours';
     let introductoryTextObj;
 
     if (siteManagementData) {
@@ -88,6 +94,17 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
         }
       }
 
+      if (siteManagementData.reminderTime) {
+        reminderDuration = siteManagementData.reminderTime;
+        if (reminderDuration < 1) {
+          reminderDuration *= 60;
+          reminderDurationTYpe = 'Minutes';
+        } else if (reminderDuration >= 24) {
+          reminderDuration /= 24;
+          reminderDurationTYpe = 'Days';
+        }
+      }
+
       if (siteManagementData.introductoryText) {
         try {
           introductoryTextObj = JSON.parse(siteManagementData.introductoryText);
@@ -99,38 +116,48 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
     this.siteManagementForm = this.fb.group({
       name: [siteManagementData?.name ?? '', [Validators.required]],
-      file: [{ file: siteManagementData?.logo, loading: false }, [Validators.required]],
-      introductoryText: [siteManagementData?.introductoryText ?? '', []],
-      heading: [introductoryTextObj?.heading ?? '', [Validators.required]],
-      subHeading: [introductoryTextObj?.subHeading ?? '', [Validators.required]],
-      bodyText: [introductoryTextObj?.bodyText ?? '', [Validators.required]],
-      disableAppointment: [+!!siteManagementData?.disableAppointment, [Validators.required]],
+      file: [{ file: siteManagementData?.logo, loading: false, fileBlob: null }, []],
+      introductoryText: [siteManagementData?.introductoryText ?? null, []],
+      heading: [introductoryTextObj?.heading ?? '', []],
+      subHeading: [introductoryTextObj?.subHeading ?? '', []],
+      bodyText: [introductoryTextObj?.bodyText ?? '', []],
+      disableAppointment: [!!siteManagementData?.disableAppointment, [Validators.required]],
       disableWarningText: [siteManagementData?.disableWarningText ?? '', []],
-      doctorReferringConsent: [siteManagementData?.doctorReferringConsent, [Validators.required]],
+      doctorReferringConsent: [siteManagementData?.doctorReferringConsent, []],
       cancelAppointmentTime: [duration, []],
       cancelAppointmentType: [durationType, []],
-      email: [siteManagementData?.email ?? '', []],
+      email: [siteManagementData?.email ?? '', [Validators.required]],
       telephone: [siteManagementData?.telephone, [Validators.required]],
       address: [siteManagementData?.address, [Validators.required]],
-      isSlotsCombinable: [+!!siteManagementData?.isSlotsCombinable, [Validators.required]],
-      reminderTime: [duration, []],
-      reminderTimeType: [durationType, []],
+      isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
+      reminderTime: [reminderDuration, []],
+      reminderTimeType: [reminderDurationTYpe, []],
     });
   }
 
   public saveSiteManagementData(): void {
     if (this.siteManagementForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.siteManagementForm.updateValueAndValidity();
+      Object.keys(this.siteManagementForm.controls).forEach((key) => {
+        if (this.siteManagementForm.get(key)?.invalid) {
+          this.siteManagementForm.get(key)?.markAsTouched();
+        }
+      });
       return;
     }
 
-    const { heading, subHeading, bodyText, file, cancelAppointmentType, isSlotsCombinable, ...rest } = this.formValues;
+    if (this.formValues.disableAppointment && !this.formValues.disableWarningText) {
+      this.notificationSvc.showNotification('Please add disable warning text', NotificationType.WARNING);
+      return;
+    }
+
+    this.submitting$$.next(true);
+
+    const { heading, subHeading, bodyText, file, cancelAppointmentType, reminderTimeType, isSlotsCombinable, ...rest } = this.formValues;
 
     const requestData: SiteManagementRequestData = {
       ...rest,
-      introductoryText: '',
-      file: file.file,
+      file: file.fileBlob,
       disableWarningText: rest.disableAppointment ? rest.disableWarningText : null,
       cancelAppointmentTime: (function () {
         switch (cancelAppointmentType) {
@@ -142,7 +169,17 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
             return rest.cancelAppointmentTime;
         }
       })(),
-      isSlotsCombinable: false
+      reminderTime: (function () {
+        switch (reminderTimeType) {
+          case 'Minutes':
+            return rest.reminderTime / 60;
+          case 'Days':
+            return rest.reminderTime * 24;
+          default:
+            return rest.reminderTime;
+        }
+      })(),
+      isSlotsCombinable: false,
     };
 
     requestData.introductoryText = JSON.stringify({
@@ -160,9 +197,16 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     this.siteManagementApiSvc
       .saveSiteManagementData$(requestData)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`${this.siteManagementData$$.value?.id ? 'Changes updated' : 'Saved'} successfully`);
-      });
+      .subscribe(
+        () => {
+          this.submitting$$.next(false);
+          this.notificationSvc.showNotification(`${this.siteManagementData$$.value?.id ? 'Changes updated' : 'Saved'} successfully`);
+        },
+        (err) => {
+          this.submitting$$.next(false);
+          this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+        },
+      );
   }
 
   public onFileChange(event: Event) {
@@ -180,6 +224,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       reader.onload = (e: any) => {
         fileControl?.setValue({
           file: reader.result,
+          fileBlob: files[0],
           loading: false,
         });
       };
@@ -190,6 +235,23 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     this.siteManagementForm.get('file')?.setValue({
       ...this.formValues.file,
       file: null,
+      fileBlob: null,
     });
+  }
+
+  public handleEmailInput(e: Event): void {
+    const inputText = (e.target as HTMLInputElement).value;
+
+    if (!inputText) {
+      return;
+    }
+
+    if (!inputText.match(EMAIL_REGEX)) {
+      this.siteManagementForm.get('email')?.setErrors({
+        email: true,
+      });
+    } else {
+      this.siteManagementForm.get('email')?.setErrors(null);
+    }
   }
 }

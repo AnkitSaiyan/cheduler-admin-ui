@@ -18,6 +18,7 @@ export interface Exam {
   status: Status;
   users?: User[];
   usersList: number[];
+  mandatoryUsers: number[];
   roomsForExam: {
     duration: number;
     roomId: number;
@@ -42,6 +43,7 @@ export interface CreateExamRequestData {
   nursingCount: number;
   secretaryCount: number;
   usersList: number[];
+  mandatoryUsers: number[];
   availabilityType: AvailabilityType;
   practiceAvailability: PracticeAvailability[];
   status: Status;

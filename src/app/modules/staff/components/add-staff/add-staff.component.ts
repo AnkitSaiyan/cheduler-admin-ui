@@ -123,6 +123,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
   }
 
   public ngOnInit(): void {
+    this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
+    this.filteredTimings = [...this.timings];
+
     this.routerStateSvc
       .listenForParamChange$(STAFF_ID)
       .pipe(
@@ -139,9 +142,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         this.loading$$.next(false);
         this.staffDetails$$.next(staffDetails);
       });
-
-    this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
-    this.filteredTimings = [...this.timings];
 
     this.staffApiSvc.staffTypes$
       .pipe(
@@ -220,8 +220,8 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       weekday: [weekday ?? this.formValues.selectedWeekday, []],
       dayStart: [get24HourTimeString(dayStart), []],
       dayEnd: [get24HourTimeString(dayEnd), []],
-      startTimings: [this.filteredTimings, []],
-      endTimings: [this.filteredTimings, []],
+      startTimings: [[...this.filteredTimings], []],
+      endTimings: [[...this.filteredTimings], []],
     });
 
     fg.get('dayStart')

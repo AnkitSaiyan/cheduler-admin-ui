@@ -10,7 +10,7 @@
 
       <div class="d-flex dfm-gap-16 align-items-center">
         <dfm-button color="secondary" size="md">Cancel</dfm-button>
-        <dfm-button color="primary" size="md" (click)="saveSiteManagementData()">Save Changes</dfm-button>
+        <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveSiteManagementData()">Save Changes</dfm-button>
       </div>
     </div>
 
@@ -32,13 +32,15 @@
 
   <section class="dfm-card dfm-p-16 st-mg-section2 hide-scrollbar">
     <form [formGroup]="siteManagementForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
-      <div class="d-flex dfm-gap-24 flex-wrap w-fit">
-        <dfm-input class="flex-1 st-mg-site-name" size="md" placeholder="Enter site name" label="Site Name *" formControlName="name">
-        </dfm-input>
+      <div class="d-flex dfm-gap-32 flex-wrap">
+        <div class="flex-1">
+          <dfm-input class="" size="md" placeholder="Enter site name" label="Site Name *" formControlName="name">
+          </dfm-input>
+        </div>
 
-        <div class="d-flex dfm-gap-24 dfm-ms-8 st-mg-choose-file-container">
+        <div class="d-flex dfm-gap-24 dfm-ms-8 flex-1 st-mg-choose-file-container">
           <div class="d-flex flex-column dfm-gap-8">
-            <span class="text-sm font-weight-medium dfm-text-main-700">Site Logo *</span>
+            <span class="text-sm font-weight-medium dfm-text-main-700">Site Logo</span>
 
             <label class="input-type-file-primary-md">Choose File
               <input #fileInput type="file" class="hidden" accept="image/*" (change)="$event.stopPropagation(); onFileChange($event)">
@@ -53,10 +55,12 @@
             </div>
           </div>
         </div>
+
+        <div class="flex-1 temp-elements"></div>
       </div>
 
       <div class="d-flex flex-column dfm-gap-8 flex-1">
-        <span class="text-sm font-weight-medium dfm-text-main-700">Site Introduction Text *</span>
+        <span class="text-sm font-weight-medium dfm-text-main-700">Site Introduction Text</span>
 
         <div class="d-flex dfm-gap-32 flex-wrap st-mg-heading-subheading">
           <dfm-input class="flex-1" size="md" placeholder="Enter heading" formControlName="heading"></dfm-input>
@@ -74,11 +78,16 @@
             <dfm-radio-button class="font-weight-normal" label="No" [checkedValue]="false"
                               formControlName="disableAppointment"></dfm-radio-button>
           </div>
+
+          <div *ngIf="formValues.disableAppointment" class="st-mg-warning-text flex-1">
+            <dfm-input size="md" label="Warning Text *" placeholder="Enter warning text" [required]="formValues.disableAppointment"
+                       formControlName="disableWarningText"></dfm-input>
+          </div>
         </div>
 
         <div class="d-flex flex-column dfm-gap-16 flex-1">
           <span
-            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Disable Referring Doctor Consent *</span>
+            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Disable Referring Doctor Consent</span>
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
             <dfm-radio-button class="font-weight-normal" label="Yes" [checkedValue]="1"
                               formControlName="doctorReferringConsent"></dfm-radio-button>
@@ -87,33 +96,6 @@
           </div>
         </div>
 
-        <div class="d-flex flex-column dfm-gap-16 flex-1 st-mg-appointment-cancellation">
-          <span
-            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Appointment Cancellation Duration *</span>
-          <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-input type="number" size="sm" formControlName="cancelAppointmentTime"></dfm-input>
-            <div class="dfm-input-dropdown-wrapper-wo-label st-mg-time-duration-type">
-              <dfm-input-dropdown [items]="timeDurations" size="sm"
-                                  formControlName="cancelAppointmentType"></dfm-input-dropdown>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex">
-        <div class="d-flex flex-column dfm-gap-16 flex-1 st-mg-appointment-cancellation">
-          <span
-            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Reminder Mail Duration *</span>
-          <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-input type="number" size="sm" formControlName="reminderTime"></dfm-input>
-            <div class="dfm-input-dropdown-wrapper-wo-label st-mg-time-duration-type">
-              <dfm-input-dropdown [items]="timeDurations" size="sm"
-                                  formControlName="reminderTimeType"></dfm-input-dropdown>
-            </div>
-          </div>
-        </div>
-  
-        
         <div class="d-flex flex-column dfm-gap-16 flex-1">
           <span
             class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Combine Slots *</span>
@@ -124,23 +106,52 @@
                               formControlName="isSlotsCombinable"></dfm-radio-button>
           </div>
         </div>
+      </div>
 
-        <div *ngIf="formValues.disableAppointment" class="st-mg-warning-text flex-1">
-          <dfm-input size="md" label="Warning Text" placeholder="Enter warning text"
-                     formControlName="disableWarningText"></dfm-input>
+      <div class="d-flex dfm-gap-32 flex-wrap">
+        <div class="d-flex flex-column dfm-gap-16 flex-1 w-full st-mg-appointment-cancellation">
+          <span
+            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Reminder Mail Duration *</span>
+          <div class="w-fit d-flex flex-1 justify-content-between dfm-gap-24">
+            <dfm-input type="number" size="sm" formControlName="reminderTime"></dfm-input>
+            <div class="dfm-input-dropdown-wrapper-wo-label st-mg-time-duration-type">
+              <dfm-input-dropdown [items]="timeDurations" size="sm"
+                                  formControlName="reminderTimeType"></dfm-input-dropdown>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="d-flex flex-column dfm-gap-16 flex-1 w-full st-mg-appointment-cancellation">
+          <span
+            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Appointment Cancellation Duration *</span>
+          <div class="w-fit d-flex flex-1 justify-content-between dfm-gap-24">
+            <dfm-input type="number" size="sm" formControlName="cancelAppointmentTime"></dfm-input>
+            <div class="dfm-input-dropdown-wrapper-wo-label st-mg-time-duration-type">
+              <dfm-input-dropdown [items]="timeDurations" size="sm"
+                                  formControlName="cancelAppointmentType"></dfm-input-dropdown>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 temp-elements">
         </div>
       </div>
 
 
       <div class="d-flex dfm-gap-32 flex-wrap st-mg-contact-info">
-        <dfm-input class="flex-1" size="md" placeholder="Enter Email" label="Email" formControlName="email"></dfm-input>
-        <dfm-input type="number" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone *"
+        <div class="d-flex flex-1 flex-column">
+          <dfm-input class="flex-1" size="md" placeholder="Enter Email" label="Email" formControlName="email" (focusout)="handleEmailInput($event)"></dfm-input>
+          <small *ngIf="siteManagementForm.get('email')?.hasError('email')" class="validation-error">Email is
+            Invalid.</small>
+        </div>
+        <dfm-input #phone [dfmNumberInput]="phone" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone *"
                    formControlName="telephone">
         </dfm-input>
-        <dfm-text-area class="flex-1" label="Address" placeholder="Enter address" formControlName="address"></dfm-text-area>
+        <dfm-text-area class="flex-1" label="Address *" placeholder="Enter address" formControlName="address"></dfm-text-area>
       </div>
 
-      <dfm-button class="hidden st-mg-save-changes-btn-mv" color="primary" size="md" (click)="saveSiteManagementData()">Save Changes</dfm-button>
+      <dfm-button class="hidden st-mg-save-changes-btn-mv" color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveSiteManagementData()">Save Changes</dfm-button>
     </form>
   </section>
 
