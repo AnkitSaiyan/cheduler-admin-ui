@@ -301,13 +301,13 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       info: [examDetails?.info, []],
       uncombinables: [examDetails?.uncombinables, []],
       mandatoryStaffs: [[], []],
-      assistantCount: [examDetails ? examDetails?.assistantCount?.toString() : null, []],
+      assistantCount: [examDetails?.assistantCount ?? '0', []],
       assistants: [assistants, []],
-      radiologistCount: [examDetails ? examDetails?.radiologistCount?.toString() : null, []],
+      radiologistCount: [examDetails?.radiologistCount ?? '0', []],
       radiologists: [radiologists, []],
-      nursingCount: [examDetails ? examDetails?.nursingCount?.toString() : null, []],
+      nursingCount: [examDetails?.nursingCount ?? '0', []],
       nursing: [nursing, []],
-      secretaryCount: [examDetails ? examDetails?.secretaryCount?.toString() : null, []],
+      secretaryCount: [examDetails?.secretaryCount ?? '0', []],
       secretaries: [secretaries, []],
       selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceAvailabilityToggle: [!!examDetails?.practiceAvailability?.length, []],
@@ -865,7 +865,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
     console.log(control?.value?.length, +countControl.value);
 
-    if (control?.value?.length < +countControl.value || (+countControl.value === 0 && control?.value?.length > 0)) {
+    // (+countControl.value === 0 && control?.value?.length > 0)
+    if (control?.value?.length < +countControl.value) {
       console.log(control?.value?.length, +countControl.value);
       toggleControlError(control, errorName);
       return;
