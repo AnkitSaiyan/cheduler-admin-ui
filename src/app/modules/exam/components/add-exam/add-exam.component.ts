@@ -76,13 +76,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   public submitting$$ = new BehaviorSubject(false);
 
-  public staffsGroupedByTypes$$ = new BehaviorSubject<StaffsGroupedByType>({
-    assistants: [],
-    radiologists: [],
-    nursing: [],
-    secretaries: [],
-    mandatory: [],
-  });
+  public staffsGroupedByTypes$$ = new BehaviorSubject<StaffsGroupedByType | null>(null);
 
   public exams: any[] = [];
 
@@ -188,24 +182,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         this.examDetails$$.next(examDetails);
       });
 
-    this.examApiSvc.exams$
-      .pipe(
-        map((exams) => exams.filter((exam) => exam?.status)),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((exams) => {
-        this.exams = exams.map(({ id, name }) => ({ name, value: id }));
-      });
-
-    this.roomApiSvc
-      .getRoomTypes()
-      .pipe(take(1))
-      .subscribe((roomTypes) => (this.roomTypes = [...roomTypes]));
-
-    this.roomApiSvc.roomsGroupedByType$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      this.availableRooms$$.next(rooms);
-    });
-
     this.staffApiSvc.staffList$
       .pipe(
         map((staffs) => staffs.filter((staff) => staff.status)),
@@ -213,6 +189,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       )
       .subscribe((staffs) => {
         console.log('staffs: ', staffs);
+
         const staffGroupedByType: StaffsGroupedByType = {
           radiologists: [],
           assistants: [],
@@ -222,7 +199,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         };
 
         staffs.forEach((staff) => {
-          const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff.id };
+          const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff?.id?.toString() };
 
           staffGroupedByType.mandatory.push(nameValue);
 
@@ -247,53 +224,23 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         this.staffsGroupedByTypes$$.next({ ...staffGroupedByType });
       });
 
-    this.examForm
-      ?.get('roomType')
-      ?.valueChanges.pipe(takeUntil(this.destroy$$))
-      .subscribe((roomType) => {
-        this.createRoomsForExamFormArray(roomType);
-      });
-
-    this.examForm
-      ?.get('expensive')
-      ?.valueChanges.pipe(
-        filter((value) => !!value),
+    this.examApiSvc.exams$
+      .pipe(
+        map((exams) => exams.filter((exam) => exam?.status)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((value) => this.toggleExpensiveError(+value));
-
-    this.examForm
-      ?.get('practiceAvailabilityToggle')
-      ?.valueChanges.pipe(
-        filter((value: boolean) => value),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe(() => this.addPracticeAvailabilityControls());
-
-    combineLatest([this.examForm?.get('assistants')?.valueChanges.pipe(startWith('')), this.examForm?.get('assistantCount')?.valueChanges])
-      .pipe(debounceTime(0), takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.checkStaffCountValidity(this.examForm.get('assistants'), this.examForm.get('assistantCount'), 'assistantCount');
+      .subscribe((exams) => {
+        this.exams = exams.map(({ id, name }) => ({ name, value: id }));
       });
 
-    combineLatest([this.examForm?.get('radiologists')?.valueChanges.pipe(startWith('')), this.examForm?.get('radiologistCount')?.valueChanges])
-      .pipe(debounceTime(0), takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.checkStaffCountValidity(this.examForm.get('radiologists'), this.examForm.get('radiologistCount'), 'radiologistCount');
-      });
+    this.roomApiSvc
+      .getRoomTypes()
+      .pipe(take(1))
+      .subscribe((roomTypes) => (this.roomTypes = [...roomTypes]));
 
-    combineLatest([this.examForm?.get('nursing')?.valueChanges.pipe(startWith('')), this.examForm?.get('nursingCount')?.valueChanges])
-      .pipe(debounceTime(0), takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.checkStaffCountValidity(this.examForm.get('nursing'), this.examForm.get('nursingCount'), 'nursingCount');
-      });
-
-    combineLatest([this.examForm?.get('secretaries')?.valueChanges.pipe(startWith('')), this.examForm?.get('secretaryCount')?.valueChanges])
-      .pipe(debounceTime(0), takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.checkStaffCountValidity(this.examForm.get('secretaries'), this.examForm.get('secretaryCount'), 'secretaryCount');
-      });
+    this.roomApiSvc.roomsGroupedByType$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
+      this.availableRooms$$.next(rooms);
+    });
   }
 
   public override ngOnDestroy() {
@@ -304,6 +251,33 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   private createForm(examDetails?: Exam | undefined): void {
     console.log('examDetails', examDetails);
+
+    const assistants: string[] = [];
+    const radiologists: string[] = [];
+    const nursing: string[] = [];
+    const secretaries: string[] = [];
+
+    if (examDetails?.users?.length) {
+      examDetails.users.forEach((u) => {
+        switch (u.userType) {
+          case UserType.Assistant:
+            assistants.push(u.id.toString());
+            break;
+          case UserType.Radiologist:
+            radiologists.push(u.id.toString());
+            break;
+          case UserType.Nursing:
+            nursing.push(u.id.toString());
+            break;
+          case UserType.Scheduler:
+          case UserType.Secretary:
+            secretaries.push(u.id.toString());
+            break;
+          default:
+        }
+      });
+    }
+
     this.examForm = this.fb.group({
       name: [examDetails?.name, [Validators.required]],
       expensive: [examDetails?.expensive, [Validators.required, Validators.min(1)]],
@@ -312,19 +286,21 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       info: [examDetails?.info, []],
       uncombinables: [examDetails?.uncombinables, []],
       mandatoryStaffs: [[], []],
-      assistantCount: [examDetails?.assistantCount ?? 0, []],
-      assistants: [[], []],
-      radiologistCount: [examDetails?.assistantCount ?? 0, []],
-      radiologists: [[], []],
-      nursingCount: [examDetails?.nursingCount ?? 0, []],
-      nursing: [[], []],
-      secretaryCount: [examDetails?.secretaryCount ?? 0, []],
-      secretaries: [[], []],
+      assistantCount: [examDetails?.assistantCount?.toString() ?? '0', []],
+      assistants: [assistants, []],
+      radiologistCount: [examDetails?.assistantCount?.toString() ?? '0', []],
+      radiologists: [radiologists, []],
+      nursingCount: [examDetails?.nursingCount?.toString() ?? '0', []],
+      nursing: [nursing, []],
+      secretaryCount: [examDetails?.secretaryCount?.toString() ?? '0', []],
+      secretaries: [secretaries, []],
       selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceAvailabilityToggle: [!!examDetails?.practiceAvailability?.length, []],
       status: [this.edit ? +!!examDetails?.status : Status.Active, []],
       practiceAvailability: this.fb.group({}),
     });
+
+    console.log('formValues', this.formValues);
 
     if (examDetails?.practiceAvailability?.length) {
       const weekdays = new Set([0, 1, 2, 3, 4, 5, 6]);
@@ -347,22 +323,86 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       this.addPracticeAvailabilityControls();
     }
 
+    this.cdr.detectChanges();
+
+    this.examForm
+      .get('roomType')
+      ?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe((roomType) => this.createRoomsForExamFormArray(roomType));
+
     if (examDetails?.roomsForExam?.length) {
       this.roomApiSvc
         .getRoomByID(examDetails.roomsForExam[0].roomId)
         .pipe(takeUntil(this.destroy$$))
-        .subscribe((room) => {
-          this.examForm.patchValue({ roomType: room?.type }, { emitEvent: true });
-        });
+        .subscribe((room) => this.examForm.get('roomType')?.setValue(room?.type));
     }
+
+    this.examForm
+      .get('roomType')
+      ?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe((roomType) => this.createRoomsForExamFormArray(roomType));
+
+    this.examForm
+      .get('expensive')
+      ?.valueChanges.pipe(
+        debounceTime(0),
+        filter((value) => !!value),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe((value) => this.toggleExpensiveError(+value));
+
+    this.examForm
+      .get('practiceAvailabilityToggle')
+      ?.valueChanges.pipe(
+        filter((value: boolean) => value),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe(() => this.addPracticeAvailabilityControls());
+
+    combineLatest([this.examForm?.get('assistants')?.valueChanges?.pipe(startWith('')), this.examForm?.get('assistantCount')?.valueChanges])
+      .pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.checkStaffCountValidity(this.examForm.get('assistants'), this.examForm.get('assistantCount'), 'assistantCount');
+      });
+
+    combineLatest([this.examForm?.get('radiologists')?.valueChanges?.pipe(startWith('')), this.examForm?.get('radiologistCount')?.valueChanges])
+      .pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.checkStaffCountValidity(this.examForm.get('radiologists'), this.examForm.get('radiologistCount'), 'radiologistCount');
+      });
+
+    combineLatest([this.examForm?.get('nursing')?.valueChanges?.pipe(startWith('')), this.examForm?.get('nursingCount')?.valueChanges])
+      .pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.checkStaffCountValidity(this.examForm.get('nursing'), this.examForm.get('nursingCount'), 'nursingCount');
+      });
+
+    combineLatest([this.examForm?.get('secretaries')?.valueChanges?.pipe(startWith('')), this.examForm?.get('secretaryCount')?.valueChanges])
+      .pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.checkStaffCountValidity(this.examForm.get('secretaries'), this.examForm.get('secretaryCount'), 'secretaryCount');
+      });
   }
 
   private getRoomsForExamFormGroup(room: Room): FormGroup {
+    let roomForExam;
+
+    if (this.examDetails$$.value?.roomsForExam?.length) {
+      roomForExam = this.examDetails$$.value?.roomsForExam.find((examRoom) => examRoom?.roomId?.toString() === room?.id?.toString());
+    }
+
     const fg = this.fb.group({
       roomId: [room.id, []],
-      duration: [{ value: null, disabled: true }, [Validators.required, Validators.min(1)]],
+      duration: [
+        {
+          value: roomForExam?.duration ?? null,
+          disabled: !roomForExam?.duration,
+        },
+        [Validators.required, Validators.min(1)],
+      ],
       roomName: [room.name, []],
-      selectRoom: [false, []],
+      selectRoom: [!!roomForExam?.duration, []],
     });
 
     fg.get('selectRoom')
@@ -388,9 +428,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
     fa.clear();
 
-    console.log('in', this.availableRooms$$.value);
     if (this.availableRooms$$.value[roomType]?.length) {
-      console.log('in');
       this.availableRooms$$.value[roomType].forEach((room) => fa.push(this.getRoomsForExamFormGroup(room)));
     }
 

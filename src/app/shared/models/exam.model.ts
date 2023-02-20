@@ -16,11 +16,12 @@ export interface Exam {
   availabilityType: AvailabilityType;
   count?: number;
   status: Status;
-  user?: User[];
+  users?: User[];
   usersList: number[];
   roomsForExam: {
     duration: number;
     roomId: number;
+    name: string;
   }[];
   rooms?: Room[];
   uncombinables?: number[];

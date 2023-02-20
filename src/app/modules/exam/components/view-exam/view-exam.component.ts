@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, of, switchMap, take, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { User, UserType } from '../../../../shared/models/user.model';
@@ -15,7 +15,7 @@ import { ConfirmActionModalComponent, DialogData } from '../../../../shared/comp
 import { Exam } from '../../../../shared/models/exam.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { NameValue } from '../../../../shared/components/search-modal.component';
-import { get24HourTimeString } from '../../../../shared/utils/time';
+import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
 
 @Component({
   selector: 'dfm-view-exam',
@@ -24,8 +24,6 @@ import { get24HourTimeString } from '../../../../shared/utils/time';
 })
 export class ViewExamComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public examDetails$$ = new BehaviorSubject<Exam | undefined>(undefined);
-
-  public roomIdToNameMap = new Map<number, string>();
 
   public staffsGroupedByTypes: {
     mandatory: NameValue[];
@@ -65,21 +63,17 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
         switchMap((examID) => this.examApiService.getExamByID(+examID)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((examDetails) => {
-        this.examDetails$$.next(examDetails);
+      .subscribe((exam) => {
+        this.examDetails$$.next(exam);
 
-        if (examDetails?.user && examDetails.user?.length) {
-          this.saveStaffDetails(examDetails.user);
+        if (exam?.practiceAvailability?.length) {
+          this.practiceAvailability$$.next([...this.getPracticeAvailability(exam.practiceAvailability)]);
         }
 
-        if (examDetails?.practiceAvailability?.length) {
-          this.practiceAvailability$$.next([...this.getPracticeAvailability(examDetails.practiceAvailability)]);
+        if (exam?.users?.length) {
+          this.saveStaffDetails(exam.users);
         }
       });
-
-    this.roomApiService.rooms$
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((rooms) => rooms.forEach((room) => this.roomIdToNameMap.set(+room.id, room.name)));
   }
 
   private saveStaffDetails(users: User[]) {
@@ -122,17 +116,19 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
         id: practice.id,
       };
 
-      if (!weekdayToSlotsObj[practice.weekday.toString()] && !weekdayToSlotsObj[practice.weekday.toString()]?.length) {
-        weekdayToSlotsObj[practice.weekday.toString()] = [];
+      const key = practice.weekday.toString();
+
+      if (!weekdayToSlotsObj[key] && !weekdayToSlotsObj[key]?.length) {
+        weekdayToSlotsObj[key] = [];
       }
 
-      weekdayToSlotsObj[practice.weekday.toString()].push(timeSlot);
+      weekdayToSlotsObj[key].push(timeSlot);
     });
 
     // sorting slots by start time
-    for (let weekday = 1; weekday <= 7; weekday++) {
+    for (let weekday = 0; weekday < 7; weekday++) {
       if (weekdayToSlotsObj[weekday.toString()]?.length) {
-        weekdayToSlotsObj[weekday.toString()].sort((a, b) => new Date(a.dayStart).getTime() - new Date(b.dayStart).getTime());
+        weekdayToSlotsObj[weekday.toString()].sort((a, b) => timeToNumber(a.dayStart) - timeToNumber(b.dayStart));
       }
     }
 
@@ -144,8 +140,10 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
       let done = true;
 
       for (let weekday = 0; weekday < 7; weekday++) {
-        if (weekdayToSlotsObj[weekday.toString()]?.length) {
-          allWeekTimeSlots[weekday.toString()] = { ...allWeekTimeSlots, ...weekdayToSlotsObj[weekday.toString()][slotNo] };
+        const key = weekday.toString();
+
+        if (weekdayToSlotsObj[key]?.length > slotNo) {
+          allWeekTimeSlots[key] = { ...allWeekTimeSlots, ...weekdayToSlotsObj[key][slotNo] };
           if (done) {
             done = false;
           }
