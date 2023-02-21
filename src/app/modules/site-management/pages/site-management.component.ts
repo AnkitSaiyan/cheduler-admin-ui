@@ -130,11 +130,11 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       }
 
       if (siteManagementData?.logo) {
-        const base64ToBlob = new Blob([siteManagementData.logo], { type: 'image/png' });
-        const logo = this.sanitizer.bypassSecurityTrustResourceUrl(`data:image/png;base64, ${siteManagementData?.logo}`);
+        file.file = this.sanitizer.bypassSecurityTrustResourceUrl(`data:image/png;base64, ${siteManagementData?.logo}`);
 
-        file.fileBlob = base64ToBlob;
-        file.file = logo;
+        fetch(`data:image/png;base64, ${siteManagementData?.logo}`)
+          .then((res) => res.blob())
+          .then((res) => (file.fileBlob = res));
       }
     }
 
@@ -179,7 +179,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
     this.submitting$$.next(true);
 
-    const { heading, subHeading, bodyText, file, cancelAppointmentType, reminderTimeType, isSlotsCombinable, ...rest } = this.formValues;
+    const { heading, subHeading, bodyText, file, cancelAppointmentType, reminderTimeType, ...rest } = this.formValues;
 
     const requestData: SiteManagementRequestData = {
       ...rest,
@@ -205,7 +205,6 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
             return rest.reminderTime;
         }
       })(),
-      isSlotsCombinable: false,
     };
 
     requestData.introductoryText = JSON.stringify({
@@ -238,6 +237,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
   public onFileChange(event: Event) {
     const { files } = event.target as HTMLInputElement;
 
+    console.log(files);
     if (files && files?.length) {
       const fileControl = this.siteManagementForm.get('file');
 
