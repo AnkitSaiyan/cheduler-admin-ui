@@ -227,16 +227,16 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     fg.get('dayStart')
       ?.valueChanges.pipe(
-        filter((time) => !!time),
         debounceTime(0),
+        filter((time) => !!time),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => this.handleError(value as string, fg.get('dayStart')));
 
     fg.get('dayEnd')
       ?.valueChanges.pipe(
-        filter((time) => !!time),
         debounceTime(0),
+        filter((time) => !!time),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => this.handleError(value as string, fg.get('dayEnd')));
@@ -355,6 +355,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     controlArray.removeAt(i);
 
     const formArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
+    this.handleInvalidSlotRangeError(formArrays);
     this.handleSlotExistsError(formArrays);
   }
 
@@ -384,7 +385,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       return;
     }
 
-    // this.submitting$$.next(true);
+    this.submitting$$.next(true);
 
     const { practiceAvailabilityToggle, practiceAvailability, selectedWeekday, ...rest } = this.formValues;
     const addStaffReqData: AddStaffRequestData = {
