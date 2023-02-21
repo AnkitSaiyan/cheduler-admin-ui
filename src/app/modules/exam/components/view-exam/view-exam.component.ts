@@ -83,6 +83,10 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
         value: user.id,
       };
 
+      if (user.isMandate) {
+        this.staffsGroupedByTypes.mandatory.push(nameValue);
+      }
+
       switch (user.userType) {
         case UserType.Assistant:
           this.staffsGroupedByTypes.assistants.push(nameValue);
@@ -98,7 +102,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
           this.staffsGroupedByTypes.secretaries.push(nameValue);
           break;
         default:
-          this.staffsGroupedByTypes.mandatory.push(nameValue);
+        // this.staffsGroupedByTypes.mandatory.push(nameValue);
       }
     });
   }
