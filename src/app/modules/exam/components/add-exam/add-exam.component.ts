@@ -85,7 +85,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   public mandatoryStaffs$$ = new BehaviorSubject<NameValue[] | null>(null);
 
-  public exams: any[] = [];
+  public exams$$ = new BehaviorSubject<null | NameValue[]>(null);
 
   public roomTypes: any[] = [];
 
@@ -126,6 +126,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   public readonly invalidSlotRangeError: string = 'invalidSlot';
 
   public readonly slotExistsError: string = 'slotExists';
+
+  public examID!: string;
 
   constructor(
     private fb: FormBuilder,
@@ -178,6 +180,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       .pipe(
         switchMap((examID) => {
           if (examID) {
+            this.examID = examID;
             return this.examApiSvc.getExamByID(+examID);
           }
           return of({} as Exam);
@@ -186,13 +189,28 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       )
       .subscribe((examDetails) => {
         this.createForm(examDetails);
+
+        this.examForm.patchValue({
+          uncombinables: examDetails?.uncombinables?.map((u) => u?.toString()),
+        });
+
         this.loading$$.next(false);
         this.examDetails$$.next(examDetails);
       });
 
+    this.examApiSvc.exams$
+      .pipe(
+        map((exams) => exams.filter((exam) => exam?.status && +exam.id !== (+this.examID ?? 0))),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe((exams) => {
+        this.exams$$.next([...exams.map(({ id, name }) => ({ name, value: id?.toString() }))]);
+        this.cdr.detectChanges();
+      });
+
     this.staffApiSvc.staffList$
       .pipe(
-        debounceTime(400),
+        debounceTime(0),
         map((staffs) => staffs.filter((staff) => staff.status)),
         takeUntil(this.destroy$$),
       )
@@ -232,18 +250,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         this.secretaries$$.next([...secretaries]);
         this.mandatoryStaffs$$.next([...mandatory]);
 
-        console.log('staffs created nursing', nursing);
-        console.log('staffs created radiologists', radiologists);
-        console.log('staffs created sec', secretaries);
-      });
-
-    this.examApiSvc.exams$
-      .pipe(
-        map((exams) => exams.filter((exam) => exam?.status)),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((exams) => {
-        this.exams = exams.map(({ id, name }) => ({ name, value: id }));
+        this.cdr.detectChanges();
       });
 
     this.roomApiSvc
@@ -270,8 +277,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     const mandatory: string[] = [];
 
     if (examDetails?.users?.length) {
-      console.log('create form', examDetails.users);
-
       examDetails.users.forEach((u) => {
         if (u.isMandate) {
           mandatory.push(u.id.toString());
@@ -295,23 +300,21 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       });
     }
 
-    console.log('create form nursing', nursing);
-
     this.examForm = this.fb.group({
       name: [examDetails?.name, [Validators.required]],
       expensive: [examDetails?.expensive, [Validators.required, Validators.min(1)]],
       roomType: [null, [Validators.required]],
       roomsForExam: this.fb.array([]),
       info: [examDetails?.info, []],
-      uncombinables: [examDetails?.uncombinables, []],
+      uncombinables: [[...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])], []],
       mandatoryStaffs: [mandatory, []],
-      assistantCount: [examDetails?.assistantCount ?? '0', []],
+      assistantCount: [examDetails?.assistantCount?.toString() ?? '0', []],
       assistants: [assistants, []],
-      radiologistCount: [examDetails?.radiologistCount ?? '0', []],
+      radiologistCount: [examDetails?.radiologistCount?.toString() ?? '0', []],
       radiologists: [radiologists, []],
-      nursingCount: [examDetails?.nursingCount ?? '0', []],
+      nursingCount: [examDetails?.nursingCount?.toString() ?? '0', []],
       nursing: [nursing, []],
-      secretaryCount: [examDetails?.secretaryCount ?? '0', []],
+      secretaryCount: [examDetails?.secretaryCount?.toString() ?? '0', []],
       secretaries: [secretaries, []],
       selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceAvailabilityToggle: [!!examDetails?.practiceAvailability?.length, []],
@@ -319,7 +322,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       practiceAvailability: this.fb.group({}),
     });
 
-    console.log('formValues', this.formValues);
+    this.cdr.detectChanges();
 
     if (examDetails?.practiceAvailability?.length) {
       const weekdays = new Set([0, 1, 2, 3, 4, 5, 6]);
@@ -500,8 +503,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     if (!validInput) {
       return;
     }
-
-    console.log(totalRoomExpensive, expensive);
 
     this.formErrors.expensiveErr = totalRoomExpensive !== expensive;
   }
@@ -725,8 +726,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       createExamRequestData.availabilityType = AvailabilityType.Unavailable;
     }
 
-    console.log(createExamRequestData);
-
     if (this.edit) {
       this.examApiSvc
         .updateExam$(createExamRequestData)
@@ -935,15 +934,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   private checkStaffCountValidity(control: AbstractControl | null, countControl: AbstractControl | null, errorName: string) {
     if (!countControl?.value || (countControl.value && Number.isNaN(+countControl.value))) {
-      console.log('no value', countControl?.value);
       return;
     }
 
-    console.log(control?.value?.length, +countControl.value);
-
     // (+countControl.value === 0 && control?.value?.length > 0)
     if (control?.value?.length < +countControl.value) {
-      console.log(control?.value?.length, +countControl.value);
       toggleControlError(control, errorName);
       return;
     }

@@ -126,7 +126,7 @@
         </dfm-text-area>
 
         <div class="d-flex flex-1 dfm-gap-24">
-          <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1"
+          <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1" *ngIf="exams$$ | async as exams"
                [ngClass]="{ 'dfm-mb-32': uncombinableDropdown.value?.length }">
             <dfm-input-dropdown #uncombinableDropdown size="md" [multiple]="true"
                                 [placeholder]="!!uncombinableDropdown.value?.length ? uncombinableDropdown.value.length + ' Selected' : 'Select Exam'"
