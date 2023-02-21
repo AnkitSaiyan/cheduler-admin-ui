@@ -20,6 +20,10 @@ section.vw-ex-section3  {
 }
 
 @media (max-width: 680px) {
+  section.vw-ex-section3 {
+    max-height: 100%;
+  }
+
   .vw-ex-main-wrapper {
     padding: 0;
   }
@@ -42,7 +46,7 @@ section.vw-ex-section3  {
   }
 
   section.vw-ex-section2 {
-    margin-top: 56px;
+    margin-top: 64px;
   }
 
   section.vw-ex-section3 {
