@@ -18,7 +18,7 @@
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper ab-li-button-dropdown-group">
-        <div class="dfm-button-icon-bg-transparent">
+        <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
           <dfm-button-icon
             color="tertiary-gray"
             size="md"
@@ -62,7 +62,7 @@
         <dfm-table-body-cell>{{ item.startedAt | date: 'short' | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.endedAt | date: 'short' | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
-          <div class="text-truncate ab-li-info-cell"> {{ item.isRepeat | dashIfNothing }} </div>
+          <div class="text-truncate ab-li-info-cell"> {{ item.priority | dashIfNothing }} </div>
         </dfm-table-body-cell>
 
         <dfm-table-body-cell>

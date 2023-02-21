@@ -12,6 +12,7 @@ import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-sl
 import { getUserTypeEnum } from 'src/app/shared/utils/getEnums';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
+import { RepeatType } from 'src/app/shared/models/absence.model';
 
 @Component({
   selector: 'dfm-view-priority-slots',
@@ -22,6 +23,8 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
   public prioritySlotDetails$$ = new BehaviorSubject<PrioritySlot | undefined>(undefined);
 
   public userType = getUserTypeEnum();
+
+  public repeatType = RepeatType;
 
   constructor(
     private routerStateSvc: RouterStateService,
@@ -65,9 +68,16 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
       });
   }
 
-  public openEditPriorityModal() {
+  public openEditPriorityModal(prioritySlotID: number) {
+    this.priorityApiSvc.getPrioritySlotsByID(prioritySlotID).pipe(takeUntil(this.destroy$$)).subscribe((priorityDetail) => {
+      console.log('priorityDetail: ', priorityDetail);
+      this.prioritySlotDetails$$.next(priorityDetail);  
+    });
+
+
+    console.log('this.prioritySlotDetails$$: ', this.prioritySlotDetails$$.value);
     this.modalSvc.open(AddPrioritySlotsComponent, {
-      data: { edit: !!this.prioritySlotDetails$$.value?.id, priorityDetails: { ...this.prioritySlotDetails$$.value } },
+      data: { edit: !!this.prioritySlotDetails$$.value?.id, prioritySlotDetails: { ...this.prioritySlotDetails$$.value } },
       options: {
         size: 'lg',
         centered: true,

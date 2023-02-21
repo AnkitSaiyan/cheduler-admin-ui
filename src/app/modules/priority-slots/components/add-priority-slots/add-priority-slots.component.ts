@@ -89,6 +89,12 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   public isRepeatClicked: boolean = true;
   staffDetails: User[] =[];
 
+  public minFromDate = {
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
+    day: new Date().getDate(),
+  };
+
   constructor(
     private modalSvc: ModalService,
     private fb: FormBuilder,
@@ -111,8 +117,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     this.modalSvc.dialogData$.pipe(take(1)).subscribe((data) => {
       this.modalData = data;
       this.createForm(this.modalData?.prioritySlotDetails);
-      console.log('this.modalData?.prioritySlotDetails: ', this.modalData?.prioritySlotDetails);
-      // console.log("this.prioritySlotForm.get('isRepeat')?.value: ", this.prioritySlotForm.get('isRepeat')?.value);
+      console.log("this.prioritySlotForm.get('isRepeat')?.value: ", this.prioritySlotForm.get('isRepeat')?.value);
     });
 
     this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
@@ -166,7 +171,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
     if (prioritySlotDetails?.startedAt) {
       const date = new Date(prioritySlotDetails.startedAt);
-      slotStartTime = this.datePipe.transform(date, 'hh:mmaa');
+      slotStartTime = this.datePipe.transform(date, 'HH:mm');
 
       if (slotStartTime) {
         this.startTimes.push({ name: slotStartTime, value: slotStartTime });
@@ -175,7 +180,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
     if (prioritySlotDetails?.endedAt) {
       const date = new Date(prioritySlotDetails.endedAt);
-      slotEndTime = this.datePipe.transform(date, 'hh:mmaa');
+      slotEndTime = this.datePipe.transform(date, 'HH:mm');
       this.endTimes.push({ name: slotEndTime, value: slotEndTime });
     }
 
@@ -184,16 +189,14 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       this.isClicked = false;
     }
 
-    if (this.modalData?.prioritySlotDetails && !prioritySlotDetails?.isRepeat) {
-      this.isRepeatClicked = true;
-      this.isClicked = false;
-    }
+    // if (this.modalData?.prioritySlotDetails && prioritySlotDetails?.isRepeat) {
+    //   this.isRepeatClicked = false;
+    //   this.isClicked = true;
+    // }
 
 
-    const assistants: string[] = [];
+
     const radiologists: string[] = [];
-    const nursing: string[] = [];
-    const secretaries: string[] = [];
 
     if (this.staffDetails.length) {
       console.log('this.staffDetails: ', this.staffDetails);
@@ -236,8 +239,8 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
 
       isRepeat: [!!prioritySlotDetails?.isRepeat, []],
-      slotStartTime: [prioritySlotDetails?.slotStartTime, [Validators.required]],
-      slotEndTime: [slotEndTime, [Validators.required]],
+      slotStartTime: [slotStartTime, [Validators.required]],
+      slotEndTime: [slotEndTime, []],
       priority: [prioritySlotDetails?.priority, [Validators.required]],
       repeatType: [prioritySlotDetails?.repeatType ?? null, []],
       repeatDays: [prioritySlotDetails?.repeatDays ? prioritySlotDetails.repeatDays.split(',') : '', []],
@@ -270,11 +273,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   public savePrioritySlot() {
-    if (this.prioritySlotForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.prioritySlotForm.updateValueAndValidity();
-      return;
-    }
 
     console.log(this.formValues);
 

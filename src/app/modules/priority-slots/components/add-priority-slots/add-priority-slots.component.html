@@ -15,7 +15,7 @@
   <section class="modal-body dfm-pb-24 ad-pr-section2">
     <form [formGroup]="prioritySlotForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-center ad-pr-dates">
-        <div class="ad-pr-from-date flex-1">
+        <!-- <div class="ad-pr-from-date flex-1"> 
           <span class="text-sm font-weight-medium dfm-text-main-700">From *</span>
 
           <div class="d-flex align-items-center dfm-gap-16 flex-1">
@@ -27,6 +27,14 @@
                 <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date" (click)="startedAt.toggle()"></dfm-button-icon>
               </div>
             </div>
+          </div>
+          <div>
+            <dfm-button-icon
+              color="tertiary-gray"
+              size="md"
+              icon="calendar-date"
+              (click)="startedAt.toggle()"
+            ></dfm-button-icon>
           </div>
         </div>
 
@@ -44,77 +52,136 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
-        <div class="d-flex dfm-gap-32 align-items-center ad-pr-dates my-3">
-          <div class="ad-pr-from-date flex-1" >
-            <span class="text-sm font-weight-medium dfm-text-main-700">Start Time</span>
-  
-            <div class="d-flex align-items-center dfm-gap-16">
+        <div class="ad-ab-from-date flex-1 max-w-5">
+          <span class="text-sm font-weight-medium dfm-text-main-700">From *</span>
+
+          <div class="d-flex align-items-start dfm-gap-16 flex-1">
+            <div class="flex-1 d-flex flex-column">
               <div class="dfm-button-group-wrapper h-fit flex-1">
                 <div class="input-as-dfm-input flex-1">
-                  <dfm-input-dropdown
-                    #slotStartTime
-                    [items]="startTimes"
-                    [typeToSearch]="true"
-                    [typeToSearchText]="slotStartTime.value"
-                    (searchInput)="handleTimeInput($event, 'slotStartTime')"
-                    formControlName="slotStartTime"
-                    size="md"
-                    placeholder="hh:mm"
-                  >
-                  </dfm-input-dropdown>
+                  <input
+                    class="w-full min-w-128"
+                    formControlName="startedAt"
+                    placeholder="yyyy-mm-dd"
+                    ngbDatepicker
+                    #startedAt="ngbDatepicker"
+                    [minDate]="minFromDate"
+                  />
+                </div>
+                <div>
+                  <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date" (click)="startedAt.toggle()"></dfm-button-icon>
                 </div>
               </div>
+
+              <small
+                class="validation-error"
+                *ngIf="prioritySlotForm.get('startedAt')?.hasError('required') && prioritySlotForm.get('startedAt')?.touched"
+              >
+                This field is Required.
+              </small>
+            </div>
+
+            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
+              <dfm-input-dropdown
+                #startTime
+                [items]="startTimes"
+                [typeToSearch]="true"
+                [typeToSearchText]="startTime.value"
+                (searchInput)="handleTimeInput($event, 'slotStartTime')"
+                (focusout)="handleTimeInput(startTime.search, 'slotStartTime')"
+                formControlName="slotStartTime"
+                size="md"
+                placeholder="hh:mm"
+              >
+              </dfm-input-dropdown>
             </div>
           </div>
-  
-          <div class="ad-pr-to-date flex-1">
-            <span class="text-sm font-weight-medium dfm-text-main-700">End Time</span>
-  
-            <div class="d-flex align-items-center dfm-gap-16">
-              <div class="dfm-button-group-wrapper flex-1">
-                <div class="input-as-dfm-input flex-1">
-                  <dfm-input-dropdown
-                    #slotEndTime
-                    [items]="endTimes"
-                    [typeToSearch]="true"
-                    [typeToSearchText]="slotEndTime.value"
-                    (searchInput)="handleTimeInput($event, 'slotEndTime')"
-                    formControlName="slotEndTime"
-                    size="md"
-                    placeholder="hh:mm"
-                  >
-                  </dfm-input-dropdown>
-                </div>
-              </div>
-            </div>
-          </div>
-  
-          <div class="d-flex flex-column dfm-gap-16 flex-1">
-            <span
-              class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
-            <div class="w-fit d-flex justify-content-between dfm-gap-24">
-              <dfm-radio-button class="font-weight-normal" label="High" [checkedValue]="priorityType.High"
-                                formControlName="priority"></dfm-radio-button>
-              <dfm-radio-button class="font-weight-normal" label="Medium" [checkedValue]="priorityType.Medium"
-                                formControlName="priority"></dfm-radio-button>
-              <dfm-radio-button class="font-weight-normal" label="Low" [checkedValue]="priorityType.Low"
-                                formControlName="priority"></dfm-radio-button>
-            </div>
-          </div>
+
+          <small class="validation-error" *ngIf="startTime.control.hasError('time')">Start Time should be smaller than End Time</small>
         </div>
 
-      <div class="d-flex dfm-gap-32 flex-wrap ad-pr-radio-group">
-        <div class="d-flex flex-column dfm-gap-16 flex-1 ad-pr-repeat-radio">
+        <div class="ad-ab-to-date flex-1 max-w-5">
+          <span class="text-sm font-weight-medium dfm-text-main-700" *ngIf="!(isRepeatClicked && !isClicked) || prioritySlotForm.get('isRepeat')?.value">Until *</span>
+
+          <div class="d-flex align-items-start dfm-gap-16" *ngIf="!(isRepeatClicked && !isClicked) || prioritySlotForm.get('isRepeat')?.value">
+            <div class="flex-1 d-flex flex-column">
+              <div class="dfm-button-group-wrapper flex-1">
+                <div class="input-as-dfm-input flex-1">
+                  <input
+                    class="w-full min-w-128"
+                    formControlName="endedAt"
+                    placeholder="yyyy-mm-dd"
+                    ngbDatepicker
+                    #endedAt="ngbDatepicker"
+                    [minDate]="formValues.startedAt"
+                    [required]="formValues.isRepeat"
+                  />
+                </div>
+                <div>
+                  <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date" (click)="endedAt.toggle()"></dfm-button-icon>
+                </div>
+              </div>
+
+              <small
+                class="validation-error"
+                *ngIf="prioritySlotForm.get('endedAt')?.hasError('required') && prioritySlotForm.get('endedAt')?.touched"
+              >
+                This field is Required.
+              </small>
+            </div>
+
+            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
+              <dfm-input-dropdown
+                #endTime
+                [items]="endTimes"
+                [typeToSearch]="true"
+                [typeToSearchText]="endTime.value"
+                (searchInput)="handleTimeInput($event, 'slotEndTime')"
+                (focusout)="handleTimeInput(startTime.search, 'slotEndTime')"
+                [required]="formValues.isRepeat"
+                formControlName="slotEndTime"
+                size="md"
+                placeholder="hh:mm"
+              >
+              </dfm-input-dropdown>
+            </div>
+            <small class="validation-error" *ngIf="endTime.control.hasError('time')"> End Time should be greater than Start Time </small>
+          </div>
+          </div>
+      </div>
+
+   
+        
+        
+      <div class="d-flex dfm-gap-32 flex-wrap ad-ab-radio-group">
+        <div class="d-flex flex-column dfm-gap-16 flex-1 ad-ab-repeat-radio">
           <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Repeat</span>
 
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-radio-button class="font-weight-normal" label="All Day" [checkedValue]="isClicked" formControlName="isRepeat" (click)="setRepeatValue()"></dfm-radio-button>
-            <dfm-radio-button class="font-weight-normal" label="Repeat" [checkedValue]="isRepeatClicked" formControlName="isRepeat" (click)="setRepeatValue()"></dfm-radio-button>
+            <dfm-radio-button class="font-weight-normal" label="All Day" [checkedValue]="isClicked" (click)="setRepeatValue()"
+                              formControlName="isRepeat"></dfm-radio-button>
+            <dfm-radio-button class="font-weight-normal" label="Repeat" [checkedValue]="isRepeatClicked" (click)="setRepeatValue()"
+                              formControlName="isRepeat"></dfm-radio-button>
+          </div>
+        </div>
+
+        <div class="d-flex flex-column dfm-gap-16 flex-1">
+          <span
+            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
+          <div class="w-fit d-flex justify-content-between dfm-gap-24">
+            <dfm-radio-button class="font-weight-normal" label="High" [checkedValue]="priorityType.High"
+                              formControlName="priority"></dfm-radio-button>
+            <dfm-radio-button class="font-weight-normal" label="Medium" [checkedValue]="priorityType.Medium"
+                              formControlName="priority"></dfm-radio-button>
+            <dfm-radio-button class="font-weight-normal" label="Low" [checkedValue]="priorityType.Low"
+                              formControlName="priority"></dfm-radio-button>
           </div>
         </div>
       </div>
+
+      
 
       <ng-container *ngIf="formValues.isRepeat">
         <div class="d-flex dfm-gap-32 flex-wrap align-items-start ad-pr-repeat-form">
@@ -166,7 +233,10 @@
         <div class="d-flex flex-column dfm-gap-16 flex-1 ad-pr-repeat-radio">
           <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Radiologist</span>
 
-          <div class="w-fit d-flex justify-content-between dfm-gap-24 dfm-button-group-wrapper" *ngIf="staffsGroupedByTypes$$ | async as staffsGroupedByType">
+          <div
+            class="w-fit d-flex justify-content-between dfm-gap-24 dfm-button-group-wrapper"
+            *ngIf="staffsGroupedByTypes$$ | async as staffsGroupedByType"
+          >
             <dfm-input-dropdown
               #repeatEveryDropdown
               [items]="staffsGroupedByType.radiologists"

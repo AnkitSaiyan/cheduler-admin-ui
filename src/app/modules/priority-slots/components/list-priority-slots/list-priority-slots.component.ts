@@ -1,8 +1,8 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TableItem } from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -20,6 +20,7 @@ import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
   styleUrls: ['./list-priority-slots.component.scss']
 })
 export class ListPrioritySlotsComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  clipboardData: string = '';
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -28,7 +29,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Start Date', 'End Date', 'Repeat', 'Actions'];
+  public columns: string[] = ['Start Date', 'End Date', 'Priority', 'Actions'];
 
   public downloadItems: any[] = [];
 
@@ -37,13 +38,13 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
   public filteredPrioritySlots$$: BehaviorSubject<any[]>;
 
   constructor(
-    private absenceApiSvc: AbsenceApiService,
     private priorityApiSvc: PrioritySlotApiService,
     private notificationSvc: NotificationDataService,
     private router: Router,
     private route: ActivatedRoute,
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.prioritySlots$$ = new BehaviorSubject<any[]>([]);
@@ -89,7 +90,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
   private handleSearch(searchText: string): void {
     this.filteredPrioritySlots$$.next([
       ...this.prioritySlots$$.value.filter((priority) => {
-        return priority.name?.toLowerCase()?.includes(searchText);
+        return priority.startedAt?.toLowerCase()?.includes(searchText) || priority.endedAt?.toLowerCase()?.includes(searchText) || priority.priority?.toLowerCase()?.includes(searchText);
       }),
     ]);
   }
@@ -118,7 +119,21 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+      this.filteredPrioritySlots$$.value.forEach((prioritySlot: PrioritySlot) => {
+        dataString += `${prioritySlot.startedAt}\t${prioritySlot.endedAt}\t${prioritySlot.priority}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public navigateToViewAbsence(e: TableItem) {
