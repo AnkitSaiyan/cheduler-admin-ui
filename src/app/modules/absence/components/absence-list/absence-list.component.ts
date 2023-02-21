@@ -30,7 +30,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Name', 'Start Date', 'End Date', 'Absence Info', 'Actions'];
+  public columns: string[] = ['Title', 'Start Date', 'End Date', 'Absence Info', 'Actions'];
 
   public downloadItems: DownloadType[] = [];
 
