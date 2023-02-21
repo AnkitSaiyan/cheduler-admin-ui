@@ -12,13 +12,13 @@
       <dfm-input
         class="flex-1 ab-li-search"
         size="md"
-        placeholder="Search by Absence Name"
+        placeholder="Search by Absence Name, Date"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper ab-li-button-dropdown-group">
-        <div class="dfm-button-icon-bg-transparent">
+        <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
           <dfm-button-icon
             color="tertiary-gray"
             size="md"
@@ -53,7 +53,7 @@
 
   <dfm-input
     size="md"
-    placeholder="Search by Name"
+    placeholder="Search by Name, Date"
     icon="search-sm"
     class="w-full hidden ab-li-search-mv"
     [formControl]="searchControl"

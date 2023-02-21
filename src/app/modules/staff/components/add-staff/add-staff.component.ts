@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, distinctUntilChanged, filter, map, of, switchMap, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, map, of, switchMap, takeUntil, tap } from 'rxjs';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User, UserType } from '../../../../shared/models/user.model';
@@ -52,7 +52,7 @@ interface FormValues {
 export class AddStaffComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public addStaffForm!: FormGroup;
 
-  public exams$$ = new BehaviorSubject<any[]>([]);
+  public exams$$ = new BehaviorSubject<NameValue[] | null>(null);
 
   public staffTypes$$ = new BehaviorSubject<NameValue[]>([]);
 
@@ -152,7 +152,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     this.examApiSvc.exams$
       .pipe(
-        map((exams) => exams.filter((exam) => !!exam.status).map(({ name, id }) => ({ name, value: id }))),
+        map((exams) => exams.filter((exam) => !!exam.status).map(({ name, id }) => ({ name, value: id.toString() }))),
         takeUntil(this.destroy$$),
       )
       .subscribe((exams) => {
@@ -185,7 +185,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       telephone: [staffDetails?.telephone, []],
       userType: [staffDetails?.userType, [Validators.required]],
       info: [staffDetails?.info, []],
-      examList: [staffDetails?.examList, []],
+      examList: [staffDetails?.exams?.map((exam) => exam?.id?.toString()), []],
       status: [staffDetails?.status ?? Status.Active, []],
       selectedWeekday: [this.weekdayEnum.ALL, []],
       availabilityType: [!!staffDetails?.availabilityType, []],
@@ -227,6 +227,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     fg.get('dayStart')
       ?.valueChanges.pipe(
         filter((time) => !!time),
+        debounceTime(0),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => this.handleError(value as string, fg.get('dayStart')));
@@ -234,6 +235,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     fg.get('dayEnd')
       ?.valueChanges.pipe(
         filter((time) => !!time),
+        debounceTime(0),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => this.handleError(value as string, fg.get('dayEnd')));

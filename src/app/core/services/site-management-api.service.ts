@@ -29,7 +29,7 @@ export class SiteManagementApiService {
     formData.append('cancelAppointmentTime', String(requestData.cancelAppointmentTime));
     formData.append('ReminderTime', String(requestData.reminderTime));
     if (requestData.file) {
-      formData.append('logo', requestData.file);
+      formData.append('file', requestData.file);
     }
 
     return this.http.post<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`, formData).pipe(map((response) => response.data));

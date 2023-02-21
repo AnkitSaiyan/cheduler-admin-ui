@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
+import { read } from '@popperjs/core';
 import { SiteManagement, SiteManagementRequestData } from '../../../shared/models/site-management.model';
 import { TimeDurationType } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
@@ -56,7 +57,12 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     },
   ];
 
-  constructor(private fb: FormBuilder, private notificationSvc: NotificationDataService, private siteManagementApiSvc: SiteManagementApiService) {
+  constructor(
+    private fb: FormBuilder,
+    private notificationSvc: NotificationDataService,
+    private siteManagementApiSvc: SiteManagementApiService,
+    private cdr: ChangeDetectorRef,
+  ) {
     super();
   }
 
@@ -78,30 +84,30 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
   private createForm(siteManagementData?: SiteManagement | undefined): void {
     let duration = 0;
     let reminderDuration = 0;
-    let durationType: TimeDurationType = 'Hours';
-    let reminderDurationTYpe: TimeDurationType = 'Hours';
+    let durationType: TimeDurationType = 'Minutes';
+    let reminderDurationTYpe: TimeDurationType = 'Minutes';
     let introductoryTextObj;
 
     if (siteManagementData) {
       if (siteManagementData.cancelAppointmentTime) {
         duration = siteManagementData.cancelAppointmentTime;
-        if (duration < 1) {
-          duration *= 60;
-          durationType = 'Minutes';
-        } else if (duration >= 24) {
-          duration /= 24;
+        if (duration >= 1440 && duration % 1440 === 0) {
+          duration /= 1440;
           durationType = 'Days';
+        } else if (duration >= 60 && duration % 60 === 0) {
+          duration /= 60;
+          durationType = 'Hours';
         }
       }
 
       if (siteManagementData.reminderTime) {
         reminderDuration = siteManagementData.reminderTime;
-        if (reminderDuration < 1) {
-          reminderDuration *= 60;
-          reminderDurationTYpe = 'Minutes';
-        } else if (reminderDuration >= 24) {
-          reminderDuration /= 24;
+        if (reminderDuration >= 1440 && reminderDuration % 1440 === 0) {
+          reminderDuration /= 1440;
           reminderDurationTYpe = 'Days';
+        } else if (reminderDuration >= 60 && reminderDuration % 60 === 0) {
+          reminderDuration /= 60;
+          reminderDurationTYpe = 'Hours';
         }
       }
 
@@ -133,6 +139,22 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       reminderTime: [reminderDuration, []],
       reminderTimeType: [reminderDurationTYpe, []],
     });
+
+    if (siteManagementData?.logo) {
+      const reader = new FileReader();
+
+      reader.readAsDataURL(siteManagementData.logo);
+
+      this.siteManagementForm.patchValue({
+        file: {
+          file: reader.result,
+          fileBlob: siteManagementData.logo,
+          loading: false,
+        },
+      });
+
+      this.cdr.detectChanges();
+    }
   }
 
   public saveSiteManagementData(): void {
@@ -161,20 +183,20 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       disableWarningText: rest.disableAppointment ? rest.disableWarningText : null,
       cancelAppointmentTime: (function () {
         switch (cancelAppointmentType) {
-          case 'Minutes':
-            return rest.cancelAppointmentTime / 60;
+          case 'Hours':
+            return rest.cancelAppointmentTime * 60;
           case 'Days':
-            return rest.cancelAppointmentTime * 24;
+            return rest.cancelAppointmentTime * 1440;
           default:
             return rest.cancelAppointmentTime;
         }
       })(),
       reminderTime: (function () {
         switch (reminderTimeType) {
-          case 'Minutes':
-            return rest.reminderTime / 60;
+          case 'Hours':
+            return rest.reminderTime * 60;
           case 'Days':
-            return rest.reminderTime * 24;
+            return rest.reminderTime * 1440;
           default:
             return rest.reminderTime;
         }

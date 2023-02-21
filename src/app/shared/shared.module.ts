@@ -14,6 +14,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { NgChartsModule } from 'ng2-charts';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { DestroyableComponent } from './components/destroyable.component';
 import { StatusNamePipe } from './pipes/status-name.pipe';
 import { DashIfNothingPipe } from './pipes/dash-if-nothing.pipe';
@@ -108,6 +109,7 @@ import { NumberArrayPipe } from './pipes/number-array.pipe';
     EmailInputDirective,
     NumberInputDirective,
     NumberArrayPipe,
+    ClipboardModule,
   ],
 })
 export class SharedModule {}
