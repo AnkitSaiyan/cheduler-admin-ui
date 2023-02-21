@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { SiteManagement, SiteManagementRequestData } from '../../shared/models/site-management.model';
@@ -32,7 +32,10 @@ export class SiteManagementApiService {
       formData.append('file', requestData.file);
     }
 
-    return this.http.post<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`, formData).pipe(map((response) => response.data));
+    return this.http.post<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`, formData).pipe(
+      map((response) => response.data),
+      // tap(() => this.refreshSiteManagement$.next()),
+    );
   }
 
   public get siteManagementData$(): Observable<SiteManagement> {

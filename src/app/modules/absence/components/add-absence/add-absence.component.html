@@ -24,7 +24,8 @@
   </section>
 
   <section class="modal-body dfm-pb-24 ad-ab-section2">
-    <form [formGroup]="absenceForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16" *ngIf="absence$$ | async as absence">
+    <form [formGroup]="absenceForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16"
+          *ngIf="absence$$ | async as absence">
       <div class="max-w-5 ad-ab-absence-name">
         <dfm-input class="flex-1" size="md" placeholder="Enter absence title" label="Title *" formControlName="name">
         </dfm-input>
@@ -44,7 +45,6 @@
                     placeholder="yyyy-mm-dd"
                     ngbDatepicker
                     #startedAt="ngbDatepicker"
-                    [minDate]="minFromDate"
                   />
                 </div>
                 <div>
@@ -195,7 +195,8 @@
               (focusout)="handleFocusOut()"
             >
             </dfm-input>
-            <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched">Repeat frequency
+            <small class="validation-error"
+                   *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched">Repeat frequency
               should be greater than 0</small>
           </div>
 
