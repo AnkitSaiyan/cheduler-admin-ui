@@ -72,7 +72,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
   public openEditAbsenceModal() {
     this.modalSvc.open(AddAbsenceComponent, {
-      data: { edit: !!this.absenceDetails$$.value?.id, absenceDetails: { ...this.absenceDetails$$.value } },
+      data: { edit: !!this.absenceDetails$$.value?.id, absenceID: this.absenceDetails$$.value?.id },
       options: {
         size: 'xl',
         centered: true,

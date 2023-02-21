@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { SiteManagement, SiteManagementRequestData } from '../../shared/models/site-management.model';
@@ -18,8 +18,8 @@ export class SiteManagementApiService {
   public saveSiteManagementData$(requestData: SiteManagementRequestData): Observable<SiteManagement> {
     const formData = new FormData();
     formData.append('Name', requestData.name);
-    formData.append('DisabledAppointment', String(requestData.disableAppointment));
-    formData.append('DosabledWarningText', String(requestData.disableWarningText));
+    formData.append('DisableAppointment', String(requestData.disableAppointment));
+    formData.append('DisableWarningText', String(requestData.disableWarningText));
     formData.append('IntroductoryText', requestData.introductoryText);
     formData.append('DoctorReferringConsent', String(requestData.doctorReferringConsent));
     formData.append('Address', requestData.address);
@@ -29,10 +29,13 @@ export class SiteManagementApiService {
     formData.append('cancelAppointmentTime', String(requestData.cancelAppointmentTime));
     formData.append('ReminderTime', String(requestData.reminderTime));
     if (requestData.file) {
-      formData.append('file', requestData.file);
+      formData.append('File', requestData.file);
     }
 
-    return this.http.post<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`, formData).pipe(map((response) => response.data));
+    return this.http.post<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`, formData).pipe(
+      map((response) => response.data),
+      // tap(() => this.refreshSiteManagement$.next()),
+    );
   }
 
   public get siteManagementData$(): Observable<SiteManagement> {

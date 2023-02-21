@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
-import { read } from '@popperjs/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SiteManagement, SiteManagementRequestData } from '../../../shared/models/site-management.model';
 import { TimeDurationType } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
@@ -24,7 +24,7 @@ interface FormValues {
   address: string;
   email: string;
   telephone: number;
-  file: { file: ArrayBuffer | string; loading: boolean; fileBlob: Blob };
+  file: { file: ArrayBuffer | string | SafeResourceUrl; loading: boolean; fileBlob: Blob };
   isSlotsCombinable: boolean;
   reminderTime: number;
   reminderTimeType: TimeDurationType;
@@ -62,14 +62,15 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     private notificationSvc: NotificationDataService,
     private siteManagementApiSvc: SiteManagementApiService,
     private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer,
   ) {
     super();
   }
 
   public ngOnInit(): void {
     this.siteManagementApiSvc.siteManagementData$.pipe(takeUntil(this.destroy$$)).subscribe((siteManagementData) => {
-      this.siteManagementData$$.next(siteManagementData ?? {});
       this.createForm(siteManagementData);
+      this.siteManagementData$$.next(siteManagementData ?? {});
     });
   }
 
@@ -87,6 +88,15 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     let durationType: TimeDurationType = 'Minutes';
     let reminderDurationTYpe: TimeDurationType = 'Minutes';
     let introductoryTextObj;
+    const file: {
+      loading: boolean;
+      fileBlob: Blob | null;
+      file: string | ArrayBuffer | SafeResourceUrl | null;
+    } = {
+      loading: false,
+      file: null,
+      fileBlob: null,
+    };
 
     if (siteManagementData) {
       if (siteManagementData.cancelAppointmentTime) {
@@ -118,11 +128,19 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
           console.log(e);
         }
       }
+
+      if (siteManagementData?.logo) {
+        file.file = this.sanitizer.bypassSecurityTrustResourceUrl(`data:image/png;base64, ${siteManagementData?.logo}`);
+
+        fetch(`data:image/png;base64, ${siteManagementData?.logo}`)
+          .then((res) => res.blob())
+          .then((res) => (file.fileBlob = res));
+      }
     }
 
     this.siteManagementForm = this.fb.group({
       name: [siteManagementData?.name ?? '', [Validators.required]],
-      file: [{ file: siteManagementData?.logo, loading: false, fileBlob: null }, []],
+      file: [{ ...file }, []],
       introductoryText: [siteManagementData?.introductoryText ?? null, []],
       heading: [introductoryTextObj?.heading ?? '', []],
       subHeading: [introductoryTextObj?.subHeading ?? '', []],
@@ -140,21 +158,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       reminderTimeType: [reminderDurationTYpe, []],
     });
 
-    if (siteManagementData?.logo) {
-      const reader = new FileReader();
-
-      reader.readAsDataURL(siteManagementData.logo);
-
-      this.siteManagementForm.patchValue({
-        file: {
-          file: reader.result,
-          fileBlob: siteManagementData.logo,
-          loading: false,
-        },
-      });
-
-      this.cdr.detectChanges();
-    }
+    this.cdr.detectChanges();
   }
 
   public saveSiteManagementData(): void {
@@ -175,7 +179,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
     this.submitting$$.next(true);
 
-    const { heading, subHeading, bodyText, file, cancelAppointmentType, reminderTimeType, isSlotsCombinable, ...rest } = this.formValues;
+    const { heading, subHeading, bodyText, file, cancelAppointmentType, reminderTimeType, ...rest } = this.formValues;
 
     const requestData: SiteManagementRequestData = {
       ...rest,
@@ -201,7 +205,6 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
             return rest.reminderTime;
         }
       })(),
-      isSlotsCombinable: false,
     };
 
     requestData.introductoryText = JSON.stringify({
@@ -234,14 +237,16 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
   public onFileChange(event: Event) {
     const { files } = event.target as HTMLInputElement;
 
+    console.log(files);
     if (files && files?.length) {
-      const reader = new FileReader();
-      reader.readAsDataURL(files[0]);
       const fileControl = this.siteManagementForm.get('file');
+
       fileControl?.setValue({
         file: null,
         loading: true,
       });
+
+      const reader = new FileReader();
 
       reader.onload = (e: any) => {
         fileControl?.setValue({
@@ -250,6 +255,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
           loading: false,
         });
       };
+
+      reader.readAsDataURL(files[0]);
     }
   }
 

@@ -1,9 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, map, of, switchMap, takeUntil, tap } from 'rxjs';
 import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
-import { User, UserType } from '../../../../shared/models/user.model';
+import { AvailabilityType, User, UserType } from '../../../../shared/models/user.model';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
@@ -93,6 +93,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     private routerStateSvc: RouterStateService,
     private nameValuePipe: NameValuePairPipe,
     private timeInIntervalPipe: TimeInIntervalPipe,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     const state = this.router.getCurrentNavigation()?.extras?.state;
@@ -226,16 +227,16 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     fg.get('dayStart')
       ?.valueChanges.pipe(
-        filter((time) => !!time),
         debounceTime(0),
+        filter((time) => !!time),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => this.handleError(value as string, fg.get('dayStart')));
 
     fg.get('dayEnd')
       ?.valueChanges.pipe(
-        filter((time) => !!time),
         debounceTime(0),
+        filter((time) => !!time),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => this.handleError(value as string, fg.get('dayEnd')));
@@ -319,7 +320,17 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
   public handleRadioButtonChange(toggle: boolean): void {
     //  set practice availability toggle
-    this.addStaffForm.patchValue({ practiceAvailabilityToggle: toggle });
+    this.addStaffForm.patchValue({ practiceAvailabilityToggle: toggle }, { emitEvent: false });
+
+    if (toggle) {
+      this.addPracticeAvailabilityControls();
+
+      const controlsArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
+      this.handleSlotExistsError(controlsArrays);
+      this.handleInvalidSlotRangeError(controlsArrays);
+
+      this.cdr.detectChanges();
+    }
   }
 
   public selectWeekday(selectedWeekday: Weekday): void {
@@ -333,25 +344,43 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
   }
 
   public addSlot(controlArray: FormArray) {
-    controlArray.push(this.getPracticeAvailabilityFormGroup(this.getFormArrayName(controlArray)));
+    if (controlArray.controls.every((control) => control.value.dayStart && control.value.dayEnd)) {
+      controlArray.push(this.getPracticeAvailabilityFormGroup(this.getFormArrayName(controlArray)));
+    } else {
+      this.notificationSvc.showNotification('Please fill current slot before adding new', NotificationType.WARNING);
+    }
   }
 
   public removeSlot(controlArray: FormArray, i: number) {
     controlArray.removeAt(i);
+
+    const formArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
+    this.handleInvalidSlotRangeError(formArrays);
+    this.handleSlotExistsError(formArrays);
   }
 
   public saveStaff(): void {
     console.log(this.formValues);
 
-    if (this.addStaffForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.addStaffForm.markAsTouched();
-      return;
-    }
+    const requiredKeys: string[] = ['firstname', 'lastname', 'email', 'userType'];
+    let valid = true;
+
+    requiredKeys.forEach((key) => {
+      if (this.addStaffForm.get(key)?.invalid) {
+        this.addStaffForm.get(key)?.markAsTouched();
+        if (valid) {
+          valid = false;
+        }
+      }
+    });
 
     const controlArrays: FormArray[] = this.practiceAvailabilityWeekWiseControlsArray(true);
 
-    if (this.isFormInvalid(controlArrays)) {
+    if (valid) {
+      valid = !this.isPracticeFormInvalid(controlArrays);
+    }
+
+    if (!valid) {
       this.notificationSvc.showNotification('Form is not valid.', NotificationType.WARNING);
       return;
     }
@@ -362,27 +391,29 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     const addStaffReqData: AddStaffRequestData = {
       ...rest,
       availabilityType: +!!practiceAvailabilityToggle,
-      practiceAvailability: [
-        ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
-          (acc, formArray) => [
-            ...acc,
-            ...formArray.controls.reduce((a, control) => {
-              if (control.value.dayStart && control.value.dayEnd) {
-                return [
-                  ...a,
-                  {
-                    weekday: control.value.weekday,
-                    dayStart: control.value.dayStart,
-                    dayEnd: control.value.dayEnd,
-                  },
-                ];
-              }
-              return a;
-            }, [] as PracticeAvailability[]),
-          ],
-          [] as PracticeAvailability[],
-        ),
-      ],
+      practiceAvailability: practiceAvailabilityToggle
+        ? [
+            ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
+              (acc, formArray) => [
+                ...acc,
+                ...formArray.controls.reduce((a, control) => {
+                  if (control.value.dayStart && control.value.dayEnd) {
+                    return [
+                      ...a,
+                      {
+                        weekday: control.value.weekday,
+                        dayStart: control.value.dayStart,
+                        dayEnd: control.value.dayEnd,
+                      },
+                    ];
+                  }
+                  return a;
+                }, [] as PracticeAvailability[]),
+              ],
+              [] as PracticeAvailability[],
+            ),
+          ]
+        : [],
     };
 
     console.log(addStaffReqData.info);
@@ -394,7 +425,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       delete addStaffReqData.address;
     }
     if (!addStaffReqData.practiceAvailability?.length) {
-      delete addStaffReqData.practiceAvailability;
+      addStaffReqData.availabilityType = AvailabilityType.Unavailable;
     }
     if (this.staffID) {
       addStaffReqData.id = this.staffID;
@@ -436,7 +467,11 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     }
   }
 
-  private isFormInvalid(controlArrays: FormArray[]): boolean {
+  private isPracticeFormInvalid(controlArrays: FormArray[]): boolean {
+    if (!this.formValues.practiceAvailabilityToggle) {
+      return false;
+    }
+
     for (let i = 0; i < controlArrays.length; i++) {
       for (let j = 0; j < controlArrays[i].length; j++) {
         if (controlArrays[i].controls[j].get('dayStart')?.errors || controlArrays[i].controls[j].get('dayEnd')?.errors) {
@@ -491,7 +526,15 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
   private handleError(time: string, control: AbstractControl | null | undefined) {
     //  Handling invalid time input
+    this.handleInvalidTimeError(time, control);
 
+    // Handling slot errors
+    const controlArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
+    this.handleInvalidSlotRangeError(controlArrays);
+    this.handleSlotExistsError(controlArrays);
+  }
+
+  private handleInvalidTimeError(time: string, control: AbstractControl | null | undefined) {
     if (!time) {
       toggleControlError(control, this.invalidTimeError, false);
       return;
@@ -503,11 +546,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     }
 
     toggleControlError(control, this.invalidTimeError, false);
+  }
 
-    // Handling slot errors
-
-    const controlArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
-
+  private handleInvalidSlotRangeError(controlArrays: FormArray[]) {
     for (let i = 0; i < controlArrays.length; i++) {
       for (let j = 0; j < controlArrays[i].length; j++) {
         const dayStart = controlArrays[i].controls[j].get('dayStart');
@@ -525,10 +566,12 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         toggleControlError(dayEnd, this.invalidSlotRangeError, false);
       }
     }
+  }
 
+  private handleSlotExistsError(controlArrays: FormArray[]) {
     controlArrays.forEach((formArray) => {
       const { controls } = formArray;
-      if (formArray.length > 1 && controls[1].value.dayStart && controls[1].value.dayEnd) {
+      if (formArray.length > 1) {
         const sortedControls = [...controls].sort((a, b) => timeToNumber(a.value.daysStart) - timeToNumber(b.value.dayStart));
 
         const first = sortedControls[0];
@@ -550,6 +593,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
             }
           }
         }
+      } else if (formArray.length === 1) {
+        toggleControlError(controls[0].get('dayStart'), this.slotExistsError, false);
+        toggleControlError(controls[0].get('dayEnd'), this.slotExistsError, false);
       }
     });
   }

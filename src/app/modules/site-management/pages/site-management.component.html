@@ -47,8 +47,8 @@
             </label>
           </div>
 
-          <div class="position-relative d-flex align-items-center justify-content-center st-mg-logo-container dfm-top shadow-sm" *ngIf="formValues?.file?.file">
-            <img [src]="formValues.file.file" class="h-100 w-full">
+          <div class="position-relative d-flex align-items-center justify-content-center st-mg-logo-container dfm-top shadow-sm" *ngIf="siteManagementForm.get('file')?.value?.file">
+            <img [src]="siteManagementForm.get('file')?.value?.file" class="h-100 w-full">
             <dfm-spinner *ngIf="formValues.file.loading"></dfm-spinner>
             <div style="width: 24px; height: 24px; top: -12px; right: -12px" class="h-fit position-absolute rounded-circle bg-white pointer shadow" (click)="fileInput.value = ''; removeFile()">
               <dfm-icon name="x-close"></dfm-icon>

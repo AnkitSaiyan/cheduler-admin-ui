@@ -89,7 +89,7 @@
           </td>
           <td class="room-table-td">{{ room.name | titlecase | dashIfNothing }}</td>
           <td class="room-table-td">{{ room.description | titlecase | dashIfNothing }}</td>
-          <td class="room-table-td">{{ room.placeInAgenda | dashIfNothing }}</td>
+          <td class="room-table-td">{{ roomPlaceInToIndexMap.get(+room.placeInAgenda) | dashIfNothing }}</td>
           <td class="room-table-td">{{ room.type | titlecase | dashIfNothing }}</td>
 
           <td class="room-table-td">

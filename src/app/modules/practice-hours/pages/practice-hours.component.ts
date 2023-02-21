@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, debounceTime, takeUntil } from 'rxjs';
 import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
-import formatters from 'chart.js/dist/core/core.ticks';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
 import { Weekday } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
@@ -277,6 +276,10 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
   public removeSlot(controlArray: FormArray, i: number) {
     controlArray.removeAt(i);
+
+    const formArrays = this.practiceHoursWeekWiseControlsArray(true);
+    this.handleInvalidSlotRangeError(formArrays);
+    this.handleSlotExistsError(formArrays);
   }
 
   public getBadgeColor(selectedTab: number): BadgeColor {
@@ -444,7 +447,15 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
   private handleError(time: string, control: AbstractControl | null | undefined) {
     //  Handling invalid time input
+    this.handleInvalidTimeError(time, control);
 
+    // Handling slot errors
+    const controlArrays = this.practiceHoursWeekWiseControlsArray(true);
+    this.handleInvalidSlotRangeError(controlArrays);
+    this.handleSlotExistsError(controlArrays);
+  }
+
+  private handleInvalidTimeError(time: string, control: AbstractControl | null | undefined) {
     if (!time) {
       toggleControlError(control, this.invalidTimeError, false);
       return;
@@ -456,11 +467,9 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     }
 
     toggleControlError(control, this.invalidTimeError, false);
+  }
 
-    // Handling slot errors
-
-    const controlArrays = this.practiceHoursWeekWiseControlsArray(true);
-
+  private handleInvalidSlotRangeError(controlArrays: FormArray[]) {
     for (let i = 0; i < controlArrays.length; i++) {
       for (let j = 0; j < controlArrays[i].length; j++) {
         const dayStart = controlArrays[i].controls[j].get('dayStart');
@@ -478,10 +487,12 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
         toggleControlError(dayEnd, this.invalidSlotRangeError, false);
       }
     }
+  }
 
+  private handleSlotExistsError(controlArrays: FormArray[]) {
     controlArrays.forEach((formArray) => {
       const { controls } = formArray;
-      if (formArray.length > 1 && controls[1].value.dayStart && controls[1].value.dayEnd) {
+      if (formArray.length > 1) {
         const sortedControls = [...controls].sort((a, b) => timeToNumber(a.value.daysStart) - timeToNumber(b.value.dayStart));
 
         const first = sortedControls[0];
@@ -503,6 +514,9 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
             }
           }
         }
+      } else if (formArray.length === 1) {
+        toggleControlError(controls[0].get('dayStart'), this.slotExistsError, false);
+        toggleControlError(controls[0].get('dayEnd'), this.slotExistsError, false);
       }
     });
   }

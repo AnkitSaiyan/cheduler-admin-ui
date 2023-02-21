@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -18,7 +18,6 @@ import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pi
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { formatTime, timeToNumber } from '../../../../shared/utils/time';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
-import { Status } from '../../../../shared/models/status.model';
 
 interface FormValues {
   name: string;
@@ -63,7 +62,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
   public submitting$$ = new BehaviorSubject<boolean>(false);
 
-  public modalData!: { edit: boolean; absenceDetails: Absence };
+  public absence$$ = new BehaviorSubject<Absence | null>(null);
+
+  public modalData!: { edit: boolean; absenceID: number };
 
   public priorityType = PriorityType;
 
@@ -126,10 +127,22 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public ngOnInit(): void {
-    this.modalSvc.dialogData$.pipe(take(1)).subscribe((data) => {
-      this.modalData = data;
-      this.createForm(this.modalData?.absenceDetails);
-    });
+    this.modalSvc.dialogData$
+      .pipe(
+        switchMap((modalData) => {
+          this.modalData = modalData;
+          if (modalData?.absenceID) {
+            return this.absenceApiSvc.getAbsenceByID$(modalData.absenceID);
+          }
+          return of({} as Absence);
+        }),
+        take(1),
+      )
+      .subscribe((absence) => {
+        console.log(absence);
+        this.absence$$.next(absence);
+        this.createForm(absence);
+      });
 
     this.roomApiSvc.rooms$
       .pipe(
@@ -149,26 +162,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       .subscribe((staffs) => {
         this.staffs$$.next(staffs.map((staff) => ({ name: staff.firstname, value: staff.id.toString() })) as NameValue[]);
         this.cdr.detectChanges();
-      });
-
-    this.absenceForm
-      .get('repeatType')
-      ?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.absenceForm.get('repeatDays')?.setValue(null);
-        this.updateRepeatFrequency();
-      });
-
-    combineLatest([
-      this.absenceForm.get('startTime')?.valueChanges,
-      this.absenceForm.get('endTime')?.valueChanges,
-      this.absenceForm.get('startedAt')?.valueChanges,
-      this.absenceForm.get('endedAt')?.valueChanges,
-    ])
-      .pipe(debounceTime(0), takeUntil(this.destroy$$))
-      .subscribe(() => {
-        console.log('in');
-        this.handleTimeChange();
       });
   }
 
@@ -243,11 +236,31 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     });
 
     this.cdr.detectChanges();
+
+    this.absenceForm
+      .get('repeatType')
+      ?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.absenceForm.get('repeatDays')?.setValue(null);
+        this.updateRepeatFrequency();
+      });
+
+    combineLatest([
+      this.absenceForm.get('startTime')?.valueChanges,
+      this.absenceForm.get('endTime')?.valueChanges,
+      this.absenceForm.get('startedAt')?.valueChanges,
+      this.absenceForm.get('endedAt')?.valueChanges,
+    ])
+      .pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe(() => {
+        console.log('in');
+        this.handleTimeChange();
+      });
   }
 
   public closeModal(res: boolean) {
     this.modalSvc.close(res);
-    this.ngOnDestroy();
+    // this.ngOnDestroy();
   }
 
   public saveAbsence() {
@@ -298,8 +311,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       }, '');
     }
 
-    if (this.modalData?.absenceDetails?.id) {
-      addAbsenceReqData.id = this.modalData.absenceDetails.id;
+    if (this.modalData?.absenceID) {
+      addAbsenceReqData.id = this.modalData.absenceID;
     }
 
     console.log(addAbsenceReqData);

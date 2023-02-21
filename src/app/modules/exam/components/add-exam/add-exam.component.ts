@@ -12,7 +12,6 @@ import { NotificationDataService } from '../../../../core/services/notification-
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { COMING_FROM_ROUTE, EDIT, EXAM_ID, TIME_24 } from '../../../../shared/utils/const';
 import { PracticeAvailability, PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
-import { StaffsGroupedByType } from '../../../../shared/models/staff.model';
 import { Room, RoomsGroupedByType, RoomType } from '../../../../shared/models/rooms.model';
 import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
@@ -471,6 +470,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     fg.get('dayStart')
       ?.valueChanges.pipe(
         filter((time) => !!time),
+        debounceTime(0),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => this.handleError(value as string, fg.get('dayStart')));
@@ -478,6 +478,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     fg.get('dayEnd')
       ?.valueChanges.pipe(
         filter((time) => !!time),
+        debounceTime(0),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => this.handleError(value as string, fg.get('dayEnd')));
@@ -546,9 +547,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
           case 1:
             keys = [1, 2, 3, 4];
             break;
-          default:
+          case 2:
             keys = [5, 6, 0];
             break;
+          default:
         }
       } else {
         keys = [selectedWeekday];
@@ -577,7 +579,17 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   public handleRadioButtonChange(toggle: boolean): void {
     //  set practice availability toggle
-    this.examForm.patchValue({ practiceAvailabilityToggle: toggle });
+    this.examForm.patchValue({ practiceAvailabilityToggle: toggle }, { emitEvent: false });
+
+    if (toggle) {
+      this.addPracticeAvailabilityControls();
+
+      const controlsArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
+      this.handleSlotExistsError(controlsArrays);
+      this.handleInvalidSlotRangeError(controlsArrays);
+
+      this.cdr.detectChanges();
+    }
   }
 
   public selectWeekday(selectedWeekday: Weekday): void {
@@ -591,37 +603,68 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public addSlot(controlArray: FormArray) {
-    controlArray.push(this.getPracticeAvailabilityFormGroup(this.getFormArrayName(controlArray)));
+    if (controlArray.controls.every((control) => control.value.dayStart && control.value.dayEnd)) {
+      controlArray.push(this.getPracticeAvailabilityFormGroup(this.getFormArrayName(controlArray)));
+    } else {
+      this.notificationSvc.showNotification('Please fill current slot before adding new', NotificationType.WARNING);
+    }
   }
 
   public removeSlot(controlArray: FormArray, i: number) {
     controlArray.removeAt(i);
+
+    const formArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
+    this.handleInvalidSlotRangeError(formArrays);
+    this.handleSlotExistsError(formArrays);
   }
 
   public saveExam(): void {
-    if (this.examForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid.', NotificationType.WARNING);
+    const requiredKeys: string[] = ['name', 'expensive', 'roomType'];
+    let valid = true;
 
-      Object.keys(this.examForm.controls).forEach((key) => {
-        if (this.examForm.get(key)?.invalid) {
-          this.examForm.get(key)?.markAsTouched();
+    requiredKeys.forEach((key) => {
+      if (this.examForm.get(key)?.invalid) {
+        this.examForm.get(key)?.markAsTouched();
+        if (valid) {
+          valid = false;
         }
-      });
+      }
+    });
 
-      return;
-    }
-
-    if (this.formValues.roomsForExam?.every((room) => !room.selectRoom)) {
+    if (valid && this.formValues.roomsForExam?.every((room) => !room.selectRoom)) {
       this.formErrors.selectRoomErr = true;
-      this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
-      return;
     }
 
     if (this.formErrors.expensiveErr) {
-      this.notificationSvc.showNotification('Form is not valid', NotificationType.WARNING);
+      valid = false;
+    }
+
+    if (valid) {
+      (this.examForm.get('roomsForExam') as FormArray).controls.forEach((control) => {
+        if (control.get('duration')?.invalid) {
+          control.get('duration')?.markAsTouched();
+          if (valid) {
+            valid = false;
+          }
+        }
+      });
+    }
+
+    let controlArrays!: FormArray[];
+
+    if (valid) {
+      controlArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
+      valid = !this.isPracticeFormInvalid(controlArrays);
+    }
+
+    if (!valid) {
+      this.notificationSvc.showNotification('Form is not valid.', NotificationType.WARNING);
+      return;
     }
 
     this.submitting$$.next(true);
+
+    controlArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
 
     const createExamRequestData: CreateExamRequestData = {
       name: this.formValues.name,
@@ -637,7 +680,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         ...(this.formValues.nursing ?? []),
         ...(this.formValues.radiologists ?? []),
         ...(this.formValues.secretaries ?? []),
-        // ...(this.formValues.mandatoryStaffs ?? []),
       ],
       roomsForExam: [
         ...this.formValues.roomsForExam
@@ -648,37 +690,39 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
           })),
       ],
       status: this.formValues.status,
-      availabilityType: AvailabilityType.Unavailable,
+      availabilityType: +!!this.formValues.practiceAvailabilityToggle,
       uncombinables: this.formValues.uncombinables ?? [],
-      practiceAvailability: [
-        ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
-          (acc, formArray) => [
-            ...acc,
-            ...formArray.controls.reduce((a, control) => {
-              if (control.value.dayStart && control.value.dayEnd) {
-                return [
-                  ...a,
-                  {
-                    weekday: control.value.weekday,
-                    dayStart: `${control.value.dayStart}:00`,
-                    dayEnd: `${control.value.dayEnd}:00`,
-                  },
-                ];
-              }
-              return a;
-            }, [] as PracticeAvailability[]),
-          ],
-          [] as PracticeAvailability[],
-        ),
-      ],
+      practiceAvailability: this.formValues.practiceAvailabilityToggle
+        ? [
+            ...controlArrays.reduce(
+              (acc, formArray) => [
+                ...acc,
+                ...formArray.controls.reduce((a, control) => {
+                  if (control.value.dayStart && control.value.dayEnd) {
+                    return [
+                      ...a,
+                      {
+                        weekday: control.value.weekday,
+                        dayStart: `${control.value.dayStart}:00`,
+                        dayEnd: `${control.value.dayEnd}:00`,
+                      },
+                    ];
+                  }
+                  return a;
+                }, [] as PracticeAvailability[]),
+              ],
+              [] as PracticeAvailability[],
+            ),
+          ]
+        : [],
     };
 
     if (this.examDetails$$.value?.id) {
       createExamRequestData.id = this.examDetails$$.value?.id;
     }
 
-    if (createExamRequestData.practiceAvailability?.length) {
-      createExamRequestData.availabilityType = AvailabilityType.Available;
+    if (!createExamRequestData.practiceAvailability?.length) {
+      createExamRequestData.availabilityType = AvailabilityType.Unavailable;
     }
 
     console.log(createExamRequestData);
@@ -732,13 +776,29 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
   }
 
+  private isPracticeFormInvalid(controlArrays: FormArray[]): boolean {
+    if (!this.formValues.practiceAvailabilityToggle) {
+      return false;
+    }
+
+    for (let i = 0; i < controlArrays.length; i++) {
+      for (let j = 0; j < controlArrays[i].length; j++) {
+        if (controlArrays[i].controls[j].get('dayStart')?.errors || controlArrays[i].controls[j].get('dayEnd')?.errors) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
   public getBadgeColor(weekday: Weekday): BadgeColor {
     if (this.formValues.selectedWeekday === weekday) {
       return 'secondary';
     }
 
     if (weekday === Weekday.ALL) {
-      for (let i = 1; i <= 7; i++) {
+      for (let i = 0; i < 7; i++) {
         if (!this.formValues.practiceAvailability[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
           return 'primary';
         }
@@ -766,7 +826,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public handleTimeFocusOut(time: string, control: AbstractControl | null | undefined) {
-    console.log('in');
     this.handleError(time, control);
   }
 
@@ -780,7 +839,15 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   private handleError(time: string, control: AbstractControl | null | undefined) {
     //  Handling invalid time input
+    this.handleInvalidTimeError(time, control);
 
+    // Handling slot errors
+    const controlArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
+    this.handleInvalidSlotRangeError(controlArrays);
+    this.handleSlotExistsError(controlArrays);
+  }
+
+  private handleInvalidTimeError(time: string, control: AbstractControl | null | undefined) {
     if (!time) {
       toggleControlError(control, this.invalidTimeError, false);
       return;
@@ -792,11 +859,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
 
     toggleControlError(control, this.invalidTimeError, false);
+  }
 
-    // Handling slot errors
-
-    const controlArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
-
+  private handleInvalidSlotRangeError(controlArrays: FormArray[]) {
     for (let i = 0; i < controlArrays.length; i++) {
       for (let j = 0; j < controlArrays[i].length; j++) {
         const dayStart = controlArrays[i].controls[j].get('dayStart');
@@ -814,10 +879,12 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         toggleControlError(dayEnd, this.invalidSlotRangeError, false);
       }
     }
+  }
 
+  private handleSlotExistsError(controlArrays: FormArray[]) {
     controlArrays.forEach((formArray) => {
       const { controls } = formArray;
-      if (formArray.length > 1 && controls[1].value.dayStart && controls[1].value.dayEnd) {
+      if (formArray.length > 1) {
         const sortedControls = [...controls].sort((a, b) => timeToNumber(a.value.daysStart) - timeToNumber(b.value.dayStart));
 
         const first = sortedControls[0];
@@ -839,6 +906,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
             }
           }
         }
+      } else if (formArray.length === 1) {
+        toggleControlError(controls[0].get('dayStart'), this.slotExistsError, false);
+        toggleControlError(controls[0].get('dayEnd'), this.slotExistsError, false);
       }
     });
   }
