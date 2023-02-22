@@ -46,7 +46,7 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
       .subscribe((priorityDetails) => this.prioritySlotDetails$$.next(priorityDetails));
   }
 
-  public deletePriority(id: number) {
+  public deletePriority(id: any) {
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
@@ -68,7 +68,7 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
       });
   }
 
-  public openEditPriorityModal(prioritySlotID: number) {
+  public openEditPriorityModal(prioritySlotID: any) {
     this.priorityApiSvc.getPrioritySlotsByID(prioritySlotID).pipe(takeUntil(this.destroy$$)).subscribe((priorityDetail) => {
       console.log('priorityDetail: ', priorityDetail);
       this.prioritySlotDetails$$.next(priorityDetail);  

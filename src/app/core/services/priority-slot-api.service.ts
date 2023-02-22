@@ -36,7 +36,7 @@ export class PrioritySlotApiService {
 
     return combineLatest([this.refreshPrioritySlots$$.pipe(startWith(''))]).pipe(
       switchMap(() =>
-        this.http.get<BaseResponse<PrioritySlot>>(`${this.prioritySlots}`, { params: queryParams }).pipe(
+        this.http.get<BaseResponse<PrioritySlot>>(`${this.prioritySlots}/${slotID}`).pipe(
           map((response) => {
             if (Array.isArray(response.data)) {
               return response.data[0];
@@ -68,7 +68,7 @@ export class PrioritySlotApiService {
     
     let { id, ...restData } = requestData;
     let queryParams = new HttpParams();
-    queryParams.append('id', id);
+    queryParams.append('id', String(id));
     console.log('id: ', id);
     console.log('restData: ', restData);
     return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}?id=${id}`, restData).pipe(

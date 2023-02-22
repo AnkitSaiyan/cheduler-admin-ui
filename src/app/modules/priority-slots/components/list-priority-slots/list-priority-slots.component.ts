@@ -7,7 +7,7 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadService } from '../../../../core/services/download.service';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { Absence } from '../../../../shared/models/absence.model';
@@ -31,7 +31,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
   public columns: string[] = ['Start Date', 'End Date', 'Priority', 'Actions'];
 
-  public downloadItems: any[] = [];
+  public downloadItems: DownloadType[] = [];
 
   private prioritySlots$$: BehaviorSubject<any[]>;
 
@@ -72,14 +72,25 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
         filter((value) => !!value),
         takeUntil(this.destroy$$),
       )
-      .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+      .subscribe((downloadAs) => {
+        if (!this.filteredPrioritySlots$$.value.length) {
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          downloadAs as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.filteredPrioritySlots$$.value.map((pr: PrioritySlot) => [pr.startedAt, String(pr.endedAt), pr.priority]),
+          'priority slot details',
+        );
+
+        if (downloadAs !== 'PRINT') {
+          this.notificationSvc.showNotification(`${downloadAs} file downloaded successfully`);
+        }
+
+        this.downloadDropdownControl.setValue(null);
+
+        this.cdr.detectChanges();
       });
   }
 
