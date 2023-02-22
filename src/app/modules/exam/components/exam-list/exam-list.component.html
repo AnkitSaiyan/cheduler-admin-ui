@@ -68,7 +68,7 @@
       </ng-template>
 
       <ng-template #bodyRowTemplate let-item>
-        <dfm-table-body-cell>{{ item.name | titlecase | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.name | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.expensive | dashIfNothing }}</dfm-table-body-cell>
 
         <dfm-table-body-cell>
