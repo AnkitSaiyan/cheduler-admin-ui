@@ -114,6 +114,10 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="check-circle"
+                ngbPopover="Change to Active"
+                popoverClass="popover-p-8"
+                triggers="mouseenter:mouseleave"
+                [openDelay]="200"
                 (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Active }])"
               ></dfm-button>
 
@@ -122,6 +126,10 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="x-circle"
+                ngbPopover="Change to Inactive"
+                popoverClass="popover-p-8"
+                triggers="mouseenter:mouseleave"
+                [openDelay]="200"
                 (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Inactive }])"
               ></dfm-button>
 
@@ -129,6 +137,10 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="pencil-02"
+                ngbPopover="Edit"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
                 (click)="$event.stopPropagation(); openAddRoomModal(room);"
               ></dfm-button>
 
@@ -136,6 +148,10 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="trash-01"
+                ngbPopover="Delete"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
                 (click)="$event.stopPropagation(); deleteRoom(room.id)"
               ></dfm-button>
             </div>
@@ -159,24 +175,20 @@
               <div class="rm-li-menus"
                    aria-labelledby="dropdownManual">
                 <div *ngIf="!room.status"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Active }])"
-                     ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                     (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Active }])">
                   <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
                 </div>
 
                 <div *ngIf="room.status"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Inactive }])"
-                     ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                     (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Inactive }])">
                   <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
                 </div>
 
-                <div (click)="$event.stopPropagation(); openAddRoomModal(room)" ngbPopover="Edit"
-                     triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <div (click)="$event.stopPropagation(); openAddRoomModal(room)">
                   <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
                 </div>
 
-                <div (click)="$event.stopPropagation(); deleteRoom(room.id)" ngbPopover="Delete"
-                     triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <div (click)="$event.stopPropagation(); deleteRoom(room.id)">
                   <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
                 </div>
               </div>
