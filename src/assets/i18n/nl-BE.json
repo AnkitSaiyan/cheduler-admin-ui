@@ -1,0 +1,9 @@
+{
+  "FirstName": "Voornaam",
+  "LastName": "Naam",
+  "Email": "E-mail",
+  "Telephone": "Telefoon",
+  "Category": "Categorie",
+  "Status": "Status",
+  "Actions": "Acties"
+}

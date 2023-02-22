@@ -1,14 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  NavigationItem,
-  NavigationItemEvent,
-  NavigationProfileData,
-  NavigationProfileLink,
-  NotificationService,
-  SelectItem,
-} from 'diflexmo-angular-design';
-import { RouterStateService } from './services/router-state.service';
+import { NavigationItem, NavigationItemEvent, NavigationProfileData, NavigationProfileLink, SelectItem } from 'diflexmo-angular-design';
+import { TranslateService } from '@ngx-translate/core';
 import { DestroyableComponent } from '../shared/components/destroyable.component';
+import { DUTCH_BE, ENG_BE } from '../shared/utils/const';
 
 @Component({
   selector: 'dfm-main',
@@ -16,38 +10,6 @@ import { DestroyableComponent } from '../shared/components/destroyable.component
   styleUrls: ['./core.component.scss'],
 })
 export class CoreComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  // @ViewChild('configurationMenu') private configMenu!: ElementRef;
-  //
-  // @ViewChild('configuration') private configBtn!: ElementRef;
-
-  // @HostListener('document:click', ['$event']) onClick(e: MouseEvent) {
-  //   this.toggleMenu(e, true);
-  // }
-
-  // @HostListener('document:scroll') onScroll(e: Event): void {
-  //   console.log(e);
-  // }
-  //
-  // @HostListener('scroll') onScrollHost(e: Event): void {
-  //   console.log(e);
-  // }
-
-  // public configurationMenuTitle = 'Configuration';
-  //
-  // public configurationMenuIconName = 'tool-02';
-  //
-  // public notConfigurationRoutes = ['dashboard', 'appointment', 'absence', ''];
-  //
-  // public navTitleToIconObj = {
-  //   staff: 'user-01',
-  //   room: 'building-01',
-  //   physician: 'medical-circle',
-  //   'Site Management': 'tool-02',
-  //   'Practice Hours': 'clock',
-  //   user: 'user-01',
-  //   exams: 'user-x-01',
-  // };
-
   public navigationItems: NavigationItem[] = [
     new NavigationItem('Dashboard', 'home-03', '/dashboard', true),
     new NavigationItem('Appointment', 'file-06', '/appointment', false),
@@ -75,11 +37,11 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     new NavigationItemEvent('3', new Date(), 'Test Message 3'),
   ];
 
-  public currentTenant: string = 'EN';
+  public currentTenant: string = 'en-BE';
 
-  public tenants: SelectItem[] = [
-    { name: 'EN', value: 'EN' },
-    { name: 'NL', value: 'NL' },
+  public languages: SelectItem[] = [
+    { name: 'EN', value: ENG_BE },
+    { name: 'NL', value: DUTCH_BE },
   ];
 
   public profileData: NavigationProfileData = {
@@ -91,61 +53,19 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     links: [new NavigationProfileLink('Test Link', './', '', true)],
   };
 
-  constructor(private notificationSvc: NotificationService, private routerStateSvc: RouterStateService) {
+  constructor(private translateService: TranslateService) {
     super();
   }
 
-  public ngOnInit(): void {
-    // this.routerStateSvc
-    //   .listenForUrlChange$()
-    //   .pipe(takeUntil(this.destroy$$))
-    //   .subscribe((url) => this.updateNavBar(url));
-  }
+  public ngOnInit(): void {}
 
   public override ngOnDestroy() {
     super.ngOnDestroy();
   }
 
-  private updateNavBar(url: string) {
-    // const currentRouteName = url.split('/')[1];
-    // if (this.notConfigurationRoutes.includes(currentRouteName)) {
-    //   this.configurationMenuTitle = 'Configuration';
-    // } else {
-    //   switch (currentRouteName) {
-    //     case 'site-management':
-    //     case 'practice-hours':
-    //       this.configurationMenuTitle = currentRouteName
-    //         .split('-')
-    //         .map((text) => `${text[0].toUpperCase()}${text.slice(1)}`)
-    //         .join(' ');
-    //       break;
-    //     default:
-    //       this.configurationMenuTitle = currentRouteName;
-    //   }
-    // }
-    // this.configurationMenuIconName = this.navTitleToIconObj[currentRouteName] ?? 'tool-02';
+  public onLanguageChange(lang: string) {
+    console.log(lang);
+    this.currentTenant = lang;
+    this.translateService.use(this.currentTenant);
   }
-
-  // public toggleMenu(e: MouseEvent, reset = false) {
-  //   // console.log('in', reset);
-  //   const el = this.configMenu?.nativeElement as HTMLDivElement;
-  //   if (reset) {
-  //     if (!el.className.includes('hidden')) {
-  //       el.classList.add('hidden');
-  //     }
-  //   } else {
-  //     e.stopPropagation();
-  //     e.stopImmediatePropagation();
-  //     el.classList.toggle('hidden');
-  //     // console.log(el.classList);
-  //   }
-  //
-  //   const config = this.configMenu?.nativeElement as HTMLDivElement;
-  //   if (!this.notConfigurationRoutes.includes(this.configurationMenuTitle)) {
-  //     // console.log(config);
-  //     config.classList.add('nav-item-selected-bg');
-  //   } else {
-  //     config.classList.remove('nav-item-selected-bg');
-  //   }
-  // }
 }

@@ -63,7 +63,7 @@
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewUser($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
-        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
       </ng-template>
 
       <ng-template #bodyRowTemplate let-item>
@@ -84,7 +84,7 @@
                      color="success"
                      size="sm"
                      fontWeight="medium">
-            {{ item.status | statusName | dashIfNothing }}
+            {{ item.status | statusName | translate | dashIfNothing }}
           </dfm-badge>
 
           <dfm-badge *ngIf="item.status === statusType.Inactive"
@@ -208,6 +208,8 @@
   <!--    </dfm-button>-->
   <!--  </div>-->
 </div>
+
+<div> {{ 'FirstName' | translate }} </div>
 
 <dfm-confirm-status-change-banner [display]="selectedUserIds.length"
                                   (confirmationEvent)="handleConfirmation($event)"></dfm-confirm-status-change-banner>
