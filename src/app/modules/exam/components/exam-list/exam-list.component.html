@@ -94,6 +94,8 @@
               size="sm"
               trailingIcon="check-circle"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
+              ngbPopover="Status" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8" [openDelay]="200"
             ></dfm-button>
 
             <dfm-button
@@ -102,6 +104,8 @@
               size="sm"
               trailingIcon="x-circle"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
+              ngbPopover="Status" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8" [openDelay]="200"
             ></dfm-button>
 
             <dfm-button
@@ -111,6 +115,8 @@
               (click)="$event.stopPropagation();"
               [routerLink]="['./', item.id, 'edit']"
               [state]="{ comingFromRoute: 'exam', edit: true }"
+              ngbPopover="Edit" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8" [openDelay]="200"
             ></dfm-button>
 
             <dfm-button
@@ -118,6 +124,8 @@
               size="sm"
               trailingIcon="trash-01"
               (click)="$event.stopPropagation(); deleteExam(item.id)"
+              ngbPopover="Delete" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8" [openDelay]="200"
             ></dfm-button>
           </div>
 
