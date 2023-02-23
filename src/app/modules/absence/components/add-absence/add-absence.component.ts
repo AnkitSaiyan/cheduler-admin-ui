@@ -139,7 +139,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         take(1),
       )
       .subscribe((absence) => {
-        console.log(absence);
         this.absence$$.next(absence);
         this.createForm(absence);
       });
@@ -246,14 +245,13 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       });
 
     combineLatest([
-      this.absenceForm.get('startTime')?.valueChanges,
-      this.absenceForm.get('endTime')?.valueChanges,
-      this.absenceForm.get('startedAt')?.valueChanges,
+      this.absenceForm.get('startTime')?.valueChanges.pipe(startWith('')),
+      this.absenceForm.get('endTime')?.valueChanges.pipe(startWith('')),
+      this.absenceForm.get('startedAt')?.valueChanges.pipe(startWith('')),
       this.absenceForm.get('endedAt')?.valueChanges.pipe(startWith('')),
     ])
       .pipe(debounceTime(0), takeUntil(this.destroy$$))
       .subscribe(() => {
-        console.log('in');
         this.handleTimeChange();
       });
   }
@@ -264,7 +262,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public saveAbsence() {
-    console.log(this.absenceForm);
     if (this.formValues.isRepeat) {
       if (this.absenceForm.invalid) {
         this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
@@ -287,7 +284,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     }
 
     this.submitting$$.next(true);
-    console.log(this.formValues);
 
     const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
 
@@ -317,7 +313,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       addAbsenceReqData.id = this.modalData.absenceID;
     }
 
-    console.log(addAbsenceReqData);
     if (this.modalData.edit) {
       this.absenceApiSvc
         .updateAbsence(addAbsenceReqData)
@@ -365,11 +360,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public handleTimeInput(time: string, controlName: 'startTime' | 'endTime') {
-    console.log(time);
-
     const formattedTime = formatTime(time, 24, 5);
-
-    console.log(formattedTime);
 
     if (!formattedTime) {
       return;
@@ -412,14 +403,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   private updateRepeatFrequency(type: 'number' | 'text' = 'text') {
-    console.log(type, this.repeatFrequency);
     if (!this.repeatFrequency?.value || !this.formValues.repeatFrequency) {
       return;
     }
 
     const { repeatFrequency } = this.formValues;
-
-    console.log(repeatFrequency);
 
     switch (type) {
       case 'text':
@@ -473,10 +461,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       return;
     }
 
-    console.log(startedAt, startTime, endedAt, endTime);
-
     if (startedAt.day === endedAt.day && startedAt.month === endedAt.month && startedAt.year === endedAt.year) {
-      console.log('in');
       if (timeToNumber(startTime) >= timeToNumber(endTime)) {
         toggleControlError(this.absenceForm.get('startTime'), 'time');
         toggleControlError(this.absenceForm.get('endTime'), 'time');
