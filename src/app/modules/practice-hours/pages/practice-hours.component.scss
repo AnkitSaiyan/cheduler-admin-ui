@@ -3,7 +3,7 @@
 
   .pr-hr-section2 {
     // viewport - nav - padding - sec1 height - sec gap - extra
-    max-height: calc(100vh - 48px - 24px - 40px - 16px - 16px);
+    max-height: calc(100dvh - 64px - 40px - 16px - 48px);
     min-height: 512px;
     overflow-y: auto;
   }
@@ -21,7 +21,7 @@
 
 @media (max-width: 1440px) {
   .pr-hr-section2 {
-    max-height: calc(100vh - 36px - 24px - 40px - 16px);
+    max-height: calc(100dvh - 46px - 48px - 16px - 40px) !important;
   }
 }
 
@@ -30,20 +30,19 @@
   }
 }
 
-//@media (max-width: 720px) {
-//  .pr-hr-form-fields {
-//    max-height: 100% !important;
-//    flex-wrap: nowrap !important;
-//  }
-//}
+@media (max-width: 960px) {
+  .pr-hr-section2 {
+    max-height: calc(100dvh - 36px - 56px - 48px - 40px - 16px) !important;
+  }
+}
 
 @media (max-width: 680px) {
   .pr-hr-main-wrapper {
-    max-height: calc(100vh - 38px - 24px - 36px - 16px - 16px - 20px);
 
     .pr-hr-title-buttons-mv {
       display: flex;
       margin-bottom: 8px;
+      margin-left: 8px;
     }
 
     .pr-hr-title-buttons {
@@ -51,10 +50,15 @@
     }
 
     .pr-hr-section2 {
+      max-height: calc(100dvh - 36px - 56px - 48px - 44px - 16px) !important;
       background: transparent;
       padding: 0;
       box-shadow: none;
       border-radius: 0;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       .pr-hr-weekdays-tab {
         overflow-x: scroll !important;

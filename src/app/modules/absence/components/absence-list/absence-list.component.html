@@ -1,4 +1,4 @@
-<div class="d-flex flex-column h-100 position-relative dfm-gap-16 dfm-px-8 ab-li-main-wrapper">
+<div class="d-flex flex-column h-100 position-relative dfm-gap-16 ab-li-main-wrapper">
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 ab-li-section-1">
       <dfm-button
@@ -59,7 +59,7 @@
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section class="overflow-y-auto ab-li-table-wrapper dfm-pb-8" *ngIf="filteredAbsences$$ | async as absences">
+  <section class="overflow-y-auto ab-li-table-wrapper" *ngIf="filteredAbsences$$ | async as absences">
     <dfm-table [items]="absences" [rowClickable]="true" (rowClicked)="navigateToViewAbsence($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
@@ -80,9 +80,9 @@
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
-              ngbPopover="Edit" 
-              triggers="mouseenter:mouseleave" 
-              popoverClass="popover-p-8" 
+              ngbPopover="Edit"
+              triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); openAddAbsenceModal(item);"
             ></dfm-button>

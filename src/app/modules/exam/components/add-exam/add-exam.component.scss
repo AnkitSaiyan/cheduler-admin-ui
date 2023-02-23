@@ -4,7 +4,7 @@
 
 section.ad-ex-section2 {
   // header height - content padding top bottom - section 1 height - row gap - maintaining bottom gap
-  max-height: calc(100vh - 64px - 48px - 40px - 16px);
+  max-height: calc(100dvh - 64px - 48px - 40px - 16px);
 
   .ad-ex-name {
     width: 512px;
@@ -47,13 +47,13 @@ section.ad-ex-section2 {
   section.ad-ex-section2 {
     // header height - content padding - section 1 height - row gap - extra gap
     //max-height: calc(100vh - 64px - 48px - 40px - 16px);
-    height: calc(100vh - 46px - 48px - 40px - 16px);
+    max-height: calc(100dvh - 46px - 48px - 40px - 16px);
   }
 }
 
 @media (max-width: 960px) {
   section.ad-ex-section2 {
-    max-height: calc(100vh - 36px - 56px - 48px - 40px - 16px)
+    max-height: calc(100dvh - 36px - 56px - 48px - 40px - 16px)
   }
 }
 
@@ -65,10 +65,6 @@ section.ad-ex-section2 {
 }
 
 @media (max-width: 680px) {
-  section.ad-ex-section2 {
-    max-height: calc(100vh - 36px - 76px - 48px - 52px - 16px);
-  }
-
   .ad-ex-main-wrapper {
     padding: 0;
   }
@@ -126,11 +122,16 @@ section.ad-ex-section2 {
 
   section.ad-ex-section2 {
     // header height - content padding - section 1 height - row gap - bottom nav bar height - extra gap
-    max-height: calc(100vh - 36px - 24px - 36px - 24px - 65px - 24px);
+    //max-height: calc(100vh - 36px - 24px - 36px - 24px - 65px - 24px);
+    max-height: calc(100dvh - 36px - 76px - 48px - 36px - 16px);
     box-shadow: none;
     background: transparent;
     padding: 0;
     border-radius: 0%;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     .ad-ex-staff-dropdown, .ad-ex-exam-dropdown, .ad-ex-info-input, dfm-input {
       flex: 1;

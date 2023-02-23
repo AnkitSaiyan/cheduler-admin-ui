@@ -1,5 +1,5 @@
 <div class="bg-white rounded-4 ad-ph-main-wrapper dfm-px-16">
-  <section class="modal-header">
+  <section class="modal-header ad-ph-section1">
     <h5 class="modal-title ad-ph-title-buttons">{{ modalData.edit ? 'Edit' : 'Add' }} Physician</h5>
     <dfm-button-icon class="ad-ph-title-buttons" color="tertiary-gray" icon="x-close"
                      (click)="closeModal(false)"></dfm-button-icon>
@@ -35,7 +35,7 @@
       </div>
 
       <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
-        <div class="d-flex flex-column flex-1">
+        <div class="d-flex flex-column w-full flex-1">
           <dfm-input [type]="'email'" class="flex-1" size="md" placeholder="Enter email" label="Email"
                      formControlName="email" (focusout)="handleEmailInput($event)">
           </dfm-input>
@@ -48,7 +48,7 @@
       </div>
 
       <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
-        <div class="d-flex flex-column flex-1">
+        <div class="d-flex flex-column w-full flex-1">
           <dfm-input #phone [dfmNumberInput]="phone" (focusout)="handleNumberFocusOut($event)" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone *"
                      formControlName="telephone">
           </dfm-input>

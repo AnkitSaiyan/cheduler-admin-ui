@@ -74,7 +74,7 @@
 
 
     <form [formGroup]="practiceHourForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
-      <div formGroupName="practiceHours" class="d-flex flex-wrap gap-5">
+      <div formGroupName="practiceHours" class="d-flex flex-wrap dfm-gap-32">
         <div class="d-flex flex-column pr-hr-form-fields"
              *ngIf="[1, 2, 3, 4].includes(practiceHourFormValues.selectedWeekday) || practiceHourFormValues.selectedWeekday === weekdayEnum.ALL">
           <div *ngFor="let controlArray of practiceHoursWeekWiseControlsArray(false, 1)"

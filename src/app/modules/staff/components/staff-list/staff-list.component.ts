@@ -21,6 +21,7 @@ import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/
 })
 export class StaffListComponent extends DestroyableComponent implements OnInit, OnDestroy {
   clipboardData: string = '';
+
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }

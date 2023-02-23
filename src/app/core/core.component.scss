@@ -3,7 +3,7 @@
     //padding: 24px 24px;
     background-color: var(--dfm-base-layout-bg);
     height: var(--content-height);
-    overflow-y: overlay;
+    overflow-y: auto;
   }
 }
 
@@ -14,18 +14,25 @@
 
 @media (max-width: 1440px) {
   .dfm-layout .content {
-    height: var(--content-height-1440);
+    max-height: var(--content-height-1440);
+    height: 100%;
   }
 }
 
 @media (max-width: 960px) {
   .dfm-layout .content {
-    height: var(--content-height-mobile);
+    max-height: var(--content-height-mobile);
+    height: 100%;
   }
 }
 
 @media (max-width: 680px) {
   .dfm-layout .content {
-    height: var(--content-height-mobile);
+    max-height: var(--content-height-mobile);
+    height: 100%;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }

@@ -67,6 +67,11 @@ $body-content-padding-y-total: 48px;
 }
 
 // custom styles for dfm elements ===========================================================
+
+.dfm-navigation-bar-container{
+  height: 100dvh !important;
+}
+
 dfm-input-dropdown {
   input {
     border: none !important;
