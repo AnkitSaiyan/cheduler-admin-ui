@@ -30,5 +30,9 @@
   .dfm-layout .content {
     max-height: var(--content-height-mobile);
     height: 100%;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }

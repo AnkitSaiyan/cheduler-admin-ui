@@ -1,4 +1,4 @@
-<div class="d-flex flex-column dfm-gap-16 h-100 position-relative dfm-px-8 rm-li-main-wrapper">
+<div class="d-flex flex-column dfm-gap-16 position-relative rm-li-main-wrapper">
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 rm-li-section-1" [cdkCopyToClipboard]="clipboardData">
       <dfm-button
@@ -66,7 +66,7 @@
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section class="rm-li-table-wrapper dfm-pb-8" *ngIf="filteredRooms$$ | async as rooms">
+  <section class="rm-li-table-wrapper" *ngIf="filteredRooms$$ | async as rooms">
     <div class="room-table-wrapper">
       <table class="room-table">
         <thead class="room-table-header">
