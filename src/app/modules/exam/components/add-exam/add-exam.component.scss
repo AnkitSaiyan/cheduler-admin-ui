@@ -47,7 +47,7 @@ section.ad-ex-section2 {
   section.ad-ex-section2 {
     // header height - content padding - section 1 height - row gap - extra gap
     //max-height: calc(100vh - 64px - 48px - 40px - 16px);
-    height: calc(100dvh - 46px - 48px - 40px - 16px);
+    max-height: calc(100dvh - 46px - 48px - 40px - 16px);
   }
 }
 
@@ -128,6 +128,10 @@ section.ad-ex-section2 {
     background: transparent;
     padding: 0;
     border-radius: 0%;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     .ad-ex-staff-dropdown, .ad-ex-exam-dropdown, .ad-ex-info-input, dfm-input {
       flex: 1;

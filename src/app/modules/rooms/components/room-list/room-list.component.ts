@@ -86,7 +86,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
       .subscribe(
         (rooms) => {
           this.rooms$$.next(rooms);
-          this.filteredRooms$$.next([...rooms, ...rooms, ...rooms]);
+          this.filteredRooms$$.next(rooms);
           this.mapRoomPlaceInAgenda();
           this.loading$$.next(false);
         },
