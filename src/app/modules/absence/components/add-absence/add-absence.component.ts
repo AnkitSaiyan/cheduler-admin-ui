@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -249,7 +249,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       this.absenceForm.get('startTime')?.valueChanges,
       this.absenceForm.get('endTime')?.valueChanges,
       this.absenceForm.get('startedAt')?.valueChanges,
-      this.absenceForm.get('endedAt')?.valueChanges,
+      this.absenceForm.get('endedAt')?.valueChanges.pipe(startWith('')),
     ])
       .pipe(debounceTime(0), takeUntil(this.destroy$$))
       .subscribe(() => {
@@ -294,7 +294,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     const addAbsenceReqData: AddAbsenceRequestDate = {
       ...rest,
       startedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`,
-      endedAt: rest.isRepeat ? `${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00` : null,
+      endedAt: rest.isRepeat
+        ? `${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`
+        : `${startedAt.year}-${startedAt.month}-${startedAt.day} ${endTime}:00`,
       userList: rest.isHoliday ? [] : userList,
       roomList: rest.isHoliday ? [] : roomList,
       repeatType: rest.isRepeat ? rest.repeatType : null,
@@ -449,11 +451,27 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   private handleTimeChange() {
-    if (!this.formValues.startTime || !this.formValues.startedAt?.day || !this.formValues.endTime || !this.formValues.endedAt?.day) {
+    if (!this.formValues.startTime || !this.formValues.startedAt?.day || !this.formValues.endTime) {
       return;
     }
 
     const { startedAt, endedAt, startTime, endTime } = this.formValues;
+
+    if (!this.formValues.isRepeat) {
+      if (timeToNumber(startTime) >= timeToNumber(endTime)) {
+        toggleControlError(this.absenceForm.get('startTime'), 'time');
+        toggleControlError(this.absenceForm.get('endTime'), 'time');
+      } else {
+        toggleControlError(this.absenceForm.get('startTime'), 'time', false);
+        toggleControlError(this.absenceForm.get('endTime'), 'time', false);
+      }
+
+      return;
+    }
+
+    if (!endedAt) {
+      return;
+    }
 
     console.log(startedAt, startTime, endedAt, endTime);
 
