@@ -58,7 +58,7 @@
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section class="overflow-y-auto us-li-table-wrapper dfm-pb-8" *ngIf="filteredUsers$$ | async as users">
+  <section class="overflow-y-auto us-li-table-wrapper" *ngIf="filteredUsers$$ | async as users">
     <dfm-table [items]="users" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewUser($event)"
                class="dfm-table-wrapper">

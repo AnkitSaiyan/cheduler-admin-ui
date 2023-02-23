@@ -23,6 +23,7 @@ import { AddUserComponent } from '../add-user/add-user.component';
 })
 export class UserListComponent extends DestroyableComponent implements OnInit, OnDestroy {
   clipboardData: string = '';
+
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -83,8 +84,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       )
       .subscribe(
         (users) => {
-          this.users$$.next(users);
-          this.filteredUsers$$.next(users);
+          this.users$$.next([...users, ...users, ...users]);
+          this.filteredUsers$$.next([...users, ...users, ...users]);
           this.loading$$.next(false);
         },
         (err) => this.loading$$.next(false),
@@ -225,7 +226,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
 
       this.filteredUsers$$.value.forEach((user: User) => {
-        dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.telephone ?? '—'}\t${user.userType ?? '—'}\t${StatusToName[+user.status]}\n`;
+        dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.telephone ?? '—'}\t${user.userType ?? '—'}\t${
+          StatusToName[+user.status]
+        }\n`;
       });
 
       this.clipboardData = dataString;
