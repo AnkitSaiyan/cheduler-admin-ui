@@ -67,7 +67,9 @@
       </ng-template>
 
       <ng-template #bodyRowTemplate let-item>
-        <dfm-table-body-cell>{{ item.name | titlecase | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>
+          <div class="text-truncate">{{ item.name | titlecase | dashIfNothing }}</div>
+        </dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.startedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.endedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
