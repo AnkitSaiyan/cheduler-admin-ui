@@ -253,9 +253,9 @@
       <div class="d-flex dfm-gap-32 flex-wrap flex-1">
 
         
-        <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-pr-staffs" *ngIf="staffsGroupedByTypes$$ | async as staffsGroupedByType">
+        <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-pr-staffs" *ngIf="radiologist$$ | async as radiology">
           <dfm-input-dropdown #staffDropDown
-                              [items]="staffsGroupedByType.radiologists"
+                              [items]="radiology"
                               [multiple]="true"
                               size="md"
                               formControlName="userList"

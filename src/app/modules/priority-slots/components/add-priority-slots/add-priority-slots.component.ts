@@ -59,6 +59,8 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
   public staffs$$ = new BehaviorSubject<NameValue[] | null>(null);
 
+  public radiologist$$ = new BehaviorSubject<NameValue[] | null>(null);
+
   public submitting$$ = new BehaviorSubject<boolean>(false);
 
   public prioritySlot$$ = new BehaviorSubject<PrioritySlot | null | undefined>(null);
@@ -104,13 +106,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     day: new Date().getDate(),
   };
 
-  public staffsGroupedByTypes$$ = new BehaviorSubject<StaffsGroupedByType>({
-    assistants: [],
-    radiologists: [],
-    nursing: [],
-    secretaries: [],
-    mandatory: [],
-  });
   staffDetails: User[] =[];
 
 
@@ -164,18 +159,20 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
           secretaries: [],
           mandatory: [],
         };
+
+        const radiologist: NameValue[] = [];
   
         staffs.forEach((staff) => {
-          const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff.id };
-          staffGroupedByType.mandatory.push(nameValue);
+          const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff.id.toString() };
           switch (staff.userType) {
             case UserType.Radiologist:
               staffGroupedByType.radiologists.push(nameValue);
+              radiologist.push(nameValue);
               break;
             default:
           }
         });
-        this.staffsGroupedByTypes$$.next({ ...staffGroupedByType });
+        this.radiologist$$.next(radiologist);
       });
   }
 
@@ -259,7 +256,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
           : null,
         [Validators.min(1)],
       ],
-      userList: [prioritySlotDetails?.users?.length ? prioritySlotDetails.users.map(({ id }) => id?.toString()) : [], []],
+      userList: [prioritySlotDetails?.users?.length ? prioritySlotDetails.users.map(({ id }) => id.toString()) : [], []],
       priority: [prioritySlotDetails?.priority ?? null, []],
     });
 
