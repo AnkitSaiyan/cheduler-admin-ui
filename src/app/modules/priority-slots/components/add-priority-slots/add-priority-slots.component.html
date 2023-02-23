@@ -28,7 +28,7 @@
           *ngIf="prioritySlot$$ | async as prioritySlot">
       <div class="d-flex dfm-gap-32 align-items-center ad-pr-dates">
         <div class="ad-pr-from-date flex-1 max-w-5">
-          <span class="text-sm font-weight-medium dfm-text-main-700">From *</span>
+          <span class="text-sm font-weight-medium dfm-text-main-700">{{(!formValues.isRepeat)? 'Date *': 'From *'}}</span>
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
             <div class="flex-1 d-flex flex-column">
@@ -40,6 +40,7 @@
                     placeholder="yyyy-mm-dd"
                     ngbDatepicker
                     #startedAt="ngbDatepicker"
+                    [minDate]="minFromDate"
                   />
                 </div>
                 <div>
@@ -57,26 +58,12 @@
                 This field is Required.
               </small>
             </div>
-<!-- 
-            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
-              <dfm-input-dropdown #slotStartTime
-                                  [items]="startTimes"
-                                  [typeToSearch]="true"
-                                  [typeToSearchText]="slotStartTime.value"
-                                  (searchInput)="handleTimeInput($event, 'slotStartTime')"
-                                  formControlName="slotStartTime"
-                                  size="md"
-                                  placeholder="hh:mm">
-              </dfm-input-dropdown>
-            </div> -->
           </div>
 
-          <!-- <small class="validation-error" *ngIf="slotStartTime.control.hasError('time')">Start Time should be smaller than
-            End Time</small> -->
         </div>
 
         <div class="ad-pr-to-date flex-1 max-w-5" *ngIf="formValues.isRepeat">
-          <span class="text-sm font-weight-medium dfm-text-main-700">Until *</span>
+          <span class="text-sm font-weight-medium dfm-text-main-700">To *</span>
 
           <div class="d-flex align-items-start dfm-gap-16">
             <div class="flex-1 d-flex flex-column">
@@ -107,32 +94,9 @@
                 This field is Required.
               </small>
             </div>
-
-            <!-- <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
-              <dfm-input-dropdown #slotEndTime
-                                  [items]="endTimes"
-                                  [typeToSearch]="true"
-                                  [typeToSearchText]="slotEndTime.value"
-                                  (searchInput)="handleTimeInput($event, 'slotEndTime')"
-                                  [required]="formValues.isRepeat"
-                                  formControlName="slotEndTime"
-                                  size="md"
-                                  placeholder="hh:mm">
-              </dfm-input-dropdown>
-            </div> -->
           </div>
-<!-- 
-          <small class="validation-error" *ngIf="slotEndTime.control.hasError('time')">
-            End Time should be greater than Start Time
-          </small> -->
         </div>
       </div>
-
-      
-
-
-
-
 
       <div class="d-flex dfm-gap-32 flex-wrap ad-ab-radio-group mt-4">
         <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
@@ -163,9 +127,7 @@
                               size="md"
                               label="End time"
                               placeholder="hh:mm">
-          </dfm-input-dropdown>
-
-          
+          </dfm-input-dropdown>          
           <small class="validation-error" *ngIf="slotEndTime.control.hasError('time')">
             End Time should be greater than Start Time
           </small>

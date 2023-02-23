@@ -108,7 +108,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
   staffDetails: User[] =[];
 
-
   constructor(
     private modalSvc: ModalService,
     private fb: FormBuilder,
@@ -300,7 +299,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       }
     } else {
       const { controls } = this.prioritySlotForm;
-      const invalid = ['startedAt', 'slotStartTime', 'priority'].some((key) => {
+      const invalid = ['startedAt', 'slotStartTime', 'priority', 'slotEndTime'].some((key) => {
         controls[key].markAsTouched();
         return controls[key].invalid;
       });
@@ -482,6 +481,14 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     const { startedAt, endedAt, slotStartTime, slotEndTime } = this.formValues;
 
     console.log(startedAt, slotStartTime, endedAt, slotEndTime);
+    if (timeToNumber(slotStartTime) >= timeToNumber(slotEndTime)|| timeToNumber(slotEndTime) <= timeToNumber(slotStartTime)) {
+      console.log("called");
+      
+      toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time');
+      toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time');
+
+      return;
+    }
 
     if (startedAt.day === endedAt.day && startedAt.month === endedAt.month && startedAt.year === endedAt.year) {
       console.log('in');
