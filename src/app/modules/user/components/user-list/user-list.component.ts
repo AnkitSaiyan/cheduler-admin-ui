@@ -84,8 +84,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       )
       .subscribe(
         (users) => {
-          this.users$$.next([...users, ...users, ...users]);
-          this.filteredUsers$$.next([...users, ...users, ...users]);
+          this.users$$.next(users);
+          this.filteredUsers$$.next(users);
           this.loading$$.next(false);
         },
         (err) => this.loading$$.next(false),
