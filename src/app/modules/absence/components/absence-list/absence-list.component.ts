@@ -59,7 +59,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe((absences) => {
       console.log('absences: ', absences);
       this.absences$$.next(absences);
-      this.filteredAbsences$$.next([...absences, ...absences, ...absences, ...absences]);
+      this.filteredAbsences$$.next(absences);
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
