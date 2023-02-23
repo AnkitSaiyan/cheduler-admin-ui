@@ -25,6 +25,7 @@ import { User } from '../../../../shared/models/user.model';
 })
 export class PhysicianListComponent extends DestroyableComponent implements OnInit, OnDestroy {
   clipboardData: string = '';
+
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }

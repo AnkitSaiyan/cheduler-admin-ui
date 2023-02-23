@@ -1,4 +1,4 @@
-<div class="d-flex flex-column h-100 dfm-gap-16 position-relative dfm-px-8 ph-li-main-wrapper">
+<div class="d-flex flex-column h-100 dfm-gap-16 position-relative ph-li-main-wrapper">
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 ph-li-section-1">
       <dfm-button
@@ -66,7 +66,7 @@
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section class="overflow-y-auto ph-li-table-wrapper dfm-pb-8"
+  <section class="overflow-y-auto ph-li-table-wrapper"
            *ngIf="filteredPhysicians$$ | async as physicians">
     <dfm-table [items]="physicians" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewPhysician($event)"
