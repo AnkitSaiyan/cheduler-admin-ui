@@ -19,7 +19,8 @@ section.ph-vw-section2 {
   }
 
   section.ph-vw-section1 {
-    position: fixed;
+    // position: fixed;
+      margin: -24px -16px;
     width: 100%;
     left: 0;
     top: 36px;
@@ -35,8 +36,7 @@ section.ph-vw-section2 {
     }
   }
 
-  section.ph-vw-section2 {
-    margin-top: 60px;
+        section.ph-vw-section2 {
     margin-bottom: 12px;
     width: 100% !important;
 
