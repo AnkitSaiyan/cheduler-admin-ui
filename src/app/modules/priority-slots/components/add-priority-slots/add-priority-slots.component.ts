@@ -219,7 +219,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         }
       });
 
-      this.prioritySlotForm.patchValue({
+      this.prioritySlotForm?.patchValue({
         radiologists,
       });
     }
@@ -263,18 +263,18 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     this.cdr.detectChanges();
 
     this.prioritySlotForm
-      .get('repeatType')
+      ?.get('repeatType')
       ?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.prioritySlotForm.get('repeatDays')?.setValue(null);
+        this.prioritySlotForm?.get('repeatDays')?.setValue(null);
         this.updateRepeatFrequency();
       });
 
     combineLatest([
-      this.prioritySlotForm.get('slotStartTime')?.valueChanges,
-      this.prioritySlotForm.get('slotEndTime')?.valueChanges,
-      this.prioritySlotForm.get('startedAt')?.valueChanges,
-      this.prioritySlotForm.get('endedAt')?.valueChanges,
+      this.prioritySlotForm?.get('slotStartTime')?.valueChanges,
+      this.prioritySlotForm?.get('slotEndTime')?.valueChanges,
+      this.prioritySlotForm?.get('startedAt')?.valueChanges,
+      this.prioritySlotForm?.get('endedAt')?.valueChanges,
     ])
       .pipe(debounceTime(0), takeUntil(this.destroy$$))
       .subscribe(() => {
