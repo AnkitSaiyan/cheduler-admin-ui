@@ -151,21 +151,11 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
         this.staffDetails = staffs;
         console.log('this.staffDetails: ', this.staffDetails);
-        const staffGroupedByType: StaffsGroupedByType = {
-          radiologists: [],
-          assistants: [],
-          nursing: [],
-          secretaries: [],
-          mandatory: [],
-        };
-
         const radiologist: NameValue[] = [];
-  
         staffs.forEach((staff) => {
           const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff.id.toString() };
           switch (staff.userType) {
             case UserType.Radiologist:
-              staffGroupedByType.radiologists.push(nameValue);
               radiologist.push(nameValue);
               break;
             default:
@@ -184,7 +174,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   private createForm(prioritySlotDetails?: PrioritySlot | undefined): void {
-    console.log('prioritySlotDetails: ', prioritySlotDetails);
     let slotStartTime;
     let slotEndTime;
 
@@ -484,8 +473,8 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     if (timeToNumber(slotStartTime) >= timeToNumber(slotEndTime)|| timeToNumber(slotEndTime) <= timeToNumber(slotStartTime)) {
       console.log("called");
       
-      toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time');
-      toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time');
+      toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', true);
+      toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', true);
 
       return;
     }
