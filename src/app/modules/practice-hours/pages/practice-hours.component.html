@@ -9,8 +9,10 @@
       </dfm-button>
 
       <div class="d-flex dfm-gap-16 align-items-center">
-        <dfm-button color="secondary" size="md">Cancel</dfm-button>
-        <dfm-button color="primary" size="md" (click)="savePracticeHours()">Save Changes</dfm-button>
+<!--        <dfm-button color="secondary" size="md">Cancel</dfm-button>-->
+        <dfm-button color="primary" size="md" (click)="savePracticeHours()"
+                    [disabled]="(submitting$$ | async) === true">Save Changes
+        </dfm-button>
       </div>
     </div>
 
@@ -67,123 +69,397 @@
                    class="pointer"
                    (click)="selectWeekday(weekdayEnum.SUN)">SUN
         </dfm-badge>
-
-        <dfm-badge size="sm" [color]="getBadgeColor(8)"
-                   class="pointer"
-                   (click)="selectExceptionForm()">EXCEPTION
-        </dfm-badge>
       </div>
     </div>
 
-    <ng-container *ngIf="!isExceptionFormSelected; else exceptionFormContainer">
-      <form [formGroup]="practiceHourForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
-        <div formGroupName="practiceHours" class="d-flex flex-column dfm-gap-32 pr-hr-form-fields">
-          <div *ngFor="let controlArray of practiceHoursWeekWiseControlsArray()"
-               [formArrayName]="getFormArrayName(controlArray)"
-               class="d-flex flex-column flex-wrap dfm-gap-16">
-              <span class="text-sm font-weight-semi-bold">
-                {{ getFormArrayName(controlArray) | weekdayToName }}
-              </span>
 
-            <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
-                 class="d-flex flex-column dfm-gap-16">
-              <div class="d-flex dfm-gap-32 align-items-start">
-                <div class="d-flex flex-column dfm-gap-8">
-                  <!--                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">-->
+    <form [formGroup]="practiceHourForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+      <div formGroupName="practiceHours" class="d-flex flex-wrap dfm-gap-32">
+        <div class="d-flex flex-column pr-hr-form-fields"
+             *ngIf="[1, 2, 3, 4].includes(practiceHourFormValues.selectedWeekday) || practiceHourFormValues.selectedWeekday === weekdayEnum.ALL">
+          <div *ngFor="let controlArray of practiceHoursWeekWiseControlsArray(false, 1)"
+               class="d-flex flex-column dfm-gap-32">
+            <div [formArrayName]="getFormArrayName(controlArray)"
+                 *ngIf="[1,2,3,4].includes(getFormArrayName(controlArray))"
+                 class="d-flex flex-column dfm-gap-16 flex-1">
+              <span
+                class="text-sm font-weight-semi-bold w-fit">{{ getFormArrayName(controlArray) | weekdayToName }}</span>
 
-                  <!--                    </dfm-input-dropdown>-->
-                  <label class="text-sm font-weight-medium">Start Time</label>
-                  <ngb-timepicker formControlName="dayStart" size="small" [spinners]="false"></ngb-timepicker>
-                  <span class="text-sm text-red"
-                        *ngIf="controls.get('dayStart')?.hasError('startTimeErr')">Start Time must be smaller.</span>
-                </div>
+              <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
+                   class="d-flex flex-column dfm-gap-16 flex-1 min-w-128">
+                <div class="d-flex flex-column w-full">
+                  <div class="d-flex dfm-gap-16 align-items-start flex-1">
+                    <div class="d-flex flex-column w-full">
+                      <div
+                        class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
+                        <dfm-input-dropdown #start
+                                            [items]="controls?.get('startTimings')?.value"
+                                            [typeToSearch]="true"
+                                            [typeToSearchText]="start.value"
+                                            (searchInput)="handleTimeInput($event,controls?.get('dayStart'),controls?.get('startTimings'), start)"
+                                            (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
+                                            label="Start Time"
+                                            formControlName="dayStart"
+                                            size="md"
+                                            placeholder="hh:mm">
+                        </dfm-input-dropdown>
+                      </div>
 
-                <div class="d-flex flex-column dfm-gap-8">
-                  <label class="text-sm font-weight-medium">End Time</label>
-                  <ngb-timepicker formControlName="dayEnd" size="small" [spinners]="false"></ngb-timepicker>
-                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>
-                </div>
+                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">Invalid
+                        Time.</small>
+                    </div>
 
-                <div class="d-flex flex-column dfm-gap-16">
-                  <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
-                  <div class="w-fit d-flex justify-content-between dfm-gap-24">
-                    <dfm-checkbox class="font-weight-normal" formControlName="isPriority"
-                                  (click)="handleRadioButtonClick(controlArray, controls)"></dfm-checkbox>
+
+                    <div class="d-flex flex-column w-full">
+                      <div
+                        class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
+                        <dfm-input-dropdown #end
+                                            [items]="controls?.get('endTimings')?.value"
+                                            [typeToSearch]="true"
+                                            [typeToSearchText]="end.value"
+                                            (searchInput)="handleTimeInput($event,controls?.get('dayEnd'),controls?.get('endTimings'), end)"
+                                            (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
+                                            label="End Time"
+                                            formControlName="dayEnd"
+                                            size="md"
+                                            placeholder="hh:mm">
+                        </dfm-input-dropdown>
+                      </div>
+
+                      <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">Invalid
+                        Time.</small>
+                    </div>
+
+                    <div class="dfm-mt-32">
+                      <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                                       (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+                    </div>
                   </div>
-                </div>
 
-                <div class="align-self-end dfm-mb-4">
-                  <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
-                                   (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+                  <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
+                    Start time should be smaller than End time.
+                  </small>
+
+                  <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
+                   Slot overlaps other slots.
+                  </small>
                 </div>
               </div>
-            </div>
 
-            <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
-              <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
-              <span class="text-sm dfm-text-main-600">Click to add slot</span>
+              <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
+                <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+                <span class="text-sm dfm-text-main-600">Click to add slot</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <dfm-button class="hidden pr-hr-save-changes-btn-mv" color="primary" size="md" (click)="savePracticeHours()">Save
-          Changes
-        </dfm-button>
-      </form>
-    </ng-container>
+        <div class="d-flex flex-column pr-hr-form-fields"
+             *ngIf="[5, 6, 0].includes(practiceHourFormValues.selectedWeekday) || practiceHourFormValues.selectedWeekday === weekdayEnum.ALL">
+          <div *ngFor="let controlArray of practiceHoursWeekWiseControlsArray(false, 2)"
+               class="d-flex flex-column dfm-gap-32">
+            <div [formArrayName]="getFormArrayName(controlArray)"
+                 *ngIf="[0, 5, 6].includes(getFormArrayName(controlArray))"
+                 class="d-flex flex-column dfm-gap-16 flex-1">
+            <span class="text-sm font-weight-semi-bold w-fit">
+              {{ getFormArrayName(controlArray) | weekdayToName }}
+            </span>
 
-    <ng-template #exceptionFormContainer>
-      <form [formGroup]="exceptionForm" *ngIf="exceptionFormArray.controls as exceptionControls">
-        <div formArrayName="exception" class="d-flex flex-column dfm-gap-24">
-          <div class="d-flex dfm-gap-24 align-items-center" [formGroupName]="groupIndex" *ngFor="let control of exceptionControls; let groupIndex = index">
-            <div class="d-flex flex-column dfm-gap-8">
-              <label class="text-sm font-weight-medium">Exception Date</label>
+              <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
+                   class="d-flex flex-column dfm-gap-16 flex-1 min-w-128">
+                <div class="d-flex flex-column flex-1 w-full">
+                  <div class="d-flex dfm-gap-16 align-items-start flex-1">
+                    <div class="d-flex flex-column w-full">
+                      <div
+                        class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
+                        <dfm-input-dropdown #start
+                                            [items]="controls?.get('startTimings')?.value"
+                                            [typeToSearch]="true"
+                                            [typeToSearchText]="start.value"
+                                            (searchInput)="handleTimeInput($event,controls?.get('dayStart'),controls?.get('startTimings'), start)"
+                                            (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
+                                            label="Start Time"
+                                            formControlName="dayStart"
+                                            size="md"
+                                            placeholder="hh:mm">
+                        </dfm-input-dropdown>
+                      </div>
 
-              <div class="dfm-button-group-wrapper h-fit flex-1">
-                <div class="input-as-dfm-input flex-1">
-                  <input
-                    class="w-full min-w-128"
-                    formControlName="date"
-                    placeholder="yyyy-mm-dd"
-                    ngbDatepicker
-                    #startedAt="ngbDatepicker"
-                  />
-                </div>
-                <div>
-                  <dfm-button-icon
-                    color="tertiary-gray"
-                    size="md"
-                    icon="calendar-date"
-                    (click)="startedAt.toggle()"
-                  ></dfm-button-icon>
+                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">Invalid
+                        Time.</small>
+                    </div>
+
+                    <div class="d-flex flex-column w-full">
+                      <div
+                        class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
+                        <dfm-input-dropdown #end
+                                            [items]="controls?.get('endTimings')?.value"
+                                            [typeToSearch]="true"
+                                            [typeToSearchText]="end.value"
+                                            (searchInput)="handleTimeInput($event, controls?.get('dayEnd'), controls?.get('endTimings'), end)"
+                                            (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
+                                            label="End Time"
+                                            formControlName="dayEnd"
+                                            size="md"
+                                            placeholder="hh:mm">
+                        </dfm-input-dropdown>
+                      </div>
+
+                      <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">Invalid
+                        Time.</small>
+                    </div>
+
+                    <div class="dfm-mt-32">
+                      <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                                       (click)="removeSlot(controlArray, i)"></dfm-button-icon>
+                    </div>
+                  </div>
+
+                  <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
+                    Start time should be smaller than End time.
+                  </small>
+
+                  <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
+                    Slot overlaps other slots.
+                  </small>
                 </div>
               </div>
-            </div>
 
-            <div class="d-flex flex-column dfm-gap-8">
-              <label class="text-sm font-weight-medium">Start Time</label>
-              <ngb-timepicker formControlName="startTime" size="small" [spinners]="false"></ngb-timepicker>
-              <!--                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>-->
+              <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
+                <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+                <span class="text-sm dfm-text-main-600">Click to add slot</span>
+              </div>
             </div>
-
-            <div class="d-flex flex-column dfm-gap-8">
-              <label class="text-sm font-weight-medium">End Time</label>
-              <ngb-timepicker formControlName="endTime" size="small" [spinners]="false"></ngb-timepicker>
-              <!--                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>-->
-            </div>
-
-            <div class="align-self-end dfm-mb-4">
-              <dfm-button-icon *ngIf="exceptionControls.length > 1" size="sm" icon="trash-01" color="tertiary"
-                               (click)="removeExceptionSlot(groupIndex)"></dfm-button-icon>
-            </div>
-          </div>
-
-          <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addExceptionSlot()">
-            <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
-            <span class="text-sm dfm-text-main-600">Click to add exception</span>
           </div>
         </div>
-      </form>
-    </ng-template>
+      </div>
+
+      <dfm-button class="hidden pr-hr-save-changes-btn-mv" color="primary" size="md"
+                  [disabled]="(submitting$$ | async) === true" (click)="savePracticeHours()">Save
+        Changes
+      </dfm-button>
+    </form>
   </section>
 </div>
+
+
+<!--
+  ======================================================================
+
+          CODE WITH PRIORITY AND EXCEPTION ---- (FOR BACKUP)
+
+  ======================================================================
+-->
+
+<!--<div class="d-flex flex-column dfm-gap-16 pr-hr-main-wrapper">-->
+<!--  <section>-->
+<!--    <div class="d-flex align-items-center justify-content-between dfm-gap-16 pr-hr-title-buttons">-->
+<!--      <dfm-button-->
+<!--        color="link"-->
+<!--        size="lg"-->
+<!--        routerLink="./"-->
+<!--      >Practice Hours-->
+<!--      </dfm-button>-->
+
+<!--      <div class="d-flex dfm-gap-16 align-items-center">-->
+<!--        <dfm-button color="secondary" size="md">Cancel</dfm-button>-->
+<!--        <dfm-button color="primary" size="md" (click)="savePracticeHours()">Save Changes</dfm-button>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash;  Mobile view  &ndash;&gt;-->
+<!--    <div class="hidden dfm-gap-8 align-items-center pr-hr-title-buttons-mv">-->
+<!--      <div class="rounded-circle overflow-hidden">-->
+<!--        <dfm-button-icon-->
+<!--          color="tertiary-gray"-->
+<!--          size="sm"-->
+<!--          icon="chevron-left"-->
+<!--        >-->
+<!--        </dfm-button-icon>-->
+<!--      </div>-->
+
+<!--      <dfm-button color="link" size="lg">Practice Hours</dfm-button>-->
+<!--    </div>-->
+<!--    &lt;!&ndash;    &ndash;&gt;-->
+<!--  </section>-->
+
+<!--  <section class="dfm-card d-flex flex-column dfm-gap-24 dfm-p-16 pr-hr-section2 hide-scrollbar">-->
+<!--    <div class="d-flex flex-column dfm-gap-8">-->
+<!--      <span class="text-sm font-weight-semi-bold">Choose Day</span>-->
+
+<!--      <div class="d-flex dfm-gap-16 weekday-header pr-hr-weekdays-tab hide-scrollbar">-->
+<!--        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)"-->
+<!--                   class="pointer"-->
+<!--                   (click)="selectWeekday(weekdayEnum.ALL)">VIEW ALL-->
+<!--        </dfm-badge>-->
+<!--        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.MON)"-->
+<!--                   class="pointer"-->
+<!--                   (click)="selectWeekday(weekdayEnum.MON)">MON-->
+<!--        </dfm-badge>-->
+<!--        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.TUE)"-->
+<!--                   class="pointer"-->
+<!--                   (click)="selectWeekday(weekdayEnum.TUE)">TUE-->
+<!--        </dfm-badge>-->
+<!--        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.WED)"-->
+<!--                   class="pointer"-->
+<!--                   (click)="selectWeekday(weekdayEnum.WED)">WED-->
+<!--        </dfm-badge>-->
+<!--        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.THU)"-->
+<!--                   class="pointer"-->
+<!--                   (click)="selectWeekday(weekdayEnum.THU)">THU-->
+<!--        </dfm-badge>-->
+<!--        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.FRI)"-->
+<!--                   class="pointer"-->
+<!--                   (click)="selectWeekday(weekdayEnum.FRI)">FRI-->
+<!--        </dfm-badge>-->
+<!--        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SAT)"-->
+<!--                   class="pointer"-->
+<!--                   (click)="selectWeekday(weekdayEnum.SAT)">SAT-->
+<!--        </dfm-badge>-->
+<!--        <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SUN)"-->
+<!--                   class="pointer"-->
+<!--                   (click)="selectWeekday(weekdayEnum.SUN)">SUN-->
+<!--        </dfm-badge>-->
+
+<!--        <dfm-badge size="sm" [color]="getBadgeColor(8)"-->
+<!--                   class="pointer"-->
+<!--                   (click)="selectExceptionForm()">EXCEPTION-->
+<!--        </dfm-badge>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <ng-container *ngIf="!isExceptionFormSelected; else exceptionFormContainer">-->
+<!--      <form [formGroup]="practiceHourForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">-->
+<!--        <div formGroupName="practiceHours" class="d-flex flex-column dfm-gap-32 pr-hr-form-fields">-->
+<!--          <div *ngFor="let controlArray of practiceHoursWeekWiseControlsArray()"-->
+<!--               [formArrayName]="getFormArrayName(controlArray)"-->
+<!--               class="d-flex flex-column flex-wrap dfm-gap-16">-->
+<!--              <span class="text-sm font-weight-semi-bold">-->
+<!--                {{ getFormArrayName(controlArray) | weekdayToName }}-->
+<!--              </span>-->
+
+<!--            <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"-->
+<!--                 class="d-flex flex-column dfm-gap-16">-->
+<!--              <div class="d-flex dfm-gap-32 align-items-start">-->
+<!--                &lt;!&ndash;                <div class="d-flex flex-column dfm-gap-8">&ndash;&gt;-->
+<!--                &lt;!&ndash;                  &lt;!&ndash;                    <dfm-input-dropdown [items]="10 | timeInInterval" size="sm" placeholder="Start Time">&ndash;&gt;&ndash;&gt;-->
+
+<!--                &lt;!&ndash;                  &lt;!&ndash;                    </dfm-input-dropdown>&ndash;&gt;&ndash;&gt;-->
+<!--                &lt;!&ndash;                  <label class="text-sm font-weight-medium">Start Time</label>&ndash;&gt;-->
+<!--                &lt;!&ndash;                  <ngb-timepicker formControlName="dayStart" size="small" [spinners]="false"></ngb-timepicker>&ndash;&gt;-->
+<!--                &lt;!&ndash;                  <span class="text-sm text-red"&ndash;&gt;-->
+<!--                &lt;!&ndash;                        *ngIf="controls.get('dayStart')?.hasError('startTimeErr')">Start Time must be smaller.</span>&ndash;&gt;-->
+<!--                &lt;!&ndash;                </div>&ndash;&gt;-->
+
+<!--                <div class="dfm-input-dropdown-wrapper-wo-label dfm-dropdown-input-pr-10 flex-1 min-w-128">-->
+<!--                  <dfm-input-dropdown #time-->
+<!--                                      [items]="timings"-->
+<!--                                      [typeToSearch]="true"-->
+<!--                                      [typeToSearchText]="time.value"-->
+<!--                                      (searchInput)="handleTimeInput($event)"-->
+<!--                                      formControlName="dayStart"-->
+<!--                                      size="md"-->
+<!--                                      placeholder="hh:mm">-->
+<!--                  </dfm-input-dropdown>-->
+<!--                </div>-->
+
+<!--                <div class="dfm-input-dropdown-wrapper-wo-label dfm-dropdown-input-pr-10 flex-1 min-w-128">-->
+<!--                  <dfm-input-dropdown #time-->
+<!--                                      [items]="timings"-->
+<!--                                      [typeToSearch]="true"-->
+<!--                                      [typeToSearchText]="time.value"-->
+<!--                                      (searchInput)="handleTimeInput($event)"-->
+<!--                                      formControlName="dayEnd"-->
+<!--                                      size="md"-->
+<!--                                      placeholder="hh:mm">-->
+<!--                  </dfm-input-dropdown>-->
+<!--                </div>-->
+<!--                &lt;!&ndash;                <div class="d-flex flex-column dfm-gap-8">&ndash;&gt;-->
+<!--                &lt;!&ndash;                  <label class="text-sm font-weight-medium">End Time</label>&ndash;&gt;-->
+<!--                &lt;!&ndash;                  <ngb-timepicker formControlName="dayEnd" size="small" [spinners]="false"></ngb-timepicker>&ndash;&gt;-->
+<!--                &lt;!&ndash;                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>&ndash;&gt;-->
+<!--                &lt;!&ndash;                </div>&ndash;&gt;-->
+
+<!--                <div class="d-flex flex-column dfm-gap-16">-->
+<!--                  <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>-->
+<!--                  <div class="w-fit d-flex justify-content-between dfm-gap-24">-->
+<!--                    <dfm-checkbox class="font-weight-normal" formControlName="isPriority"-->
+<!--                                  (click)="handleRadioButtonClick(controlArray, controls)"></dfm-checkbox>-->
+<!--                  </div>-->
+<!--                </div>-->
+
+<!--                <div class="align-self-end dfm-mb-4">-->
+<!--                  <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"-->
+<!--                                   (click)="removeSlot(controlArray, i)"></dfm-button-icon>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">-->
+<!--              <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>-->
+<!--              <span class="text-sm dfm-text-main-600">Click to add slot</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <dfm-button class="hidden pr-hr-save-changes-btn-mv" color="primary" size="md" (click)="savePracticeHours()">Save-->
+<!--          Changes-->
+<!--        </dfm-button>-->
+<!--      </form>-->
+<!--    </ng-container>-->
+
+<!--    <ng-template #exceptionFormContainer>-->
+<!--      <form [formGroup]="exceptionForm" *ngIf="exceptionFormArray.controls as exceptionControls">-->
+<!--        <div formArrayName="exception" class="d-flex flex-column dfm-gap-24">-->
+<!--          <div class="d-flex dfm-gap-24 align-items-center" [formGroupName]="groupIndex" *ngFor="let control of exceptionControls; let groupIndex = index">-->
+<!--            <div class="d-flex flex-column dfm-gap-8">-->
+<!--              <label class="text-sm font-weight-medium">Exception Date</label>-->
+
+<!--              <div class="dfm-button-group-wrapper h-fit flex-1">-->
+<!--                <div class="input-as-dfm-input flex-1">-->
+<!--                  <input-->
+<!--                    class="w-full min-w-128"-->
+<!--                    formControlName="date"-->
+<!--                    placeholder="yyyy-mm-dd"-->
+<!--                    ngbDatepicker-->
+<!--                    #startedAt="ngbDatepicker"-->
+<!--                  />-->
+<!--                </div>-->
+<!--                <div>-->
+<!--                  <dfm-button-icon-->
+<!--                    color="tertiary-gray"-->
+<!--                    size="md"-->
+<!--                    icon="calendar-date"-->
+<!--                    (click)="startedAt.toggle()"-->
+<!--                  ></dfm-button-icon>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div class="d-flex flex-column dfm-gap-8">-->
+<!--              <label class="text-sm font-weight-medium">Start Time</label>-->
+<!--              <ngb-timepicker formControlName="startTime" size="small" [spinners]="false"></ngb-timepicker>-->
+<!--              &lt;!&ndash;                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>&ndash;&gt;-->
+<!--            </div>-->
+
+<!--            <div class="d-flex flex-column dfm-gap-8">-->
+<!--              <label class="text-sm font-weight-medium">End Time</label>-->
+<!--              <ngb-timepicker formControlName="endTime" size="small" [spinners]="false"></ngb-timepicker>-->
+<!--              &lt;!&ndash;                  <span class="text-sm text-red" *ngIf="controls.get('dayEnd')?.hasError('endTimeErr')">End Time must be greater.</span>&ndash;&gt;-->
+<!--            </div>-->
+
+<!--            <div class="align-self-end dfm-mb-4">-->
+<!--              <dfm-button-icon *ngIf="exceptionControls.length > 1" size="sm" icon="trash-01" color="tertiary"-->
+<!--                               (click)="removeExceptionSlot(groupIndex)"></dfm-button-icon>-->
+<!--            </div>-->
+<!--          </div>-->
+
+<!--          <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addExceptionSlot()">-->
+<!--            <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>-->
+<!--            <span class="text-sm dfm-text-main-600">Click to add exception</span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </form>-->
+<!--    </ng-template>-->
+<!--  </section>-->
+<!--</div>-->

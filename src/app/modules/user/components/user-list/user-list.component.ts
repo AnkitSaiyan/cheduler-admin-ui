@@ -1,19 +1,19 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TableItem } from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Status } from '../../../../shared/models/status.model';
-import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
+import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
+import { getStatusEnum, getUserTypeEnum } from '../../../../shared/utils/getEnums';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { User, UserType } from '../../../../shared/models/user.model';
-import { DownloadService } from '../../../../core/services/download.service';
-import { getUserTypeEnum } from '../../../../shared/utils/getUserTypeEnum';
+import { User } from '../../../../shared/models/user.model';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 import { AddUserComponent } from '../add-user/add-user.component';
 
 @Component({
@@ -22,11 +22,15 @@ import { AddUserComponent } from '../add-user/add-user.component';
   styleUrls: ['./user-list.component.scss'],
 })
 export class UserListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  clipboardData: string = '';
+
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
 
   @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
+
+  @ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
 
   public searchControl = new FormControl('', []);
 
@@ -34,7 +38,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   public columns: string[] = ['First Name', 'Last Name', 'Email', 'Telephone', 'Category', 'Status', 'Actions'];
 
-  public downloadItems: any[] = [];
+  public downloadItems: DownloadType[] = [];
 
   private users$$: BehaviorSubject<any[]>;
 
@@ -50,6 +54,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   public userType = getUserTypeEnum();
 
+  public loading$$ = new BehaviorSubject(true);
+
+  public fileName: string = '';
+
   constructor(
     private userApiSvc: StaffApiService,
     private notificationSvc: NotificationDataService,
@@ -57,6 +65,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     private route: ActivatedRoute,
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.users$$ = new BehaviorSubject<any[]>([]);
@@ -68,15 +77,19 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       this.downloadItems = types;
     });
 
-    this.userApiSvc.staffList$
+    this.userApiSvc.userLists$
       .pipe(
-        map((users) => users.filter((user) => [UserType.Scheduler, UserType.Secretary, UserType.General].includes(user.userType))),
+        tap(() => this.loading$$.next(true)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((users) => {
-        this.users$$.next(users);
-        this.filteredUsers$$.next(users);
-      });
+      .subscribe(
+        (users) => {
+          this.users$$.next(users);
+          this.filteredUsers$$.next(users);
+          this.loading$$.next(false);
+        },
+        (err) => this.loading$$.next(false),
+      );
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
       if (searchText) {
@@ -92,40 +105,61 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+        if (!this.filteredUsers$$.value.length) {
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          value as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.filteredUsers$$.value.map((u: User) => [
+            u.firstname,
+            u.lastname,
+            u.email,
+            u.telephone?.toString(),
+            u.userType,
+            StatusToName[u.status],
+          ]),
+          'users',
+        );
+
+        if (value !== 'PRINT') {
+          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        }
+
+        this.downloadDropdownControl.setValue(null);
+
+        this.cdr.detectChanges();
       });
 
     this.afterBannerClosed$$
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedUserIds.map((id) => ({ id: +id, newStatus: value.newStatus }))];
+            return [...this.selectedUserIds.map((id) => ({ id: +id, status: value.newStatus as number }))];
           }
 
           return [];
         }),
-        // TODO have to implement change status
-        // switchMap((changes) => this.userApiSvc.changeStaffStatus$(changes)),
+        filter((changes) => {
+          if (!changes.length) {
+            this.clearSelected$$.next();
+          }
+          return !!changes.length;
+        }),
+        switchMap((changes) => this.userApiSvc.changeUserStatus$(changes)),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        if (value) {
-          this.notificationSvc.showNotification('Status has changed successfully');
-        }
+        this.notificationSvc.showNotification('Status has changed successfully');
         this.clearSelected$$.next();
       });
 
-    this.userApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-      console.log('appointments: ', appointments);
-      this.users$$.next(appointments);
-      this.filteredUsers$$.next(appointments);
-    });
+    interval(0)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.closeMenus();
+      });
   }
 
   public override ngOnDestroy() {
@@ -151,11 +185,14 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     ]);
   }
 
-  public changeStatus(changes: { id: number | string; newStatus: Status | null }[]) {
-    // this.userApiSvc
-    //   .changeStaffStatus$(changes)
-    //   .pipe(takeUntil(this.destroy$$))
-    //   .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
+  public changeStatus(changes: ChangeStatusRequestData[]) {
+    this.userApiSvc
+      .changeUserStatus$(changes)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(
+        () => this.notificationSvc.showNotification('Status has changed successfully'),
+        (err) => this.notificationSvc.showNotification(err, NotificationType.DANGER),
+      );
   }
 
   public deleteUser(id: number) {
@@ -185,7 +222,23 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+      this.filteredUsers$$.value.forEach((user: User) => {
+        dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.telephone ?? '—'}\t${user.userType ?? '—'}\t${
+          StatusToName[+user.status]
+        }\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public navigateToViewUser(e: TableItem) {
@@ -251,5 +304,14 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         backdropClass: 'modal-backdrop-remove-mv',
       },
     });
+  }
+
+  private closeMenus() {
+    if (window.innerWidth >= 680) {
+      if (this.optionMenu && this.optionMenu.isOpen()) {
+        this.optionMenu.close();
+        this.toggleMenu(true);
+      }
+    }
   }
 }

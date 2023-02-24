@@ -86,12 +86,17 @@
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Address</span>
-          <span class="font-weight-medium flex-1 text-truncate">{{ physicianDetails.address | titlecase }}</span>
+          <span class="font-weight-medium flex-1 text-truncate">{{ physicianDetails.address | titlecase | dashIfNothing }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Gsm</span>
-          <span class="font-weight-medium flex-1 text-truncate">{{ physicianDetails.gsm | titlecase }}</span>
+          <span class="font-weight-medium flex-1 text-truncate">{{ physicianDetails?.gsm | titlecase | dashIfNothing }}</span>
+        </div>
+
+        <div class="d-flex dfm-gap-8 justify-content-between">
+          <span class="flex-1">Rizv No</span>
+          <span class="font-weight-medium flex-1 text-truncate">{{ physicianDetails?.rizivNumber | titlecase | dashIfNothing }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
@@ -101,8 +106,9 @@
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Status</span>
-          <span class="font-weight-medium flex-1"
-                [ngClass]="physicianDetails.status === 0 ? 'dfm-text-danger-600' : 'dfm-text-success-600'">{{ physicianDetails.status | statusName }}</span>
+          <span class="font-weight-medium flex-1" [ngClass]="physicianDetails?.status ? 'dfm-text-success-600' : 'dfm-text-danger-600'">
+            {{ (physicianDetails.status ? 1 : 0 ) | statusName }}
+          </span>
         </div>
       </div>
     </div>
@@ -110,7 +116,7 @@
 
   <div class="hidden bg-white ph-vw-action-buttons-mv">
     <dfm-button color="secondary" size="sm" (click)="deletePhysician(physicianDetails.id)">Delete</dfm-button>
-    <dfm-button color="primary" size="sm" (click)="openEditPhysicianModal()">Edit Physician</dfm-button>
+    <dfm-button color="primary" size="sm" (click)="openEditPhysicianModal(physicianDetails)">Edit Physician</dfm-button>
   </div>
 </div>
 

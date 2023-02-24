@@ -1,3 +1,45 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$diflexmo-admin-primary: mat.define-palette(mat.$indigo-palette);
+$diflexmo-admin-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$diflexmo-admin-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$typography-config: mat.define-typography-config(
+  $font-family: 'Montserrat'
+);
+
+$diflexmo-admin-theme: mat.define-light-theme((
+  color: (
+    primary: $diflexmo-admin-primary,
+    accent: $diflexmo-admin-accent,
+    warn: $diflexmo-admin-warn,
+  ),
+  typography: $typography-config
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+
+@include mat.all-component-themes($diflexmo-admin-theme);
+@include mat.all-component-typographies($typography-config);
+
 @import '../../node_modules/bootstrap/scss/functions';
 
 @import '../../node_modules/diflexmo-angular-design/lib/styles/styles.scss';
@@ -9,7 +51,27 @@
 //  display: none !important;
 //}
 
+$nav-bar-height: 64px;
+$nav-bar-1440-height: 46px;
+$nav-bar-mobile-top-height: 36px;
+$nav-bar-mobile-bottom-height: 56px;
+$body-content-padding-y-total: 48px;
+
+*, body, html {
+  box-sizing: border-box;
+  font-family: Montserrat;
+
+  --content-height: calc(100vh - $nav-bar-height - $body-content-padding-y-total);
+  --content-height-1440: calc(100vh - $nav-bar-1440-height - $body-content-padding-y-total);
+  --content-height-mobile: calc(100vh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total);
+}
+
 // custom styles for dfm elements ===========================================================
+
+.dfm-navigation-bar-container{
+  height: 100dvh !important;
+}
+
 dfm-input-dropdown {
   input {
     border: none !important;
@@ -78,6 +140,15 @@ dfm-input-dropdown {
   margin-bottom: 40px;
 }
 
+.dfm-input-multi-dropdown-wrapper-mb-0 {
+  background: white;
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+  height: fit-content;
+  margin-top: 28px;
+  //margin-bottom: 28px;
+}
+
 dfm-input-dropdown {
   dfm-error {
     position: absolute !important;
@@ -86,6 +157,15 @@ dfm-input-dropdown {
   input {
     padding-right: 40px !important;
   }
+}
+
+.dfm-dropdown-input-pr-10 {
+  dfm-input-dropdown {
+    input {
+      padding-right: 10px !important;
+    }
+  }
+
 }
 
 .dfm-button-icon-bg-transparent {
@@ -311,6 +391,18 @@ ngb-timepicker {
   max-width: inherit;
 }
 
+.popover-p-0 {
+  .popover-body {
+    padding: 0;
+  }
+}
+
+.popover-p-8 {
+  .popover-body {
+    padding: 8px;
+  }
+}
+
 // others ===================================================================
 button:disabled {
   background: #D0D5DD !important;
@@ -493,6 +585,10 @@ ngb-datepicker {
 
 
 // Custom Global styling ==============================================================
+.overflow-auto {
+  overflow: auto;
+}
+
 .overflow-y-auto {
   overflow-y: auto;
 }
@@ -559,6 +655,10 @@ ngb-datepicker {
   max-width: 192px;
 }
 
+.max-w-5 {
+  max-width: 50%;
+}
+
 .max-h-5 {
   max-height: 50vh;
 }
@@ -612,7 +712,7 @@ ngb-datepicker {
   align-items: center;
   justify-content: flex-end;
   column-gap: 8px;
-  padding: 8px 16px;
+  padding: 12px 16px;
   border: none;
 }
 
@@ -699,6 +799,13 @@ ngb-datepicker {
   margin-left: auto;
 }
 
+.validation-error {
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #dc3545;
+}
+
 .modal-backdrop-remove-mv {
   @media (max-width: 680px) {
     opacity: 0 !important;
@@ -773,3 +880,6 @@ ngb-datepicker {
 //  gap: 8px;
 //  max-width: calc(100% - 200px);
 //}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

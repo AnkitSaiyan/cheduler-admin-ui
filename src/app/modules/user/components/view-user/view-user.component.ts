@@ -10,7 +10,7 @@ import { ConfirmActionModalComponent, DialogData } from '../../../../shared/comp
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { User } from '../../../../shared/models/user.model';
-import { getUserTypeEnum } from '../../../../shared/utils/getUserTypeEnum';
+import { getUserTypeEnum } from '../../../../shared/utils/getEnums';
 
 @Component({
   selector: 'dfm-view-user',
@@ -55,7 +55,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.userApiSvc.deleteStaff(id)),
+        switchMap(() => this.userApiSvc.deleteStaff(id)),
         take(1),
       )
       .subscribe(() => {

@@ -1,13 +1,14 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TableItem } from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadService } from '../../../../core/services/download.service';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { Absence } from '../../../../shared/models/absence.model';
@@ -19,6 +20,8 @@ import { AddAbsenceComponent } from '../add-absence/add-absence.component';
   styleUrls: ['./absence-list.component.scss'],
 })
 export class AbsenceListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  clipboardData: string = '';
+
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -27,9 +30,9 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Name', 'Start Date', 'End Date', 'Absence Info', 'Actions'];
+  public columns: string[] = ['Title', 'Start Date', 'End Date', 'Absence Info', 'Actions'];
 
-  public downloadItems: any[] = [];
+  public downloadItems: DownloadType[] = [];
 
   private absences$$: BehaviorSubject<any[]>;
 
@@ -42,13 +45,15 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     private route: ActivatedRoute,
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
+    private datePipe: DatePipe,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.absences$$ = new BehaviorSubject<any[]>([]);
     this.filteredAbsences$$ = new BehaviorSubject<any[]>([]);
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe((absences) => {
@@ -71,13 +76,29 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+        if (!this.filteredAbsences$$.value.length) {
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          value as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.filteredAbsences$$.value.map((u: Absence) => [
+            u.name,
+            u.startedAt ? new Date(u.startedAt)?.toDateString() : '',
+            u.endedAt ? new Date(u?.endedAt)?.toDateString() : '',
+            u.info,
+          ]),
+          'absences',
+        );
+
+        if (value !== 'PRINT') {
+          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        }
+
+        this.downloadDropdownControl.setValue('');
+
+        this.cdr.detectChanges();
       });
   }
 
@@ -87,8 +108,12 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
   private handleSearch(searchText: string): void {
     this.filteredAbsences$$.next([
-      ...this.absences$$.value.filter((absence) => {
-        return absence.name?.toLowerCase()?.includes(searchText);
+      ...this.absences$$.value.filter((absence: Absence) => {
+        return (
+          absence.name?.toLowerCase()?.includes(searchText) ||
+          this.datePipe.transform(absence.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ||
+          this.datePipe.transform(absence.endedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText)
+        );
       }),
     ]);
   }
@@ -106,18 +131,31 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.absenceApiSvc.deleteAbsence(id)),
+        switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),
         take(1),
       )
-      .subscribe((response) => {
-        if (response) {
-          this.notificationSvc.showNotification('Absence deleted successfully');
-        }
+      .subscribe((res) => {
+        console.log(res);
+        this.notificationSvc.showNotification('Absence deleted successfully');
       });
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+      this.filteredAbsences$$.value.forEach((absence: Absence) => {
+        dataString += `${absence.name}\t${absence.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public navigateToViewAbsence(e: TableItem) {
@@ -172,7 +210,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
   public openAddAbsenceModal(absenceDetails?: Absence) {
     this.modalSvc.open(AddAbsenceComponent, {
-      data: { edit: !!absenceDetails?.id, absenceDetails },
+      data: { edit: !!absenceDetails?.id, absenceID: absenceDetails?.id },
       options: {
         size: 'xl',
         centered: true,

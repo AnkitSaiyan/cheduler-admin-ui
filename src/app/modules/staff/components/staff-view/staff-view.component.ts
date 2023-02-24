@@ -13,6 +13,7 @@ import { NotificationDataService } from '../../../../core/services/notification-
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { AddStaffComponent } from '../add-staff/add-staff.component';
+import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
 
 interface TimeSlot {
   id?: number;
@@ -84,8 +85,8 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     // creating week-wise slots
     practiceAvailabilities.forEach((practice) => {
       const timeSlot: TimeSlot = {
-        dayStart: practice.dayStart,
-        dayEnd: practice.dayEnd,
+        dayStart: get24HourTimeString(practice.dayStart),
+        dayEnd: get24HourTimeString(practice.dayEnd),
         id: practice.id,
       };
 
@@ -97,9 +98,9 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     });
 
     // sorting slots by start time
-    for (let weekday = 1; weekday <= 7; weekday++) {
+    for (let weekday = 0; weekday < 7; weekday++) {
       if (weekdayToSlotsObj[weekday.toString()]?.length) {
-        weekdayToSlotsObj[weekday.toString()].sort((a, b) => new Date(a.dayStart).getTime() - new Date(b.dayStart).getTime());
+        weekdayToSlotsObj[weekday.toString()].sort((a, b) => timeToNumber(a.dayStart) - timeToNumber(b.dayStart));
       }
     }
 
@@ -110,7 +111,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 
       let done = true;
 
-      for (let weekday = 1; weekday <= 7; weekday++) {
+      for (let weekday = 0; weekday < 7; weekday++) {
         if (weekdayToSlotsObj[weekday.toString()]?.length > slotNo) {
           allWeekTimeSlots[weekday.toString()] = { ...allWeekTimeSlots, ...weekdayToSlotsObj[weekday.toString()][slotNo] };
           if (done) {
@@ -133,7 +134,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
         thursday: { ...allWeekTimeSlots['4'] },
         friday: { ...allWeekTimeSlots['5'] },
         saturday: { ...allWeekTimeSlots['6'] },
-        sunday: { ...allWeekTimeSlots['7'] },
+        sunday: { ...allWeekTimeSlots['0'] },
       });
     }
 
@@ -159,7 +160,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.staffApiSvc.deleteStaff(id)),
+        switchMap(() => this.staffApiSvc.deleteStaff(id)),
         take(1),
       )
       .subscribe(() => {

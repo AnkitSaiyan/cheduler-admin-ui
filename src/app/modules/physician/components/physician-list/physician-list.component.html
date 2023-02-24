@@ -1,4 +1,4 @@
-<div class="d-flex flex-column h-100 position-relative dfm-px-8 ph-li-main-wrapper">
+<div class="d-flex flex-column h-100 dfm-gap-16 position-relative ph-li-main-wrapper">
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 ph-li-section-1">
       <dfm-button
@@ -18,7 +18,7 @@
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper ph-li-button-dropdown-group">
-        <div class="dfm-button-icon-bg-transparent">
+        <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
           <dfm-button-icon
             color="tertiary-gray"
             size="md"
@@ -58,7 +58,16 @@
     </div>
   </section>
 
-  <section class="overflow-y-auto ph-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredPhysicians$$ | async as physicians">
+  <dfm-input
+    class="w-full hidden ph-li-search-mv"
+    size="md"
+    placeholder="Search by Physician Name, Email, Status"
+    icon="search-sm"
+    [formControl]="searchControl"
+  ></dfm-input>
+
+  <section class="overflow-y-auto ph-li-table-wrapper"
+           *ngIf="filteredPhysicians$$ | async as physicians">
     <dfm-table [items]="physicians" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewPhysician($event)"
                class="dfm-table-wrapper">
@@ -93,6 +102,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
+              ngbPopover="Status" triggers="mouseenter:mouseleave"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
             ></dfm-button>
 
@@ -101,6 +111,9 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
+              ngbPopover="Status" triggers="mouseenter:mouseleave"
+              [openDelay]="200"
+              popoverClass="popover-p-8"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
             ></dfm-button>
 
@@ -108,6 +121,9 @@
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
+              ngbPopover="Edit" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
               (click)="$event.stopPropagation(); openAddPhysicianModal(item);"
             ></dfm-button>
 
@@ -115,70 +131,80 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
+              ngbPopover="Delete" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
               (click)="$event.stopPropagation(); deletePhysician(item.id)"
             ></dfm-button>
           </div>
 
-          <div class="">
-            <div ngbDropdown #actionButtonsMenu="ngbDropdown">
-              <div class="shadow-lg ph-li-action-buttons-menu ph-li-menus" ngbDropdownMenu
-                   aria-labelledby="dropdownManual">
-                <div ngbDropdownItem *ngIf="!item.status"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])">
-                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-                </div>
+          <!-- Action Menu -->
+          <dfm-button
+            [ngbPopover]="actionMenu"
+            autoClose="autoClose"
+            triggers="click"
+            container="body"
+            placement="left"
+            popoverClass="popover-p-0"
+            class="hidden ph-li-vertical-dots-btn"
+            color="link-gray"
+            size="sm"
+            trailingIcon="dots-vertical"
+            (click)="$event.stopPropagation(); toggleMenu(true)"
+          ></dfm-button>
 
-                <div ngbDropdownItem *ngIf="item.status"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])">
-                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-                </div>
+          <ng-template #actionMenu>
+            <div class="ph-li-menus"
+                 aria-labelledby="dropdownManual">
+              <div *ngIf="!item.status"
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])" ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+              </div>
 
-                <div ngbDropdownItem (click)="$event.stopPropagation(); openAddPhysicianModal(item)"
-                     class="position-relative">
-                  <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
-                  <div class="menu-point-forward shadow-sm"></div>
-                </div>
+              <div *ngIf="item.status"
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])" ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+              </div>
 
-                <div ngbDropdownItem (click)="$event.stopPropagation(); deletePhysician(item.id)">
-                  <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
-                </div>
+              <div (click)="$event.stopPropagation(); openAddPhysicianModal(item)" ngbPopover="Edit" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
+              </div>
+
+              <div (click)="$event.stopPropagation(); deletePhysician(item.id)" ngbPopover="Delete" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>
+          </ng-template>
+          <!-- Action Menu ends -->
 
-            <dfm-button
-              class="hidden ph-li-vertical-dots-btn"
-              color="link-gray"
-              size="sm"
-              trailingIcon="dots-vertical"
-              (click)="$event.stopPropagation(); actionButtonsMenu.open();"
-            ></dfm-button>
-
-          </div>
         </dfm-table-body-cell>
       </ng-template>
     </dfm-table>
-    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!physicians.length">
-      No data found
+    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"
+         *ngIf="!physicians.length && (loading$$ | async) === false">
+      No Physician found
     </div>
   </section>
-  <div ngbDropdown #optionsMenu="ngbDropdown">
-    <div class="shadow-lg ph-li-plus-btn-menu ph-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
-      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">
-        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
-      </div>
-    </div>
-  </div>
 
-  <dfm-button color="secondary" size="md" class="hidden shadow-lg ph-li-plus-btn rounded-2"
-              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">
-    <dfm-icon #showMoreButtonIcon name="plus" class="ph-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
-  </dfm-button>
+<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+<!--    <div class="shadow-lg ph-li-plus-btn-menu ph-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div class="hidden shadow-lg ph-li-plus-btn rounded-2" (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">-->
+<!--    <dfm-button color="secondary" size="md" class="h-full">-->
+<!--      <dfm-icon #showMoreButtonIcon name="plus" class="ph-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+<!--    </dfm-button>-->
+<!--  </div>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedPhysicianIDs.length"

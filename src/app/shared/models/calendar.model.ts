@@ -1,12 +1,12 @@
 export enum Weekday {
-  ALL,
+  SUN,
   MON,
   TUE,
   WED,
   THU,
   FRI,
   SAT,
-  SUN,
+  ALL,
 }
 
 export interface TimeSlot {

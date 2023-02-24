@@ -7,7 +7,7 @@ import { ModalService } from 'src/app/core/services/modal.service';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
 import { ConfirmActionModalComponent, DialogData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
-import { getReadStatusEnum } from 'src/app/shared/utils/getStatusEnum';
+import { getReadStatusEnum } from 'src/app/shared/utils/getEnums';
 
 @Component({
   selector: 'dfm-appointments-list',

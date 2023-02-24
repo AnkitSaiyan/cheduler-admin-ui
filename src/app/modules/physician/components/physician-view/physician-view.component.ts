@@ -10,6 +10,7 @@ import { ConfirmActionModalComponent, DialogData } from '../../../../shared/comp
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
+import { Status } from '../../../../shared/models/status.model';
 
 @Component({
   selector: 'dfm-physician-view',
@@ -18,6 +19,8 @@ import { PhysicianAddComponent } from '../physician-add/physician-add.component'
 })
 export class PhysicianViewComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public physicianDetails$$ = new BehaviorSubject<Physician | undefined>(undefined);
+
+  public statusEnum = Status;
 
   constructor(
     private physicianApiSvc: PhysicianApiService,
@@ -52,7 +55,7 @@ export class PhysicianViewComponent extends DestroyableComponent implements OnIn
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.physicianApiSvc.deletePhysician(id)),
+        switchMap(() => this.physicianApiSvc.deletePhysician(id)),
         take(1),
       )
       .subscribe(() => {
@@ -69,6 +72,6 @@ export class PhysicianViewComponent extends DestroyableComponent implements OnIn
         centered: true,
         backdropClass: 'modal-backdrop-remove-mv',
       },
-    }).result;
+    });
   }
 }

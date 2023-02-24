@@ -10,13 +10,13 @@ export enum RoomType {
 export interface Room {
   id: number;
   name: string;
-  roomNo: number;
+  placeInAgenda: number;
   description: string;
   type: RoomType;
   availabilityType: AvailabilityType;
   status: Status;
-  placeInAgenda?: number;
   practiceAvailability: PracticeAvailability[];
+  roomNo?: number;
   examLists?: number[];
 }
 
@@ -24,10 +24,10 @@ export interface AddRoomRequestData {
   name: string;
   description: string;
   type: RoomType;
-  availabilityType?: AvailabilityType;
+  placeInAgenda: number;
   status?: Status;
-  roomNo: number;
-  placeInAgenda?: number;
+  availabilityType: AvailabilityType;
+  roomNo?: number;
   practiceAvailability?: PracticeAvailability[];
   id?: number;
 }
@@ -35,4 +35,9 @@ export interface AddRoomRequestData {
 export interface RoomsGroupedByType {
   public: Room[];
   private: Room[];
+}
+
+export interface UpdateRoomPlaceInAgendaRequestData {
+  id: number;
+  placeInAgenda: number;
 }

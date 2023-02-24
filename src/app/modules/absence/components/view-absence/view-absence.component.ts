@@ -10,8 +10,6 @@ import { ConfirmActionModalComponent, DialogData } from '../../../../shared/comp
 import { Absence, RepeatType } from '../../../../shared/models/absence.model';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
-import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 
 @Component({
   selector: 'dfm-view-absence',
@@ -23,18 +21,12 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
   public repeatType = RepeatType;
 
-  public staffNames: string[] = [];
-
-  public roomNames: string[] = [];
-
   constructor(
     private absenceApiSvc: AbsenceApiService,
     private routerStateSvc: RouterStateService,
     private notificationSvc: NotificationDataService,
     private router: Router,
     private modalSvc: ModalService,
-    private staffApiSvc: StaffApiService,
-    private roomApiSvc: RoomsApiService,
   ) {
     super();
   }
@@ -50,31 +42,6 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
         this.absenceDetails$$.next(absenceDetails);
         console.log(absenceDetails);
       });
-
-    this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
-      const staffIdToNameMap = new Map<number, string>();
-      staffs.forEach((staff) => staffIdToNameMap.set(+staff.id, `${staff.firstname} ${staff.lastname}`));
-      this.absenceDetails$$.value?.user.forEach((id) => {
-        const name = staffIdToNameMap.get(+id.id);
-        if (name) {
-          this.staffNames.push(name);
-        }
-      });
-    });
-
-    this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      console.log('rooms: ', rooms);
-      const roomIdToNameMap = new Map<number, string>();
-      console.log('roomIdToNameMap: ', roomIdToNameMap);
-      rooms.forEach((room) => roomIdToNameMap.set(+room.id, room.name));
-      this.absenceDetails$$.value?.rooms.forEach((id) => {
-        const name = roomIdToNameMap.get(+id.name);
-        console.log('name: ', name);
-        if (id.name) {
-          this.roomNames.push(id.name);
-        }
-      });
-    });
   }
 
   public deleteAbsence(id: number) {
@@ -90,8 +57,11 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
     modalRef.closed
       .pipe(
-        filter((res: boolean) => {console.log("res", res); return res;}),
-        switchMap(()=> this.absenceApiSvc.deleteAbsence(id)),
+        filter((res: boolean) => {
+          console.log('res', res);
+          return res;
+        }),
+        switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),
         take(1),
       )
       .subscribe(() => {
@@ -102,13 +72,13 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
   public openEditAbsenceModal() {
     this.modalSvc.open(AddAbsenceComponent, {
-      data: { edit: !!this.absenceDetails$$.value?.id, absenceDetails: { ...this.absenceDetails$$.value } },
+      data: { edit: !!this.absenceDetails$$.value?.id, absenceID: this.absenceDetails$$.value?.id },
       options: {
         size: 'xl',
         centered: true,
         backdropClass: 'modal-backdrop-remove-mv',
         keyboard: false,
       },
-    }).result
+    });
   }
 }

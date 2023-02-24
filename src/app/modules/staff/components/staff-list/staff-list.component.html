@@ -1,4 +1,4 @@
-<div class="d-flex flex-column h-100 position-relative dfm-px-8 sf-ls-main-wrapper">
+<div class="d-flex flex-column position-relative dfm-gap-16 sf-ls-main-wrapper">
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 sf-li-section-1">
       <dfm-button
@@ -12,13 +12,13 @@
       <dfm-input
         class="flex-1 sf-li-search"
         size="md"
-        placeholder="Search by Staff Name, Type, Email..."
+        placeholder="Search by Staff First Name, Last Name, Type and Email"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper sf-li-button-dropdown-group">
-        <div class="dfm-button-icon-bg-transparent">
+        <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
           <dfm-button-icon
             color="tertiary-gray"
             size="md"
@@ -58,7 +58,15 @@
     </div>
   </section>
 
-  <section class="overflow-y-auto sf-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredStaffs$$ | async as staffs">
+  <dfm-input
+    size="md"
+    placeholder="Search by First Name, Last Name, Type and Email"
+    icon="search-sm"
+    class="w-full hidden sf-li-search-mv"
+    [formControl]="searchControl"
+  ></dfm-input>
+
+  <section class="overflow-y-auto sf-li-table-wrapper" *ngIf="filteredStaffs$$ | async as staffs">
     <dfm-table [items]="staffs" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewStaff($event)"
                class="dfm-table-wrapper">
@@ -71,7 +79,7 @@
         <dfm-table-body-cell>{{ item.lastname | titlecase | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.userType | titlecase | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
-          <span class="text-truncate">{{ item.email | dashIfNothing }}</span>
+          <div class="text-truncate">{{ item.email | dashIfNothing }}</div>
         </dfm-table-body-cell>
 
         <dfm-table-body-cell>
@@ -96,7 +104,10 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Active }])"
+              ngbPopover="Change to Active" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
+              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
             ></dfm-button>
 
             <dfm-button
@@ -104,13 +115,19 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Inactive }])"
+              ngbPopover="Change to Inactive" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
+              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
             ></dfm-button>
 
             <dfm-button
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
+              ngbPopover="Edit" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
               (click)="$event.stopPropagation()"
               [routerLink]="['./', item.id, 'edit']"
               [state]="{ comingFromRoute: 'staff', edit: true }"
@@ -120,6 +137,9 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
+              ngbPopover="Delete" triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
               (click)="$event.stopPropagation(); deleteStaff(item.id)"
             ></dfm-button>
           </div>
@@ -129,11 +149,11 @@
               <div class="shadow-lg sf-li-action-buttons-menu sf-li-menus" ngbDropdownMenu
                    aria-labelledby="dropdownManual">
                 <div ngbDropdownItem *ngIf="item.status === statusType.Inactive"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Active }])">
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])">
                   <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
                 </div>
                 <div ngbDropdownItem *ngIf="item.status === statusType.Active"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, newStatus: statusType.Inactive }])">
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])">
                   <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
                 </div>
                 <div ngbDropdownItem (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"
@@ -163,24 +183,25 @@
       No data found
     </div>
   </section>
-  <div ngbDropdown #optionsMenu="ngbDropdown">
-    <div class="shadow-lg sf-li-plus-btn-menu sf-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
-      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">
-        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
-      </div>
-    </div>
-  </div>
 
-  <dfm-button color="secondary" size="md" class="hidden shadow-lg sf-li-plus-btn rounded-2"
-              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">
-    <dfm-icon #showMoreButtonIcon name="plus" class="sf-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
-  </dfm-button>
+  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+  <!--    <div class="shadow-lg sf-li-plus-btn-menu sf-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
+
+  <!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg sf-li-plus-btn rounded-2"-->
+  <!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
+  <!--    <dfm-icon #showMoreButtonIcon name="plus" class="sf-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+  <!--  </dfm-button>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedStaffIds.length"

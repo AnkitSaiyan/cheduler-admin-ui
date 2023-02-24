@@ -1,20 +1,22 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ChangeStatusRequestData, Status } from '../../../../shared/models/status.model';
+import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
+import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
+import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadService } from '../../../../core/services/download.service';
+import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { Statuses } from '../../../../shared/utils/const';
 import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
+import { User } from '../../../../shared/models/user.model';
 
 @Component({
   selector: 'dfm-physician-list',
@@ -22,11 +24,17 @@ import { PhysicianAddComponent } from '../physician-add/physician-add.component'
   styleUrls: ['./physician-list.component.scss'],
 })
 export class PhysicianListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  clipboardData: string = '';
+
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
 
   @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
+
+  @ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
+
+  // @ViewChild('actionsMenuButton') private actionsMenuButton!: ButtonComponent;
 
   public searchControl = new FormControl('', []);
 
@@ -48,6 +56,8 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public statusType = getStatusEnum();
 
+  public loading$$ = new BehaviorSubject(true);
+
   constructor(
     private physicianApiSvc: PhysicianApiService,
     private notificationSvc: NotificationDataService,
@@ -55,19 +65,26 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     private route: ActivatedRoute,
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.physicians$$ = new BehaviorSubject<any[]>([]);
     this.filteredPhysicians$$ = new BehaviorSubject<any[]>([]);
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
-    this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
-      this.physicians$$.next(physicians);
-      this.filteredPhysicians$$.next(physicians);
-    });
+    this.physicianApiSvc.physicians$
+      .pipe(
+        tap(() => this.loading$$.next(true)),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe((physicians) => {
+        this.physicians$$.next(physicians);
+        this.filteredPhysicians$$.next(physicians);
+        this.loading$$.next(false);
+      });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
       if (searchText) {
@@ -83,13 +100,24 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+        if (!this.filteredPhysicians$$.value.length) {
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          value as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.filteredPhysicians$$.value.map((u: User) => [u.firstname, u.lastname, u.userType, u.email, StatusToName[+u.status]]),
+          'physician',
+        );
+
+        if (value !== 'PRINT') {
+          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        }
+
+        this.downloadDropdownControl.setValue(null);
+
+        this.cdr.detectChanges();
       });
 
     this.afterBannerClosed$$
@@ -100,15 +128,24 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
           }
           return [];
         }),
-        filter((changes) => !!changes.length),
+        filter((changes) => {
+          if (!changes.length) {
+            this.clearSelected$$.next();
+          }
+          return !!changes.length;
+        }),
         switchMap((changes) => this.physicianApiSvc.changePhysicianStatus$(changes)),
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        if (value) {
-          this.notificationSvc.showNotification('Status has changed successfully');
-        }
+        this.notificationSvc.showNotification('Status has changed successfully');
         this.clearSelected$$.next();
+      });
+
+    interval(0)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.closeMenus();
       });
   }
 
@@ -172,7 +209,21 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+      this.filteredPhysicians$$.value.forEach((physician: Physician) => {
+        dataString += `${physician.firstname}\t${physician.lastname}\t ${physician.email}\t ${StatusToName[+physician.status]}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public navigateToViewPhysician(e: TableItem) {
@@ -235,5 +286,14 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         backdropClass: 'modal-backdrop-remove-mv',
       },
     });
+  }
+
+  private closeMenus() {
+    if (window.innerWidth >= 680) {
+      if (this.optionMenu && this.optionMenu.isOpen()) {
+        this.optionMenu.close();
+        this.toggleMenu(true);
+      }
+    }
   }
 }

@@ -16,11 +16,13 @@ export interface Exam {
   availabilityType: AvailabilityType;
   count?: number;
   status: Status;
-  user?: User[];
+  users?: User[];
   usersList: number[];
+  mandatoryUsers: number[];
   roomsForExam: {
     duration: number;
     roomId: number;
+    name: string;
   }[];
   rooms?: Room[];
   uncombinables?: number[];
@@ -41,6 +43,9 @@ export interface CreateExamRequestData {
   nursingCount: number;
   secretaryCount: number;
   usersList: number[];
+  mandatoryUsers: number[];
+  availabilityType: AvailabilityType;
   practiceAvailability: PracticeAvailability[];
+  status: Status;
   id?: number;
 }

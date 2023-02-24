@@ -1,36 +1,163 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as Excel from 'exceljs';
+
+export type DownloadAsType = 'CSV' | 'XLSX' | 'PDF' | 'PRINT';
+
+export interface DownloadType {
+  name: string;
+  value: DownloadAsType;
+  description: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class DownloadService {
-  private downloadItems = [
+  private downloadItems: DownloadType[] = [
     {
       name: 'CSV',
-      value: 'csv',
+      value: 'CSV',
       description: 'Download as CSV',
     },
     {
       name: 'Excel',
-      value: 'xls',
+      value: 'XLSX',
       description: 'Download as Excel',
     },
     {
-      name: 'Pdf',
-      value: 'pdf',
+      name: 'PDF',
+      value: 'PDF',
       description: 'Download as PDF',
     },
     {
       name: 'Print',
-      value: 'print',
+      value: 'PRINT',
       description: 'Print appointments',
     },
   ];
+
+  private href = {
+    CSV: (textFile: string): Blob => new Blob([textFile], { type: 'data:text/csv;charset=utf-8' }),
+    XLSX: (file: string): Blob => new Blob([file], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+  };
 
   constructor() {}
 
   get fileTypes$(): Observable<any[]> {
     return of(this.downloadItems);
+  }
+
+  public downloadJsonAs(downloadAs: DownloadAsType, headers: string[], data: string[][], filename = 'data'): void {
+    switch (downloadAs) {
+      case 'CSV':
+        this.download(this.generateCSV(headers, data), downloadAs, `${filename}.csv`);
+        break;
+      case 'PDF':
+        this.generatePDF(headers, data, filename);
+        break;
+      case 'XLSX':
+        this.generateExcel(headers, data).then((file) => {
+          this.download(file, downloadAs, `${filename}_${new Date().toString()}.xlsx`);
+        });
+        break;
+      case 'PRINT':
+        this.printPDF(headers, data);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private generateCSV(headers: string[], data: string[][]): string {
+    let csv: string = '';
+
+    if (!headers.length) {
+      return '';
+    }
+
+    headers.forEach((title, index) => {
+      if (title && title.length) {
+        csv += `${title[0]}${title.slice(1)}`;
+      }
+
+      if (index < headers.length - 1) {
+        csv += ',';
+      }
+    });
+
+    csv += '\n';
+    if (data.length) {
+      data.forEach((row) => (csv += `${row.join(',')}\n`));
+    }
+    console.log(csv);
+    return csv;
+  }
+
+  private generatePDF(headers: string[], data: string[][], filename: string) {
+    // eslint-disable-next-line new-cap
+    const pdf = new jsPDF();
+    autoTable(pdf, {
+      head: [headers],
+      body: data,
+    });
+
+    pdf.save(`${filename}.pdf`);
+  }
+
+  private async generateExcel(headers: string[], data: string[][]) {
+    const workBook = new Excel.Workbook();
+    // const workBook = new Workbook();
+
+    workBook.created = new Date();
+    const workSheet = workBook.addWorksheet();
+
+    const headerIndex = 1;
+    // let colIndex = 1;
+
+    headers.forEach((header, index) => {
+      workSheet.getRow(headerIndex).getCell(index + 1).value = header;
+    });
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const column of workSheet.columns) {
+      column.width = 20;
+    }
+
+    data.forEach((row) => {
+      workSheet.addRow(row);
+    });
+
+    return workBook.xlsx.writeBuffer();
+  }
+
+  private download(file: any, type: DownloadAsType, filename: string) {
+    const anchorElement = document.createElement('a');
+
+    anchorElement.href = URL.createObjectURL(this.href[type](file));
+    anchorElement.target = '_blank';
+    anchorElement.download = filename;
+    anchorElement.classList.add('hidden');
+
+    document.body.appendChild(anchorElement);
+
+    anchorElement.click();
+
+    document.body.removeChild(anchorElement);
+  }
+
+  private printPDF(headers: string[], data: string[][]) {
+    // eslint-disable-next-line new-cap
+    const pdf = new jsPDF();
+
+    autoTable(pdf, {
+      head: [headers],
+      body: data,
+    });
+
+    pdf.autoPrint();
+    pdf.output('dataurlnewwindow');
   }
 }

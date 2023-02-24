@@ -4,20 +4,26 @@
 
   .ad-rm-section2 {
     // viewport - m-top - modal header height - modal footer header - p-bottom - m-bottom - extra
-    max-height: calc(100vh - 24px - 76px - 64px - 16px - 24px - 48px);
+    min-height: 320px;
+    max-height: calc(100dvh - 24px - 76px - 64px - 16px - 24px - 48px);
     overflow-y: auto;
 
     .ad-rm-availability-form-fields {
       max-height: 672px;
-      flex-wrap: wrap;
+      //flex-wrap: wrap;
+    }
+
+    .ad-rm-time-dropdown {
+      width: 120px;
+      min-width: 92px;
     }
   }
 }
 
 @media (max-width: 1000px) {
   .ad-rm-availability-form-fields {
-    max-height: 100% !important;
-    flex-wrap: nowrap !important;
+    //max-height: 100% !important;
+    //flex-wrap: nowrap !important;
   }
 
   .ad-rm-weekdays-tab {
@@ -28,14 +34,20 @@
 @media (max-width: 680px) {
   .ad-rm-main-wrapper {
     position: fixed;
-    height: calc(100vh - 40px);
+    height: calc(100dvh - 40px);
     width: 100vw;
-    top: 40px;
+    top: 45px;
     left: 0;
     border-radius: 0 !important;
     background: var(--dfm-base-layout-bg) !important;
+    padding: 0;
+
+    .ad-rm-section1 {
+      padding: 15px 16px 20px;
+    }
 
     .ad-rm-title-buttons-mv {
+      margin-left: 8px;
       display: flex;
     }
 
@@ -45,7 +57,15 @@
 
     .ad-rm-section2 {
       // viewport - nav bar height - modal header height - modal footer header - extra space
-      max-height: calc(100vh - 40px - 76px - 64px - 16px);
+      max-height: calc(100dvh - 36px - 76px - 48px - 36px) !important;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    .ad-rm-time-dropdown {
+      width: 100% !important;
     }
 
     form {

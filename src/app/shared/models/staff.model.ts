@@ -1,18 +1,21 @@
 import { UserType } from './user.model';
 import { PracticeAvailability } from './practice.model';
 import { NameValue } from '../components/search-modal.component';
+import { Status } from './status.model';
 
 export interface AddStaffRequestData {
   firstname: string;
   lastname: string;
-  email: string;
+  email: string | null;
   telephone: string | number;
   address?: string;
   userType: UserType;
+  availabilityType?: number;
   practiceAvailability?: PracticeAvailability[];
   examLists?: number[];
   gsm?: string;
   info?: string;
+  status?: Status;
   id?: number;
 }
 

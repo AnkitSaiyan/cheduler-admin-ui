@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DesignSystemModule, TableModule } from 'diflexmo-angular-design';
-import { NgChartsModule } from 'ng2-charts';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
@@ -13,6 +12,9 @@ import {
   NgbTimepickerModule,
 } from '@ng-bootstrap/ng-bootstrap';
 import { RouterLink } from '@angular/router';
+import { NgChartsModule } from 'ng2-charts';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { DestroyableComponent } from './components/destroyable.component';
 import { StatusNamePipe } from './pipes/status-name.pipe';
 import { DashIfNothingPipe } from './pipes/dash-if-nothing.pipe';
@@ -35,6 +37,10 @@ import { DfmCalendarWeekViewComponent } from './components/dfm-calendar/dfm-cale
 import { DfmCalendarDayViewComponent } from './components/dfm-calendar/dfm-calendar-day-view/dfm-calendar-day-view.component';
 import { NumberToDatePipe } from './pipes/number-to-date.pipe';
 import { LargestPipe } from './pipes/largest.pipe';
+import { NameInputDirective } from './directives/name-input.directive';
+import { EmailInputDirective } from './directives/email-input.directive';
+import { NumberInputDirective } from './directives/number-input.directive';
+import { NumberArrayPipe } from './pipes/number-array.pipe';
 
 @NgModule({
   declarations: [
@@ -60,6 +66,10 @@ import { LargestPipe } from './pipes/largest.pipe';
     DfmCalendarDayViewComponent,
     NumberToDatePipe,
     LargestPipe,
+    NameInputDirective,
+    EmailInputDirective,
+    NumberInputDirective,
+    NumberArrayPipe,
   ],
   imports: [CommonModule, DesignSystemModule, ReactiveFormsModule, NgbDropdownModule, NgbPopoverModule, NgbAccordionModule, RouterLink],
   exports: [
@@ -94,6 +104,12 @@ import { LargestPipe } from './pipes/largest.pipe';
     NgbPopoverModule,
     NgbAccordionModule,
     LargestPipe,
+    DragDropModule,
+    NameInputDirective,
+    EmailInputDirective,
+    NumberInputDirective,
+    NumberArrayPipe,
+    ClipboardModule,
   ],
 })
 export class SharedModule {}

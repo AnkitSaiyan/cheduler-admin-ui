@@ -13,6 +13,7 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
+import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
 
 @Component({
   selector: 'dfm-view-room',
@@ -67,8 +68,8 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     // creating week-wise slots
     practiceAvailabilities.forEach((practice) => {
       const timeSlot: TimeSlot = {
-        dayStart: practice.dayStart,
-        dayEnd: practice.dayEnd,
+        dayStart: get24HourTimeString(practice.dayStart),
+        dayEnd: get24HourTimeString(practice.dayEnd),
         id: practice.id,
       };
 
@@ -80,9 +81,9 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     });
 
     // sorting slots by start time
-    for (let weekday = 1; weekday <= 7; weekday++) {
+    for (let weekday = 0; weekday < 7; weekday++) {
       if (weekdayToSlotsObj[weekday.toString()]?.length) {
-        weekdayToSlotsObj[weekday.toString()].sort((a, b) => new Date(a.dayStart).getTime() - new Date(b.dayStart).getTime());
+        weekdayToSlotsObj[weekday.toString()].sort((a, b) => timeToNumber(a.dayStart) - timeToNumber(b.dayStart));
       }
     }
 
@@ -93,7 +94,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
 
       let done = true;
 
-      for (let weekday = 1; weekday <= 7; weekday++) {
+      for (let weekday = 0; weekday < 7; weekday++) {
         if (weekdayToSlotsObj[weekday.toString()]?.length > slotNo) {
           allWeekTimeSlots[weekday.toString()] = { ...allWeekTimeSlots, ...weekdayToSlotsObj[weekday.toString()][slotNo] };
           if (done) {
@@ -116,7 +117,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
         thursday: { ...allWeekTimeSlots['4'] },
         friday: { ...allWeekTimeSlots['5'] },
         saturday: { ...allWeekTimeSlots['6'] },
-        sunday: { ...allWeekTimeSlots['7'] },
+        sunday: { ...allWeekTimeSlots['0'] },
       });
     }
 
@@ -136,7 +137,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=> this.roomApiSvc.deleteRoom(id)),
+        switchMap(() => this.roomApiSvc.deleteRoom(id)),
         take(1),
       )
       .subscribe(() => {
@@ -147,12 +148,12 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
 
   public openEditRoomModal() {
     this.modalSvc.open(AddRoomModalComponent, {
-      data: { edit: !!this.roomDetails$$.value?.id, roomDetails: { ...this.roomDetails$$.value } },
+      data: { edit: !!this.roomDetails$$.value?.id, roomID: this.roomDetails$$.value?.id },
       options: {
         size: 'lg',
         centered: true,
         backdropClass: 'modal-backdrop-remove-mv',
       },
-    }).result;
+    });
   }
 }

@@ -5,10 +5,10 @@ import { Subject } from 'rxjs';
   template: '',
 })
 export class DestroyableComponent implements OnDestroy {
-  protected destroy$$ = new Subject();
+  protected destroy$$ = new Subject<void>();
 
   private destroy() {
-    this.destroy$$.next('');
+    this.destroy$$.next();
     this.destroy$$.unsubscribe();
   }
 

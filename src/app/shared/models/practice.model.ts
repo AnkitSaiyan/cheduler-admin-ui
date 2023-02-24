@@ -7,7 +7,6 @@ export interface PracticeAvailability {
   dayEnd: string;
 }
 
-
 export interface PracticeAvailabilityServer {
   id?: number;
   weekday: Weekday;

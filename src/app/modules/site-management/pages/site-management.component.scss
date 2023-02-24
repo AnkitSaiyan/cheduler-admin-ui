@@ -18,28 +18,44 @@
     }
   }
 
-  .st-mg-site-name, .st-mg-warning-text {
-    width: 592px;
-  }
+  //.st-mg-site-name, .st-mg-warning-text {
+  //  width: 592px;
+  //}
 
   .st-mg-appointment-cancellation {
     dfm-input, .st-mg-time-duration-type {
       max-width: 128px;
+      min-width: 128px;
     }
   }
 }
 
 @media (max-width: 1440px) {
-  .st-mg-main-wrapper {
-    max-height: calc(100vh - 36px - 24px - 40px - 16px - 16px);
+  .st-mg-section2 {
+    max-height: calc(100dvh - 46px - 48px - 16px - 40px) !important;
+  }
+}
+
+@media (max-width: 960px) {
+  .st-mg-section2 {
+    max-height: calc(100dvh - 36px - 56px - 48px - 40px - 16px) !important;
   }
 }
 
 @media (max-width: 680px) {
-  .st-mg-main-wrapper {
-    max-height: calc(100vh - 38px - 24px - 36px - 16px - 16px - 20px);
+  .temp-elements {
+    display: none;
+  }
 
+  .st-mg-appointment-cancellation {
+    min-width: auto;
+    max-width: 100%;
+  }
+
+  .st-mg-main-wrapper {
     .st-mg-title-buttons-mv {
+      margin-left: 8px;
+      margin-bottom: 8px;
       display: flex;
     }
 
@@ -48,10 +64,15 @@
     }
 
     .st-mg-section2 {
+      max-height: calc(100dvh - 36px - 56px - 48px - 44px - 16px) !important;
       background: transparent;
       padding: 0;
       box-shadow: none;
       border-radius: 0;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       form {
         .st-mg-choose-file-container {

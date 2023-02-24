@@ -1,7 +1,8 @@
 <div class="bg-white rounded-4 ad-ph-main-wrapper dfm-px-16">
-  <section class="modal-header">
+  <section class="modal-header ad-ph-section1">
     <h5 class="modal-title ad-ph-title-buttons">{{ modalData.edit ? 'Edit' : 'Add' }} Physician</h5>
-    <dfm-button-icon class="ad-ph-title-buttons" color="tertiary-gray" icon="x-close" (click)="closeModal(false)"></dfm-button-icon>
+    <dfm-button-icon class="ad-ph-title-buttons" color="tertiary-gray" icon="x-close"
+                     (click)="closeModal(false)"></dfm-button-icon>
 
     <div class="hidden dfm-gap-8 align-items-center ad-ph-title-buttons-mv">
       <div class="rounded-circle overflow-hidden">
@@ -24,27 +25,37 @@
 
   <section class="modal-body dfm-pb-24 ad-ph-section2">
     <form [formGroup]="addPhysicianForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
-      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
-        <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="First Name *" formControlName="firstname">
+      <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
+        <dfm-input #firstname [dfmNameInput]="firstname" class="flex-1" size="md" placeholder="Enter first name"
+                   label="First Name *" formControlName="firstname">
         </dfm-input>
-
-        <dfm-input class="flex-1" size="md" placeholder="Enter last name" label="Last Name *" formControlName="lastname">
-        </dfm-input>
-      </div>
-
-      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
-        <dfm-input class="flex-1" size="md" placeholder="Enter email" label="Email *" formControlName="email">
-        </dfm-input>
-
-        <dfm-input class="flex-1" size="md" placeholder="Enter rizv no" label="Rizv Number *" formControlName="rizivNumber">
+        <dfm-input #lastname [dfmNameInput]="lastname" class="flex-1" size="md" placeholder="Enter last name"
+                   label="Last Name *" formControlName="lastname">
         </dfm-input>
       </div>
 
-      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
-        <dfm-input type="number" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone *" formControlName="telephone">
-        </dfm-input>
+      <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
+        <div class="d-flex flex-column w-full flex-1">
+          <dfm-input [type]="'email'" class="flex-1" size="md" placeholder="Enter email" label="Email"
+                     formControlName="email" (focusout)="handleEmailInput($event)">
+          </dfm-input>
+          <small *ngIf="addPhysicianForm.get('email')?.hasError('email')" class="validation-error">Email is Invalid.</small>
+        </div>
 
-        <dfm-input class="flex-1" size="md" placeholder="Enter GSM" label="GSM *" formControlName="gsm">
+        <dfm-input class="flex-1" size="md" placeholder="Enter rizv no" label="Rizv Number"
+                   formControlName="rizivNumber">
+        </dfm-input>
+      </div>
+
+      <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
+        <div class="d-flex flex-column w-full flex-1">
+          <dfm-input #phone [dfmNumberInput]="phone" (focusout)="handleNumberFocusOut($event)" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone *"
+                     formControlName="telephone">
+          </dfm-input>
+          <small *ngIf="addPhysicianForm.get('telephone')?.hasError('telephone')" class="validation-error">Email is Invalid.</small>
+        </div>
+
+        <dfm-input class="flex-1" size="md" placeholder="Enter GSM" label="GSM" formControlName="gsm">
         </dfm-input>
       </div>
 
@@ -53,14 +64,15 @@
       </div>
 
       <div>
-        <dfm-checkbox formControlName="notifyDoctor" label="Email the doctor if a patient makes an appointment that he has prescribed."></dfm-checkbox>
+        <dfm-checkbox formControlName="notifyDoctor"
+                      label="Email the doctor if a patient makes an appointment that he has prescribed."></dfm-checkbox>
       </div>
     </form>
   </section>
 
   <section class="modal-footer ad-ph-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
-    <dfm-button color="primary" size="md"
+    <dfm-button color="primary" size="md" [disabled]="(loading$$ | async) === true"
                 (click)="savePhysician()">{{ modalData.edit ? 'Save Changes' : 'Add Physician' }}</dfm-button>
   </section>
 </div>

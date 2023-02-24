@@ -3,6 +3,11 @@ export enum Status {
   Active,
 }
 
+export const StatusToName: { [key: number]: StatusName } = {
+  0: 'Inactive',
+  1: 'Active',
+};
+
 export type StatusName = 'Active' | 'Inactive';
 
 export enum AppointmentStatus {

@@ -1,13 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { take, takeUntil } from 'rxjs';
+import { BehaviorSubject, take, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Weekday } from '../../../../shared/models/calendar.model';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AddPhysicianRequestData, Physician } from '../../../../shared/models/physician.model';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
+import { Status } from '../../../../shared/models/status.model';
+import { EMAIL_REGEX } from '../../../../shared/utils/const';
 
 interface FormValues {
   firstname: string;
@@ -18,6 +19,7 @@ interface FormValues {
   telephone: number;
   gsm: string;
   notifyDoctor: boolean;
+  status: Status;
 }
 
 @Component({
@@ -30,7 +32,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 
   public modalData!: { edit: boolean; physicianDetails: Physician };
 
-  public weekdayEnum = Weekday;
+  public loading$$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private modalSvc: ModalService,
@@ -60,12 +62,13 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
     this.addPhysicianForm = this.fb.group({
       firstname: [physicianDetails?.firstname ?? '', [Validators.required]],
       lastname: [physicianDetails?.lastname ?? '', [Validators.required]],
-      email: [physicianDetails?.email ?? '', [Validators.required]],
-      rizivNumber: [physicianDetails?.rizivNumber ?? null, [Validators.required]],
+      email: [physicianDetails?.email ?? '', []],
+      rizivNumber: [physicianDetails?.rizivNumber ?? null, []],
       telephone: [physicianDetails?.telephone, [Validators.required]],
-      gsm: [physicianDetails?.gsm, [Validators.required]],
+      gsm: [physicianDetails?.gsm, []],
       address: [physicianDetails?.address, []],
       notifyDoctor: [!!physicianDetails?.notifyDoctor, []],
+      status: [this.modalData.edit ? !!physicianDetails?.status : false, []],
     });
   }
 
@@ -81,37 +84,65 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       return;
     }
 
-    console.log(this.formValues);
+    this.loading$$.next(true);
 
     const addPhysicianReqData: AddPhysicianRequestData = {
       ...this.formValues,
+      status: this.formValues.status,
     };
 
     if (this.modalData?.physicianDetails?.id) {
       addPhysicianReqData.id = this.modalData.physicianDetails.id;
     }
 
+    if (!addPhysicianReqData.email) {
+      addPhysicianReqData.email = null;
+    }
+
     console.log(addPhysicianReqData);
 
     if (this.modalData.edit) {
       this.physicianApiSvc
-      .updatePhysician$(addPhysicianReqData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Physician updated successfully`);
-        this.closeModal(true);
-      });
-    }else{
+        .updatePhysician$(addPhysicianReqData)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe(
+          () => {
+            this.notificationSvc.showNotification(`Physician updated successfully`);
+            this.closeModal(true);
+            this.loading$$.next(false);
+          },
+          () => this.loading$$.next(false),
+        );
+    } else {
       this.physicianApiSvc
         .addPhysician$(addPhysicianReqData)
         .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`Physician added successfully`);
-          this.closeModal(true);
-        });
+        .subscribe(
+          () => {
+            this.notificationSvc.showNotification(`Physician added successfully`);
+            this.closeModal(true);
+            this.loading$$.next(false);
+          },
+          () => this.loading$$.next(false),
+        );
+    }
+  }
+
+  public handleEmailInput(e: Event): void {
+    const inputText = (e.target as HTMLInputElement).value;
+
+    if (!inputText) {
+      return;
     }
 
-
-  
+    if (!inputText.match(EMAIL_REGEX)) {
+      this.addPhysicianForm.get('email')?.setErrors({
+        email: true,
+      });
+    } else {
+      this.addPhysicianForm.get('email')?.setErrors(null);
+    }
   }
+
+  public handleNumberFocusOut($event: FocusEvent) {}
 }

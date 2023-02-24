@@ -6,12 +6,12 @@
 section.vw-ex-section3  {
   // sec is section
   // page height - top nav - content padding - sec1 height - sec gap - sec2 height - sec gap - extra space
-  max-height: calc(100vh - 64px - 24px - 24px - 24px - 256px - 24px - 24px);
+  max-height: 100%;
 }
 
 @media (max-width: 1440px) {
   section.vw-ex-section3 {
-    max-height: calc(100vh - 36px - 24px - 24px - 24px - 256px - 24px - 24px);
+    max-height: 100%;
   }
 
   section.vw-ex-section2 > div {
@@ -20,6 +20,10 @@ section.vw-ex-section3  {
 }
 
 @media (max-width: 680px) {
+  section.vw-ex-section3 {
+    max-height: 100%;
+  }
+
   .vw-ex-main-wrapper {
     padding: 0;
   }
@@ -42,12 +46,12 @@ section.vw-ex-section3  {
   }
 
   section.vw-ex-section2 {
-    margin-top: 56px;
+    margin-top: 64px;
   }
 
   section.vw-ex-section3 {
     // page height - top nav - content padding - sec1 height - sec gap - sec gap - bottom bar height
-    max-height: calc(100vh - 36px - 24px - 24px - 24px - 24px - 65px);
+    //max-height: calc(100dvh - 36px - 24px - 24px - 24px - 24px - 65px);
   }
 
   .vw-ex-action-buttons-mv {

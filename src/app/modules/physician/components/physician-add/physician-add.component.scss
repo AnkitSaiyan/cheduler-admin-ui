@@ -4,7 +4,7 @@
 
   .ad-ph-section2 {
     // viewport - m-top - modal header height - modal footer header - p-bottom - m-bottom - extra
-    max-height: calc(100vh - 24px - 76px - 64px - 16px - 24px - 48px);
+    max-height: calc(100dvh - 24px - 76px - 64px - 16px - 24px - 48px);
     overflow-y: auto;
   }
 }
@@ -12,14 +12,20 @@
 @media (max-width: 680px) {
   .ad-ph-main-wrapper {
     position: fixed;
-    height: calc(100vh - 40px);
+    height: calc(100dvh - 40px);
     width: 100vw;
-    top: 40px;
+    top: 45px;
     left: 0;
     border-radius: 0 !important;
     background: var(--dfm-base-layout-bg) !important;
+    padding: 0;
+
+    .ad-ph-section1 {
+      padding: 15px 16px 20px;
+    }
 
     .ad-ph-title-buttons-mv {
+      margin-left: 8px;
       display: flex;
     }
 
@@ -29,12 +35,16 @@
 
     .ad-ph-section2 {
       // viewport - nav bar height - modal header height - modal footer header - extra space
-      max-height: calc(100vh - 40px - 76px - 64px - 16px);
+      max-height: calc(100dvh - 36px - 76px - 48px - 36px) !important;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       form {
         & > div {
           flex-direction: column;
-          
+
           dfm-input {
             width: 100%;
           }
