@@ -1,6 +1,6 @@
 <div class="bg-white rounded-4 ad-pr-main-wrapper dfm-px-16">
   <section class="modal-header">
-    <h5 class="modal-title ad-pr-title-buttons">{{ modalData?.edit ? 'Edit' : 'Add' }} Priority Slot</h5>
+    <h5 class="modal-title ad-pr-title-buttons">{{ modalData?.edit ? 'Edit' : 'Add' }} Priority Slots</h5>
     <dfm-button-icon class="ad-pr-title-buttons" color="tertiary-gray" icon="x-close"
                      (click)="closeModal(false)"></dfm-button-icon>
 
@@ -18,7 +18,7 @@
       <dfm-button
         color="link"
         size="lg"
-      > {{ modalData?.edit ? 'Edit' : 'Add' }} Priority Slot
+      > {{ modalData?.edit ? 'Edit' : 'Add' }} Priority Slots
       </dfm-button>
     </div>
   </section>
@@ -98,7 +98,7 @@
         </div>
       </div>
 
-      <div class="d-flex dfm-gap-32 flex-wrap ad-ab-radio-group mt-4">
+      <div class="d-flex dfm-gap-32 flex-wrap ad-pr-radio-group mt-4">
         <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
           <dfm-input-dropdown #slotStartTime
                               [items]="startTimes"
@@ -111,7 +111,7 @@
                               placeholder="hh:mm">
           </dfm-input-dropdown>
 
-          <small class="validation-error" *ngIf="slotStartTime.control.hasError('time')">Start Time should be smaller than
+          <small class="validation-error text-center d-flex" *ngIf="slotStartTime.control.hasError('time')">Start Time should be smaller than
             End Time</small>
         </div>
 
@@ -128,7 +128,7 @@
                               label="End time"
                               placeholder="hh:mm">
           </dfm-input-dropdown>          
-          <small class="validation-error" *ngIf="slotEndTime.control.hasError('time')">
+          <small class="validation-error text-center d-flex" *ngIf="slotEndTime.control.hasError('time')">
             End Time should be greater than Start Time
           </small>
         </div>
@@ -154,7 +154,7 @@
 
         <div class="d-flex flex-column dfm-gap-16 flex-1">
           <span
-            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
+            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority *</span>
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
             <dfm-radio-button class="font-weight-normal" label="High" [checkedValue]="priorityType.High"
                               formControlName="priority"></dfm-radio-button>
@@ -236,6 +236,6 @@
   <section class="modal-footer ad-pr-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
     <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true"
-                (click)="savePrioritySlot()">{{ modalData?.edit ? 'Save Changes' : 'Add Priority Slot' }}</dfm-button>
+                (click)="savePrioritySlot()">{{ modalData?.edit ? 'Save Changes' : 'Add Priority Slots' }}</dfm-button>
   </section>
 </div>
