@@ -280,22 +280,22 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       examDetails.users.forEach((u) => {
         if (u.isMandate) {
           mandatory.push(u.id.toString());
-        }
-
-        switch (u.userType) {
-          case UserType.Assistant:
-            assistants.push(u.id.toString());
-            break;
-          case UserType.Radiologist:
-            radiologists.push(u.id.toString());
-            break;
-          case UserType.Nursing:
-            nursing.push(u.id.toString());
-            break;
-          case UserType.Secretary:
-            secretaries.push(u.id.toString());
-            break;
-          default:
+        } else {
+          switch (u.userType) {
+            case UserType.Assistant:
+              assistants.push(u.id.toString());
+              break;
+            case UserType.Radiologist:
+              radiologists.push(u.id.toString());
+              break;
+            case UserType.Nursing:
+              nursing.push(u.id.toString());
+              break;
+            case UserType.Secretary:
+              secretaries.push(u.id.toString());
+              break;
+            default:
+          }
         }
       });
     }
