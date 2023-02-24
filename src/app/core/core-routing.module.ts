@@ -59,6 +59,7 @@ const routes: Routes = [
       },
       {
         path: 'priority-slots',
+        title: 'Diflexmo - Priority Slots',
         loadChildren: async () => (await import('../modules/priority-slots/priority-slots.module')).PrioritySlotsModule,
       },
       {
