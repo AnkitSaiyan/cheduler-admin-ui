@@ -29,7 +29,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Start Date', 'End Date', 'Priority', 'Actions'];
+  public columns: string[] = ['Start', 'End', 'Priority', 'Actions'];
 
   public downloadItems: DownloadType[] = [];
 

@@ -1,7 +1,7 @@
-.ab-li-button-dropdown-group {
+.pr-li-button-dropdown-group {
     background: transparent;
   
-    .ab-li-info-cell {
+    .pr-li-info-cell {
       max-width: 512px;
     }
   
@@ -9,25 +9,31 @@
       max-width: 152px;
     }
   }
+
+  
+  .pr-li-searchbar-mv{
+    display: none;
+    margin-top: 10px;
+  }
   
   @media (max-width: 680px) {
-    .ab-li-main-wrapper {
+    .pr-li-main-wrapper {
       padding: 0;
     }
   
-    .ab-li-section-1 {
+    .pr-li-section-1 {
       justify-content: space-between;
     }
   
-    .ab-li-search, .ab-li-button-dropdown-group {
+    .pr-li-search, .pr-li-button-dropdown-group {
       display: none !important;
     }
   
-    .ab-li-title-buttons {
+    .pr-li-title-buttons {
       display: block;
     }
   
-    .ab-li-plus-btn {
+    .pr-li-plus-btn {
       display: block;
       position: absolute;
       bottom: 0;
@@ -37,7 +43,7 @@
       width: 44px;
     }
   
-    .ab-li-menus {
+    .pr-li-menus {
       min-width: fit-content !important;
       max-width: 44px;
       border: none;
@@ -54,22 +60,22 @@
       }
     }
   
-    .ab-li-plus-btn-menu {
+    .pr-li-plus-btn-menu {
       position: fixed;
       bottom: 144px;
       right: 28px;
     }
   
-    .ab-li-action-buttons-menu {
+    .pr-li-action-buttons-menu {
       right: 28px;
       top: -48px;
     }
   
-    .ab-li-action-buttons {
+    .pr-li-action-buttons {
       display: none !important;
     }
   
-    .ab-li-vertical-dots-btn {
+    .pr-li-vertical-dots-btn {
       display: block;
     }
   
@@ -80,6 +86,10 @@
       right: -8px;
       bottom: 8px;
       border-radius: 4px;
+    }
+
+    .pr-li-searchbar-mv{
+      display: block;
     }
   }
   

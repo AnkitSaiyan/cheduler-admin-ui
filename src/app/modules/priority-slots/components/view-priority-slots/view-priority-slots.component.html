@@ -1,33 +1,34 @@
-<div *ngIf="prioritySlotDetails$$ | async as priorityDetails" class="d-flex flex-column dfm-gap-24 dfm-px-8 us-vw-main-wrapper">
-  <section class="d-flex align-items-center justify-content-between dfm-gap-16 us-vw-section1">
-    <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary us-vw-title-buttons">
-      <dfm-button color="link" size="lg" routerLink="/priority-slots">Priority Slot </dfm-button>
+<div *ngIf="prioritySlotDetails$$ | async as priorityDetails" class="d-flex flex-column dfm-gap-24 dfm-px-8 pr-vw-main-wrapper">
+  <section class="d-flex align-items-center justify-content-between dfm-gap-16 pr-vw-section1">
+    <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary pr-vw-title-buttons">
+      <dfm-button color="link" size="lg" routerLink="/priority-slots">Priority Slots </dfm-button>
       <div style="width: 16px; height: 16px" class="h-fit">
         <dfm-icon name="chevron-right"></dfm-icon>
       </div>
       <dfm-button color="link-gray" size="lg">View </dfm-button>
     </div>
 
-    <div class="d-flex dfm-gap-16 us-vw-action-buttons">
-      <dfm-button color="link" size="md" leadingIcon="pencil-02" (click)="openEditPriorityModal(priorityDetails.id)">Edit Priority Slot </dfm-button>
+    <div class="d-flex dfm-gap-16 pr-vw-action-buttons">
+      <dfm-button color="link" size="md" leadingIcon="pencil-02" (click)="openEditPriorityModal(priorityDetails.id)">Edit Priority Slots </dfm-button>
 
       <dfm-button color="link" size="md" class="text-nowrap" leadingIcon="trash-01" (click)="deletePriority(priorityDetails.id)">
-        Delete Priority Slot
+        Delete Priority Slots
       </dfm-button>
     </div>
 
     <!-- Mobile View -->
-    <div class="hidden dfm-gap-8 align-items-center us-vw-title-buttons-mv">
+    <div class="hidden dfm-gap-8 align-items-center pr-vw-title-buttons-mv">
       <div class="rounded-circle overflow-hidden">
-        <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" routerLink="/user"> </dfm-button-icon>
+        <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" routerLink="/priority-slots"> </dfm-button-icon>
       </div>
 
-      <dfm-button color="link" size="lg" routerLink="./">Priority Slot View </dfm-button>
+      <dfm-button color="link" size="lg" routerLink="./">Priority Slots View </dfm-button>
     </div>
     <!-- ** -->
   </section>
 
-  <section class="d-flex dfm-gap-24 pr-vw-section2">
+  <section class="d-flex dfm-gap-24 pr-vw-section2 pr-vw-section-mv">
+    
     <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
       <header class="d-flex align-items-center dfm-gap-8">
         <div class="dfm-button-gray-400">
@@ -42,14 +43,34 @@
           <span class="flex-1">{{ priorityDetails.name | titlecase }}</span>
         </div> -->
 
-        <div class="d-flex dfm-gap-8 justify-content-between">
+        <div class="d-flex dfm-gap-8 justify-content-left">
           <span class="flex-1">Start Date</span>
-          <span class="flex-1">{{ priorityDetails.startedAt | date : 'dd/MM/yyyy, HH:mm' }}</span>
+          <span class="flex-1" *ngIf="!priorityDetails.endedAt"
+            >{{ priorityDetails.startedAt | date : 'dd/MM/yyyy, HH:mm' }} - {{ priorityDetails.slotEndTime?.slice(0, -3) }}</span
+          >
+          <span class="flex-1" *ngIf="priorityDetails.endedAt">{{ priorityDetails.startedAt | date : 'dd/MM/yyyy, HH:mm' }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="priorityDetails.isRepeat">
           <span class="flex-1">End Date</span>
-          <span class="flex-1 text-truncate">{{ priorityDetails.endedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</span>
+          <span class="flex-1">{{ priorityDetails.endedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</span>
+        </div>
+
+        <div class="d-flex dfm-gap-8 justify-content-between">
+          <span class="flex-1">Priority</span>
+          <span class="text-break flex-1" style="white-space: pre-wrap">{{ priorityDetails.priority }}</span>
+        </div>
+
+        <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="priorityDetails.users">
+          <span class="flex-1">Radiologist </span>
+          <div class="radiologist-name d-flex flex-column flex-1">
+            <span class="text-break" style="white-space: pre-wrap" *ngIf="priorityDetails.users.length === 0"> — </span>
+            <div class="d-flex flex-column" *ngIf="priorityDetails.users.length > 0">
+              <span class="text-break flex-1" style="white-space: pre-wrap" *ngFor="let radiologist of priorityDetails.users"
+                >{{ radiologist.firstname }} {{ radiologist.lastname }}</span
+              >
+            </div>
+          </div>
         </div>
 
         <!-- <div class="d-flex dfm-gap-8 justify-content-between">
@@ -75,7 +96,7 @@
       </div>
     </div>
 
-    <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
+    <!-- <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
       <header class="d-flex align-items-center dfm-gap-8">
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
@@ -91,12 +112,15 @@
       <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="priorityDetails.users">
         <span class="flex-1">Radiologist </span>
         <div class="radiologist-name d-flex flex-column">
-          <span class="text-break" style="white-space: pre-wrap" *ngFor="let radiologist of priorityDetails.users">{{ radiologist.firstname }} {{radiologist.lastname}}</span>
+          <span class="text-break" style="white-space: pre-wrap" *ngIf="(priorityDetails.users.length === 0)"> — </span>
+          <div *ngIf="priorityDetails.users.length>0">
+            <span class="text-break" style="white-space: pre-wrap" *ngFor="let radiologist of priorityDetails.users">{{ radiologist.firstname }} {{radiologist.lastname }}</span>
+          </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
-    <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
+    <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 pr-vw-sec2-card">
       <header class="d-flex align-items-center dfm-gap-8">
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
@@ -122,33 +146,35 @@
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Repeat</span>
-          <span class="flex-1">{{ priorityDetails.isRepeat ? 'Yes' : 'All Day' | dashIfNothing }}</span>
+          <span class="flex-1">{{ priorityDetails.isRepeat ? 'Yes' : ('All Day' | dashIfNothing) }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Repeat Every</span>
-          <span class="flex-1">{{ priorityDetails.repeatFrequency }}
+          <span class="flex-1"
+            >{{ priorityDetails.repeatFrequency }}
             <span *ngIf="priorityDetails.repeatFrequency">{{ priorityDetails.repeatType | repeatTypeToName }}</span>
           </span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Repeat On</span>
-          <span class="flex-1"
-                *ngIf="priorityDetails.repeatDays && priorityDetails.repeatType === repeatType.Monthly">{{ priorityDetails.repeatDays.split(',') | joinWithAnd | dashIfNothing }}</span>
-          <span class="flex-1"
-                *ngIf="priorityDetails.repeatDays && priorityDetails.repeatType === repeatType.Weekly">{{ priorityDetails.repeatDays.split(',') | weekdayToName : true | joinWithAnd | dashIfNothing }}</span>
-          <span class="flex-1"
-                *ngIf="priorityDetails.repeatDays && priorityDetails.repeatType === repeatType.Daily">{{ '' | dashIfNothing }}</span>
+          <span class="flex-1" *ngIf="priorityDetails.repeatDays && priorityDetails.repeatType === repeatType.Monthly">{{
+            priorityDetails.repeatDays.split(',') | joinWithAnd | dashIfNothing
+          }}</span>
+          <span class="flex-1" *ngIf="priorityDetails.repeatDays && priorityDetails.repeatType === repeatType.Weekly">{{
+            priorityDetails.repeatDays.split(',') | weekdayToName : true | joinWithAnd | dashIfNothing
+          }}</span>
+          <span class="flex-1" *ngIf="priorityDetails.repeatDays && priorityDetails.repeatType === repeatType.Daily">{{ '' | dashIfNothing }}</span>
           <span *ngIf="!priorityDetails.repeatDays" class="flex-1">{{ '' | dashIfNothing }}</span>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="hidden bg-white us-vw-action-buttons-mv">
+  <div class="hidden bg-white pr-vw-action-buttons-mv">
     <dfm-button color="secondary" size="sm" (click)="deletePriority(priorityDetails.id)">Delete</dfm-button>
-    <dfm-button color="primary" size="sm" (click)="openEditPriorityModal(priorityDetails.id)">Edit Priority Slot</dfm-button>
+    <dfm-button color="primary" size="sm" (click)="openEditPriorityModal(priorityDetails.id)">Edit Priority Slots</dfm-button>
   </div>
 </div>
 
