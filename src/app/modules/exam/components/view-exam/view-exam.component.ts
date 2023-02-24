@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, of, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { User, UserType } from '../../../../shared/models/user.model';
@@ -12,7 +12,7 @@ import { ModalService } from '../../../../core/services/modal.service';
 import { EXAM_ID } from '../../../../shared/utils/const';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
-import { Exam } from '../../../../shared/models/exam.model';
+import { Exam, Uncombinables } from '../../../../shared/models/exam.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
@@ -24,6 +24,8 @@ import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time
 })
 export class ViewExamComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public examDetails$$ = new BehaviorSubject<Exam | undefined>(undefined);
+
+  public uncombinablesExam$$ = new BehaviorSubject<Uncombinables[]>([]);
 
   public staffsGroupedByTypes: {
     mandatory: NameValue[];
@@ -65,7 +67,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
       )
       .subscribe((exam) => {
         this.examDetails$$.next(exam);
-
+        this.uncombinablesExam$$.next(exam?.uncombinablesExam ?? []);
         if (exam?.practiceAvailability?.length) {
           this.practiceAvailability$$.next([...this.getPracticeAvailability(exam.practiceAvailability)]);
         }
