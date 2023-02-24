@@ -78,31 +78,31 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 
   private saveStaffDetails(users: User[]) {
     users.forEach((user) => {
-      const nameValue: NameValue = {
-        name: `${user.firstname} ${user.lastname}`,
-        value: user.id,
-      };
-
-      if (user.isMandate) {
-        this.staffsGroupedByTypes.mandatory.push(nameValue);
-      }
-
-      switch (user.userType) {
-        case UserType.Assistant:
-          this.staffsGroupedByTypes.assistants.push(nameValue);
-          break;
-        case UserType.Radiologist:
-          this.staffsGroupedByTypes.radiologists.push(nameValue);
-          break;
-        case UserType.Nursing:
-          this.staffsGroupedByTypes.nursing.push(nameValue);
-          break;
-        case UserType.Secretary:
-        case UserType.Scheduler:
-          this.staffsGroupedByTypes.secretaries.push(nameValue);
-          break;
-        default:
-        // this.staffsGroupedByTypes.mandatory.push(nameValue);
+      if (!user.isMandate) {
+        const nameValue: NameValue = {
+          name: `${user.firstname} ${user.lastname}`,
+          value: user.id,
+        };
+        if (user.isMandate) {
+          this.staffsGroupedByTypes.mandatory.push(nameValue);
+        }
+        switch (user.userType) {
+          case UserType.Assistant:
+            this.staffsGroupedByTypes.assistants.push(nameValue);
+            break;
+          case UserType.Radiologist:
+            this.staffsGroupedByTypes.radiologists.push(nameValue);
+            break;
+          case UserType.Nursing:
+            this.staffsGroupedByTypes.nursing.push(nameValue);
+            break;
+          case UserType.Secretary:
+          case UserType.Scheduler:
+            this.staffsGroupedByTypes.secretaries.push(nameValue);
+            break;
+          default:
+          // this.staffsGroupedByTypes.mandatory.push(nameValue);
+        }
       }
     });
   }
