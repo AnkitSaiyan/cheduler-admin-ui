@@ -78,14 +78,13 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 
   private saveStaffDetails(users: User[]) {
     users.forEach((user) => {
-      if (!user.isMandate) {
-        const nameValue: NameValue = {
-          name: `${user.firstname} ${user.lastname}`,
-          value: user.id,
-        };
-        if (user.isMandate) {
-          this.staffsGroupedByTypes.mandatory.push(nameValue);
-        }
+      const nameValue: NameValue = {
+        name: `${user.firstname} ${user.lastname}`,
+        value: user.id,
+      };
+      if (user.isMandate) {
+        this.staffsGroupedByTypes.mandatory.push(nameValue);
+      } else {
         switch (user.userType) {
           case UserType.Assistant:
             this.staffsGroupedByTypes.assistants.push(nameValue);
