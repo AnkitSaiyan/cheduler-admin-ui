@@ -5,13 +5,13 @@
         color="link"
         size="lg"
         routerLink="./"
-      >Practice Hours
+      >{{'PracticeHours' | translate}}
       </dfm-button>
 
       <div class="d-flex dfm-gap-16 align-items-center">
 <!--        <dfm-button color="secondary" size="md">Cancel</dfm-button>-->
         <dfm-button color="primary" size="md" (click)="savePracticeHours()"
-                    [disabled]="(submitting$$ | async) === true">Save Changes
+                    [disabled]="(submitting$$ | async) === true">{{'SaveChanges' | translate}}
         </dfm-button>
       </div>
     </div>
@@ -27,50 +27,50 @@
         </dfm-button-icon>
       </div>
 
-      <dfm-button color="link" size="lg">Practice Hours</dfm-button>
+      <dfm-button color="link" size="lg">{{'PracticeHours' | translate}}</dfm-button>
     </div>
     <!--    -->
   </section>
 
   <section class="dfm-card d-flex flex-column dfm-gap-24 dfm-p-16 pr-hr-section2 hide-scrollbar">
     <div class="d-flex flex-column dfm-gap-8">
-      <span class="text-sm font-weight-semi-bold">Choose Day</span>
+      <span class="text-sm font-weight-semi-bold">{{'ChooseDay' | translate}}</span>
 
       <div class="d-flex dfm-gap-16 weekday-header pr-hr-weekdays-tab hide-scrollbar">
         <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)"
                    class="pointer"
-                   (click)="selectWeekday(weekdayEnum.ALL)">VIEW ALL
+                   (click)="selectWeekday(weekdayEnum.ALL)">{{'ViewAll' | translate | uppercase }}
         </dfm-badge>
         <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.MON)"
                    class="pointer"
-                   (click)="selectWeekday(weekdayEnum.MON)">MON
+                   (click)="selectWeekday(weekdayEnum.MON)">{{'MON' | translate}}
         </dfm-badge>
         <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.TUE)"
                    class="pointer"
-                   (click)="selectWeekday(weekdayEnum.TUE)">TUE
+                   (click)="selectWeekday(weekdayEnum.TUE)">{{'TUE' | translate}}
         </dfm-badge>
         <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.WED)"
                    class="pointer"
-                   (click)="selectWeekday(weekdayEnum.WED)">WED
+                   (click)="selectWeekday(weekdayEnum.WED)">{{'WED' | translate}}
         </dfm-badge>
         <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.THU)"
                    class="pointer"
-                   (click)="selectWeekday(weekdayEnum.THU)">THU
+                   (click)="selectWeekday(weekdayEnum.THU)">{{'THU' | translate}}
         </dfm-badge>
         <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.FRI)"
                    class="pointer"
-                   (click)="selectWeekday(weekdayEnum.FRI)">FRI
+                   (click)="selectWeekday(weekdayEnum.FRI)">{{'FRI' | translate}}
         </dfm-badge>
         <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SAT)"
                    class="pointer"
-                   (click)="selectWeekday(weekdayEnum.SAT)">SAT
+                   (click)="selectWeekday(weekdayEnum.SAT)">{{'SAT' | translate}}
         </dfm-badge>
         <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SUN)"
                    class="pointer"
-                   (click)="selectWeekday(weekdayEnum.SUN)">SUN
+                   (click)="selectWeekday(weekdayEnum.SUN)">{{'SUN' | translate}}
         </dfm-badge>
       </div>
-    </div>
+    </div>         
 
 
     <form [formGroup]="practiceHourForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
@@ -83,7 +83,7 @@
                  *ngIf="[1,2,3,4].includes(getFormArrayName(controlArray))"
                  class="d-flex flex-column dfm-gap-16 flex-1">
               <span
-                class="text-sm font-weight-semi-bold w-fit">{{ getFormArrayName(controlArray) | weekdayToName }}</span>
+                class="text-sm font-weight-semi-bold w-fit">{{ getFormArrayName(controlArray) | weekdayToName | translate }}</span>
 
               <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
                    class="d-flex flex-column dfm-gap-16 flex-1 min-w-128">
@@ -98,15 +98,14 @@
                                             [typeToSearchText]="start.value"
                                             (searchInput)="handleTimeInput($event,controls?.get('dayStart'),controls?.get('startTimings'), start)"
                                             (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
-                                            label="Start Time"
+                                            label="{{'StartTime' | translate}}"
                                             formControlName="dayStart"
                                             size="md"
                                             placeholder="hh:mm">
                         </dfm-input-dropdown>
                       </div>
 
-                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">Invalid
-                        Time.</small>
+                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
                     </div>
 
 
@@ -119,15 +118,14 @@
                                             [typeToSearchText]="end.value"
                                             (searchInput)="handleTimeInput($event,controls?.get('dayEnd'),controls?.get('endTimings'), end)"
                                             (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
-                                            label="End Time"
+                                            label="{{'EndTime' | translate}}"
                                             formControlName="dayEnd"
                                             size="md"
                                             placeholder="hh:mm">
                         </dfm-input-dropdown>
                       </div>
 
-                      <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">Invalid
-                        Time.</small>
+                      <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
                     </div>
 
                     <div class="dfm-mt-32">
@@ -137,11 +135,11 @@
                   </div>
 
                   <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
-                    Start time should be smaller than End time.
+                    {{'StartTimeLessThanEndTime'| translate}}
                   </small>
 
                   <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
-                   Slot overlaps other slots.
+                    {{'SlotOverlapsOtherSlots'| translate}}
                   </small>
                 </div>
               </div>
@@ -162,7 +160,7 @@
                  *ngIf="[0, 5, 6].includes(getFormArrayName(controlArray))"
                  class="d-flex flex-column dfm-gap-16 flex-1">
             <span class="text-sm font-weight-semi-bold w-fit">
-              {{ getFormArrayName(controlArray) | weekdayToName }}
+              {{ getFormArrayName(controlArray) | weekdayToName |translate}}
             </span>
 
               <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
@@ -178,15 +176,14 @@
                                             [typeToSearchText]="start.value"
                                             (searchInput)="handleTimeInput($event,controls?.get('dayStart'),controls?.get('startTimings'), start)"
                                             (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
-                                            label="Start Time"
+                                            label="{{'StartTime' | translate}}"
                                             formControlName="dayStart"
                                             size="md"
                                             placeholder="hh:mm">
                         </dfm-input-dropdown>
                       </div>
 
-                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">Invalid
-                        Time.</small>
+                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
                     </div>
 
                     <div class="d-flex flex-column w-full">
@@ -198,15 +195,14 @@
                                             [typeToSearchText]="end.value"
                                             (searchInput)="handleTimeInput($event, controls?.get('dayEnd'), controls?.get('endTimings'), end)"
                                             (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
-                                            label="End Time"
+                                            label="{{'EndTime' | translate}}"
                                             formControlName="dayEnd"
                                             size="md"
                                             placeholder="hh:mm">
                         </dfm-input-dropdown>
                       </div>
 
-                      <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">Invalid
-                        Time.</small>
+                      <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
                     </div>
 
                     <div class="dfm-mt-32">
@@ -216,18 +212,19 @@
                   </div>
 
                   <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
-                    Start time should be smaller than End time.
+                   {{'StartTimeLessThanEndTime'| translate}}
                   </small>
 
                   <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
-                    Slot overlaps other slots.
+                    {{'SlotOverlapsOtherSlots'| translate}}
+
                   </small>
                 </div>
               </div>
 
               <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
                 <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
-                <span class="text-sm dfm-text-main-600">Click to add slot</span>
+                <span class="text-sm dfm-text-main-600">{{'ClickToAddSlot' | translate}}</span>
               </div>
             </div>
           </div>
@@ -235,8 +232,7 @@
       </div>
 
       <dfm-button class="hidden pr-hr-save-changes-btn-mv" color="primary" size="md"
-                  [disabled]="(submitting$$ | async) === true" (click)="savePracticeHours()">Save
-        Changes
+                  [disabled]="(submitting$$ | async) === true" (click)="savePracticeHours()">{{'SaveChanges' | translate}}
       </dfm-button>
     </form>
   </section>

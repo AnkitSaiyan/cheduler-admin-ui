@@ -12,7 +12,7 @@
       <dfm-input
         class="flex-1 rm-li-search"
         size="md"
-        placeholder="Search by Room Name and Description"
+        placeholder="{{'RoomSearch' | translate}}"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
@@ -61,7 +61,7 @@
   <dfm-input
     class="w-full hidden rm-li-search-mv"
     size="md"
-    placeholder="Search by Room Name and Description"
+    placeholder="{{'RoomSearch' | translate}}"
     icon="search-sm"
     [formControl]="searchControl"
   ></dfm-input>
@@ -201,7 +201,7 @@
       </table>
     </div>
     <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!rooms.length && (loading$$ | async) === false">
-      No data found
+     {{'NoDataFound' | translate}}
     </div>
     <!--    <table class="table table-bordered table-striped text-center">-->
     <!--      <thead>-->

@@ -5,12 +5,12 @@
         color="link"
         size="lg"
         routerLink="./"
-      >Site Management
+      >{{'SiteManagement' | translate}}
       </dfm-button>
 
       <div class="d-flex dfm-gap-16 align-items-center">
         <!-- <dfm-button color="secondary" size="md">Cancel</dfm-button> -->
-        <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveSiteManagementData()">Save Changes</dfm-button>
+        <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveSiteManagementData()">{{'SaveChanges' | translate}}</dfm-button>
       </div>
     </div>
 
@@ -25,7 +25,7 @@
         </dfm-button-icon>
       </div>
 
-      <dfm-button color="link" size="lg">Site Management</dfm-button>
+      <dfm-button color="link" size="lg">{{'SiteManagement' | translate}}</dfm-button>
     </div>
     <!--    -->
   </section>
@@ -34,15 +34,15 @@
     <form [formGroup]="siteManagementForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 flex-wrap">
         <div class="flex-1">
-          <dfm-input class="" size="md" placeholder="Enter site name" label="Site Name *" formControlName="name">
+          <dfm-input class="" size="md" placeholder="Enter site name" label="{{'SiteName' | translate}} *" formControlName="name">
           </dfm-input>
         </div>
 
         <div class="d-flex dfm-gap-24 dfm-ms-8 flex-1 st-mg-choose-file-container">
           <div class="d-flex flex-column dfm-gap-8">
-            <span class="text-sm font-weight-medium dfm-text-main-700">Site Logo</span>
+            <span class="text-sm font-weight-medium dfm-text-main-700">{{'SiteLogo' | translate}}</span>
 
-            <label class="input-type-file-primary-md">Choose File
+            <label class="input-type-file-primary-md">{{'ChooseFile' | translate}}
               <input #fileInput type="file" class="hidden" accept="image/*" (change)="$event.stopPropagation(); onFileChange($event)">
             </label>
           </div>
@@ -60,45 +60,45 @@
       </div>
 
       <div class="d-flex flex-column dfm-gap-8 flex-1">
-        <span class="text-sm font-weight-medium dfm-text-main-700">Site Introduction Text</span>
+        <span class="text-sm font-weight-medium dfm-text-main-700">{{'SiteIntroductionText' | translate}}</span>
 
         <div class="d-flex dfm-gap-32 flex-wrap st-mg-heading-subheading">
-          <dfm-input class="flex-1" size="md" placeholder="Enter heading" formControlName="heading"></dfm-input>
-          <dfm-input class="flex-1" size="md" placeholder="Enter sub-heading" formControlName="subHeading"></dfm-input>
-          <dfm-text-area class="flex-1 st-mg-body-text" placeholder="Enter body text" formControlName="bodyText"></dfm-text-area>
+          <dfm-input class="flex-1" size="md" placeholder="{{'EnterHeading' | translate}}" formControlName="heading"></dfm-input>
+          <dfm-input class="flex-1" size="md" placeholder="{{'EnterSubHeading' | translate}}" formControlName="subHeading"></dfm-input>
+          <dfm-text-area class="flex-1 st-mg-body-text" placeholder="{{'EnterBodyText' | translate}}" formControlName="bodyText"></dfm-text-area>
         </div>
       </div>
 
       <div class="d-flex dfm-gap-32 flex-wrap">
         <div class="d-flex flex-column dfm-gap-16 flex-1">
-          <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Disable Appointment Booking *</span>
+          <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{'DisableAppointmentBooking' | translate}} *</span>
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-radio-button class="font-weight-normal" label="Yes" [checkedValue]="true"
+            <dfm-radio-button class="font-weight-normal" label="{{'Yes'| translate}}" [checkedValue]="true"
                               formControlName="disableAppointment"></dfm-radio-button>
-            <dfm-radio-button class="font-weight-normal" label="No" [checkedValue]="false"
+            <dfm-radio-button class="font-weight-normal" label="{{'No' | translate}}" [checkedValue]="false"
                               formControlName="disableAppointment"></dfm-radio-button>
           </div>
 
           <div *ngIf="formValues.disableAppointment" class="st-mg-warning-text flex-1">
-            <dfm-input size="md" label="Warning Text *" placeholder="Enter warning text" [required]="formValues.disableAppointment"
+            <dfm-input size="md" label="{{'WarningText' | translate}} *" placeholder="{{'EnterWarningText' | translate}}" [required]="formValues.disableAppointment"
                        formControlName="disableWarningText"></dfm-input>
           </div>
         </div>
 
         <div class="d-flex flex-column dfm-gap-16 flex-1">
           <span
-            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Disable Referring Doctor Consent</span>
+            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{'DisableReferringDoctorconsent' | translate}}</span>
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-radio-button class="font-weight-normal" label="Yes" [checkedValue]="1"
+            <dfm-radio-button class="font-weight-normal" label="{{'Yes' | translate}}" [checkedValue]="1"
                               formControlName="doctorReferringConsent"></dfm-radio-button>
-            <dfm-radio-button class="font-weight-normal" label="No" [checkedValue]="0"
+            <dfm-radio-button class="font-weight-normal" label="{{'No' | translate}}" [checkedValue]="0"
                               formControlName="doctorReferringConsent"></dfm-radio-button>
           </div>
         </div>
 
         <div class="d-flex flex-column dfm-gap-16 flex-1">
           <span
-            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Combine Slots *</span>
+            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{'CombineSlots' | translate}} *</span>
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
             <dfm-radio-button class="font-weight-normal" label="Yes" [checkedValue]="true"
                               formControlName="isSlotsCombinable"></dfm-radio-button>
@@ -111,7 +111,7 @@
       <div class="d-flex dfm-gap-32 flex-wrap">
         <div class="d-flex flex-column dfm-gap-16 flex-1 w-full st-mg-appointment-cancellation">
           <span
-            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Reminder Mail Duration *</span>
+            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{'ReminderMailDuration' | translate}} *</span>
           <div class="w-fit d-flex flex-1 justify-content-between dfm-gap-24">
             <dfm-input type="number" size="sm" formControlName="reminderTime"></dfm-input>
             <div class="dfm-input-dropdown-wrapper-wo-label st-mg-time-duration-type">
@@ -124,7 +124,7 @@
 
         <div class="d-flex flex-column dfm-gap-16 flex-1 w-full st-mg-appointment-cancellation">
           <span
-            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Appointment Cancellation Duration *</span>
+            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{'AppointmentCancellationDuration' | translate}} *</span>
           <div class="w-fit d-flex flex-1 justify-content-between dfm-gap-24">
             <dfm-input type="number" size="sm" formControlName="cancelAppointmentTime"></dfm-input>
             <div class="dfm-input-dropdown-wrapper-wo-label st-mg-time-duration-type">
@@ -141,17 +141,17 @@
 
       <div class="d-flex dfm-gap-32 flex-wrap st-mg-contact-info">
         <div class="d-flex flex-1 flex-column">
-          <dfm-input class="flex-1" size="md" placeholder="Enter Email" label="Email" formControlName="email" (focusout)="handleEmailInput($event)"></dfm-input>
+          <dfm-input class="flex-1" size="md" placeholder="{{'EnterEmail' | translate}}" label="{{'Email' | translate}}" formControlName="email" (focusout)="handleEmailInput($event)"></dfm-input>
           <small *ngIf="siteManagementForm.get('email')?.hasError('email')" class="validation-error">Email is
             Invalid.</small>
         </div>
-        <dfm-input #phone [dfmNumberInput]="phone" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone *"
+        <dfm-input #phone [dfmNumberInput]="phone" class="flex-1" size="md" placeholder="{{'EnterTelephone' | translate}}" label="{{'Telephone' | translate}} *"
                    formControlName="telephone">
         </dfm-input>
-        <dfm-text-area class="flex-1" label="Address *" placeholder="Enter address" formControlName="address"></dfm-text-area>
+        <dfm-text-area class="flex-1" label="{{'Address' | translate}} *" placeholder="{{'EnterAddress' | translate}}" formControlName="address"></dfm-text-area>
       </div>
 
-      <dfm-button class="hidden st-mg-save-changes-btn-mv" color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveSiteManagementData()">Save Changes</dfm-button>
+      <dfm-button class="hidden st-mg-save-changes-btn-mv" color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveSiteManagementData()">{{'SaveChanges'| translate}}</dfm-button>
     </form>
   </section>
 

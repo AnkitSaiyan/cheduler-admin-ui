@@ -12,7 +12,7 @@
       <dfm-input
         class="flex-1 ph-li-search"
         size="md"
-        placeholder="Search by Physician Name, Email, Status"
+        placeholder="{{'SearchPhysician' | translate}}"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
@@ -32,7 +32,7 @@
             [items]="downloadItems"
             [showDescription]="false"
             [formControl]="downloadDropdownControl"
-            placeholder="Download"
+            placeholder="{{'Download' | translate}}"
             size="md"
           ></dfm-input-dropdown>
         </div>
@@ -52,7 +52,7 @@
           class="text-nowrap"
           [disabled]="false"
           (click)="openAddPhysicianModal()"
-        >Add Physician
+        >{{'AddPhysician' | translate}}
         </dfm-button>
       </div>
     </div>
@@ -61,7 +61,7 @@
   <dfm-input
     class="w-full hidden ph-li-search-mv"
     size="md"
-    placeholder="Search by Physician Name, Email, Status"
+    placeholder="{{'SearchPhysician' | translate}}"
     icon="search-sm"
     [formControl]="searchControl"
   ></dfm-input>
@@ -72,7 +72,7 @@
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewPhysician($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
-        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate}}</dfm-table-header-cell>
       </ng-template>
 
       <ng-template #bodyRowTemplate let-item>
@@ -85,13 +85,13 @@
                      color="success"
                      size="sm"
                      fontWeight="medium">
-            {{ +item.status | statusName | dashIfNothing }}
+            {{ +item.status | statusName | dashIfNothing | translate}}
           </dfm-badge>
 
           <dfm-badge *ngIf="!item.status"
                      color="primary"
                      size="sm">
-            {{ +item.status | statusName | dashIfNothing }}
+            {{ +item.status | statusName | dashIfNothing |translate}}
           </dfm-badge>
         </dfm-table-body-cell>
 
@@ -102,7 +102,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
-              ngbPopover="Status" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
             ></dfm-button>
 
@@ -111,7 +111,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
-              ngbPopover="Status" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave"
               [openDelay]="200"
               popoverClass="popover-p-8"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
@@ -121,7 +121,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
-              ngbPopover="Edit" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); openAddPhysicianModal(item);"
@@ -131,7 +131,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
-              ngbPopover="Delete" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); deletePhysician(item.id)"
@@ -157,20 +157,20 @@
             <div class="ph-li-menus"
                  aria-labelledby="dropdownManual">
               <div *ngIf="!item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])" ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])" ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
               </div>
 
               <div *ngIf="item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])" ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])" ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); openAddPhysicianModal(item)" ngbPopover="Edit" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+              <div (click)="$event.stopPropagation(); openAddPhysicianModal(item)" ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); deletePhysician(item.id)" ngbPopover="Delete" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+              <div (click)="$event.stopPropagation(); deletePhysician(item.id)" ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>
@@ -182,7 +182,7 @@
     </dfm-table>
     <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"
          *ngIf="!physicians.length && (loading$$ | async) === false">
-      No Physician found
+     {{' NoPhysicianfound' | translate}}
     </div>
   </section>
 

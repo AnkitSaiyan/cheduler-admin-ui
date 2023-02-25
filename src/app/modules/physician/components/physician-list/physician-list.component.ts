@@ -40,7 +40,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['First Name', 'Last Name', 'Email', 'Status', 'Actions'];
+  public columns: string[] = ['FirstName', 'LastName', 'Email', 'Status', 'Actions'];
 
   public downloadItems: any[] = [];
 
@@ -185,7 +185,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Physician?',
+        bodyText: 'AreyousureyouwanttodeletethisPhysician',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
