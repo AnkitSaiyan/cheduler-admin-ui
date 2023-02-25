@@ -261,23 +261,22 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     if (this.appointmentForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
       this.appointmentForm.markAsDirty({ onlySelf: true });
-      return;
     }
 
-    const { startedAt, ...rest } = this.formValues;
-    const time = this.selectedTime.split(':');
-    const requestData = {
-      ...rest,
-      startedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day} ${time[0]}:${time[1]}`,
-    } as AddAppointmentRequestData;
-
-    this.appointmentApiSvc
-      .saveAppointment$(requestData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Appointment saved successfully`);
-        this.modalSvc.close(true);
-      });
+    // const { startedAt, ...rest } = this.formValues;
+    // const time = this.selectedTime.split(':');
+    // const requestData = {
+    //   ...rest,
+    //   startedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day} ${time[0]}:${time[1]}`,
+    // } as AddAppointmentRequestData;
+    //
+    // this.appointmentApiSvc
+    //   .saveAppointment$(requestData)
+    //   .pipe(takeUntil(this.destroy$$))
+    //   .subscribe(() => {
+    //     this.notificationSvc.showNotification(`Appointment saved successfully`);
+    //     this.modalSvc.close(true);
+    //   });
   }
 
   private updateEventCard(slot?: Slot) {

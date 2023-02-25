@@ -38,10 +38,12 @@ export interface AddAppointmentRequestData {
   patientLname: string;
   patientEmail: string;
   patientTel: number;
-  roomType?: RoomType;
   comments: string;
-  startedAt: string;
-  examList: number[];
+  examDetails: Array<{
+    examId: number;
+    startedAt: string;
+    endedAt: string;
+  }>;
   approval?: AppointmentStatus;
   createdBy?: number;
   updatedBy?: number;
