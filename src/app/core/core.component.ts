@@ -59,6 +59,8 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       new NavigationItem('Physician', 'medical-circle', '/physician', false),
       new NavigationItem('Exam', 'microscope', '/exam', false),
       new NavigationItem('Practice Hours', 'clock', '/practice-hours', false),
+      new NavigationItem('Priority Slots', 'calendar-date', '/priority-slots', false),
+      new NavigationItem('Email', 'mail-05', '/email', false),
       new NavigationItem('Site Management', 'tool-01', '/site-management', false),
     ]),
   ];

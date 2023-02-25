@@ -4,13 +4,12 @@ import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, t
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { getStatusEnum } from '../../../../shared/utils/getStatusEnum';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { DownloadService } from '../../../../core/services/download.service';
-import { getUserTypeEnum } from '../../../../shared/utils/getUserTypeEnum';
 import { EditEmailComponent } from '../edit-email/edit-email.component';
 import { EmailTemplateApiService } from 'src/app/core/services/email-template-api.service';
 import { Status } from 'src/app/shared/models/status.model';
+import { getStatusEnum, getUserTypeEnum } from 'src/app/shared/utils/getEnums';
 
 @Component({
   selector: 'dfm-email-list',

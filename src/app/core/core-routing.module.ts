@@ -62,6 +62,10 @@ const routes: Routes = [
         loadChildren: async () => (await import('../modules/email/email.module')).EmailModule,
       },
       {
+        path: 'priority-slots',
+        loadChildren: async () => (await import('../modules/priority-slots/priority-slots.module')).PrioritySlotsModule,
+      },
+      {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full',

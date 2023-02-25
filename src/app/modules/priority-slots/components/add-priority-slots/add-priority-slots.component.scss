@@ -1,0 +1,128 @@
+.ad-pr-main-wrapper {
+    transition: all ease 200ms;
+    padding-bottom: 16px;
+  
+    .ad-pr-section2 {
+      // viewport - m-top - modal header height - modal footer header - p-bottom - m-bottom - extra
+      max-height: calc(100dvh - 24px - 76px - 64px - 16px - 24px - 48px);
+      overflow-y: auto;
+  
+      min-height: 300px;
+  
+      .ad-pr-time-dropdown {
+        min-width: 128px;
+      }
+  
+      .ad-pr-repeat-type-text {
+        border: 1px solid var(--dfm-main-300);
+        border-radius: 8px;
+        padding: 10px 12px;
+      }
+    }
+  }
+  
+  @media (max-width: 1200px) {
+    .ad-pr-repeat {
+      flex: 2;
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .ad-pr-dates {
+      flex-wrap: wrap;
+  
+      &>div {
+        max-width: 100%;
+      }
+    }
+  
+    .ad-pr-radio-group {
+      flex-direction: column;
+  
+      .ad-pr-repeat-every {
+        margin-bottom: 8px;
+      }
+    }
+  }
+  
+  @media (max-width: 680px) {
+    .ad-pr-main-wrapper {
+      position: fixed;
+      height: calc(100dvh - 40px);
+      width: 100vw;
+      top: 45px;
+      left: 0;
+      border-radius: 0 !important;
+      background: var(--dfm-base-layout-bg) !important;
+      padding: 0;
+  
+      .ad-pr-section1 {
+        padding: 15px 16px 20px;
+      }
+  
+      form {
+        .ad-pr-from-date, .ad-pr-to-date, .ad-pr-absence-name {
+          max-width: 100% !important;
+          width: 100%;
+        }
+  
+        .ad-pr-repeat-form {
+          flex-direction: column;
+          gap: 16px;
+  
+          & > div {
+            width: 100%;
+          }
+        }
+  
+        .ad-pr-repeat-radio {
+          order: 1;
+        }
+  
+        .ad-pr-rooms, .ad-pr-staffs {
+          margin-bottom: 8px;
+        }
+      }
+  
+      .ad-pr-title-buttons-mv {
+        margin-left: 8px;
+        display: flex;
+      }
+  
+      .ad-pr-title-buttons {
+        display: none !important;
+      }
+  
+      .ad-pr-section2 {
+        // viewport - nav bar height - modal header height - modal footer header - extra space
+        max-height: calc(100dvh - 40px - 76px - 64px - 16px);
+  
+        &::-webkit-scrollbar {
+          display: none;
+        }
+  
+        form {
+          & > div {
+            flex-direction: column;
+  
+            dfm-input {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+  
+    .ad-pr-footer-buttons {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+  
+      dfm-button {
+        flex: 1;
+      }
+    }
+  }
+  

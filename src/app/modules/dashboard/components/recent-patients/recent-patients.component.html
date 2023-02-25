@@ -69,7 +69,7 @@
                    height="40">
 
               <div *ngIf="!item.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
-                {{ item.patientName.toString()[0].toUpperCase() }}
+                {{ item?.patientName?.toString()[0]?.toUpperCase() }}
               </div>
             </div>
             <span>{{ item.patientName }}</span>
