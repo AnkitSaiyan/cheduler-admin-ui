@@ -15,6 +15,7 @@ import { RouterLink } from '@angular/router';
 import { NgChartsModule } from 'ng2-charts';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { HttpClient } from '@angular/common/http';
 import { DestroyableComponent } from './components/destroyable.component';
 import { StatusNamePipe } from './pipes/status-name.pipe';
 import { DashIfNothingPipe } from './pipes/dash-if-nothing.pipe';
@@ -41,6 +42,14 @@ import { NameInputDirective } from './directives/name-input.directive';
 import { EmailInputDirective } from './directives/email-input.directive';
 import { NumberInputDirective } from './directives/number-input.directive';
 import { NumberArrayPipe } from './pipes/number-array.pipe';
+// eslint-disable-next-line import/order
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+// eslint-disable-next-line import/order
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
 
 @NgModule({
   declarations: [
@@ -71,7 +80,23 @@ import { NumberArrayPipe } from './pipes/number-array.pipe';
     NumberInputDirective,
     NumberArrayPipe,
   ],
-  imports: [CommonModule, DesignSystemModule, ReactiveFormsModule, NgbDropdownModule, NgbPopoverModule, NgbAccordionModule, RouterLink],
+  imports: [
+    CommonModule,
+    DesignSystemModule,
+    ReactiveFormsModule,
+    NgbDropdownModule,
+    NgbPopoverModule,
+    NgbAccordionModule,
+    RouterLink,
+    TranslateModule.forChild({
+      loader: {
+        provide: TranslateLoader,
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient],
+      },
+    }),
+  ],
   exports: [
     DesignSystemModule,
     TableModule,
@@ -110,6 +135,7 @@ import { NumberArrayPipe } from './pipes/number-array.pipe';
     NumberInputDirective,
     NumberArrayPipe,
     ClipboardModule,
+    TranslateModule,
   ],
 })
 export class SharedModule {}
