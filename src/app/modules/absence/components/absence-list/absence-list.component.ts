@@ -30,7 +30,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Title', 'Start Date', 'End Date', 'Absence Info', 'Actions'];
+  public columns: string[] = ['Title', 'StartDate', 'EndDate', 'AbsenceInfo', 'Actions'];
 
   public downloadItems: DownloadType[] = [];
 
@@ -122,7 +122,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Absence?',
+        bodyText: 'AreyousureyouwanttodeletethisAbsence',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,

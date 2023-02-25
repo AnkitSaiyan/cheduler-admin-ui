@@ -6,13 +6,13 @@
         color="link"
         size="lg"
         routerLink="./"
-      >Room
+      >{{'Room' | translate}}
       </dfm-button>
 
       <dfm-input
         class="flex-1 rm-li-search"
         size="md"
-        placeholder="Search by Room Name and Description"
+        placeholder="{{'RoomSearch' | translate}}"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
@@ -32,7 +32,7 @@
             [items]="downloadItems"
             [showDescription]="false"
             [formControl]="downloadDropdownControl"
-            placeholder="Download"
+            placeholder="{{'Download' | translate}}"
             size="md"
           ></dfm-input-dropdown>
         </div>
@@ -52,7 +52,7 @@
           class="text-nowrap"
           [disabled]="(loading$$ | async) === true"
           (click)="openAddRoomModal()"
-        >Add Room
+        >{{'AddRoom' | translate}}
         </dfm-button>
       </div>
     </div>
@@ -61,7 +61,7 @@
   <dfm-input
     class="w-full hidden rm-li-search-mv"
     size="md"
-    placeholder="Search by Room Name and Description"
+    placeholder="{{'RoomSearch' | translate}}"
     icon="search-sm"
     [formControl]="searchControl"
   ></dfm-input>
@@ -74,7 +74,7 @@
           <th class="room-table-th">
             <dfm-checkbox class="w-fit d-flex dfm-me-0" #headerCheckBox (click)="$event.stopPropagation(); handleCheckboxSelection(-1)"></dfm-checkbox>
           </th>
-          <th *ngFor="let column of columns" class="room-table-th">{{ column }}</th>
+          <th *ngFor="let column of columns" class="room-table-th">{{ column | translate }}</th>
         </tr>
         </thead>
 
@@ -90,20 +90,20 @@
           <td class="room-table-td">{{ room.name | titlecase | dashIfNothing }}</td>
           <td class="room-table-td">{{ room.description | titlecase | dashIfNothing }}</td>
           <td class="room-table-td">{{ roomPlaceInToIndexMap.get(+room.placeInAgenda) | dashIfNothing }}</td>
-          <td class="room-table-td">{{ room.type | titlecase | dashIfNothing }}</td>
+          <td class="room-table-td">{{ room.type | titlecase | dashIfNothing | translate}}</td>
 
           <td class="room-table-td">
             <dfm-badge *ngIf="room.status === statusType.Active"
                        color="success"
                        size="sm"
                        fontWeight="medium">
-              {{ room.status | statusName | dashIfNothing }}
+              {{ room.status | statusName | dashIfNothing | translate }}
             </dfm-badge>
 
             <dfm-badge *ngIf="room.status === statusType.Inactive"
                        color="primary"
                        size="sm">
-              {{ room.status | statusName | dashIfNothing }}
+              {{ room.status | statusName | dashIfNothing | translate}}
             </dfm-badge>
           </td>
 
@@ -114,7 +114,7 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="check-circle"
-                ngbPopover="Change to Active"
+                ngbPopover="{{'ChangeStatus' | translate}}"
                 popoverClass="popover-p-8"
                 triggers="mouseenter:mouseleave"
                 [openDelay]="200"
@@ -126,7 +126,7 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="x-circle"
-                ngbPopover="Change to Inactive"
+                ngbPopover="{{'ChangeStatus' | translate}}"
                 popoverClass="popover-p-8"
                 triggers="mouseenter:mouseleave"
                 [openDelay]="200"
@@ -137,7 +137,7 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="pencil-02"
-                ngbPopover="Edit"
+                ngbPopover="{{'Edit' | translate}}"
                 triggers="mouseenter:mouseleave"
                 popoverClass="popover-p-8"
                 [openDelay]="200"
@@ -148,7 +148,7 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="trash-01"
-                ngbPopover="Delete"
+                ngbPopover="{{'Delete' | translate}}"
                 triggers="mouseenter:mouseleave"
                 popoverClass="popover-p-8"
                 [openDelay]="200"
@@ -201,7 +201,7 @@
       </table>
     </div>
     <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!rooms.length && (loading$$ | async) === false">
-      No data found
+     {{'NoDataFound' | translate}}
     </div>
     <!--    <table class="table table-bordered table-striped text-center">-->
     <!--      <thead>-->

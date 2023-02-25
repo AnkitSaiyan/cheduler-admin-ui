@@ -36,7 +36,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['First Name', 'Last Name', 'Email', 'Telephone', 'Category', 'Status', 'Actions'];
+  public columns: string[] = ['FirstName', 'LastName', 'Email', 'Telephone', 'Category', 'Status', 'Actions'];
 
   public downloadItems: DownloadType[] = [];
 
@@ -199,7 +199,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this User?',
+        bodyText: 'AreyousureyouwanttodeletethisUser',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,

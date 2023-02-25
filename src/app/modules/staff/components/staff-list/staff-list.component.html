@@ -12,7 +12,7 @@
       <dfm-input
         class="flex-1 sf-li-search"
         size="md"
-        placeholder="Search by Staff First Name, Last Name, Type and Email"
+        placeholder="{{'StaffSearch' | translate}}"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
@@ -32,7 +32,7 @@
             [items]="downloadItems"
             [showDescription]="false"
             [formControl]="downloadDropdownControl"
-            placeholder="Download"
+            placeholder="{{'Download' | translate}}"
             size="md"
           ></dfm-input-dropdown>
         </div>
@@ -52,7 +52,7 @@
           class="text-nowrap"
           [disabled]="false"
           routerLink="./add"
-        >Add Staff
+        >{{'AddStaff' | translate}}
         </dfm-button>
       </div>
     </div>
@@ -60,7 +60,7 @@
 
   <dfm-input
     size="md"
-    placeholder="Search by First Name, Last Name, Type and Email"
+    placeholder="{{'StaffSearch' | translate}}"
     icon="search-sm"
     class="w-full hidden sf-li-search-mv"
     [formControl]="searchControl"
@@ -71,7 +71,7 @@
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewStaff($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
-        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
       </ng-template>
 
       <ng-template #bodyRowTemplate let-item>
@@ -87,13 +87,13 @@
                      color="success"
                      size="sm"
                      fontWeight="medium">
-            {{ item.status | statusName | dashIfNothing }}
+            {{ item.status | statusName | dashIfNothing | translate }}
           </dfm-badge>
 
           <dfm-badge *ngIf="item.status === statusType.Inactive"
                      color="primary"
                      size="sm">
-            {{ item.status | statusName | dashIfNothing }}
+            {{ item.status | statusName | dashIfNothing | translate}}
           </dfm-badge>
         </dfm-table-body-cell>
 
@@ -104,7 +104,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
-              ngbPopover="Change to Active" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
@@ -115,7 +115,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
-              ngbPopover="Change to Inactive" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
@@ -125,7 +125,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
-              ngbPopover="Edit" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation()"
@@ -137,7 +137,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
-              ngbPopover="Delete" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); deleteStaff(item.id)"

@@ -8,6 +8,11 @@ export const ABSENCE_ID = 'absenceID';
 export const APPOINTMENT_ID = 'appointmentID';
 export const PRIORITY_ID = 'priorityID';
 
+// Language Constants
+
+export const ENG_BE = 'en-BE';
+export const DUTCH_BE = 'nl-BE';
+
 // Other constants
 
 export const COMING_FROM_ROUTE = 'comingFromRoute';

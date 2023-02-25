@@ -6,7 +6,7 @@
         color="link"
         size="lg"
         routerLink="/absence"
-      >Absence
+      >{{'Absence' | translate}}
       </dfm-button>
       <div style="width: 16px; height: 16px" class="h-fit">
         <dfm-icon name="chevron-right"></dfm-icon>
@@ -14,7 +14,7 @@
       <dfm-button
         color="link-gray"
         size="lg"
-      >View
+      >{{'View' | translate}}
       </dfm-button>
     </div>
 
@@ -24,7 +24,7 @@
         size="md"
         leadingIcon="pencil-02"
         (click)="openEditAbsenceModal()"
-      >Edit Absence
+      >{{'EditAbsence' | translate}}
       </dfm-button>
 
       <dfm-button
@@ -34,7 +34,7 @@
         leadingIcon="trash-01"
         (click)="deleteAbsence(absenceDetails.id)"
       >
-        Delete Absence
+        {{'DeleteAbsence' | translate}}
       </dfm-button>
     </div>
 
@@ -54,7 +54,7 @@
         color="link"
         size="lg"
         routerLink="./"
-      >Absence View
+      >{{'AbsenceView' | translate}}
       </dfm-button>
     </div>
     <!-- ** -->
@@ -66,23 +66,23 @@
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
         </div>
-        <span class="font-weight-medium">Absence Details</span>
+        <span class="font-weight-medium">{{'AbsenceDetails' | translate}}</span>
       </header>
 
       <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Title</span>
+          <span class="flex-1">{{'Title' | translate}}</span>
           <span class="flex-1">{{ absenceDetails.name | titlecase }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">{{absenceDetails.isRepeat ? 'Start Date' : 'Date'}}</span>
+          <span class="flex-1">{{absenceDetails.isRepeat ? ('StartDate' | translate) : ('Date' | translate)}}</span>
           <span class="flex-1" *ngIf="!absenceDetails.isRepeat">{{ absenceDetails.startedAt | date : 'dd/MM/yyyy, HH:mm'}} - {{absenceDetails.endedAt | date : 'HH:mm'}}</span>
           <span class="flex-1" *ngIf="absenceDetails.isRepeat">{{ absenceDetails.startedAt | date : 'dd/MM/yyyy, HH:mm'}},</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="absenceDetails.isRepeat">
-          <span class="flex-1">End Date</span>
+          <span class="flex-1">{{'EndDate' | translate}}</span>
           <span class="flex-1 text-truncate">{{ absenceDetails.endedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</span>
         </div>
 
@@ -98,12 +98,12 @@
         <!--        </div>-->
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Staff</span>
+          <span class="flex-1">{{'Staff' | translate}}</span>
           <span class="flex-1 text-break"> {{ absenceDetails.user | joinWithAnd : 'firstname' | dashIfNothing }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Room</span>
+          <span class="flex-1">{{'Room' | translate}}</span>
           <span class="flex-1 text-break">{{ absenceDetails.rooms | joinWithAnd : 'name' | titlecase | dashIfNothing }}</span>
         </div>
       </div>
@@ -114,7 +114,7 @@
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
         </div>
-        <span class="font-weight-medium">Absence Information</span>
+        <span class="font-weight-medium">{{'AbsenceInformation' | translate}}</span>
       </header>
 
       <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
@@ -127,7 +127,7 @@
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
         </div>
-        <span class="font-weight-medium">Absence Repeat Details</span>
+        <span class="font-weight-medium">{{'AbsenceRepeatDetails' | translate}}</span>
       </header>
 
       <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
@@ -142,24 +142,24 @@
         <!--        </div>-->
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Public Holiday</span>
+          <span class="flex-1">{{'PublicHoliday' | translate}}</span>
           <span class="flex-1">{{ absenceDetails.isHoliday ? 'Yes' : 'No' | dashIfNothing }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Repeat</span>
+          <span class="flex-1">{{'Repeat' | translate}}</span>
           <span class="flex-1">{{ absenceDetails.isRepeat ? 'Yes' : 'All Day' | dashIfNothing }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Repeat Every</span>
+          <span class="flex-1">{{"RepeatEvery" | translate}}</span>
           <span class="flex-1">{{ absenceDetails.repeatFrequency === 0 ? ('' | dashIfNothing) :  absenceDetails.repeatFrequency}}
             <span *ngIf="absenceDetails.repeatFrequency">{{ absenceDetails.repeatType | repeatTypeToName }}</span>
           </span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Repeat On</span>
+          <span class="flex-1">{{'RepeatOn' | translate}}</span>
           <span class="flex-1"
                 *ngIf="absenceDetails.repeatDays && absenceDetails.repeatType === repeatType.Monthly">{{ absenceDetails.repeatDays.split(',') | joinWithAnd | dashIfNothing }}</span>
           <span class="flex-1"
@@ -173,8 +173,8 @@
   </section>
 
   <div class="hidden bg-white ab-vw-action-buttons-mv">
-    <dfm-button color="secondary" size="sm" (click)="deleteAbsence(absenceDetails.id)">Delete</dfm-button>
-    <dfm-button color="primary" size="sm" (click)="openEditAbsenceModal()">Edit Absence</dfm-button>
+    <dfm-button color="secondary" size="sm" (click)="deleteAbsence(absenceDetails.id)">{{'Delete' | translate}}</dfm-button>
+    <dfm-button color="primary" size="sm" (click)="openEditAbsenceModal()">{{'EditAbsence' | translate}}</dfm-button>
   </div>
 </div>
 

@@ -5,7 +5,7 @@
         color="link"
         size="lg"
         routerLink="/user"
-      >User
+      >{{'User' | translate}}
       </dfm-button>
       <div style="width: 16px; height: 16px" class="h-fit">
         <dfm-icon name="chevron-right"></dfm-icon>
@@ -13,7 +13,7 @@
       <dfm-button
         color="link-gray"
         size="lg"
-      >View
+      >{{'View' | translate}}
       </dfm-button>
     </div>
 
@@ -23,7 +23,7 @@
         size="md"
         leadingIcon="pencil-02"
         (click)="openEditUserModal()"
-      >Edit User
+      >{{'EditUser' | translate}}
       </dfm-button>
 
       <dfm-button
@@ -33,7 +33,7 @@
         leadingIcon="trash-01"
         (click)="deleteUser(userDetails.id)"
       >
-        Delete User
+        {{'DeleteUser' | translate}}
       </dfm-button>
     </div>
 
@@ -53,7 +53,7 @@
         color="link"
         size="lg"
         routerLink="./"
-      >User View
+      >{{'UserView' | translate}}
       </dfm-button>
     </div>
     <!-- ** -->
@@ -65,40 +65,40 @@
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
         </div>
-        <span class="font-weight-medium">User Details</span>
+        <span class="font-weight-medium">{{'UserDetails' | translate}}</span>
       </header>
 
       <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Name</span>
+          <span class="flex-1">{{'Name' | translate}}</span>
           <span
             class="font-weight-medium flex-1">{{ userDetails.firstname | titlecase }} {{ userDetails.lastname  | titlecase }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Category</span>
+          <span class="flex-1">{{'Category' | translate}}</span>
           <span
             class="font-weight-medium flex-1">{{ userDetails.userType === userType.General ? 'General' : 'Scheduler' }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Telephone</span>
+          <span class="flex-1">{{'Telephone' | translate}}</span>
           <span class="font-weight-medium flex-1">{{ userDetails.telephone }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Email</span>
+          <span class="flex-1">{{'Email' | translate}}</span>
           <span class="font-weight-medium flex-1 text-break">{{ userDetails.email | dashIfNothing }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Status</span>
+          <span class="flex-1">{{'Status' | translate}}</span>
           <span class="font-weight-medium flex-1"
-                [ngClass]="userDetails.status === 0 ? 'dfm-text-danger-600' : 'dfm-text-success-600'">{{ userDetails.status | statusName }}</span>
+                [ngClass]="userDetails.status === 0 ? 'dfm-text-danger-600' : 'dfm-text-success-600'">{{ userDetails.status | statusName | translate}}</span>
         </div>
 
         <!-- <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Rizv Number</span>
+          <span class="flex-1">{{'RizvNumber' | translate}}</span>
           <span class="font-weight-medium flex-1 text-break">{{ userDetails?.rizivNumber | dashIfNothing }}</span>
         </div> -->
 
@@ -110,7 +110,7 @@
 
         <div class="d-flex dfm-gap-8 justify-content-between"
              *ngIf="userDetails.userType === userType.Scheduler || userDetails.userType === userType.Secretary">
-          <span class="flex-1">Address</span>
+          <span class="flex-1">{{'Address' | translate}}</span>
           <span class="font-weight-medium flex-1 text-break">{{ userDetails.address | dashIfNothing }}</span>
         </div>
       </div>
@@ -135,8 +135,8 @@
   </section>
 
   <div class="hidden bg-white us-vw-action-buttons-mv">
-    <dfm-button color="secondary" size="sm" (click)="deleteUser(userDetails.id)">Delete</dfm-button>
-    <dfm-button color="primary" size="sm" (click)="openEditUserModal()">Edit User</dfm-button>
+    <dfm-button color="secondary" size="sm" (click)="deleteUser(userDetails.id)">{{'Delete' | translate}}</dfm-button>
+    <dfm-button color="primary" size="sm" (click)="openEditUserModal()">{{'EditUser' | translate}}</dfm-button>
   </div>
 </div>
 

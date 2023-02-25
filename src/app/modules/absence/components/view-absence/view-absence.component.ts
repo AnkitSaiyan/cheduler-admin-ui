@@ -49,7 +49,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Absence?',
+        bodyText: 'AreyousureyouwanttodeletethisAbsence',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
