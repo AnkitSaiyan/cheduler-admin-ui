@@ -1,22 +1,24 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TableItem } from 'diflexmo-angular-design';
-import { DatePipe } from '@angular/common';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { AppointmentStatus, Status } from '../../../../shared/models/status.model';
+import { AppointmentStatus, AppointmentStatusToName, Status, StatusToName } from '../../../../shared/models/status.model';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { DownloadService } from '../../../../core/services/download.service';
+import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { getDurationMinutes } from '../../../../shared/models/calendar.model';
 import { Exam } from '../../../../shared/models/exam.model';
+import { User } from '../../../../shared/models/user.model';
+import { Physician } from '../../../../shared/models/physician.model';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -57,7 +59,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: AppointmentStatus | null } | null>(null);
 
-  public calendarView$$ = new BehaviorSubject<boolean>(true);
+  public calendarView$$ = new BehaviorSubject<boolean>(false);
 
   public selectedAppointmentIDs: string[] = [];
 
@@ -66,6 +68,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   public statusType = getAppointmentStatusEnum();
 
   public readStatus = getReadStatusEnum();
+
+  public clipboardData: string = '';
 
   constructor(
     private downloadSvc: DownloadService,
@@ -76,6 +80,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private modalSvc: ModalService,
     private roomApiSvc: RoomsApiService,
     private datePipe: DatePipe,
+    private cdr: ChangeDetectorRef,
+    private titleCasePipe: TitleCasePipe,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -114,13 +120,33 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+        if (!this.filteredAppointments$$.value.length) {
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          value as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.filteredAppointments$$.value.map((ap: Appointment) => [
+            ap.startedAt.toString(),
+            ap.endedAt.toString(),
+            `${this.titleCasePipe.transform(ap.patientFname)} ${this.titleCasePipe.transform(ap.patientLname)}`,
+            this.titleCasePipe.transform(ap.doctor),
+            ap.id.toString(),
+            ap.createdAt.toString(),
+            ap.readStatus ? 'Yes' : 'No',
+            AppointmentStatusToName[+ap.approval],
+          ]),
+          'physician',
+        );
+
+        if (value !== 'PRINT') {
+          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        }
+
+        this.downloadDropdownControl.setValue(null);
+
+        this.cdr.detectChanges();
       });
 
     this.afterBannerClosed$$.pipe(
@@ -202,7 +228,26 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `Started At\t\t\tEnded At\t\t\t`;
+      dataString += `${this.columns.slice(2, -1).join('\t\t')}\n`;
+
+      this.filteredAppointments$$.value.forEach((ap: Appointment) => {
+        dataString += `${ap.startedAt.toString()}\t${ap.endedAt.toString()}\t${this.titleCasePipe.transform(
+          ap.patientFname,
+        )} ${this.titleCasePipe.transform(ap.patientLname)}\t\t${this.titleCasePipe.transform(
+          ap.doctor,
+        )}\t\t${ap.id.toString()}\t\t${ap.createdAt.toString()}\t\t${ap.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap.approval]}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public navigateToView(e: TableItem) {

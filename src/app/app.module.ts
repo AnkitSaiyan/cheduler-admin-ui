@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { DesignSystemCoreModule } from 'diflexmo-angular-design';
-import { DatePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -23,6 +23,7 @@ import { HeaderInterceptor } from './core/http/header.interceptor';
     DatePipe,
     TimeInIntervalPipe,
     NameValuePairPipe,
+    TitleCasePipe,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HeaderInterceptor,
