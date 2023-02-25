@@ -1,11 +1,11 @@
-.ad-ap-main-wrapper {
+.ed-et-main-wrapper {
   transition: all ease 200ms;
 
-  .ad-ap-action-buttons {
+  .ed-et-action-buttons {
     display: flex;
   }
 
-  .ad-ap-section2 {
+  .ed-et-section2 {
     // viewport - nav - padding - sec1 height - sec gap - extra
     max-height: calc(100vh - 48px - 24px - 40px - 16px - 16px);
     overflow-y: auto;
@@ -50,44 +50,44 @@
   width: 128px;
 }
 
-.ad-ap-slots-container {
+.ed-et-slots-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 }
 
 @media (max-width: 1440px) {
-  .ad-ap-main-wrapper {
+  .ed-et-main-wrapper {
     max-height: calc(100vh - 36px - 24px - 40px - 16px - 16px);
   }
 }
 
 @media (max-width: 1280px) {
-  .ad-ap-slots-container {
+  .ed-et-slots-container {
     grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 680px) {
-  .ad-ap-main-wrapper {
+  .ed-et-main-wrapper {
     max-height: calc(100vh - 38px - 24px - 36px - 16px - 16px - 20px);
 
-    .ad-ap-title-buttons-mv {
+    .ed-et-title-buttons-mv {
       display: flex;
     }
 
-    .ad-ap-title-buttons {
+    .ed-et-title-buttons {
       display: none !important;
     }
 
-    .ad-ap-title-buttons {
+    .ed-et-title-buttons {
       display: none !important;
     }
 
-    .ad-ap-title-buttons-mv {
+    .ed-et-title-buttons-mv {
       display: flex;
     }
 
-    .ad-ap-action-buttons {
+    .ed-et-action-buttons {
       background: white;
       position: fixed;
       bottom: 0;
@@ -105,14 +105,14 @@
       }
     }
 
-    .ad-ap-section2 {
+    .ed-et-section2 {
       background: transparent;
       padding: 0;
       box-shadow: none;
       border-radius: 0;
 
       form {
-        .ad-ap-multi-dropdown {
+        .ed-et-multi-dropdown {
           margin-bottom: 8px;
         }
 
@@ -127,14 +127,14 @@
       }
     }
   }
-  .ad-ap-slots-container {
+  .ed-et-slots-container {
     margin-top: 16px;
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 368px) {
-  .ad-ap-dates {
+  .ed-et-dates {
     flex-wrap: wrap;
     gap: 8px;
   }

@@ -32,6 +32,11 @@
                 "input": "./node_modules/diflexmo-angular-design/assets",
                 "output": "./assets"
               },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@kolkov/angular-editor/assets/",
+                "output": "./assets/fonts/"
+              }
             ],
             "styles": [
               "src/styles/styles.scss"

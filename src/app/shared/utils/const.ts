@@ -6,7 +6,7 @@ export const PHYSICIAN_ID = 'physicianID';
 export const EXAM_ID = 'examID';
 export const ABSENCE_ID = 'absenceID';
 export const APPOINTMENT_ID = 'appointmentID';
-export const EMAIL_ID = 'emailID';
+export const EMAIL_TEMPLATE_ID = 'emailID';
 export const PRIORITY_ID = 'priorityID';
 
 // Other constants

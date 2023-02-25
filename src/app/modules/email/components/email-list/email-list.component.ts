@@ -99,12 +99,6 @@ export class EmailListComponent extends DestroyableComponent implements OnInit, 
         }),
         takeUntil(this.destroy$$),
       )
-      .subscribe((value) => {
-        if (value) {
-          this.notificationSvc.showNotification('Status has changed successfully');
-        }
-        this.clearSelected$$.next();
-      });
   }
 
   public override ngOnDestroy() {

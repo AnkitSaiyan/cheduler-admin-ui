@@ -28,14 +28,18 @@ export class EmailTemplateApiService {
   }
 
   public updateEmailTemplate(requestData: EmailTemplateRequestData): Observable<EmailTemplateRequestData> {
-    return this.http.put<BaseResponse<EmailTemplateRequestData>>(`${environment.serverBaseUrl}/email`, requestData).pipe(
+    console.log('requestData: ', requestData);
+    const {id, ...restData} = requestData;
+    return this.http.put<BaseResponse<EmailTemplateRequestData>>(`${environment.serverBaseUrl}/email/${id}`, requestData).pipe(
       map((response) => response.data));
   }
 
   public getEmailTemplateById(id: number): Observable<Email> {
     console.log('id: ', id);
     return this.http.get<BaseResponse<Email>>(`${environment.serverBaseUrl}/email/${id}`).pipe(
-        map((response) => response.data));
+        map((response) => response.data),
+        tap(()=>{this.emailTemplates$$.next()})
+        );
     }
   
 }

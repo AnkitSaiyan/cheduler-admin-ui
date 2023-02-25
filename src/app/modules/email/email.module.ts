@@ -6,7 +6,7 @@ import { EditEmailComponent } from './components/edit-email/edit-email.component
 import { EmailRoutingModule } from './email-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
+import { AngularEditorModule } from '@kolkov/angular-editor';
 
 
 @NgModule({
@@ -20,7 +20,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     EmailRoutingModule,
     SharedModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AngularEditorModule
   ]
 })
 export class EmailModule { }
