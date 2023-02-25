@@ -12,7 +12,7 @@
       <dfm-input
         class="flex-1 ap-li-search"
         size="md"
-        placeholder="Search by Patient name, app. no..."
+        placeholder="Search by Patient name, appointment no and doctor"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
@@ -229,24 +229,24 @@
   </section>
 
 
-  <div ngbDropdown #optionsMenu="ngbDropdown">
-    <div class="shadow-lg ap-li-plus-btn-menu ap-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
-      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">
-        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
-      </div>
-    </div>
-  </div>
+<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+<!--    <div class="shadow-lg ap-li-plus-btn-menu ap-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
 
-  <dfm-button color="secondary" size="md" class="hidden shadow-lg ap-li-plus-btn rounded-2"
-              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">
-    <dfm-icon #showMoreButtonIcon name="plus" class="ap-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
-  </dfm-button>
+<!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg ap-li-plus-btn rounded-2"-->
+<!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
+<!--    <dfm-icon #showMoreButtonIcon name="plus" class="ap-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+<!--  </dfm-button>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedAppointmentIDs.length" [statusType]="'appointment'"

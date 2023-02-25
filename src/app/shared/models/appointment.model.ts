@@ -1,4 +1,3 @@
-import { Physician } from './physician.model';
 import { RoomType } from './rooms.model';
 import { Exam } from './exam.model';
 import { User } from './user.model';

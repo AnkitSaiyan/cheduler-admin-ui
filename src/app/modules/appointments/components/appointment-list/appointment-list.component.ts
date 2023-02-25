@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { AppointmentStatus, AppointmentStatusToName, Status, StatusToName } from '../../../../shared/models/status.model';
+import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -17,8 +17,6 @@ import { Appointment } from '../../../../shared/models/appointment.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { getDurationMinutes } from '../../../../shared/models/calendar.model';
 import { Exam } from '../../../../shared/models/exam.model';
-import { User } from '../../../../shared/models/user.model';
-import { Physician } from '../../../../shared/models/physician.model';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -149,23 +147,29 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         this.cdr.detectChanges();
       });
 
-    this.afterBannerClosed$$.pipe(
-      map((value) => {
-        if (value?.proceed) {
-          return [...this.selectedAppointmentIDs.map((id) => ({ id: +id, newStatus: value.newStatus }))];
-        }
-
-        return [];
-      }),
-      switchMap((changes) => this.appointmentApiSvc.changeAppointmentStatus$(changes)),
-      takeUntil(this.destroy$$),
-    );
-    // .subscribe((value) => {
-    //   if (value) {
-    //     this.notificationSvc.showNotification('Status has changed successfully');
-    //   }
-    //   this.clearSelected$$.next();
-    // });
+    this.afterBannerClosed$$
+      .pipe(
+        map((value) => {
+          if (value?.proceed) {
+            return [...this.selectedAppointmentIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
+          }
+          return [];
+        }),
+        filter((changes) => {
+          if (!changes.length) {
+            this.clearSelected$$.next();
+          }
+          return !!changes.length;
+        }),
+        switchMap((changes) => this.appointmentApiSvc.changeAppointmentStatus$(changes)),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe({
+        next: () => {
+          this.notificationSvc.showNotification('Status has changed successfully');
+          this.clearSelected$$.next();
+        },
+      });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
       this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
@@ -177,7 +181,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   }
 
   public handleCheckboxSelection(selected: string[]) {
-    this.toggleMenu(true);
+    // this.toggleMenu(true);
+    console.log(selected);
     this.selectedAppointmentIDs = [...selected];
   }
 
@@ -194,7 +199,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     ]);
   }
 
-  public changeStatus(changes: { id: number | string; newStatus: AppointmentStatus | null }[]) {
+  public changeStatus(changes: ChangeStatusRequestData[]) {
     this.appointmentApiSvc
       .changeAppointmentStatus$(changes)
       .pipe(takeUntil(this.destroy$$))

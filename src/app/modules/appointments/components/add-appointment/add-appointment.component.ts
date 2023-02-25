@@ -184,7 +184,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         }),
         switchMap((appointmentID) => {
           console.log('appointmentID: ', appointmentID);
-          return this.appointmentApiSvc.getAppointmentByID(+appointmentID);
+          return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
         }),
         debounceTime(300),
         takeUntil(this.destroy$$),

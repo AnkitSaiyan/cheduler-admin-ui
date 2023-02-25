@@ -35,7 +35,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
       .listenForParamChange$(APPOINTMENT_ID)
       .pipe(
         // filter((appointmentID) => !!appointmentID),
-        switchMap((appointmentID) => this.appointmentApiSvc.getAppointmentByID(+appointmentID)),
+        switchMap((appointmentID) => this.appointmentApiSvc.getAppointmentByID$(+appointmentID)),
         tap((appointment) => {
           this.appointment$$.next(appointment);
 
