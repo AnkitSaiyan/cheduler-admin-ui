@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -46,6 +46,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   public appointment$$ = new BehaviorSubject<Appointment | undefined>(undefined);
 
   public loading$$ = new BehaviorSubject(false);
+
+  public loadingSlots$$ = new BehaviorSubject<boolean>(false);
 
   public userList: NameValue[] = [];
 
@@ -192,6 +194,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       ?.valueChanges.pipe(
         debounceTime(0),
         filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
+        tap(() => this.loadingSlots$$.next(true)),
         map((date) => {
           this.examIdToAppointmentSlots = {};
           this.selectedTimeSlot = {};
@@ -200,13 +203,17 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         }),
         switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
       )
-      .subscribe((slots) => this.setSlots(slots[0].slots));
+      .subscribe((slots) => {
+        this.setSlots(slots[0].slots);
+        this.loadingSlots$$.next(false);
+      });
 
     this.appointmentForm
       .get('examList')
       ?.valueChanges.pipe(
         debounceTime(0),
         filter((examList) => examList?.length && this.formValues.startedAt?.day),
+        tap(() => this.loadingSlots$$.next(true)),
         map((examList) => {
           this.examIdToAppointmentSlots = {};
           this.selectedTimeSlot = {};
@@ -215,7 +222,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         }),
         switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
       )
-      .subscribe((slots) => this.setSlots(slots[0].slots));
+      .subscribe((slots) => {
+        this.setSlots(slots[0].slots);
+        this.loadingSlots$$.next(false);
+      });
   }
 
   public ngAfterViewInit() {

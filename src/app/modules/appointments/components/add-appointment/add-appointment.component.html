@@ -127,7 +127,15 @@
         </div>
       </div>
 
-      <span class="font-weight-medium text-sm dfm-my-8" *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length">No slots found for selected Exams</span>
+      <span class="font-weight-medium text-sm dfm-my-8"
+            *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false">
+        No slots found for selected Exams and Date combination.
+      </span>
+
+      <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async">
+        Loading slots...
+      </span>
+
 
       <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="slots?.length">
         <div class="dfm-card d-flex flex-column dfm-p-16 card-item" *ngFor="let exam of exams.value">
