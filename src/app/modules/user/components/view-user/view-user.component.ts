@@ -46,7 +46,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this User?',
+        bodyText: 'AreyousureyouwanttodeletethisUser',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,

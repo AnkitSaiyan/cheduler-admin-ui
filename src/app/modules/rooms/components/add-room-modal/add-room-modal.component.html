@@ -1,6 +1,6 @@
 <div class="bg-white rounded-4 ad-rm-main-wrapper dfm-px-16">
   <section class="modal-header ad-rm-section1">
-    <h5 class="modal-title ad-rm-title-buttons">{{ modalData?.edit ? 'Edit' : 'Add' }} Room</h5>
+    <h5 class="modal-title ad-rm-title-buttons">{{ modalData?.edit ? 'EditRoom' : 'AddRoom' | translate }}</h5>
     <dfm-button-icon class="ad-rm-title-buttons" color="tertiary-gray" icon="x-close"
                      (click)="closeModal(false)"></dfm-button-icon>
 
@@ -18,7 +18,7 @@
       <dfm-button
         color="link"
         size="lg"
-      > {{ modalData?.edit ? 'Edit' : 'Add' }} Room
+      > {{ modalData?.edit ? 'EditRoom' : 'AddRoom' | translate }}
       </dfm-button>
     </div>
   </section>
@@ -26,7 +26,7 @@
   <section class="modal-body dfm-pb-24 ad-rm-section2">
     <form [formGroup]="addRoomForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16" *ngIf="room$$ | async">
       <div class="d-flex dfm-gap-32 flex-wrap">
-        <dfm-input class="flex-1" size="md" placeholder="Enter room name" label="Room Name *" formControlName="name">
+        <dfm-input class="flex-1" size="md" placeholder="Enter room name" label="{{'RoomName' | translate }} *" formControlName="name">
         </dfm-input>
 
         <dfm-input type="number" class="flex-1" size="md" placeholder="Enter place in agenda" label="Place In Agenda. *"
@@ -35,21 +35,21 @@
       </div>
 
       <div class="d-flex dfm-gap-32 flex-wrap align-items-start flex-1">
-        <dfm-input class="flex-1 w-full" size="md" placeholder="Enter room description" label="Description"
+        <dfm-input class="flex-1 w-full" size="md" placeholder="Enter room description" label="{{'Description' | translate}}"
                    formControlName="description">
         </dfm-input>
 
         <div class="d-flex flex-column dfm-gap-16 flex-1 ad-rm-form-room-type" style="width: 50%">
-          <span class="text-sm font-weight-medium dfm-text-main-700">Room Type *</span>
+          <span class="text-sm font-weight-medium dfm-text-main-700">{{'RoomType' | translate}} *</span>
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-radio-button class="font-weight-normal" label="Public" [checkedValue]="'public'" formControlName="type"
+            <dfm-radio-button class="font-weight-normal" label="{{'Public' | translate}}" [checkedValue]="'public'" formControlName="type"
                               (change)="handle($event)"></dfm-radio-button>
-            <dfm-radio-button class="font-weight-normal" label="Private" [checkedValue]="'private'"
+            <dfm-radio-button class="font-weight-normal" label="{{'Private' | translate}}" [checkedValue]="'private'"
                               formControlName="type"></dfm-radio-button>
           </div>
           <small class="validation-error"
                  *ngIf="addRoomForm.get('type')?.hasError('required') && addRoomForm.get('type')?.touched">
-            The field is Required.
+           {{'RequiredField' | translate}}
           </small>
         </div>
         <!--        <dfm-input class="flex-1" size="md" placeholder="Enter Room no." label="Room No. *" formControlName="roomNo">-->
@@ -58,12 +58,12 @@
       </div>
 
       <div class="d-flex flex-column dfm-gap-8">
-        <span class="font-weight-medium">Add Availability Data</span>
+        <span class="font-weight-medium">{{'AddAvailabilityData' | translate}}</span>
 
         <div class="w-fit">
           <dfm-radio-button
-            label="Always"
-            hint="Corresponds to the opening hours of the practice"
+            label="{{'Always' | translate}}"
+            hint="{{'Openinghoursofthepractice' | translate}}"
             size="sm"
             [checkedValue]="false"
             formControlName="practiceAvailabilityToggle"
@@ -71,8 +71,8 @@
           ></dfm-radio-button>
 
           <dfm-radio-button
-            label="Get Detailed"
-            hint="Use only for exceptions"
+            label="{{'GetDetailed' | translate}}"
+            hint="{{'OnlyForException' | translate}}"
             size="sm"
             formControlName="practiceAvailabilityToggle"
             [checkedValue]="true"
@@ -83,40 +83,40 @@
 
       <div *ngIf="formValues.practiceAvailabilityToggle" class="d-flex flex-column dfm-gap-24">
         <div class="d-flex flex-column dfm-gap-8">
-          <span class="text-sm font-weight-semi-bold">Choose Day</span>
+          <span class="text-sm font-weight-semi-bold">{{"ChooseDay" | translate}}</span>
 
           <div class="d-flex dfm-gap-16 weekday-header ad-rm-weekdays-tab hide-scrollbar">
             <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)"
                        class="pointer"
-                       (click)="selectWeekday(weekdayEnum.ALL)">VIEW ALL
+                       (click)="selectWeekday(weekdayEnum.ALL)">{{'ViewAll' | translate | uppercase }}
             </dfm-badge>
             <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.MON)"
                        class="pointer"
-                       (click)="selectWeekday(weekdayEnum.MON)">MON
+                       (click)="selectWeekday(weekdayEnum.MON)">{{'MON' | translate}}
             </dfm-badge>
             <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.TUE)"
                        class="pointer"
-                       (click)="selectWeekday(weekdayEnum.TUE)">TUE
+                       (click)="selectWeekday(weekdayEnum.TUE)">{{'TUE' | translate}}
             </dfm-badge>
             <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.WED)"
                        class="pointer"
-                       (click)="selectWeekday(weekdayEnum.WED)">WED
+                       (click)="selectWeekday(weekdayEnum.WED)">{{'WED' | translate}}
             </dfm-badge>
             <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.THU)"
                        class="pointer"
-                       (click)="selectWeekday(weekdayEnum.THU)">THU
+                       (click)="selectWeekday(weekdayEnum.THU)">{{'THU' | translate}}
             </dfm-badge>
             <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.FRI)"
                        class="pointer"
-                       (click)="selectWeekday(weekdayEnum.FRI)">FRI
+                       (click)="selectWeekday(weekdayEnum.FRI)">{{'FRI' | translate}}
             </dfm-badge>
             <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SAT)"
                        class="pointer"
-                       (click)="selectWeekday(weekdayEnum.SAT)">SAT
+                       (click)="selectWeekday(weekdayEnum.SAT)">{{'SAT' | translate}}
             </dfm-badge>
             <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SUN)"
                        class="pointer"
-                       (click)="selectWeekday(weekdayEnum.SUN)">SUN
+                       (click)="selectWeekday(weekdayEnum.SUN)">{{'SUN' | translate}}
             </dfm-badge>
           </div>
         </div>
@@ -128,7 +128,7 @@
                  [formArrayName]="getFormArrayName(controlArray)"
                  class="d-flex flex-column flex-wrap dfm-gap-16">
               <span class="text-sm font-weight-semi-bold">
-                {{ getFormArrayName(controlArray) | weekdayToName }}
+                {{ getFormArrayName(controlArray) | weekdayToName | translate}}
               </span>
 
               <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
@@ -144,7 +144,7 @@
                                             [typeToSearchText]="start.value"
                                             (searchInput)="handleTimeInput($event, controls?.get('dayStart'), controls?.get('startTimings'))"
                                             (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
-                                            label="Start Time"
+                                            label="{{'StartTime' | translate}}"
                                             formControlName="dayStart"
                                             size="md"
                                             placeholder="hh:mm">
@@ -164,7 +164,7 @@
                                             [typeToSearchText]="end.value"
                                             (searchInput)="handleTimeInput($event, controls?.get('dayEnd'), controls?.get('endTimings'))"
                                             (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
-                                            label="End Time"
+                                            label="{{'EndTime' | translate}}"
                                             formControlName="dayEnd"
                                             size="md"
                                             placeholder="hh:mm">
@@ -195,7 +195,7 @@
 
               <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
                 <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
-                <span class="text-sm dfm-text-main-600">Click to add slot</span>
+                <span class="text-sm dfm-text-main-600">{{'ClickToAddSlot' | translate}}</span>
               </div>
             </div>
           </div>
@@ -206,7 +206,7 @@
                  [formArrayName]="getFormArrayName(controlArray)"
                  class="d-flex flex-column flex-wrap dfm-gap-16">
               <span class="text-sm font-weight-semi-bold">
-                {{ getFormArrayName(controlArray) | weekdayToName }}
+                {{ getFormArrayName(controlArray) | weekdayToName | translate }}
               </span>
 
               <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
@@ -222,7 +222,7 @@
                                             [typeToSearchText]="start.value"
                                             (searchInput)="handleTimeInput($event, controls?.get('dayStart'), controls?.get('startTimings'))"
                                             (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
-                                            label="Start Time"
+                                            label="{{'StartTime' | translate}}"
                                             formControlName="dayStart"
                                             size="md"
                                             placeholder="hh:mm">
@@ -242,7 +242,7 @@
                                             [typeToSearchText]="end.value"
                                             (searchInput)="handleTimeInput($event, controls?.get('dayEnd'), controls?.get('endTimings'))"
                                             (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
-                                            label="End Time"
+                                            label="{{'EndTime' | translate}}"
                                             formControlName="dayEnd"
                                             size="md"
                                             placeholder="hh:mm">
@@ -273,7 +273,7 @@
 
               <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
                 <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
-                <span class="text-sm dfm-text-main-600">Click to add slot</span>
+                <span class="text-sm dfm-text-main-600">{{'ClickToAddSlot' | translate}}</span>
               </div>
             </div>
           </div>
@@ -297,8 +297,8 @@
   </section>
 
   <section class="modal-footer ad-rm-footer-buttons">
-    <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
+    <dfm-button color="secondary" size="md" (click)="closeModal(false)">{{'Cancel' | translate}}</dfm-button>
     <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true"
-                (click)="saveRoom()">{{ modalData?.edit ? 'Save Changes' : 'Add Room' }}</dfm-button>
+                (click)="saveRoom()">{{ modalData?.edit ? 'SaveChanges' : 'AddRoom' | translate}}</dfm-button>
   </section>
 </div>

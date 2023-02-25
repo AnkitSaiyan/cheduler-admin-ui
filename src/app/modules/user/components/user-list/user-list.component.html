@@ -12,7 +12,7 @@
       <dfm-input
         class="flex-1 us-li-search"
         size="md"
-        placeholder="Search by First Name, Last Name, Email and Category"
+        placeholder="{{'SearchByNameEmailCategory' | translate }}"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
@@ -32,7 +32,7 @@
             [items]="downloadItems"
             [showDescription]="false"
             [formControl]="downloadDropdownControl"
-            placeholder="Download"
+            placeholder="{{'Download' | translate}}"
             size="md"
           ></dfm-input-dropdown>
         </div>
@@ -44,7 +44,7 @@
           size="md"
           class="text-nowrap"
           (click)="openAddUserModal()"
-        >Add User
+        >{{'AddUser' | translate}}
         </dfm-button>
       </div>
     </div>
@@ -52,7 +52,7 @@
 
   <dfm-input
     size="md"
-    placeholder="Search by First Name, Last Name, Email and Category"
+    placeholder="{{'SearchByNameEmailCategory' | translate }}"
     icon="search-sm"
     class="w-full hidden us-li-search-mv"
     [formControl]="searchControl"
@@ -90,7 +90,7 @@
           <dfm-badge *ngIf="item.status === statusType.Inactive"
                      color="primary"
                      size="sm">
-            {{ item.status | statusName | dashIfNothing }}
+            {{ item.status | statusName | translate | dashIfNothing }}
           </dfm-badge>
         </dfm-table-body-cell>
 
@@ -101,7 +101,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
-              ngbPopover="Status" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
             ></dfm-button>
@@ -111,7 +111,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
-              ngbPopover="Status" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
             ></dfm-button>
@@ -120,7 +120,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
-              ngbPopover="Edit" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); openAddUserModal(item)"
             ></dfm-button>
@@ -129,7 +129,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
-              ngbPopover="Delete" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); deleteUser(item.id)"
             ></dfm-button>
@@ -155,22 +155,22 @@
                  aria-labelledby="dropdownManual">
               <div *ngIf="!item.status"
                    (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-                   ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
               </div>
 
               <div *ngIf="item.status"
                    (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-                   ngbPopover="Status" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); openAddUserModal(item)" ngbPopover="Edit"
+              <div (click)="$event.stopPropagation(); openAddUserModal(item)" ngbPopover="{{'Edit' | translate}}"
                    triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); deleteUser(item.id)" ngbPopover="Delete"
+              <div (click)="$event.stopPropagation(); deleteUser(item.id)" ngbPopover="{{'Delete' | translate}}"
                    triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
@@ -209,7 +209,6 @@
   <!--  </div>-->
 </div>
 
-<div> {{ 'FirstName' | translate }} </div>
 
 <dfm-confirm-status-change-banner [display]="selectedUserIds.length"
                                   (confirmationEvent)="handleConfirmation($event)"></dfm-confirm-status-change-banner>

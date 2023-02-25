@@ -3,6 +3,8 @@ import { NavigationItem, NavigationItemEvent, NavigationProfileData, NavigationP
 import { TranslateService } from '@ngx-translate/core';
 import { DestroyableComponent } from '../shared/components/destroyable.component';
 import { DUTCH_BE, ENG_BE } from '../shared/utils/const';
+import defaultLanguage from '../../assets/i18n/en-BE.json';
+import dutchLangauge from '../../assets/i18n/nl-BE.json';
 
 @Component({
   selector: 'dfm-main',
@@ -57,15 +59,23 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     super();
   }
 
-  public ngOnInit(): void {}
+  public ngOnInit(): void {
+    console.log();
+  }
 
   public override ngOnDestroy() {
     super.ngOnDestroy();
   }
 
   public onLanguageChange(lang: string) {
-    console.log(lang);
-    this.currentTenant = lang;
-    this.translateService.use(this.currentTenant);
+    // eslint-disable-next-line eqeqeq
+    if (lang == 'en-BE') {
+      this.translateService.setTranslation(lang, defaultLanguage);
+      this.translateService.setDefaultLang(lang);
+      // eslint-disable-next-line eqeqeq
+    } else if (lang == 'nl-BE') {
+      this.translateService.setTranslation(lang, dutchLangauge);
+      this.translateService.setDefaultLang(lang);
+    }
   }
 }

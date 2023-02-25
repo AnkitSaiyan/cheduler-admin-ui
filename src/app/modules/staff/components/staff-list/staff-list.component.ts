@@ -32,7 +32,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['First Name', 'Last Name', 'Type', 'Email', 'Status', 'Actions'];
+  public columns: string[] = ['FirstName', 'LastName', 'Type', 'Email', 'Status', 'Actions'];
 
   public downloadItems: DownloadType[] = [];
 
