@@ -131,13 +131,12 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(() => this.absenceApiSvc.deleteAbsence(id)),
+        switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),
         take(1),
       )
-      .subscribe((response) => {
-        if (response) {
-          this.notificationSvc.showNotification('Absence deleted successfully');
-        }
+      .subscribe((res) => {
+        console.log(res);
+        this.notificationSvc.showNotification('Absence deleted successfully');
       });
   }
 

@@ -33,7 +33,7 @@
 
       <div class="d-flex dfm-gap-32 align-items-center ad-ab-dates">
         <div class="ad-ab-from-date flex-1 max-w-5">
-          <span class="text-sm font-weight-medium dfm-text-main-700">From *</span>
+          <span class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-8">{{ formValues.isRepeat ? 'From' : 'Date' }} *</span>
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
             <div class="flex-1 d-flex flex-column">
@@ -68,6 +68,7 @@
                                   [items]="startTimes"
                                   [typeToSearch]="true"
                                   [typeToSearchText]="startTime.value"
+                                  [label]="formValues.isRepeat ? '' : 'Start Time *'"
                                   (searchInput)="handleTimeInput($event, 'startTime')"
                                   formControlName="startTime"
                                   size="md"
@@ -80,11 +81,11 @@
             End Time</small>
         </div>
 
-        <div class="ad-ab-to-date flex-1 max-w-5" *ngIf="formValues.isRepeat">
-          <span class="text-sm font-weight-medium dfm-text-main-700">Until *</span>
+        <div class="ad-ab-to-date flex-1 max-w-5">
+          <span class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-8">{{ formValues.isRepeat ? 'Until' : 'End Time' }} *</span>
 
           <div class="d-flex align-items-start dfm-gap-16">
-            <div class="flex-1 d-flex flex-column">
+            <div class="flex-1 d-flex flex-column" *ngIf="formValues.isRepeat">
               <div class="dfm-button-group-wrapper flex-1">
                 <div class="input-as-dfm-input flex-1">
                   <input

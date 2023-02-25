@@ -61,7 +61,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
           console.log('res', res);
           return res;
         }),
-        switchMap(() => this.absenceApiSvc.deleteAbsence(id)),
+        switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),
         take(1),
       )
       .subscribe(() => {

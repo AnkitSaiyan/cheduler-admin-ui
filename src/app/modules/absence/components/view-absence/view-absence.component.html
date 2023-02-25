@@ -76,8 +76,9 @@
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Start Date</span>
-          <span class="flex-1">{{ absenceDetails.startedAt | date : 'dd/MM/yyyy, HH:mm' }}</span>
+          <span class="flex-1">{{absenceDetails.isRepeat ? 'Start Date' : 'Date'}}</span>
+          <span class="flex-1" *ngIf="!absenceDetails.isRepeat">{{ absenceDetails.startedAt | date : 'dd/MM/yyyy, HH:mm'}} - {{absenceDetails.endedAt | date : 'HH:mm'}}</span>
+          <span class="flex-1" *ngIf="absenceDetails.isRepeat">{{ absenceDetails.startedAt | date : 'dd/MM/yyyy, HH:mm'}},</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="absenceDetails.isRepeat">
@@ -152,7 +153,7 @@
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">Repeat Every</span>
-          <span class="flex-1">{{ absenceDetails.repeatFrequency }}
+          <span class="flex-1">{{ absenceDetails.repeatFrequency === 0 ? ('' | dashIfNothing) :  absenceDetails.repeatFrequency}}
             <span *ngIf="absenceDetails.repeatFrequency">{{ absenceDetails.repeatType | repeatTypeToName }}</span>
           </span>
         </div>

@@ -89,11 +89,10 @@ export class DownloadService {
     });
 
     csv += '\n';
-
     if (data.length) {
       data.forEach((row) => (csv += `${row.join(',')}\n`));
     }
-
+    console.log(csv);
     return csv;
   }
 

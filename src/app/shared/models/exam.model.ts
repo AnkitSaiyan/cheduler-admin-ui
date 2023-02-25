@@ -26,7 +26,14 @@ export interface Exam {
   }[];
   rooms?: Room[];
   uncombinables?: number[];
+  uncombinablesExam: Uncombinables[];
+
   practiceAvailability?: any[];
+}
+
+export interface Uncombinables {
+  name: string;
+  id: number;
 }
 
 export interface CreateExamRequestData {
