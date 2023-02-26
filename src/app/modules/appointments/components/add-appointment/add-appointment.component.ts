@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,8 +18,9 @@ import { formatTime } from '../../../../shared/utils/time';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { UserType } from '../../../../shared/models/user.model';
 import { AddAppointmentRequestData, Appointment, AppointmentSlotsRequestData, Slot } from '../../../../shared/models/appointment.model';
-import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT } from '../../../../shared/utils/const';
+import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX } from '../../../../shared/utils/const';
 import { RouterStateService } from '../../../../core/services/router-state.service';
+import { AppointmentStatus } from '../../../../shared/models/status.model';
 
 interface FormValues {
   patientFname: string;
@@ -46,6 +47,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   public appointment$$ = new BehaviorSubject<Appointment | undefined>(undefined);
 
   public loading$$ = new BehaviorSubject(false);
+
+  public loadingSlots$$ = new BehaviorSubject<boolean>(false);
+
+  public submitting$$ = new BehaviorSubject(false);
 
   public userList: NameValue[] = [];
 
@@ -78,7 +83,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     },
   ];
 
-  public examIdToName: { [key: number]: string } = {};
+  public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
 
   public slots: Slot[] = [];
 
@@ -143,8 +148,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.examApiService.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
       this.examList = this.nameValuePipe.transform(exams, 'name', 'id');
       exams.forEach((exam) => {
-        if (!this.examIdToName[+exam.id]) {
-          this.examIdToName[+exam.id] = exam.name;
+        if (!this.examIdToDetails[+exam.id]) {
+          this.examIdToDetails[+exam.id] = {
+            name: exam.name,
+            expensive: exam.expensive,
+          };
         }
       });
 
@@ -176,7 +184,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         }),
         switchMap((appointmentID) => {
           console.log('appointmentID: ', appointmentID);
-          return this.appointmentApiSvc.getAppointmentByID(+appointmentID);
+          return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
         }),
         debounceTime(300),
         takeUntil(this.destroy$$),
@@ -192,6 +200,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       ?.valueChanges.pipe(
         debounceTime(0),
         filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
+        tap(() => this.loadingSlots$$.next(true)),
         map((date) => {
           this.examIdToAppointmentSlots = {};
           this.selectedTimeSlot = {};
@@ -200,13 +209,17 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         }),
         switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
       )
-      .subscribe((slots) => this.setSlots(slots[0].slots));
+      .subscribe((slots) => {
+        this.setSlots(slots[0].slots);
+        this.loadingSlots$$.next(false);
+      });
 
     this.appointmentForm
       .get('examList')
       ?.valueChanges.pipe(
         debounceTime(0),
         filter((examList) => examList?.length && this.formValues.startedAt?.day),
+        tap(() => this.loadingSlots$$.next(true)),
         map((examList) => {
           this.examIdToAppointmentSlots = {};
           this.selectedTimeSlot = {};
@@ -215,7 +228,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         }),
         switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
       )
-      .subscribe((slots) => this.setSlots(slots[0].slots));
+      .subscribe((slots) => {
+        this.setSlots(slots[0].slots);
+        this.loadingSlots$$.next(false);
+      });
   }
 
   public ngAfterViewInit() {
@@ -243,8 +259,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       startedAt: [null, [Validators.required]],
       startTime: [null, []],
       examList: [[], [Validators.required]],
-      userId: [null, []],
+      userId: [null, [Validators.required]],
       comments: ['', []],
+      approval: [AppointmentStatus.Pending, []],
     });
   }
 
@@ -277,6 +294,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
       userId: appointment?.userId.toString() ?? null,
       comments: appointment?.comments ?? null,
+      approval: appointment?.approval ?? AppointmentStatus.Pending,
     });
 
     const examId = appointment?.exams[0]?.id;
@@ -322,63 +340,118 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   public saveAppointment(): void {
-    // if (this.appointmentForm.invalid) {
-    //   this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-    //   this.appointmentForm.markAsDirty({ onlySelf: true });
-    //   return;
-    // }
+    try {
+      if (this.appointmentForm.invalid) {
+        this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+        Object.keys(this.appointmentForm.controls).forEach((key) => this.appointmentForm.get(key)?.markAsTouched());
+        return;
+      }
 
-    const { startedAt, startTime, ...rest } = this.formValues;
+      this.submitting$$.next(true);
 
-    // const hour = startTime.slice(-2).toLowerCase() === 'pm' ? +startTime.slice(0, 2) + 12 : +startTime.slice(0, 2);
-    const time = Object.values(this.selectedTimeSlot)[0].split(':');
+      const { startedAt, startTime, examList, ...rest } = this.formValues;
 
-    const requestData: AddAppointmentRequestData = {
-      ...rest,
-      startedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day} ${time[0]}:${time[1]}`,
-    };
+      const requestData: AddAppointmentRequestData = {
+        ...rest,
+        examDetails: examList.map((examID) => {
+          const examDetails = {
+            examId: +examID,
+            startedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day}`,
+            endedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day}`,
+          };
 
-    if (this.appointment$$.value && this.appointment$$.value?.id) {
-      requestData.id = this.appointment$$.value.id;
-    }
+          if (this.selectedTimeSlot[+examID]) {
+            const time = this.selectedTimeSlot[+examID].split('-');
+            const start = time[0].split(':');
+            const end = time[1].split(':');
 
-    console.log(requestData);
-
-    if (this.edit) {
-      this.appointmentApiSvc
-        .updateAppointment$(requestData)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`Appointment updated successfully`);
-          let route: string;
-          console.log('this.comingFromRoute: ', this.comingFromRoute);
-          if (this.comingFromRoute === 'view') {
-            route = '../view';
+            examDetails.startedAt += ` ${start[0]}:${start[1]}:00`;
+            examDetails.endedAt += ` ${end[0]}:${end[1]}:00`;
           } else {
-            route = this.edit ? '/appointment' : '/dashboard';
+            examDetails.startedAt += ' 00:00:00';
+            examDetails.endedAt += (() => {
+              const { expensive } = this.examIdToDetails[+examID];
+
+              let hour: string = '00';
+              let minute: string = '00';
+
+              if (+expensive >= 60) {
+                hour = Math.floor(+expensive / 60).toString();
+                minute = Math.floor(+expensive % 60).toString();
+              }
+
+              if (+expensive < 60 && +expensive > 0) {
+                minute = +expensive < 10 ? `0${expensive}` : `${expensive}`;
+              }
+
+              return ` ${hour}:${minute}:00`;
+            })();
           }
 
-          this.router.navigate([route], { relativeTo: this.route });
-        });
-    } else {
-      this.appointmentApiSvc
-        .saveAppointment$(requestData)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`Appointment saved successfully`);
-          let route: string;
-          switch (this.comingFromRoute) {
-            case 'view':
-              route = '../view';
-              break;
-            case 'dashboard':
-              route = '/';
-              break;
-            default:
-              route = this.edit ? '/appointment' : '../';
-          }
-          this.router.navigate([route], { relativeTo: this.route });
-        });
+          return examDetails;
+        }),
+      };
+
+      if (this.appointment$$.value && this.appointment$$.value?.id) {
+        requestData.id = this.appointment$$.value.id;
+      }
+
+      console.log(requestData);
+
+      if (this.edit) {
+        this.appointmentApiSvc
+          .updateAppointment$(requestData)
+          .pipe(takeUntil(this.destroy$$))
+          .subscribe({
+            next: () => {
+              this.notificationSvc.showNotification(`Appointment updated successfully`);
+              this.submitting$$.next(false);
+
+              let route: string;
+              console.log('this.comingFromRoute: ', this.comingFromRoute);
+              if (this.comingFromRoute === 'view') {
+                route = '../view';
+              } else {
+                route = this.edit ? '/appointment' : '/dashboard';
+              }
+              this.router.navigate([route], { relativeTo: this.route });
+            },
+            error: (err) => {
+              this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+              this.submitting$$.next(false);
+            },
+          });
+      } else {
+        this.appointmentApiSvc
+          .saveAppointment$(requestData)
+          .pipe(takeUntil(this.destroy$$))
+          .subscribe({
+            next: () => {
+              this.notificationSvc.showNotification(`Appointment saved successfully`);
+              this.submitting$$.next(false);
+
+              let route: string;
+              switch (this.comingFromRoute) {
+                case 'view':
+                  route = '../view';
+                  break;
+                case 'dashboard':
+                  route = '/';
+                  break;
+                default:
+                  route = this.edit ? '/appointment' : '../';
+              }
+              this.router.navigate([route], { relativeTo: this.route });
+            },
+            error: (err) => {
+              this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+              this.submitting$$.next(false);
+            },
+          });
+      }
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to save the appointment', NotificationType.DANGER);
+      this.submitting$$.next(false);
     }
   }
 
@@ -431,6 +504,22 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     }
   }
 
+  public handleEmailInput(e: Event): void {
+    const inputText = (e.target as HTMLInputElement).value;
+
+    if (!inputText) {
+      return;
+    }
+
+    if (!inputText.match(EMAIL_REGEX)) {
+      this.appointmentForm.get('patientEmail')?.setErrors({
+        email: true,
+      });
+    } else {
+      this.appointmentForm.get('patientEmail')?.setErrors(null);
+    }
+  }
+
   // public selectSlot(slot, id) {
   //   const index = this.selectedTimeSlot.findIndex((timeSlot) => +timeSlot.id === +id);
   //   if (index !== -1) {
@@ -444,6 +533,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   //
   // public isSlotSelected(slot: string, id: number): boolean {
   //   return false;
-  //   // return !!this.selectedTimeSlot.find((timeSlot) => timeSlot?.slot === slot && +timeSlot?.examId === +id);
+  //   return !!this.selectedTimeSlot.find((timeSlot) => timeSlot?.slot === slot && +timeSlot?.examId === +id);
   // }
 }

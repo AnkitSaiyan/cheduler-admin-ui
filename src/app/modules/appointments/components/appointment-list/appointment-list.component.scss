@@ -15,12 +15,11 @@
     display: none !important;
   }
 
-  .ap-li-title-buttons {
+  .ap-li-title-buttons, .ap-li-search-mv, .ap-li-plus-btn {
     display: block;
   }
 
   .ap-li-plus-btn {
-    display: block;
     position: absolute;
     bottom: 0;
     right: 0;

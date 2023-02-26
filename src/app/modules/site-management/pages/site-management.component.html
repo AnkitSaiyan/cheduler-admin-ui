@@ -1,20 +1,21 @@
-<div class="d-flex flex-column dfm-gap-16 st-mg-main-wrapper" *ngIf="siteManagementData$$ | async as smData">
-  <section>
-    <div class="d-flex align-items-center justify-content-between dfm-gap-16 st-mg-title-buttons">
+<div class="d-flex flex-column dfm-gap-24 st-mg-main-wrapper" *ngIf="siteManagementData$$ | async as smData">
+  <section class="content-section-1">
+    <ng-container>
       <dfm-button
+        class="st-mg-title-buttons"
         color="link"
         size="lg"
         routerLink="./"
       >{{'SiteManagement' | translate}}
       </dfm-button>
 
-      <div class="d-flex dfm-gap-16 align-items-center">
+      <div class="d-flex dfm-gap-16 align-items-center st-mg-title-buttons">
         <!-- <dfm-button color="secondary" size="md">Cancel</dfm-button> -->
         <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveSiteManagementData()">{{'SaveChanges' | translate}}</dfm-button>
       </div>
-    </div>
+    </ng-container>
 
-    <!--  Mobile view  -->
+    <!--  Mobile View Elements -->
     <div class="hidden dfm-gap-8 align-items-center st-mg-title-buttons-mv">
       <div class="rounded-circle overflow-hidden">
         <dfm-button-icon
@@ -27,11 +28,11 @@
 
       <dfm-button color="link" size="lg">{{'SiteManagement' | translate}}</dfm-button>
     </div>
-    <!--    -->
+    <!--  Mobile View Elements End  -->
   </section>
 
-  <section class="dfm-card dfm-p-16 st-mg-section2">
-    <form [formGroup]="siteManagementForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+  <section class="dfm-card dfm-p-16 st-mg-section2 add-page-content-height">
+    <form [formGroup]="siteManagementForm" class="d-flex flex-column dfm-gap-24">
       <div class="d-flex dfm-gap-32 flex-wrap">
         <div class="flex-1">
           <dfm-input class="" size="md" placeholder="Enter site name" label="{{'SiteName' | translate}} *" formControlName="name">

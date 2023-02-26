@@ -1,53 +1,51 @@
-<div class="d-flex flex-column h-100 position-relative dfm-gap-16 ex-li-main-wrapper">
-  <section>
-    <div class="d-flex align-items-center dfm-gap-16 flex-1 ex-li-section-1">
-      <dfm-button
-        class="hidden ex-li-title-buttons"
-        color="link"
-        size="lg"
-        routerLink="./"
-      >Exam
-      </dfm-button>
+<div class="d-flex flex-column dfm-gap-16 position-relative">
+  <section class="list-page-section-1">
+    <dfm-button
+      class="hidden ex-li-title-buttons"
+      color="link"
+      size="lg"
+      routerLink="./"
+    >Exam
+    </dfm-button>
 
-      <dfm-input
-        class="flex-1 ex-li-search"
-        size="md"
-        placeholder="Search by Exam Name"
-        icon="search-sm"
-        [formControl]="searchControl"
-      ></dfm-input>
+    <dfm-input
+      class="flex-1 ex-li-search"
+      size="md"
+      placeholder="Search by Exam Name"
+      icon="search-sm"
+      [formControl]="searchControl"
+    ></dfm-input>
 
-      <div class="d-flex align-items-center dfm-button-group-wrapper ex-li-button-dropdown-group">
-        <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
-          <dfm-button-icon
-            (click)="copyToClipboard()"
-            color="tertiary-gray"
-            size="md"
-            icon="copy-03"
-          ></dfm-button-icon>
-        </div>
-
-        <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
-          <dfm-input-dropdown
-            [items]="downloadItems"
-            [showDescription]="false"
-            [formControl]="downloadDropdownControl"
-            placeholder="Download"
-            size="md"
-          ></dfm-input-dropdown>
-        </div>
-      </div>
-
-      <div class="d-flex dfm-gap-8 align-items-center">
-        <dfm-button
-          color="primary"
+    <div class="d-flex align-items-center dfm-button-group-wrapper ex-li-button-dropdown-group">
+      <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
+        <dfm-button-icon
+          (click)="copyToClipboard()"
+          color="tertiary-gray"
           size="md"
-          class="text-nowrap"
-          [disabled]="false"
-          routerLink="./add"
-        >Add Exam
-        </dfm-button>
+          icon="copy-03"
+        ></dfm-button-icon>
       </div>
+
+      <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
+        <dfm-input-dropdown
+          [items]="downloadItems"
+          [showDescription]="false"
+          [formControl]="downloadDropdownControl"
+          placeholder="Download"
+          size="md"
+        ></dfm-input-dropdown>
+      </div>
+    </div>
+
+    <div class="d-flex dfm-gap-8 align-items-center">
+      <dfm-button
+        color="primary"
+        size="md"
+        class="text-nowrap"
+        [disabled]="false"
+        routerLink="./add"
+      >Add Exam
+      </dfm-button>
     </div>
   </section>
 
@@ -59,7 +57,7 @@
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section #tableWrapper class="overflow-y-auto ex-li-table-wrapper" *ngIf="filteredExams$$ | async as exams">
+  <section #tableWrapper class="list-page-content-height" *ngIf="filteredExams$$ | async as exams">
     <dfm-table [items]="exams" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewExam($event)"
                class="dfm-table-wrapper">
@@ -129,39 +127,52 @@
             ></dfm-button>
           </div>
 
-          <div class="position-relative">
-            <div ngbDropdown #actionButtonsMenu="ngbDropdown">
-              <div class="shadow-lg ex-li-action-buttons-menu ex-li-menus" ngbDropdownMenu
-                   aria-labelledby="dropdownManual">
-                <div ngbDropdownItem *ngIf="item.status === statusType.Inactive"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])">
-                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-                </div>
-                <div ngbDropdownItem *ngIf="item.status === statusType.Active"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])">
-                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-                </div>
-                <div ngbDropdownItem (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"
-                     [state]="{ comingFromRoute: 'exam', edit: true }"
-                     class="position-relative">
-                  <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
-                  <div class="menu-point-forward shadow-sm"></div>
-                </div>
-                <div ngbDropdownItem (click)="$event.stopPropagation(); deleteExam(item.id)">
-                  <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
-                </div>
+          <!-- Action Menu -->
+          <dfm-button
+            [ngbPopover]="actionMenu"
+            autoClose="autoClose"
+            triggers="click"
+            container="body"
+            placement="left"
+            popoverClass="popover-p-0"
+            class="hidden ex-li-vertical-dots-btn"
+            color="link-gray"
+            size="sm"
+            trailingIcon="dots-vertical"
+            (click)="$event.stopPropagation(); toggleMenu(true)"
+          ></dfm-button>
+
+          <ng-template #actionMenu>
+            <div class="ex-li-menus"
+                 aria-labelledby="dropdownManual">
+              <div *ngIf="!item.status"
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
+                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
+                   [openDelay]="200">
+                <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+              </div>
+
+              <div *ngIf="item.status"
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
+                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
+                   [openDelay]="200">
+                <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+              </div>
+
+              <div (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"
+                   [state]="{ comingFromRoute: 'exam', edit: true }" ngbPopover="{{'Edit' | translate}}"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
+              </div>
+
+              <div (click)="$event.stopPropagation(); deleteExam(item.id)" ngbPopover="{{'Delete' | translate}}"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>
+          </ng-template>
+          <!-- Action Menu ends -->
 
-            <dfm-button
-              class="hidden ex-li-vertical-dots-btn"
-              color="link-gray"
-              size="sm"
-              trailingIcon="dots-vertical"
-              (click)="$event.stopPropagation(); actionButtonsMenu.open();"
-            ></dfm-button>
-
-          </div>
         </dfm-table-body-cell>
       </ng-template>
     </dfm-table>
@@ -169,24 +180,24 @@
       No data found
     </div>
   </section>
-<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
-<!--    <div class="shadow-lg ex-li-plus-btn-menu ex-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
-<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
+  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+  <!--    <div class="shadow-lg ex-li-plus-btn-menu ex-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
 
-<!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg ex-li-plus-btn rounded-2"-->
-<!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
-<!--    <dfm-icon #showMoreButtonIcon name="plus" class="ex-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
-<!--  </dfm-button>-->
+  <!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg ex-li-plus-btn rounded-2"-->
+  <!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
+  <!--    <dfm-icon #showMoreButtonIcon name="plus" class="ex-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+  <!--  </dfm-button>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedExamIDs.length"

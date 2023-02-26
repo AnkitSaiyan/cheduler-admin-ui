@@ -1,60 +1,58 @@
-<div class="d-flex flex-column h-100 dfm-gap-16 position-relative ph-li-main-wrapper">
-  <section>
-    <div class="d-flex align-items-center dfm-gap-16 flex-1 ph-li-section-1">
-      <dfm-button
-        class="hidden ph-li-title-buttons"
-        color="link"
-        size="lg"
-        routerLink="./"
-      >Physician
-      </dfm-button>
+<div class="d-flex flex-column dfm-gap-16 position-relative">
+  <section class="list-page-section-1">
+    <dfm-button
+      class="hidden ph-li-title-buttons"
+      color="link"
+      size="lg"
+      routerLink="./"
+    >Physician
+    </dfm-button>
 
-      <dfm-input
-        class="flex-1 ph-li-search"
-        size="md"
-        placeholder="{{'SearchPhysician' | translate}}"
-        icon="search-sm"
-        [formControl]="searchControl"
-      ></dfm-input>
+    <dfm-input
+      class="flex-1 ph-li-search"
+      size="md"
+      placeholder="{{'SearchPhysician' | translate}}"
+      icon="search-sm"
+      [formControl]="searchControl"
+    ></dfm-input>
 
-      <div class="d-flex align-items-center dfm-button-group-wrapper ph-li-button-dropdown-group">
-        <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="copy-03"
-            (click)="copyToClipboard()"
-          ></dfm-button-icon>
-        </div>
-
-        <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
-          <dfm-input-dropdown
-            [items]="downloadItems"
-            [showDescription]="false"
-            [formControl]="downloadDropdownControl"
-            placeholder="{{'Download' | translate}}"
-            size="md"
-          ></dfm-input-dropdown>
-        </div>
-      </div>
-
-      <div class="d-flex dfm-gap-8 align-items-center">
-        <!--        <dfm-button-->
-        <!--          color="secondary"-->
-        <!--          size="sm"-->
-        <!--          [disabled]="!selectedPhysicianIds.length"-->
-        <!--        >Confirm-->
-        <!--        </dfm-button>-->
-
-        <dfm-button
-          color="primary"
+    <div class="d-flex align-items-center dfm-button-group-wrapper ph-li-button-dropdown-group">
+      <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
+        <dfm-button-icon
+          color="tertiary-gray"
           size="md"
-          class="text-nowrap"
-          [disabled]="false"
-          (click)="openAddPhysicianModal()"
-        >{{'AddPhysician' | translate}}
-        </dfm-button>
+          icon="copy-03"
+          (click)="copyToClipboard()"
+        ></dfm-button-icon>
       </div>
+
+      <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
+        <dfm-input-dropdown
+          [items]="downloadItems"
+          [showDescription]="false"
+          [formControl]="downloadDropdownControl"
+          placeholder="{{'Download' | translate}}"
+          size="md"
+        ></dfm-input-dropdown>
+      </div>
+    </div>
+
+    <div class="d-flex dfm-gap-8 align-items-center">
+      <!--        <dfm-button-->
+      <!--          color="secondary"-->
+      <!--          size="sm"-->
+      <!--          [disabled]="!selectedPhysicianIds.length"-->
+      <!--        >Confirm-->
+      <!--        </dfm-button>-->
+
+      <dfm-button
+        color="primary"
+        size="md"
+        class="text-nowrap"
+        [disabled]="false"
+        (click)="openAddPhysicianModal()"
+      >{{'AddPhysician' | translate}}
+      </dfm-button>
     </div>
   </section>
 
@@ -66,7 +64,7 @@
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section class="overflow-y-auto ph-li-table-wrapper"
+  <section class="list-page-content-height"
            *ngIf="filteredPhysicians$$ | async as physicians">
     <dfm-table [items]="physicians" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewPhysician($event)"
@@ -157,20 +155,26 @@
             <div class="ph-li-menus"
                  aria-labelledby="dropdownManual">
               <div *ngIf="!item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])" ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
+                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
+                   [openDelay]="200">
                 <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
               </div>
 
               <div *ngIf="item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])" ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
+                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
+                   [openDelay]="200">
                 <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); openAddPhysicianModal(item)" ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+              <div (click)="$event.stopPropagation(); openAddPhysicianModal(item)" ngbPopover="{{'Edit' | translate}}"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); deletePhysician(item.id)" ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+              <div (click)="$event.stopPropagation(); deletePhysician(item.id)" ngbPopover="{{'Delete' | translate}}"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>
@@ -182,29 +186,29 @@
     </dfm-table>
     <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"
          *ngIf="!physicians.length && (loading$$ | async) === false">
-     {{' NoPhysicianfound' | translate}}
+      {{' NoPhysicianfound' | translate}}
     </div>
   </section>
 
-<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
-<!--    <div class="shadow-lg ph-li-plus-btn-menu ph-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
-<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
+  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+  <!--    <div class="shadow-lg ph-li-plus-btn-menu ph-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
 
-<!--  <div class="hidden shadow-lg ph-li-plus-btn rounded-2" (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">-->
-<!--    <dfm-button color="secondary" size="md" class="h-full">-->
-<!--      <dfm-icon #showMoreButtonIcon name="plus" class="ph-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
-<!--    </dfm-button>-->
-<!--  </div>-->
+  <!--  <div class="hidden shadow-lg ph-li-plus-btn rounded-2" (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">-->
+  <!--    <dfm-button color="secondary" size="md" class="h-full">-->
+  <!--      <dfm-icon #showMoreButtonIcon name="plus" class="ph-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+  <!--    </dfm-button>-->
+  <!--  </div>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedPhysicianIDs.length"

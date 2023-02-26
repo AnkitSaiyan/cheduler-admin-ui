@@ -18,7 +18,7 @@
       <dfm-button
         color="link"
         size="lg"
-      > {{ modalData?.edit ? 'EditRoom' : 'AddRoom' | translate }}
+      > {{ (modalData?.edit ? 'EditRoom' : 'AddRoom') | translate }}
       </dfm-button>
     </div>
   </section>
@@ -294,7 +294,7 @@
 
   <section class="modal-footer ad-rm-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">{{'Cancel' | translate}}</dfm-button>
-    <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true"
+    <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" class="text-nowrap"
                 (click)="saveRoom()">{{ modalData?.edit ? ('SaveChanges' |translate): ('AddRoom' | translate)}}</dfm-button>
   </section>
 </div>

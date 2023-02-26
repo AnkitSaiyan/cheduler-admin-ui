@@ -1,4 +1,3 @@
-
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
@@ -55,20 +54,178 @@ $nav-bar-height: 64px;
 $nav-bar-1440-height: 46px;
 $nav-bar-mobile-top-height: 36px;
 $nav-bar-mobile-bottom-height: 56px;
+
 $body-content-padding-y-total: 48px;
+
+$list-page-section1-height: 46px;
+$list-page-section1-height-mobile: 100px;
+$list-page-section-gap-height: 16px;
+
+$list-page-content-height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total - $list-page-section1-height - $list-page-section-gap-height);
+$list-page-content-height-1440: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total - $list-page-section1-height - $list-page-section-gap-height);
+$list-page-content-height-960: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height - $list-page-section-gap-height);
+$list-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height-mobile - $list-page-section-gap-height);
+
+$view-page-section1-height: 26px;
+$view-page-section1-height-mobile: 36px;
+$view-page-bottom-buttons-height-mobile: 76px;
+$view-page-section-gap-height: 24px;
+
+$view-page-content-height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total - $view-page-section1-height - $view-page-section-gap-height);
+$view-page-content-height-1440: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total - $view-page-section1-height - $view-page-section-gap-height);
+$view-page-content-height-960: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $view-page-section1-height - $view-page-section-gap-height);
+$view-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $view-page-bottom-buttons-height-mobile - $body-content-padding-y-total - $view-page-section1-height-mobile - 8px /* Padding bottom */);
 
 *, body, html {
   box-sizing: border-box;
   font-family: Montserrat;
 
-  --content-height: calc(100vh - $nav-bar-height - $body-content-padding-y-total);
-  --content-height-1440: calc(100vh - $nav-bar-1440-height - $body-content-padding-y-total);
-  --content-height-mobile: calc(100vh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total);
+  --content-height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total);
+  --content-height-1440: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total);
+  --content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total);
+
+  --list-page-content-height: $list-page-content-height !important;
+
+  --list-page-height-1440: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total - $list-page-section1-height);
+  --list-page-height-960: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height);
+  --list-page-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height-mobile);
+
+  //--list-page-table-height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total - $list-page-section1-height - lis);
+  //--list-page-height-1440: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total - $list-page-section1-height);
+  //--list-page-height-960: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height);
+  //--list-page-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height-mobile);
 }
+
+// Main contents height
+.content-height {
+  height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total);
+  max-height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total);
+  overflow: auto;
+  transition: all 150ms linear;
+
+  @media (max-width: 1440px) {
+    height: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total);
+    max-height: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total);
+  }
+
+  @media (max-width: 960px) {
+    height: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total);
+    max-height: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total);
+  }
+
+  @media (max-width: 680px) {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+// All list pages scrollable content height
+.list-page-content-height {
+  height: $list-page-content-height;
+  max-height: $list-page-content-height;
+  overflow: auto;
+  transition: all 150ms linear;
+
+  @media (max-width: 1440px) {
+    height: $list-page-content-height-1440;
+    max-height: $list-page-content-height-1440;
+  }
+
+  @media (max-width: 960px) {
+    height: $list-page-content-height-960;
+    max-height: $list-page-content-height-960;
+  }
+
+  @media (max-width: 680px) {
+    height: $list-page-content-height-mobile;
+    max-height: $list-page-content-height-mobile;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+// All view pages scrollable content height
+.view-page-content-height {
+  //height: $view-page-content-height;
+  max-height: $view-page-content-height;
+  overflow: auto;
+  transition: all 150ms linear;
+
+  @media (max-width: 1440px) {
+    //height: $view-page-content-height-1440;
+    max-height: $view-page-content-height-1440;
+  }
+
+  @media (max-width: 960px) {
+    //height: $view-page-content-height-960;
+    max-height: $view-page-content-height-960;
+  }
+
+  @media (max-width: 680px) {
+    //height: $view-page-content-height-mobile;
+    max-height: $view-page-content-height-mobile;
+    padding-bottom: 8px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+// Add-Edit pages scrollable content height
+.add-page-content-height {
+  height: calc($list-page-content-height - 8px);
+  max-height: calc($list-page-content-height - 8px);
+  overflow: auto;
+  transition: all 150ms linear;
+
+  @media (max-width: 1440px) {
+    height: calc($list-page-content-height-1440 - 8px);
+    max-height: calc($list-page-content-height-1440 - 8px);
+  }
+
+  @media (max-width: 960px) {
+    height: calc($list-page-content-height-960 - 8px);
+    max-height: calc($list-page-content-height-960 - 8px);
+  }
+
+  @media (max-width: 680px) {
+    height: $view-page-content-height-mobile;
+    max-height: $view-page-content-height-mobile;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+.content-section-1, .list-page-section-1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  height: 46px;
+  transition: all 150ms linear;
+
+  @media (max-width: 680px) {
+    height: 40px;
+  }
+}
+
+.content-section-1 {
+  @media (max-width: 680px) {
+    height: 36px;
+    padding: 0 8px;
+  }
+}
+
 
 // custom styles for dfm elements ===========================================================
 
-.dfm-navigation-bar-container{
+.dfm-navigation-bar-container {
   height: 100dvh !important;
 }
 
@@ -274,7 +431,7 @@ dfm-notification {
 }
 
 .dfm-table-wrapper {
-  td:nth-child(4) {
+  td {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
@@ -425,6 +582,8 @@ button:disabled {
 }
 
 .input-as-dfm-input {
+  width: 100%;
+
   input {
     padding: 8px 12px;
     border: none;
@@ -893,5 +1052,11 @@ ngb-datepicker {
 //  max-width: calc(100% - 200px);
 //}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

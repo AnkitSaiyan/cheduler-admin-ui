@@ -1,63 +1,64 @@
-<div class="d-flex flex-column h-100 position-relative dfm-px-8 pr-li-main-wrapper">
-  <section>
-    <div class="d-flex align-items-center dfm-gap-16 flex-1 pr-li-section-1">
-      <dfm-button
-        class="hidden pr-li-title-buttons"
-        color="link"
-        size="lg"
-        routerLink="./"
-      >Priority Slots
-      </dfm-button>
+<div class="d-flex flex-column dfm-gap-16 position-relative">
+  <section class="list-page-section-1">
+    <dfm-button
+      class="hidden pr-li-title-buttons"
+      color="link"
+      size="lg"
+      routerLink="./"
+    >Priority Slots
+    </dfm-button>
 
-      <dfm-input
-        class="flex-1 pr-li-search"
-        size="md"
-        placeholder="Search by Priority Slots"
-        icon="search-sm"
-        [formControl]="searchControl"
-      ></dfm-input>
+    <dfm-input
+      class="flex-1 pr-li-search"
+      size="md"
+      placeholder="Search by Priority Slots"
+      icon="search-sm"
+      [formControl]="searchControl"
+    ></dfm-input>
 
-      <div class="d-flex align-items-center dfm-button-group-wrapper pr-li-button-dropdown-group">
-        <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="copy-03"
-            (click)="copyToClipboard()"
-          ></dfm-button-icon>
-        </div>
-
-        <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
-          <dfm-input-dropdown
-            [items]="downloadItems"
-            [showDescription]="false"
-            [formControl]="downloadDropdownControl"
-            placeholder="Download"
-            size="md"
-          ></dfm-input-dropdown>
-        </div>
+    <div class="d-flex align-items-center dfm-button-group-wrapper pr-li-button-dropdown-group">
+      <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
+        <dfm-button-icon
+          color="tertiary-gray"
+          size="md"
+          icon="copy-03"
+          (click)="copyToClipboard()"
+        ></dfm-button-icon>
       </div>
 
-      <div class="d-flex dfm-gap-8 align-items-center">
-        <dfm-button
-          color="primary"
+      <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
+        <dfm-input-dropdown
+          [items]="downloadItems"
+          [showDescription]="false"
+          [formControl]="downloadDropdownControl"
+          placeholder="Download"
           size="md"
-          class="text-nowrap"
-          [disabled]="false"
-          (click)="openAddPriorityModal()"
-        >Add Priority Slots
-        </dfm-button>
+        ></dfm-input-dropdown>
       </div>
     </div>
-    <dfm-input
+
+    <div class="d-flex dfm-gap-8 align-items-center">
+      <dfm-button
+        color="primary"
+        size="md"
+        class="text-nowrap"
+        [disabled]="false"
+        (click)="openAddPriorityModal()"
+      >Add Priority Slots
+      </dfm-button>
+    </div>
+  </section>
+
+  <dfm-input
     class="flex-1 pr-li-searchbar-mv"
     size="md"
     placeholder="Search by Priority Slots"
     icon="search-sm"
     [formControl]="searchControl"
   ></dfm-input>
-  </section>
-  <section class="overflow-y-auto pr-li-table-wrapper dfm-mt-16 dfm-pb-8" *ngIf="filteredPrioritySlots$$ | async as prioritySlots">
+
+  <section class="list-page-content-height"
+           *ngIf="filteredPrioritySlots$$ | async as prioritySlots">
     <dfm-table [items]="prioritySlots" [rowClickable]="true" (rowClicked)="navigateToViewAbsence($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
@@ -66,7 +67,7 @@
 
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-body-cell>{{ item.startedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ (item.endedAt)? (item.endedAt| date: 'dd/MM/yyyy, HH:mm') :  (item.startedAt  | date: 'dd/MM/yyyy,') }} {{(!item.endedAt)? item.slotEndTime.slice(0, -3): ''}}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ (item.endedAt) ? (item.endedAt| date: 'dd/MM/yyyy, HH:mm') : (item.startedAt  | date: 'dd/MM/yyyy,') }} {{(!item.endedAt) ? item.slotEndTime.slice(0, -3) : ''}}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <div class="text-truncate pr-li-info-cell"> {{ item.priority | dashIfNothing }} </div>
         </dfm-table-body-cell>
@@ -92,30 +93,37 @@
             ></dfm-button>
           </div>
 
-          <div class="position-relative">
-            <div ngbDropdown #actionButtonsMenu="ngbDropdown">
-              <div class="shadow-lg pr-li-action-buttons-menu pr-li-menus" ngbDropdownMenu
-                   aria-labelledby="dropdownManual">
-                <div ngbDropdownItem (click)="$event.stopPropagation(); openAddPriorityModal(item)"
-                     class="position-relative">
-                  <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
-                  <div class="menu-point-forward shadow-sm"></div>
-                </div>
-                <div ngbDropdownItem (click)="$event.stopPropagation(); deletePrioritySlot(item.id)">
-                  <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
-                </div>
+          <!-- Action Menu -->
+          <dfm-button
+            [ngbPopover]="actionMenu"
+            autoClose="autoClose"
+            triggers="click"
+            container="body"
+            placement="left"
+            popoverClass="popover-p-0"
+            class="hidden pr-li-vertical-dots-btn"
+            color="link-gray"
+            size="sm"
+            trailingIcon="dots-vertical"
+            (click)="$event.stopPropagation(); toggleMenu(true)"
+          ></dfm-button>
+
+          <ng-template #actionMenu>
+            <div class="pr-li-menus"
+                 aria-labelledby="dropdownManual">
+              <div (click)="$event.stopPropagation(); openAddPriorityModal(item)" ngbPopover="{{'Edit' | translate}}"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
+              </div>
+
+              <div (click)="$event.stopPropagation(); deletePrioritySlot(item.id)" ngbPopover="{{'Delete' | translate}}"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>
+          </ng-template>
+          <!-- Action Menu End-->
 
-            <dfm-button
-              class="hidden pr-li-vertical-dots-btn"
-              color="link-gray"
-              size="sm"
-              trailingIcon="dots-vertical"
-              (click)="$event.stopPropagation(); actionButtonsMenu.open();"
-            ></dfm-button>
-
-          </div>
         </dfm-table-body-cell>
       </ng-template>
     </dfm-table>
@@ -125,18 +133,18 @@
   </section>
   <!-- <div ngbDropdown #optionsMenu="ngbDropdown">
     <div class="shadow-lg pr-li-plus-btn-menu pr-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual"> -->
-      <!-- <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()"> -->
-      <!-- <div ngbDropdownItem (click)="$event.stopPropagation();">
-        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
-      </div>
-      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
-      </div>
-    </div>
-  </div> -->
+  <!-- <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()"> -->
+  <!-- <div ngbDropdownItem (click)="$event.stopPropagation();">
+    <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
+  </div>
+  <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
+    <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
+  </div>
+  <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
+    <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
+  </div>
+</div>
+</div> -->
 
   <!-- <dfm-button color="secondary" size="md" class="hidden shadow-lg pr-li-plus-btn rounded-2"
               (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">

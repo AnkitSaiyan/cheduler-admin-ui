@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { DesignSystemCoreModule } from 'diflexmo-angular-design';
-import { DatePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // eslint-disable-next-line import/no-extraneous-dependencies
 // import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
@@ -63,6 +63,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     DatePipe,
     TimeInIntervalPipe,
     NameValuePairPipe,
+    TitleCasePipe,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HeaderInterceptor,

@@ -1,6 +1,6 @@
 <div class="bg-white rounded-4 ad-ab-main-wrapper dfm-px-16">
   <section class="modal-header ad-ab-section1">
-    <h5 class="modal-title ad-ab-title-buttons">{{ modalData?.edit ? ('EditAbsence' | translate) : ('AddAsence' | translate) }}</h5>
+    <h5 class="modal-title ad-ab-title-buttons">{{ modalData?.edit ? ('EditAbsence' | translate) : ('AddAbsence' | translate) }}</h5>
     <dfm-button-icon class="ad-ab-title-buttons" color="tertiary-gray" icon="x-close"
                      (click)="closeModal(false)"></dfm-button-icon>
 
@@ -18,12 +18,12 @@
       <dfm-button
         color="link"
         size="lg"
-      > {{ modalData?.edit ? ('EditAbsence' | translate) : ('AddAsence' | translate)  }}
+      > {{ modalData?.edit ? ('EditAbsence' | translate) : ('AddAbsence' | translate)  }}
       </dfm-button>
     </div>
   </section>
 
-  <section class="modal-body dfm-pb-24 ad-ab-section2">
+  <section class="modal-body ad-ab-section2">
     <form [formGroup]="absenceForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16"
           *ngIf="absence$$ | async as absence">
       <div class="max-w-5 ad-ab-absence-name">
@@ -33,7 +33,7 @@
 
       <div class="d-flex dfm-gap-32 align-items-center ad-ab-dates">
         <div class="ad-ab-from-date flex-1 max-w-5">
-          <span class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-8">{{ formValues.isRepeat ? ('From'| translate) : ('Date' | translate) }} *</span>
+          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ formValues.isRepeat ? ('From'| translate) : ('Date' | translate) }} *</div>
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
             <div class="flex-1 d-flex flex-column">
@@ -81,7 +81,7 @@
         </div>
 
         <div class="ad-ab-to-date flex-1 max-w-5">
-          <span class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-8">{{ formValues.isRepeat ? ('Until' | translate) : ("EndTimeRequired" | translate) }} *</span>
+          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ formValues.isRepeat ? ('Until' | translate) : ("EndTimeRequired" | translate) }} *</div>
 
           <div class="d-flex align-items-start dfm-gap-16">
             <div class="flex-1 d-flex flex-column" *ngIf="formValues.isRepeat">

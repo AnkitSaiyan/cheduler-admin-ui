@@ -1,53 +1,51 @@
-<div class="d-flex flex-column h-100 position-relative dfm-gap-16 ab-li-main-wrapper">
-  <section>
-    <div class="d-flex align-items-center dfm-gap-16 flex-1 ab-li-section-1">
-      <dfm-button
-        class="hidden ab-li-title-buttons"
-        color="link"
-        size="lg"
-        routerLink="./"
-      >{{'Absence' | translate}}
-      </dfm-button>
+<div class="d-flex flex-column position-relative dfm-gap-16">
+  <section class="list-page-section-1">
+    <dfm-button
+      class="hidden ab-li-title-buttons"
+      color="link"
+      size="lg"
+      routerLink="./"
+    >{{'Absence' | translate}}
+    </dfm-button>
 
-      <dfm-input
-        class="flex-1 ab-li-search"
-        size="md"
-        placeholder="{{'AbsenceSearch' | translate}}"
-        icon="search-sm"
-        [formControl]="searchControl"
-      ></dfm-input>
+    <dfm-input
+      class="flex-1 ab-li-search"
+      size="md"
+      placeholder="{{'AbsenceSearch' | translate}}"
+      icon="search-sm"
+      [formControl]="searchControl"
+    ></dfm-input>
 
-      <div class="d-flex align-items-center dfm-button-group-wrapper ab-li-button-dropdown-group">
-        <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="copy-03"
-            (click)="copyToClipboard()"
-          ></dfm-button-icon>
-        </div>
-
-        <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
-          <dfm-input-dropdown
-            [items]="downloadItems"
-            [showDescription]="false"
-            [formControl]="downloadDropdownControl"
-            placeholder="{{'Download' | translate}}"
-            size="md"
-          ></dfm-input-dropdown>
-        </div>
-      </div>
-
-      <div class="d-flex dfm-gap-8 align-items-center">
-        <dfm-button
-          color="primary"
+    <div class="d-flex align-items-center dfm-button-group-wrapper ab-li-button-dropdown-group">
+      <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
+        <dfm-button-icon
+          color="tertiary-gray"
           size="md"
-          class="text-nowrap"
-          [disabled]="false"
-          (click)="openAddAbsenceModal()"
-        >{{'AddAbsence' | translate}}
-        </dfm-button>
+          icon="copy-03"
+          (click)="copyToClipboard()"
+        ></dfm-button-icon>
       </div>
+
+      <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
+        <dfm-input-dropdown
+          [items]="downloadItems"
+          [showDescription]="false"
+          [formControl]="downloadDropdownControl"
+          placeholder="{{'Download' | translate}}"
+          size="md"
+        ></dfm-input-dropdown>
+      </div>
+    </div>
+
+    <div class="d-flex dfm-gap-8 align-items-center">
+      <dfm-button
+        color="primary"
+        size="md"
+        class="text-nowrap"
+        [disabled]="false"
+        (click)="openAddAbsenceModal()"
+      >{{'AddAbsence' | translate}}
+      </dfm-button>
     </div>
   </section>
 
@@ -59,7 +57,7 @@
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section class="overflow-y-auto ab-li-table-wrapper" *ngIf="filteredAbsences$$ | async as absences">
+  <section class="list-page-content-height" *ngIf="filteredAbsences$$ | async as absences">
     <dfm-table [items]="absences" [rowClickable]="true" (rowClicked)="navigateToViewAbsence($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
@@ -93,59 +91,66 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
-              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); deleteAbsence(item.id)"
             ></dfm-button>
           </div>
 
-          <div class="position-relative">
-            <div ngbDropdown #actionButtonsMenu="ngbDropdown">
-              <div class="shadow-lg ab-li-action-buttons-menu ab-li-menus" ngbDropdownMenu
-                   aria-labelledby="dropdownManual">
-                <div ngbDropdownItem (click)="$event.stopPropagation(); openAddAbsenceModal(item)"
-                     class="position-relative">
-                  <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
-                  <div class="menu-point-forward shadow-sm"></div>
-                </div>
-                <div ngbDropdownItem (click)="$event.stopPropagation(); deleteAbsence(item.id)">
-                  <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
-                </div>
+          <!-- Action Menu -->
+          <dfm-button
+            [ngbPopover]="actionMenu"
+            autoClose="autoClose"
+            triggers="click"
+            container="body"
+            placement="left"
+            popoverClass="popover-p-0"
+            class="hidden ab-li-vertical-dots-btn"
+            color="link-gray"
+            size="sm"
+            trailingIcon="dots-vertical"
+            (click)="$event.stopPropagation(); toggleMenu(true)"
+          ></dfm-button>
+
+          <ng-template #actionMenu>
+            <div class="ab-li-menus"
+                 aria-labelledby="dropdownManual">
+              <div (click)="$event.stopPropagation(); openAddAbsenceModal(item)" ngbPopover="{{'Edit' | translate}}"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
+              </div>
+
+              <div (click)="$event.stopPropagation(); deleteAbsence(item.id)" ngbPopover="{{'Delete' | translate}}"
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>
+          </ng-template>
+          <!-- Action Menu End-->
 
-            <dfm-button
-              class="hidden ab-li-vertical-dots-btn"
-              color="link-gray"
-              size="sm"
-              trailingIcon="dots-vertical"
-              (click)="$event.stopPropagation(); actionButtonsMenu.open();"
-            ></dfm-button>
-
-          </div>
         </dfm-table-body-cell>
       </ng-template>
     </dfm-table>
     <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!absences.length">
-     {{' NoDataFound' | translate}}
+      {{' NoDataFound' | translate}}
     </div>
   </section>
-<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
-<!--    <div class="shadow-lg ab-li-plus-btn-menu ab-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
-<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
+  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+  <!--    <div class="shadow-lg ab-li-plus-btn-menu ab-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
 
-<!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg ab-li-plus-btn rounded-2"-->
-<!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
-<!--    <dfm-icon #showMoreButtonIcon name="plus" class="ab-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
-<!--  </dfm-button>-->
+  <!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg ab-li-plus-btn rounded-2"-->
+  <!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
+  <!--    <dfm-icon #showMoreButtonIcon name="plus" class="ab-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+  <!--  </dfm-button>-->
 </div>

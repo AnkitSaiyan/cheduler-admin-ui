@@ -8,12 +8,12 @@ section.rm-vw-section2 {
 section.rm-vw-section3  {
   // sec is section
   // page height - top nav - content padding - sec1 height - sec gap - sec2 height - sec gap - extra space
-  max-height: calc(100dvh - 64px - 24px - 24px - 24px - 256px - 24px - 24px);
+  //max-height: calc(100dvh - 64px - 24px - 24px - 24px - 256px - 24px - 24px);
 }
 
 @media (max-width: 1440px) {
   section.rm-vw-section3 {
-    max-height: calc(100dvh - 36px - 24px - 24px - 24px - 256px - 24px - 24px);
+    //max-height: calc(100dvh - 36px - 24px - 24px - 24px - 256px - 24px - 24px);
   }
 
   section.rm-vw-section2 {
@@ -22,17 +22,8 @@ section.rm-vw-section3  {
 }
 
 @media (max-width: 680px) {
-  .rm-vw-main-wrapper {
-    padding: 0;
-  }
-
   section.rm-vw-section1 {
-    position: fixed;
-    width: 100%;
-    left: 0;
-    top: 36px;
-    padding: 24px;
-    background: var(--dfm-body-bg);
+    padding: 0 8px;
 
     .rm-vw-title-buttons, .rm-vw-action-buttons {
       display: none !important;
@@ -41,15 +32,6 @@ section.rm-vw-section3  {
     .rm-vw-title-buttons-mv {
       display: flex;
     }
-  }
-
-  section.rm-vw-section2 {
-    margin-top: 60px;
-  }
-
-  section.rm-vw-section3 {
-    // page height - top nav - content padding - sec1 height - sec gap - sec gap - bottom bar height
-    max-height: 100%;
   }
 
   .rm-vw-action-buttons-mv {
