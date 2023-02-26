@@ -14,17 +14,8 @@ section.us-vw-section2 {
 }
 
 @media (max-width: 680px) {
-  .us-vw-main-wrapper {
-    padding: 0;
-  }
-
   section.us-vw-section1 {
-    position: fixed;
-    width: 100%;
-    left: 0;
-    top: 36px;
-    padding: 24px;
-    background: var(--dfm-body-bg);
+    padding: 0 8px;
 
     .us-vw-title-buttons, .us-vw-action-buttons {
       display: none !important;
@@ -36,8 +27,6 @@ section.us-vw-section2 {
   }
 
   section.us-vw-section2 {
-    margin-top: 60px;
-    width: 100% !important;
     flex-direction: column;
 
     &>div {
