@@ -177,19 +177,19 @@ $view-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $vi
 
 // Add-Edit pages scrollable content height
 .add-page-content-height {
-  height: $list-page-content-height;
-  max-height: $list-page-content-height;
+  height: calc($list-page-content-height - 8px);
+  max-height: calc($list-page-content-height - 8px);
   overflow: auto;
   transition: all 150ms linear;
 
   @media (max-width: 1440px) {
-    height: $list-page-content-height-1440;
-    max-height: $list-page-content-height-1440;
+    height: calc($list-page-content-height-1440 - 8px);
+    max-height: calc($list-page-content-height-1440 - 8px);
   }
 
   @media (max-width: 960px) {
-    height: $list-page-content-height-960;
-    max-height: $list-page-content-height-960;
+    height: calc($list-page-content-height-960 - 8px);
+    max-height: calc($list-page-content-height-960 - 8px);
   }
 
   @media (max-width: 680px) {

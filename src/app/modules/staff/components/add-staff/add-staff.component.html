@@ -1,5 +1,5 @@
-<div class="d-flex flex-column dfm-gap-24 ad-sf-main-wrapper">
-  <section class="d-flex align-items-center justify-content-between dfm-gap-16 ad-sf-section1">
+<div class="d-flex flex-column dfm-gap-24">
+  <section class="content-section-1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-sf-title-buttons">
       <dfm-button color="link" size="lg" routerLink="/staff">Staff</dfm-button>
 
@@ -41,7 +41,7 @@
     <!--  **  -->
   </section>
 
-  <section class="dfm-card overflow-y-auto ad-sf-section2">
+  <section class="dfm-card ad-sf-section2 add-page-content-height">
     <form [formGroup]="addStaffForm" class="dfm-p-16 d-flex flex-column dfm-gap-32"
           *ngIf="(loading$$ | async) === false">
       <div class="d-flex flex-column dfm-gap-16 ad-sf-form-general-info">
