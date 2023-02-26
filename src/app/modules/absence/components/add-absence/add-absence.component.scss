@@ -95,7 +95,8 @@
 
     .ad-ab-section2 {
       // viewport - nav bar height - title buttons height - footer buttons height
-      max-height: calc(100dvh - 36px - 84px - 76px);
+      max-height: calc(100dvh - 36px - 84px - 72px);
+      min-height: auto;
 
       &::-webkit-scrollbar {
         display: none;
@@ -119,6 +120,7 @@
     left: 0;
     right: 0;
     background: white;
+    z-index: 1;
 
     dfm-button {
       flex: 1;
