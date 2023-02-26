@@ -1,4 +1,4 @@
-<div class="d-flex flex-column h-100 position-relative dfm-px-8 ap-ls-main-wrapper">
+<div class="d-flex flex-column dfm-gap-16 position-relative ap-ls-main-wrapper">
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 ap-li-section-1" *ngIf="(calendarView$$ | async) === false">
       <dfm-button
@@ -89,7 +89,15 @@
     </ng-container>
   </section>
 
-  <section class="overflow-y-auto ap-li-section-2 dfm-mt-16 dfm-pb-8"
+  <dfm-input
+    class="flex-1 ap-li-search-mv hidden"
+    size="md"
+    placeholder="Search by Patient name, appointment no and doctor"
+    icon="search-sm"
+    [formControl]="searchControl"
+  ></dfm-input>
+
+  <section class="overflow-y-auto list-page-content-height"
            [ngClass]="{ 'h-100': (calendarView$$ | async) }"
            *ngIf="filteredAppointments$$ | async as appointments">
     <ng-container *ngIf="(calendarView$$ | async) === false">

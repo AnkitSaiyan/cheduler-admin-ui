@@ -42,7 +42,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public appointmentsGroupedByDate: { [key: string]: Appointment[] } = {};
 
-  public appointmentsGroupedByDateAndTime: { [key: string]: Appointment[][] } = {};
+  public appointmentsGroupedByDateAndTime: { [keydeployed: string]: Appointment[][] } = {};
 
   public appointmentGroupedByDateAndRoom: {
     [key: string]: {

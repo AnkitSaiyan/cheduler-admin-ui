@@ -1,5 +1,5 @@
 <div class="d-flex flex-column dfm-gap-16 ad-ap-main-wrapper">
-  <section class="d-flex align-items-center justify-content-between dfm-gap-16">
+  <section class="content-section-1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-ap-title-buttons">
       <dfm-button color="link" size="lg"
                   [routerLink]="[comingFromRoute === 'dashboard' ? '/dashboard' : '/appointment']">
@@ -56,7 +56,7 @@
     <!--  **  -->
   </section>
 
-  <section class="dfm-card dfm-p-16 ad-ap-section2 hide-scrollbar">
+  <section class="dfm-card dfm-p-16 ad-ap-section2 add-page-content-height">
     <form [formGroup]="appointmentForm" *ngIf="appointment$$ | async" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-start">
         <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="Patient First Name *"
@@ -112,13 +112,13 @@
             </dfm-input-dropdown>
           </div>
 
-          <div>
+          <div class="flex-1">
             <div class="d-flex flex-column dfm-gap-8 flex-wrap">
               <span class="text-sm font-weight-medium dfm-text-main-700">Date *</span>
               <div class="d-flex align-items-center dfm-gap-16 ad-ap-dates">
-                <div class="dfm-button-group-wrapper h-fit">
+                <div class="dfm-button-group-wrapper w-full h-fit">
                   <div class="input-as-dfm-input">
-                    <input class="w-full" formControlName="startedAt" placeholder="yyyy-mm-dd" required ngbDatepicker
+                    <input class="w-full min-w-128" formControlName="startedAt" placeholder="yyyy-mm-dd" required ngbDatepicker
                            #date="ngbDatepicker"/>
                   </div>
                   <div>
@@ -132,6 +132,8 @@
               *ngIf="appointmentForm.get('startedAt')?.hasError('required') && appointmentForm.get('startedAt')?.touched"
               class="validation-error">This field is required.</span>
           </div>
+
+          <div class="flex-1 temp-element"></div>
         </div>
       </div>
 
