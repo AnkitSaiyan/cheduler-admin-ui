@@ -1,20 +1,18 @@
-<div class="d-flex flex-column dfm-gap-16 pr-hr-main-wrapper">
-  <section>
-    <div class="d-flex align-items-center justify-content-between dfm-gap-16 pr-hr-title-buttons">
+<div class="d-flex flex-column dfm-gap-24 pr-hr-main-wrapper">
+  <section class="content-section-1">
+    <ng-container>
       <dfm-button
+        class="pr-hr-title-buttons"
         color="link"
         size="lg"
         routerLink="./"
       >{{'PracticeHours' | translate}}
       </dfm-button>
 
-      <div class="d-flex dfm-gap-16 align-items-center">
-<!--        <dfm-button color="secondary" size="md">Cancel</dfm-button>-->
-        <dfm-button color="primary" size="md" (click)="savePracticeHours()"
-                    [disabled]="(submitting$$ | async) === true">{{'SaveChanges' | translate}}
-        </dfm-button>
-      </div>
-    </div>
+      <dfm-button color="primary" size="md" (click)="savePracticeHours()" class="pr-hr-title-buttons"
+                  [disabled]="(submitting$$ | async) === true">{{'SaveChanges' | translate}}
+      </dfm-button>
+    </ng-container>
 
     <!--  Mobile view  -->
     <div class="hidden dfm-gap-8 align-items-center pr-hr-title-buttons-mv">
@@ -32,7 +30,7 @@
     <!--    -->
   </section>
 
-  <section class="dfm-card d-flex flex-column dfm-gap-24 dfm-p-16 pr-hr-section2 hide-scrollbar">
+  <section class="dfm-card d-flex flex-column dfm-gap-24 dfm-p-16 pr-hr-section2 add-page-content-height">
     <div class="d-flex flex-column dfm-gap-8">
       <span class="text-sm font-weight-semi-bold">{{'ChooseDay' | translate}}</span>
 
@@ -70,7 +68,7 @@
                    (click)="selectWeekday(weekdayEnum.SUN)">{{'SUN' | translate}}
         </dfm-badge>
       </div>
-    </div>         
+    </div>
 
 
     <form [formGroup]="practiceHourForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
@@ -105,7 +103,8 @@
                         </dfm-input-dropdown>
                       </div>
 
-                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
+                      <small class="validation-error"
+                             *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
                     </div>
 
 
@@ -125,7 +124,8 @@
                         </dfm-input-dropdown>
                       </div>
 
-                      <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
+                      <small class="validation-error"
+                             *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
                     </div>
 
                     <div class="dfm-mt-32">
@@ -134,11 +134,13 @@
                     </div>
                   </div>
 
-                  <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
+                  <small class="validation-error"
+                         *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
                     {{'StartTimeLessThanEndTime'| translate}}
                   </small>
 
-                  <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
+                  <small class="validation-error"
+                         *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
                     {{'SlotOverlapsOtherSlots'| translate}}
                   </small>
                 </div>
@@ -183,7 +185,8 @@
                         </dfm-input-dropdown>
                       </div>
 
-                      <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
+                      <small class="validation-error"
+                             *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
                     </div>
 
                     <div class="d-flex flex-column w-full">
@@ -202,7 +205,8 @@
                         </dfm-input-dropdown>
                       </div>
 
-                      <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
+                      <small class="validation-error"
+                             *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">{{'Invalidtime' | translate}}</small>
                     </div>
 
                     <div class="dfm-mt-32">
@@ -211,11 +215,13 @@
                     </div>
                   </div>
 
-                  <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
-                   {{'StartTimeLessThanEndTime'| translate}}
+                  <small class="validation-error"
+                         *ngIf="controls.get('dayStart')?.hasError(invalidSlotRangeError) || controls.get('dayEnd')?.hasError(invalidSlotRangeError)">
+                    {{'StartTimeLessThanEndTime'| translate}}
                   </small>
 
-                  <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
+                  <small class="validation-error"
+                         *ngIf="controls.get('dayStart')?.hasError(slotExistsError) || controls.get('dayEnd')?.hasError(slotExistsError)">
                     {{'SlotOverlapsOtherSlots'| translate}}
 
                   </small>
@@ -232,7 +238,8 @@
       </div>
 
       <dfm-button class="hidden pr-hr-save-changes-btn-mv" color="primary" size="md"
-                  [disabled]="(submitting$$ | async) === true" (click)="savePracticeHours()">{{'SaveChanges' | translate}}
+                  [disabled]="(submitting$$ | async) === true"
+                  (click)="savePracticeHours()">{{'SaveChanges' | translate}}
       </dfm-button>
     </form>
   </section>
