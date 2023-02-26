@@ -1,4 +1,4 @@
-<div *ngIf="prioritySlotDetails$$ | async as priorityDetails" class="d-flex flex-column dfm-gap-24 dfm-px-8 pr-vw-main-wrapper">
+<div *ngIf="prioritySlotDetails$$ | async as priorityDetails" class="d-flex flex-column dfm-gap-24">
   <section class="d-flex align-items-center justify-content-between dfm-gap-16 pr-vw-section1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary pr-vw-title-buttons">
       <dfm-button color="link" size="lg" routerLink="/priority-slots">Priority Slots </dfm-button>
@@ -27,9 +27,8 @@
     <!-- ** -->
   </section>
 
-  <section class="d-flex dfm-gap-24 pr-vw-section2 pr-vw-section-mv">
-    
-    <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
+  <section class="d-flex dfm-gap-24 pr-vw-section2 view-page-content-height">
+    <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 pr-vw-sec2-card">
       <header class="d-flex align-items-center dfm-gap-8">
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
@@ -174,7 +173,7 @@
 
   <div class="hidden bg-white pr-vw-action-buttons-mv">
     <dfm-button color="secondary" size="sm" (click)="deletePriority(priorityDetails.id)">Delete</dfm-button>
-    <dfm-button color="primary" size="sm" (click)="openEditPriorityModal(priorityDetails.id)">Edit Priority Slots</dfm-button>
+    <dfm-button color="primary" size="sm" (click)="openEditPriorityModal(priorityDetails.id)">Edit</dfm-button>
   </div>
 </div>
 

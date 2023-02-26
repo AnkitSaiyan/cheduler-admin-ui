@@ -23,7 +23,7 @@
     </div>
   </section>
 
-  <section class="modal-body dfm-pb-24 ad-pr-section2">
+  <section class="modal-body ad-pr-section2">
     <form [formGroup]="prioritySlotForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16"
           *ngIf="prioritySlot$$ | async as prioritySlot">
       <div class="d-flex dfm-gap-32 align-items-center ad-pr-dates">
@@ -127,7 +127,7 @@
                               size="md"
                               label="End time"
                               placeholder="hh:mm">
-          </dfm-input-dropdown>          
+          </dfm-input-dropdown>
           <small class="validation-error text-center d-flex" *ngIf="slotEndTime.control.hasError('time')">
             End Time should be greater than Start Time
           </small>
@@ -214,7 +214,7 @@
 
       <div class="d-flex dfm-gap-32 flex-wrap flex-1">
 
-        
+
         <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-pr-staffs" *ngIf="radiologist$$ | async as radiology">
           <dfm-input-dropdown #staffDropDown
                               [items]="radiology"
@@ -228,7 +228,6 @@
 
         <div class="flex-1 ad-pr-rooms">
         </div>
-
       </div>
     </form>
   </section>
@@ -236,6 +235,6 @@
   <section class="modal-footer ad-pr-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
     <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true"
-                (click)="savePrioritySlot()">{{ modalData?.edit ? 'Save Changes' : 'Add Priority Slots' }}</dfm-button>
+                (click)="savePrioritySlot()">{{ modalData?.edit ? 'Save Changes' : 'Add' }}</dfm-button>
   </section>
 </div>

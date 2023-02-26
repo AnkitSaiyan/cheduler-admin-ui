@@ -91,7 +91,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
-              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); deleteAbsence(item.id)"
             ></dfm-button>
@@ -126,6 +126,8 @@
               </div>
             </div>
           </ng-template>
+          <!-- Action Menu End-->
+
         </dfm-table-body-cell>
       </ng-template>
     </dfm-table>
