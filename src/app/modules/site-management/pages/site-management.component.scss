@@ -1,12 +1,6 @@
 .st-mg-main-wrapper {
   transition: all ease 200ms;
 
-  .st-mg-section2 {
-    // viewport - nav - padding - sec1 height - sec gap - extra
-    max-height: calc(100vh - 48px - 24px - 40px - 16px - 16px);
-    overflow-y: auto;
-  }
-
   .st-mg-logo-container {
     height: 52px;
     width: 52px;
@@ -30,18 +24,6 @@
   }
 }
 
-@media (max-width: 1440px) {
-  .st-mg-section2 {
-    max-height: calc(100dvh - 46px - 48px - 16px - 40px) !important;
-  }
-}
-
-@media (max-width: 960px) {
-  .st-mg-section2 {
-    max-height: calc(100dvh - 36px - 56px - 48px - 40px - 16px) !important;
-  }
-}
-
 @media (max-width: 680px) {
   .temp-elements {
     display: none;
@@ -53,9 +35,8 @@
   }
 
   .st-mg-main-wrapper {
+
     .st-mg-title-buttons-mv {
-      margin-left: 8px;
-      margin-bottom: 8px;
       display: flex;
     }
 
@@ -64,7 +45,6 @@
     }
 
     .st-mg-section2 {
-      max-height: calc(100dvh - 36px - 56px - 48px - 44px - 16px) !important;
       background: transparent;
       padding: 0;
       box-shadow: none;
