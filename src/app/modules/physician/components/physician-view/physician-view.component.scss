@@ -15,13 +15,7 @@ section.ph-vw-section2 {
 
 @media (max-width: 680px) {
   section.ph-vw-section1 {
-    // position: fixed;
-      margin: -24px -16px;
-    width: 100%;
-    left: 0;
-    top: 36px;
-    padding: 24px;
-    background: var(--dfm-body-bg);
+    padding: 0 8px;
 
     .ph-vw-title-buttons, .ph-vw-action-buttons {
       display: none !important;
