@@ -14,10 +14,6 @@ section.ph-vw-section2 {
 }
 
 @media (max-width: 680px) {
-  .ph-vw-main-wrapper {
-    padding: 0;
-  }
-
   section.ph-vw-section1 {
     // position: fixed;
       margin: -24px -16px;
@@ -36,10 +32,7 @@ section.ph-vw-section2 {
     }
   }
 
-        section.ph-vw-section2 {
-    margin-bottom: 12px;
-    width: 100% !important;
-
+  section.ph-vw-section2 {
     &>div {
       width: 100%;
       max-width: 100%;

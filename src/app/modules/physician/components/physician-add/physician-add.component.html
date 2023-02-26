@@ -72,7 +72,7 @@
 
   <section class="modal-footer ad-ph-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">{{'Cancel' | translate}}</dfm-button>
-    <dfm-button color="primary" size="md" [disabled]="(loading$$ | async) === true"
+    <dfm-button color="primary" size="md" [disabled]="(loading$$ | async) === true" class="text-nowrap"
                 (click)="savePhysician()">{{ modalData.edit ? ('SaveChanges' | translate) : ('AddPhysician' | translate) }}</dfm-button>
   </section>
 </div>
