@@ -14,18 +14,7 @@ section.ab-vw-section2 {
 }
 
 @media (max-width: 680px) {
-  .ab-vw-main-wrapper {
-    padding: 0;
-  }
-
   section.ab-vw-section1 {
-    position: fixed;
-    width: 100%;
-    left: 0;
-    top: 36px;
-    padding: 24px;
-    background: var(--dfm-body-bg);
-
     .ab-vw-title-buttons, .ab-vw-action-buttons {
       display: none !important;
     }
@@ -36,10 +25,6 @@ section.ab-vw-section2 {
   }
 
   section.ab-vw-section2 {
-    margin-top: 60px;
-    margin-bottom: 12px;
-    width: 100% !important;
-
     &>div {
       width: 100%;
       max-width: 100%;

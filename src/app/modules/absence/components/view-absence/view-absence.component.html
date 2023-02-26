@@ -1,6 +1,5 @@
-<div *ngIf="absenceDetails$$ | async as absenceDetails"
-     class="d-flex flex-column dfm-gap-24 ab-vw-main-wrapper">
-  <section class="d-flex align-items-center justify-content-between dfm-gap-16 ab-vw-section1">
+<div *ngIf="absenceDetails$$ | async as absenceDetails" class="d-flex flex-column dfm-gap-24">
+  <section class="content-section-1 ab-vw-section1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ab-vw-title-buttons">
       <dfm-button
         color="link"
@@ -60,7 +59,7 @@
     <!-- ** -->
   </section>
 
-  <section class="d-flex dfm-gap-24 ab-vw-section2">
+  <section class="d-flex dfm-gap-24 view-page-content-height ab-vw-section2">
     <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
       <header class="d-flex align-items-center dfm-gap-8">
         <div class="dfm-button-gray-400">
@@ -85,17 +84,6 @@
           <span class="flex-1">{{'EndDate' | translate}}</span>
           <span class="flex-1 text-truncate">{{ absenceDetails.endedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</span>
         </div>
-
-        <!-- <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Priority</span>
-          <span class="flex-1">{{ absenceDetails.priority }}</span>
-        </div> -->
-
-        <!--        <div class="d-flex dfm-gap-8 justify-content-between">-->
-        <!--          <span class="flex-1">Status</span>-->
-        <!--          <span class="font-weight-medium flex-1"-->
-        <!--                [ngClass]="absenceDetails.status === 0 ? 'dfm-text-danger-600' : 'dfm-text-success-600'">{{ absenceDetails.status | statusName }}</span>-->
-        <!--        </div>-->
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">{{'Staff' | translate}}</span>
@@ -131,16 +119,6 @@
       </header>
 
       <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-        <!--        <div class="d-flex dfm-gap-8 justify-content-between">-->
-        <!--          <span class="flex-1">Start Date</span>-->
-        <!--          <span class="flex-1">{{ absenceDetails.startedAt | date : 'dd/MM/yyyy, HH:mm' }}</span>-->
-        <!--        </div>-->
-
-        <!--        <div class="d-flex dfm-gap-8 justify-content-between">-->
-        <!--          <span class="flex-1 text-nowrap">End Date</span>-->
-        <!--          <span class="flex-1 text-truncate">{{ absenceDetails.endedAt | date : 'dd/MM/yyyy, HH:mm' }}</span>-->
-        <!--        </div>-->
-
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">{{'PublicHoliday' | translate}}</span>
           <span class="flex-1">{{ absenceDetails.isHoliday ? 'Yes' : 'No' | dashIfNothing }}</span>
