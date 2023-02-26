@@ -1,60 +1,58 @@
 <div class="d-flex flex-column dfm-gap-16 position-relative rm-li-main-wrapper">
-  <section>
-    <div class="d-flex align-items-center dfm-gap-16 flex-1 rm-li-section-1" [cdkCopyToClipboard]="clipboardData">
-      <dfm-button
-        class="hidden rm-li-title-buttons"
-        color="link"
-        size="lg"
-        routerLink="./"
-      >{{'Room' | translate}}
-      </dfm-button>
+  <section class="list-page-section-1">
+    <dfm-button
+      class="hidden rm-li-title-buttons"
+      color="link"
+      size="lg"
+      routerLink="./"
+    >{{'Room' | translate}}
+    </dfm-button>
 
-      <dfm-input
-        class="flex-1 rm-li-search"
-        size="md"
-        placeholder="{{'RoomSearch' | translate}}"
-        icon="search-sm"
-        [formControl]="searchControl"
-      ></dfm-input>
+    <dfm-input
+      class="flex-1 rm-li-search"
+      size="md"
+      placeholder="{{'RoomSearch' | translate}}"
+      icon="search-sm"
+      [formControl]="searchControl"
+    ></dfm-input>
 
-      <div class="d-flex align-items-center dfm-button-group-wrapper rm-li-button-dropdown-group">
-        <div class="dfm-button-icon-bg-transparent">
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="copy-03"
-            (click)="copyToClipboard()"
-          ></dfm-button-icon>
-        </div>
-
-        <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
-          <dfm-input-dropdown
-            [items]="downloadItems"
-            [showDescription]="false"
-            [formControl]="downloadDropdownControl"
-            placeholder="{{'Download' | translate}}"
-            size="md"
-          ></dfm-input-dropdown>
-        </div>
-      </div>
-
-      <div class="d-flex dfm-gap-8 align-items-center">
-        <!--        <dfm-button-->
-        <!--          color="secondary"-->
-        <!--          size="sm"-->
-        <!--          [disabled]="!selectedRoomIds.length"-->
-        <!--        >Confirm-->
-        <!--        </dfm-button>-->
-
-        <dfm-button
-          color="primary"
+    <div class="d-flex align-items-center dfm-button-group-wrapper rm-li-button-dropdown-group">
+      <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
+        <dfm-button-icon
+          color="tertiary-gray"
           size="md"
-          class="text-nowrap"
-          [disabled]="(loading$$ | async) === true"
-          (click)="openAddRoomModal()"
-        >{{'AddRoom' | translate}}
-        </dfm-button>
+          icon="copy-03"
+          (click)="copyToClipboard()"
+        ></dfm-button-icon>
       </div>
+
+      <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
+        <dfm-input-dropdown
+          [items]="downloadItems"
+          [showDescription]="false"
+          [formControl]="downloadDropdownControl"
+          placeholder="{{'Download' | translate}}"
+          size="md"
+        ></dfm-input-dropdown>
+      </div>
+    </div>
+
+    <div class="d-flex dfm-gap-8 align-items-center">
+      <!--        <dfm-button-->
+      <!--          color="secondary"-->
+      <!--          size="sm"-->
+      <!--          [disabled]="!selectedRoomIds.length"-->
+      <!--        >Confirm-->
+      <!--        </dfm-button>-->
+
+      <dfm-button
+        color="primary"
+        size="md"
+        class="text-nowrap"
+        [disabled]="(loading$$ | async) === true"
+        (click)="openAddRoomModal()"
+      >{{'AddRoom' | translate}}
+      </dfm-button>
     </div>
   </section>
 
@@ -66,13 +64,14 @@
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section class="rm-li-table-wrapper" *ngIf="filteredRooms$$ | async as rooms">
+  <section class="list-page-content-height" *ngIf="filteredRooms$$ | async as rooms">
     <div class="room-table-wrapper">
       <table class="room-table">
         <thead class="room-table-header">
         <tr class="room-table-header-row">
           <th class="room-table-th">
-            <dfm-checkbox class="w-fit d-flex dfm-me-0" #headerCheckBox (click)="$event.stopPropagation(); handleCheckboxSelection(-1)"></dfm-checkbox>
+            <dfm-checkbox class="w-fit d-flex dfm-me-0" #headerCheckBox
+                          (click)="$event.stopPropagation(); handleCheckboxSelection(-1)"></dfm-checkbox>
           </th>
           <th *ngFor="let column of columns" class="room-table-th">{{ column | translate }}</th>
         </tr>
@@ -200,8 +199,9 @@
         </tbody>
       </table>
     </div>
-    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!rooms.length && (loading$$ | async) === false">
-     {{'NoDataFound' | translate}}
+    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"
+         *ngIf="!rooms.length && (loading$$ | async) === false">
+      {{'NoDataFound' | translate}}
     </div>
     <!--    <table class="table table-bordered table-striped text-center">-->
     <!--      <thead>-->
@@ -339,26 +339,26 @@
     <!--      </ng-template>-->
     <!--    </dfm-table>-->
   </section>
-<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
-<!--    <div class="shadow-lg rm-li-plus-btn-menu rm-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
-<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
+  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+  <!--    <div class="shadow-lg rm-li-plus-btn-menu rm-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
 
-<!--  <div class="hidden shadow-lg rm-li-plus-btn rounded-2">-->
-<!--    <dfm-button color="secondary" size="md" class="h-full"-->
-<!--                (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
-<!--      <dfm-icon #showMoreButtonIcon name="plus" class="rm-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
-<!--    </dfm-button>-->
-<!--  </div>-->
+  <!--  <div class="hidden shadow-lg rm-li-plus-btn rounded-2">-->
+  <!--    <dfm-button color="secondary" size="md" class="h-full"-->
+  <!--                (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
+  <!--      <dfm-icon #showMoreButtonIcon name="plus" class="rm-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+  <!--    </dfm-button>-->
+  <!--  </div>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedRooms.length"
