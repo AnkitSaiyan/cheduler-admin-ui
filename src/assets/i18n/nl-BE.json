@@ -136,7 +136,7 @@
   "Date":"Datum ",
   "From":"Van",
   "StartTimeRequired":"Begin tijd *",
-  "EndTimeRequired":"Eind tijd *",
+  "EndTimeRequired":"Eind tijd",
   "Until":"Tot",
   "Repeat":"Herhaal",
   "AllDay":"Volledige Dag",

@@ -135,7 +135,7 @@
   "Date":"Date",
   "From":"From",
   "StartTimeRequired":"Start Time *",
-  "EndTimeRequired":"End Time *",
+  "EndTimeRequired":"End Time",
   "Until":"Until",
   "Repeat":"Repeat",
   "AllDay":"All Day",

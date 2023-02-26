@@ -58,7 +58,7 @@ $nav-bar-mobile-bottom-height: 56px;
 $body-content-padding-y-total: 48px;
 
 $list-page-section1-height: 46px;
-$list-page-section1-height-mobile: 104px;
+$list-page-section1-height-mobile: 100px;
 $list-page-section-gap-height: 16px;
 
 $list-page-content-height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total - $list-page-section1-height - $list-page-section-gap-height);
@@ -74,7 +74,7 @@ $view-page-section-gap-height: 24px;
 $view-page-content-height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total - $view-page-section1-height - $view-page-section-gap-height);
 $view-page-content-height-1440: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total - $view-page-section1-height - $view-page-section-gap-height);
 $view-page-content-height-960: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $view-page-section1-height - $view-page-section-gap-height);
-$view-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $view-page-bottom-buttons-height-mobile - $body-content-padding-y-total - $view-page-section1-height-mobile);
+$view-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $view-page-bottom-buttons-height-mobile - $body-content-padding-y-total - $view-page-section1-height-mobile - 8px /* Padding bottom */);
 
 *, body, html {
   box-sizing: border-box;
@@ -149,23 +149,23 @@ $view-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $vi
 
 // All view pages scrollable content height
 .view-page-content-height {
-  height: $view-page-content-height;
+  //height: $view-page-content-height;
   max-height: $view-page-content-height;
   overflow: auto;
   transition: all 150ms linear;
 
   @media (max-width: 1440px) {
-    height: $view-page-content-height-1440;
+    //height: $view-page-content-height-1440;
     max-height: $view-page-content-height-1440;
   }
 
   @media (max-width: 960px) {
-    height: $view-page-content-height-960;
+    //height: $view-page-content-height-960;
     max-height: $view-page-content-height-960;
   }
 
   @media (max-width: 680px) {
-    height: $view-page-content-height-mobile;
+    //height: $view-page-content-height-mobile;
     max-height: $view-page-content-height-mobile;
     padding-bottom: 8px;
 
@@ -202,8 +202,7 @@ $view-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $vi
   }
 }
 
-
-.content-section-1 {
+.content-section-1, .list-page-section-1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -211,6 +210,12 @@ $view-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $vi
   height: 46px;
   transition: all 150ms linear;
 
+  @media (max-width: 680px) {
+    height: 40px;
+  }
+}
+
+.content-section-1 {
   @media (max-width: 680px) {
     height: 36px;
     padding: 0 8px;
@@ -426,7 +431,7 @@ dfm-notification {
 }
 
 .dfm-table-wrapper {
-  td:nth-child(4) {
+  td {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
