@@ -11,6 +11,7 @@
 @media (max-width: 680px) {
   .ad-us-main-wrapper {
     position: fixed;
+    height: calc(100vh - 36px);
     height: calc(100dvh - 36px);
     display: flex;
       flex-direction: column;
