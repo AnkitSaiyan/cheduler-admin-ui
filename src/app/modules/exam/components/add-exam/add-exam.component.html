@@ -185,7 +185,7 @@
                 <dfm-input-dropdown #radiologistDropdown size="md" label="{{'Radiologist' | translate}}"
                                     placeholder="{{'SelectRadiologist' | translate}}"
                                     [multiple]="true" formControlName="radiologists"
-                                    [placeholder]="!!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : 'Select Radiologists'"
+                                    [placeholder]="!!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : 'Select Radiologists' | translate"
                                     [items]="radiologists">
                 </dfm-input-dropdown>
               </div>
@@ -208,7 +208,7 @@
                    [ngClass]="{ 'dfm-mb-32': nursingDropdown.value?.length }">
                 <dfm-input-dropdown #nursingDropdown size="md" label="{{'Nursing' | translate}}" placeholder="{{'SelectNursing' | translate}}"
                                     [multiple]="true" formControlName="nursing"
-                                    [placeholder]="!!nursingDropdown.value?.length ? nursingDropdown.value.length + ' Selected' : 'Select Nursing'"
+                                    [placeholder]="!!nursingDropdown.value?.length ? nursingDropdown.value.length + ' Selected' : 'SelectNursing' | translate"
                                     [items]="nursing">
                 </dfm-input-dropdown>
               </div>
@@ -231,7 +231,7 @@
                    [ngClass]="{ 'dfm-mb-32': secretaryDropdown.value?.length }">
                 <dfm-input-dropdown #secretaryDropdown size="md" label="{{'Secretary' | translate}}" placeholder="{{'SelectSecretary' | translate}}"
                                     [multiple]="true" formControlName="secretaries"
-                                    [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ' Selected' : 'Select Secretary'"
+                                    [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ' Selected' : 'SelectSecretary' | translate"
                                     [items]="secretaries">
                 </dfm-input-dropdown>
               </div>
@@ -276,35 +276,35 @@
             <div class="d-flex dfm-gap-16 weekday-header ad-ex-weekdays-tab hide-scrollbar">
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)"
                          class="pointer"
-                         (click)="selectWeekday(weekdayEnum.ALL)">VIEW ALL
+                         (click)="selectWeekday(weekdayEnum.ALL)">{{"ViewAll" | translate}}
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.MON)"
                          class="pointer"
-                         (click)="selectWeekday(weekdayEnum.MON)">MON
+                         (click)="selectWeekday(weekdayEnum.MON)">{{"MON" | translate}}
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.TUE)"
                          class="pointer"
-                         (click)="selectWeekday(weekdayEnum.TUE)">TUE
+                         (click)="selectWeekday(weekdayEnum.TUE)">{{"TUE" | translate}}
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.WED)"
                          class="pointer"
-                         (click)="selectWeekday(weekdayEnum.WED)">WED
+                         (click)="selectWeekday(weekdayEnum.WED)">{{"WED" | translate}}
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.THU)"
                          class="pointer"
-                         (click)="selectWeekday(weekdayEnum.THU)">THU
+                         (click)="selectWeekday(weekdayEnum.THU)">{{"THU" | translate}}
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.FRI)"
                          class="pointer"
-                         (click)="selectWeekday(weekdayEnum.FRI)">FRI
+                         (click)="selectWeekday(weekdayEnum.FRI)">{{"FRI" | translate}}
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SAT)"
                          class="pointer"
-                         (click)="selectWeekday(weekdayEnum.SAT)">SAT
+                         (click)="selectWeekday(weekdayEnum.SAT)">{{"SAT" | translate}}
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SUN)"
                          class="pointer"
-                         (click)="selectWeekday(weekdayEnum.SUN)">SUN
+                         (click)="selectWeekday(weekdayEnum.SUN)">{{"SUN" | translate}}
               </dfm-badge>
             </div>
           </div>
@@ -354,7 +354,7 @@
                                                 [typeToSearchText]="end.value"
                                                 (searchInput)="handleTimeInput($event,controls?.get('dayEnd'),controls?.get('endTimings'), end)"
                                                 (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
-                                                label="{{'End Time' | translate}}"
+                                                label="{{'EndTime' | translate}}"
                                                 formControlName="dayEnd"
                                                 size="md"
                                                 placeholder="hh:mm">
@@ -385,7 +385,7 @@
 
                   <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
                     <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
-                    <span class="text-sm dfm-text-main-600">Click to add slot</span>
+                    <span class="text-sm dfm-text-main-600">{{"ClickToAddSlot" | translate}}</span>
                   </div>
                 </div>
               </div>
@@ -399,7 +399,7 @@
                      *ngIf="[0, 5, 6].includes(getFormArrayName(controlArray))"
                      class="d-flex flex-column dfm-gap-16 flex-1">
             <span class="text-sm font-weight-semi-bold w-fit">
-              {{ getFormArrayName(controlArray) | weekdayToName }}
+              {{ getFormArrayName(controlArray) | weekdayToName | translate}}
             </span>
 
                   <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
@@ -466,7 +466,7 @@
 
                   <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
                     <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
-                    <span class="text-sm dfm-text-main-600">Click to add slot</span>
+                    <span class="text-sm dfm-text-main-600">{{"ClickToAddSlot" | translate}}</span>
                   </div>
                 </div>
               </div>

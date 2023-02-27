@@ -210,7 +210,7 @@
       <dfm-table [items]="practiceAvailability" *ngIf="examDetails?.practiceAvailability?.length">
         <ng-template #headerRowTemplate>
           <dfm-table-header-cell>{{"SlotNo" | translate}}</dfm-table-header-cell>
-          <dfm-table-header-cell *ngFor="let column of columns">{{ column | weekdayToName }}</dfm-table-header-cell>
+          <dfm-table-header-cell *ngFor="let column of columns">{{ column | weekdayToName | translate }}</dfm-table-header-cell>
         </ng-template>
 
           <ng-template #bodyRowTemplate let-item>
@@ -268,7 +268,7 @@
         </dfm-table>
         <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom dfm-text-main-600"
              *ngIf="!examDetails?.practiceAvailability?.length">
-          No data found
+          {{"NoDataFound" | translate}}
         </div>
       </div>
     </section>
