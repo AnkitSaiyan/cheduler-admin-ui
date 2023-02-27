@@ -12,7 +12,7 @@ import { AppointmentStatus, Status } from '../models/status.model';
       </div>
 
       <div class="w-full">
-        <span class="font-weight-medium">Are you sure want to change Status?</span>
+        <span class="font-weight-medium">{{"AreYouSureWantToChangeStatus" | translate}}</span>
       </div>
 
       <div class="d-flex align-items-center dfm-gap-16 w-fit">
@@ -29,14 +29,14 @@ import { AppointmentStatus, Status } from '../models/status.model';
         </div>
 
         <div class="d-flex flex-row dfm-gap-16 align-items-center">
-          <dfm-button color="secondary" size="md" (click)="$event.stopPropagation(); handleClick(false)">Cancel </dfm-button>
+          <dfm-button color="secondary" size="md" (click)="$event.stopPropagation(); handleClick(false)">{{"Cancel" | translate}} </dfm-button>
           <dfm-button
             color="primary"
             size="md"
             (click)="$event.stopPropagation(); handleClick(true)"
             [disabled]="statusDropdownControl.value === null"
           >
-            Proceed
+            {{"Proceed" |translate}}
           </dfm-button>
         </div>
       </div>
