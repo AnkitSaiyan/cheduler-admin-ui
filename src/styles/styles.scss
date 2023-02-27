@@ -64,7 +64,9 @@ $list-page-section-gap-height: 16px;
 $list-page-content-height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total - $list-page-section1-height - $list-page-section-gap-height);
 $list-page-content-height-1440: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total - $list-page-section1-height - $list-page-section-gap-height);
 $list-page-content-height-960: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height - $list-page-section-gap-height);
+$list-page-content-height-960-vh: calc(100vh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height - $list-page-section-gap-height);
 $list-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height-mobile - $list-page-section-gap-height);
+$list-page-content-height-mobile-vh: calc(100vh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height-mobile - $list-page-section-gap-height);
 
 $view-page-section1-height: 26px;
 $view-page-section1-height-mobile: 36px;
@@ -72,9 +74,14 @@ $view-page-bottom-buttons-height-mobile: 76px;
 $view-page-section-gap-height: 24px;
 
 $view-page-content-height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total - $view-page-section1-height - $view-page-section-gap-height);
+$view-page-content-height-vh: calc(100vh - $nav-bar-height - $body-content-padding-y-total - $view-page-section1-height - $view-page-section-gap-height);
 $view-page-content-height-1440: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total - $view-page-section1-height - $view-page-section-gap-height);
 $view-page-content-height-960: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $view-page-section1-height - $view-page-section-gap-height);
+$view-page-content-height-960-vh: calc(100vh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $view-page-section1-height - $view-page-section-gap-height);
 $view-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $view-page-bottom-buttons-height-mobile - $body-content-padding-y-total - $view-page-section1-height-mobile - 8px /* Padding bottom */);
+$view-page-content-height-mobile-vh: calc(100vh - $nav-bar-mobile-top-height - $view-page-bottom-buttons-height-mobile - $body-content-padding-y-total - $view-page-section1-height-mobile - 8px
+    /* Padding bottom */
+  );
 
 *, body, html {
   box-sizing: border-box;
@@ -134,11 +141,13 @@ $view-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $vi
 
   @media (max-width: 960px) {
     height: $list-page-content-height-960;
+    max-height: $list-page-content-height-960-vh;
     max-height: $list-page-content-height-960;
   }
 
   @media (max-width: 680px) {
     height: $list-page-content-height-mobile;
+    max-height: $list-page-content-height-mobile-vh;
     max-height: $list-page-content-height-mobile;
 
     &::-webkit-scrollbar {
@@ -161,11 +170,13 @@ $view-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $vi
 
   @media (max-width: 960px) {
     //height: $view-page-content-height-960;
+    max-height: $view-page-content-height-960-vh;
     max-height: $view-page-content-height-960;
   }
 
   @media (max-width: 680px) {
     //height: $view-page-content-height-mobile;
+    max-height: $view-page-content-height-mobile-vh;
     max-height: $view-page-content-height-mobile;
     padding-bottom: 8px;
 
@@ -189,11 +200,13 @@ $view-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $vi
 
   @media (max-width: 960px) {
     height: calc($list-page-content-height-960 - 8px);
+    max-height: calc($list-page-content-height-960-vh - 8px);
     max-height: calc($list-page-content-height-960 - 8px);
   }
 
   @media (max-width: 680px) {
     height: $view-page-content-height-mobile;
+    max-height: $view-page-content-height-mobile-vh;
     max-height: $view-page-content-height-mobile;
 
     &::-webkit-scrollbar {
