@@ -1,15 +1,16 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TableItem } from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { DownloadService } from '../../../../core/services/download.service';
+import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { EditEmailComponent } from '../edit-email/edit-email.component';
 import { EmailTemplateApiService } from 'src/app/core/services/email-template-api.service';
-import { Status } from 'src/app/shared/models/status.model';
+import { Status, StatusToName } from 'src/app/shared/models/status.model';
 import { getStatusEnum, getUserTypeEnum } from 'src/app/shared/utils/getEnums';
+import { Email } from 'src/app/shared/models/email-template.model';
 
 @Component({
   selector: 'dfm-email-list',
@@ -17,6 +18,7 @@ import { getStatusEnum, getUserTypeEnum } from 'src/app/shared/utils/getEnums';
   styleUrls: ['./email-list.component.scss'],
 })
 export class EmailListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+  clipboardData: string = '';
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -49,6 +51,7 @@ export class EmailListComponent extends DestroyableComponent implements OnInit, 
     private notificationSvc: NotificationDataService,
     private downloadSvc: DownloadService,
     private emailTemplateApiSvc: EmailTemplateApiService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.emails$$ = new BehaviorSubject<any[]>([]);
@@ -56,9 +59,8 @@ export class EmailListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public ngOnInit(): void {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((types) => {
-      this.downloadItems = types;
-    });
+    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
+
 
     this.emailTemplateApiSvc.emailTemplates$.pipe(takeUntil(this.destroy$$)).subscribe((emails) => {
       this.emails$$.next(emails);
@@ -74,19 +76,30 @@ export class EmailListComponent extends DestroyableComponent implements OnInit, 
     });
 
     this.downloadDropdownControl.valueChanges
-      .pipe(
-        filter((value) => !!value),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
-        }
-      });
+    .pipe(
+      filter((value) => !!value),
+      takeUntil(this.destroy$$),
+    )
+    .subscribe((downloadAs) => {
+      if (!this.filteredEmails$$.value.length) {
+        return;
+      }
+
+      this.downloadSvc.downloadJsonAs(
+        downloadAs as DownloadAsType,
+        this.columns.slice(0, -1),
+        this.filteredEmails$$.value.map((em: Email) => [em.title, em.subject?.toString(), StatusToName[em.status]]),
+        'exams',
+      );
+
+      if (downloadAs !== 'PRINT') {
+        this.notificationSvc.showNotification(`${downloadAs} file downloaded successfully`);
+      }
+
+      this.downloadDropdownControl.setValue(null);
+
+      this.cdr.detectChanges();
+    });
 
     this.afterBannerClosed$$
       .pipe(
@@ -126,7 +139,22 @@ export class EmailListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+      this.filteredEmails$$.value.forEach((email: Email) => {
+        console.log('email: ', email);
+        dataString += `${email.title}\t${email.subject}\t${StatusToName[email.status]}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
   public toggleMenu(reset = false) {
