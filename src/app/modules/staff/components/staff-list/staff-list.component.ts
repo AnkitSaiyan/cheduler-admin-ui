@@ -166,7 +166,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Staff?',
+        bodyText: 'AreYouSureYouWantToDelete',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,

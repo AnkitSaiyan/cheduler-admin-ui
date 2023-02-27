@@ -151,8 +151,8 @@
       <div class="overflow-y-auto h-fit h-fit">
         <dfm-table [items]="practiceAvailability" *ngIf="staffDetails?.practiceAvailability?.length">
           <ng-template #headerRowTemplate>
-            <dfm-table-header-cell>Slot No</dfm-table-header-cell>
-            <dfm-table-header-cell *ngFor="let column of columns">{{ column | weekdayToName }}</dfm-table-header-cell>
+            <dfm-table-header-cell>{{"SlotNo" | translate}}</dfm-table-header-cell>
+            <dfm-table-header-cell *ngFor="let column of columns">{{ column | weekdayToName | translate }}</dfm-table-header-cell>
           </ng-template>
 
         <ng-template #bodyRowTemplate let-item>
