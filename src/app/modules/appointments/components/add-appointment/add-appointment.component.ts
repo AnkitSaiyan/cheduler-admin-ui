@@ -267,9 +267,20 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   private updateForm(appointment: Appointment | undefined) {
     let time;
+    let dateObj;
+
     if (appointment?.startedAt) {
       const date = new Date(appointment.startedAt);
-
+      dateObj = this.getDateToObject(date);
+      if (date) {
+        time = this.datePipe.transform(date, 'hh:mmaa');
+        if (time) {
+          this.timings.push({ name: time, value: time });
+        }
+      }
+    } else if (appointment?.exams[0]?.startedAt) {
+      const date = new Date(appointment?.exams[0]?.startedAt);
+      dateObj = this.getDateToObject(date);
       if (date) {
         time = this.datePipe.transform(date, 'hh:mmaa');
         if (time) {
@@ -283,16 +294,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       patientLname: appointment?.patientLname ?? null,
       patientTel: appointment?.patientTel ?? null,
       patientEmail: appointment?.patientEmail ?? null,
-      doctorId: appointment?.doctorId.toString() ?? null,
-      startedAt: appointment?.startedAt
-        ? {
-            year: new Date(appointment.startedAt).getFullYear(),
-            month: new Date(appointment.startedAt).getMonth() + 1,
-            day: new Date(appointment.startedAt).getDate(),
-          }
-        : null,
+      doctorId: appointment?.doctorId?.toString() ?? null,
+      startedAt: dateObj,
       examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
-      userId: appointment?.userId.toString() ?? null,
+      userId: appointment?.userId?.toString() ?? null,
       comments: appointment?.comments ?? null,
       approval: appointment?.approval ?? AppointmentStatus.Pending,
     });
@@ -307,7 +312,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   private createSlotRequestData(date: { day: number; month: number; year: number }, examList: number[]): AppointmentSlotsRequestData {
-    const dateString = `${date.year}-${date.month + 1}-${date.month}`;
+    const dateString = `${date.year}-${date.month}-${date.day}`;
     return {
       exams: examList,
       fromDate: dateString,
@@ -518,6 +523,14 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     } else {
       this.appointmentForm.get('patientEmail')?.setErrors(null);
     }
+  }
+
+  public getDateToObject(date: Date) {
+    return {
+      year: new Date(date).getFullYear(),
+      month: new Date(date).getMonth() + 1,
+      day: new Date(date).getDate(),
+    };
   }
 
   // public selectSlot(slot, id) {

@@ -27,6 +27,7 @@ export interface Exam {
   rooms?: Room[];
   uncombinables?: number[];
   uncombinablesExam: Uncombinables[];
+  startedAt: Date;
 
   practiceAvailability?: any[];
 }
