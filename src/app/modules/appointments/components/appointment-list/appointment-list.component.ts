@@ -32,7 +32,18 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Started At', 'Ended At', 'Patient Name', 'Doctor', 'Appointment No', 'Applied On', 'Read', 'Status', 'Actions'];
+  public columns: string[] = [
+    'Started At',
+    'Ended At',
+    'Patient Name',
+    'Doctor',
+    'Exam',
+    'Appointment No',
+    'Applied On',
+    'Read',
+    'Status',
+    'Actions',
+  ];
 
   public downloadItems: NameValue[] = [];
 
