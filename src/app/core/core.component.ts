@@ -5,6 +5,7 @@ import { DestroyableComponent } from '../shared/components/destroyable.component
 import { DUTCH_BE, ENG_BE } from '../shared/utils/const';
 import defaultLanguage from '../../assets/i18n/en-BE.json';
 import dutchLangauge from '../../assets/i18n/nl-BE.json';
+import { ShareDataService } from './services/share-data.service';
 
 @Component({
   selector: 'dfm-main',
@@ -27,6 +28,23 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       new NavigationItem('Site Management', 'tool-01', '/site-management', false),
     ]),
   ];
+
+  public navigationItemsNL: NavigationItem[] = [
+    new NavigationItem('Dashboard', 'home-03', '/dashboard', true),
+    new NavigationItem('Afspraak', 'file-06', '/appointment', false),
+    new NavigationItem('Afwezigheid', 'user-x-01', '/absence', false),
+    new NavigationItem('Configuratie', 'tool-02', undefined, false, [
+      new NavigationItem('Gebruiker', 'user-circle', '/user', false),
+      new NavigationItem('Zalen', 'building-01', '/room', false),
+      new NavigationItem('Medewerkers', 'user-01', '/staff', false),
+      new NavigationItem('Dokter', 'medical-circle', '/physician', false),
+      new NavigationItem('Onderzoek', 'microscope', '/exam', false),
+      new NavigationItem('Uren praktijk', 'clock', '/practice-hours', false),
+      new NavigationItem('Prioritaire slots', 'calendar-date', '/priority-slots', false),
+      new NavigationItem('Site Beheer', 'tool-01', '/site-management', false),
+    ]),
+  ];
+
 
   public notifications: NavigationItemEvent[] = [
     new NavigationItemEvent('1', new Date(), 'Test notification 1'),
@@ -55,8 +73,9 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     },
     links: [new NavigationProfileLink('Test Link', './', '', true)],
   };
+  isDutchLanguage: boolean = false;
 
-  constructor(private translateService: TranslateService) {
+  constructor(private translateService: TranslateService, private dataShareService: ShareDataService) {
     super();
   }
 
@@ -70,11 +89,14 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 
   public onLanguageChange(lang: string) {
     // eslint-disable-next-line eqeqeq
-    if (lang == 'en-BE') {
+    this.dataShareService.setLanguage(lang);
+    if (lang == ENG_BE) {
+      this.isDutchLanguage = false;
       this.translateService.setTranslation(lang, defaultLanguage);
       this.translateService.setDefaultLang(lang);
       // eslint-disable-next-line eqeqeq
-    } else if (lang == 'nl-BE') {
+    } else if (lang == DUTCH_BE) {
+      this.isDutchLanguage = true;
       this.translateService.setTranslation(lang, dutchLangauge);
       this.translateService.setDefaultLang(lang);
     }

@@ -318,7 +318,7 @@
                      *ngIf="[1,2,3,4].includes(getFormArrayName(controlArray))"
                      class="d-flex flex-column dfm-gap-16 flex-1">
               <span
-                class="text-sm font-weight-semi-bold w-fit">{{ getFormArrayName(controlArray) | weekdayToName }}</span>
+                class="text-sm font-weight-semi-bold w-fit">{{ getFormArrayName(controlArray) | weekdayToName | translate}}</span>
 
                   <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
                        class="d-flex flex-column dfm-gap-16 flex-1 min-w-128">
@@ -415,7 +415,7 @@
                                                 [typeToSearchText]="start.value"
                                                 (searchInput)="handleTimeInput($event,controls?.get('dayStart'),controls?.get('startTimings'), start)"
                                                 (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
-                                                label="Start Time"
+                                                label="{{'StartTime' | translate}}"
                                                 formControlName="dayStart"
                                                 size="md"
                                                 placeholder="hh:mm">
@@ -435,7 +435,7 @@
                                                 [typeToSearchText]="end.value"
                                                 (searchInput)="handleTimeInput($event, controls?.get('dayEnd'), controls?.get('endTimings'), end)"
                                                 (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
-                                                label="End Time"
+                                                label="{{'EndTime' | translate}}"
                                                 formControlName="dayEnd"
                                                 size="md"
                                                 placeholder="hh:mm">

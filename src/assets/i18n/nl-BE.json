@@ -213,5 +213,15 @@
   "ExamInfo": "Onderzoek Info",
   "GetDetailedForException": "Gedetailleerd gebruik enkel voor uitzonderingen",
   "AreYouSureWantToChangeStatus": "Ben je zeker dat je de status wil wijzigen?",
-  "Proceed": "Ga verder"
+  "Proceed": "Ga verder",
+  "Dashboard": "Dashboard",
+  "Appointment": "Afspraak",
+  "Configuration": "Configuratie",
+  "Profile": "Profiel",
+  "PrioritySlots": "Prioritaire slots",
+  "SiteManagementNav": "Site Beheer",
+  "AppliedOn": "Toegepast op",
+  "Pending": "In afwachting",
+  "Approved": "Goedgekeurd",
+  "Canceled": "Geannuleerd"
 }

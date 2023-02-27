@@ -212,5 +212,15 @@
   "ExamInfo": "Exam Info",
   "GetDetailedForException": "Get detailed use only for exceptions",
   "AreYouSureWantToChangeStatus": "Are you sure you want to change the status?",
-  "Proceed": "Proceed"
+  "Proceed": "Proceed",
+  "Dashboard": "Dashboard",
+  "Appointment": "Appointment",
+  "Configuration": "Configuration",
+  "Profile": "Profile",
+  "PrioritySlots": "Priority Slots",
+  "SiteManagementNav": "Site Management",
+  "AppliedOn": "Applied On",
+  "Pending": "Pending",
+  "Approved": "Approved",
+  "Canceled": "Canceled"
 }
