@@ -1,30 +1,30 @@
 <div class="d-flex flex-column dfm-gap-24">
   <section class="content-section-1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-sf-title-buttons">
-      <dfm-button color="link" size="lg" routerLink="/staff">Staff</dfm-button>
+      <dfm-button color="link" size="lg" routerLink="/staff">{{"Staff" | translate}}</dfm-button>
 
       <div style="width: 16px; height: 16px" class="h-fit">
         <dfm-icon name="chevron-right"></dfm-icon>
       </div>
 
       <div class="d-flex align-items-center dfm-gap-8" *ngIf="comingFromRoute === 'view' && staffID">
-        <dfm-button color="link" size="lg" [routerLink]="['../', 'view']">View</dfm-button>
+        <dfm-button color="link" size="lg" [routerLink]="['../', 'view']">{{"View" | translate}}</dfm-button>
 
         <div style="width: 16px; height: 16px" class="h-fit">
           <dfm-icon name="chevron-right"></dfm-icon>
         </div>
       </div>
 
-      <dfm-button color="link-gray" size="lg">{{ comingFromRoute ? 'Edit' : 'Add' }} </dfm-button>
+      <dfm-button color="link-gray" size="lg">{{ comingFromRoute ? ('Edit' |translate) : ('Add' | translate) }} </dfm-button>
     </div>
 
     <div class="dfm-gap-16 ad-sf-action-buttons">
       <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/staff']">
-        Cancel
+        {{"Cancel" | translate}}
       </dfm-button>
       <dfm-button [disabled]="(submitting$$ | async) === true" color="primary" size="md" class="text-nowrap"
                   (click)="saveStaff()"
-      >{{ comingFromRoute ? 'Save Changes' : 'Add Staff' }}
+      >{{ comingFromRoute ? ('SaveChanges' | translate) : ('AddStaff' | translate) }}
       </dfm-button>
     </div>
 
@@ -36,7 +36,7 @@
         </dfm-button-icon>
       </div>
 
-      <dfm-button color="link" size="lg" routerLink="./"> {{ edit ? 'Edit Staff' : 'Add Staff' }} </dfm-button>
+      <dfm-button color="link" size="lg" routerLink="./"> {{ edit ? ('EditStaff' |translate) : ('AddStaff' | translate ) }} </dfm-button>
     </div>
     <!--  **  -->
   </section>
@@ -46,22 +46,22 @@
           *ngIf="(loading$$ | async) === false">
       <div class="d-flex flex-column dfm-gap-16 ad-sf-form-general-info">
         <div class="d-flex dfm-gap-16 flex-wrap">
-          <dfm-input #firstname [dfmNameInput]="firstname" size="md" placeholder="Enter First Name" label="First Name *"
+          <dfm-input #firstname [dfmNameInput]="firstname" size="md" placeholder="{{'EnterFirstName' | translate}}" label="{{'FirstName' | translate}} *"
                      formControlName="firstname"></dfm-input>
 
-          <dfm-input #lastname [dfmNameInput]="lastname" size="md" placeholder="Enter Last Name" label="Last Name *"
+          <dfm-input #lastname [dfmNameInput]="lastname" size="md" placeholder="{{'EnterLastName' | translate}}" label="{{'LastName' | translate}} *"
                      formControlName="lastname"></dfm-input>
         </div>
 
         <div class="d-flex dfm-gap-16 flex-wrap">
           <div class="d-flex flex-column ad-sf-email">
-            <dfm-input type="email" size="md" placeholder="Enter Email" label="Email *" formControlName="email"
+            <dfm-input type="email" size="md" placeholder="{{'EnterEmail' | translate}}" label="{{'Email' | translate}} *" formControlName="email"
                        class="flex-1" (focusout)="handleEmailInput($event)"></dfm-input>
-            <small *ngIf="addStaffForm.get('email')?.hasError('email')" class="validation-error">Email is
-              Invalid.</small>
+            <small *ngIf="addStaffForm.get('email')?.hasError('email')" class="validation-error">{{"InvalidEmail" | translate}}
+              </small>
           </div>
 
-          <dfm-input #phone [dfmNumberInput]="phone" type="number" size="md" placeholder="Enter Telephone" label="Telephone"
+          <dfm-input #phone [dfmNumberInput]="phone" type="number" size="md" placeholder="{{'EnterTelephone' | translate}}" label="{{'Telephone' | translate}}"
                      formControlName="telephone"></dfm-input>
         </div>
 
@@ -71,8 +71,8 @@
               #examsDropdown
               size="md"
               #dropdown
-              [placeholder]="'Select Staff Type'"
-              label="Staff Type *"
+              placeholder="{{'SelectStaffType'| translate}}"
+              label="{{'StaffType' | translate}}*"
               [items]="staffTypes"
               formControlName="userType"
             >
@@ -87,8 +87,8 @@
             size="md"
             [multiple]="true"
             #dropdown
-            [placeholder]="!!examsDropdown.value?.length ? examsDropdown.value.length + ' Selected' : 'Select exams involving this staff'"
-            label="Exams"
+            [placeholder]="!!examsDropdown.value?.length ? examsDropdown.value.length + ' Selected' : 'ExamInvolvingStaff'| translate"
+            label="{{'Exams' | translate}}"
             [items]="exams"
             formControlName="examList"
           >
@@ -99,18 +99,18 @@
           <!--        </span>-->
         </div>
 
-        <dfm-text-area size="md" placeholder="Enter Info" label="Info" class="ad-sf-info-input"
+        <dfm-text-area size="md" placeholder="{{'EnterInfo' | translate}}" label="{{'Info' | translate}}" class="ad-sf-info-input"
                        formControlName="info"></dfm-text-area>
       </div>
 
       <div class="d-flex flex-column dfm-gap-16">
         <div class="d-flex flex-column dfm-gap-8">
-          <span class="text-md font-weight-semi-bold">Add Practice Data</span>
+          <span class="text-md font-weight-semi-bold">{{"AddPracticeData" | translate}}</span>
 
           <div class="w-fit">
             <dfm-radio-button
-              label="Always"
-              hint="Corresponds to the opening hours of the practice"
+              label="{{'Always' | translate}}"
+              hint="{{'Openinghoursofthepractice' | translate}}"
               size="sm"
               [checkedValue]="false"
               formControlName="practiceAvailabilityToggle"
@@ -118,8 +118,8 @@
             ></dfm-radio-button>
 
             <dfm-radio-button
-              label="Get Detailed"
-              hint="Use only for exceptions"
+              label="{{'GetDetailed' | translate}}"
+              hint="{{'OnlyForException' | translate}}"
               size="sm"
               formControlName="practiceAvailabilityToggle"
               [checkedValue]="true"
