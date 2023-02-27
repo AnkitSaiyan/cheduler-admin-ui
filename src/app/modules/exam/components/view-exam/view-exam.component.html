@@ -5,7 +5,7 @@
         color="link"
         size="lg"
         routerLink="/exam"
-      >Exam
+      >{{"Exam" | translate}}
       </dfm-button>
       <div style="width: 16px; height: 16px" class="h-fit">
         <dfm-icon name="chevron-right"></dfm-icon>
@@ -13,7 +13,7 @@
       <dfm-button
         color="link-gray"
         size="lg"
-      >View
+      >{{"View" | translate}}
       </dfm-button>
     </div>
 
@@ -24,7 +24,7 @@
         leadingIcon="pencil-02"
         [routerLink]="['../', 'edit']"
         [state]="{ comingFromRoute: 'view', edit: true }"
-      >Edit Exam
+      >{{"EditExam" | translate}}
       </dfm-button>
 
       <dfm-button
@@ -34,7 +34,7 @@
         leadingIcon="trash-01"
         (click)="deleteExam(examDetails.id)"
       >
-        Delete Exam
+        {{"DeleteExam" | translate}}
       </dfm-button>
     </div>
 
@@ -54,7 +54,7 @@
         color="link"
         size="lg"
         routerLink="./"
-      >Exam View
+      >{{"ExamView" | translate}}
       </dfm-button>
     </div>
     <!-- ** -->
@@ -68,39 +68,39 @@
             <div class="dfm-button-gray-400">
               <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
             </div>
-            <span class="font-weight-medium">Exam Details</span>
+            <span class="font-weight-medium">{{"ExamDetails" | translate}}</span>
           </header>
 
-          <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-            <div class="d-flex dfm-gap-8 justify-content-between">
-              <span class="flex-1">Name</span>
-              <span class="font-weight-medium flex-1">{{ examDetails.name | titlecase }}</span>
-            </div>
+        <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
+          <div class="d-flex dfm-gap-8 justify-content-between">
+            <span class="flex-1">{{"Name" | translate}}</span>
+            <span class="font-weight-medium flex-1">{{ examDetails.name | titlecase }}</span>
+          </div>
 
-            <div class="d-flex dfm-gap-8 justify-content-between">
-              <span class="flex-1">Expensive</span>
-              <span class="font-weight-medium flex-1">{{ examDetails.expensive }}</span>
-            </div>
+          <div class="d-flex dfm-gap-8 justify-content-between">
+            <span class="flex-1">{{"Expensive" | translate}}</span>
+            <span class="font-weight-medium flex-1">{{ examDetails.expensive }}</span>
+          </div>
 
-            <div class="d-flex dfm-gap-8 justify-content-between">
-              <span class="flex-1">Status</span>
-              <span class="font-weight-medium flex-1"
-                    [ngClass]="examDetails.status === 0 ? 'dfm-text-danger-600' : 'dfm-text-success-600'">{{ examDetails.status | statusName }}</span>
-            </div>
-            <div class="d-flex dfm-gap-8 justify-content-between">
-              <span class="flex-1">Uncombinable</span>
-              <span *ngIf="(uncombinablesExam$$ | async) as uncombinablesExam" class="flex-1 font-weight-medium">{{ uncombinablesExam | joinWithAnd : 'name' | dashIfNothing }}</span>
-            </div>
+          <div class="d-flex dfm-gap-8 justify-content-between">
+            <span class="flex-1">{{"Status" | translate}}</span>
+            <span class="font-weight-medium flex-1"
+                  [ngClass]="examDetails.status === 0 ? 'dfm-text-danger-600' : 'dfm-text-success-600'">{{ examDetails.status | statusName }}</span>
+          </div>
+          <div class="d-flex dfm-gap-8 justify-content-between">
+            <span class="flex-1">{{"Uncombinable" | translate}}</span>
+            <span *ngIf="(uncombinablesExam$$ | async) as uncombinablesExam" class="flex-1 font-weight-medium">{{ uncombinablesExam | joinWithAnd : 'name' | dashIfNothing }}</span>
           </div>
         </div>
+      </div>
 
-        <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
-          <header class="d-flex align-items-center dfm-gap-8">
-            <div class="dfm-button-gray-400">
-              <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
-            </div>
-            <span class="font-weight-medium text-break">Rooms Involving the Exam</span>
-          </header>
+      <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
+        <header class="d-flex align-items-center dfm-gap-8">
+          <div class="dfm-button-gray-400">
+            <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+          </div>
+          <span class="font-weight-medium text-break">{{"RoomsInvolvingTheExam" | translate}}</span>
+        </header>
 
           <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
             <div class="d-flex dfm-gap-8 justify-content-between" *ngFor="let room of examDetails.roomsForExam;">
@@ -111,13 +111,13 @@
           </div>
         </div>
 
-        <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
-          <header class="d-flex align-items-center dfm-gap-8">
-            <div class="dfm-button-gray-400">
-              <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
-            </div>
-            <span class="font-weight-medium">Exam Info</span>
-          </header>
+      <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
+        <header class="d-flex align-items-center dfm-gap-8">
+          <div class="dfm-button-gray-400">
+            <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+          </div>
+          <span class="font-weight-medium">{{"ExamInfo" | translate}}</span>
+        </header>
 
           <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
             <span class="font-weight-medium flex-1">{{ examDetails.info | titlecase }}</span>
@@ -125,14 +125,14 @@
         </div>
       </div>
 
-      <div class="d-flex dfm-gap-24">
-        <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
-          <header class="d-flex align-items-center dfm-gap-8">
-            <div class="dfm-button-gray-400">
-              <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
-            </div>
-            <span class="font-weight-medium text-break">General Staff</span>
-          </header>
+    <div class="d-flex dfm-gap-24">
+      <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
+        <header class="d-flex align-items-center dfm-gap-8">
+          <div class="dfm-button-gray-400">
+            <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+          </div>
+          <span class="font-weight-medium text-break">{{"GeneralStaff" | translate}}</span>
+        </header>
 
           <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
             <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="staffsGroupedByTypes.assistants.length">
@@ -141,44 +141,44 @@
                 class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.assistants | joinWithAnd : 'name' | dashIfNothing }}</span>
             </div>
 
-            <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="staffsGroupedByTypes.radiologists.length">
-              <span class="flex-1">Radiologist</span>
-              <span
-                class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.radiologists | joinWithAnd : 'name' | dashIfNothing }}</span>
-            </div>
+          <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="staffsGroupedByTypes.radiologists.length">
+            <span class="flex-1">{{"Radiologist" | translate}}</span>
+            <span
+              class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.radiologists | joinWithAnd : 'name' | dashIfNothing }}</span>
+          </div>
 
-            <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="staffsGroupedByTypes.nursing.length">
-              <span class="flex-1">Nursing</span>
-              <span
-                class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.nursing | joinWithAnd : 'name' | dashIfNothing }}</span>
-            </div>
+          <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="staffsGroupedByTypes.nursing.length">
+            <span class="flex-1">{{"Nursing" | translate}}</span>
+            <span
+              class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.nursing | joinWithAnd : 'name' | dashIfNothing }}</span>
+          </div>
 
-            <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="staffsGroupedByTypes.secretaries.length">
-              <span class="flex-1">Secretary</span>
-              <span
-                class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.secretaries | joinWithAnd : 'name' | dashIfNothing }}</span>
-            </div>
+          <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="staffsGroupedByTypes.secretaries.length">
+            <span class="flex-1">{{"Secretary" | translate}}</span>
+            <span
+              class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.secretaries | joinWithAnd : 'name' | dashIfNothing }}</span>
+          </div>
 
             <span class="dfm-text-main-600"
                   *ngIf="!staffsGroupedByTypes.secretaries.length && !staffsGroupedByTypes.nursing.length && !staffsGroupedByTypes.radiologists.length && !staffsGroupedByTypes.assistants.length">No General Staff found</span>
           </div>
         </div>
 
-        <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
-          <header class="d-flex align-items-center dfm-gap-8">
-            <div class="dfm-button-gray-400">
-              <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
-            </div>
-            <span class="font-weight-medium text-break">Mandatory Staff</span>
-          </header>
-
-          <div class="d-flex flex-column dfm-gap-16 overflow-y-auto" *ngIf="staffsGroupedByTypes.mandatory?.length">
-            <div class="d-flex dfm-gap-8 justify-content-between">
-              <span class="flex-1">Staff</span>
-              <span
-                class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.mandatory | joinWithAnd : 'name' | dashIfNothing }}</span>
-            </div>
+      <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
+        <header class="d-flex align-items-center dfm-gap-8">
+          <div class="dfm-button-gray-400">
+            <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
           </div>
+          <span class="font-weight-medium text-break">{{"MandatoryStaffs" | translate}}</span>
+        </header>
+
+        <div class="d-flex flex-column dfm-gap-16 overflow-y-auto" *ngIf="staffsGroupedByTypes.mandatory?.length">
+          <div class="d-flex dfm-gap-8 justify-content-between">
+            <span class="flex-1">{{"Staff" | translate}}</span>
+            <span
+              class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.mandatory | joinWithAnd : 'name' | dashIfNothing }}</span>
+          </div>
+        </div>
 
           <span class="dfm-text-main-600" *ngIf="!staffsGroupedByTypes.mandatory.length">No Mandatory Staff found</span>
         </div>
@@ -191,11 +191,11 @@
             <span class="font-weight-medium">Exam Availability Info</span>
           </header>
 
-          <span *ngIf="!examDetails.practiceAvailability?.length" class="dfm-text-main-600">Always corresponds to the opening hours of the practice</span>
-          <span *ngIf="examDetails.practiceAvailability?.length" class="dfm-text-main-600">Get detailed use only for exceptions</span>
-        </div>
+        <span *ngIf="!examDetails.practiceAvailability?.length" class="dfm-text-main-600">{{"CorrespondsToTheOpeningHoursOfThePractice" | translate }}</span>
+        <span *ngIf="examDetails.practiceAvailability?.length" class="dfm-text-main-600">{{"GetDetailedForException" | translate}}</span>
       </div>
-    </section>
+    </div>
+  </section>
 
     <section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16"
              *ngIf="practiceAvailability$$ | async as practiceAvailability;">
@@ -206,12 +206,12 @@
         <span class="font-weight-medium">Exam Availability Data</span>
       </header>
 
-      <div class="overflow-y-auto h-fit h-fit">
-        <dfm-table [items]="practiceAvailability" *ngIf="examDetails?.practiceAvailability?.length">
-          <ng-template #headerRowTemplate>
-            <dfm-table-header-cell>Slot No</dfm-table-header-cell>
-            <dfm-table-header-cell *ngFor="let column of columns">{{ column | weekdayToName }}</dfm-table-header-cell>
-          </ng-template>
+    <div class="overflow-y-auto h-fit h-fit">
+      <dfm-table [items]="practiceAvailability" *ngIf="examDetails?.practiceAvailability?.length">
+        <ng-template #headerRowTemplate>
+          <dfm-table-header-cell>{{"SlotNo" | translate}}</dfm-table-header-cell>
+          <dfm-table-header-cell *ngFor="let column of columns">{{ column | weekdayToName }}</dfm-table-header-cell>
+        </ng-template>
 
           <ng-template #bodyRowTemplate let-item>
             <dfm-table-body-cell>{{ item.slotNo }}</dfm-table-body-cell>
@@ -275,9 +275,9 @@
   </div>
 
   <div class="hidden bg-white vw-ex-action-buttons-mv">
-    <dfm-button color="secondary" size="sm" (click)="deleteExam(examDetails.id)">Delete</dfm-button>
+    <dfm-button color="secondary" size="sm" (click)="deleteExam(examDetails.id)">{{"Delete" | translate}}</dfm-button>
     <dfm-button color="primary" size="sm" [routerLink]="['../', 'edit']"
-                [state]="{ comingFromRoute: 'view', edit: true }">Edit
+                [state]="{ comingFromRoute: 'view', edit: true }">{{"Edit" | translate}}
     </dfm-button>
   </div>
 </div>

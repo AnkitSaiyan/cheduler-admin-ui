@@ -5,7 +5,7 @@
         color="link"
         size="lg"
         routerLink="/exam"
-      >Exam
+      >{{ 'Exam' | translate}}
       </dfm-button>
 
       <div style="width: 16px; height: 16px" class="h-fit">
@@ -17,7 +17,7 @@
           color="link"
           size="lg"
           [routerLink]="['../', 'view']"
-        >View
+        >{{ 'View' | translate}}
         </dfm-button>
 
         <div style="width: 16px; height: 16px" class="h-fit">
@@ -28,12 +28,12 @@
       <dfm-button
         color="link-gray"
         size="lg"
-      >{{ comingFromRoute ? 'Edit' : 'Add' }}
+      >{{ comingFromRoute ? ('EditExam' | translate) : ('AddExam' | translate) }}
       </dfm-button>
     </div>
 
     <div class="dfm-gap-16 ad-ex-action-buttons">
-      <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/exam']">Cancel
+      <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/exam']">{{"Cancel" | translate}}
       </dfm-button>
       <dfm-button
         color="primary"
@@ -41,7 +41,7 @@
         class="text-nowrap"
         [disabled]="(submitting$$ | async) === true"
         (click)="saveExam()"
-      >{{ comingFromRoute ? 'Save Changes' : 'Add Exam' }}
+      >{{ comingFromRoute ? ('SaveChanges' | translate) : ('AddExam' | translate) }}
       </dfm-button>
     </div>
 
@@ -61,7 +61,7 @@
         color="link"
         size="lg"
         routerLink="./"
-      > {{ edit ? 'Edit' : 'Add' }} Exam
+      > {{ edit ? ('EditExam' | translate) : ('AddExam' | translate) }} Exam
       </dfm-button>
     </div>
     <!--  **  -->
@@ -71,14 +71,14 @@
     <form [formGroup]="examForm" class="dfm-p-16 d-flex flex-column dfm-gap-32">
       <div class="d-flex flex-column dfm-gap-16 ad-ex-form-exam-info">
         <div class="d-flex dfm-gap-24 flex-wrap ad-ex-name-expense-room">
-          <dfm-input class="ad-ex-name" size="md" placeholder="Enter Exam Name" label="Exam Name *"
+          <dfm-input class="ad-ex-name" size="md" placeholder="{{'EnterExamName' | translate}}" label="{{'ExamName' | translate}} *"
                      formControlName="name">
           </dfm-input>
 
           <div>
             <dfm-input #expensive [dfmNumberInput]="expensive" class="ad-ex-duration" type="number" size="md"
-                       placeholder="Enter Duration"
-                       label="Expensive (Mins) *"
+                       placeholder="{{'EnterDuration' | translate}}"
+                       label="{{'ExpensiveMin' | translate}} *"
                        formControlName="expensive">
             </dfm-input>
 
@@ -87,7 +87,7 @@
           </div>
 
           <div class="dfm-input-dropdown-wrapper">
-            <dfm-input-dropdown class="flex-1" size="md" placeholder="Select room type" label="Room Type *"
+            <dfm-input-dropdown class="flex-1" size="md" placeholder="{{'SelectRoomType' | translate}}" label="{{'RoomType' | translate}} *"
                                 formControlName="roomType"
                                 [items]="roomTypes"></dfm-input-dropdown>
           </div>
@@ -95,7 +95,7 @@
 
         <div class="d-flex dfm-gap-8 flex-column" *ngIf="!!examForm.get('roomType')?.value">
           <span class="text-sm font-weight-medium dfm-text-main-700">{{ formValues.roomType | titlecase }}
-            Rooms *</span>
+            {{'Rooms' | translate}} *</span>
 
           <div class="d-flex dfm-gap-24 flex-wrap" formArrayName="roomsForExam">
             <div [formGroupName]="rowIndex"
@@ -104,7 +104,7 @@
               <dfm-checkbox formControlName="selectRoom" size="md"
                             [label]="roomForExamControl.value?.roomName"></dfm-checkbox>
               <div class="ad-ex-duration">
-                <dfm-input #duration [dfmNumberInput]="duration" type="text" size="md" placeholder="Duration (Mins)"
+                <dfm-input #duration [dfmNumberInput]="duration" type="text" size="md" placeholder="{{'DurationMins' | translate}}"
                            formControlName="duration">
                 </dfm-input>
               </div>
@@ -115,22 +115,22 @@
           </div>
 
           <small *ngIf="formErrors.selectRoomErr" class="validation-error">
-            Please select at least one room.
+            {{'PleaseSelectAtLeastOneRoom' | translate}}
           </small>
           <small *ngIf="formErrors.expensiveErr && !formErrors.selectRoomErr" class="validation-error">
             Expensive of the exam and total minutes of rooms should be the same.
           </small>
         </div>
 
-        <dfm-text-area size="md" placeholder="Enter Info" label="Info" class="ad-ex-info-input" formControlName="info">
+        <dfm-text-area size="md" placeholder="{{'EnterInfo' | translate}}" label="Info" class="ad-ex-info-input" formControlName="info">
         </dfm-text-area>
 
         <div class="d-flex flex-1 dfm-gap-24">
           <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1" *ngIf="exams$$ | async as exams"
                [ngClass]="{ 'dfm-mb-32': uncombinableDropdown.value?.length }">
             <dfm-input-dropdown #uncombinableDropdown size="md" [multiple]="true"
-                                [placeholder]="!!uncombinableDropdown.value?.length ? uncombinableDropdown.value.length + ' Selected' : 'Select Exam'"
-                                label="Uncombinable" [items]="exams"
+                                [placeholder]="!!uncombinableDropdown.value?.length ? uncombinableDropdown.value.length + ' Selected' : ('SelectExam' | translate)"
+                                label="{{'Uncombinable' | translate}}" [items]="exams"
                                 formControlName="uncombinables">
             </dfm-input-dropdown>
           </div>
@@ -138,20 +138,20 @@
           <div *ngIf="mandatoryStaffs$$ | async as mandatory" class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1"
                [ngClass]="{ 'dfm-mb-32': mandatoryStaffsDropdown.value?.length }">
             <dfm-input-dropdown #mandatoryStaffsDropdown size="md" [multiple]="true"
-                                [placeholder]="!!mandatoryStaffsDropdown.value?.length ? mandatoryStaffsDropdown.value.length + ' Selected' : 'Select Staff'"
-                                label="Mandatory Staffs" [items]="mandatory"
+                                [placeholder]="!!mandatoryStaffsDropdown.value?.length ? mandatoryStaffsDropdown.value.length + ' Selected' : ('SelectStaff' | translate)"
+                                label="{{'MandatoryStaffs' | translate}}" [items]="mandatory"
                                 formControlName="mandatoryStaffs">
             </dfm-input-dropdown>
           </div>
         </div>
 
-        <span class="text-sm font-weight-medium dfm-text-main-700 dfm-mt-16">General Staff</span>
+        <span class="text-sm font-weight-medium dfm-text-main-700 dfm-mt-16">{{'GeneralStaff' | translate}}</span>
 
         <div class="ad-ex-general-staff">
           <div class="d-flex flex-column flex-1" *ngIf="assistants$$ | async as assistants">
             <div class="d-flex dfm-gap-16">
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
-                <dfm-input-dropdown class="flex-1" size="md" label="Select No." placeholder="Select"
+                <dfm-input-dropdown class="flex-1" size="md" label="{{'SelectNo' | translate}}" placeholder="{{'Select' | translate}}"
                                     formControlName="assistantCount"
                                     [items]="assistants.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
@@ -159,7 +159,7 @@
 
               <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                    [ngClass]="{ 'dfm-mb-32': assistantDropdown.value?.length }">
-                <dfm-input-dropdown #assistantDropdown size="md" label="Assistant" placeholder="Select Assistants"
+                <dfm-input-dropdown #assistantDropdown size="md" label="Assistant" placeholder="{{'SelectAssistant' | translate}}"
                                     [multiple]="true" formControlName="assistants"
                                     [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : 'Select Assistants'"
                                     [items]="assistants">
@@ -175,15 +175,15 @@
           <div class="d-flex flex-column flex-1" *ngIf="radiologists$$ | async as radiologists">
             <div class="d-flex dfm-gap-16">
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
-                <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="radiologistCount"
+                <dfm-input-dropdown size="md" label="{{'SelectNo' | translate}}" placeholder="Select" formControlName="radiologistCount"
                                     [items]="radiologists.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
               </div>
 
               <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                    [ngClass]="{ 'dfm-mb-32': radiologistDropdown.value?.length }">
-                <dfm-input-dropdown #radiologistDropdown size="md" label="Radiologists"
-                                    placeholder="Select Radiologists"
+                <dfm-input-dropdown #radiologistDropdown size="md" label="{{'Radiologist' | translate}}"
+                                    placeholder="{{'SelectRadiologist' | translate}}"
                                     [multiple]="true" formControlName="radiologists"
                                     [placeholder]="!!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : 'Select Radiologists'"
                                     [items]="radiologists">
@@ -199,14 +199,14 @@
           <div class="d-flex flex-column flex-1" *ngIf="nursing$$ | async as nursing">
             <div class="d-flex dfm-gap-16">
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
-                <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="nursingCount"
+                <dfm-input-dropdown size="md" label="{{'SelectNo' | translate}}" placeholder="{{'Select' | translate}}" formControlName="nursingCount"
                                     [items]="nursing.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
               </div>
 
               <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                    [ngClass]="{ 'dfm-mb-32': nursingDropdown.value?.length }">
-                <dfm-input-dropdown #nursingDropdown size="md" label="Nursing" placeholder="Select Nursing"
+                <dfm-input-dropdown #nursingDropdown size="md" label="{{'Nursing' | translate}}" placeholder="{{'SelectNursing' | translate}}"
                                     [multiple]="true" formControlName="nursing"
                                     [placeholder]="!!nursingDropdown.value?.length ? nursingDropdown.value.length + ' Selected' : 'Select Nursing'"
                                     [items]="nursing">
@@ -215,21 +215,21 @@
             </div>
 
             <small class="validation-error" *ngIf="nursingDropdown.control.hasError('nursingCount')">
-              {{ formValues.nursingCount.toString() === '0' ? 'Please deselect Nursing' : 'Please select at least ' + formValues.nursingCount + ' Nursing.' }}
+              {{ formValues.nursingCount.toString() === '0' ? 'Please deselect Nursing' : 'Please select at least ' + formValues.nursingCount + (' Nursing' | translate)}}
             </small>
           </div>
 
           <div class="d-flex flex-column flex-1" *ngIf="secretaries$$ | async as secretaries">
             <div class="d-flex dfm-gap-16">
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
-                <dfm-input-dropdown size="md" label="Select No." placeholder="Select" formControlName="secretaryCount"
+                <dfm-input-dropdown size="md" label="{{'SelectNo' | translate}}" placeholder="{{'Select' | translate}}" formControlName="secretaryCount"
                                     [items]="secretaries.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
               </div>
 
               <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                    [ngClass]="{ 'dfm-mb-32': secretaryDropdown.value?.length }">
-                <dfm-input-dropdown #secretaryDropdown size="md" label="Secretary" placeholder="Select Secretary"
+                <dfm-input-dropdown #secretaryDropdown size="md" label="{{'Secretary' | translate}}" placeholder="{{'SelectSecretary' | translate}}"
                                     [multiple]="true" formControlName="secretaries"
                                     [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ' Selected' : 'Select Secretary'"
                                     [items]="secretaries">
@@ -246,12 +246,12 @@
 
       <div class="d-flex flex-column dfm-gap-16">
         <div class="d-flex flex-column dfm-gap-8">
-          <span class="text-md font-weight-semi-bold">Add Practice Data</span>
+          <span class="text-md font-weight-semi-bold">{{"AddPracticeData" | translate}}</span>
 
           <div class="w-fit">
             <dfm-radio-button
-              label="Always"
-              hint="Corresponds to the opening hours of the practice"
+              label="{{'Always' | translate}}"
+              hint="{{'CorrespondsToTheOpeningHoursOfThePractice' | translate}}"
               size="sm"
               [checkedValue]="false"
               formControlName="practiceAvailabilityToggle"
@@ -259,8 +259,8 @@
             ></dfm-radio-button>
 
             <dfm-radio-button
-              label="Get Detailed"
-              hint="Use only for exceptions"
+              label="{{'GetDetailed' | translate}}"
+              hint="{{'OnlyForException' | translate }}"
               size="sm"
               formControlName="practiceAvailabilityToggle"
               [checkedValue]="true"
@@ -271,7 +271,7 @@
 
         <div *ngIf="formValues.practiceAvailabilityToggle" class="d-flex flex-column dfm-gap-24">
           <div class="d-flex flex-column dfm-gap-8">
-            <span class="text-sm font-weight-semi-bold">Choose Day</span>
+            <span class="text-sm font-weight-semi-bold">{{"ChooseDay" | translate}}</span>
 
             <div class="d-flex dfm-gap-16 weekday-header ad-ex-weekdays-tab hide-scrollbar">
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)"
@@ -333,7 +333,7 @@
                                                 [typeToSearchText]="start.value"
                                                 (searchInput)="handleTimeInput($event,controls?.get('dayStart'),controls?.get('startTimings'), start)"
                                                 (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
-                                                label="Start Time"
+                                                label="{{'StartTime' | translate}}"
                                                 formControlName="dayStart"
                                                 size="md"
                                                 placeholder="hh:mm">
@@ -354,7 +354,7 @@
                                                 [typeToSearchText]="end.value"
                                                 (searchInput)="handleTimeInput($event,controls?.get('dayEnd'),controls?.get('endTimings'), end)"
                                                 (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
-                                                label="End Time"
+                                                label="{{'End Time' | translate}}"
                                                 formControlName="dayEnd"
                                                 size="md"
                                                 placeholder="hh:mm">
