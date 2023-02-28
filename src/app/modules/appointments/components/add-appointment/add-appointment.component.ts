@@ -375,24 +375,12 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
             examDetails.startedAt += ` ${start[0]}:${start[1]}:00`;
             examDetails.endedAt += ` ${end[0]}:${end[1]}:00`;
           } else {
-            examDetails.startedAt += ' 00:00:00';
-            examDetails.endedAt += (() => {
-              const { expensive } = this.examIdToDetails[+examID];
+            const time = this.selectedTimeSlot[0].split('-');
+            const start = time[0].split(':');
+            const end = time[1].split(':');
 
-              let hour: string = '00';
-              let minute: string = '00';
-
-              if (+expensive >= 60) {
-                hour = Math.floor(+expensive / 60).toString();
-                minute = Math.floor(+expensive % 60).toString();
-              }
-
-              if (+expensive < 60 && +expensive > 0) {
-                minute = +expensive < 10 ? `0${expensive}` : `${expensive}`;
-              }
-
-              return ` ${hour}:${minute}:00`;
-            })();
+            examDetails.startedAt += ` ${start[0]}:${start[1]}:00`;
+            examDetails.endedAt += ` ${end[0]}:${end[1]}:00`;
           }
 
           return examDetails;
@@ -403,7 +391,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         requestData.id = this.appointment$$.value.id;
       }
 
-      console.log(requestData);
 
       if (this.edit) {
         this.appointmentApiSvc
@@ -506,12 +493,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     if (!this.isSlotAvailable(slot)) {
       return;
     }
-
     if (this.selectedTimeSlot[slot.examId] === `${slot.start}-${slot.end}`) {
       this.selectedTimeSlot[slot.examId] = '';
     } else {
       this.selectedTimeSlot[slot.examId] = `${slot.start}-${slot.end}`;
-      console.log(this.selectedTimeSlot);
     }
   }
 
