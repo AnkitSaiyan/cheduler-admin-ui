@@ -389,9 +389,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         requestData.id = this.appointment$$.value.id;
       }
 
-      console.log(requestData);
-
-      return;
 
       if (this.edit) {
         this.appointmentApiSvc
