@@ -230,7 +230,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       ],
       userList: [absenceDetails?.user?.length ? absenceDetails.user.map(({ id }) => id?.toString()) : [], []],
       roomList: [absenceDetails?.rooms?.length ? absenceDetails?.rooms.map(({ id }) => id?.toString()) : [], []],
-      info: [absenceDetails?.info ?? '', [Validators.required]],
+      info: [absenceDetails?.info ?? '', []],
       priority: [absenceDetails?.priority ?? null, []],
     });
 
