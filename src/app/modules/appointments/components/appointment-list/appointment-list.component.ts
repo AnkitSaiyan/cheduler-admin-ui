@@ -32,7 +32,18 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Started At', 'Ended At', 'Patient Name', 'Doctor', 'Appointment No', 'Applied On', 'Read', 'Status', 'Actions'];
+  public columns: string[] = [
+    'Started At',
+    'Ended At',
+    'Patient Name',
+    'Doctor',
+    'Exam',
+    'Appointment No',
+    'Applied On',
+    'Read',
+    'Status',
+    'Actions',
+  ];
 
   public downloadItems: NameValue[] = [];
 
@@ -255,10 +266,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     }
   }
 
-  public navigateToView(e: TableItem) {
+  public navigateToView(e: TableItem, appointments: Appointment[]) {
     if (e?.id) {
-      console.log('in');
-      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+      const amptId = appointments.find((item: Appointment) => item?.id === +e.id)?.apmtId;
+      this.router.navigate([`./${amptId}/view`], { relativeTo: this.route });
     }
   }
 

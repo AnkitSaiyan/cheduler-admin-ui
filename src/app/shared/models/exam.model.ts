@@ -28,6 +28,7 @@ export interface Exam {
   uncombinables?: number[];
   uncombinablesExam: Uncombinables[];
   startedAt: Date;
+  endedAt: Date;
 
   practiceAvailability?: any[];
 }

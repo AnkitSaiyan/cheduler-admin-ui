@@ -75,7 +75,7 @@
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-body-cell>{{ item.firstname | titlecase | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.lastname | titlecase | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.userType | titlecase | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.userType | titlecase | dashIfNothing | translate }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <div class="text-truncate">{{ item.email | dashIfNothing }}</div>
         </dfm-table-body-cell>
@@ -192,7 +192,7 @@
       </ng-template>
     </dfm-table>
     <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!staffs.length">
-      No data found
+      {{"Nodatafound" | translate}}
     </div>
   </section>
 

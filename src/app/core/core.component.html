@@ -1,6 +1,6 @@
 <div class="dfm-layout">
   <dfm-navigation-bar
-    [navigationItems]="navigationItems"
+    [navigationItems]="(!isDutchLanguage)? navigationItems: navigationItemsNL"
     [isNotificationsCounterShown]="true"
     [notifications]="notifications"
     [isMessagesCounterShown]="true"

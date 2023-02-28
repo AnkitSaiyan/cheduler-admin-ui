@@ -87,7 +87,7 @@
             size="md"
             [multiple]="true"
             #dropdown
-            [placeholder]="!!examsDropdown.value?.length ? examsDropdown.value.length + ' Selected' : 'ExamInvolvingStaff'| translate"
+            [placeholder]="!!examsDropdown.value?.length ? examsDropdown.value.length + ' ' + ('Selected' | translate) : 'ExamInvolvingStaff'| translate"
             label="{{'Exams' | translate}}"
             [items]="exams"
             formControlName="examList"
@@ -131,6 +131,7 @@
         <div *ngIf="formValues.practiceAvailabilityToggle" class="d-flex flex-column dfm-gap-24">
           <div class="d-flex flex-column dfm-gap-8">
             <span class="text-sm font-weight-semi-bold">{{"ChooseDay" | translate}}</span>
+            <!-- <span class="text-sm font-weight-semi-bold">{{"ChooseDay" | translate}}</span> -->
 
             <div class="d-flex dfm-gap-16 weekday-header ad-sf-weekdays-tab hide-scrollbar">
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)" class="pointer"
@@ -139,24 +140,31 @@
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.MON)" class="pointer"
                          (click)="selectWeekday(weekdayEnum.MON)">{{"MON" | translate}}
+                         <!-- (click)="selectWeekday(weekdayEnum.MON)">{{"MON" | translate}} -->
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.TUE)" class="pointer"
                          (click)="selectWeekday(weekdayEnum.TUE)">{{"TUE" | translate}}
+                         <!-- (click)="selectWeekday(weekdayEnum.TUE)">{{"TUE" | translate}} -->
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.WED)" class="pointer"
                          (click)="selectWeekday(weekdayEnum.WED)">{{"WED" | translate}}
+                         <!-- (click)="selectWeekday(weekdayEnum.WED)">{{"WED" | translate}} -->
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.THU)" class="pointer"
                          (click)="selectWeekday(weekdayEnum.THU)">{{"THU" | translate}}
+                         <!-- (click)="selectWeekday(weekdayEnum.THU)">{{"THU" | translate}} -->
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.FRI)" class="pointer"
                          (click)="selectWeekday(weekdayEnum.FRI)">{{"FRI" | translate}}
+                         <!-- (click)="selectWeekday(weekdayEnum.FRI)">{{"FRI" | translate}} -->
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SAT)" class="pointer"
                          (click)="selectWeekday(weekdayEnum.SAT)">{{"SAT" | translate}}
+                         <!-- (click)="selectWeekday(weekdayEnum.SAT)">{{"SAT" | translate}} -->
               </dfm-badge>
               <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SUN)" class="pointer"
                          (click)="selectWeekday(weekdayEnum.SUN)">{{"SUN" | translate}}
+                         <!-- (click)="selectWeekday(weekdayEnum.SUN)">{{"SUN" | translate}} -->
               </dfm-badge>
             </div>
           </div>
@@ -238,6 +246,7 @@
                   <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(controlArray)">
                     <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
                     <span class="text-sm dfm-text-main-600">{{"ClickToAddSlot" | translate}}</span>
+                    <span class="text-sm dfm-text-main-600">{{"ClickToAddSlot" | translate}}</span>
                   </div>
                 </div>
               </div>
@@ -268,6 +277,7 @@
                                                 (searchInput)="handleTimeInput($event, controls?.get('dayStart'), controls?.get('startTimings'))"
                                                 (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
                                                 label="{{'StartTime' | translate}}"
+                                                label="{{'StartTime' | translate}}"
                                                 formControlName="dayStart"
                                                 size="md"
                                                 placeholder="{{'HH:MM' | translate}}">
@@ -287,6 +297,7 @@
                                                 [typeToSearchText]="end.value"
                                                 (searchInput)="handleTimeInput($event, controls?.get('dayEnd'), controls?.get('endTimings'))"
                                                 (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
+                                                label="{{'EndTime' | translate}}"
                                                 label="{{'EndTime' | translate}}"
                                                 formControlName="dayEnd"
                                                 size="md"

@@ -23,7 +23,7 @@
     </div>
   </section>
 
-  <section class="modal-body ad-us-section2">
+  <section class="modal-body ad-us-section2 ">
     <form [formGroup]="addUserForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex flex-column dfm-gap-16 flex-1">
         <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{'SelectUserType' | translate}}*</span>
@@ -62,7 +62,7 @@
             placeholder="{{'EnterEmail' | translate}}"
             formControlName="email" (focusout)="handleEmailInput($event)">
           </dfm-input>
-          <small *ngIf="addUserForm.get('email')?.hasError('email')" class="validation-error">{{'InavlidEmail' | translate}}</small>
+          <small *ngIf="addUserForm.get('email')?.hasError('email')" class="validation-error">{{'InvalidEmail' | translate}}</small>
         </div>
 
         <dfm-input #phone [dfmNumberInput]="phone" class="flex-1" size="md" placeholder="{{'EnterTelephone' | translate}}"

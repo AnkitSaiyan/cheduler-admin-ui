@@ -159,9 +159,9 @@
 
               <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                    [ngClass]="{ 'dfm-mb-32': assistantDropdown.value?.length }">
-                <dfm-input-dropdown #assistantDropdown size="md" label="Assistant" placeholder="{{'SelectAssistant' | translate}}"
+                <dfm-input-dropdown #assistantDropdown size="md" label="{{'Assistant' | translate}}" placeholder="{{'SelectAssistant' | translate}}"
                                     [multiple]="true" formControlName="assistants"
-                                    [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : 'Select Assistants'"
+                                    [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : 'SelectAssistant' | translate"
                                     [items]="assistants">
                 </dfm-input-dropdown>
               </div>
@@ -183,7 +183,7 @@
               <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                    [ngClass]="{ 'dfm-mb-32': radiologistDropdown.value?.length }">
                 <dfm-input-dropdown #radiologistDropdown size="md" label="{{'Radiologist' | translate}}"
-                                    placeholder="{{'SelectRadiologist' | translate}}"
+                                    placeholder="{{'SelectRadiologist'| translate}}"
                                     [multiple]="true" formControlName="radiologists"
                                     [placeholder]="!!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : 'Select Radiologists' | translate"
                                     [items]="radiologists">
@@ -318,7 +318,7 @@
                      *ngIf="[1,2,3,4].includes(getFormArrayName(controlArray))"
                      class="d-flex flex-column dfm-gap-16 flex-1">
               <span
-                class="text-sm font-weight-semi-bold w-fit">{{ getFormArrayName(controlArray) | weekdayToName }}</span>
+                class="text-sm font-weight-semi-bold w-fit">{{ getFormArrayName(controlArray) | weekdayToName | translate}}</span>
 
                   <div [formGroupName]="i" *ngFor="let controls of controlArray.controls; let i = index;"
                        class="d-flex flex-column dfm-gap-16 flex-1 min-w-128">
@@ -336,7 +336,7 @@
                                                 label="{{'StartTime' | translate}}"
                                                 formControlName="dayStart"
                                                 size="md"
-                                                placeholder="hh:mm">
+                                                placeholder="{{'hh:mm' | translate}}">
                             </dfm-input-dropdown>
                           </div>
 
@@ -357,7 +357,7 @@
                                                 label="{{'EndTime' | translate}}"
                                                 formControlName="dayEnd"
                                                 size="md"
-                                                placeholder="hh:mm">
+                                                placeholder="{{'hh:mm' | translate}}">
                             </dfm-input-dropdown>
                           </div>
 
@@ -415,10 +415,10 @@
                                                 [typeToSearchText]="start.value"
                                                 (searchInput)="handleTimeInput($event,controls?.get('dayStart'),controls?.get('startTimings'), start)"
                                                 (focusout)="handleTimeFocusOut(start.search, controls?.get('dayStart'))"
-                                                label="Start Time"
+                                                label="{{'StartTime' | translate}}"
                                                 formControlName="dayStart"
                                                 size="md"
-                                                placeholder="hh:mm">
+                                                placeholder="{{'hh:mm' | translate}}">
                             </dfm-input-dropdown>
                           </div>
 
@@ -435,10 +435,10 @@
                                                 [typeToSearchText]="end.value"
                                                 (searchInput)="handleTimeInput($event, controls?.get('dayEnd'), controls?.get('endTimings'), end)"
                                                 (focusout)="handleTimeFocusOut(end.search, controls?.get('dayEnd'))"
-                                                label="End Time"
+                                                label="{{'EndTime' | translate}}"
                                                 formControlName="dayEnd"
                                                 size="md"
-                                                placeholder="hh:mm">
+                                                placeholder="{{'hh:mm' | translate}}">
                             </dfm-input-dropdown>
                           </div>
 

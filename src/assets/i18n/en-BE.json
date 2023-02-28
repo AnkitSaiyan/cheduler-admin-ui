@@ -231,5 +231,23 @@
   "Low": "Low",
   "yyyy-mm-dd": "yyyy-mm-dd",
   "StartTimeSmallerEndTime": "Start Time should be smaller than End Time",
-  "EndTimeGreaterTime": "End Time should be greater than Start Time"
+  "EndTimeGreaterTime": "End Time should be greater than Start Time",
+  "Dashboard": "Dashboard",
+  "Appointment": "Appointment",
+  "Configuration": "Configuration",
+  "Profile": "Profile",
+  "PrioritySlots": "Priority Slots",
+  "SiteManagementNav": "Site Management",
+  "AppliedOn": "Applied On",
+  "Pending": "Pending",
+  "Approved": "Approved",
+  "Canceled": "Canceled",
+  "hh:mm": "hh:mm",
+  "dateFormat": "yyyy-mm-dd",
+  "AbsenceDetails": "Absence Details",
+  "Assistant": "Assistant",
+  "ExamAvailabilityInfo": "Exam Availability Info",
+  "ExamAvailabilityData": "Exam Availability Data"
+
+
 }
