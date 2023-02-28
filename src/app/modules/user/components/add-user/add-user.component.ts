@@ -83,7 +83,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
   public closeModal(res: boolean) {
     this.modalSvc.close(res);
-    this.ngOnDestroy();
+    // this.ngOnDestroy();
   }
 
   public saveUser() {
@@ -101,7 +101,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     if (
       [UserType.Scheduler, UserType.Secretary].includes(this.formValues.userType) ||
-      [UserType.Scheduler, UserType.Secretary].includes(this.modalData.userDetails.userType)
+      [UserType.Scheduler, UserType.Secretary].includes(this.modalData?.userDetails?.userType)
     ) {
       addUserReqData = {
         ...addUserReqData,

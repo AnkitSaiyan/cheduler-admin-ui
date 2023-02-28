@@ -62,7 +62,7 @@
             placeholder="{{'EnterEmail' | translate}}"
             formControlName="email" (focusout)="handleEmailInput($event)">
           </dfm-input>
-          <small *ngIf="addUserForm.get('email')?.hasError('email')" class="validation-error">{{'InavlidEmail' | translate}}</small>
+          <small *ngIf="addUserForm.get('email')?.hasError('email')" class="validation-error">{{'InvalidEmail' | translate}}</small>
         </div>
 
         <dfm-input #phone [dfmNumberInput]="phone" class="flex-1" size="md" placeholder="{{'EnterTelephone' | translate}}"
