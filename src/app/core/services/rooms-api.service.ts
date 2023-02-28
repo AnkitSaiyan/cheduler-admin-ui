@@ -1,10 +1,16 @@
-import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
-import { BaseResponse } from 'src/app/shared/models/base-response.model';
-import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { AddRoomRequestData, Room, RoomsGroupedByType, RoomType, UpdateRoomPlaceInAgendaRequestData } from '../../shared/models/rooms.model';
-import { ChangeStatusRequestData } from '../../shared/models/status.model';
+import {Injectable} from '@angular/core';
+import {combineLatest, map, Observable, of, startWith, Subject, switchMap, tap} from 'rxjs';
+import {BaseResponse} from 'src/app/shared/models/base-response.model';
+import {environment} from 'src/environments/environment';
+import {HttpClient} from '@angular/common/http';
+import {
+  AddRoomRequestData,
+  Room,
+  RoomsGroupedByType,
+  RoomType,
+  UpdateRoomPlaceInAgendaRequestData
+} from '../../shared/models/rooms.model';
+import {ChangeStatusRequestData, Status} from '../../shared/models/status.model';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +31,8 @@ export class RoomsApiService {
 
   private readonly roomUrl = `${environment.serverBaseUrl}/room`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   public get rooms$(): Observable<Room[]> {
     return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllRooms()));
@@ -65,7 +72,7 @@ export class RoomsApiService {
   }
 
   public editRoom$(requestData: AddRoomRequestData): Observable<Room> {
-    const { id, ...restData } = requestData;
+    const {id, ...restData} = requestData;
     return this.http.put<BaseResponse<Room>>(`${this.roomUrl}/${id}`, restData).pipe(
       map((response) => response.data),
       tap(() => this.refreshRooms$$.next()),
@@ -86,8 +93,12 @@ export class RoomsApiService {
   public get roomsGroupedByType$(): Observable<RoomsGroupedByType> {
     return this.rooms$.pipe(
       map((rooms) => {
-        const roomsGroupedByType: RoomsGroupedByType = { private: [], public: [] };
+        const roomsGroupedByType: RoomsGroupedByType = {private: [], public: []};
         rooms.forEach((room) => {
+          if (room.status === Status.Inactive) {
+            return;
+          }
+          
           if (room.type === RoomType.Public) {
             roomsGroupedByType.public.push(room);
           } else if (room.type === RoomType.Private) {
