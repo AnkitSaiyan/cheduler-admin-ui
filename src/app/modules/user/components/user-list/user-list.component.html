@@ -73,7 +73,7 @@
         <dfm-table-body-cell>{{ item.telephone | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <span *ngIf="[userType.Scheduler, userType.General, userType.Secretary].includes(item.userType)">
-            {{ item.userType | titlecase }} User
+            {{ item.userType === 'General'? ('GeneralUser' | translate) : ('SchedulerUser' | translate) | titlecase }}
           </span>
         </dfm-table-body-cell>
 
