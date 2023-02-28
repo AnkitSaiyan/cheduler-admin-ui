@@ -28,6 +28,7 @@ export interface Appointment {
   userId: number;
   examList: number[];
   exams: Exam[];
+  apmtId: number;
 }
 
 export interface AddAppointmentRequestData {
