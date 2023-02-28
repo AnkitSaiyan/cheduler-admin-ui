@@ -11,7 +11,7 @@
     <dfm-input
       class="flex-1 pr-li-search"
       size="md"
-      placeholder="Search by Priority Slots"
+      placeholder="{{'SearchByPrioritySlots' | translate}}"
       icon="search-sm"
       [formControl]="searchControl"
     ></dfm-input>
@@ -31,7 +31,7 @@
           [items]="downloadItems"
           [showDescription]="false"
           [formControl]="downloadDropdownControl"
-          placeholder="Download"
+          placeholder="{{'Download' | translate}}"
           size="md"
         ></dfm-input-dropdown>
       </div>
@@ -44,7 +44,7 @@
         class="text-nowrap"
         [disabled]="false"
         (click)="openAddPriorityModal()"
-      >Add Priority Slots
+      >{{"AddPrioritySlots" | translate}}
       </dfm-button>
     </div>
   </section>
@@ -62,14 +62,14 @@
     <dfm-table [items]="prioritySlots" [rowClickable]="true" (rowClicked)="navigateToViewAbsence($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
-        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
       </ng-template>
 
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-body-cell>{{ item.startedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ (item.endedAt) ? (item.endedAt| date: 'dd/MM/yyyy, HH:mm') : (item.startedAt  | date: 'dd/MM/yyyy,') }} {{(!item.endedAt) ? item.slotEndTime.slice(0, -3) : ''}}</dfm-table-body-cell>
         <dfm-table-body-cell>
-          <div class="text-truncate pr-li-info-cell"> {{ item.priority | dashIfNothing }} </div>
+          <div class="text-truncate pr-li-info-cell"> {{ item.priority | dashIfNothing | translate }} </div>
         </dfm-table-body-cell>
 
         <dfm-table-body-cell>
@@ -78,7 +78,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="pencil-02"
-              ngbPopover="Edit" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); openAddPriorityModal(item);"
             ></dfm-button>
@@ -87,7 +87,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
-              ngbPopover="Delete" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); deletePrioritySlot(item.id)"
             ></dfm-button>
@@ -128,7 +128,7 @@
       </ng-template>
     </dfm-table>
     <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!prioritySlots.length">
-      No data found
+      {{"NoDataFound" | translate}}
     </div>
   </section>
   <!-- <div ngbDropdown #optionsMenu="ngbDropdown">
