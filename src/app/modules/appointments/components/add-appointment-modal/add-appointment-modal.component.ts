@@ -111,7 +111,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
         this.shareDataSvc.setDate(newDate);
       });
 
-    this.examApiService.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
+    this.examApiService.allExams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
       this.examList = this.nameValuePipe.transform(exams, 'name', 'id', 'expensive');
     });
 

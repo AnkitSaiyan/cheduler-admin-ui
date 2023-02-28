@@ -98,7 +98,7 @@ export class RoomsApiService {
           if (room.status === Status.Inactive) {
             return;
           }
-          
+
           if (room.type === RoomType.Public) {
             roomsGroupedByType.public.push(room);
           } else if (room.type === RoomType.Private) {

@@ -215,9 +215,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
               day: new Date(absenceDetails.endedAt).getDate(),
             }
           : null,
-        [],
+        [Validators.required],
       ],
-      endTime: [endTime, []],
+      endTime: [endTime, [Validators.required]],
       isRepeat: [!!absenceDetails?.isRepeat, []],
       isHoliday: [!!absenceDetails?.isHoliday, []],
       repeatType: [absenceDetails?.repeatType ?? null, []],
@@ -439,27 +439,27 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   private handleTimeChange() {
-    if (!this.formValues.startTime || !this.formValues.startedAt?.day || !this.formValues.endTime) {
+    if (!this.formValues.startTime || !this.formValues.startedAt?.day || !this.formValues.endTime || !this.formValues.endTime) {
       return;
     }
 
     const { startedAt, endedAt, startTime, endTime } = this.formValues;
 
-    if (!this.formValues.isRepeat) {
-      if (timeToNumber(startTime) >= timeToNumber(endTime)) {
-        toggleControlError(this.absenceForm.get('startTime'), 'time');
-        toggleControlError(this.absenceForm.get('endTime'), 'time');
-      } else {
-        toggleControlError(this.absenceForm.get('startTime'), 'time', false);
-        toggleControlError(this.absenceForm.get('endTime'), 'time', false);
-      }
-
-      return;
-    }
-
-    if (!endedAt) {
-      return;
-    }
+    // if (!this.formValues.isRepeat) {
+    //   if (timeToNumber(startTime) >= timeToNumber(endTime)) {
+    //     toggleControlError(this.absenceForm.get('startTime'), 'time');
+    //     toggleControlError(this.absenceForm.get('endTime'), 'time');
+    //   } else {
+    //     toggleControlError(this.absenceForm.get('startTime'), 'time', false);
+    //     toggleControlError(this.absenceForm.get('endTime'), 'time', false);
+    //   }
+    //
+    //   return;
+    // }
+    //
+    // if (!endedAt) {
+    //   return;
+    // }
 
     if (startedAt.day === endedAt.day && startedAt.month === endedAt.month && startedAt.year === endedAt.year) {
       if (timeToNumber(startTime) >= timeToNumber(endTime)) {
