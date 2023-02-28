@@ -229,5 +229,7 @@
   "AbsenceDetails": "Details afwezigheid",
   "Assistant": "Assistent",
   "ExamAvailabilityInfo": "Info Examen Beschikbaarheid",
-  "ExamAvailabilityData": "Gegevens Examen Beschikbaarheid"
+  "ExamAvailabilityData": "Gegevens Examen Beschikbaarheid",
+  "ExamDeletedSuccessfully": "Onderzoek succesvol verwijderd",
+  "AreYouSureWantToDeleteAppointment": "Ben je zeker dat je deze afspraak wil verwijderen?"
 }
