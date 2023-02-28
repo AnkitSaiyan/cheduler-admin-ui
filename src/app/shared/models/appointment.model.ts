@@ -29,6 +29,7 @@ export interface Appointment {
   examList: number[];
   exams: Exam[];
   apmtId: number;
+  isCombineExam: boolean;
 }
 
 export interface AddAppointmentRequestData {

@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -248,6 +248,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     return this.appointmentForm?.value;
   }
 
+  public getSlotData(reqData: AppointmentSlotsRequestData) {
+    return this.appointmentApiSvc.getSlots$(reqData);
+  }
+
   private createForm(): void {
     // console.log(appointment?.doctorId);
     this.appointmentForm = this.fb.group({
@@ -289,26 +293,56 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       }
     }
 
-    this.appointmentForm.patchValue({
-      patientFname: appointment?.patientFname ?? null,
-      patientLname: appointment?.patientLname ?? null,
-      patientTel: appointment?.patientTel ?? null,
-      patientEmail: appointment?.patientEmail ?? null,
-      doctorId: appointment?.doctorId?.toString() ?? null,
-      startedAt: dateObj,
-      examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
-      userId: appointment?.userId?.toString() ?? null,
-      comments: appointment?.comments ?? null,
-      approval: appointment?.approval ?? AppointmentStatus.Pending,
-    });
+    this.appointmentForm.patchValue(
+      {
+        patientFname: appointment?.patientFname ?? null,
+        patientLname: appointment?.patientLname ?? null,
+        patientTel: appointment?.patientTel ?? null,
+        patientEmail: appointment?.patientEmail ?? null,
+        doctorId: appointment?.doctorId?.toString() ?? null,
+        startedAt: dateObj,
+        examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
+        userId: appointment?.userId?.toString() ?? null,
+        comments: appointment?.comments ?? null,
+        approval: appointment?.approval ?? AppointmentStatus.Pending,
+      },
+      { emitEvent: false },
+    );
 
-    const examId = appointment?.exams[0]?.id;
-    const timeSlot = `${appointment?.startedAt?.toString().slice(-8)}-${appointment?.endedAt?.toString().slice(-8)}`;
+    const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
 
-    if (examId) {
-      this.selectedTimeSlot[+examId] = timeSlot;
-      console.log(this.selectedTimeSlot);
-    }
+    this.getSlotData(this.createSlotRequestData(dateObj, examList))
+      .pipe(take(1))
+      .subscribe((slots) => {
+        this.setSlots(slots[0].slots);
+        this.loadingSlots$$.next(false);
+        if (appointment?.exams?.length) {
+          if (slots[0].slots[0].examId === 0) {
+            const exam = appointment.exams[0];
+            this.toggleSlotSelection({
+              examId: 0,
+              start: exam?.startedAt?.toString().slice(-8),
+              end: exam?.endedAt?.toString().slice(-8),
+            });
+          } else {
+            appointment?.exams.forEach((exam) => {
+              this.toggleSlotSelection({
+                examId: exam?.id,
+                start: exam?.startedAt?.toString().slice(-8),
+                end: exam?.endedAt?.toString().slice(-8),
+              });
+            });
+          }
+        }
+      });
+
+    // const examId = appointment?.exams[0]?.id;
+    // const timeSlot = `${appointment?.startedAt?.toString().slice(-8)}-${appointment?.endedAt?.toString().slice(-8)}`;
+
+    // if (examId) {
+    //   this.selectedTimeSlot[+examId] = timeSlot;
+    //   console.log(this.selectedTimeSlot);
+    // }
   }
 
   private createSlotRequestData(date: { day: number; month: number; year: number }, examList: number[]): AppointmentSlotsRequestData {
@@ -388,7 +422,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       if (this.appointment$$.value && this.appointment$$.value?.id) {
         requestData.id = this.appointment$$.value.id;
       }
-
+      console.log(requestData);
 
       if (this.edit) {
         this.appointmentApiSvc
@@ -484,7 +518,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   public toggleSlotSelection(slot: Slot) {
-    if (!this.isSlotAvailable(slot)) {
+    if (!this.isSlotAvailable(slot) || !slot.end || !slot.start) {
       return;
     }
     if (this.selectedTimeSlot[slot.examId] === `${slot.start}-${slot.end}`) {
