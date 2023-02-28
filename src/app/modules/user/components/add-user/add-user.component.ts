@@ -89,7 +89,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
   public saveUser() {
     if (this.addUserForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.addUserForm.markAsTouched();
+      this.addUserForm.markAllAsTouched();
       return;
     }
 
