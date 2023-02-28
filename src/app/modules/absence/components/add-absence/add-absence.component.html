@@ -68,7 +68,6 @@
                                   [items]="startTimes"
                                   [typeToSearch]="true"
                                   [typeToSearchText]="startTime.value"
-                                  label="{{formValues.isRepeat ? '' : ('StartTimeRequired' | translate)}}"
                                   (searchInput)="handleTimeInput($event, 'startTime')"
                                   formControlName="startTime"
                                   size="md"
@@ -81,10 +80,11 @@
         </div>
 
         <div class="ad-ab-to-date flex-1 max-w-5">
-          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ formValues.isRepeat ? ('Until' | translate) : ("EndTimeRequired" | translate) }} *</div>
+<!--          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ formValues.isRepeat ? ('Until' | translate) : ("EndTimeRequired" | translate) }} *</div>-->
+          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ 'Until' | translate }} *</div>
 
           <div class="d-flex align-items-start dfm-gap-16">
-            <div class="flex-1 d-flex flex-column" *ngIf="formValues.isRepeat">
+            <div class="flex-1 d-flex flex-column">
               <div class="dfm-button-group-wrapper flex-1">
                 <div class="input-as-dfm-input flex-1">
                   <input
@@ -240,7 +240,7 @@
       </div>
 
       <div>
-        <dfm-text-area label="Info *" placeholder="{{'EnterAbsenceInfo' | translate}}" formControlName="info"></dfm-text-area>
+        <dfm-text-area label="Info" placeholder="{{'EnterAbsenceInfo' | translate}}" formControlName="info"></dfm-text-area>
       </div>
       <!--      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">-->
       <!--        <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="First Name *" formControlName="firstname">-->

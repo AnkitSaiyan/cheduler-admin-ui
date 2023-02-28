@@ -20,6 +20,10 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 
   public rooms: string[] = [];
 
+  public examDetails$$ = new BehaviorSubject<any[]>([]);
+
+  public columns = ['Name', 'Expensive', 'Room', 'StartDate', 'EndDate'];
+
   constructor(
     private appointmentApiSvc: AppointmentApiService,
     private routerStateSvc: RouterStateService,
@@ -38,6 +42,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
         switchMap((appointmentID) => this.appointmentApiSvc.getAppointmentByID$(+appointmentID)),
         tap((appointment) => {
           this.appointment$$.next(appointment);
+          this.examDetails$$.next(appointment?.exams ?? []);
 
           if (appointment?.exams?.length) {
             const roomIdToName: { [key: string]: string } = {};
