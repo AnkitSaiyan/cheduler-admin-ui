@@ -222,5 +222,13 @@
   "AppliedOn": "Applied On",
   "Pending": "Pending",
   "Approved": "Approved",
-  "Canceled": "Canceled"
+  "Canceled": "Canceled",
+  "hh:mm": "hh:mm",
+  "dateFormat": "yyyy-mm-dd",
+  "AbsenceDetails": "Absence Details",
+  "Assistant": "Assistant",
+  "ExamAvailabilityInfo": "Exam Availability Info",
+  "ExamAvailabilityData": "Exam Availability Data"
+
+
 }

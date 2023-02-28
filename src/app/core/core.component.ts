@@ -73,6 +73,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     },
     links: [new NavigationProfileLink('Test Link', './', '', true)],
   };
+  
   isDutchLanguage: boolean = false;
 
   constructor(private translateService: TranslateService, private dataShareService: ShareDataService) {
@@ -81,6 +82,9 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 
   public ngOnInit(): void {
     console.log();
+    this.dataShareService.getLanguage$().subscribe((language: string)=>{
+      this.profileData.user.name = (language === ENG_BE)? "Profile": "Profiel"
+    })
   }
 
   public override ngOnDestroy() {

@@ -42,9 +42,9 @@
         <div class="d-flex flex-column dfm-gap-16 flex-1 ad-rm-form-room-type" style="width: 50%">
           <span class="text-sm font-weight-medium dfm-text-main-700">{{'RoomType' | translate}} *</span>
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-radio-button class="font-weight-normal" label="{{'Public' | translate}}" [checkedValue]="'public'" formControlName="type"
+            <dfm-radio-button class="font-weight-normal" label="{{'Public' | translate}}" [checkedValue]="'Public' | translate" formControlName="type"
                               (change)="handle($event)"></dfm-radio-button>
-            <dfm-radio-button class="font-weight-normal" label="{{'Private' | translate}}" [checkedValue]="'private'"
+            <dfm-radio-button class="font-weight-normal" label="{{'Private' | translate}}" [checkedValue]="'Private' | translate"
                               formControlName="type"></dfm-radio-button>
           </div>
           <small class="validation-error"
@@ -147,7 +147,7 @@
                                             label="{{'StartTime' | translate}}"
                                             formControlName="dayStart"
                                             size="md"
-                                            placeholder="hh:mm">
+                                            placeholder="{{'hh:mm' | translate}}">
                         </dfm-input-dropdown>
                       </div>
 
@@ -166,7 +166,7 @@
                                             label="{{'EndTime' | translate}}"
                                             formControlName="dayEnd"
                                             size="md"
-                                            placeholder="hh:mm">
+                                            placeholder="{{'hh:mm' | translate}}">
                         </dfm-input-dropdown>
                       </div>
 
@@ -223,7 +223,7 @@
                                             label="{{'StartTime' | translate}}"
                                             formControlName="dayStart"
                                             size="md"
-                                            placeholder="hh:mm">
+                                            placeholder="{{'hh:mm' | translate}}">
                         </dfm-input-dropdown>
                       </div>
 
@@ -232,7 +232,7 @@
 
                     <div class="d-flex flex-column w-full">
                       <div
-                        class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 ad-rm-time-dropdown min-w-128">
+                        class="dfm-input-dropdown-wrapper dfm -dropdown-input-pr-10 flex-1 ad-rm-time-dropdown min-w-128">
                         <dfm-input-dropdown #end
                                             [items]="controls?.get('endTimings')?.value"
                                             [typeToSearch]="true"
@@ -242,7 +242,7 @@
                                             label="{{'EndTime' | translate}}"
                                             formControlName="dayEnd"
                                             size="md"
-                                            placeholder="hh:mm">
+                                            placeholder="{{'hh:mm' | translate}}">
                         </dfm-input-dropdown>
                       </div>
 

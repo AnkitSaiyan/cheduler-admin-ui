@@ -42,7 +42,7 @@
                   <input
                     class="w-full min-w-128"
                     formControlName="startedAt"
-                    placeholder="yyyy-mm-dd"
+                    placeholder="{{'dateFormat' |translate}}"
                     ngbDatepicker
                     #startedAt="ngbDatepicker"
                   />
@@ -59,7 +59,7 @@
 
               <small class="validation-error"
                      *ngIf="absenceForm.get('startedAt')?.hasError('required') && absenceForm.get('startedAt')?.touched">
-                {{'RequiredField' | translate}}
+                {{'RequiredField'| translate}}
               </small>
             </div>
 
@@ -72,12 +72,12 @@
                                   (searchInput)="handleTimeInput($event, 'startTime')"
                                   formControlName="startTime"
                                   size="md"
-                                  placeholder="hh:mm">
+                                  placeholder="{{'hh:mm' | translate}}">
               </dfm-input-dropdown>
             </div>
           </div>
 
-          <small class="validation-error" *ngIf="startTime.control.hasError('time')">{{"StartTimeLessThanEndTime" | translate}}</small>
+          <small class="validation-error" *ngIf="startTime.control.hasError('time')">{{"RequiredField" | translate}}</small>
         </div>
 
         <div class="ad-ab-to-date flex-1 max-w-5">
@@ -122,7 +122,7 @@
                                   [required]="formValues.isRepeat"
                                   formControlName="endTime"
                                   size="md"
-                                  placeholder="hh:mm">
+                                  placeholder="{{'hh:mm' | translate}}">
               </dfm-input-dropdown>
             </div>
           </div>

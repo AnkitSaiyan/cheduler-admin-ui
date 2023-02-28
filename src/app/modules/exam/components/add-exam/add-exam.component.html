@@ -159,9 +159,9 @@
 
               <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                    [ngClass]="{ 'dfm-mb-32': assistantDropdown.value?.length }">
-                <dfm-input-dropdown #assistantDropdown size="md" label="Assistant" placeholder="{{'SelectAssistant' | translate}}"
+                <dfm-input-dropdown #assistantDropdown size="md" label="{{'Assistant' | translate}}" placeholder="{{'SelectAssistant' | translate}}"
                                     [multiple]="true" formControlName="assistants"
-                                    [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : 'Select Assistants'"
+                                    [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : 'SelectAssistant' | translate"
                                     [items]="assistants">
                 </dfm-input-dropdown>
               </div>
@@ -183,7 +183,7 @@
               <div class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                    [ngClass]="{ 'dfm-mb-32': radiologistDropdown.value?.length }">
                 <dfm-input-dropdown #radiologistDropdown size="md" label="{{'Radiologist' | translate}}"
-                                    placeholder="{{'SelectRadiologist' | translate}}"
+                                    placeholder="{{'SelectRadiologist'| translate}}"
                                     [multiple]="true" formControlName="radiologists"
                                     [placeholder]="!!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : 'Select Radiologists' | translate"
                                     [items]="radiologists">
@@ -336,7 +336,7 @@
                                                 label="{{'StartTime' | translate}}"
                                                 formControlName="dayStart"
                                                 size="md"
-                                                placeholder="hh:mm">
+                                                placeholder="{{'hh:mm' | translate}}">
                             </dfm-input-dropdown>
                           </div>
 
@@ -357,7 +357,7 @@
                                                 label="{{'EndTime' | translate}}"
                                                 formControlName="dayEnd"
                                                 size="md"
-                                                placeholder="hh:mm">
+                                                placeholder="{{'hh:mm' | translate}}">
                             </dfm-input-dropdown>
                           </div>
 
@@ -418,7 +418,7 @@
                                                 label="{{'StartTime' | translate}}"
                                                 formControlName="dayStart"
                                                 size="md"
-                                                placeholder="hh:mm">
+                                                placeholder="{{'hh:mm' | translate}}">
                             </dfm-input-dropdown>
                           </div>
 
@@ -438,7 +438,7 @@
                                                 label="{{'EndTime' | translate}}"
                                                 formControlName="dayEnd"
                                                 size="md"
-                                                placeholder="hh:mm">
+                                                placeholder="{{'hh:mm' | translate}}">
                             </dfm-input-dropdown>
                           </div>
 
