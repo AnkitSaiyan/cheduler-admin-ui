@@ -9,11 +9,12 @@ import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
-import { Statuses } from '../../../../shared/utils/const';
+import { ENG_BE, Statuses } from '../../../../shared/utils/const';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { Exam } from '../../../../shared/models/exam.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-exam-list',
@@ -61,6 +62,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
+    private shareDataService: ShareDataService
   ) {
     super();
     this.exams$$ = new BehaviorSubject<any[]>([]);
@@ -179,7 +181,9 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Exam deleted successfully');
+        this.shareDataService.getLanguage$().subscribe((language: string) => {
+          this.notificationSvc.showNotification((language === ENG_BE)? 'Exam deleted successfully': 'Onderzoek succesvol verwijderd!');
+        })
       });
   }
 
@@ -198,7 +202,10 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.shareDataService.getLanguage$().subscribe((language: string)=>{
+        
+        this.notificationSvc.showNotification(language === ENG_BE ? 'Data copied to clipboard successfully' : '');
+      })
     } catch (e) {
       this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
       this.clipboardData = '';

@@ -5,8 +5,10 @@ import { AppointmentApiService } from 'src/app/core/services/appointment-api.ser
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { ConfirmActionModalComponent, DialogData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import { ENG_BE } from 'src/app/shared/utils/const';
 import { getReadStatusEnum } from 'src/app/shared/utils/getEnums';
 
 @Component({
@@ -143,6 +145,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
     private appointmentApiSvc: AppointmentApiService,
     private modalSvc: ModalService,
     private notificationSvc: NotificationDataService,
+    private shareDataService: ShareDataService
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -195,7 +198,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Appointment?',
+        bodyText: 'AreYouSureWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
@@ -210,7 +213,9 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
       .subscribe((response) => {
         console.log('response: ', response);
         if (response) {
-          this.notificationSvc.showNotification('Appointment deleted successfully');
+          this.shareDataService.getLanguage$().subscribe((language: string)=>{
+            this.notificationSvc.showNotification(language === ENG_BE? 'Appointment deleted successfully': 'Afspraak succesvol Verwijderd!');
+          })
         }
       });
   }
