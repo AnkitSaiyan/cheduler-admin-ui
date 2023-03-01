@@ -1,23 +1,25 @@
-import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
-import { FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
-import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
-import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { getStatusEnum } from '../../../../shared/utils/getEnums';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
-import { PhysicianApiService } from '../../../../core/services/physician.api.service';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap} from 'rxjs';
+import {NotificationType, TableItem} from 'diflexmo-angular-design';
+import {FormControl} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {NgbDropdown} from '@ng-bootstrap/ng-bootstrap';
+import {ChangeStatusRequestData, Status, StatusToName} from '../../../../shared/models/status.model';
+import {ConfirmActionModalComponent, DialogData} from '../../../../shared/components/confirm-action-modal.component';
+import {SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
+import {getStatusEnum} from '../../../../shared/utils/getEnums';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {ModalService} from '../../../../core/services/modal.service';
+import {DownloadAsType, DownloadService} from '../../../../core/services/download.service';
+import {PhysicianApiService} from '../../../../core/services/physician.api.service';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
-import { Physician } from '../../../../shared/models/physician.model';
-import { PhysicianAddComponent } from '../physician-add/physician-add.component';
-import { User } from '../../../../shared/models/user.model';
+import {Physician} from '../../../../shared/models/physician.model';
+import {PhysicianAddComponent} from '../physician-add/physician-add.component';
+import {User} from '../../../../shared/models/user.model';
 import {ShareDataService} from "../../../../core/services/share-data.service";
+import {TranslatePipe} from "@ngx-translate/core";
+import {Translate} from "../../../../shared/models/translate.model";
 
 @Component({
   selector: 'dfm-physician-list',
@@ -61,6 +63,8 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public statuses = Statuses;
 
+  private selectedLang: string = ENG_BE;
+
   constructor(
     private physicianApiSvc: PhysicianApiService,
     private notificationSvc: NotificationDataService,
@@ -69,7 +73,8 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
-    private shareDataSvc: ShareDataService
+    private shareDataSvc: ShareDataService,
+    private translatePipe: TranslatePipe,
   ) {
     super();
     this.physicians$$ = new BehaviorSubject<any[]>([]);
@@ -111,12 +116,12 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         this.downloadSvc.downloadJsonAs(
           value as DownloadAsType,
           this.columns.slice(0, -1),
-          this.filteredPhysicians$$.value.map((u: User) => [u.firstname, u.lastname, u.userType, u.email, StatusToName[+u.status]]),
+          this.filteredPhysicians$$.value.map((u: User) => [u.firstname, u.lastname, u.email, Translate[StatusToName[+u.status]][this.selectedLang]]),
           'physician',
         );
 
         if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+          this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
         }
 
         this.downloadDropdownControl.setValue(null);
@@ -128,7 +133,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedPhysicianIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
+            return [...this.selectedPhysicianIDs.map((id) => ({id: +id, status: value.newStatus as number}))];
           }
           return [];
         }),
@@ -153,6 +158,8 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       });
 
     this.shareDataSvc.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe((lang) => {
+      this.selectedLang = lang;
+      this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang], Translate.Actions[lang]];
       switch (lang) {
         case ENG_BE:
           this.statuses = Statuses;
@@ -243,7 +250,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public navigateToViewPhysician(e: TableItem) {
     if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+      this.router.navigate([`./${e.id}/view`], {relativeTo: this.route});
     }
   }
 
@@ -264,10 +271,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     this.toggleMenu();
 
     const modalRef = this.modalSvc.open(SearchModalComponent, {
-      options: { fullscreen: true },
+      options: {fullscreen: true},
       data: {
         items: [
-          ...this.physicians$$.value.map(({ id, firstname, lastname, email, status }) => ({
+          ...this.physicians$$.value.map(({id, firstname, lastname, email, status}) => ({
             name: `${firstname} ${lastname}`,
             description: email,
             key: `${firstname} ${lastname} ${email} ${Statuses[+status]}`,
@@ -294,7 +301,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public openAddPhysicianModal(physicianDetails?: Physician) {
     this.modalSvc.open(PhysicianAddComponent, {
-      data: { edit: !!physicianDetails?.id, physicianDetails },
+      data: {edit: !!physicianDetails?.id, physicianDetails},
       options: {
         size: 'lg',
         centered: true,

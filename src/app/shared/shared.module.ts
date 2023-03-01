@@ -43,7 +43,7 @@ import { EmailInputDirective } from './directives/email-input.directive';
 import { NumberInputDirective } from './directives/number-input.directive';
 import { NumberArrayPipe } from './pipes/number-array.pipe';
 // eslint-disable-next-line import/order
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import {TranslateLoader, TranslateModule, TranslatePipe} from '@ngx-translate/core';
 // eslint-disable-next-line import/order
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
@@ -137,5 +137,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ClipboardModule,
     TranslateModule,
   ],
+  providers: [
+    TranslatePipe
+  ]
 })
 export class SharedModule {}

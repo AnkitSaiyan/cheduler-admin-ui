@@ -64,6 +64,7 @@ export class DownloadService {
         });
         break;
       case 'PRINT':
+        console.log(data)
         this.printPDF(headers, data);
         break;
       default:
