@@ -16,6 +16,7 @@ import { DownloadAsType, DownloadService } from '../../../../core/services/downl
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room, UpdateRoomPlaceInAgendaRequestData } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'dfm-room-list',
@@ -69,6 +70,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
+    private translate: TranslateService,
   ) {
     super();
     this.rooms$$ = new BehaviorSubject<any[]>([]);
@@ -94,6 +96,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
       );
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
+      console.log(searchText);
       if (searchText) {
         this.handleSearch(searchText.toLowerCase());
       } else {
@@ -198,10 +201,17 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     }
   }
 
-  private handleSearch(searchText: string): void {
+  private handleSearch(searchText: any): void {
     this.filteredRooms$$.next([
       ...this.rooms$$.value.filter((room) => {
-        return room.name?.toLowerCase()?.includes(searchText) || room.description?.toLowerCase()?.includes(searchText);
+        // this.translate.get(searchText).subscribe((res) => {
+        //   console.log(res);
+        // });
+        return (
+          room.name?.toLowerCase()?.includes(searchText) ||
+          room.description?.toLowerCase()?.includes(searchText) ||
+          room.type?.toLowerCase()?.includes(searchText)
+        );
       }),
     ]);
   }
