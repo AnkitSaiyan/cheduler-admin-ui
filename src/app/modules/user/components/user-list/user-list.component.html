@@ -184,7 +184,7 @@
     </dfm-table>
     <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"
          *ngIf="!users.length && (loading$$ | async) === false">
-      No user found
+      {{"NoDataFound" | translate}}
     </div>
   </section>
   <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
