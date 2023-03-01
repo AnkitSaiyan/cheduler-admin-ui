@@ -327,7 +327,8 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       return;
     }
 
-    this.submitting$$.next(true);
+
+    let valid = true;
 
     const practiceHourRequestData: PracticeAvailabilityServer[] = [
       ...controlArrays.reduce(
@@ -344,6 +345,9 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
                 },
               ];
             }
+            if (valid && ((control.value.dayStart && !control.value.dayEnd) || (control.value.dayEnd && !control.value.dayStart))) {
+              valid = false;
+            }
             return a;
           }, [] as PracticeAvailabilityServer[]),
         ],
@@ -352,6 +356,13 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     ];
 
     console.log(practiceHourRequestData);
+    if (!valid) {
+      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+      return;
+    }
+
+    this.submitting$$.next(true);
+
 
     this.practiceHourApiSvc
       .savePracticeHours$(practiceHourRequestData)
