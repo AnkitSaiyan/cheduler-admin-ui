@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+  import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -203,7 +203,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
       this.cdr.detectChanges();
       this.shareDataService.getLanguage$().subscribe((language: string)=>{
-        
+
         this.notificationSvc.showNotification(language === ENG_BE ? 'Data copied to clipboard successfully' : '');
       })
     } catch (e) {
