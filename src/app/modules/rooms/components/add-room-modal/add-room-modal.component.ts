@@ -115,6 +115,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   }
 
   private createForm(roomDetails?: Room | undefined): void {
+    console.log('test', roomDetails?.type);
     this.addRoomForm = this.fb.group({
       name: [roomDetails?.name ?? '', [Validators.required]],
       placeInAgenda: [roomDetails?.placeInAgenda, []],
@@ -126,6 +127,8 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
       practiceAvailability: this.fb.group({}),
       status: [this.modalData.edit ? roomDetails?.status : Status.Inactive, []],
     });
+
+    console.log(this.addRoomForm.value);
 
     if (roomDetails?.practiceAvailability?.length) {
       const weekdays = new Set([0, 1, 2, 3, 4, 5, 6]);
