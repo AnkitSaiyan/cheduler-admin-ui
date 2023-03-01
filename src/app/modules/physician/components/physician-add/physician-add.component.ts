@@ -73,7 +73,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       gsm: [physicianDetails?.gsm, []],
       address: [physicianDetails?.address, []],
       notifyDoctor: [!!physicianDetails?.notifyDoctor, []],
-      status: [this.modalData.edit ? !!physicianDetails?.status : false, []],
+      status: [this.modalData.edit ? !!physicianDetails?.status : true, []],
     });
   }
 
