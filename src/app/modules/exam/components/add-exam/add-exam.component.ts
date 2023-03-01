@@ -636,6 +636,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
     if (valid && this.formValues.roomsForExam?.every((room) => !room.selectRoom)) {
       this.formErrors.selectRoomErr = true;
+      valid = false;
     }
 
     if (this.formErrors.expensiveErr) {

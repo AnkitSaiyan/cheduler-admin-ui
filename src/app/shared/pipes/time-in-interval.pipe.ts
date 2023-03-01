@@ -35,13 +35,13 @@ export class TimeInIntervalPipe implements PipeTransform {
       times.push(time);
     }
 
-    if (format === 24) {
-      times.push('24:00');
-    } else if (formatted) {
-      times.push('24:00 PM');
-    } else {
-      times.push('24:00PM');
-    }
+    // if (format === 24) {
+    //   times.push('24:00');
+    // } else if (formatted) {
+    //   times.push('24:00 PM');
+    // } else {
+    //   times.push('24:00PM');
+    // }
 
     return times;
   }
