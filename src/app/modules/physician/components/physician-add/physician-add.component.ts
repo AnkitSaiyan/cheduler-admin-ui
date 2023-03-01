@@ -53,6 +53,10 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       this.modalData = data;
       this.createForm(this.modalData?.physicianDetails);
     });
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => (this.selectedLanguage = lang));
   }
 
   public override ngOnDestroy() {
@@ -112,6 +116,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
+            console.log(Translate.SuccessMessage.Updated[this.selectedLanguage]);
             this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated[this.selectedLanguage]}!`);
             this.closeModal(true);
             this.loading$$.next(false);
