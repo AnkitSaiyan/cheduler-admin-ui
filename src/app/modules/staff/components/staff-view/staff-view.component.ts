@@ -77,6 +77,10 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
       .subscribe((exams) => exams.forEach((exam) => this.examIdToNameMap.set(+exam.id, exam.name)));
   }
 
+  public override ngOnDestroy(): void {
+    super.ngOnDestroy();
+  }
+
   private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): WeekWisePracticeAvailability[] {
     const weekdayToSlotsObj: { [key: string]: TimeSlot[] } = {};
 

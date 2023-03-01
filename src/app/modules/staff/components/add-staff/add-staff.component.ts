@@ -146,28 +146,27 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     this.staffApiSvc.staffTypes$
       .pipe(
-        map((staffTypes) => staffTypes.map((staffType) => ({name: staffType, value: staffType}))),
+        map((staffTypes) => staffTypes.map((staffType) => ({ name: staffType, value: staffType }))),
         takeUntil(this.destroy$$),
       )
       .subscribe((staffTypes) => this.staffTypes$$.next(staffTypes));
 
     this.examApiSvc.exams$
       .pipe(
-        map((exams) => exams.filter((exam) => !!exam.status).map(({name, id}) => ({name, value: id.toString()}))),
+        map((exams) => exams.filter((exam) => !!exam.status).map(({ name, id }) => ({ name, value: id.toString() }))),
         takeUntil(this.destroy$$),
       )
       .subscribe((exams) => {
-        console.log('exams: ', exams);
         this.exams$$.next(exams);
       });
 
     this.addStaffForm
       ?.get('practiceAvailabilityToggle')
       ?.valueChanges.pipe(
-      filter((value: boolean) => value),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$$),
-    )
+        filter((value: boolean) => value),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$$),
+      )
       .subscribe(() => this.addPracticeAvailabilityControls());
   }
 
@@ -198,7 +197,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       const weekdays = new Set([0, 1, 2, 3, 4, 5, 6]);
 
       staffDetails.practiceAvailability.forEach((practice) => {
-        this.addStaffForm.patchValue({selectedWeekday: practice.weekday});
+        this.addStaffForm.patchValue({ selectedWeekday: practice.weekday });
         this.addPracticeAvailabilityControls(practice);
         if (weekdays.has(practice.weekday)) {
           weekdays.delete(practice.weekday);
@@ -206,11 +205,11 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       });
 
       weekdays.forEach((weekday) => {
-        this.addStaffForm.patchValue({selectedWeekday: weekday});
+        this.addStaffForm.patchValue({ selectedWeekday: weekday });
         this.addPracticeAvailabilityControls();
       });
 
-      this.addStaffForm.patchValue({selectedWeekday: Weekday.ALL});
+      this.addStaffForm.patchValue({ selectedWeekday: Weekday.ALL });
     } else {
       this.addPracticeAvailabilityControls();
     }
@@ -227,18 +226,18 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     fg.get('dayStart')
       ?.valueChanges.pipe(
-      debounceTime(0),
-      filter((time) => !!time),
-      takeUntil(this.destroy$$),
-    )
+        debounceTime(0),
+        filter((time) => !!time),
+        takeUntil(this.destroy$$),
+      )
       .subscribe((value) => this.handleError(value as string, fg.get('dayStart')));
 
     fg.get('dayEnd')
       ?.valueChanges.pipe(
-      debounceTime(0),
-      filter((time) => !!time),
-      takeUntil(this.destroy$$),
-    )
+        debounceTime(0),
+        filter((time) => !!time),
+        takeUntil(this.destroy$$),
+      )
       .subscribe((value) => this.handleError(value as string, fg.get('dayEnd')));
 
     return fg;
@@ -280,7 +279,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     const controls: FormArray[] = [];
 
     const fg = this.addStaffForm.get('practiceAvailability');
-    const {selectedWeekday} = this.formValues;
+    const { selectedWeekday } = this.formValues;
     let keys = [1, 2, 3, 4, 5, 6, 0];
 
     if (!all) {
@@ -320,7 +319,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
   public handleRadioButtonChange(toggle: boolean): void {
     //  set practice availability toggle
-    this.addStaffForm.patchValue({practiceAvailabilityToggle: toggle}, {emitEvent: false});
+    this.addStaffForm.patchValue({ practiceAvailabilityToggle: toggle }, { emitEvent: false });
 
     if (toggle) {
       this.addPracticeAvailabilityControls();
@@ -339,7 +338,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     }
 
     // const { weekday } = this.formValues;
-    this.addStaffForm.patchValue({selectedWeekday});
+    this.addStaffForm.patchValue({ selectedWeekday });
     this.addPracticeAvailabilityControls();
   }
 
@@ -360,8 +359,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
   }
 
   public saveStaff(): void {
-    console.log(this.formValues);
-
     const requiredKeys: string[] = ['firstname', 'lastname', 'email', 'userType'];
     let valid = true;
 
@@ -387,36 +384,34 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     this.submitting$$.next(true);
 
-    const {practiceAvailabilityToggle, practiceAvailability, selectedWeekday, ...rest} = this.formValues;
+    const { practiceAvailabilityToggle, practiceAvailability, selectedWeekday, ...rest } = this.formValues;
     const addStaffReqData: AddStaffRequestData = {
       ...rest,
       availabilityType: +!!practiceAvailabilityToggle,
       practiceAvailability: practiceAvailabilityToggle
         ? [
-          ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
-            (acc, formArray) => [
-              ...acc,
-              ...formArray.controls.reduce((a, control) => {
-                if (control.value.dayStart && control.value.dayEnd) {
-                  return [
-                    ...a,
-                    {
-                      weekday: control.value.weekday,
-                      dayStart: control.value.dayStart,
-                      dayEnd: control.value.dayEnd,
-                    },
-                  ];
-                }
-                return a;
-              }, [] as PracticeAvailability[]),
-            ],
-            [] as PracticeAvailability[],
-          ),
-        ]
+            ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
+              (acc, formArray) => [
+                ...acc,
+                ...formArray.controls.reduce((a, control) => {
+                  if (control.value.dayStart && control.value.dayEnd) {
+                    return [
+                      ...a,
+                      {
+                        weekday: control.value.weekday,
+                        dayStart: control.value.dayStart,
+                        dayEnd: control.value.dayEnd,
+                      },
+                    ];
+                  }
+                  return a;
+                }, [] as PracticeAvailability[]),
+              ],
+              [] as PracticeAvailability[],
+            ),
+          ]
         : [],
     };
-
-    console.log(addStaffReqData.info);
 
     if (!addStaffReqData.info) {
       delete addStaffReqData.info;
@@ -432,8 +427,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     addStaffReqData.id = Number.isNaN(+this.staffID) ? 0 : +this.staffID;
 
-    console.log(addStaffReqData);
-
     this.staffApiSvc
       .addNewStaff$(addStaffReqData)
       .pipe(takeUntil(this.destroy$$))
@@ -446,8 +439,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
           route = this.edit ? '/staff' : '../';
         }
 
-        console.log(route);
-        this.router.navigate([route], {relativeTo: this.route});
+        this.router.navigate([route], { relativeTo: this.route });
       });
   }
 
@@ -496,7 +488,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
   }
 
   public handleTimeFocusOut(time: string, control: AbstractControl | null | undefined) {
-    console.log('in');
     this.handleError(time, control);
   }
 
@@ -554,7 +545,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
   private handleSlotExistsError(controlArrays: FormArray[]) {
     controlArrays.forEach((formArray) => {
-      const {controls} = formArray;
+      const { controls } = formArray;
       if (formArray.length > 1) {
         const sortedControls = [...controls].sort((a, b) => timeToNumber(a.value.daysStart) - timeToNumber(b.value.dayStart));
 
