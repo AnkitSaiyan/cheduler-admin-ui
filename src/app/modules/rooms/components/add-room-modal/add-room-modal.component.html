@@ -18,7 +18,7 @@
       <dfm-button
         color="link"
         size="lg"
-      > {{ (modalData?.edit ? 'EditRoom' : 'AddRoom') | translate }}
+      > {{ modalData?.edit ? ('EditRoom' | translate) : ('AddRoom' | translate )}}
       </dfm-button>
     </div>
   </section>
@@ -42,9 +42,9 @@
         <div class="d-flex flex-column dfm-gap-16 flex-1 ad-rm-form-room-type" style="width: 50%">
           <span class="text-sm font-weight-medium dfm-text-main-700">{{'RoomType' | translate}} *</span>
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-radio-button class="font-weight-normal" label="{{'Public' | translate}}" [checkedValue]="'Public' | translate" formControlName="type"
+            <dfm-radio-button class="font-weight-normal" label="{{'Public' | translate}}" [checkedValue]="'Public'" formControlName="type"
                               (change)="handle($event)"></dfm-radio-button>
-            <dfm-radio-button class="font-weight-normal" label="{{'Private' | translate}}" [checkedValue]="'Private' | translate"
+            <dfm-radio-button class="font-weight-normal" label="{{'Private' | translate}}" [checkedValue]="'Private'"
                               formControlName="type"></dfm-radio-button>
           </div>
           <small class="validation-error"
