@@ -44,10 +44,13 @@ export class AppointmentApiService {
       return response.data.map((appointment) => {
         return {
           ...appointment,
-          exams: appointment.exams?.length ? appointment.exams.sort((a, b) => {
-            return new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime()
-          }) : []
-        }
+          startedAt: appointment.exams.sort((a, b) => {
+            return new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime();
+          })[0]?.startedAt,
+          endedAt: appointment.exams.sort((a, b) => {
+            return new Date(b.endedAt).getTime() - new Date(a.endedAt).getTime();
+          })[0]?.endedAt,
+        };
       });
     }));
   }

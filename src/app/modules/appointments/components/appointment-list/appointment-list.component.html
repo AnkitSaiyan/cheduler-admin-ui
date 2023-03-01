@@ -109,8 +109,8 @@
         </ng-template>
 
         <ng-template #bodyRowTemplate let-item>
-          <dfm-table-body-cell>{{ (item?.exams.length ? (item.exams[0].startedAt | date : 'y-MM-dd HH:mm') : '') | dashIfNothing }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ item?.endedAt | date : 'y-MM-dd hh:mmaa' | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ (item?.exams.length ? (item.startedAt | date : 'y-MM-dd HH:mm') : '') | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ (item?.exams.length ? (item.endedAt | date : 'y-MM-dd HH:mm') : '') | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>
             <div class="text-truncate">
               {{ item?.patientFname  | titlecase }} {{ item?.patientLname | titlecase }}
@@ -121,11 +121,11 @@
               {{ item?.doctor  | titlecase }}
             </div>
           </dfm-table-body-cell>
-          <dfm-table-body-cell>
+          <!-- <dfm-table-body-cell>
             <div class="text-truncate">
               {{ item?.exam?.name  | titlecase }}
             </div>
-          </dfm-table-body-cell>
+          </dfm-table-body-cell> -->
           <dfm-table-body-cell>{{ item.id | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.createdAt | dashIfNothing }}</dfm-table-body-cell>
 
