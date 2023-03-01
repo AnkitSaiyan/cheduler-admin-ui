@@ -122,39 +122,56 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       addUserReqData.email = null;
     }
 
+    addUserReqData.id = this.modalData?.userDetails?.id ?? 0;
+
     console.log(addUserReqData);
 
-    if (this.modalData.edit) {
-      this.userApiSvc
-        .updateStaff(addUserReqData)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe(
-          () => {
-            this.notificationSvc.showNotification(`User updated successfully`);
-            this.loading$$.next(false);
-            this.closeModal(true);
-          },
-          (err) => {
-            this.loading$$.next(false);
-            this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-          },
-        );
-    } else {
-      this.userApiSvc
-        .addNewStaff$(addUserReqData)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe(
-          () => {
-            this.notificationSvc.showNotification(`User added successfully`);
-            this.loading$$.next(false);
-            this.closeModal(true);
-          },
-          (err) => {
-            this.loading$$.next(false);
-            this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-          },
-        );
-    }
+    this.userApiSvc
+      .addNewStaff$(addUserReqData)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(
+        () => {
+          this.notificationSvc.showNotification( `User ${this.modalData.edit ? 'updated' : 'added'} successfully`);
+          this.loading$$.next(false);
+          this.closeModal(true);
+        },
+        (err) => {
+          this.loading$$.next(false);
+          this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+        },
+      );
+
+    // if (this.modalData.edit) {
+    //   this.userApiSvc
+    //     .updateStaff(addUserReqData)
+    //     .pipe(takeUntil(this.destroy$$))
+    //     .subscribe(
+    //       () => {
+    //         this.notificationSvc.showNotification(`User updated successfully`);
+    //         this.loading$$.next(false);
+    //         this.closeModal(true);
+    //       },
+    //       (err) => {
+    //         this.loading$$.next(false);
+    //         this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+    //       },
+    //     );
+    // } else {
+    //   this.userApiSvc
+    //     .addNewStaff$(addUserReqData)
+    //     .pipe(takeUntil(this.destroy$$))
+    //     .subscribe(
+    //       () => {
+    //         this.notificationSvc.showNotification(`User added successfully`);
+    //         this.loading$$.next(false);
+    //         this.closeModal(true);
+    //       },
+    //       (err) => {
+    //         this.loading$$.next(false);
+    //         this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+    //       },
+    //     );
+    // }
   }
 
   public handleEmailInput(e: Event): void {

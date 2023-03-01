@@ -1,26 +1,26 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, map, of, switchMap, takeUntil, tap } from 'rxjs';
-import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AvailabilityType, User, UserType } from '../../../../shared/models/user.model';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { UserApiService } from '../../../../core/services/user-api.service';
-import { Weekday } from '../../../../shared/models/calendar.model';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { AddStaffRequestData } from '../../../../shared/models/staff.model';
-import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, STAFF_ID, TIME_24 } from '../../../../shared/utils/const';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { PracticeAvailability } from '../../../../shared/models/practice.model';
-import { NameValue } from '../../../../shared/components/search-modal.component';
-import { Status } from '../../../../shared/models/status.model';
-import { toggleControlError } from '../../../../shared/utils/toggleControlError';
-import { checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
-import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
-import { getNumberArray } from '../../../../shared/utils/getNumberArray';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {BehaviorSubject, debounceTime, distinctUntilChanged, filter, map, of, switchMap, takeUntil, tap} from 'rxjs';
+import {BadgeColor, NotificationType} from 'diflexmo-angular-design';
+import {ActivatedRoute, Router} from '@angular/router';
+import {AvailabilityType, User, UserType} from '../../../../shared/models/user.model';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
+import {ExamApiService} from '../../../../core/services/exam-api.service';
+import {UserApiService} from '../../../../core/services/user-api.service';
+import {Weekday} from '../../../../shared/models/calendar.model';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {AddStaffRequestData} from '../../../../shared/models/staff.model';
+import {StaffApiService} from '../../../../core/services/staff-api.service';
+import {COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, STAFF_ID, TIME_24} from '../../../../shared/utils/const';
+import {RouterStateService} from '../../../../core/services/router-state.service';
+import {PracticeAvailability} from '../../../../shared/models/practice.model';
+import {NameValue} from '../../../../shared/components/search-modal.component';
+import {Status} from '../../../../shared/models/status.model';
+import {toggleControlError} from '../../../../shared/utils/toggleControlError';
+import {checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumber} from '../../../../shared/utils/time';
+import {TimeInIntervalPipe} from '../../../../shared/pipes/time-in-interval.pipe';
+import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
+import {getNumberArray} from '../../../../shared/utils/getNumberArray';
 
 interface FormValues {
   firstname: string;
@@ -146,14 +146,14 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     this.staffApiSvc.staffTypes$
       .pipe(
-        map((staffTypes) => staffTypes.map((staffType) => ({ name: staffType, value: staffType }))),
+        map((staffTypes) => staffTypes.map((staffType) => ({name: staffType, value: staffType}))),
         takeUntil(this.destroy$$),
       )
       .subscribe((staffTypes) => this.staffTypes$$.next(staffTypes));
 
     this.examApiSvc.exams$
       .pipe(
-        map((exams) => exams.filter((exam) => !!exam.status).map(({ name, id }) => ({ name, value: id.toString() }))),
+        map((exams) => exams.filter((exam) => !!exam.status).map(({name, id}) => ({name, value: id.toString()}))),
         takeUntil(this.destroy$$),
       )
       .subscribe((exams) => {
@@ -164,10 +164,10 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     this.addStaffForm
       ?.get('practiceAvailabilityToggle')
       ?.valueChanges.pipe(
-        filter((value: boolean) => value),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$$),
-      )
+      filter((value: boolean) => value),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$$),
+    )
       .subscribe(() => this.addPracticeAvailabilityControls());
   }
 
@@ -198,7 +198,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       const weekdays = new Set([0, 1, 2, 3, 4, 5, 6]);
 
       staffDetails.practiceAvailability.forEach((practice) => {
-        this.addStaffForm.patchValue({ selectedWeekday: practice.weekday });
+        this.addStaffForm.patchValue({selectedWeekday: practice.weekday});
         this.addPracticeAvailabilityControls(practice);
         if (weekdays.has(practice.weekday)) {
           weekdays.delete(practice.weekday);
@@ -206,11 +206,11 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       });
 
       weekdays.forEach((weekday) => {
-        this.addStaffForm.patchValue({ selectedWeekday: weekday });
+        this.addStaffForm.patchValue({selectedWeekday: weekday});
         this.addPracticeAvailabilityControls();
       });
 
-      this.addStaffForm.patchValue({ selectedWeekday: Weekday.ALL });
+      this.addStaffForm.patchValue({selectedWeekday: Weekday.ALL});
     } else {
       this.addPracticeAvailabilityControls();
     }
@@ -227,18 +227,18 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     fg.get('dayStart')
       ?.valueChanges.pipe(
-        debounceTime(0),
-        filter((time) => !!time),
-        takeUntil(this.destroy$$),
-      )
+      debounceTime(0),
+      filter((time) => !!time),
+      takeUntil(this.destroy$$),
+    )
       .subscribe((value) => this.handleError(value as string, fg.get('dayStart')));
 
     fg.get('dayEnd')
       ?.valueChanges.pipe(
-        debounceTime(0),
-        filter((time) => !!time),
-        takeUntil(this.destroy$$),
-      )
+      debounceTime(0),
+      filter((time) => !!time),
+      takeUntil(this.destroy$$),
+    )
       .subscribe((value) => this.handleError(value as string, fg.get('dayEnd')));
 
     return fg;
@@ -280,7 +280,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     const controls: FormArray[] = [];
 
     const fg = this.addStaffForm.get('practiceAvailability');
-    const { selectedWeekday } = this.formValues;
+    const {selectedWeekday} = this.formValues;
     let keys = [1, 2, 3, 4, 5, 6, 0];
 
     if (!all) {
@@ -320,7 +320,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
   public handleRadioButtonChange(toggle: boolean): void {
     //  set practice availability toggle
-    this.addStaffForm.patchValue({ practiceAvailabilityToggle: toggle }, { emitEvent: false });
+    this.addStaffForm.patchValue({practiceAvailabilityToggle: toggle}, {emitEvent: false});
 
     if (toggle) {
       this.addPracticeAvailabilityControls();
@@ -339,7 +339,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     }
 
     // const { weekday } = this.formValues;
-    this.addStaffForm.patchValue({ selectedWeekday });
+    this.addStaffForm.patchValue({selectedWeekday});
     this.addPracticeAvailabilityControls();
   }
 
@@ -387,32 +387,32 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     this.submitting$$.next(true);
 
-    const { practiceAvailabilityToggle, practiceAvailability, selectedWeekday, ...rest } = this.formValues;
+    const {practiceAvailabilityToggle, practiceAvailability, selectedWeekday, ...rest} = this.formValues;
     const addStaffReqData: AddStaffRequestData = {
       ...rest,
       availabilityType: +!!practiceAvailabilityToggle,
       practiceAvailability: practiceAvailabilityToggle
         ? [
-            ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
-              (acc, formArray) => [
-                ...acc,
-                ...formArray.controls.reduce((a, control) => {
-                  if (control.value.dayStart && control.value.dayEnd) {
-                    return [
-                      ...a,
-                      {
-                        weekday: control.value.weekday,
-                        dayStart: control.value.dayStart,
-                        dayEnd: control.value.dayEnd,
-                      },
-                    ];
-                  }
-                  return a;
-                }, [] as PracticeAvailability[]),
-              ],
-              [] as PracticeAvailability[],
-            ),
-          ]
+          ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
+            (acc, formArray) => [
+              ...acc,
+              ...formArray.controls.reduce((a, control) => {
+                if (control.value.dayStart && control.value.dayEnd) {
+                  return [
+                    ...a,
+                    {
+                      weekday: control.value.weekday,
+                      dayStart: control.value.dayStart,
+                      dayEnd: control.value.dayEnd,
+                    },
+                  ];
+                }
+                return a;
+              }, [] as PracticeAvailability[]),
+            ],
+            [] as PracticeAvailability[],
+          ),
+        ]
         : [],
     };
 
@@ -421,50 +421,34 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     if (!addStaffReqData.info) {
       delete addStaffReqData.info;
     }
+
     if (!addStaffReqData.address) {
       delete addStaffReqData.address;
     }
+
     if (!addStaffReqData.practiceAvailability?.length) {
       addStaffReqData.availabilityType = AvailabilityType.Unavailable;
     }
-    if (this.staffID) {
-      addStaffReqData.id = this.staffID;
-    }
+
+    addStaffReqData.id = Number.isNaN(+this.staffID) ? 0 : +this.staffID;
 
     console.log(addStaffReqData);
-    if (this.edit) {
-      this.staffApiSvc
-        .updateStaff(addStaffReqData)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`Staff updated successfully`);
-          let route: string;
-          if (this.comingFromRoute === 'view') {
-            route = '../view';
-          } else {
-            route = this.edit ? '/staff' : '../';
-          }
 
-          console.log(route);
-          this.router.navigate([route], { relativeTo: this.route });
-        });
-    } else {
-      this.staffApiSvc
-        .addNewStaff$(addStaffReqData)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`Staff updated successfully`);
-          let route: string;
-          if (this.comingFromRoute === 'view') {
-            route = '../view';
-          } else {
-            route = this.edit ? '/staff' : '../';
-          }
+    this.staffApiSvc
+      .addNewStaff$(addStaffReqData)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.notificationSvc.showNotification(`Staff ${this.staffID ? 'updated' : 'added'} successfully`);
+        let route: string;
+        if (this.comingFromRoute === 'view') {
+          route = '../view';
+        } else {
+          route = this.edit ? '/staff' : '../';
+        }
 
-          console.log(route);
-          this.router.navigate([route], { relativeTo: this.route });
-        });
-    }
+        console.log(route);
+        this.router.navigate([route], {relativeTo: this.route});
+      });
   }
 
   private isPracticeFormInvalid(controlArrays: FormArray[]): boolean {
@@ -570,7 +554,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
   private handleSlotExistsError(controlArrays: FormArray[]) {
     controlArrays.forEach((formArray) => {
-      const { controls } = formArray;
+      const {controls} = formArray;
       if (formArray.length > 1) {
         const sortedControls = [...controls].sort((a, b) => timeToNumber(a.value.daysStart) - timeToNumber(b.value.dayStart));
 
