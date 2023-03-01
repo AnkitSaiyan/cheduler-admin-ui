@@ -13,10 +13,11 @@ import { ModalService } from '../../../../core/services/modal.service';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Statuses } from '../../../../shared/utils/const';
+import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
 import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
 import { User } from '../../../../shared/models/user.model';
+import {ShareDataService} from "../../../../core/services/share-data.service";
 
 @Component({
   selector: 'dfm-physician-list',
@@ -58,6 +59,8 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public loading$$ = new BehaviorSubject(true);
 
+  public statuses = Statuses;
+
   constructor(
     private physicianApiSvc: PhysicianApiService,
     private notificationSvc: NotificationDataService,
@@ -66,6 +69,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService
   ) {
     super();
     this.physicians$$ = new BehaviorSubject<any[]>([]);
@@ -147,6 +151,17 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       .subscribe(() => {
         this.closeMenus();
       });
+
+    this.shareDataSvc.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe((lang) => {
+      switch (lang) {
+        case ENG_BE:
+          this.statuses = Statuses;
+          break;
+        case DUTCH_BE:
+          this.statuses = StatusesNL;
+          break;
+      }
+    })
   }
 
   public override ngOnDestroy() {
@@ -165,7 +180,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
           physician.firstname?.toLowerCase()?.includes(searchText) ||
           physician.lastname?.toLowerCase()?.includes(searchText) ||
           physician.email?.toLowerCase()?.includes(searchText) ||
-          Statuses[+physician.status] === searchText
+          this.statuses[+physician.status] === searchText
         );
       }),
     ]);

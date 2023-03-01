@@ -18,6 +18,7 @@ export const DUTCH_BE = 'nl-BE';
 export const COMING_FROM_ROUTE = 'comingFromRoute';
 export const EDIT = 'edit';
 export const Statuses = Object.freeze(['inactive', 'active']);
+export const StatusesNL = Object.freeze(['inactief', 'actief']);
 
 // RegExp Const
 
