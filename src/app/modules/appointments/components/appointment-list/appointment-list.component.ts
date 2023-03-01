@@ -268,8 +268,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public navigateToView(e: TableItem, appointments: Appointment[]) {
     if (e?.id) {
-      const amptId = appointments.find((item: Appointment) => item?.id === +e.id)?.apmtId;
-      this.router.navigate([`./${amptId}/view`], { relativeTo: this.route });
+      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
     }
   }
 

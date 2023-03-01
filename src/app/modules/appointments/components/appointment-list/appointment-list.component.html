@@ -126,7 +126,7 @@
               {{ item?.exam?.name  | titlecase }}
             </div>
           </dfm-table-body-cell>
-          <dfm-table-body-cell>{{ item.apmtId | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item.id | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.createdAt | dashIfNothing }}</dfm-table-body-cell>
 
           <dfm-table-body-cell>
@@ -161,7 +161,7 @@
                 size="sm"
                 trailingIcon="pencil-02"
                 (click)="$event.stopPropagation()"
-                [routerLink]="['./', item.apmtId, 'edit']"
+                [routerLink]="['./', item.id, 'edit']"
                 [state]="{ comingFromRoute: 'appointment', edit: true }"
               ></dfm-button>
 
@@ -169,7 +169,7 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="trash-01"
-                (click)="$event.stopPropagation(); deleteAppointment(item.apmtId)"
+                (click)="$event.stopPropagation(); deleteAppointment(item.id)"
               ></dfm-button>
             </div>
 
@@ -191,13 +191,13 @@
             <ng-template #actionMenu>
               <div class="ap-li-menus"
                    aria-labelledby="dropdownManual">
-                <div (click)="$event.stopPropagation()" [routerLink]="['./', item.apmtId, 'edit']"
+                <div (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"
                      [state]="{ comingFromRoute: 'appointment', edit: true }" ngbPopover="{{'Edit' | translate}}"
                      triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                   <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
                 </div>
 
-                <div (click)="$event.stopPropagation(); deleteAppointment(item.apmtId)" ngbPopover="{{'Delete' | translate}}"
+                <div (click)="$event.stopPropagation(); deleteAppointment(item.id)" ngbPopover="{{'Delete' | translate}}"
                      triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                   <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
                 </div>
