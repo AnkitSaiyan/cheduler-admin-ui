@@ -215,7 +215,7 @@
         </div>
       </ng-container>
 
-      <div class="d-flex dfm-gap-32 flex-wrap flex-1" *ngIf="!formValues.isHoliday">
+      <div class="d-flex flex-wrap flex-1 gap" *ngIf="!formValues.isHoliday">
         <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-rooms" *ngIf="roomList$$ | async as roomList">
           <dfm-input-dropdown #roomDropdown
                               [items]="roomList"
@@ -236,6 +236,9 @@
                               label="{{'Staff' | translate}}"
                               placeholder="{{!!staffDropDown.value?.length ? staffDropDown.value.length + ('Selected' | translate) : ('SelectStaff' | translate)}}">
           </dfm-input-dropdown>
+        </div>
+        <div class="w-full" style="margin-top: -24px;">
+          <small class="validation-error" *ngIf="isAbsenceStaffRoomInvalid | async">Please select either Room or Staff for Absence</small>
         </div>
       </div>
 

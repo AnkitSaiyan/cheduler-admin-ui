@@ -64,6 +64,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
   public absence$$ = new BehaviorSubject<Absence | null>(null);
 
+  public isAbsenceStaffRoomInvalid = new BehaviorSubject<boolean>(false);
+
   public modalData!: { edit: boolean; absenceID: number };
 
   public priorityType = PriorityType;
@@ -245,6 +247,15 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       });
 
     combineLatest([
+      this.absenceForm.get('userList')?.valueChanges.pipe(startWith('')),
+      this.absenceForm.get('roomList')?.valueChanges.pipe(startWith('')),
+    ])
+      .pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.isAbsenceStaffRoomInvalid.next(false);
+      });
+
+    combineLatest([
       this.absenceForm.get('startTime')?.valueChanges.pipe(startWith('')),
       this.absenceForm.get('endTime')?.valueChanges.pipe(startWith('')),
       this.absenceForm.get('startedAt')?.valueChanges.pipe(startWith('')),
@@ -262,6 +273,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public saveAbsence() {
+    let valid = true;
+    if (!this.formValues.roomList.length && !this.formValues.userList.length) {
+      valid = false;
+    }
+
     if (this.formValues.isRepeat) {
       if (this.absenceForm.invalid) {
         this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
@@ -281,6 +297,12 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
         return;
       }
+    }
+
+    if (!this.formValues.isHoliday && !valid) {
+      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+      this.isAbsenceStaffRoomInvalid.next(true);
+      return;
     }
 
     this.submitting$$.next(true);
