@@ -31,7 +31,7 @@
         </dfm-input>
       </div>
 
-      <div class="d-flex dfm-gap-32 align-items-center ad-ab-dates">
+      <div class="d-flex dfm-gap-32 ad-ab-dates">
         <div class="ad-ab-from-date flex-1 max-w-5">
           <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ formValues.isRepeat ? ('From'| translate) : ('From' | translate) }} *</div>
 
@@ -76,7 +76,11 @@
             </div>
           </div>
 
-          <small class="validation-error" *ngIf="startTime.control.hasError('time')">{{"RequiredField" | translate}}</small>
+          <!-- <small class="validation-error" *ngIf="startTime.control.hasError('time')">{{"RequiredField" | translate}}</small> -->
+          <small class="validation-error" *ngIf="endTime.control.hasError('time')">
+            {{"StartTimeLessThanEndTime" | translate}}
+          </small>
+
         </div>
 
         <div class="ad-ab-to-date flex-1 max-w-5">
@@ -126,12 +130,9 @@
               </dfm-input-dropdown>
             </div>
           </div>
-
-          <small class="validation-error" *ngIf="endTime.control.hasError('time')">
-            {{"StartTimeLessThanEndTime" | translate}}
-          </small>
         </div>
       </div>
+
 
       <div class="d-flex dfm-gap-32 flex-wrap ad-ab-radio-group">
         <div class="d-flex flex-column dfm-gap-16 flex-1 ad-ab-repeat-radio">

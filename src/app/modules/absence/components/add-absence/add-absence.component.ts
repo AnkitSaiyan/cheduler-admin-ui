@@ -292,6 +292,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         controls[key].markAsTouched();
         return controls[key].invalid;
       });
+      this.absenceForm.markAllAsTouched();
 
       if (invalid) {
         this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
