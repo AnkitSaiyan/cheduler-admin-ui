@@ -14,6 +14,7 @@ import { AppointmentStatus, ChangeStatusRequestData } from '../../shared/models/
 import { PhysicianApiService } from './physician.api.service';
 import { StaffApiService } from './staff-api.service';
 import { DashboardApiService } from './dashboard-api.service';
+import {Exam} from "../../shared/models/exam.model";
 
 @Injectable({
   providedIn: 'root',
@@ -35,7 +36,20 @@ export class AppointmentApiService {
   }
 
   private fetchAllAppointments$(): Observable<Appointment[]> {
-    return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`).pipe(map((response) => response.data));
+    return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`).pipe(map((response) => {
+      if (!response?.data?.length) {
+        return [];
+      }
+
+      return response.data.map((appointment) => {
+        return {
+          ...appointment,
+          exams: appointment.exams?.length ? appointment.exams.sort((a, b) => {
+            return new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime()
+          }) : []
+        }
+      });
+    }));
   }
 
   public changeAppointmentStatus$(requestData: ChangeStatusRequestData[]): Observable<boolean> {

@@ -109,7 +109,7 @@
         </ng-template>
 
         <ng-template #bodyRowTemplate let-item>
-          <dfm-table-body-cell>{{ item?.startedAt | date : 'y-MM-dd hh:mmaa' | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ (item?.exams.length ? (item.exams[0].startedAt | date : 'y-MM-dd HH:mm') : '') | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.endedAt | date : 'y-MM-dd hh:mmaa' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>
             <div class="text-truncate">
