@@ -94,7 +94,7 @@
                   <input
                     class="w-full min-w-128"
                     formControlName="endedAt"
-                    placeholder="yyyy-mm-dd"
+                    placeholder="{{'dateFormat' |translate}}"
                     ngbDatepicker
                     #endedAt="ngbDatepicker"
                     [minDate]="formValues.startedAt"
