@@ -147,7 +147,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged}!`);
+        this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`);
         this.clearSelected$$.next();
       });
 
@@ -198,7 +198,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       .changePhysicianStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(
-        () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged}!`),
+        () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`),
         (err) => this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER),
       );
   }
@@ -221,7 +221,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       )
       .subscribe((response) => {
         if (response) {
-          this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted}!`);
+          this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted[this.selectedLang]}!`);
         }
       });
   }
@@ -241,7 +241,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification(`${Translate.SuccessMessage.CopyToClipboard}!`);
+      this.notificationSvc.showNotification(`${Translate.SuccessMessage.CopyToClipboard[this.selectedLang]}!`);
     } catch (e) {
       this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
       this.clipboardData = '';
