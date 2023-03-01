@@ -254,4 +254,6 @@
   "yyyy-mm-dd": "jj-mm-dd",
   "StartTimeSmallerEndTime": "Begin Tijd moet eerder zijn dan Eind Tijd",
   "EndTimeGreaterTime": "Eind Tijd moet later zijn dan Begin Tijd"
+  "ExamDeletedSuccessfully": "Onderzoek succesvol verwijderd",
+  "AreYouSureWantToDeleteAppointment": "Ben je zeker dat je deze afspraak wil verwijderen?"
 }

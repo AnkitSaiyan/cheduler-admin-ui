@@ -18,9 +18,10 @@ import { formatTime } from '../../../../shared/utils/time';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { UserType } from '../../../../shared/models/user.model';
 import { AddAppointmentRequestData, Appointment, AppointmentSlotsRequestData, Slot } from '../../../../shared/models/appointment.model';
-import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX } from '../../../../shared/utils/const';
+import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { AppointmentStatus } from '../../../../shared/models/status.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
   patientFname: string;
@@ -109,6 +110,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     private routerStateSvc: RouterStateService,
     private router: Router,
     private route: ActivatedRoute,
+    private shareDataService: ShareDataService
   ) {
     super();
     this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(30))];
@@ -430,7 +432,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           .pipe(takeUntil(this.destroy$$))
           .subscribe({
             next: () => {
-              this.notificationSvc.showNotification(`Appointment updated successfully`);
+              this.shareDataService.getLanguage$().subscribe((language: string)=>{
+                this.notificationSvc.showNotification(language === ENG_BE? `Appointment updated successfully`: 'Afspraak succesvol geupdated');
+              })
               this.submitting$$.next(false);
 
               let route: string;
@@ -453,7 +457,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           .pipe(takeUntil(this.destroy$$))
           .subscribe({
             next: () => {
-              this.notificationSvc.showNotification(`Appointment saved successfully`);
+              this.shareDataService.getLanguage$().subscribe((language: string)=>{
+                this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully`: 'Appointment saved successfully');
+              })
               this.submitting$$.next(false);
 
               let route: string;

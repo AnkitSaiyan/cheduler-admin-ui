@@ -10,7 +10,7 @@ import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
-import { COMING_FROM_ROUTE, EDIT, EXAM_ID, TIME_24 } from '../../../../shared/utils/const';
+import { COMING_FROM_ROUTE, EDIT, ENG_BE, EXAM_ID, TIME_24 } from '../../../../shared/utils/const';
 import { PracticeAvailability, PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
 import { Room, RoomsGroupedByType, RoomType } from '../../../../shared/models/rooms.model';
 import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
@@ -23,6 +23,7 @@ import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pi
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { Status } from '../../../../shared/models/status.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
   name: string;
@@ -142,6 +143,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     private nameValuePipe: NameValuePairPipe,
     private timeInIntervalPipe: TimeInIntervalPipe,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService
   ) {
     super();
     const state = this.router.getCurrentNavigation()?.extras?.state;
@@ -732,7 +734,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Exam added successfully`);
+            this.shareDataSvc.getLanguage$().subscribe((language: string)=>{
+
+              this.notificationSvc.showNotification(language === ENG_BE? `Exam added successfully`: 'Onderzoek succesvol toegevoegd!');
+            })
             let route: string;
             if (this.comingFromRoute === 'view') {
               route = '../view';
@@ -755,7 +760,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Exam updated successfully`);
+            this.shareDataSvc.getLanguage$().subscribe((language: string)=>{
+            this.notificationSvc.showNotification(language === ENG_BE ? `Exam updated successfully`: 'Onderzoek succesvol geüpdated!');
+          })
             let route: string;
             if (this.comingFromRoute === 'view') {
               route = '../view';
