@@ -275,6 +275,13 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public removeSlot(controlArray: FormArray, i: number) {
+    if (controlArray.length === 1) {
+      controlArray.controls[i].patchValue({
+        dayStart: null,
+        dayEnd: null,
+      });
+      return;
+    }
     controlArray.removeAt(i);
 
     const formArrays = this.practiceHoursWeekWiseControlsArray(true);
