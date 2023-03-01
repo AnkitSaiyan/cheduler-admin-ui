@@ -276,6 +276,13 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   }
 
   public removeSlot(controlArray: FormArray, i: number) {
+    if (controlArray.length === 1) {
+      controlArray.controls[i].patchValue({
+        dayStart: null,
+        dayEnd: null,
+      });
+      return;
+    }
     controlArray.removeAt(i);
 
     const formArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
