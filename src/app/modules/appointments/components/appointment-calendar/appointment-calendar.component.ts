@@ -141,7 +141,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
     this.appointmentsGroupedByDate = {};
     this.appointmentsGroupedByDateAndTIme = {};
-    this.appointmentGroupedByDateAndRoom = {};
 
     appointments.push({} as Appointment);
     appointments.forEach((appointment, index) => {
@@ -199,19 +198,17 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
         this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
       }
     });
-
-    console.log('test', this.appointmentsGroupedByDate, this.appointmentsGroupedByDateAndTIme);
   }
 
-  private groupAppointmentByDateAndRoom(...appointments: Appointment[]) {
-    // const groupBy: {
-    //   [key: string]: {
-    //     [key: number]: {
-    //       appointment: Appointment;
-    //       exam: Exam[];
-    //     };
-    //   };
-    // } = {};
+  private groupAppointmentByDateAndRoom(...appointmentsProps: Appointment[]) {
+    const appointments: Appointment[] = [];
+    appointmentsProps.forEach((appointment: Appointment) => {
+      appointment.exams.forEach((exam) => {
+        appointments.push({ ...appointment, startedAt: exam.startedAt, endedAt: exam.endedAt, exams: [exam] });
+      });
+    });
+
+    console.log({ appointments });
 
     appointments.forEach((appointment) => {
       const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
@@ -235,5 +232,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
         });
       }
     });
+    console.log('test', this.appointmentGroupedByDateAndRoom);
   }
 }
