@@ -146,8 +146,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     appointments.push({} as Appointment);
     appointments.forEach((appointment, index) => {
       if (appointment.exams?.length) {
-        if (Object.keys(appointment).length && appointment.exams?.length) {
-          const dateString = this.datePipe.transform(new Date(appointment.exams[0].startedAt), 'd-M-yyyy');
+        if (Object.keys(appointment).length) {
+          const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
 
           if (dateString) {
             if (!this.appointmentsGroupedByDate[dateString]) {
@@ -157,13 +157,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
             if (!this.appointmentsGroupedByDateAndTIme[dateString]) {
               this.appointmentsGroupedByDateAndTIme[dateString] = [];
 
-              startDate = new Date(appointment.exams[0].startedAt);
-              endDate = new Date(appointment.exams[0].endedAt);
+              startDate = new Date(appointment.startedAt);
+              endDate = new Date(appointment.endedAt);
               // group = 0;
               sameGroup = false;
             } else {
-              const currSD = new Date(appointment.exams[0].startedAt);
-              const currED = new Date(appointment.exams[0].endedAt);
+              const currSD = new Date(appointment.startedAt);
+              const currED = new Date(appointment.endedAt);
 
               if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
                 sameGroup = true;
@@ -182,7 +182,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
               }
             }
 
-            if (!sameGroup && lastDateString) {
+            if (!sameGroup) {
               // group++;
 
               if (index !== 0) {
