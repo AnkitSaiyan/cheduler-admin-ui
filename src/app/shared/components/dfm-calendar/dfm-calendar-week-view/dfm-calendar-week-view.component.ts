@@ -267,7 +267,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     });
 
     const durationMinutes = getDurationMinutes(groupedData[0].startedAt, endDate);
-
     return durationMinutes * this.pixelsPerMin;
   }
 
@@ -277,7 +276,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     const barHeight = 1;
     const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
     const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
-
+    if (top % 20) {
+      return Math.floor(top / 20) * 20 + 20;
+    }
     return top;
   }
 

@@ -152,11 +152,15 @@ h3 {
           //top: -12px;
           //left: 64px;
 
+          &:first-child::after {
+              content: "";
+              margin-top: -4px;
+            }
           &::after {
             content: "";
             position: absolute;
             width: 100%;
-            margin-top: -4px;
+            // margin-top: -4px;
             z-index: 1;
             pointer-events: none;
             border-bottom: 1px solid var(--dfm-main-300);
@@ -173,7 +177,7 @@ h3 {
             margin-top: -20px;
             z-index: 1;
             pointer-events: none;
-            border-bottom: 1px solid var(--dfm-main-100);
+            border-bottom: 1px solid var(--dfm-main-200);
             cursor: pointer !important;
           }
 
@@ -184,7 +188,7 @@ h3 {
             margin-top: -40px;
             z-index: 1;
             pointer-events: none;
-            border-bottom: 1px solid var(--dfm-main-100);
+            border-bottom: 1px solid var(--dfm-main-200);
             cursor: pointer !important;
           }
         }
