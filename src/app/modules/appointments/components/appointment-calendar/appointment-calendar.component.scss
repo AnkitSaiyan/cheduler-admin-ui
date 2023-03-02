@@ -13,4 +13,5 @@
 
 .calendar-body {
   overflow: auto;
+  height: calc(100vh - 260px) !important;
 }
