@@ -141,6 +141,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
     this.appointmentsGroupedByDate = {};
     this.appointmentsGroupedByDateAndTIme = {};
+    this.appointmentGroupedByDateAndRoom = {};
 
     appointments.push({} as Appointment);
     appointments.forEach((appointment, index) => {
@@ -194,7 +195,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
           groupedAppointments.push(appointment);
           this.appointmentsGroupedByDate[dateString].push(appointment);
         }
-      } else {
+      } else if (lastDateString) {
         this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
       }
     });
