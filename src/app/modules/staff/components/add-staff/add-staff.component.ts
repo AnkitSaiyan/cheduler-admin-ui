@@ -218,7 +218,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       telephone: [staffDetails?.telephone, []],
       userType: [staffDetails?.userType, [Validators.required]],
       info: [staffDetails?.info, []],
-      examList: [staffDetails?.exams?.map((exam) => exam?.id?.toString()), []],
+      // examList: [staffDetails?.exams?.map((exam) => exam?.id?.toString()), []],
       status: [staffDetails?.status ?? Status.Active, []],
       selectedWeekday: [this.weekdayEnum.ALL, []],
       availabilityType: [!!staffDetails?.availabilityType, []],

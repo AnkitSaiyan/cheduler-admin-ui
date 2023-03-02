@@ -80,7 +80,7 @@
           </div>
         </div>
 
-        <div *ngIf="exams$$ | async as exams"
+        <!-- <div *ngIf="exams$$ | async as exams"
              class="position-relative dfm-input-multi-dropdown-wrapper ad-sf-exam-dropdown">
           <dfm-input-dropdown
             #examsDropdown
@@ -92,12 +92,12 @@
             [items]="exams"
             formControlName="examList"
           >
-          </dfm-input-dropdown>
+          </dfm-input-dropdown> -->
           <!--        <span *ngIf="!!examsDropdown.value?.length"-->
           <!--              class="studies-dropdown-text text-sm font-weight-medium text-center">-->
           <!--          {{ examsDropdown.value?.length }} Selected-->
           <!--        </span>-->
-        </div>
+        <!-- </div> -->
 
         <dfm-text-area size="md" placeholder="{{'EnterInfo' | translate}}" label="{{'Info' | translate}}" class="ad-sf-info-input"
                        formControlName="info"></dfm-text-area>
