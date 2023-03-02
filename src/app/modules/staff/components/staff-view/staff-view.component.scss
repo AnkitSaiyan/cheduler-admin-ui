@@ -5,6 +5,10 @@ section.sf-vw-section2 {
   }
 }
 
+.fix-height {
+  max-height: 270px;
+}
+
 @media (max-width: 1440px) {
   section.sf-vw-section2 {
     flex-wrap: wrap;
