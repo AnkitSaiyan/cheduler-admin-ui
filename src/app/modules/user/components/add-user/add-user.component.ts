@@ -11,6 +11,9 @@ import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { AddStaffRequestData } from '../../../../shared/models/staff.model';
 import { Status } from '../../../../shared/models/status.model';
 import { EMAIL_REGEX } from '../../../../shared/utils/const';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
   userType: UserType;
@@ -37,11 +40,16 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
   public loading$$ = new BehaviorSubject<boolean>(false);
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   constructor(
     private modalSvc: ModalService,
     private fb: FormBuilder,
     private notificationSvc: NotificationDataService,
     private userApiSvc: StaffApiService,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
 
@@ -52,7 +60,24 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
     });
   }
 
-  public ngOnInit(): void {}
+  public ngOnInit(): void {
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
+  }
 
   public override ngOnDestroy() {
     super.ngOnDestroy();
@@ -88,7 +113,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
   public saveUser() {
     if (this.addUserForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+      this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}`, NotificationType.WARNING);
       this.addUserForm.markAllAsTouched();
       return;
     }
@@ -131,7 +156,11 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       .pipe(takeUntil(this.destroy$$))
       .subscribe(
         () => {
-          this.notificationSvc.showNotification( `User ${this.modalData.edit ? 'updated' : 'added'} successfully`);
+          if (this.modalData.edit) {
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+          } else {
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+          }
           this.loading$$.next(false);
           this.closeModal(true);
         },

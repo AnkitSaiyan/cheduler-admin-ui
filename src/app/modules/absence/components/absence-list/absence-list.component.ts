@@ -13,6 +13,9 @@ import { ConfirmActionModalComponent, DialogData } from '../../../../shared/comp
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { Absence } from '../../../../shared/models/absence.model';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-absence-list',
@@ -38,6 +41,10 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
   public filteredAbsences$$: BehaviorSubject<any[]>;
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   constructor(
     private absenceApiSvc: AbsenceApiService,
     private notificationSvc: NotificationDataService,
@@ -47,6 +54,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     private downloadSvc: DownloadService,
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     this.absences$$ = new BehaviorSubject<any[]>([]);
@@ -93,12 +101,36 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         );
 
         if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
 
         this.downloadDropdownControl.setValue('');
 
         this.cdr.detectChanges();
+      });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        this.columns = [
+          Translate.Title[lang],
+          Translate.StartDate[lang],
+          Translate.EndDate[lang],
+          Translate.AbsenceInfo[lang],
+          Translate.Actions[lang],
+        ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
       });
   }
 
@@ -136,7 +168,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
       )
       .subscribe((res) => {
         console.log(res);
-        this.notificationSvc.showNotification('Absence deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
       });
   }
 
@@ -151,9 +183,9 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
       this.clipboardData = '';
     }
   }

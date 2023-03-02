@@ -19,6 +19,9 @@ import { toggleControlError } from '../../../../shared/utils/toggleControlError'
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { User, UserType } from 'src/app/shared/models/user.model';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
   name: string;
@@ -86,6 +89,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
   public endTimes: NameValue[];
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   public repeatEvery = {
     // daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
     weekly: [...this.getRepeatEveryItems(RepeatType.Weekly)],
@@ -118,6 +125,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     private timeInIntervalPipe: TimeInIntervalPipe,
     private nameValuePairPipe: NameValuePairPipe,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
 
@@ -161,6 +169,32 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       });
       this.radiologist$$.next(radiologist);
     });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        // this.columns = [
+        //   Translate.FirstName[lang],
+        //   Translate.LastName[lang],
+        //   Translate.Email[lang],
+        //   Translate.Telephone[lang],
+        //   Translate.Category[lang],
+        //   Translate.Status[lang],
+        //   Translate.Actions[lang],
+        // ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
   }
 
   public override ngOnDestroy() {
@@ -299,7 +333,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     console.log(this.prioritySlotForm);
     if (this.formValues.isRepeat) {
       if (this.prioritySlotForm.invalid) {
-        this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+        this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 
         Object.keys(this.prioritySlotForm.controls).map((key) => this.prioritySlotForm.get(key)?.markAsTouched());
 
@@ -313,7 +347,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       });
 
       if (invalid) {
-        this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+        this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
         return;
       }
     }
@@ -355,7 +389,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Priority Slots updated successfully`);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },
@@ -370,7 +404,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Priority Slots added successfully`);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },

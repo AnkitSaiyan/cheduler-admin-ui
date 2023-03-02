@@ -18,6 +18,9 @@ import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pi
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { formatTime, timeToNumber } from '../../../../shared/utils/time';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
   name: string;
@@ -89,6 +92,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
   public endTimes: NameValue[];
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   public repeatEvery = {
     // daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
     weekly: [...this.getRepeatEveryItems(RepeatType.Weekly)],
@@ -120,6 +127,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     private timeInIntervalPipe: TimeInIntervalPipe,
     private nameValuePairPipe: NameValuePairPipe,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
 
@@ -163,6 +171,32 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       .subscribe((staffs) => {
         this.staffs$$.next(staffs.map((staff) => ({ name: staff.firstname, value: staff.id.toString() })) as NameValue[]);
         this.cdr.detectChanges();
+      });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        // this.columns = [
+        //   Translate.FirstName[lang],
+        //   Translate.LastName[lang],
+        //   Translate.Email[lang],
+        //   Translate.Telephone[lang],
+        //   Translate.Category[lang],
+        //   Translate.Status[lang],
+        //   Translate.Actions[lang],
+        // ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
       });
   }
 
@@ -280,7 +314,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
     if (this.formValues.isRepeat) {
       if (this.absenceForm.invalid) {
-        this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+        this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 
         Object.keys(this.absenceForm.controls).map((key) => this.absenceForm.get(key)?.markAsTouched());
 
@@ -295,13 +329,13 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       this.absenceForm.markAllAsTouched();
 
       if (invalid) {
-        this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+        this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
         return;
       }
     }
 
     if (!this.formValues.isHoliday && !valid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+      this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
       this.isAbsenceStaffRoomInvalid.next(true);
       return;
     }
@@ -343,7 +377,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Absence updated successfully`);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },
@@ -358,7 +392,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Absence added successfully`);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },

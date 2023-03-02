@@ -10,6 +10,9 @@ import { ConfirmActionModalComponent, DialogData } from '../../../../shared/comp
 import { Absence, RepeatType } from '../../../../shared/models/absence.model';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-view-absence',
@@ -21,12 +24,16 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
   public repeatType = RepeatType;
 
+  private selectedLang: string = ENG_BE;
+
+
   constructor(
     private absenceApiSvc: AbsenceApiService,
     private routerStateSvc: RouterStateService,
     private notificationSvc: NotificationDataService,
     private router: Router,
     private modalSvc: ModalService,
+    private shareDataService: ShareDataService,
   ) {
     super();
   }
@@ -42,6 +49,11 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
         this.absenceDetails$$.next(absenceDetails);
         console.log(absenceDetails);
       });
+
+      this.shareDataService
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => (this.selectedLang = lang));
   }
 
   public deleteAbsence(id: number) {
@@ -65,7 +77,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Absence deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
         this.router.navigate(['/', 'absence']);
       });
   }

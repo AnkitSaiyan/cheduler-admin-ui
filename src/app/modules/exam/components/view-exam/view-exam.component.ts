@@ -9,13 +9,16 @@ import { RouterStateService } from '../../../../core/services/router-state.servi
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { EXAM_ID } from '../../../../shared/utils/const';
+import { EXAM_ID, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
 import { Exam, Uncombinables } from '../../../../shared/models/exam.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
+
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-view-exam',
@@ -41,6 +44,8 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
     secretaries: [],
   };
 
+  private selectedLang: string = ENG_BE;
+
   public practiceAvailability$$ = new BehaviorSubject<any[]>([]);
 
   public columns: Weekday[] = [Weekday.MON, Weekday.TUE, Weekday.WED, Weekday.THU, Weekday.FRI, Weekday.SAT, Weekday.SUN];
@@ -54,6 +59,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
     private notificationSvc: NotificationDataService,
     private router: Router,
     private modalSvc: ModalService,
+    private shareDataService: ShareDataService,
   ) {
     super();
   }
@@ -76,6 +82,11 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
           this.saveStaffDetails(exam.users);
         }
       });
+
+    this.shareDataService
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => (this.selectedLang = lang));
   }
 
   private saveStaffDetails(users: User[]) {
@@ -193,7 +204,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Exam deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
         this.router.navigate(['/', 'exam']);
       });
   }

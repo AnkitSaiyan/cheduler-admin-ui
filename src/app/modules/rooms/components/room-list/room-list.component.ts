@@ -17,6 +17,9 @@ import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room, UpdateRoomPlaceInAgendaRequestData } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
 import { TranslateService } from '@ngx-translate/core';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-room-list',
@@ -52,7 +55,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
   public loading$$ = new BehaviorSubject(true);
 
-  public columns: string[] = ['Name', 'Description', 'Place In Agenda', 'Type', 'Status', 'Actions'];
+  public columns: string[] = ['Name', 'Description', 'PlaceInAgenda', 'Type', 'Status', 'Actions'];
 
   public downloadItems: any[] = [];
 
@@ -61,6 +64,10 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
   public statusType = getStatusEnum();
 
   public roomPlaceInToIndexMap = new Map<number, number>();
+
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
 
   constructor(
     private roomApiSvc: RoomsApiService,
@@ -71,6 +78,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     this.rooms$$ = new BehaviorSubject<any[]>([]);
@@ -122,13 +130,13 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
             u.description,
             u.placeInAgenda.toString(),
             u.type?.toString(),
-            StatusToName[u.status],
+            Translate[StatusToName[+u.status]][this.selectedLang],
           ]),
           'rooms',
         );
 
         if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+          this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
         }
 
         this.downloadDropdownControl.setValue(null);
@@ -160,7 +168,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        this.notificationSvc.showNotification('Status has changed successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
         this.clearSelected$$.next();
       });
 
@@ -168,6 +176,31 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         this.closeMenus();
+      });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        this.columns = [
+          Translate.Name[lang],
+          Translate.Description[lang],
+          Translate.PlaceInAgenda[lang],
+          Translate.Type[lang],
+          Translate.Status[lang],
+          Translate.Actions[lang],
+        ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
       });
   }
 
@@ -220,7 +253,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     this.roomApiSvc
       .changeRoomStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
+      .subscribe(() => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]));
   }
 
   public deleteRoom(id: number) {
@@ -240,7 +273,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Room deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
       });
   }
 
@@ -260,9 +293,9 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
       this.clipboardData = '';
     }
   }

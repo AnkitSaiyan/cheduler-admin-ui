@@ -254,7 +254,10 @@
   "ExamAvailabilityInfo": "Exam Availability Info",
   "ExamAvailabilityData": "Exam Availability Data",
   "ExamDeletedSuccessfully": "Exam Deleted Successfully",
-  "AreYouSureWantToDeleteAppointment": "Are you sure you want to delete this Appointment?"
-
+  "AreYouSureWantToDeleteAppointment": "Are you sure you want to delete this Appointment?",
+  "CSV" : "CSV",
+  "Excel" : "Excel",
+  "PDF" : "PDF",
+  "Print" : "Print"
 
 }
