@@ -15,6 +15,9 @@ import { SearchModalComponent, SearchModalData } from '../../../../shared/compon
 import { User } from '../../../../shared/models/user.model';
 import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 import { AddUserComponent } from '../add-user/add-user.component';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-user-list',
@@ -58,6 +61,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   public fileName: string = '';
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   constructor(
     private userApiSvc: StaffApiService,
     private notificationSvc: NotificationDataService,
@@ -66,6 +73,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     this.users$$ = new BehaviorSubject<any[]>([]);
@@ -118,13 +126,13 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
             u.email,
             u.telephone?.toString(),
             u.userType,
-            StatusToName[u.status],
+            Translate[StatusToName[+u.status]][this.selectedLang],
           ]),
           'users',
         );
 
         if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+          this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
         }
 
         this.downloadDropdownControl.setValue(null);
@@ -151,7 +159,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        this.notificationSvc.showNotification('Status has changed successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
         this.clearSelected$$.next();
       });
 
@@ -159,6 +167,32 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         this.closeMenus();
+      });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        this.columns = [
+          Translate.FirstName[lang],
+          Translate.LastName[lang],
+          Translate.Email[lang],
+          Translate.Telephone[lang],
+          Translate.Category[lang],
+          Translate.Status[lang],
+          Translate.Actions[lang],
+        ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
       });
   }
 
@@ -190,7 +224,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       .changeUserStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(
-        () => this.notificationSvc.showNotification('Status has changed successfully'),
+        () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
         (err) => this.notificationSvc.showNotification(err, NotificationType.DANGER),
       );
   }
@@ -212,7 +246,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('User deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
       });
   }
 
@@ -234,9 +268,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(`${Translate.SuccessMessage.CopyToClipboard[this.selectedLang]}!`);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(`${Translate.ErrorMessage.CopyToClipboard[this.selectedLang]}!`, NotificationType.DANGER);
       this.clipboardData = '';
     }
   }

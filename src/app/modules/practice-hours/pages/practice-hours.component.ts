@@ -14,6 +14,9 @@ import { TimeInIntervalPipe } from '../../../shared/pipes/time-in-interval.pipe'
 import { getNumberArray } from '../../../shared/utils/getNumberArray';
 import { toggleControlError } from '../../../shared/utils/toggleControlError';
 import { TIME_24 } from '../../../shared/utils/const';
+import { Translate } from '../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { COMING_FROM_ROUTE, EDIT, EXAM_ID, ENG_BE, DUTCH_BE, Statuses, StatusesNL } from '../../../shared/utils/const';
 
 // interface TimeDistributed {
 //   hour: number;
@@ -83,6 +86,8 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
   public readonly slotExistsError: string = 'slotExists';
 
+  private selectedLang: string = ENG_BE;
+
   constructor(
     private fb: FormBuilder,
     private notificationSvc: NotificationDataService,
@@ -90,6 +95,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     private nameValuePipe: NameValuePairPipe,
     private timeInIntervalPipe: TimeInIntervalPipe,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
   }
@@ -105,6 +111,23 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
     this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
     this.filteredTimings = [...this.timings];
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        // this.columns = [
+        //   Translate.FirstName[lang],
+        //   Translate.LastName[lang],
+        //   Translate.Email[lang],
+        //   Translate.Telephone[lang],
+        //   Translate.Category[lang],
+        //   Translate.Status[lang],
+        //   Translate.Actions[lang],
+        // ];
+
+        // eslint-disable-next-line default-case
+      });
   }
 
   public override ngOnDestroy() {
@@ -323,7 +346,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     const controlArrays: FormArray[] = this.practiceHoursWeekWiseControlsArray(true);
 
     if (this.isFormInvalid(controlArrays)) {
-      this.notificationSvc.showNotification('Form is not valid.', NotificationType.WARNING);
+      this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang], NotificationType.WARNING);
       return;
     }
 
@@ -369,7 +392,11 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       .pipe(takeUntil(this.destroy$$))
       .subscribe(
         () => {
-          this.notificationSvc.showNotification(`${this.practiceHoursData$$.value?.length ? 'Changes updated' : 'Saved'} successfully`);
+          if (this.practiceHoursData$$.value?.length) {
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+          } else {
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+          }
           this.submitting$$.next(false);
         },
         () => this.submitting$$.next(false),

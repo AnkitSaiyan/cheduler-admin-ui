@@ -13,6 +13,9 @@ import { getUserTypeEnum } from 'src/app/shared/utils/getEnums';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { RepeatType } from 'src/app/shared/models/absence.model';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-view-priority-slots',
@@ -26,12 +29,16 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
 
   public repeatType = RepeatType;
 
+  private selectedLang: string = ENG_BE;
+
+
   constructor(
     private routerStateSvc: RouterStateService,
     private notificationSvc: NotificationDataService,
     private router: Router,
     private modalSvc: ModalService,
-    private priorityApiSvc: PrioritySlotApiService
+    private priorityApiSvc: PrioritySlotApiService,
+    private shareDataService: ShareDataService,
   ) {
     super();
   }
@@ -44,6 +51,11 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
         takeUntil(this.destroy$$),
       )
       .subscribe((priorityDetails) => this.prioritySlotDetails$$.next(priorityDetails));
+
+      this.shareDataService
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => (this.selectedLang = lang));
   }
 
   public deletePriority(id: any) {
@@ -63,7 +75,7 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Priority Slot deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
         this.router.navigate(['/', 'priority-slots']);
       });
   }

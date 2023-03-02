@@ -1,25 +1,25 @@
-import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap} from 'rxjs';
-import {NotificationType, TableItem} from 'diflexmo-angular-design';
-import {FormControl} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
-import {NgbDropdown} from '@ng-bootstrap/ng-bootstrap';
-import {ChangeStatusRequestData, Status, StatusToName} from '../../../../shared/models/status.model';
-import {ConfirmActionModalComponent, DialogData} from '../../../../shared/components/confirm-action-modal.component';
-import {SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
-import {getStatusEnum} from '../../../../shared/utils/getEnums';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {ModalService} from '../../../../core/services/modal.service';
-import {DownloadAsType, DownloadService} from '../../../../core/services/download.service';
-import {PhysicianApiService} from '../../../../core/services/physician.api.service';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
-import {Physician} from '../../../../shared/models/physician.model';
-import {PhysicianAddComponent} from '../physician-add/physician-add.component';
-import {User} from '../../../../shared/models/user.model';
-import {ShareDataService} from "../../../../core/services/share-data.service";
-import {TranslatePipe} from "@ngx-translate/core";
-import {Translate} from "../../../../shared/models/translate.model";
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
+import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
+import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
+import { getStatusEnum } from '../../../../shared/utils/getEnums';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
+import { PhysicianApiService } from '../../../../core/services/physician.api.service';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Physician } from '../../../../shared/models/physician.model';
+import { PhysicianAddComponent } from '../physician-add/physician-add.component';
+import { User } from '../../../../shared/models/user.model';
+import { ShareDataService } from '../../../../core/services/share-data.service';
+import { TranslatePipe } from '@ngx-translate/core';
+import { Translate } from '../../../../shared/models/translate.model';
 
 @Component({
   selector: 'dfm-physician-list',
@@ -133,7 +133,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedPhysicianIDs.map((id) => ({id: +id, status: value.newStatus as number}))];
+            return [...this.selectedPhysicianIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
           }
           return [];
         }),
@@ -157,18 +157,22 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         this.closeMenus();
       });
 
-    this.shareDataSvc.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe((lang) => {
-      this.selectedLang = lang;
-      this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang], Translate.Actions[lang]];
-      switch (lang) {
-        case ENG_BE:
-          this.statuses = Statuses;
-          break;
-        case DUTCH_BE:
-          this.statuses = StatusesNL;
-          break;
-      }
-    })
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang], Translate.Actions[lang]];
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
   }
 
   public override ngOnDestroy() {
@@ -241,16 +245,16 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification(`${Translate.SuccessMessage.CopyToClipboard[this.selectedLang]}!`);
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
       this.clipboardData = '';
     }
   }
 
   public navigateToViewPhysician(e: TableItem) {
     if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], {relativeTo: this.route});
+      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
     }
   }
 
@@ -271,10 +275,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     this.toggleMenu();
 
     const modalRef = this.modalSvc.open(SearchModalComponent, {
-      options: {fullscreen: true},
+      options: { fullscreen: true },
       data: {
         items: [
-          ...this.physicians$$.value.map(({id, firstname, lastname, email, status}) => ({
+          ...this.physicians$$.value.map(({ id, firstname, lastname, email, status }) => ({
             name: `${firstname} ${lastname}`,
             description: email,
             key: `${firstname} ${lastname} ${email} ${Statuses[+status]}`,
@@ -301,7 +305,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public openAddPhysicianModal(physicianDetails?: Physician) {
     this.modalSvc.open(PhysicianAddComponent, {
-      data: {edit: !!physicianDetails?.id, physicianDetails},
+      data: { edit: !!physicianDetails?.id, physicianDetails },
       options: {
         size: 'lg',
         centered: true,

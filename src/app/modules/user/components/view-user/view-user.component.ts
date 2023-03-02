@@ -11,6 +11,9 @@ import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { User } from '../../../../shared/models/user.model';
 import { getUserTypeEnum } from '../../../../shared/utils/getEnums';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-view-user',
@@ -22,12 +25,16 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
 
   public userType = getUserTypeEnum();
 
+  private selectedLang: string = ENG_BE;
+
+
   constructor(
     private userApiSvc: StaffApiService,
     private routerStateSvc: RouterStateService,
     private notificationSvc: NotificationDataService,
     private router: Router,
     private modalSvc: ModalService,
+    private shareDataService: ShareDataService,
   ) {
     super();
   }
@@ -40,6 +47,11 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe((userDetails) => this.userDetails$$.next(userDetails));
+
+      this.shareDataService
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => (this.selectedLang = lang));
   }
 
   public deleteUser(id: number) {
@@ -59,7 +71,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('User deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
         this.router.navigate(['/', 'user']);
       });
   }

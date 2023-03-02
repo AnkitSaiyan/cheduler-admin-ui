@@ -47,8 +47,8 @@
   "AddRoom": "Zaal toevoegen",
   "EditRoom": "Zaal bewerken",
   "Description": "Beschrijving",
-  "Place In Agenda": "Plaats in agenda",
-  "Type": "Type",
+  "Place In Agenda":"Plaats in agenda",
+  "Type":"Vul in",
   "ChangeStatus": "Wijzigen status",
   "RoomName": "Zaal naam",
   "RoomType": "Type zaal",
@@ -255,6 +255,10 @@
   "StartTimeSmallerEndTime": "Begin Tijd moet eerder zijn dan Eind Tijd",
   "EndTimeGreaterTime": "Eind Tijd moet later zijn dan Begin Tijd",
   "ExamDeletedSuccessfully": "Onderzoek succesvol verwijderd",
-  "AreYouSureWantToDeleteAppointment": "Ben je zeker dat je deze afspraak wil verwijderen?"
+  "AreYouSureWantToDeleteAppointment": "Ben je zeker dat je deze afspraak wil verwijderen?",
+  "CSV" : "CSV",
+  "Excel" : "Excel",
+  "PDF" : "PDF",
+  "Print" : "Afdrukken"
 }
 

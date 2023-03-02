@@ -14,6 +14,9 @@ import { ConfirmActionModalComponent, DialogData } from '../../../../shared/comp
 import { ModalService } from '../../../../core/services/modal.service';
 import { AddStaffComponent } from '../add-staff/add-staff.component';
 import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface TimeSlot {
   id?: number;
@@ -44,6 +47,8 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 
   public practiceAvailability$$ = new BehaviorSubject<any[]>([]);
 
+  private selectedLang: string = ENG_BE;
+
   public columns: Weekday[] = [Weekday.MON, Weekday.TUE, Weekday.WED, Weekday.THU, Weekday.FRI, Weekday.SAT, Weekday.SUN];
 
   constructor(
@@ -53,6 +58,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     private notificationSvc: NotificationDataService,
     private router: Router,
     private modalSvc: ModalService,
+    private shareDataService: ShareDataService,
   ) {
     super();
   }
@@ -75,6 +81,11 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     this.examApiSvc.exams$
       .pipe(takeUntil(this.destroy$$))
       .subscribe((exams) => exams.forEach((exam) => this.examIdToNameMap.set(+exam.id, exam.name)));
+
+      this.shareDataService
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => (this.selectedLang = lang));
   }
 
   public override ngOnDestroy(): void {
@@ -155,7 +166,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Staff?',
+        bodyText: 'AreyousureyouwanttodeletethisStaff?',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
@@ -168,7 +179,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Staff deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
         this.router.navigate(['/', 'staff']);
       });
   }

@@ -1,27 +1,29 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {BehaviorSubject, debounceTime, distinctUntilChanged, filter, map, of, switchMap, takeUntil, tap} from 'rxjs';
-import {BadgeColor, NotificationType} from 'diflexmo-angular-design';
-import {ActivatedRoute, Router} from '@angular/router';
-import {AvailabilityType, User, UserType} from '../../../../shared/models/user.model';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {ExamApiService} from '../../../../core/services/exam-api.service';
-import {UserApiService} from '../../../../core/services/user-api.service';
-import {Weekday} from '../../../../shared/models/calendar.model';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {AddStaffRequestData} from '../../../../shared/models/staff.model';
-import {StaffApiService} from '../../../../core/services/staff-api.service';
-import {COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, STAFF_ID, TIME_24} from '../../../../shared/utils/const';
-import {RouterStateService} from '../../../../core/services/router-state.service';
-import {PracticeAvailability} from '../../../../shared/models/practice.model';
-import {NameValue} from '../../../../shared/components/search-modal.component';
-import {Status} from '../../../../shared/models/status.model';
-import {toggleControlError} from '../../../../shared/utils/toggleControlError';
-import {checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumber} from '../../../../shared/utils/time';
-import {TimeInIntervalPipe} from '../../../../shared/pipes/time-in-interval.pipe';
-import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
-import {getNumberArray} from '../../../../shared/utils/getNumberArray';
-
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, map, of, switchMap, takeUntil, tap } from 'rxjs';
+import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AvailabilityType, User, UserType } from '../../../../shared/models/user.model';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { ExamApiService } from '../../../../core/services/exam-api.service';
+import { UserApiService } from '../../../../core/services/user-api.service';
+import { Weekday } from '../../../../shared/models/calendar.model';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { AddStaffRequestData } from '../../../../shared/models/staff.model';
+import { StaffApiService } from '../../../../core/services/staff-api.service';
+import { COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, STAFF_ID, TIME_24 } from '../../../../shared/utils/const';
+import { RouterStateService } from '../../../../core/services/router-state.service';
+import { PracticeAvailability } from '../../../../shared/models/practice.model';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { Status } from '../../../../shared/models/status.model';
+import { toggleControlError } from '../../../../shared/utils/toggleControlError';
+import { checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { getNumberArray } from '../../../../shared/utils/getNumberArray';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 interface FormValues {
   firstname: string;
   lastname: string;
@@ -82,6 +84,10 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
   public readonly slotExistsError: string = 'slotExists';
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   constructor(
     private fb: FormBuilder,
     private userApiSvc: UserApiService,
@@ -94,6 +100,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     private nameValuePipe: NameValuePairPipe,
     private timeInIntervalPipe: TimeInIntervalPipe,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     const state = this.router.getCurrentNavigation()?.extras?.state;
@@ -168,6 +175,32 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe(() => this.addPracticeAvailabilityControls());
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        // this.columns = [
+        //   Translate.FirstName[lang],
+        //   Translate.LastName[lang],
+        //   Translate.Email[lang],
+        //   Translate.Telephone[lang],
+        //   Translate.Category[lang],
+        //   Translate.Status[lang],
+        //   Translate.Actions[lang],
+        // ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
   }
 
   public override ngOnDestroy() {
@@ -385,7 +418,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     }
 
     if (!valid) {
-      this.notificationSvc.showNotification('Form is not valid.', NotificationType.WARNING);
+      this.notificationSvc.showNotification(Translate.FormInvalidSimple[this.selectedLang], NotificationType.WARNING);
       return;
     }
 
@@ -438,7 +471,11 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       .addNewStaff$(addStaffReqData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.notificationSvc.showNotification(`Staff ${this.staffID ? 'updated' : 'added'} successfully`);
+        if (this.staffID) {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+        } else {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+        }
         let route: string;
         if (this.comingFromRoute === 'view') {
           route = '../view';

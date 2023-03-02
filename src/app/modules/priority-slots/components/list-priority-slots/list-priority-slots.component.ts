@@ -14,10 +14,13 @@ import { Absence } from '../../../../shared/models/absence.model';
 import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-slots.component';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 @Component({
   selector: 'dfm-list-priority-slots',
   templateUrl: './list-priority-slots.component.html',
-  styleUrls: ['./list-priority-slots.component.scss']
+  styleUrls: ['./list-priority-slots.component.scss'],
 })
 export class ListPrioritySlotsComponent extends DestroyableComponent implements OnInit, OnDestroy {
   clipboardData: string = '';
@@ -37,6 +40,10 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
   public filteredPrioritySlots$$: BehaviorSubject<any[]>;
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   constructor(
     private priorityApiSvc: PrioritySlotApiService,
     private notificationSvc: NotificationDataService,
@@ -45,6 +52,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     this.prioritySlots$$ = new BehaviorSubject<any[]>([]);
@@ -80,17 +88,39 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
         this.downloadSvc.downloadJsonAs(
           downloadAs as DownloadAsType,
           this.columns.slice(0, -1),
-          this.filteredPrioritySlots$$.value.map((pr: PrioritySlot) => [pr.startedAt, pr.endedAt? pr.endedAt: `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`, pr.priority]),
+          this.filteredPrioritySlots$$.value.map((pr: PrioritySlot) => [
+            pr.startedAt,
+            pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`,
+            pr.priority,
+          ]),
           'priority slot details',
         );
 
         if (downloadAs !== 'PRINT') {
-          this.notificationSvc.showNotification(`${downloadAs} file downloaded successfully`);
+          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
         }
 
         this.downloadDropdownControl.setValue(null);
 
         this.cdr.detectChanges();
+      });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        this.columns = [Translate.Start[lang], Translate.End[lang], Translate.Priority[lang], Translate.Actions[lang]];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
       });
   }
 
@@ -101,7 +131,11 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
   private handleSearch(searchText: string): void {
     this.filteredPrioritySlots$$.next([
       ...this.prioritySlots$$.value.filter((priority) => {
-        return priority.startedAt?.toLowerCase()?.includes(searchText) || priority.endedAt?.toLowerCase()?.includes(searchText) || priority.priority?.toLowerCase()?.includes(searchText);
+        return (
+          priority.startedAt?.toLowerCase()?.includes(searchText) ||
+          priority.endedAt?.toLowerCase()?.includes(searchText) ||
+          priority.priority?.toLowerCase()?.includes(searchText)
+        );
       }),
     ]);
   }
@@ -119,12 +153,12 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
-        switchMap(()=>this.priorityApiSvc.deletePrioritySlot$(id)),
+        switchMap(() => this.priorityApiSvc.deletePrioritySlot$(id)),
         take(1),
       )
       .subscribe((response) => {
         if (response) {
-          this.notificationSvc.showNotification('Priority Slot deleted successfully');
+          this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
         }
       });
   }
@@ -134,15 +168,17 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
       let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
 
       this.filteredPrioritySlots$$.value.forEach((prioritySlot: PrioritySlot) => {
-        dataString += `${prioritySlot.startedAt}\t${prioritySlot.endedAt? prioritySlot.endedAt : prioritySlot.startedAt.slice(0, -9)}\t${prioritySlot.priority}\n`;
+        dataString += `${prioritySlot.startedAt}\t${prioritySlot.endedAt ? prioritySlot.endedAt : prioritySlot.startedAt.slice(0, -9)}\t${
+          prioritySlot.priority
+        }\n`;
       });
 
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
       this.clipboardData = '';
     }
   }

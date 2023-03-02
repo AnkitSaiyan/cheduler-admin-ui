@@ -17,6 +17,9 @@ import { checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumbe
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
 import { TIME_24 } from '../../../../shared/utils/const';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
   name: string;
@@ -65,6 +68,10 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
   public readonly slotExistsError: string = 'slotExists';
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   constructor(
     private modalSvc: ModalService,
     private fb: FormBuilder,
@@ -73,6 +80,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     private nameValuePipe: NameValuePairPipe,
     private timeInIntervalPipe: TimeInIntervalPipe,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     this.modalSvc.dialogData$
@@ -104,6 +112,32 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
     this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
     this.filteredTimings = [...this.timings];
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        // this.columns = [
+        //   Translate.FirstName[lang],
+        //   Translate.LastName[lang],
+        //   Translate.Email[lang],
+        //   Translate.Telephone[lang],
+        //   Translate.Category[lang],
+        //   Translate.Status[lang],
+        //   Translate.Actions[lang],
+        // ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
   }
 
   public override ngOnDestroy() {
@@ -318,7 +352,7 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     }
 
     if (!valid) {
-      this.notificationSvc.showNotification('Form is not valid.', NotificationType.WARNING);
+      this.notificationSvc.showNotification(Translate.FormInvalidSimple[this.selectedLang], NotificationType.WARNING);
       return;
     }
 
@@ -369,7 +403,11 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Room ${this.modalData.edit ? 'updated' : 'added'} successfully`);
+            if (this.modalData.edit) {
+              this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+            } else {
+              this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+            }
             this.closeModal(true);
             this.submitting$$.next(false);
           },
@@ -381,7 +419,11 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Room ${this.modalData.edit ? 'updated' : 'added'} successfully`);
+            if (this.modalData.edit) {
+              this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+            } else {
+              this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+            }
             this.closeModal(true);
             this.submitting$$.next(false);
           },
