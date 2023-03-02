@@ -360,7 +360,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     const addPriorityReqData: PrioritySlot = {
       ...rest,
       startedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day} ${slotStartTime}:00`,
-      endedAt: rest.isRepeat ? `${endedAt.year}-${endedAt.month}-${endedAt.day} ${slotEndTime}:00` : null,
+      endedAt: `${endedAt.year}-${endedAt.month}-${endedAt.day} ${slotEndTime}:00`,
       repeatType: rest.isRepeat ? rest.repeatType : null,
       repeatFrequency: rest.isRepeat && rest.repeatFrequency ? +rest.repeatFrequency.toString().split(' ')[0] : 0,
       repeatDays: '',
@@ -561,3 +561,4 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
   }
 }
+

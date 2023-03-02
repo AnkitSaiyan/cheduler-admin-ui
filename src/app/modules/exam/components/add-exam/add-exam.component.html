@@ -79,10 +79,12 @@
             <dfm-input #expensive [dfmNumberInput]="expensive" class="ad-ex-duration" type="number" size="md"
                        placeholder="{{'EnterDuration' | translate}}"
                        label="{{'ExpensiveMin' | translate}} *"
-                       formControlName="expensive">
+                       formControlName="expensive"
+                       (focusout)="handleExpenseInput($event, expensive, examForm.get('expensive'))"
+            >
             </dfm-input>
 
-            <small class="validation-error" *ngIf="expensive.control.hasError('min')">Please enter at least 1
+            <small class="validation-error" *ngIf="expensive.control.hasError('min')">Please enter at least 5
               min</small>
           </div>
 
@@ -105,7 +107,7 @@
                             [label]="roomForExamControl.value?.roomName"></dfm-checkbox>
               <div class="ad-ex-duration">
                 <dfm-input #duration [dfmNumberInput]="duration" type="text" size="md" placeholder="{{'DurationMins' | translate}}"
-                           formControlName="duration">
+                           formControlName="duration" (focusout)="handleExpenseInput($event, duration, roomForExamControl.get('duration'))">
                 </dfm-input>
               </div>
             </div>
@@ -366,7 +368,7 @@
                         </div>
 
                         <div class="dfm-mt-32">
-                          <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                          <dfm-button-icon size="sm" icon="trash-01" color="tertiary"
                                            (click)="removeSlot(controlArray, i)"></dfm-button-icon>
                         </div>
                       </div>
@@ -447,7 +449,7 @@
                         </div>
 
                         <div class="dfm-mt-32">
-                          <dfm-button-icon *ngIf="controlArray.length > 1" size="sm" icon="trash-01" color="tertiary"
+                          <dfm-button-icon  size="sm" icon="trash-01" color="tertiary"
                                            (click)="removeSlot(controlArray, i)"></dfm-button-icon>
                         </div>
                       </div>

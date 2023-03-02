@@ -88,6 +88,10 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
       .subscribe((lang) => (this.selectedLang = lang));
   }
 
+  public override ngOnDestroy(): void {
+    super.ngOnDestroy();
+  }
+
   private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): WeekWisePracticeAvailability[] {
     const weekdayToSlotsObj: { [key: string]: TimeSlot[] } = {};
 

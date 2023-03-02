@@ -225,7 +225,6 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
-    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
@@ -290,7 +289,6 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   private filterStaffList(result: { name: string; value: string }[]) {
-    console.log(result, this.staffs$$.value);
     if (!result?.length) {
       this.filteredStaffs$$.next([...this.staffs$$.value]);
       return;

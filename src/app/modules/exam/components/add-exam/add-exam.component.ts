@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
+import {BadgeColor, InputComponent, InputDropdownComponent, NotificationType} from 'diflexmo-angular-design';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, filter, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -335,7 +335,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
     this.examForm = this.fb.group({
       name: [examDetails?.name, [Validators.required]],
-      expensive: [examDetails?.expensive, [Validators.required, Validators.min(1)]],
+      expensive: [examDetails?.expensive, [Validators.required, Validators.min(5)]],
       roomType: [null, [Validators.required]],
       roomsForExam: this.fb.array([]),
       info: [examDetails?.info, []],
@@ -645,6 +645,13 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public removeSlot(controlArray: FormArray, i: number) {
+    if (controlArray.length === 1) {
+      controlArray.controls[i].patchValue({
+        dayStart: null,
+        dayEnd: null,
+      });
+      return;
+    }
     controlArray.removeAt(i);
 
     const formArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
@@ -978,5 +985,21 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
 
     toggleControlError(control, errorName, false);
+  }
+
+  public handleExpenseInput(e: Event, element: InputComponent, control: AbstractControl | null | undefined) {
+    if (!element.value && element.value < 5) {
+      e.preventDefault();
+      return;
+    }
+
+    if (element.value % 5 !== 0) {
+      const newValue = element.value - element.value % 5;
+
+      element.value = newValue;
+      if (control) {
+        control.setValue(newValue)
+      }
+    }
   }
 }

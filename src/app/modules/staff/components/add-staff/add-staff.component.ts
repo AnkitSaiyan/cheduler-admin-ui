@@ -164,7 +164,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe((exams) => {
-        console.log('exams: ', exams);
         this.exams$$.next(exams);
       });
 
@@ -385,6 +384,13 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
   }
 
   public removeSlot(controlArray: FormArray, i: number) {
+    if (controlArray.length === 1) {
+      controlArray.controls[i].patchValue({
+        dayStart: null,
+        dayEnd: null,
+      });
+      return;
+    }
     controlArray.removeAt(i);
 
     const formArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
@@ -393,8 +399,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
   }
 
   public saveStaff(): void {
-    console.log(this.formValues);
-
     const requiredKeys: string[] = ['firstname', 'lastname', 'email', 'userType'];
     let valid = true;
 
@@ -449,8 +453,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         : [],
     };
 
-    console.log(addStaffReqData.info);
-
     if (!addStaffReqData.info) {
       delete addStaffReqData.info;
     }
@@ -464,8 +466,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     }
 
     addStaffReqData.id = Number.isNaN(+this.staffID) ? 0 : +this.staffID;
-
-    console.log(addStaffReqData);
 
     this.staffApiSvc
       .addNewStaff$(addStaffReqData)
@@ -482,6 +482,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         } else {
           route = this.edit ? '/staff' : '../';
         }
+
         this.router.navigate([route], { relativeTo: this.route });
       });
   }
@@ -531,7 +532,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
   }
 
   public handleTimeFocusOut(time: string, control: AbstractControl | null | undefined) {
-    console.log('in');
     this.handleError(time, control);
   }
 
