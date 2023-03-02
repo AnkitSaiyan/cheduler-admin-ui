@@ -145,64 +145,62 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
     appointments.push({} as Appointment);
     appointments.forEach((appointment, index) => {
-      if (appointment.exams?.length) {
-        if (Object.keys(appointment).length) {
-          const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
+      if (Object.keys(appointment).length && appointment.exams?.length) {
+        const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
 
-          if (dateString) {
-            if (!this.appointmentsGroupedByDate[dateString]) {
-              this.appointmentsGroupedByDate[dateString] = [];
-            }
-
-            if (!this.appointmentsGroupedByDateAndTIme[dateString]) {
-              this.appointmentsGroupedByDateAndTIme[dateString] = [];
-
-              startDate = new Date(appointment.startedAt);
-              endDate = new Date(appointment.endedAt);
-              // group = 0;
-              sameGroup = false;
-            } else {
-              const currSD = new Date(appointment.startedAt);
-              const currED = new Date(appointment.endedAt);
-
-              if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
-                sameGroup = true;
-                if (currED > endDate) {
-                  endDate = currED;
-                }
-              } else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
-                sameGroup = true;
-                if (currED > endDate) {
-                  endDate = currED;
-                }
-              } else {
-                startDate = currSD;
-                endDate = currED;
-                sameGroup = false;
-              }
-            }
-
-            if (!sameGroup) {
-              // group++;
-
-              if (index !== 0) {
-                this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
-                groupedAppointments = [];
-              }
-            }
-
-            lastDateString = dateString;
-
-            groupedAppointments.push(appointment);
-            this.appointmentsGroupedByDate[dateString].push(appointment);
+        if (dateString) {
+          if (!this.appointmentsGroupedByDate[dateString]) {
+            this.appointmentsGroupedByDate[dateString] = [];
           }
-        } else {
-          this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
+
+          if (!this.appointmentsGroupedByDateAndTIme[dateString]) {
+            this.appointmentsGroupedByDateAndTIme[dateString] = [];
+
+            startDate = new Date(appointment.startedAt);
+            endDate = new Date(appointment.endedAt);
+            // group = 0;
+            sameGroup = false;
+          } else {
+            const currSD = new Date(appointment.startedAt);
+            const currED = new Date(appointment.endedAt);
+
+            if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
+              sameGroup = true;
+              if (currED > endDate) {
+                endDate = currED;
+              }
+            } else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
+              sameGroup = true;
+              if (currED > endDate) {
+                endDate = currED;
+              }
+            } else {
+              startDate = currSD;
+              endDate = currED;
+              sameGroup = false;
+            }
+          }
+
+          if (!sameGroup) {
+            // group++;
+
+            if (index !== 0) {
+              this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
+              groupedAppointments = [];
+            }
+          }
+
+          lastDateString = dateString;
+
+          groupedAppointments.push(appointment);
+          this.appointmentsGroupedByDate[dateString].push(appointment);
         }
+      } else {
+        this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
       }
     });
 
-    console.log('test', this.appointmentsGroupedByDate);
+    console.log('test', this.appointmentsGroupedByDate, this.appointmentsGroupedByDateAndTIme);
   }
 
   private groupAppointmentByDateAndRoom(...appointments: Appointment[]) {
