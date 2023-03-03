@@ -80,7 +80,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
 
-      appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
+      appointments.sort((ap1, ap2) => {
+        if (ap1.startedAt && ap2.startedAt) {
+          return new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime()
+        }
+
+        return -1;
+      });
 
       console.log(appointments);
 
@@ -145,7 +151,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
     appointments.push({} as Appointment);
     appointments.forEach((appointment, index) => {
-      if (Object.keys(appointment).length && appointment.exams?.length) {
+      if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
         const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
 
         if (dateString) {
