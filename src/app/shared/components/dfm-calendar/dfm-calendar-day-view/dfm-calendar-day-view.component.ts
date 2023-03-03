@@ -119,6 +119,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   private changeDate(offset: number) {
+    console.log({ offset });
     if (this.selectedDate) {
       const date = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + offset));
       this.updateDate(date);
@@ -127,6 +128,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   private updateDate(date: Date) {
+    date.setMinutes(date.getMinutes() - (date.getMinutes() % 5));
     this.selectedDate = date;
     this.selectedDateOnly = date.getDate();
     const dateString = this.datePipe.transform(date, 'd-M-yyyy');
@@ -334,10 +336,11 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {
+    const top = e.offsetY - (e.offsetY % 20);
     const eventCard = document.createElement('div');
     eventCard.classList.add('calender-day-view-event-container');
     eventCard.style.height = `20px`;
-    eventCard.style.top = `${e.offsetY}px`;
+    eventCard.style.top = `${top}px`;
 
     const appointmentText = document.createElement('span');
     // const textNode = document.createTextNode('Appointment');

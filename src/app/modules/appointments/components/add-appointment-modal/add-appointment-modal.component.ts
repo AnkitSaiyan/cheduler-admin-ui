@@ -88,8 +88,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
       this.modalData = data;
       if (this.modalData.event.offsetY) {
         const minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
+        const roundedMin = minutes - (minutes % 5);
         const hour = `0${Math.floor(minutes / 60)}`.slice(-2);
-        const min = `0${minutes % 60}`.slice(-2);
+        const min = `0${roundedMin % 60}`.slice(-2);
         console.log(minutes % 60);
         this.selectedTime = `${hour}:${min}:00`;
       }
