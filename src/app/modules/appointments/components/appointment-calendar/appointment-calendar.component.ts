@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import {BehaviorSubject, debounceTime, take, takeUntil} from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -9,6 +9,8 @@ import { getDurationMinutes } from 'src/app/shared/models/calendar.model';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { Exam } from '../../../../shared/models/exam.model';
+import {Router} from "@angular/router";
+import {RouterStateService} from "../../../../core/services/router-state.service";
 
 @Component({
   selector: 'dfm-appointment-calendar',
@@ -62,17 +64,29 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     };
   } = {};
 
-  constructor(private roomApiSvc: RoomsApiService, private datePipe: DatePipe, private appointmentApiSvc: AppointmentApiService) {
+  public paramsToCalendarView = {
+    m: 'month',
+    w: 'week',
+    d: 'day',
+  }
+
+  constructor(private roomApiSvc: RoomsApiService, private datePipe: DatePipe, private appointmentApiSvc: AppointmentApiService, private router: Router, private routerStateSvc: RouterStateService) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
   }
 
   public ngOnInit(): void {
+    this.routerStateSvc.listenForQueryParamsChanges$().pipe(debounceTime(100), take(1)).subscribe((params) => {
+      if (params['v']) {
+        this.calendarViewFormControl.setValue(this.paramsToCalendarView[params['v']]);
+      }
+    })
     this.calendarViewFormControl.setValue('week');
 
     this.calendarViewFormControl.valueChanges.pipe().subscribe((value) => {
       this.newDate$$.next(this.selectedDate);
+      this.updateQuery(value[0]);
     });
 
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
@@ -240,5 +254,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
       }
     });
     console.log('test', this.appointmentGroupedByDateAndRoom);
+  }
+
+  private updateQuery(queryStr: string) {
+    this.router.navigate([], {
+      queryParams: {
+        v: queryStr
+      }
+    })
   }
 }

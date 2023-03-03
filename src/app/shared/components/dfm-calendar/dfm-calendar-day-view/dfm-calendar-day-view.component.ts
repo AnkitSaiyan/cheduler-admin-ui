@@ -243,11 +243,11 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         }),
         take(1),
       )
-      .subscribe(
-        (res) => {
+      .subscribe({
+        next: (res) => {
           console.log(res);
         },
-        (err) => {
+        error: (err) => {
           console.log(err);
           this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
           if (eventContainer && top && height) {
@@ -257,7 +257,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
             eventContainer.style.height = height;
           }
         },
-      );
+      });
   }
 
   public readAppointment(appointment: Appointment) {

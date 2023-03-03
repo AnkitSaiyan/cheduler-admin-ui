@@ -1,22 +1,27 @@
-import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
-import { DatePipe, TitleCasePipe } from '@angular/common';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
-import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
-import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
-import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
-import { Appointment } from '../../../../shared/models/appointment.model';
-import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { getDurationMinutes } from '../../../../shared/models/calendar.model';
-import { Exam } from '../../../../shared/models/exam.model';
+import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil} from 'rxjs';
+import {ActivatedRoute, Router} from '@angular/router';
+import {NotificationType, TableItem} from 'diflexmo-angular-design';
+import {DatePipe, TitleCasePipe} from '@angular/common';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
+import {
+  AppointmentStatus,
+  AppointmentStatusToName,
+  ChangeStatusRequestData
+} from '../../../../shared/models/status.model';
+import {getAppointmentStatusEnum, getReadStatusEnum} from '../../../../shared/utils/getEnums';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {ModalService} from '../../../../core/services/modal.service';
+import {ConfirmActionModalComponent, DialogData} from '../../../../shared/components/confirm-action-modal.component';
+import {NameValue, SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
+import {DownloadAsType, DownloadService} from '../../../../core/services/download.service';
+import {AppointmentApiService} from '../../../../core/services/appointment-api.service';
+import {Appointment} from '../../../../shared/models/appointment.model';
+import {RoomsApiService} from '../../../../core/services/rooms-api.service';
+import {getDurationMinutes} from '../../../../shared/models/calendar.model';
+import {Exam} from '../../../../shared/models/exam.model';
+import {RouterStateService} from "../../../../core/services/router-state.service";
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -80,10 +85,24 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
     private titleCasePipe: TitleCasePipe,
+    private routerStateSvc: RouterStateService
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
+
+    this.routerStateSvc.listenForQueryParamsChanges$().pipe(debounceTime(100)).subscribe((params) => {
+      if (params['v']) {
+        this.calendarView$$.next(params['v'] !== 't');
+      } else {
+        this.router.navigate([], {
+          queryParams: {
+            v: 'w'
+          }
+        });
+        this.calendarView$$.next(true);
+      }
+    });
   }
 
   public ngOnInit() {
@@ -151,7 +170,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedAppointmentIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
+            return [...this.selectedAppointmentIDs.map((id) => ({id: +id, status: value.newStatus as number}))];
           }
           return [];
         }),
@@ -172,7 +191,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
+      this.roomList = rooms.map(({name, id}) => ({name, value: id}));
     });
   }
 
@@ -257,7 +276,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public navigateToView(e: TableItem, appointments: Appointment[]) {
     if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+      this.router.navigate([`./${e.id}/view`], {relativeTo: this.route});
     }
   }
 
@@ -278,10 +297,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.toggleMenu();
 
     const modalRef = this.modalSvc.open(SearchModalComponent, {
-      options: { fullscreen: true },
+      options: {fullscreen: true},
       data: {
         items: [
-          ...this.appointments$$.value.map(({ id, patientLname, patientFname }) => {
+          ...this.appointments$$.value.map(({id, patientLname, patientFname}) => {
             return {
               name: `${patientFname} ${patientLname}`,
               key: `${patientFname} ${patientLname} ${id}`,
@@ -309,7 +328,11 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   }
 
   public toggleView(): void {
-    this.calendarView$$.next(!this.calendarView$$.value);
+    this.router.navigate([], {
+      queryParams: {
+        v: this.calendarView$$.value ? 'w' : 't'
+      }
+    });
   }
 
   private groupAppointmentsForCalendar(...appointments: Appointment[]) {
