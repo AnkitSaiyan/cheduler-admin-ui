@@ -81,6 +81,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
   public rendered = false;
 
+  public getDurationFn = (s, e) => getDurationMinutes(s, e);
+
   constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private renderer: Renderer2, private modalSvc: ModalService) {
     super();
   }
