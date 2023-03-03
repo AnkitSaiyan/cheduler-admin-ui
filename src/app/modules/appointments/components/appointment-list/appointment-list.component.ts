@@ -96,6 +96,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         this.calendarView$$.next(params['v'] !== 't');
       } else {
         this.router.navigate([], {
+          replaceUrl: true,
           queryParams: {
             v: 'w'
           }
@@ -276,7 +277,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public navigateToView(e: TableItem, appointments: Appointment[]) {
     if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], {relativeTo: this.route});
+      this.router.navigate([`./${e.id}/view`], {replaceUrl: true, relativeTo: this.route});
     }
   }
 
@@ -329,8 +330,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public toggleView(): void {
     this.router.navigate([], {
+      replaceUrl: true,
       queryParams: {
-        v: this.calendarView$$.value ? 'w' : 't'
+        v: !this.calendarView$$.value ? 'w' : 't'
       }
     });
   }

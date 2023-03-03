@@ -1,14 +1,14 @@
-import { DatePipe } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import {BehaviorSubject, debounceTime, take, takeUntil} from 'rxjs';
-import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
-import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
-import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
-import { getDurationMinutes } from 'src/app/shared/models/calendar.model';
-import { NameValue } from '../../../../shared/components/search-modal.component';
-import { Appointment } from '../../../../shared/models/appointment.model';
-import { Exam } from '../../../../shared/models/exam.model';
+import {DatePipe} from '@angular/common';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {BehaviorSubject, debounceTime, filter, take, takeUntil} from 'rxjs';
+import {AppointmentApiService} from 'src/app/core/services/appointment-api.service';
+import {RoomsApiService} from 'src/app/core/services/rooms-api.service';
+import {DestroyableComponent} from 'src/app/shared/components/destroyable.component';
+import {getDurationMinutes} from 'src/app/shared/models/calendar.model';
+import {NameValue} from '../../../../shared/components/search-modal.component';
+import {Appointment} from '../../../../shared/models/appointment.model';
+import {Exam} from '../../../../shared/models/exam.model';
 import {Router} from "@angular/router";
 import {RouterStateService} from "../../../../core/services/router-state.service";
 
@@ -78,13 +78,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
   public ngOnInit(): void {
     this.routerStateSvc.listenForQueryParamsChanges$().pipe(debounceTime(100), take(1)).subscribe((params) => {
-      if (params['v']) {
+      if (params['v'] !== 't') {
         this.calendarViewFormControl.setValue(this.paramsToCalendarView[params['v']]);
       }
     })
     this.calendarViewFormControl.setValue('week');
 
-    this.calendarViewFormControl.valueChanges.pipe().subscribe((value) => {
+    this.calendarViewFormControl.valueChanges.pipe(filter((v) => !!v), takeUntil(this.destroy$$)).subscribe((value) => {
       this.newDate$$.next(this.selectedDate);
       this.updateQuery(value[0]);
     });
@@ -111,7 +111,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      this.headerList = rooms.map(({ name, id }) => ({ name, value: id }));
+      this.headerList = rooms.map(({name, id}) => ({name, value: id}));
     });
   }
 
@@ -225,32 +225,34 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     const appointments: Appointment[] = [];
     appointmentsProps.forEach((appointment: Appointment) => {
       appointment.exams.forEach((exam) => {
-        appointments.push({ ...appointment, startedAt: exam.startedAt, endedAt: exam.endedAt, exams: [exam] });
+        appointments.push({...appointment, startedAt: exam.startedAt, endedAt: exam.endedAt, exams: [exam]});
       });
     });
 
-    console.log({ appointments });
+    console.log({appointments});
 
     appointments.forEach((appointment) => {
-      const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
+      if (appointment.startedAt) {
+        const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
 
-      if (dateString) {
-        if (!this.appointmentGroupedByDateAndRoom[dateString]) {
-          this.appointmentGroupedByDateAndRoom[dateString] = {};
-        }
+        if (dateString) {
+          if (!this.appointmentGroupedByDateAndRoom[dateString]) {
+            this.appointmentGroupedByDateAndRoom[dateString] = {};
+          }
 
-        appointment.exams?.forEach((exam) => {
-          exam.rooms?.forEach((room) => {
-            if (!this.appointmentGroupedByDateAndRoom[dateString][room.id]) {
-              this.appointmentGroupedByDateAndRoom[dateString][room.id] = [];
-            }
+          appointment.exams?.forEach((exam) => {
+            exam.rooms?.forEach((room) => {
+              if (!this.appointmentGroupedByDateAndRoom[dateString][room.id]) {
+                this.appointmentGroupedByDateAndRoom[dateString][room.id] = [];
+              }
 
-            this.appointmentGroupedByDateAndRoom[dateString][room.id].push({
-              appointment,
-              exams: appointment.exams ?? [],
+              this.appointmentGroupedByDateAndRoom[dateString][room.id].push({
+                appointment,
+                exams: appointment.exams ?? [],
+              });
             });
           });
-        });
+        }
       }
     });
     console.log('test', this.appointmentGroupedByDateAndRoom);
