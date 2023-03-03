@@ -119,6 +119,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   private changeDate(offset: number) {
+    console.log({ offset });
     if (this.selectedDate) {
       const date = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + offset));
       this.updateDate(date);
@@ -127,6 +128,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   private updateDate(date: Date) {
+    date.setMinutes(date.getMinutes() - (date.getMinutes() % 5));
     this.selectedDate = date;
     this.selectedDateOnly = date.getDate();
     const dateString = this.datePipe.transform(date, 'd-M-yyyy');
@@ -313,6 +315,19 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     const eventCard = this.createAppointmentCard(e, eventsContainer);
 
     const modalRef = this.modalSvc.open(AddAppointmentModalComponent, {
+      data: {
+        event: e,
+        element: eventCard,
+        elementContainer: eventsContainer,
+        startedAt: this.selectedDate,
+      },
+      options: {
+        backdrop: false,
+        centered: true,
+        modalDialogClass: 'ad-ap-modal-shadow',
+      },
+    });
+    console.log({
       data: {
         event: e,
         element: eventCard,
