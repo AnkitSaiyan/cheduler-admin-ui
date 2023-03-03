@@ -46,6 +46,7 @@ import { NumberArrayPipe } from './pipes/number-array.pipe';
 import {TranslateLoader, TranslateModule, TranslatePipe} from '@ngx-translate/core';
 // eslint-disable-next-line import/order
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import {IsDataPipe} from "./pipes/is-data.pipe";
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -79,6 +80,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     EmailInputDirective,
     NumberInputDirective,
     NumberArrayPipe,
+    IsDataPipe
   ],
   imports: [
     CommonModule,
@@ -136,6 +138,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NumberArrayPipe,
     ClipboardModule,
     TranslateModule,
+    IsDataPipe
   ],
   providers: [
     TranslatePipe

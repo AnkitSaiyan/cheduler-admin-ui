@@ -32,7 +32,7 @@
                         <div class="calender-month-view-day-exam-details-expanded-patient-details">
                           <span class="font-weight-medium">{{ ap.patientFname + ' ' + ap.patientLname }}</span>
                           <span class="text-sm dfm-text-main-500">
-                            {{ (ap.startedAt | date : 'HH:mm') + ' - ' + (ap.endedAt | date : 'HH:mm') }} (min)
+                            {{ (ap.startedAt | date : 'HH:mm') + ' - ' + (ap.endedAt | date : 'HH:mm') }} ({{getDurationFn(ap.startedAt, ap.endedAt)}} min)
                           </span>
                         </div>
                         <div class="calender-month-view-day-exam-details-expanded-patient-details-divider"
@@ -46,18 +46,24 @@
                        <span *ngIf="ap.exams?.length">{{ ap.exams | joinWithAnd : 'name'}}</span>
                        <span class="font-weight-medium dfm-mt-8"> Comments </span>
                        <span class=""> {{ ap?.comments | dashIfNothing }} </span>
-                       <span class="font-weight-medium dfm-mt-8">Staff3</span>
-                       <div *ngFor="let exam of ap.exams" class="dfm-ps-4 dfm-pt-4">
-                         <div *ngFor="let u of exam?.users" class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
-                           <div class="circle-gray-200-40">
-                             {{ u?.firstname[0] | uppercase }}
-                           </div>
-                           <div class="d-flex flex-column">
-                             <span>{{ u?.firstname | titlecase }} {{ u?.lastname | titlecase }}</span>
-                             <span class="dfm-text-main-500">{{ u?.userType | titlecase }}</span>
+                       <span class="font-weight-medium dfm-mt-8">Staff</span>
+                       
+                       <ng-container *ngIf="ap.exams | isData : 'users'; else dash">
+                         <div *ngFor="let exam of ap.exams" class="dfm-ps-4 dfm-pt-4">
+                           <div *ngFor="let u of exam?.users" class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
+                             <div class="circle-gray-200-40">
+                               {{ u?.firstname[0] | uppercase }}
+                             </div>
+                             <div class="d-flex flex-column">
+                               <span>{{ u?.firstname | titlecase }} {{ u?.lastname | titlecase }}</span>
+                               <span class="dfm-text-main-500">{{ u?.userType | titlecase }}</span>
+                             </div>
                            </div>
                          </div>
-                       </div>
+                       </ng-container>
+                       <ng-template #dash>
+                         <span>{{ '' | dashIfNothing }}</span>
+                       </ng-template>
                      </div>
                     </ng-template>
                   </ngb-panel>
