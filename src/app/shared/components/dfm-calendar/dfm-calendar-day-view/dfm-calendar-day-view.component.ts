@@ -327,19 +327,6 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         modalDialogClass: 'ad-ap-modal-shadow',
       },
     });
-    console.log({
-      data: {
-        event: e,
-        element: eventCard,
-        elementContainer: eventsContainer,
-        startedAt: this.selectedDate,
-      },
-      options: {
-        backdrop: false,
-        centered: true,
-        modalDialogClass: 'ad-ap-modal-shadow',
-      },
-    });
 
     modalRef.closed.pipe(take(1)).subscribe((res) => {
       if (!res) {
@@ -349,10 +336,11 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {
+    const top = e.offsetY - (e.offsetY % 20);
     const eventCard = document.createElement('div');
     eventCard.classList.add('calender-day-view-event-container');
     eventCard.style.height = `20px`;
-    eventCard.style.top = `${e.offsetY}px`;
+    eventCard.style.top = `${top}px`;
 
     const appointmentText = document.createElement('span');
     // const textNode = document.createTextNode('Appointment');

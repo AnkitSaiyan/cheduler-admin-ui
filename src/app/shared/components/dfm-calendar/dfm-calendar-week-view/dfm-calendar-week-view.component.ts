@@ -150,6 +150,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   private updateDate(date: Date) {
+    date.setMinutes(date.getMinutes() - (date.getMinutes() % 5));
     this.selectedDate = date;
     this.emitDate();
   }
@@ -307,10 +308,11 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {
+    const top = e.offsetY - (e.offsetY % 20);
     const eventCard = document.createElement('div');
     eventCard.classList.add('calender-week-view-event-container');
     eventCard.style.height = `20px`;
-    eventCard.style.top = `${e.offsetY}px`;
+    eventCard.style.top = `${top}px`;
 
     const appointmentText = document.createElement('span');
     // const textNode = document.createTextNode('Appointment');
