@@ -1,7 +1,7 @@
-import { RoomType } from './rooms.model';
-import { Exam } from './exam.model';
-import { User } from './user.model';
-import { AppointmentStatus, ReadStatus } from './status.model';
+import {RoomType} from './rooms.model';
+import {Exam} from './exam.model';
+import {User} from './user.model';
+import {AppointmentStatus, ReadStatus} from './status.model';
 
 export interface Appointment {
   id: number;
@@ -72,9 +72,19 @@ export interface UpdateDurationRequestData {
 export interface Slot {
   start: string;
   end: string;
+  exams: {
+    examId: number;
+    roomId?: number[];
+    userId?: number[];
+  }[];
+}
+
+export interface SlotModified {
+  start: string;
+  end: string;
   examId: number;
   userList?: number[];
-  roomList?: number[]
+  roomList?: number[];
 }
 
 export interface AppointmentSlot {
@@ -100,4 +110,27 @@ export interface AppointmentSlotsRequestData {
   fromDate: string;
   toDate: string;
   exams: number[];
+}
+
+export interface SelectedSlots {
+  [key: number]: {
+    slot: string;
+    examId: number;
+    userList: number[];
+    roomList: number[];
+  }
+}
+
+export interface CreateAppointmentFormValues {
+  patientFname: string;
+  patientLname: string;
+  patientEmail: string;
+  patientTel: number;
+  startedAt: any;
+  startTime: string;
+  doctorId: number;
+  userId: number;
+  // roomType: RoomType;
+  examList: number[];
+  comments: string;
 }

@@ -43,6 +43,12 @@ export enum Month {
   DEC,
 }
 
+export interface DateDistributed {
+  day: number;
+  month: number;
+  year: number
+}
+
 export function getDaysOfMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate();
 }

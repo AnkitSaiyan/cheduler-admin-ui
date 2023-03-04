@@ -1,110 +1,110 @@
-<div #content class="bg-white rounded-4 add-appointment-modal">
-  <div class="modal-header">
-    <h5 class="modal-title">Add Appointment</h5>
-    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
-  </div>
+<!--<div #content class="bg-white rounded-4 add-appointment-modal">-->
+<!--  <div class="modal-header">-->
+<!--    <h5 class="modal-title">Add Appointment</h5>-->
+<!--    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>-->
+<!--  </div>-->
 
-  <div class="modal-body">
-    <form [formGroup]="appointmentForm">
-      <div class="d-flex flex-column dfm-gap-8">
-        <div class="d-flex dfm-gap-16">
-          <div class="d-flex flex-column dfm-gap-8">
-            <span class="text-sm font-weight-medium dfm-ms-2">Started At*</span>
-            <div class="dfm-button-group-wrapper w-fit h-fit">
-              <div class="input-as-dfm-input">
-                <input class="w-full" formControlName="startedAt" placeholder="yyyy-mm-dd" ngbDatepicker
-                       #date="ngbDatepicker"/>
-              </div>
-              <div>
-                <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date"
-                                 (click)="date.toggle()"></dfm-button-icon>
-              </div>
-            </div>
-          </div>
+<!--  <div class="modal-body">-->
+<!--    <form [formGroup]="appointmentForm">-->
+<!--      <div class="d-flex flex-column dfm-gap-8">-->
+<!--        <div class="d-flex dfm-gap-16">-->
+<!--          <div class="d-flex flex-column dfm-gap-8">-->
+<!--            <span class="text-sm font-weight-medium dfm-ms-2">Started At*</span>-->
+<!--            <div class="dfm-button-group-wrapper w-fit h-fit">-->
+<!--              <div class="input-as-dfm-input">-->
+<!--                <input class="w-full" formControlName="startedAt" placeholder="yyyy-mm-dd" ngbDatepicker-->
+<!--                       #date="ngbDatepicker"/>-->
+<!--              </div>-->
+<!--              <div>-->
+<!--                <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date"-->
+<!--                                 (click)="date.toggle()"></dfm-button-icon>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
 
-          <div class="d-flex flex-column dfm-gap-8">
-            <span class="text-sm font-weight-medium">Start Time</span>
-            <span class="time-text">  {{ selectedTime }} </span>
-          </div>
-        </div>
+<!--          <div class="d-flex flex-column dfm-gap-8">-->
+<!--            <span class="text-sm font-weight-medium">Start Time</span>-->
+<!--            <span class="time-text">  {{ selectedTime }} </span>-->
+<!--          </div>-->
+<!--        </div>-->
 
-        <div class="dfm-input-multi-dropdown-wrapper flex-1">
-          <dfm-input-dropdown
-            #exams
-            [items]="examList"
-            [multiple]="true"
-            [placeholder]="!!exams.value?.length ? exams.value.length + ' Selected' : 'Select Exams'"
-            [showDescription]="false"
-            formControlName="examList"
-            size="md"
-            label="Exams *"
-          >
-          </dfm-input-dropdown>
-        </div>
+<!--        <div class="dfm-input-multi-dropdown-wrapper flex-1">-->
+<!--          <dfm-input-dropdown-->
+<!--            #exams-->
+<!--            [items]="examList"-->
+<!--            [multiple]="true"-->
+<!--            [placeholder]="!!exams.value?.length ? exams.value.length + ' Selected' : 'Select Exams'"-->
+<!--            [showDescription]="false"-->
+<!--            formControlName="examList"-->
+<!--            size="md"-->
+<!--            label="Exams *"-->
+<!--          >-->
+<!--          </dfm-input-dropdown>-->
+<!--        </div>-->
 
-                <div class="d-flex flex-column align-items-center gap-3 overflow-x-auto max-h-128 dfm-mt-12 flex-wrap"
-                     *ngIf="slots.length">
-                  <div
-                    class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
-                    *ngFor="let slot of examIdToAppointmentSlots[exams.value[0]];"
-                    (click)="toggleSlotSelection(slot)"
-                    [ngClass]="{
-                            'time-slot-disabled-text': !isSlotAvailable(slot),
-                            'time-slot-selected-text': selectedTimeSlot[exams.value[0]] === (slot.start + '-' + slot.end)
-                          }"
-                  >
-                    {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
-                  </div>
-                </div>
+<!--                <div class="d-flex flex-column align-items-center gap-3 overflow-x-auto max-h-128 dfm-mt-12 flex-wrap"-->
+<!--                     *ngIf="slots.length">-->
+<!--                  <div-->
+<!--                    class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"-->
+<!--                    *ngFor="let slot of examIdToAppointmentSlots[exams.value[0]];"-->
+<!--                    (click)="toggleSlotSelection(slot)"-->
+<!--                    [ngClass]="{-->
+<!--                            'time-slot-disabled-text': !isSlotAvailable(slot),-->
+<!--                            'time-slot-selected-text': selectedTimeSlot[exams.value[0]] === (slot.start + '-' + slot.end)-->
+<!--                          }"-->
+<!--                  >-->
+<!--                    {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}-->
+<!--                  </div>-->
+<!--                </div>-->
 
-        <!--        <span *ngIf="slots.length && checkSlotAvailable(exams.value[0])"></span>-->
+<!--        &lt;!&ndash;        <span *ngIf="slots.length && checkSlotAvailable(exams.value[0])"></span>&ndash;&gt;-->
 
-        <div class="d-flex flex-column dfm-gap-8">
-          <div class="d-flex dfm-gap-8 flex-wrap">
-            <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="Patient First Name *"
-                       formControlName="patientFname"></dfm-input>
+<!--        <div class="d-flex flex-column dfm-gap-8">-->
+<!--          <div class="d-flex dfm-gap-8 flex-wrap">-->
+<!--            <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="Patient First Name *"-->
+<!--                       formControlName="patientFname"></dfm-input>-->
 
-            <dfm-input class="flex-1" size="md" placeholder="Enter last name" label="Patient Last Name *"
-                       formControlName="patientLname"></dfm-input>
-          </div>
+<!--            <dfm-input class="flex-1" size="md" placeholder="Enter last name" label="Patient Last Name *"-->
+<!--                       formControlName="patientLname"></dfm-input>-->
+<!--          </div>-->
 
-          <div class="d-flex dfm-gap-8 flex-wrap">
-            <dfm-input class="flex-1" size="md" placeholder="Enter Telephone" label="Enter telephone *" type="number"
-                       formControlName="patientTel"></dfm-input>
+<!--          <div class="d-flex dfm-gap-8 flex-wrap">-->
+<!--            <dfm-input class="flex-1" size="md" placeholder="Enter Telephone" label="Enter telephone *" type="number"-->
+<!--                       formControlName="patientTel"></dfm-input>-->
 
-            <dfm-input class="flex-1 min-w-128" size="md" placeholder="Enter Patient Email" label="Patient Email *"
-                       formControlName="patientEmail"></dfm-input>
-          </div>
-        </div>
+<!--            <dfm-input class="flex-1 min-w-128" size="md" placeholder="Enter Patient Email" label="Patient Email *"-->
+<!--                       formControlName="patientEmail"></dfm-input>-->
+<!--          </div>-->
+<!--        </div>-->
 
-        <div class="d-flex flex-column dfm-gap-16 dfm-mt-8">
-          <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
-            <dfm-input-dropdown [items]="physicianList" class="flex-1" size="md" placeholder="Select doctor"
-                                label="Doctor" formControlName="doctorId">
-            </dfm-input-dropdown>
-          </div>
+<!--        <div class="d-flex flex-column dfm-gap-16 dfm-mt-8">-->
+<!--          <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">-->
+<!--            <dfm-input-dropdown [items]="physicianList" class="flex-1" size="md" placeholder="Select doctor"-->
+<!--                                label="Doctor" formControlName="doctorId">-->
+<!--            </dfm-input-dropdown>-->
+<!--          </div>-->
 
-          <div class="dfm-input-dropdown-wrapper flex-1">
-            <dfm-input-dropdown
-              #generalUsers
-              [items]="userList"
-              [placeholder]="!!generalUsers.value?.length ? generalUsers.value.length + ' Selected' : 'Select General Users'"
-              formControlName="userId"
-              size="md"
-              label="General Users *"
-            >
-            </dfm-input-dropdown>
-          </div>
+<!--          <div class="dfm-input-dropdown-wrapper flex-1">-->
+<!--            <dfm-input-dropdown-->
+<!--              #generalUsers-->
+<!--              [items]="userList"-->
+<!--              [placeholder]="!!generalUsers.value?.length ? generalUsers.value.length + ' Selected' : 'Select General Users'"-->
+<!--              formControlName="userId"-->
+<!--              size="md"-->
+<!--              label="General Users *"-->
+<!--            >-->
+<!--            </dfm-input-dropdown>-->
+<!--          </div>-->
 
-          <dfm-text-area label="Comments / Clinical data" placeholder="Enter comments"
-                         formControlName="comments"></dfm-text-area>
-        </div>
-      </div>
-    </form>
-  </div>
+<!--          <dfm-text-area label="Comments / Clinical data" placeholder="Enter comments"-->
+<!--                         formControlName="comments"></dfm-text-area>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </form>-->
+<!--  </div>-->
 
-  <div class="modal-footer">
-    <dfm-button color="secondary" size="md" (click)="close(false)">Cancel</dfm-button>
-    <dfm-button color="primary" size="md" (click)="saveAppointment()">Add</dfm-button>
-  </div>
-</div>
+<!--  <div class="modal-footer">-->
+<!--    <dfm-button color="secondary" size="md" (click)="close(false)">Cancel</dfm-button>-->
+<!--    <dfm-button color="primary" size="md" (click)="saveAppointment()">Add</dfm-button>-->
+<!--  </div>-->
+<!--</div>-->

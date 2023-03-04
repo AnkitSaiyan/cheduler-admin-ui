@@ -1,7 +1,8 @@
 <div class="d-flex flex-column dfm-gap-24 ad-ap-main-wrapper">
   <section class="content-section-1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-ap-title-buttons">
-      <dfm-button color="link" size="lg" [routerLink]="[comingFromRoute === 'dashboard' ? '/dashboard' : '/appointment']">
+      <dfm-button color="link" size="lg"
+                  [routerLink]="[comingFromRoute === 'dashboard' ? '/dashboard' : '/appointment']">
         {{ comingFromRoute === 'dashboard' ? 'Dashboard' : 'Appointment' }}
       </dfm-button>
 
@@ -34,16 +35,20 @@
     </div>
 
     <div class="dfm-gap-16 ad-ap-action-buttons">
-      <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/appointment']"> Cancel </dfm-button>
-      <dfm-button [disabled]="(submitting$$ | async) === true" color="primary" size="md" class="text-nowrap" (click)="saveAppointment()"
-        >{{ edit ? 'Save Changes' : 'Add Appointment' }}
+      <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/appointment']">
+        Cancel
+      </dfm-button>
+      <dfm-button [disabled]="(submitting$$ | async) === true" color="primary" size="md" class="text-nowrap"
+                  (click)="saveAppointment()"
+      >{{ edit ? 'Save Changes' : 'Add Appointment' }}
       </dfm-button>
     </div>
 
     <!--  Mobile View  -->
     <div class="hidden dfm-gap-8 align-items-center ad-ap-title-buttons-mv">
       <div class="rounded-circle overflow-hidden">
-        <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" [routerLink]="comingFromRoute === 'view' ? '../view' : '/appointment'">
+        <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left"
+                         [routerLink]="comingFromRoute === 'view' ? '../view' : '/appointment'">
         </dfm-button-icon>
       </div>
 
@@ -98,7 +103,8 @@
             (focusout)="handleEmailInput($event)"
           >
           </dfm-input>
-          <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">Email is Invalid.</small>
+          <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">Email is
+            Invalid.</small>
         </div>
 
         <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128" *ngIf="physicianList.length">
@@ -157,13 +163,16 @@
                     />
                   </div>
                   <div>
-                    <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date" (click)="date.toggle()"></dfm-button-icon>
+                    <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date"
+                                     (click)="date.toggle()"></dfm-button-icon>
                   </div>
                 </div>
               </div>
             </div>
-            <span *ngIf="appointmentForm.get('startedAt')?.hasError('required') && appointmentForm.get('startedAt')?.touched" class="validation-error"
-              >This field is required.</span
+            <span
+              *ngIf="appointmentForm.get('startedAt')?.hasError('required') && appointmentForm.get('startedAt')?.touched"
+              class="validation-error"
+            >This field is required.</span
             >
           </div>
 
@@ -181,23 +190,23 @@
       <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> Loading slots... </span>
 
       <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="slots?.length">
-        <ng-container *ngIf="slots[0].examId !== 0; else uncombine">
-          <div class="dfm-card d-flex flex-column dfm-p-16 card-item" *ngFor="let exam of exams.value">
+        <ng-container *ngIf="!isCombinable; else uncombinable">
+          <div class="dfm-card d-flex flex-column dfm-p-16 card-item" *ngFor="let examID of exams.value">
             <div class="d-flex flex-column gap-1">
               <div class="d-flex gap-2 align-items-center text-sm">
                 <span class="font-weight-medium">Exam Name: </span>
-                <span>{{ examIdToDetails[exam]?.name }}</span>
+                <span>{{ examIdToDetails[examID]?.name }}</span>
               </div>
             </div>
 
             <div class="d-flex align-items-center gap-3 overflow-y-auto max-h-128 dfm-mt-12 flex-wrap">
               <div
                 class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
-                *ngFor="let slot of examIdToAppointmentSlots[exam];"
-                (click)="toggleSlotSelection(slot)"
+                *ngFor="let slot of examIdToAppointmentSlots[examID];"
+                (click)="handleSlotSelectionToggle(slot)"
                 [ngClass]="{
-                  'time-slot-disabled-text': !isSlotAvailable(slot),
-                  'time-slot-selected-text': selectedTimeSlot[exam]?.slot === slot.start + '-' + slot.end
+                  'time-slot-disabled-text': !checkSlotAvailability(slot),
+                  'time-slot-selected-text': selectedTimeSlot[examID]?.slot === slot.start + '-' + slot.end
                 }"
               >
                 {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
@@ -205,35 +214,36 @@
             </div>
           </div>
         </ng-container>
-        <ng-template #uncombine>
-          <div class="d-flex align-items-center gap-3 overflow-y-auto max-h-128 dfm-mt-12 flex-wrap">
-            <div class="d-flex flex-column gap-1">
-              <div class="d-flex gap-2 align-items-center text-sm">
-                <span class="font-weight-medium">Exam Name: </span>
-                <span>
-                  <ng-container *ngFor="let exam of exams.value;let i = index">
-                    {{ examIdToDetails[exam]?.name }} {{i !== (exams.value.length - 1) ? ',' : ''}}
+        <ng-template #uncombinable>
+          <div class="d-flex flex-column gap-1">
+            <div class="d-flex gap-2 align-items-center text-sm">
+              <span class="font-weight-medium">Exam(s): </span>
+              <span>
+                  <ng-container *ngFor="let examID of exams.value;let i = index">
+                    {{ examIdToDetails[+examID]?.name }}{{i !== (exams.value.length - 1) ? ',' : ''}}
                   </ng-container>
                 </span>
-              </div>
             </div>
-            <div
-              class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
-              *ngFor="let slot of examIdToAppointmentSlots[0];"
-              (click)="toggleSlotSelection(slot)"
-              [ngClass]="{
-                'time-slot-disabled-text': !isSlotAvailable(slot),
-                'time-slot-selected-text': selectedTimeSlot[0]?.slot === slot.start + '-' + slot.end
+
+            <div class="d-flex align-items-center gap-3 overflow-y-auto max-h-128 dfm-mt-12 flex-wrap">
+              <div
+                class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
+                *ngFor="let slot of examIdToAppointmentSlots[+exams.value[0]];"
+                (click)="handleSlotSelectionToggle(slot)"
+                [ngClass]="{
+                'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === slot.start + '-' + slot.end
               }"
-            >
-              {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
+              >
+                {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
+              </div>
             </div>
           </div>
         </ng-template>
 
       </div>
 
-      <dfm-text-area label="Comments / Clinical data" placeholder="Enter comments" formControlName="comments"></dfm-text-area>
+      <dfm-text-area label="Comments / Clinical data" placeholder="Enter comments"
+                     formControlName="comments"></dfm-text-area>
     </form>
   </section>
 </div>
