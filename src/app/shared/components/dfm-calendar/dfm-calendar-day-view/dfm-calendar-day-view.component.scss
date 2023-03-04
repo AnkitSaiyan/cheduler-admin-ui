@@ -444,3 +444,18 @@ h3 {
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
   }
 }
+
+@media (max-width: 680px) {
+  .calender-day-view-event-details-expanded {
+    min-width: auto !important;
+  }
+
+  .calender-day-view-event-patients-container {
+    overflow-y: auto;
+    max-height: 256px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}

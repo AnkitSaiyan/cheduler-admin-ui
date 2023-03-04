@@ -376,7 +376,12 @@ h3 {
   }
 
   .calendar-week-view-event-patients-container {
+    overflow-y: auto;
     max-height: 256px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }
 
