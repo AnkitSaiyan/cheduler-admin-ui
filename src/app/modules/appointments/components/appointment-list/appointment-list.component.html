@@ -90,6 +90,7 @@
   </section>
 
   <dfm-input
+    *ngIf="(calendarView$$ | async) === false"
     class="flex-1 ap-li-search-mv hidden"
     size="md"
     placeholder="Search by Patient name, appointment no and doctor"
@@ -98,9 +99,9 @@
   ></dfm-input>
 
   <section class="overflow-y-auto list-page-content-height"
-           [ngClass]="{ 'h-100': (calendarView$$ | async) }"
+           [ngClass]="{ 'list-page-content-height-calendar': (calendarView$$ | async) }"
            *ngIf="filteredAppointments$$ | async as appointments">
-    <ng-container *ngIf="(calendarView$$ | async) === false">
+      <ng-container *ngIf="(calendarView$$ | async) === false">
       <dfm-table [items]="appointments" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                  [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToView($event,appointments)"
                  class="dfm-table-wrapper">

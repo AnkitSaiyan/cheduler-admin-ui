@@ -9,7 +9,7 @@
   <th>{{ weekDayEnum.SAT | weekdayToName : true | uppercase }}</th>
   </thead>
 
-  <tbody>
+    <tbody class="calendar-month-view-body">
   <tr *ngFor="let days of daysInMonthMatrix;">
     <td class="calender-month-view-day-cell" *ngFor="let day of days">
       <div class="calender-month-view-day-cell-content">
@@ -77,7 +77,7 @@
           </div>
 
           <div class="calender-month-view-day-exam-event-details" [ngbPopover]="eventDetails" triggers="click" [autoClose]="'outside'">
-            <span class="calender-month-view-day-exam-event-title">{{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length === 1 ? 'Appointment' : 'Appointments' }}</span>
+            <span class="calender-month-view-day-exam-event-title text-truncate">{{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length === 1 ? 'Appointment' : 'Appointments' }}</span>
             <span class="calender-month-view-day-exam-event-time"
                   *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length === 1">
               {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()][0]?.startedAt | date : 'HH:mm' }}

@@ -61,6 +61,51 @@ h3 {
         //border-right: 1px solid var(--dfm-main-200);;
       }
 
+      .calender-day-view-weekday-alt {
+        text-align: center;
+        text-align: -webkit-center;
+        //width: 256px;
+        min-width: 128px;
+        //max-width: 256px;
+        color: var(--dfm-main-500);
+        padding: 8px 0;
+        position: relative;
+        background: var(--dfm-table-odd-cell-bg);
+
+        .calender-day-view-day-name {
+          height: 40px;
+          line-height: 40px;
+        }
+
+        .calender-day-view-date {
+          transition: all 150ms linear;
+          border-radius: 50%;
+          height: 40px;
+          width: 40px;
+          line-height: 40px;
+          font-size: 1.5rem;
+
+          //&:hover {
+          //  cursor: pointer;
+          //  background: var(--dfm-main-200);
+          //  color: black;
+          //}
+        }
+
+        .calender-day-view-header-cell-left-line {
+          border-left: 1px solid var(--dfm-main-200);
+          bottom: 0;
+          height: 100%;
+          //margin-left: -8px;
+          position: absolute;
+        }
+
+        .calender-day-view-date-today {
+          background: coral;
+          color: white;
+        }
+      }
+
       .calender-day-view-weekday {
         text-align: center;
         text-align: -webkit-center;

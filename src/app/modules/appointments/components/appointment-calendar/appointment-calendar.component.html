@@ -1,8 +1,8 @@
-<div class="bg-white d-flex flex-column dfm-gap-16 dfm-p-24 h-100">
+<div class="bg-white d-flex flex-column dfm-gap-16 dfm-p-24">
   <section class="calendar-header">
     <h4 *ngIf="selectedDate" class="">{{ selectedDate | date : 'MMM dd, yyyy' }}</h4>
 
-    <div class="d-flex dfm-gap-8 flex-wrap">
+    <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper">
       <div>
         <dfm-button-icon
           color="secondary-gray"
@@ -11,44 +11,44 @@
         ></dfm-button-icon>
       </div>
 
-      <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label">
+      <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown">
         <dfm-input-dropdown size="sm" [formControl]="calendarViewFormControl" [showDescription]="false"
                             [items]="calendarViewType"></dfm-input-dropdown>
       </div>
+    </div>
 
-      <div class="d-flex dfm-gap-8 flex-1">
-        <div>
-          <dfm-button-icon
-            color="secondary-gray"
-            size="sm"
-            icon="chevron-left"
-            (click)="changeDate(-1)"
-          ></dfm-button-icon>
-        </div>
+    <div class="d-flex dfm-gap-8 calendar-date-buttons">
+      <div>
+        <dfm-button-icon
+          color="secondary-gray"
+          size="sm"
+          icon="chevron-left"
+          (click)="changeDate(-1)"
+        ></dfm-button-icon>
+      </div>
 
-        <div class="flex-1">
-          <dfm-button
-            color="secondary-gray"
-            size="sm"
-            class="h-100"
-            (click)="updateToToday()"
-          >Today
-          </dfm-button>
-        </div>
+      <div class="flex-1">
+        <dfm-button
+          color="secondary-gray"
+          size="sm"
+          class="h-100"
+          (click)="updateToToday()"
+        >Today
+        </dfm-button>
+      </div>
 
-        <div>
-          <dfm-button-icon
-            color="secondary-gray"
-            size="sm"
-            icon="chevron-right"
-            (click)="changeDate(1)"
-          ></dfm-button-icon>
-        </div>
+      <div>
+        <dfm-button-icon
+          color="secondary-gray"
+          size="sm"
+          icon="chevron-right"
+          (click)="changeDate(1)"
+        ></dfm-button-icon>
       </div>
     </div>
   </section>
 
-  <section class="calendar-body h-100">
+  <section class="calendar-body">
     <ng-container [ngSwitch]="calendarViewFormControl.value">
       <ng-container *ngSwitchCase="'month'">
         <dfm-calendar-month-view
