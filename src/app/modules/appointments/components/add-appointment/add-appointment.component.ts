@@ -1,27 +1,32 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
-import { NotificationType } from 'diflexmo-angular-design';
-import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
-import { RoomType } from '../../../../shared/models/rooms.model';
-import { NameValue } from '../../../../shared/components/search-modal.component';
-import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
-import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { formatTime } from '../../../../shared/utils/time';
-import { PhysicianApiService } from '../../../../core/services/physician.api.service';
-import { UserType } from '../../../../shared/models/user.model';
-import { AddAppointmentRequestData, Appointment, AppointmentSlotsRequestData, Slot } from '../../../../shared/models/appointment.model';
-import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { AppointmentStatus } from '../../../../shared/models/status.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {BehaviorSubject, debounceTime, filter, map, switchMap, take, takeUntil, tap} from 'rxjs';
+import {NotificationType} from 'diflexmo-angular-design';
+import {DatePipe} from '@angular/common';
+import {ActivatedRoute, Router} from '@angular/router';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {AppointmentApiService} from '../../../../core/services/appointment-api.service';
+import {RoomType} from '../../../../shared/models/rooms.model';
+import {NameValue} from '../../../../shared/components/search-modal.component';
+import {RoomsApiService} from '../../../../core/services/rooms-api.service';
+import {StaffApiService} from '../../../../core/services/staff-api.service';
+import {ExamApiService} from '../../../../core/services/exam-api.service';
+import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
+import {TimeInIntervalPipe} from '../../../../shared/pipes/time-in-interval.pipe';
+import {formatTime} from '../../../../shared/utils/time';
+import {PhysicianApiService} from '../../../../core/services/physician.api.service';
+import {UserType} from '../../../../shared/models/user.model';
+import {
+  AddAppointmentRequestData,
+  Appointment,
+  AppointmentSlotsRequestData,
+  Slot
+} from '../../../../shared/models/appointment.model';
+import {APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE} from '../../../../shared/utils/const';
+import {RouterStateService} from '../../../../core/services/router-state.service';
+import {AppointmentStatus} from '../../../../shared/models/status.model';
+import {ShareDataService} from 'src/app/core/services/share-data.service';
 
 interface FormValues {
   patientFname: string;
@@ -88,7 +93,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public slots: Slot[] = [];
 
-  public selectedTimeSlot: { [key: number]: string } = {};
+  public selectedTimeSlot: { [key: number]: { slot: string; userList: number[]; roomList: number[]; } } = {};
 
   public examIdToAppointmentSlots: { [key: number]: Slot[] } = {};
 
@@ -200,36 +205,37 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.appointmentForm
       ?.get('startedAt')
       ?.valueChanges.pipe(
-        debounceTime(0),
-        filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
-        tap(() => this.loadingSlots$$.next(true)),
-        map((date) => {
-          this.examIdToAppointmentSlots = {};
-          this.selectedTimeSlot = {};
-          this.slots = [];
-          return this.createSlotRequestData(date, this.formValues.examList);
-        }),
-        switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
-      )
+      debounceTime(0),
+      filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
+      tap(() => this.loadingSlots$$.next(true)),
+      map((date) => {
+        this.examIdToAppointmentSlots = {};
+        this.selectedTimeSlot = {};
+        this.slots = [];
+        return this.createSlotRequestData(date, this.formValues.examList);
+      }),
+      switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
+    )
       .subscribe((slots) => {
         this.setSlots(slots[0].slots);
+        console.log(slots)
         this.loadingSlots$$.next(false);
       });
 
     this.appointmentForm
       .get('examList')
       ?.valueChanges.pipe(
-        debounceTime(0),
-        filter((examList) => examList?.length && this.formValues.startedAt?.day),
-        tap(() => this.loadingSlots$$.next(true)),
-        map((examList) => {
-          this.examIdToAppointmentSlots = {};
-          this.selectedTimeSlot = {};
-          this.slots = [];
-          return this.createSlotRequestData(this.formValues.startedAt, examList);
-        }),
-        switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
-      )
+      debounceTime(0),
+      filter((examList) => examList?.length && this.formValues.startedAt?.day),
+      tap(() => this.loadingSlots$$.next(true)),
+      map((examList) => {
+        this.examIdToAppointmentSlots = {};
+        this.selectedTimeSlot = {};
+        this.slots = [];
+        return this.createSlotRequestData(this.formValues.startedAt, examList);
+      }),
+      switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
+    )
       .subscribe((slots) => {
         this.setSlots(slots[0].slots);
         this.loadingSlots$$.next(false);
@@ -281,7 +287,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       if (date) {
         time = this.datePipe.transform(date, 'hh:mmaa');
         if (time) {
-          this.timings.push({ name: time, value: time });
+          this.timings.push({name: time, value: time});
         }
       }
     } else if (appointment?.exams[0]?.startedAt) {
@@ -290,7 +296,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       if (date) {
         time = this.datePipe.transform(date, 'hh:mmaa');
         if (time) {
-          this.timings.push({ name: time, value: time });
+          this.timings.push({name: time, value: time});
         }
       }
     }
@@ -308,7 +314,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         comments: appointment?.comments ?? null,
         approval: appointment?.approval ?? AppointmentStatus.Pending,
       },
-      { emitEvent: false },
+      {emitEvent: false},
     );
 
     const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
@@ -325,6 +331,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
               examId: 0,
               start: exam?.startedAt?.toString().slice(-8),
               end: exam?.endedAt?.toString().slice(-8),
+              roomList: appointment.exams[0].rooms?.map((room) => +room.id),
+              userList: appointment.exams[0].users?.map((user) => +user.id),
             });
           } else {
             appointment?.exams.forEach((exam) => {
@@ -332,6 +340,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
                 examId: exam?.id,
                 start: exam?.startedAt?.toString().slice(-8),
                 end: exam?.endedAt?.toString().slice(-8),
+                roomList: exam?.rooms?.map((room) => +room.id) ?? [],
+                userList: exam?.users?.map((user) => +user.id) ?? [],
               });
             });
           }
@@ -390,7 +400,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
       this.submitting$$.next(true);
 
-      const { startedAt, startTime, examList, ...rest } = this.formValues;
+      const {startedAt, startTime, examList, ...rest} = this.formValues;
 
       const requestData: AddAppointmentRequestData = {
         ...rest,
@@ -402,14 +412,14 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           };
 
           if (this.selectedTimeSlot[+examID]) {
-            const time = this.selectedTimeSlot[+examID].split('-');
+            const time = this.selectedTimeSlot[+examID].slot.split('-');
             const start = time[0].split(':');
             const end = time[1].split(':');
 
             examDetails.startedAt += ` ${start[0]}:${start[1]}:00`;
             examDetails.endedAt += ` ${end[0]}:${end[1]}:00`;
           } else {
-            const time = this.selectedTimeSlot[0].split('-');
+            const time = this.selectedTimeSlot[0].slot.split('-');
             const start = time[0].split(':');
             const end = time[1].split(':');
 
@@ -432,8 +442,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           .pipe(takeUntil(this.destroy$$))
           .subscribe({
             next: () => {
-              this.shareDataService.getLanguage$().subscribe((language: string)=>{
-                this.notificationSvc.showNotification(language === ENG_BE? `Appointment updated successfully`: 'Afspraak succesvol geupdated');
+              this.shareDataService.getLanguage$().subscribe((language: string) => {
+                this.notificationSvc.showNotification(language === ENG_BE ? `Appointment updated successfully` : 'Afspraak succesvol geupdated');
               })
               this.submitting$$.next(false);
 
@@ -444,7 +454,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
               } else {
                 route = this.edit ? '/appointment' : '/dashboard';
               }
-              this.router.navigate([route], { relativeTo: this.route });
+              this.router.navigate([route], {relativeTo: this.route});
             },
             error: (err) => {
               this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
@@ -457,8 +467,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           .pipe(takeUntil(this.destroy$$))
           .subscribe({
             next: () => {
-              this.shareDataService.getLanguage$().subscribe((language: string)=>{
-                this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully`: 'Appointment saved successfully');
+              this.shareDataService.getLanguage$().subscribe((language: string) => {
+                this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully` : 'Appointment saved successfully');
               })
               this.submitting$$.next(false);
 
@@ -473,7 +483,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
                 default:
                   route = this.edit ? '/appointment' : '../';
               }
-              this.router.navigate([route], { relativeTo: this.route });
+              this.router.navigate([route], {relativeTo: this.route});
             },
             error: (err) => {
               this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
@@ -515,7 +525,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
     Object.entries(this.selectedTimeSlot).forEach(([key, value]) => {
       const timeString = `${slot.start}-${slot.end}`;
-      if (+key !== +slot.examId && timeString === value) {
+      if (+key !== +slot.examId && timeString === value.slot) {
         isAvailable = false;
       }
     });
@@ -527,10 +537,14 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     if (!this.isSlotAvailable(slot) || !slot.end || !slot.start) {
       return;
     }
-    if (this.selectedTimeSlot[slot.examId] === `${slot.start}-${slot.end}`) {
-      this.selectedTimeSlot[slot.examId] = '';
+    if (this.selectedTimeSlot[slot.examId].slot === `${slot.start}-${slot.end}`) {
+      this.selectedTimeSlot[slot.examId] = {slot: '', roomList: [], userList: []};
     } else {
-      this.selectedTimeSlot[slot.examId] = `${slot.start}-${slot.end}`;
+      this.selectedTimeSlot[slot.examId] = {
+        slot: `${slot.start}-${slot.end}`,
+        roomList: slot?.roomList ?? [],
+        userList: slot?.userList ?? []
+      };
     }
   }
 

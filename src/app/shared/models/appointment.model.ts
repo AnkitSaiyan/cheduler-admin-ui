@@ -44,6 +44,8 @@ export interface AddAppointmentRequestData {
     examId: number;
     startedAt: string;
     endedAt: string;
+    roomList?: number[];
+    userList?: number[];
   }>;
   approval?: AppointmentStatus;
   createdBy?: number;
@@ -71,6 +73,8 @@ export interface Slot {
   start: string;
   end: string;
   examId: number;
+  userList?: number[];
+  roomList?: number[]
 }
 
 export interface AppointmentSlot {

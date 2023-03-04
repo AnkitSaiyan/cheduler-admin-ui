@@ -197,7 +197,7 @@
                 (click)="toggleSlotSelection(slot)"
                 [ngClass]="{
                   'time-slot-disabled-text': !isSlotAvailable(slot),
-                  'time-slot-selected-text': selectedTimeSlot[exam] === slot.start + '-' + slot.end
+                  'time-slot-selected-text': selectedTimeSlot[exam]?.slot === slot.start + '-' + slot.end
                 }"
               >
                 {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
@@ -223,7 +223,7 @@
               (click)="toggleSlotSelection(slot)"
               [ngClass]="{
                 'time-slot-disabled-text': !isSlotAvailable(slot),
-                'time-slot-selected-text': selectedTimeSlot[0] === slot.start + '-' + slot.end
+                'time-slot-selected-text': selectedTimeSlot[0]?.slot === slot.start + '-' + slot.end
               }"
             >
               {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
