@@ -379,12 +379,14 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       });
 
       const appointment = this.appointment$$.value;
-      if (appointment && this.edit === true && this.isSlotUpdated === false) {
+      if (appointment && this.edit && !this.isSlotUpdated) {
         this.isSlotUpdated = true;
         this.toggleSlotSelection({
           examId: appointment?.exams[0]?.id,
           start: appointment?.startedAt?.toString().slice(-8),
           end: appointment?.endedAt?.toString().slice(-8),
+          userList: slots.find((slot) => +slot.examId === +appointment?.exams[0]?.id)?.userList ?? [],
+          roomList: slots.find((slot) => +slot.examId === +appointment?.exams[0]?.id)?.roomList ?? []
         });
       }
     }
