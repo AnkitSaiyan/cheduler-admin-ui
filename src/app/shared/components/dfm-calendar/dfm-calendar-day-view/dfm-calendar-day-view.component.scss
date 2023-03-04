@@ -110,8 +110,8 @@ h3 {
         text-align: center;
         text-align: -webkit-center;
         //width: 256px;
-        min-width: 256px;
-        max-width: 256px;
+        min-width: 128px;
+        width: 128px;
         color: var(--dfm-main-500);
         padding: 8px 0;
         position: relative;
@@ -157,7 +157,7 @@ h3 {
 .calender-day-view-body-container {
   max-height: calc(100vh - 368px);
   overflow-y: auto;
-    overflow-x: hidden;
+  overflow-x: hidden;
 
   .calender-day-view-body {
     display: flex;
@@ -263,8 +263,8 @@ h3 {
 
         .calender-day-view-body-grid-column {
           //width: 256px;
-          min-width: 256px;
-          max-width: 256px;
+          min-width: 128px;
+          width: 128px;
           flex: 1;
           border-left: 1px solid var(--dfm-main-200);
           padding-right: 12px;
