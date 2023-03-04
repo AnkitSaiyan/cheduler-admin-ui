@@ -81,6 +81,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
   public rendered = false;
 
+  public getDurationFn = (s, e) => getDurationMinutes(s, e);
+
   constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private renderer: Renderer2, private modalSvc: ModalService) {
     super();
   }
@@ -150,6 +152,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   private updateDate(date: Date) {
+    date.setMinutes(date.getMinutes() - (date.getMinutes() % 5));
     this.selectedDate = date;
     this.emitDate();
   }
@@ -267,7 +270,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     });
 
     const durationMinutes = getDurationMinutes(groupedData[0].startedAt, endDate);
-
     return durationMinutes * this.pixelsPerMin;
   }
 
@@ -277,7 +279,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     const barHeight = 1;
     const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
     const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
-
+    if (top % 20) {
+      return Math.floor(top / 20) * 20 + 20;
+    }
     return top;
   }
 
@@ -306,10 +310,11 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {
+    const top = e.offsetY - (e.offsetY % 20);
     const eventCard = document.createElement('div');
     eventCard.classList.add('calender-week-view-event-container');
     eventCard.style.height = `20px`;
-    eventCard.style.top = `${e.offsetY}px`;
+    eventCard.style.top = `${top}px`;
 
     const appointmentText = document.createElement('span');
     // const textNode = document.createTextNode('Appointment');

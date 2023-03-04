@@ -43,7 +43,8 @@
     <!--  Mobile View  -->
     <div class="hidden dfm-gap-8 align-items-center ad-ap-title-buttons-mv">
       <div class="rounded-circle overflow-hidden">
-        <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" [routerLink]="comingFromRoute === 'view' ? '../view' : '/appointment'">
+        <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left"
+                         [routerLink]="comingFromRoute === 'view' ? '../view' : '/appointment'">
         </dfm-button-icon>
       </div>
 
@@ -157,7 +158,8 @@
                     />
                   </div>
                   <div>
-                    <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date" (click)="date.toggle()"></dfm-button-icon>
+                    <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date"
+                                     (click)="date.toggle()"></dfm-button-icon>
                   </div>
                 </div>
               </div>
@@ -181,8 +183,8 @@
       <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> {{'SlotsLoading' | translate}} </span>
 
       <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="slots?.length">
-        <ng-container *ngIf="slots[0].examId !== 0; else uncombine">
-          <div class="dfm-card d-flex flex-column dfm-p-16 card-item" *ngFor="let exam of exams.value">
+        <ng-container *ngIf="!isCombinable; else uncombinable">
+          <div class="dfm-card d-flex flex-column dfm-p-16 card-item" *ngFor="let examID of exams.value">
             <div class="d-flex flex-column gap-1">
               <div class="d-flex gap-2 align-items-center text-sm">
                 <span class="font-weight-medium">{{"ExamName" | translate}}: </span>
@@ -193,11 +195,11 @@
             <div class="d-flex align-items-center gap-3 overflow-y-auto max-h-128 dfm-mt-12 flex-wrap">
               <div
                 class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
-                *ngFor="let slot of examIdToAppointmentSlots[exam];"
-                (click)="toggleSlotSelection(slot)"
+                *ngFor="let slot of examIdToAppointmentSlots[examID];"
+                (click)="handleSlotSelectionToggle(slot)"
                 [ngClass]="{
-                  'time-slot-disabled-text': !isSlotAvailable(slot),
-                  'time-slot-selected-text': selectedTimeSlot[exam] === slot.start + '-' + slot.end
+                  'time-slot-disabled-text': !checkSlotAvailability(slot),
+                  'time-slot-selected-text': selectedTimeSlot[examID]?.slot === slot.start + '-' + slot.end
                 }"
               >
                 {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
@@ -215,18 +217,19 @@
                     {{ examIdToDetails[exam]?.name }} {{i !== (exams.value.length - 1) ? ',' : ''}}
                   </ng-container>
                 </span>
-              </div>
             </div>
-            <div
-              class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
-              *ngFor="let slot of examIdToAppointmentSlots[0];"
-              (click)="toggleSlotSelection(slot)"
-              [ngClass]="{
-                'time-slot-disabled-text': !isSlotAvailable(slot),
-                'time-slot-selected-text': selectedTimeSlot[0] === slot.start + '-' + slot.end
+
+            <div class="d-flex align-items-center gap-3 overflow-y-auto max-h-128 dfm-mt-12 flex-wrap">
+              <div
+                class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
+                *ngFor="let slot of examIdToAppointmentSlots[+exams.value[0]];"
+                (click)="handleSlotSelectionToggle(slot)"
+                [ngClass]="{
+                'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === slot.start + '-' + slot.end
               }"
-            >
-              {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
+              >
+                {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
+              </div>
             </div>
           </div>
         </ng-template>

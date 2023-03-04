@@ -35,4 +35,5 @@ export interface User {
   rights?: any[];
   rizivNumber?: string;
   isMandate: boolean;
+  examId: number;
 }

@@ -75,7 +75,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     this.filteredExams$$ = new BehaviorSubject<any[]>([]);
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {

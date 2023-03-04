@@ -1,14 +1,14 @@
 <div role="grid" class="calender-day-view">
   <div class="calender-day-view-absolute">
     <div class="calender-day-view-container">
-      <div role="presentation" class="calender-day-view-header">
+      <div role="presentation" class="calender-day-view-header " >
         <div class="text-xs calender-day-view-time-zone">
           <div>
             {{ (selectedDate | date : 'OOOO')?.split('+')?.join(' +') }}
           </div>
         </div>
 
-        <div role="presentation" class="calender-day-view-weekday-header">
+        <div role="presentation" class="calender-day-view-weekday-header hide-scrollbar" (scroll)="scrollTwo.scrollLeft = scrollOne.scrollLeft" #scrollOne>
           <div role="row" class="calender-day-view-weekdays">
             <div class="calender-day-view-weekday-header-left-vertical-line"></div>
             <ng-container *ngIf="headerList?.length; else todayHeader">
@@ -22,7 +22,7 @@
             </ng-container>
 
             <ng-template #todayHeader>
-              <div role="columnheader" class="calender-day-view-weekday">
+              <div role="columnheader" class="calender-day-view-weekday-alt">
                 <div class="calender-day-view-header-cell-left-line"></div>
                 <h3>
                   <div
@@ -34,7 +34,7 @@
                 </h3>
               </div>
 
-              <div role="columnheader" class="calender-day-view-weekday flex-1">
+              <div role="columnheader" class="calender-day-view-weekday-alt flex-1 max-w-full">
                 <h3>
                   <div class="text-xs font-weight-medium w-fit calender-day-view-day-name"></div>
                   <div class="w-fit calender-day-view-date"></div>
@@ -49,7 +49,7 @@
         </div>
       </div>
 
-      <div class="calender-day-view-body-container">
+      <div class="calender-day-view-body-container hide-scrollbar">
         <div role="presentation" class="calender-day-view-body">
           <div role="row" class="calender-day-view-time-slot-container">
             <div class="calender-day-view-time-slot text-sm" *ngFor="let time of 15 | timeInInterval : 12 :true">
@@ -58,7 +58,7 @@
             </div>
           </div>
 
-          <div role="presentation" class="calender-day-view-events-container-main">
+          <div role="presentation" class="calender-day-view-events-container-main" (scroll)="scrollOne.scrollLeft = scrollTwo.scrollLeft" #scrollTwo>
             <div role="row" class="calender-day-view-events-container">
               <div>
                 <ng-container *ngFor="let i of 15 | timeInInterval">
@@ -97,18 +97,23 @@
 
                                   <div class="d-flex flex-column dfm-gap-4">
                                     <span class="font-weight-medium dfm-mt-8">Staff</span>
-                                    <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
-                                      <div *ngFor="let user of exam?.users"
-                                           class="d-flex align-items-center dfm-gap-8">
-                                        <div class="circle-gray-200-40">
-                                          <!--                                    {{ user ? user?.firstname[0] : 'U' | uppercase }}-->
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                          <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
-                                          <span class="dfm-text-main-500">{{ user?.userType | titlecase }}</span>
+                                    <ng-container *ngIf="data.exams | isData : 'users'; else dash">
+                                      <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
+                                        <div *ngFor="let user of exam?.users"
+                                             class="d-flex align-items-center dfm-gap-8">
+                                          <div class="circle-gray-200-40">
+                                            <!--                                    {{ user ? user?.firstname[0] : 'U' | uppercase }}-->
+                                          </div>
+                                          <div class="d-flex flex-column">
+                                            <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
+                                            <span class="dfm-text-main-500">{{ user?.userType | titlecase }}</span>
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
+                                    </ng-container>
+                                    <ng-template #dash>
+                                      <span>{{ '' | dashIfNothing }}</span>
+                                    </ng-template>
                                   </div>
                                 </div>
                               </ng-template>

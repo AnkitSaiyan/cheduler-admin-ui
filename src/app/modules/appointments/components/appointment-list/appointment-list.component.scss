@@ -11,12 +11,16 @@
     justify-content: space-between;
   }
 
-  .ap-li-search, .ap-li-button-dropdown-group {
+  .ap-li-search, .ap-li-button-dropdown-group, .header-buttons {
     display: none !important;
   }
 
   .ap-li-title-buttons, .ap-li-search-mv, .ap-li-plus-btn {
     display: block;
+  }
+
+  .add-app-btn-mv {
+    display: flex;
   }
 
   .ap-li-plus-btn {

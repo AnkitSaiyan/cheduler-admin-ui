@@ -92,6 +92,20 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
+
+    this.routerStateSvc.listenForQueryParamsChanges$().pipe(debounceTime(100)).subscribe((params) => {
+      if (params['v']) {
+        this.calendarView$$.next(params['v'] !== 't');
+      } else {
+        this.router.navigate([], {
+          replaceUrl: true,
+          queryParams: {
+            v: 'w'
+          }
+        });
+        this.calendarView$$.next(true);
+      }
+    });
   }
 
   public ngOnInit() {
@@ -102,14 +116,14 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
 
-      appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
-
-      console.log(appointments);
-
-      this.groupAppointmentsForCalendar(...appointments);
-      this.groupAppointmentByDateAndRoom(...appointments);
-
-      console.log(this.appointmentsGroupedByDate);
+      // appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
+      //
+      // console.log(appointments);
+      //
+      // this.groupAppointmentsForCalendar(...appointments);
+      // this.groupAppointmentByDateAndRoom(...appointments);
+      //
+      // console.log(this.appointmentsGroupedByDate);
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
@@ -159,7 +173,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedAppointmentIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
+            return [...this.selectedAppointmentIDs.map((id) => ({id: +id, status: value.newStatus as number}))];
           }
           return [];
         }),
@@ -180,7 +194,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
+      this.roomList = rooms.map(({name, id}) => ({name, value: id}));
     });
 
     this.shareDataSvc
@@ -293,7 +307,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public navigateToView(e: TableItem, appointments: Appointment[]) {
     if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+      this.router.navigate([`./${e.id}/view`], {replaceUrl: true, relativeTo: this.route});
     }
   }
 
@@ -314,10 +328,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.toggleMenu();
 
     const modalRef = this.modalSvc.open(SearchModalComponent, {
-      options: { fullscreen: true },
+      options: {fullscreen: true},
       data: {
         items: [
-          ...this.appointments$$.value.map(({ id, patientLname, patientFname }) => {
+          ...this.appointments$$.value.map(({id, patientLname, patientFname}) => {
             return {
               name: `${patientFname} ${patientLname}`,
               key: `${patientFname} ${patientLname} ${id}`,
@@ -345,7 +359,12 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   }
 
   public toggleView(): void {
-    this.calendarView$$.next(!this.calendarView$$.value);
+    this.router.navigate([], {
+      replaceUrl: true,
+      queryParams: {
+        v: !this.calendarView$$.value ? 'w' : 't'
+      }
+    });
   }
 
   private groupAppointmentsForCalendar(...appointments: Appointment[]) {
@@ -362,7 +381,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
     appointments.push({} as Appointment);
     appointments.forEach((appointment, index) => {
-      if (Object.keys(appointment).length) {
+      if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
         const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
 
         if (dateString) {
@@ -412,7 +431,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
           groupedAppointments.push(appointment);
           this.appointmentsGroupedByDate[dateString].push(appointment);
         }
-      } else {
+      } else if (lastDateString) {
         this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
       }
     });

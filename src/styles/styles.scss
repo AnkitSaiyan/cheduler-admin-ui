@@ -67,6 +67,8 @@ $list-page-content-height-960: calc(100dvh - $nav-bar-mobile-top-height - $nav-b
 $list-page-content-height-960-vh: calc(100vh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height - $list-page-section-gap-height);
 $list-page-content-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height-mobile - $list-page-section-gap-height);
 $list-page-content-height-mobile-vh: calc(100vh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height-mobile - $list-page-section-gap-height);
+$list-page-content-height-mobile-calendar: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height - $list-page-section-gap-height);
+$list-page-content-height-mobile-calendar-vh: calc(100vh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height - $list-page-section-gap-height);
 
 $view-page-section1-height: 26px;
 $view-page-section1-height-mobile: 36px;
@@ -140,15 +142,30 @@ $view-page-content-height-mobile-vh: calc(100vh - $nav-bar-mobile-top-height - $
   }
 
   @media (max-width: 960px) {
+    height: $list-page-content-height-960-vh;
     height: $list-page-content-height-960;
     max-height: $list-page-content-height-960-vh;
     max-height: $list-page-content-height-960;
   }
 
   @media (max-width: 680px) {
+    height: $list-page-content-height-mobile-vh;
     height: $list-page-content-height-mobile;
     max-height: $list-page-content-height-mobile-vh;
     max-height: $list-page-content-height-mobile;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+.list-page-content-height-calendar {
+  @media (max-width: 680px) {
+    height: $list-page-content-height-mobile-calendar-vh;
+    height: $list-page-content-height-mobile-calendar;
+    max-height: $list-page-content-height-mobile-calendar;
+    max-height: $list-page-content-height-mobile-calendar-vh;
 
     &::-webkit-scrollbar {
       display: none;
@@ -813,6 +830,10 @@ ngb-datepicker {
 
 .min-w-256 {
   min-width: 256px;
+}
+
+.max-w-full {
+  max-width: 100%;
 }
 
 .max-w-fit {

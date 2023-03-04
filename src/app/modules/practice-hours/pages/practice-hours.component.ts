@@ -346,7 +346,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     const controlArrays: FormArray[] = this.practiceHoursWeekWiseControlsArray(true);
 
     if (this.isFormInvalid(controlArrays)) {
-      this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang], NotificationType.WARNING);
+      this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
       return;
     }
 
@@ -368,7 +368,8 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
                 },
               ];
             }
-            if (valid && ((control.value.dayStart && !control.value.dayEnd) || (control.value.dayEnd && !control.value.dayStart))) {
+
+            if (valid && (!control.value.dayEnd || !control.value.dayStart || control.get('dayStart')?.errors)) {
               valid = false;
             }
             return a;
@@ -379,8 +380,9 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     ];
 
     console.log(practiceHourRequestData);
+
     if (!valid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+      this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
       return;
     }
 
@@ -406,6 +408,9 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   private isFormInvalid(controlArrays: FormArray[]): boolean {
     for (let i = 0; i < controlArrays.length; i++) {
       for (let j = 0; j < controlArrays[i].length; j++) {
+        controlArrays[i].controls[j].get('dayStart')?.updateValueAndValidity();
+        // controlArrays[i].controls[j].get('daStart')?.markAsDirty()
+
         if (controlArrays[i].controls[j].get('dayStart')?.errors || controlArrays[i].controls[j].get('dayEnd')?.errors) {
           return true;
         }
@@ -478,7 +483,6 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public handleTimeFocusOut(time: string, control: AbstractControl | null | undefined) {
-    console.log('in');
     this.handleError(time, control);
   }
 

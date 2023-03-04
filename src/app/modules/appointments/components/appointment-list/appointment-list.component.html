@@ -48,31 +48,11 @@
       </div>
 
       <div class="d-flex dfm-gap-8 align-items-center">
-        <!--        <dfm-button-->
-        <!--          color="secondary"-->
-        <!--          size="sm"-->
-        <!--          [disabled]="!selectedAppointmentIDs.length"-->
-        <!--        >Confirm-->
-        <!--        </dfm-button>-->
-
-        <dfm-button
-          color="primary"
-          size="md"
-          class="text-nowrap"
-          [disabled]="false"
-          routerLink="./add"
-        >{{'AddAppointment' | translate}}
-        </dfm-button>
-      </div>
-    </div>
-
-    <ng-container *ngIf="calendarView$$ | async">
-      <div class="d-flex dfm-gap-16 align-items-center justify-content-end dfm-mt-2">
         <div class="">
           <dfm-button-icon
             color="secondary-gray"
             size="md"
-            icon="list"
+            icon="calendar-date"
             (click)="toggleView()"
           ></dfm-button-icon>
         </div>
@@ -86,10 +66,42 @@
         >{{'AddAppointment' | translate}}
         </dfm-button>
       </div>
+    </div>
+
+    <ng-container *ngIf="calendarView$$ | async">
+      <div class="d-flex dfm-gap-8 align-items-center justify-content-end">
+        <div class="">
+          <dfm-button-icon
+            color="secondary-gray"
+            size="md"
+            icon="list"
+            (click)="toggleView()"
+          ></dfm-button-icon>
+        </div>
+
+        <dfm-button
+          color="primary"
+          size="md"
+          class="text-nowrap header-buttons"
+          [disabled]="false"
+          routerLink="./add"
+        >{{'AddAppointment' | translate}}
+        </dfm-button>
+
+        <dfm-button
+          color="primary"
+          size="md"
+          class="add-app-btn-mv hidden"
+          [disabled]="false"
+          routerLink="./add"
+        >Add
+        </dfm-button>
+      </div>
     </ng-container>
   </section>
 
   <dfm-input
+    *ngIf="(calendarView$$ | async) === false"
     class="flex-1 ap-li-search-mv hidden"
     size="md"
     placeholder="{{'SearchbyPatientnameappointmentnoanddoctor' | translate}}"
@@ -98,9 +110,9 @@
   ></dfm-input>
 
   <section class="overflow-y-auto list-page-content-height"
-           [ngClass]="{ 'h-100': (calendarView$$ | async) }"
+           [ngClass]="{ 'list-page-content-height-calendar': (calendarView$$ | async) }"
            *ngIf="filteredAppointments$$ | async as appointments">
-    <ng-container *ngIf="(calendarView$$ | async) === false">
+      <ng-container *ngIf="(calendarView$$ | async) === false">
       <dfm-table [items]="appointments" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                  [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToView($event,appointments)"
                  class="dfm-table-wrapper">
@@ -212,12 +224,7 @@
     </ng-container>
 
     <ng-container *ngIf="calendarView$$ | async">
-      <dfm-appointment-calendar class="h-100"
-                                [headerList]="roomList"
-                                [appointmentsGroupedByDate]="appointmentsGroupedByDate"
-                                [appointmentsGroupedByDateAndTIme]="appointmentsGroupedByDateAndTime"
-                                [appointmentGroupedByDateAndRoom]="appointmentGroupedByDateAndRoom"
-      >
+      <dfm-appointment-calendar class="h-100">
       </dfm-appointment-calendar>
     </ng-container>
   </section>
