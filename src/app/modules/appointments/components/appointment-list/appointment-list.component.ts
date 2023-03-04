@@ -351,7 +351,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
     appointments.push({} as Appointment);
     appointments.forEach((appointment, index) => {
-      if (Object.keys(appointment).length) {
+      if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
         const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
 
         if (dateString) {
@@ -401,7 +401,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
           groupedAppointments.push(appointment);
           this.appointmentsGroupedByDate[dateString].push(appointment);
         }
-      } else {
+      } else if (lastDateString) {
         this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
       }
     });

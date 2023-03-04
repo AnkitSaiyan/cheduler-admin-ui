@@ -204,7 +204,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
           if (!sameGroup) {
             // group++;
 
-            if (index !== 0) {
+            if (index !== 0 && lastDateString) {
               this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
               groupedAppointments = [];
             }

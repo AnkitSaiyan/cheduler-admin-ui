@@ -294,7 +294,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     const examList = appointment?.exams?.map((exam) => exam?.id) ?? [];
 
     this.loadingSlots$$.next(true);
-    
+
     this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
       .pipe(take(1))
       .subscribe((slots) => {

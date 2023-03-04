@@ -1,4 +1,4 @@
-import {RoomType} from './rooms.model';
+import {Room, RoomType} from './rooms.model';
 import {Exam} from './exam.model';
 import {User} from './user.model';
 import {AppointmentStatus, ReadStatus} from './status.model';
@@ -30,6 +30,8 @@ export interface Appointment {
   exams: Exam[];
   apmtId: number;
   isCombineExam: boolean;
+  roomsDetail: Room[];
+  usersDetail: User[];
 }
 
 export interface AddAppointmentRequestData {

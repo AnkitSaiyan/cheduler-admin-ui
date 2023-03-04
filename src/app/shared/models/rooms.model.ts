@@ -16,6 +16,8 @@ export interface Room {
   availabilityType: AvailabilityType;
   status: Status;
   practiceAvailability: PracticeAvailability[];
+
+  examId: number;
   roomNo?: number;
   examLists?: number[];
 }

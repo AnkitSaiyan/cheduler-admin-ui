@@ -155,7 +155,7 @@ h3 {
 }
 
 .calender-day-view-body-container {
-  max-height: calc(100vh - 368px);
+  //max-height: calc(100vh - 368px);
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -292,7 +292,7 @@ h3 {
 }
 
 .calender-day-view-event-container {
-  position: relative;
+  //position: relative;
   left: 0px;
   right: 0px;
   display: flex;
