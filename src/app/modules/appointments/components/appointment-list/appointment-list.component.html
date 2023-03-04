@@ -6,13 +6,13 @@
         color="link"
         size="lg"
         routerLink="./"
-      >Appointment
+      >{{'Appointment' | translate}}
       </dfm-button>
 
       <dfm-input
         class="flex-1 ap-li-search"
         size="md"
-        placeholder="Search by Patient name, appointment no and doctor"
+        placeholder="{{'SearchbyPatientnameappointmentnoanddoctor' | translate}}"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
@@ -32,7 +32,7 @@
             [items]="downloadItems"
             [showDescription]="false"
             [formControl]="downloadDropdownControl"
-            placeholder="Download"
+            placeholder="{{'Download' | translate}}"
             size="md"
           ></dfm-input-dropdown>
         </div>
@@ -61,7 +61,7 @@
           class="text-nowrap"
           [disabled]="false"
           routerLink="./add"
-        >Add Appointment
+        >{{'AddAppointment' | translate}}
         </dfm-button>
       </div>
     </div>
@@ -83,7 +83,7 @@
           class="text-nowrap"
           [disabled]="false"
           routerLink="./add"
-        >Add Appointment
+        >{{'AddAppointment' | translate}}
         </dfm-button>
       </div>
     </ng-container>
@@ -92,7 +92,7 @@
   <dfm-input
     class="flex-1 ap-li-search-mv hidden"
     size="md"
-    placeholder="Search by Patient name, appointment no and doctor"
+    placeholder="{{'SearchbyPatientnameappointmentnoanddoctor' | translate}}"
     icon="search-sm"
     [formControl]="searchControl"
   ></dfm-input>
@@ -105,7 +105,7 @@
                  [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToView($event,appointments)"
                  class="dfm-table-wrapper">
         <ng-template #headerRowTemplate>
-          <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+          <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate}}</dfm-table-header-cell>
         </ng-template>
 
         <ng-template #bodyRowTemplate let-item>

@@ -107,6 +107,34 @@ export const Translate = Object.freeze({
     [ENG_BE]: 'Place In Agenda',
     [DUTCH_BE]: 'Plaats in agenda',
   },
+  StartedAt: {
+    [ENG_BE]: 'Started At',
+    [DUTCH_BE]: 'Begon bij',
+  },
+  EndedAt: {
+    [ENG_BE]: 'Ended At',
+    [DUTCH_BE]: 'Geëindigd om',
+  },
+  PatientName: {
+    [ENG_BE]: 'Patient Name',
+    [DUTCH_BE]: 'Naam patiënt',
+  },
+  Doctor: {
+    [ENG_BE]: 'Doctor',
+    [DUTCH_BE]: 'Docter',
+  },
+  AppointmentNo: {
+    [ENG_BE]: 'Appointment No',
+    [DUTCH_BE]: 'Afspraak nr.',
+  },
+  AppliedOn: {
+    [ENG_BE]: 'Applied On',
+    [DUTCH_BE]: 'Toegepast op',
+  },
+  Read: {
+    [ENG_BE]: 'Read',
+    [DUTCH_BE]: 'Lees',
+  },
 
   // Toast Messages
   DownloadSuccess: (filetype) => ({

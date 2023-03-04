@@ -17,6 +17,9 @@ import { Appointment } from '../../../../shared/models/appointment.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { getDurationMinutes } from '../../../../shared/models/calendar.model';
 import { Exam } from '../../../../shared/models/exam.model';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -32,7 +35,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Started At', 'Ended At', 'Patient Name', 'Doctor', 'Appointment No', 'Applied On', 'Read', 'Status', 'Actions'];
+  public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Doctor', 'AppointmentNo', 'AppliedOn', 'Read', 'Status', 'Actions'];
 
   public downloadItems: NameValue[] = [];
 
@@ -43,6 +46,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   public appointmentsGroupedByDate: { [key: string]: Appointment[] } = {};
 
   public appointmentsGroupedByDateAndTime: { [keydeployed: string]: Appointment[][] } = {};
+
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
 
   public appointmentGroupedByDateAndRoom: {
     [key: string]: {
@@ -80,6 +87,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
     private titleCasePipe: TitleCasePipe,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -174,6 +182,34 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
       this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
     });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        this.columns = [
+          Translate.StartedAt[lang],
+          Translate.EndedAt[lang],
+          Translate.PatientName[lang],
+          Translate.Doctor[lang],
+          Translate.AppointmentNo[lang],
+          Translate.AppliedOn[lang],
+          Translate.Read[lang],
+          Translate.Status[lang],
+          Translate.Actions[lang],
+        ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
   }
 
   public override ngOnDestroy() {
@@ -210,7 +246,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Appointment?',
+        bodyText: 'AreYouSureYouWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
