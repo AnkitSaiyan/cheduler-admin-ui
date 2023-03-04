@@ -78,7 +78,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
-    this.examApiSvc.allExams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
+    this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
       this.exams$$.next(exams);
       this.filteredExams$$.next(exams);
     });
