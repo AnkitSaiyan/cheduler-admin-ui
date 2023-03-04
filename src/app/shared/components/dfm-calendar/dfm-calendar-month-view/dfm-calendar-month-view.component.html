@@ -29,7 +29,7 @@
                     <ng-template ngbPanelTitle>
                       <div
                         class="calender-month-view-day-exam-details-expanded-patient-details-container">
-                        <div class="calender-month-view-day-exam-details-expanded-patient-details">
+                        <div class="dfm-p-8 d-flex flex-column">
                           <span class="font-weight-medium">{{ ap.patientFname + ' ' + ap.patientLname }}</span>
                           <span class="text-sm dfm-text-main-500">
                             {{ (ap.startedAt | date : 'HH:mm') + ' - ' + (ap.endedAt | date : 'HH:mm') }} ({{getDurationFn(ap.startedAt, ap.endedAt)}} min)
@@ -76,7 +76,7 @@
             {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length }}
           </div>
 
-          <div class="calender-month-view-day-exam-event-details" [ngbPopover]="eventDetails" triggers="click" [autoClose]="'outside'">
+          <div class="calender-month-view-day-exam-event-details" [ngbPopover]="eventDetails" triggers="click" [autoClose]="'outside'" container="body">
             <span class="calender-month-view-day-exam-event-title text-truncate">{{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length === 1 ? 'Appointment' : 'Appointments' }}</span>
             <span class="calender-month-view-day-exam-event-time"
                   *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length === 1">

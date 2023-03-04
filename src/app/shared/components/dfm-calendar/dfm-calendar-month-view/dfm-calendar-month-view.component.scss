@@ -94,14 +94,14 @@ table, th, tr, td {
               display: flex;
               flex-direction: column;
 
-              .calender-month-view-day-exam-details-expanded-patient-details {
-                display: flex;
-                flex-direction: column;
-                padding: 8px;
-                //&:hover {
-                //  background: var(--dfm-main-100);
-                //}
-              }
+              //.calender-month-view-day-exam-details-expanded-patient-details {
+              //  display: flex;
+              //  flex-direction: column;
+              //  padding: 8px !important;
+              //  //&:hover {
+              //  //  background: var(--dfm-main-100);
+              //  //}
+              //}
 
               .calender-month-view-day-exam-details-expanded-patient-details-divider {
                 border-bottom: 1px solid var(--dfm-main-200);
@@ -178,6 +178,15 @@ table, th, tr, td {
 
   .calender-month-view-day-exam-event-time, .calender-month-view-day-exam-event-title {
     display: none;
+  }
+
+  .calender-month-view-day-exam-details-expanded {
+    min-width: auto;
+  }
+
+  .calender-month-view-day-exam-details-expanded-patients-container {
+    max-height: 256px;
+    overflow: auto;
   }
 }
 
