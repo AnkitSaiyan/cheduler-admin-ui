@@ -49,67 +49,57 @@ export class AppointmentApiService {
         return [];
       }
 
-      return appointments.map((appointment) => {
-        const examIdToRooms: { [key: number]: Room[] } = {};
-        const examIdToUsers: { [key: number]: User[] } = {};
-
-        if (appointment.roomsDetail?.length) {
-          appointment?.roomsDetail?.forEach((room) => {
-            if (!examIdToRooms[+room.examId]) {
-              examIdToRooms[+room.examId] = [];
-            }
-            examIdToRooms[+room.examId].push(room);
-          });
-        }
-
-        if (appointment.usersDetail?.length) {
-          appointment?.usersDetail?.forEach((user) => {
-            if (!examIdToUsers[+user.examId]) {
-              examIdToUsers[+user.examId] = [];
-            }
-            examIdToUsers[+user.examId].push(user);
-          });
-        }
-
-        console.log(examIdToRooms, examIdToUsers)
-        let startedAt;
-        let endedAt;
-
-        const ap = {
-          ...appointment,
-          exams: appointment.exams.map((exam) => {
-            if (exam.startedAt && (!startedAt || new Date(exam.startedAt) < startedAt)) {
-              startedAt = new Date(exam.startedAt);
-            }
-
-            if (exam.endedAt && (!endedAt || new Date(exam.endedAt) > endedAt)) {
-              endedAt = new Date(exam.endedAt);
-            }
-
-            return {
-              ...exam, rooms: examIdToRooms[+exam.id], users: examIdToUsers[+exam.id]
-            };
-          }),
-        }
-
-        ap.startedAt = startedAt;
-        ap.endedAt = endedAt;
-
-        return ap;
-      });
-
-      // return response.data.map((appointment) => {
-      //   return {
-      //     ...appointment,
-      //     startedAt: appointment.exams.sort((a, b) => {
-      //       return new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime();
-      //     })[0]?.startedAt,
-      //     endedAt: appointment.exams.sort((a, b) => {
-      //       return new Date(b.endedAt).getTime() - new Date(a.endedAt).getTime();
-      //     })[0]?.endedAt,
-      //   };
-      // });
+      return appointments.map((appointment) => this.getAppointmentModified(appointment))
     }));
+  }
+
+  private getAppointmentModified(appointment: Appointment): Appointment {
+    const examIdToRooms: { [key: number]: Room[] } = {};
+    const examIdToUsers: { [key: number]: User[] } = {};
+
+    if (appointment.roomsDetail?.length) {
+      appointment?.roomsDetail?.forEach((room) => {
+        if (!examIdToRooms[+room.examId]) {
+          examIdToRooms[+room.examId] = [];
+        }
+        examIdToRooms[+room.examId].push(room);
+      });
+    }
+
+    if (appointment.usersDetail?.length) {
+      appointment?.usersDetail?.forEach((user) => {
+        if (!examIdToUsers[+user.examId]) {
+          examIdToUsers[+user.examId] = [];
+        }
+        examIdToUsers[+user.examId].push(user);
+      });
+    }
+
+    console.log(examIdToRooms, examIdToUsers)
+    let startedAt;
+    let endedAt;
+
+    const ap = {
+      ...appointment,
+      exams: appointment.exams.map((exam) => {
+        if (exam.startedAt && (!startedAt || new Date(exam.startedAt) < startedAt)) {
+          startedAt = new Date(exam.startedAt);
+        }
+
+        if (exam.endedAt && (!endedAt || new Date(exam.endedAt) > endedAt)) {
+          endedAt = new Date(exam.endedAt);
+        }
+
+        return {
+          ...exam, rooms: examIdToRooms[+exam.id], users: examIdToUsers[+exam.id]
+        };
+      }),
+    }
+
+    ap.startedAt = startedAt;
+    ap.endedAt = endedAt;
+
+    return ap;
   }
 
   public changeAppointmentStatus$(requestData: ChangeStatusRequestData[]): Observable<boolean> {
@@ -131,7 +121,12 @@ export class AppointmentApiService {
 
   public getAppointmentByID$(appointmentID: number): Observable<Appointment | undefined> {
     return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
-      switchMap(() => this.http.get<BaseResponse<Appointment>>(`${this.appointmentUrl}/${appointmentID}`).pipe(map((response) => response.data))),
+      switchMap(() => this.http.get<BaseResponse<Appointment>>(`${this.appointmentUrl}/${appointmentID}`).pipe(map((response) => {
+        if (!response?.data) {
+          return {} as Appointment;
+        }
+        return this.getAppointmentModified(response.data);
+      }))),
     );
   }
 

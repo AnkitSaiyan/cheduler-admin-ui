@@ -237,7 +237,8 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
             amountofMinutes: +res.minutes,
             extensionType: extend ? 'extend' : 'shorten',
             from: res.top ? 'AtTheTop' : 'AtTheBottom',
-            id: appointment.id,
+            appointmentId: appointment.id,
+            examId: appointment.exams[0].id
           } as UpdateDurationRequestData;
 
           eventContainer?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -329,8 +330,10 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     });
 
     modalRef.closed.pipe(take(1)).subscribe((res) => {
-      if (!res) {
-        eventCard.remove();
+      eventCard.remove();
+      if (res) {
+        // show the created card
+        // In progress
       }
     });
   }

@@ -365,7 +365,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         (this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
         (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length)
       ) {
-        this.notificationSvc.showNotification('Please select the slots for all exams.', NotificationType.WARNING);
+        this.notificationSvc.showNotification('Please select slots for all exams.', NotificationType.WARNING);
         return;
       }
 

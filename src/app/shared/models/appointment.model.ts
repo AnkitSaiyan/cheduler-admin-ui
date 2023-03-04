@@ -63,7 +63,8 @@ export type ExtensionType = 'shorten' | 'extend';
 export type ChangePosition = 'AtTheTop' | 'AtTheBottom';
 
 export interface UpdateDurationRequestData {
-  id: number;
+  appointmentId: number;
+  examId: number;
   amountofMinutes: number;
   from: ChangePosition;
   extensionType: ExtensionType;

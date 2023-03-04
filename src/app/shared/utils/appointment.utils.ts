@@ -95,7 +95,7 @@ export class AppointmentUtils {
   public static GenerateAppointmentRequestData(
     formValues: CreateAppointmentFormValues,
     selectedTimeSlot: SelectedSlots,
-    appointment: Appointment | undefined
+    appointment?: Appointment | undefined
   ): AddAppointmentRequestData {
     const {startedAt, startTime, examList, ...rest} = formValues;
 
