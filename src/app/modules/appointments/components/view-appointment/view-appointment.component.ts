@@ -75,7 +75,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Appointment?',
+        bodyText: 'AreYouSureYouWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,

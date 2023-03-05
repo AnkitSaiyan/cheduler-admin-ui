@@ -1,9 +1,8 @@
 <div class="d-flex flex-column dfm-gap-24 ad-ap-main-wrapper">
   <section class="content-section-1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-ap-title-buttons">
-      <dfm-button color="link" size="lg"
-                  [routerLink]="[comingFromRoute === 'dashboard' ? '/dashboard' : '/appointment']">
-        {{ comingFromRoute === 'dashboard' ? 'Dashboard' : 'Appointment' }}
+      <dfm-button color="link" size="lg" [routerLink]="[comingFromRoute === 'dashboard' ? '/dashboard' : '/appointment']">
+        {{ comingFromRoute === 'dashboard' ? ('Dashboard' | translate) : ('Appointment' | translate) }}
       </dfm-button>
 
       <div style="width: 16px; height: 16px" class="h-fit">
@@ -16,7 +15,7 @@
         *ngIf="comingFromRoute === 'dashboard'"
         [routerLink]="[comingFromRoute === 'dashboard' ? '/dashboard' : '/appointment']"
       >
-        {{ comingFromRoute === 'dashboard' ? 'Appointment' : '' }}
+        {{ comingFromRoute === 'dashboard' ? ('Appointment' | translate) : '' }}
       </dfm-button>
 
       <div style="width: 16px; height: 16px" class="h-fit" *ngIf="comingFromRoute === 'dashboard'">
@@ -31,16 +30,13 @@
         </div>
       </div>
 
-      <dfm-button color="link-gray" size="lg">{{ edit ? 'Edit' : 'Add' }} </dfm-button>
+      <dfm-button color="link-gray" size="lg">{{ edit ? ('Edit' | translate) : ('Add' | translate) }} </dfm-button>
     </div>
 
     <div class="dfm-gap-16 ad-ap-action-buttons">
-      <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/appointment']">
-        Cancel
-      </dfm-button>
-      <dfm-button [disabled]="(submitting$$ | async) === true" color="primary" size="md" class="text-nowrap"
-                  (click)="saveAppointment()"
-      >{{ edit ? 'Save Changes' : 'Add Appointment' }}
+      <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/appointment']"> {{'Cancel' | translate}} </dfm-button>
+      <dfm-button [disabled]="(submitting$$ | async) === true" color="primary" size="md" class="text-nowrap" (click)="saveAppointment()"
+        >{{ edit ? ('SaveChanges' | translate) : ('AddAppointment' | translate) }}
       </dfm-button>
     </div>
 
@@ -52,7 +48,7 @@
         </dfm-button-icon>
       </div>
 
-      <dfm-button color="link" size="lg" routerLink="./"> {{ edit ? 'Edit' : 'Add' }} Appointment</dfm-button>
+      <dfm-button color="link" size="lg" routerLink="./"> {{ edit ? ('Edit' | translate) : ('Add' | translate) }} Appointment</dfm-button>
     </div>
     <!--  **  -->
   </section>
@@ -63,8 +59,8 @@
         <dfm-input
           class="flex-1"
           size="md"
-          placeholder="Enter first name"
-          label="Patient First Name *"
+          placeholder="{{'EnterFirstName' | translate}}"
+          label="{{'PatientFirstName' | translate}}*"
           formControlName="patientFname"
           #pFName
           [dfmNameInput]="pFName"
@@ -73,8 +69,8 @@
         <dfm-input
           class="flex-1"
           size="md"
-          placeholder="Enter last name"
-          label="Patient Last Name *"
+          placeholder="{{'EnterLastName' | translate}}"
+          label="{{'PatientLastName' | translate}}*"
           formControlName="patientLname"
           #pLName
           [dfmNameInput]="pLName"
@@ -83,8 +79,8 @@
         <dfm-input
           class="flex-1"
           size="md"
-          placeholder="Enter Telephone"
-          label="Enter Telephone *"
+          placeholder="{{'EnterTelephone' | translate}}"
+          label="{{'EnterTelephone' | translate}}*"
           formControlName="patientTel"
           #phone
           [dfmNumberInput]="phone"
@@ -97,14 +93,13 @@
           <dfm-input
             class="flex-1 min-w-128"
             size="md"
-            placeholder="Enter Patient Email"
-            label="Patient Email *"
+            placeholder="{{'EnterPatientEmail' | translate}}"
+            label="{{'PatientEmail' | translate}}*"
             formControlName="patientEmail"
             (focusout)="handleEmailInput($event)"
           >
           </dfm-input>
-          <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">Email is
-            Invalid.</small>
+          <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">{{'InvalidEmail' | translate}}</small>
         </div>
 
         <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128" *ngIf="physicianList.length">
@@ -112,8 +107,8 @@
             [items]="physicianList"
             class="flex-1"
             size="md"
-            placeholder="Select doctor"
-            label="Doctor *"
+            placeholder="{{'Selectdoctor' | translate}}"
+            label="{{'Doctor' | translate}} *"
             formControlName="doctorId"
           >
           </dfm-input-dropdown>
@@ -123,10 +118,10 @@
           <dfm-input-dropdown
             #generalUser
             [items]="userList"
-            placeholder="Select General User"
+            placeholder="{{'SelectGeneralUser' | translate}}"
             formControlName="userId"
             size="md"
-            label="General User *"
+            label="{{'GeneralUser' | translate}} *"
           >
           </dfm-input-dropdown>
         </div>
@@ -139,17 +134,17 @@
               #exams
               [items]="examList"
               [multiple]="true"
-              [placeholder]="!!exams.value?.length ? exams.value.length + ' Selected' : 'Select Exams'"
+              [placeholder]="!!exams.value?.length ? exams.value.length + ('Selected' | translate) : ('SelectExams' | translate)"
               formControlName="examList"
               size="md"
-              label="Exams *"
+              label="{{'Exams' | translate}} *"
             >
             </dfm-input-dropdown>
           </div>
 
           <div class="flex-1">
             <div class="d-flex flex-column dfm-gap-8 flex-wrap">
-              <span class="text-sm font-weight-medium dfm-text-main-700">Date *</span>
+              <span class="text-sm font-weight-medium dfm-text-main-700">{{'Date' | translate}} *</span>
               <div class="d-flex align-items-center dfm-gap-16 ad-ap-dates">
                 <div class="dfm-button-group-wrapper w-full h-fit">
                   <div class="input-as-dfm-input">
@@ -169,10 +164,8 @@
                 </div>
               </div>
             </div>
-            <span
-              *ngIf="appointmentForm.get('startedAt')?.hasError('required') && appointmentForm.get('startedAt')?.touched"
-              class="validation-error"
-            >This field is required.</span
+            <span *ngIf="appointmentForm.get('startedAt')?.hasError('required') && appointmentForm.get('startedAt')?.touched" class="validation-error"
+              >{{'RequiredField' | translate}}</span
             >
           </div>
 
@@ -184,17 +177,17 @@
         class="font-weight-medium text-sm dfm-my-8"
         *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false"
       >
-        No slots found for selected Exams and Date combination.
+       {{'NoslotsfoundforselectedExamsandDatecombination' | translate}}
       </span>
 
-      <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> Loading slots... </span>
+      <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> {{'SlotsLoading' | translate}} </span>
 
       <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="slots?.length">
         <ng-container *ngIf="!isCombinable; else uncombinable">
           <div class="dfm-card d-flex flex-column dfm-p-16 card-item" *ngFor="let examID of exams.value">
             <div class="d-flex flex-column gap-1">
               <div class="d-flex gap-2 align-items-center text-sm">
-                <span class="font-weight-medium">Exam Name: </span>
+                <span class="font-weight-medium">{{"ExamName" | translate}}: </span>
                 <span>{{ examIdToDetails[examID]?.name }}</span>
               </div>
             </div>
@@ -214,10 +207,11 @@
             </div>
           </div>
         </ng-container>
+
         <ng-template #uncombinable>
           <div class="d-flex flex-column gap-1">
             <div class="d-flex gap-2 align-items-center text-sm">
-              <span class="font-weight-medium">Exam(s): </span>
+              <span class="font-weight-medium">{{'ExamName' | translate}}: </span>
               <span>
                   <ng-container *ngFor="let examID of exams.value;let i = index">
                     {{ examIdToDetails[+examID]?.name }}{{i !== (exams.value.length - 1) ? ',' : ''}}
@@ -242,8 +236,7 @@
 
       </div>
 
-      <dfm-text-area label="Comments / Clinical data" placeholder="Enter comments"
-                     formControlName="comments"></dfm-text-area>
+      <dfm-text-area label="{{'CommentsClinicalData' | translate}}" placeholder="{{'EnterComments' | translate}}" formControlName="comments"></dfm-text-area>
     </form>
   </section>
 </div>
