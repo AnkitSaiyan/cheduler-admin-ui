@@ -1,22 +1,22 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject, debounceTime, takeUntil } from 'rxjs';
-import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
-import { DestroyableComponent } from '../../../shared/components/destroyable.component';
-import { Weekday } from '../../../shared/models/calendar.model';
-import { NotificationDataService } from '../../../core/services/notification-data.service';
-import { PracticeAvailabilityServer } from '../../../shared/models/practice.model';
-import { PracticeHoursApiService } from '../../../core/services/practice-hours-api.service';
-import { checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumber } from '../../../shared/utils/time';
-import { NameValue } from '../../../shared/components/search-modal.component';
-import { NameValuePairPipe } from '../../../shared/pipes/name-value-pair.pipe';
-import { TimeInIntervalPipe } from '../../../shared/pipes/time-in-interval.pipe';
-import { getNumberArray } from '../../../shared/utils/getNumberArray';
-import { toggleControlError } from '../../../shared/utils/toggleControlError';
-import { TIME_24 } from '../../../shared/utils/const';
-import { Translate } from '../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { COMING_FROM_ROUTE, EDIT, EXAM_ID, ENG_BE, DUTCH_BE, Statuses, StatusesNL } from '../../../shared/utils/const';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import {BehaviorSubject, debounceTime, takeUntil} from 'rxjs';
+import {BadgeColor, InputDropdownComponent, NotificationType} from 'diflexmo-angular-design';
+import {DestroyableComponent} from '../../../shared/components/destroyable.component';
+import {Weekday} from '../../../shared/models/calendar.model';
+import {NotificationDataService} from '../../../core/services/notification-data.service';
+import {PracticeAvailabilityServer} from '../../../shared/models/practice.model';
+import {PracticeHoursApiService} from '../../../core/services/practice-hours-api.service';
+import {checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumber} from '../../../shared/utils/time';
+import {NameValue} from '../../../shared/components/search-modal.component';
+import {NameValuePairPipe} from '../../../shared/pipes/name-value-pair.pipe';
+import {TimeInIntervalPipe} from '../../../shared/pipes/time-in-interval.pipe';
+import {getNumberArray} from '../../../shared/utils/getNumberArray';
+import {toggleControlError} from '../../../shared/utils/toggleControlError';
+import {TIME_24} from '../../../shared/utils/const';
+import {Translate} from '../../../shared/models/translate.model';
+import {ShareDataService} from 'src/app/core/services/share-data.service';
+import {COMING_FROM_ROUTE, EDIT, EXAM_ID, ENG_BE, DUTCH_BE, Statuses, StatusesNL} from '../../../shared/utils/const';
 
 // interface TimeDistributed {
 //   hour: number;
@@ -104,7 +104,6 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     this.createForm();
 
     this.practiceHourApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
-      console.log(practiceHours);
       this.practiceHoursData$$.next(practiceHours);
       this.createPracticeControls(practiceHours);
     });
@@ -161,12 +160,10 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     const weekdays = new Set([0, 1, 2, 3, 4, 5, 6]);
 
     if (practiceHours?.length) {
-      // this.practiceHourForm.removeControl('practiceHours');
-      // this.practiceHourForm.addControl('practiceHours', this.fb.group({}));
       practiceHours.sort((p1, p2) => p1.weekday - p2.weekday);
 
       practiceHours.forEach((practice) => {
-        this.practiceHourForm.patchValue({ selectedWeekday: practice.weekday });
+        this.practiceHourForm.patchValue({selectedWeekday: practice.weekday});
         this.addPracticeHoursControls(practice);
         if (weekdays.has(practice.weekday)) {
           weekdays.delete(practice.weekday);
@@ -174,27 +171,31 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       });
 
       weekdays.forEach((weekday) => {
-        this.practiceHourForm.patchValue({ selectedWeekday: weekday });
+        this.practiceHourForm.patchValue({selectedWeekday: weekday});
         this.addPracticeHoursControls();
       });
 
-      this.practiceHourForm.patchValue({ selectedWeekday: Weekday.ALL });
+      this.practiceHourForm.patchValue({selectedWeekday: Weekday.ALL});
     } else {
       this.addPracticeHoursControls();
     }
 
     this.cdr.detectChanges();
+
+    // if (practiceHours) {
+    //   const formArrays = this.practiceHoursWeekWiseControlsArray(true);
+    //   this.handleSlotExistsError(formArrays);
+    // }
   }
 
   private getPracticeHoursFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string, id?: number): FormGroup {
     const fg = this.fb.group({
-      ...(id ? { id: [id ?? 0, []] } : {}),
+      ...(id ? {id: [id ?? 0, []]} : {}),
       weekday: [weekday ?? this.practiceHourFormValues.selectedWeekday, []],
       dayStart: [get24HourTimeString(dayStart), []],
       dayEnd: [get24HourTimeString(dayEnd), []],
       startTimings: [this.filteredTimings, []],
       endTimings: [this.filteredTimings, []],
-      // isPriority: [false, []],
     });
 
     fg.get('dayStart')
@@ -244,7 +245,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     const controls: FormArray[] = [];
 
     const fg = this.practiceHourForm.get('practiceHours');
-    const { selectedWeekday } = this.practiceHourFormValues;
+    const {selectedWeekday} = this.practiceHourFormValues;
     let keys = [1, 2, 3, 4, 5, 6, 0];
 
     if (!getAll) {
@@ -284,7 +285,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     }
 
     // const { weekday } = this.practiceHourFormValues;
-    this.practiceHourForm.patchValue({ selectedWeekday });
+    this.practiceHourForm.patchValue({selectedWeekday});
     this.addPracticeHoursControls();
     this.isExceptionFormSelected = false;
   }
@@ -327,13 +328,6 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       return 'gray';
     }
 
-    if (+selectedTab === 8) {
-      const formArray = this.exceptionFormArray;
-      if (formArray.controls.every((control) => control.value.date?.day && control.value.startTime?.hour && control.value.endTime?.hour)) {
-        return 'gray';
-      }
-    }
-
     const practiceHours = this.practiceHourFormValues.practiceHours[selectedTab.toString()];
     if (practiceHours?.length && practiceHours.every((pa) => pa.dayEnd && pa.dayStart)) {
       return 'gray';
@@ -358,6 +352,10 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
         (acc, formArray) => [
           ...acc,
           ...formArray.controls.reduce((a, control) => {
+            if (valid && (((control.value.dayStart && !control.value.dayEnd) || (!control.value.dayStart && control.value.dayEnd)) || control.get('dayStart')?.errors)) {
+              valid = false;
+            }
+
             if (control.value.dayStart && control.value.dayEnd) {
               return [
                 ...a,
@@ -369,9 +367,6 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
               ];
             }
 
-            if (valid && (!control.value.dayEnd || !control.value.dayStart || control.get('dayStart')?.errors)) {
-              valid = false;
-            }
             return a;
           }, [] as PracticeAvailabilityServer[]),
         ],
@@ -379,7 +374,6 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       ),
     ];
 
-    console.log(practiceHourRequestData);
 
     if (!valid) {
       this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
@@ -408,9 +402,6 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   private isFormInvalid(controlArrays: FormArray[]): boolean {
     for (let i = 0; i < controlArrays.length; i++) {
       for (let j = 0; j < controlArrays[i].length; j++) {
-        controlArrays[i].controls[j].get('dayStart')?.updateValueAndValidity();
-        // controlArrays[i].controls[j].get('daStart')?.markAsDirty()
-
         if (controlArrays[i].controls[j].get('dayStart')?.errors || controlArrays[i].controls[j].get('dayEnd')?.errors) {
           return true;
         }
@@ -418,12 +409,6 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     }
 
     return false;
-  }
-
-  public handleRadioButtonClick(controlArray: FormArray, controls: AbstractControl<any>) {
-    console.log('in`');
-    controlArray.controls.forEach((control) => control.patchValue({ isPriority: false }));
-    controls.get('isPriority')?.setValue(true);
   }
 
   private getExceptionFormGroup() {
@@ -453,23 +438,6 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     });
 
     return fg;
-  }
-
-  public get exceptionFormArray(): FormArray {
-    return this.exceptionForm.get('exception') as FormArray;
-  }
-
-  public addExceptionSlot() {
-    this.exceptionFormArray.push(this.getExceptionFormGroup());
-  }
-
-  public removeExceptionSlot(i: number) {
-    this.exceptionFormArray.removeAt(i);
-  }
-
-  public selectExceptionForm() {
-    this.isExceptionFormSelected = true;
-    this.practiceHourForm.patchValue({ selectedWeekday: 8 });
   }
 
   public handleTimeInput(
@@ -540,26 +508,29 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
   private handleSlotExistsError(controlArrays: FormArray[]) {
     controlArrays.forEach((formArray) => {
-      const { controls } = formArray;
+      const controls = formArray.controls;
       if (formArray.length > 1) {
-        const sortedControls = [...controls].sort((a, b) => timeToNumber(a.value.daysStart) - timeToNumber(b.value.dayStart));
+        // const sortedControls = [...controls].sort((a, b) => timeToNumber(a.value.daysStart) - timeToNumber(b.value.dayStart));
 
-        const first = sortedControls[0];
+        for (let i = 0; i < formArray.length - 1; i++) {
+          const compareWithControl = controls[i];
 
-        for (let j = 1; j < formArray.length; j++) {
-          const curr = sortedControls[j];
+          for (let j = i + 1; j < formArray.length; j++) {
+            const currControl = controls[j];
 
-          if (curr.value.dayStart && curr.value.dayEnd) {
-            if (checkTimeRangeOverlapping(first.value.dayStart, first.value.dayEnd, curr.value.dayStart, curr.value.dayEnd)) {
-              toggleControlError(curr.get('dayStart'), this.slotExistsError);
-              toggleControlError(curr.get('dayEnd'), this.slotExistsError);
-              toggleControlError(first.get('dayStart'), this.slotExistsError);
-              toggleControlError(first.get('dayEnd'), this.slotExistsError);
-            } else {
-              toggleControlError(curr.get('dayStart'), this.slotExistsError, false);
-              toggleControlError(curr.get('dayEnd'), this.slotExistsError, false);
-              toggleControlError(first.get('dayStart'), this.slotExistsError, false);
-              toggleControlError(first.get('dayEnd'), this.slotExistsError, false);
+            if (currControl.value.dayStart && currControl.value.dayEnd) {
+              // console.log(i, j)
+              if (checkTimeRangeOverlapping(compareWithControl.value.dayStart, compareWithControl.value.dayEnd, currControl.value.dayStart, currControl.value.dayEnd)) {
+                toggleControlError(currControl.get('dayStart'), this.slotExistsError);
+                toggleControlError(currControl.get('dayEnd'), this.slotExistsError);
+                toggleControlError(compareWithControl.get('dayStart'), this.slotExistsError);
+                toggleControlError(compareWithControl.get('dayEnd'), this.slotExistsError);
+              } else {
+                toggleControlError(currControl.get('dayStart'), this.slotExistsError, false);
+                toggleControlError(currControl.get('dayEnd'), this.slotExistsError, false);
+                toggleControlError(compareWithControl.get('dayStart'), this.slotExistsError, false);
+                toggleControlError(compareWithControl.get('dayEnd'), this.slotExistsError, false);
+              }
             }
           }
         }
