@@ -20,6 +20,7 @@ import { Exam } from '../../../../shared/models/exam.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {RouterStateService} from "../../../../core/services/router-state.service";
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -87,6 +88,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
     private titleCasePipe: TitleCasePipe,
+    private routerStateSvc: RouterStateService,
     private shareDataSvc: ShareDataService,
   ) {
     super();
