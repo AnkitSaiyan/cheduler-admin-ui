@@ -123,7 +123,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
       console.log(this.appointmentsGroupedByDate);
     });
 
-    this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
+    this.roomApiSvc.allRooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
       this.headerList = rooms.map(({name, id}) => ({name, value: id}));
     });
 
