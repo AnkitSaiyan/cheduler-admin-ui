@@ -25,19 +25,32 @@ export class StaffApiService {
   constructor(private http: HttpClient) {}
 
   public get staffList$(): Observable<User[]> {
-    return this.allUsers$.pipe(map((users) => users.filter((user) => ![UserType.Scheduler, UserType.General].includes(user.userType))));
+    return this.users$.pipe(map((users) => users.filter((user) => ![UserType.Scheduler, UserType.General].includes(user.userType))));
   }
 
   public get userLists$(): Observable<User[]> {
-    return this.allUsers$.pipe(
+    return this.users$.pipe(
       map((users) => users.filter((user) => [UserType.Scheduler, UserType.General, UserType.Secretary].includes(user.userType))),
     );
   }
 
-  private get allUsers$(): Observable<User[]> {
+  private get users$(): Observable<User[]> {
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
       switchMap(() => {
-        return this.http.get<BaseResponse<User[]>>(`${this.userUrl}?pageNo=1`).pipe(map((response) => response.data));
+        return this.http.get<BaseResponse<User[]>>(this.userUrl).pipe(map((response) => response.data));
+      }),
+    );
+  }
+
+  public get allUsers$(): Observable<User[]> {
+    return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
+      switchMap(() => this.fetchAllUsers$)
+    )
+  }
+  private get fetchAllUsers$(): Observable<User[]> {
+    return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
+      switchMap(() => {
+        return this.http.get<BaseResponse<User[]>>(`${environment.serverBaseUrl}/common/getusers`).pipe(map((response) => response.data));
       }),
     );
   }

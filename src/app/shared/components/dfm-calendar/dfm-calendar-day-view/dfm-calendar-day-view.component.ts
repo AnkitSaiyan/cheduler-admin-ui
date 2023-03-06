@@ -4,7 +4,12 @@ import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationType } from 'diflexmo-angular-design';
 import { NameValue } from '../../search-modal.component';
-import { AddAppointmentRequestData, Appointment, UpdateDurationRequestData } from '../../../models/appointment.model';
+import {
+  AddAppointmentRequestData,
+  Appointment,
+  UpdateDurationRequestData,
+  UpdateRadiologistRequestData
+} from '../../../models/appointment.model';
 import { Exam } from '../../../models/exam.model';
 import { getDurationMinutes } from '../../../models/calendar.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -190,14 +195,21 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   public changeRadiologists(appointment: Appointment) {
-    const modalRef = this.modalSvc.open(ChangeRadiologistModalComponent);
+    const modalRef = this.modalSvc.open(ChangeRadiologistModalComponent, {
+      data: appointment
+    });
 
     modalRef.closed
       .pipe(
         filter((res) => !!res),
-        switchMap((id) => {
-          const requestData = { ...getAddAppointmentRequestData(appointment, true, { userId: id }) };
-          return this.appointmentApiSvc.updateAppointment$(requestData);
+        switchMap((ids: number[]) => {
+          const requestData = {
+            appointmentId: appointment.id,
+            examId: appointment.exams[0].id,
+            userId: ids
+          } as UpdateRadiologistRequestData;
+
+          return this.appointmentApiSvc.updateRadiologist$(requestData);
         }),
         take(1),
       )

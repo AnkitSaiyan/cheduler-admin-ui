@@ -35,11 +35,25 @@ export class RoomsApiService {
   }
 
   public get rooms$(): Observable<Room[]> {
-    return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllRooms()));
+    return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRooms()));
   }
 
-  private fetchAllRooms(): Observable<Room[]> {
+  private fetchRooms(): Observable<Room[]> {
     return this.http.get<BaseResponse<Room[]>>(`${this.roomUrl}`).pipe(
+      map((response) =>
+        response.data.sort((r1, r2) => {
+          return r1.placeInAgenda - r2.placeInAgenda;
+        }),
+      ),
+    );
+  }
+
+  public get allRooms$(): Observable<Room[]> {
+    return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllRooms$()));
+  }
+
+  private fetchAllRooms$(): Observable<Room[]> {
+    return this.http.get<BaseResponse<Room[]>>(`${environment.serverBaseUrl}/common/getrooms`).pipe(
       map((response) =>
         response.data.sort((r1, r2) => {
           return r1.placeInAgenda - r2.placeInAgenda;
@@ -91,7 +105,7 @@ export class RoomsApiService {
   }
 
   public get roomsGroupedByType$(): Observable<RoomsGroupedByType> {
-    return this.rooms$.pipe(
+    return this.allRooms$.pipe(
       map((rooms) => {
         const roomsGroupedByType: RoomsGroupedByType = {private: [], public: []};
         rooms.forEach((room) => {

@@ -4,10 +4,16 @@
     <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
   </div>
 
-  <div class="modal-body dfm-mb-8">
-    <div class="dfm-input-dropdown-wrapper-wo-label">
+  <div class="modal-body d-flex flex-column dfm-gap-24 dfm-mb-8">
+    <div class="text-sm">
+      <span class="font-weight-medium dfm-text-main-400">Selected Radiologist(s) : </span>
+      <span>{{ selectedRadiologists | joinWithAnd : 'name' | dashIfNothing }}</span>
+    </div>
+    <div class="dfm-input-multi-dropdown-wrapper-wo-label">
       <dfm-input-dropdown size="md"
-                          placeholder="Select Radiologist*"
+                          placeholder="{{ doctor.value?.length ? (doctor.value.length) + ' ' + 'Selected' : 'Select Radiologist' }} *"
+                          #doctor
+                          [multiple]="true"
                           [items]="radiologists"
                           [formControl]="radiologistFormControl">
       </dfm-input-dropdown>

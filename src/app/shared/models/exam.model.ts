@@ -30,6 +30,7 @@ export interface Exam {
   startedAt: Date;
   endedAt: Date;
   practiceAvailability?: any[];
+  allUsers?: User[];
 }
 
 export interface Uncombinables {

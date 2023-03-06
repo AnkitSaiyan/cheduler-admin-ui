@@ -137,3 +137,9 @@ export interface CreateAppointmentFormValues {
   examList: number[];
   comments: string;
 }
+
+export interface UpdateRadiologistRequestData {
+  appointmentId: number;
+  examId: number;
+  userId: number[];
+}

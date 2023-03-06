@@ -215,10 +215,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         this.cdr.detectChanges();
       });
 
-    this.staffApiSvc.staffList$
+    this.staffApiSvc.allUsers$
       .pipe(
         debounceTime(0),
-        map((staffs) => staffs.filter((staff) => staff.status)),
         takeUntil(this.destroy$$),
       )
       .subscribe((staffs) => {
@@ -341,7 +340,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       info: [examDetails?.info, []],
       uncombinables: [[...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])], []],
       mandatoryStaffs: [mandatory, []],
-      assistantCount: [examDetails?.assistantCount?.toString() ?? '0', []],
+      assistantCount: [examDetails?.assistantCount ? examDetails.assistantCount.toString() : '0', []],
       assistants: [assistants, []],
       radiologistCount: [examDetails?.radiologistCount?.toString() ?? '0', []],
       radiologists: [radiologists, []],
@@ -391,11 +390,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         .pipe(takeUntil(this.destroy$$))
         .subscribe((room) => this.examForm.get('roomType')?.setValue(room?.type));
     }
-
-    this.examForm
-      .get('roomType')
-      ?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
-      .subscribe((roomType) => this.createRoomsForExamFormArray(roomType));
 
     this.examForm
       .get('expensive')
@@ -712,10 +706,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       name: this.formValues.name,
       expensive: this.formValues.expensive,
       info: this.formValues.info ?? null,
-      assistantCount: this.formValues.assistantCount,
-      nursingCount: this.formValues.nursingCount,
-      radiologistCount: this.formValues.radiologistCount,
-      secretaryCount: this.formValues.secretaryCount,
+      assistantCount: this.formValues.assistantCount ?? 0,
+      nursingCount: this.formValues.nursingCount ?? 0,
+      radiologistCount: this.formValues.radiologistCount ?? 0,
+      secretaryCount: this.formValues.secretaryCount ?? 0,
       mandatoryUsers: [...(this.formValues.mandatoryStaffs ?? [])],
       usersList: [
         ...(this.formValues.assistants ?? []),

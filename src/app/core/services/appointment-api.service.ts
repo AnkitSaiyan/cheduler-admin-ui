@@ -8,7 +8,7 @@ import {
   Appointment,
   AppointmentSlot,
   AppointmentSlotsRequestData,
-  UpdateDurationRequestData,
+  UpdateDurationRequestData, UpdateRadiologistRequestData,
 } from '../../shared/models/appointment.model';
 import { AppointmentStatus, ChangeStatusRequestData } from '../../shared/models/status.model';
 import { PhysicianApiService } from './physician.api.service';
@@ -91,7 +91,7 @@ export class AppointmentApiService {
         }
 
         return {
-          ...exam, rooms: examIdToRooms[+exam.id], users: examIdToUsers[+exam.id]
+          ...exam, rooms: examIdToRooms[+exam.id], allUsers: exam?.users ?? [], users: examIdToUsers[+exam.id]
         };
       }),
     }
@@ -154,5 +154,11 @@ export class AppointmentApiService {
     return this.http
       .post<BaseResponse<AppointmentSlot[]>>(`${environment.serverBaseUrl}/patientappointment/slots`, requestData)
       .pipe(map((res) => res?.data));
+  }
+
+  public updateRadiologist$(requestData: UpdateRadiologistRequestData): Observable<any> {
+    return this.http
+      .put<BaseResponse<any>>(`${this.appointmentUrl}/updateradiologist`, requestData)
+      .pipe(map((res) => res?.data), tap(() => this.refreshAppointment$$.next()));
   }
 }
