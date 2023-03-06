@@ -20,6 +20,8 @@ import {RouterStateService} from "../../../../core/services/router-state.service
 export class AppointmentCalendarComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public calendarViewFormControl = new FormControl();
 
+  public dataControl = new FormControl()
+
   public selectedDate: Date = new Date();
 
   public calendarViewType: NameValue[] = [
@@ -113,6 +115,12 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
       this.headerList = rooms.map(({name, id}) => ({name, value: id}));
     });
+
+    this.dataControl.valueChanges.subscribe((value) => {
+      const date = new Date(value.year, value.month - 1, value.day);
+      this.updateDate(date)
+      this.newDate$$.next(date);
+    })
   }
 
   public override ngOnDestroy() {

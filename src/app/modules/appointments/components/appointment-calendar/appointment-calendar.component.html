@@ -3,13 +3,15 @@
     <h4 *ngIf="selectedDate" class="">{{ selectedDate | date : 'MMM dd, yyyy' }}</h4>
 
     <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper">
-<!--      <div>-->
-<!--        <dfm-button-icon-->
-<!--          color="secondary-gray"-->
-<!--          size="sm"-->
-<!--          icon="calendar-date"-->
-<!--        ></dfm-button-icon>-->
-<!--      </div>-->
+      <div>
+        <input class="w-full hidden" [formControl]="dataControl" placeholder="yyyy-mm-dd" ngbDatepicker #date="ngbDatepicker" [positionTarget]="datePickerToggle"/>
+        <div>
+          <div #datePickerToggle>
+            <dfm-button-icon color="secondary-gray" size="md" icon="calendar-date"
+                             (click)="date.toggle()"></dfm-button-icon>
+          </div>
+        </div>
+      </div>
 
       <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown">
         <dfm-input-dropdown size="sm" [formControl]="calendarViewFormControl" [showDescription]="false"
