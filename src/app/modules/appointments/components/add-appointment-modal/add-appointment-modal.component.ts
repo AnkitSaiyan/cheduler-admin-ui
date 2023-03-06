@@ -261,6 +261,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     if (this.appointmentForm.invalid) {
       this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
       this.appointmentForm.markAllAsTouched();
+      return; 
     }
 
     if (
