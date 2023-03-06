@@ -8,7 +8,7 @@
           </div>
         </div>
 
-        <div role="presentation" class="calender-day-view-weekday-header hide-scrollbar" (scroll)="scrollTwo.scrollLeft = scrollOne.scrollLeft" #scrollOne>
+        <div role="presentation" class="calender-day-view-weekday-header hide-scrollbar" (scroll)="onScroll(scrollOne, scrollTwo)" #scrollOne>
           <div role="row" class="calender-day-view-weekdays">
             <div class="calender-day-view-weekday-header-left-vertical-line"></div>
             <ng-container *ngIf="headerList?.length; else todayHeader">
@@ -58,7 +58,7 @@
             </div>
           </div>
 
-          <div role="presentation" class="calender-day-view-events-container-main" (scroll)="scrollOne.scrollLeft = scrollTwo.scrollLeft" #scrollTwo>
+          <div role="presentation" class="calender-day-view-events-container-main" (scroll)="onScroll(scrollTwo, scrollOne)" #scrollTwo>
             <div role="row" class="calender-day-view-events-container">
               <div>
                 <ng-container *ngFor="let i of 15 | timeInInterval">

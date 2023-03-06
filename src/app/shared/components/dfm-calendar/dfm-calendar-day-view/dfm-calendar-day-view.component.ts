@@ -70,6 +70,10 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
 
   public addingAppointment = false;
 
+  private lastScrollTime: number = 0;
+
+  private requestId: number | null = null;
+
   constructor(
     private datePipe: DatePipe,
     private appointmentApiSvc: AppointmentApiService,
@@ -356,5 +360,27 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     eventsContainer.appendChild(eventCard);
 
     return eventCard;
+  }
+
+  public onScroll(scrolledElement: HTMLElement, targetElement: HTMLElement) {
+    const now = performance.now();
+
+    if (!this.lastScrollTime || now - this.lastScrollTime > 16) {
+      // eslint-disable-next-line no-param-reassign
+      targetElement.scrollLeft = scrolledElement.scrollLeft;
+      // eslint-disable-next-line no-param-reassign
+      targetElement.scrollTop = scrolledElement.scrollTop;
+
+      this.lastScrollTime = now;
+    } else if (!this.requestId) {
+      this.requestId = window.requestAnimationFrame(() => {
+        // eslint-disable-next-line no-param-reassign
+        targetElement.scrollLeft = scrolledElement.scrollLeft;
+        // eslint-disable-next-line no-param-reassign
+        targetElement.scrollTop = scrolledElement.scrollTop;
+        this.lastScrollTime = performance.now();
+        this.requestId = null;
+      });
+    }
   }
 }
