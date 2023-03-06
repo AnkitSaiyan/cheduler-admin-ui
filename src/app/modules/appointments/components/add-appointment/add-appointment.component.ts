@@ -198,7 +198,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           console.log('appointmentID: ', appointmentID);
           return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
         }),
-        debounceTime(0),
+        debounceTime(300),
         takeUntil(this.destroy$$),
       )
       .subscribe((appointment) => {
