@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap} from 'rxjs';
 import {NotificationType} from 'diflexmo-angular-design';
@@ -112,6 +112,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     private route: ActivatedRoute,
     private shareDataService: ShareDataService,
     private siteManagementApiSvc: SiteManagementApiService,
+    private cdr: ChangeDetectorRef
   ) {
     super();
 
@@ -274,6 +275,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   private updateForm(appointment: Appointment | undefined) {
+    console.log(appointment)
     // let time;
     let date!: Date;
     let dateDistributed: DateDistributed = {} as DateDistributed;
@@ -337,6 +339,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           });
         }
       });
+
+    this.cdr.detectChanges();
   }
 
   private findSlot(examID: number, start: string, end: string): SlotModified | undefined {

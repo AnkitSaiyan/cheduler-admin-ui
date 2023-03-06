@@ -133,12 +133,12 @@
 
       <div class="exam-date d-flex flex-row">
         <div class="ad-ab-from-date flex-wrap-reverse dfm-gap-32 d-flex flex-1">
-          <div class="dfm-input-multi-dropdown-wrapper min-w-256 ad-ap-multi-dropdown flex-1">
+          <div class="dfm-input-multi-dropdown-wrapper-mb-0 min-w-256 ad-ap-multi-dropdown flex-1">
             <dfm-input-dropdown
               #exams
               [items]="filteredExamList"
               [multiple]="true"
-              [placeholder]="!!exams.value?.length ? exams.value.length + ('Selected' | translate) : ('SelectExams' | translate)"
+              [placeholder]="!!exams.value?.length ? exams.value.length + ' ' + ('Selected' | translate) : ('SelectExams' | translate)"
               [typeToSearch]="true"
               (searchInput)="handleDropdownSearch($event, 'exam')"
               formControlName="examList"
