@@ -3,9 +3,9 @@ export class GeneralUtils {
     if (filterText) {
       return arr.filter((d) => {
         if (key) {
-          return d[key]?.toString()?.toLowerCase()?.includes(filterText.toString());
+          return d[key]?.toString()?.toLowerCase()?.includes(filterText.toString()?.toLowerCase());
         }
-        return d?.toString()?.toLowerCase().includes(filterText.toString());
+        return d?.toString()?.toLowerCase().includes(filterText.toString().toLowerCase());
       });
     } else {
       return arr;

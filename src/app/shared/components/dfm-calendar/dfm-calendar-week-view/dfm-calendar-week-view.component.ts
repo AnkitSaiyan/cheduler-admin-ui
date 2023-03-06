@@ -312,7 +312,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {
     const top = e.offsetY - (e.offsetY % 20);
     const eventCard = document.createElement('div');
-    eventCard.classList.add('calender-week-view-event-container');
+    eventCard.classList.add('calendar-week-view-event-container');
     eventCard.style.height = `20px`;
     eventCard.style.top = `${top}px`;
 

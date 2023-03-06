@@ -20,10 +20,10 @@ import {PhysicianApiService} from '../../../../core/services/physician.api.servi
 import {StaffApiService} from '../../../../core/services/staff-api.service';
 import {UserType} from '../../../../shared/models/user.model';
 import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {AppointmentUtils} from "../../../../shared/utils/appointment.utils";
-import {SiteManagementApiService} from "../../../../core/services/site-management-api.service";
-import {EMAIL_REGEX} from "../../../../shared/utils/const";
-import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import {AppointmentUtils} from '../../../../shared/utils/appointment.utils';
+import {SiteManagementApiService} from '../../../../core/services/site-management-api.service';
+import {EMAIL_REGEX} from '../../../../shared/utils/const';
+import {GeneralUtils} from '../../../../shared/utils/general.utils';
 
 @Component({
   selector: 'dfm-add-appointment-modal',
