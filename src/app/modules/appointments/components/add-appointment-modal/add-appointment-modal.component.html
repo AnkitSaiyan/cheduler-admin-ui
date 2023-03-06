@@ -31,10 +31,12 @@
         <div class="dfm-input-multi-dropdown-wrapper flex-1">
           <dfm-input-dropdown
             #exams
-            [items]="examList"
+            [items]="filteredExamList"
             [multiple]="true"
             [placeholder]="!!exams.value?.length ? exams.value.length + ' Selected' : 'Select Exams'"
             [showDescription]="false"
+            [typeToSearch]="true"
+            (searchInput)="handleDropdownSearch($event, 'exam')"
             formControlName="examList"
             size="md"
             label="Exams *"
@@ -153,7 +155,8 @@
 
         <div class="d-flex flex-column dfm-gap-16 dfm-mt-8">
           <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
-            <dfm-input-dropdown [items]="physicianList" class="flex-1" size="md" placeholder="Select doctor"
+            <dfm-input-dropdown [items]="filteredPhysicianList" [typeToSearch]="true"
+                                (searchInput)="handleDropdownSearch($event, 'doctor')" class="flex-1" size="md" placeholder="Select doctor"
                                 label="Doctor" formControlName="doctorId">
             </dfm-input-dropdown>
           </div>
@@ -161,8 +164,10 @@
           <div class="dfm-input-dropdown-wrapper flex-1">
             <dfm-input-dropdown
               #generalUsers
-              [items]="userList"
+              [items]="filteredUserList"
               [placeholder]="!!generalUsers.value?.length ? generalUsers.value.length + ' Selected' : 'Select General Users'"
+              [typeToSearch]="true"
+              (searchInput)="handleDropdownSearch($event, 'user')"
               formControlName="userId"
               size="md"
               label="General Users *"

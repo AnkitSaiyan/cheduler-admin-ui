@@ -102,12 +102,14 @@
           <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">{{'InvalidEmail' | translate}}</small>
         </div>
 
-        <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128" *ngIf="physicianList.length">
+        <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
           <dfm-input-dropdown
-            [items]="physicianList"
+            [items]="filteredPhysicianList"
+            [typeToSearch]="true"
+            (searchInput)="handleDropdownSearch($event, 'doctor')"
             class="flex-1"
             size="md"
-            placeholder="{{'Selectdoctor' | translate}}"
+            placeholder="{{'SelectDoctor' | translate}}"
             label="{{'Doctor' | translate}}"
             formControlName="doctorId"
           >
@@ -117,7 +119,9 @@
         <div class="dfm-input-dropdown-wrapper flex-1 w-full">
           <dfm-input-dropdown
             #generalUser
-            [items]="userList"
+            [items]="filteredUserList"
+            [typeToSearch]="true"
+            (searchInput)="handleDropdownSearch($event, 'user')"
             placeholder="{{'SelectGeneralUser' | translate}}"
             formControlName="userId"
             size="md"
@@ -132,9 +136,11 @@
           <div class="dfm-input-multi-dropdown-wrapper min-w-256 ad-ap-multi-dropdown flex-1">
             <dfm-input-dropdown
               #exams
-              [items]="examList"
+              [items]="filteredExamList"
               [multiple]="true"
               [placeholder]="!!exams.value?.length ? exams.value.length + ('Selected' | translate) : ('SelectExams' | translate)"
+              [typeToSearch]="true"
+              (searchInput)="handleDropdownSearch($event, 'exam')"
               formControlName="examList"
               size="md"
               label="{{'Exams' | translate}} *"

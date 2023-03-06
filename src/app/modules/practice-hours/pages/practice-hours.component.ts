@@ -17,6 +17,7 @@ import {TIME_24} from '../../../shared/utils/const';
 import {Translate} from '../../../shared/models/translate.model';
 import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {COMING_FROM_ROUTE, EDIT, EXAM_ID, ENG_BE, DUTCH_BE, Statuses, StatusesNL} from '../../../shared/utils/const';
+import {GeneralUtils} from "../../../shared/utils/general.utils";
 
 // interface TimeDistributed {
 //   hour: number;
@@ -446,6 +447,8 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     timingValueControl: AbstractControl | null | undefined,
     eleRef: InputDropdownComponent,
   ) {
+
+    console.log(time)
     this.formatTime(time, control, timingValueControl, eleRef);
     this.searchTime(time, timingValueControl);
   }
@@ -455,11 +458,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   private searchTime(time: string, timingValueControl: AbstractControl | null | undefined) {
-    if (!time) {
-      return;
-    }
-
-    timingValueControl?.setValue([...this.timings.filter((timing) => timing.value.includes(time))]);
+    timingValueControl?.setValue([...GeneralUtils.FilterArray(this.timings, time, 'value')]);
   }
 
   private handleError(time: string, control: AbstractControl | null | undefined) {

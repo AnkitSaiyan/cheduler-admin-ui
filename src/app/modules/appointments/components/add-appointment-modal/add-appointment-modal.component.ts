@@ -23,6 +23,7 @@ import {NotificationDataService} from '../../../../core/services/notification-da
 import {AppointmentUtils} from "../../../../shared/utils/appointment.utils";
 import {SiteManagementApiService} from "../../../../core/services/site-management-api.service";
 import {EMAIL_REGEX} from "../../../../shared/utils/const";
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
 
 @Component({
   selector: 'dfm-add-appointment-modal',
@@ -43,11 +44,17 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
   public loadingSlots$$ = new BehaviorSubject(false);
 
-  public examList: NameValue[] = [];
+  public filteredExamList: NameValue[] = [];
 
-  public physicianList: NameValue[] = [];
+  private examList: NameValue[] = [];
 
-  public userList: NameValue[] = [];
+  public filteredPhysicianList: NameValue[] = [];
+
+  private physicianList: NameValue[] = [];
+
+  public filteredUserList: NameValue[] = [];
+
+  private userList: NameValue[] = [];
 
   private modalData!: {
     event: MouseEvent;
@@ -119,7 +126,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
       });
 
     this.examApiService.allExams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
-      this.examList = this.nameValuePipe.transform(exams, 'name', 'id');
+      const keyValueExams = this.nameValuePipe.transform(exams, 'name', 'id');
+      this.filteredExamList = [...keyValueExams];
+      this.examList = [...keyValueExams];
 
       exams.forEach((exam) => {
         console.log(exam);
@@ -134,12 +143,20 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
     this.physicianApiSvc.physicians$
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((physicians) => (this.physicianList = this.nameValuePipe.transform(physicians, 'firstname', 'id')));
+      .subscribe((physicians) => {
+        const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'firstname', 'id');
+        this.filteredPhysicianList = [...keyValuePhysicians];
+        this.physicianList = [...keyValuePhysicians];
+      });
 
     this.staffApiSvc
       .getUsersByType(UserType.General)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((staffs) => (this.userList = this.nameValuePipe.transform(staffs, 'firstname', 'id')));
+      .subscribe((staffs) => {
+        const keyValueExams = this.nameValuePipe.transform(staffs, 'firstname', 'id');
+        this.filteredUserList = [...keyValueExams];
+        this.userList = [...keyValueExams];
+      });
 
     this.appointmentForm
       .get('startedAt')
@@ -338,6 +355,20 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
       });
     } else {
       this.appointmentForm.get('patientEmail')?.setErrors(null);
+    }
+  }
+
+  public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam'): void {
+    switch (type) {
+      case 'doctor':
+        this.filteredPhysicianList = [...GeneralUtils.FilterArray(this.physicianList, searchText, 'name')];
+        break;
+      case 'user':
+        this.filteredUserList = [...GeneralUtils.FilterArray(this.userList, searchText, 'name')];
+        break;
+      case 'exam':
+        this.filteredExamList = [...GeneralUtils.FilterArray(this.examList, searchText, 'name')];
+        break;
     }
   }
 }

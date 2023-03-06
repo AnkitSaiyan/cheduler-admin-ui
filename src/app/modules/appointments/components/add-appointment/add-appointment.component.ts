@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap} from 'rxjs';
 import {NotificationType} from 'diflexmo-angular-design';
 import {DatePipe} from '@angular/common';
@@ -31,6 +31,7 @@ import {AppointmentUtils} from "../../../../shared/utils/appointment.utils";
 import {SiteManagementApiService} from "../../../../core/services/site-management-api.service";
 import {CalendarUtils} from "../../../../shared/utils/calendar.utils";
 import {DateDistributed} from "../../../../shared/models/calendar.model";
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
 
 @Component({
   selector: 'dfm-add-appointment',
@@ -48,11 +49,17 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public submitting$$ = new BehaviorSubject(false);
 
-  public userList: NameValue[] = [];
+  public filteredUserList: NameValue[] = [];
 
-  public examList: NameValue[] = [];
+  private userList: NameValue[] = [];
 
-  public physicianList: NameValue[] = [];
+  public filteredExamList: NameValue[] = [];
+
+  private examList: NameValue[] = []
+
+  public filteredPhysicianList: NameValue[] = [];
+
+  private physicianList: NameValue[] = [];
 
   public roomType = RoomType;
 
@@ -145,7 +152,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     });
 
     this.examApiService.allExams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
-      this.examList = this.nameValuePipe.transform(exams, 'name', 'id');
+      const keyValueExams = this.nameValuePipe.transform(exams, 'name', 'id');
+      this.filteredExamList = [...keyValueExams];
+      this.examList = [...keyValueExams];
 
       exams.forEach((exam) => {
         if (!this.examIdToDetails[+exam.id]) {
@@ -161,12 +170,18 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       .getUsersByType(UserType.General)
       .pipe(takeUntil(this.destroy$$))
       .subscribe((staffs) => {
-        this.userList = this.nameValuePipe.transform(staffs, 'firstname', 'id');
+        const keyValueExams = this.nameValuePipe.transform(staffs, 'firstname', 'id');
+        this.filteredUserList = [...keyValueExams];
+        this.userList = [...keyValueExams];
       });
 
     this.physicianApiSvc.physicians$
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((physicians) => (this.physicianList = this.nameValuePipe.transform(physicians, 'firstname', 'id')));
+      .subscribe((physicians) => {
+        const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'firstname', 'id');
+        this.filteredPhysicianList = [...keyValuePhysicians];
+        this.physicianList = [...keyValuePhysicians];
+      });
 
     this.routerStateSvc
       .listenForParamChange$(APPOINTMENT_ID)
@@ -483,5 +498,19 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.examIdToAppointmentSlots = {};
     this.selectedTimeSlot = {};
     this.slots = [];
+  }
+
+  public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam'): void {
+    switch (type) {
+      case 'doctor':
+        this.filteredPhysicianList = [...GeneralUtils.FilterArray(this.physicianList, searchText, 'name')];
+        break;
+      case 'user':
+        this.filteredUserList = [...GeneralUtils.FilterArray(this.userList, searchText, 'name')];
+        break;
+      case 'exam':
+        this.filteredExamList = [...GeneralUtils.FilterArray(this.examList, searchText, 'name')];
+        break;
+    }
   }
 }
