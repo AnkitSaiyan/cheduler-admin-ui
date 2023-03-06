@@ -99,6 +99,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
     this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
       this.modalData = data;
+      console.log(data);
 
       if (this.modalData.event.offsetY) {
         const minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
@@ -245,6 +246,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
   public handleSlotSelectionToggle(slot: SlotModified) {
     AppointmentUtils.ToggleSlotSelection(slot, this.selectedTimeSlot);
+    this.selectedTime = slot.start;
   }
 
   public saveAppointment(): void {
@@ -300,8 +302,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
   }
 
   private updateEventCard(slot?: Slot) {
-    const {element} = this.modalData;
-    debugger;
+    const { element } = this.modalData;
     let totalExpense = 0;
 
     this.formValues.examList.forEach((examID) => {
