@@ -83,6 +83,17 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
       if (params['v'] !== 't') {
         this.calendarViewFormControl.setValue(this.paramsToCalendarView[params['v']]);
       }
+
+      if (!params['d']) {
+        this.updateQuery('', this.selectedDate);
+      } else {
+        const dateSplit = params['d'].split('-');
+        if (dateSplit.length === 3) {
+          const date = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2]);
+          this.newDate$$.next(date);
+          this.selectedDate = date;
+        }
+      }
     })
     this.calendarViewFormControl.setValue('week');
 
@@ -129,6 +140,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
   public updateDate(newDate: Date) {
     this.selectedDate = new Date(newDate);
+    this.updateQuery('', newDate);
   }
 
   public changeDate(offset: number) {
@@ -266,11 +278,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     console.log('test', this.appointmentGroupedByDateAndRoom);
   }
 
-  private updateQuery(queryStr: string) {
+  private updateQuery(queryStr?: string, date?: Date) {
     this.router.navigate([], {
       queryParams: {
-        v: queryStr
-      }
+        ...(queryStr ? { v: queryStr } : {} ),
+        ...(date ? { d: this.datePipe.transform(date, 'yyyy-MM-dd') } : {} )
+      },
+      queryParamsHandling: 'merge'
     })
   }
 }
