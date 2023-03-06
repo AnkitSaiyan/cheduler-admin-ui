@@ -272,6 +272,7 @@
   "CommentsClinicalData":"Opmerkingen / Klinische gegevens",
   "SelectExams":"Examens selecteren",
   "SelectDoctor":"Selecteer dokter",
+  "Doctor": "Dokter",
   "SelectGeneralUser":"Selecteer Algemene Gebruiker",
   "NoslotsfoundforselectedExamsandDatecombination":"Geen plaatsen gevonden voor de geselecteerde combinatie van examens en datums.",
   "SlotsLoading":"Slots laden...",
@@ -286,6 +287,8 @@
   "AppointmentNo":"Afspraak nr.",
   "PatientDetails":"Gegevens patiënt",
   "AppointmentDetails":"Details Afspraak",
-  "Comments":"Opmerkingen"
+  "Comments":"Opmerkingen",
+  "StartedAt": "Begon bij",
+  "EndedAt": "Geëindigd om"
 }
 

@@ -179,6 +179,7 @@ export const Translate = Object.freeze({
       [DUTCH_BE]: 'Gegevens succesvol naar clipboard gecopieerd',
     },
   },
+
   ErrorMessage: {
     CopyToClipboard: {
       [ENG_BE]: 'Failed to copy Data',
@@ -186,6 +187,7 @@ export const Translate = Object.freeze({
     },
   },
 
+  // Form Invalid
   FormInvalid: {
     [ENG_BE]: 'Form is not valid, please fill out the required fields',
     [DUTCH_BE]: 'Formulier is niet geldig, vul de verplichte velden in',
@@ -194,6 +196,11 @@ export const Translate = Object.freeze({
   FormInvalidSimple: {
     [ENG_BE]: 'Form is not valid',
     [DUTCH_BE]: 'Formulier is niet geldig',
+  },
+
+  SelectSlots: {
+    [ENG_BE]: 'Please select slots for all exams',
+    [DUTCH_BE]: 'Selecteer slots voor alle examens',
   },
 
   FillSlot: {

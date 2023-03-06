@@ -22,8 +22,9 @@ import {UserType} from '../../../../shared/models/user.model';
 import {NotificationDataService} from '../../../../core/services/notification-data.service';
 import {AppointmentUtils} from '../../../../shared/utils/appointment.utils';
 import {SiteManagementApiService} from '../../../../core/services/site-management-api.service';
-import {EMAIL_REGEX} from '../../../../shared/utils/const';
+import {EMAIL_REGEX, ENG_BE} from '../../../../shared/utils/const';
 import {GeneralUtils} from '../../../../shared/utils/general.utils';
+import {Translate} from "../../../../shared/models/translate.model";
 
 @Component({
   selector: 'dfm-add-appointment-modal',
@@ -77,6 +78,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
   public isCombinable: boolean = false;
 
+  private selectedLang = ENG_BE;
+
   constructor(
     private modalSvc: ModalService,
     private fb: FormBuilder,
@@ -87,7 +90,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     private physicianApiSvc: PhysicianApiService,
     private staffApiSvc: StaffApiService,
     private notificationSvc: NotificationDataService,
-    private siteManagementApiSvc: SiteManagementApiService
+    private siteManagementApiSvc: SiteManagementApiService,
   ) {
     super();
   }
@@ -179,18 +182,18 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     this.appointmentForm
       .get('examList')
       ?.valueChanges.pipe(
-        debounceTime(0),
-        tap(() => this.updateEventCard()),
-        filter((examList) => examList?.length && this.formValues.startedAt?.day),
-        tap(() => this.loadingSlots$$.next(true)),
-        map((examList) => {
-          this.clearSlotDetails();
-          return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
-        }),
-        switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
-      )
+      debounceTime(0),
+      tap(() => this.updateEventCard()),
+      filter((examList) => examList?.length && this.formValues.startedAt?.day),
+      tap(() => this.loadingSlots$$.next(true)),
+      map((examList) => {
+        this.clearSlotDetails();
+        return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
+      }),
+      switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
+    )
       .subscribe((data) => {
-        const { slots } = data[0];
+        const {slots} = data[0];
         const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTime);
         if (matchedSlot) {
           const modifiedSlot = AppointmentUtils.GetModifiedSlotData([matchedSlot]);
@@ -201,6 +204,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
         }
         this.loadingSlots$$.next(false);
       });
+
+    this.shareDataSvc.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe((lang) => this.selectedLang = lang);
   }
 
   public override ngOnDestroy() {
@@ -259,16 +264,16 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
   public saveAppointment(): void {
     if (this.appointmentForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+      this.notificationSvc.showNotification(`${Translate.FormInvalidSimple[this.selectedLang]}!`, NotificationType.WARNING);
       this.appointmentForm.markAllAsTouched();
-      return; 
+      return;
     }
 
     if (
       (this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
       (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length)
     ) {
-      this.notificationSvc.showNotification('Please select slots for all exams.', NotificationType.WARNING);
+      this.notificationSvc.showNotification(`${Translate.SelectSlots}.`, NotificationType.WARNING);
       return;
     }
 
@@ -299,7 +304,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
       .pipe(takeUntil(this.destroy$$))
       .subscribe({
         next: () => {
-          this.notificationSvc.showNotification(`Appointment saved successfully`);
+          this.notificationSvc.showNotification(`${Translate.SuccessMessage.Added[this.selectedLang]}!`);
           this.submitting$$.next(false);
           this.modalSvc.close(true);
         },
@@ -311,7 +316,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
   }
 
   private updateEventCard(slot?: Slot) {
-    const { element } = this.modalData;
+    const {element} = this.modalData;
     let totalExpense = 0;
 
     this.formValues.examList.forEach((examID) => {

@@ -1,5 +1,5 @@
 import {DatePipe} from '@angular/common';
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {BehaviorSubject, debounceTime, filter, take, takeUntil} from 'rxjs';
 import {AppointmentApiService} from 'src/app/core/services/appointment-api.service';
@@ -11,6 +11,7 @@ import {Appointment} from '../../../../shared/models/appointment.model';
 import {Exam} from '../../../../shared/models/exam.model';
 import {Router} from "@angular/router";
 import {RouterStateService} from "../../../../core/services/router-state.service";
+import {AppointmentStatus} from "../../../../shared/models/status.model";
 
 @Component({
   selector: 'dfm-appointment-calendar',
@@ -107,7 +108,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
 
-      appointments.sort((ap1, ap2) => {
+      const filteredAps = appointments.filter((ap) => ap.approval === AppointmentStatus.Approved).sort((ap1, ap2) => {
         if (ap1.startedAt && ap2.startedAt) {
           return new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime()
         }
@@ -117,8 +118,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
       console.log(appointments);
 
-      this.groupAppointmentsForCalendar(...appointments);
-      this.groupAppointmentByDateAndRoom(...appointments);
+      this.groupAppointmentsForCalendar(...filteredAps);
+      this.groupAppointmentByDateAndRoom(...filteredAps);
 
       console.log(this.appointmentsGroupedByDate);
     });

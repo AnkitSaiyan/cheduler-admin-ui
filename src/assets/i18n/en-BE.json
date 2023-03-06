@@ -84,7 +84,7 @@
   "Sunday": "Sunday",
   "AreYouSureYouWantThisRoom": "Are you sure you want to delete the Room?",
   "AreYouSureYouWantToDelete":"Are you sure you want to delete this Staff?",
-  
+
   "AddStaff" :"Add Staff",
   "StaffView": "Staff View",
   "DeleteStaffToast": "Staff Deleted Successfully",
@@ -270,6 +270,7 @@
   "EnterPatientEmail":"Enter Patient Email",
   "CommentsClinicalData":"Comments Clinical data",
   "SelectExams":"Select Exams",
+  "Doctor": "Doctor",
   "SelectDoctor":"Select Doctor",
   "SelectGeneralUser":"Select General User",
   "NoslotsfoundforselectedExamsandDatecombination":"No slots found for selected Exams and Date combination",
@@ -285,5 +286,7 @@
   "AppointmentNo":"Appointment No",
   "PatientDetails":"Patient Details",
   "AppointmentDetails":"Appointment Details",
-  "Comments":"Comments"
+  "Comments":"Comments",
+  "StartedAt": "Started At",
+  "EndedAt": "Ended At"
 }
