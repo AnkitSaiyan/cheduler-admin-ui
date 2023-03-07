@@ -153,7 +153,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     this.staffApiSvc.staffTypes$
       .pipe(
-        map((staffTypes) => staffTypes.map((staffType) => ({ name: staffType, value: staffType }))),
+        map((staffTypes) => staffTypes.map((staffType) => ({ name: staffType, value: staffType.toString() }))),
         takeUntil(this.destroy$$),
       )
       .subscribe((staffTypes) => this.staffTypes$$.next(staffTypes));
@@ -216,7 +216,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       lastname: [staffDetails?.lastname, [Validators.required]],
       email: [staffDetails?.email, [Validators.required]],
       telephone: [staffDetails?.telephone, []],
-      userType: [staffDetails?.userType, [Validators.required]],
+      userType: [null, [Validators.required]],
       info: [staffDetails?.info, []],
       // examList: [staffDetails?.exams?.map((exam) => exam?.id?.toString()), []],
       status: [staffDetails?.status ?? Status.Active, []],
@@ -246,6 +246,8 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     } else {
       this.addPracticeAvailabilityControls();
     }
+
+    setTimeout(() => this.addStaffForm.get('userType')?.setValue(staffDetails?.userType), 0);
   }
 
   private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string): FormGroup {
