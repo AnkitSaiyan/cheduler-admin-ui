@@ -164,7 +164,7 @@
                                     <div class="icon-20">
                                       <dfm-icon name="home-03"></dfm-icon>
                                     </div>
-                                    <span>Change Radiologist</span>
+                                    <span>{{ 'Change' | translate }} {{ 'Radiologist' | translate }}</span>
                                   </button>
 
 <!--                                  <button ngbDropdownItem-->
@@ -188,7 +188,7 @@
                                     <div class="icon-20">
                                       <dfm-icon name="arrow-right"></dfm-icon>
                                     </div>
-                                    <span>Move</span>
+                                    <span>{{ 'Move' | translate }}</span>
                                     <div class="icon-20 ml-auto">
                                       <dfm-icon name="chevron-right"></dfm-icon>
                                     </div>
@@ -207,12 +207,12 @@
 
                                         <button ngbDropdownItem
                                                 (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); openChangeTimeModal(data.appointment, false, eventContainer)">
-                                          <span>Shorten</span>
+                                          <span>{{ 'Shorten' | translate }}</span>
                                         </button>
 
                                         <button ngbDropdownItem
                                                 (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); openChangeTimeModal(data.appointment, true, eventContainer)">
-                                          <span>Extend</span>
+                                          <span>{{ 'Extend' | translate }}</span>
                                         </button>
                                       </div>
                                     </div>
@@ -224,7 +224,7 @@
                                     <div class="icon-20">
                                       <dfm-icon name="pencil-02"></dfm-icon>
                                     </div>
-                                    <span>Edit</span>
+                                    <span>{{ 'Edit' | translate }}</span>
                                   </button>
 
                                   <div class="dropdown-divider"></div>
@@ -234,7 +234,7 @@
                                     <div class="icon-20">
                                       <dfm-icon name="trash-01"></dfm-icon>
                                     </div>
-                                    <span>Delete</span>
+                                    <span>{{ 'Delete' | translate}}</span>
                                   </button>
                                 </div>
                               </div>

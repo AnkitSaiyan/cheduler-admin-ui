@@ -289,6 +289,17 @@
   "AppointmentDetails":"Details Afspraak",
   "Comments":"Opmerkingen",
   "StartedAt": "Begon bij",
-  "EndedAt": "Geëindigd om"
+  "EndedAt": "Geëindigd om",
+  "Change": "Wijziging",
+  "Move": "Verplaats",
+  "Shorten": "Inkorten",
+  "Extend": "Verlengen",
+  "AtTheBottom": "Onderaan",
+  "AtTheTop": "Bovenaan",
+  "AmountOfMinutes": "Aantal Minuten",
+  "EnterMinutes": "Voer minuten in",
+  "At": "Op",
+  "Top": "Bovenkant",
+  "Bottom": "Onderkant"
 }
 

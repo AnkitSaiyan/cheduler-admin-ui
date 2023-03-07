@@ -288,5 +288,16 @@
   "AppointmentDetails":"Appointment Details",
   "Comments":"Comments",
   "StartedAt": "Started At",
-  "EndedAt": "Ended At"
+  "EndedAt": "Ended At",
+  "Change": "Change",
+  "Move": "Move",
+  "Shorten": "Shorten",
+  "Extend": "Extend",
+  "AtTheBottom": "At The Top",
+  "AtTheTop": "At The Bottom",
+  "AmountOfMinutes": "Amount of Minutes",
+  "EnterMinutes": "Enter Minutes",
+  "At": "At",
+  "Top": "Top",
+  "Bottom": "Bottom"
 }

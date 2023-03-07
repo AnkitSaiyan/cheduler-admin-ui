@@ -23,6 +23,7 @@ import { getAddAppointmentRequestData } from '../../../utils/getAddAppointmentRe
 import { ReadStatus } from '../../../models/status.model';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
+import {Translate} from "../../../models/translate.model";
 
 @Component({
   selector: 'dfm-calendar-day-view',
@@ -215,7 +216,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
       )
       .subscribe((res) => {
         console.log(res);
-        this.notificationSvc.showNotification('Radiologist updated');
+        this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated}!`);
       });
   }
 
@@ -310,7 +311,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Appointment?',
+        bodyText: 'AreYouSureWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,
@@ -323,8 +324,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         take(1),
       )
       .subscribe((res) => {
-        console.log(res);
-        this.notificationSvc.showNotification('Appointment deleted successfully');
+        this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted}!`);
       });
   }
 
