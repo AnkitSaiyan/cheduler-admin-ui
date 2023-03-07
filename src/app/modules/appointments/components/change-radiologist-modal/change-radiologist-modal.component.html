@@ -1,7 +1,7 @@
 <div class="bg-white rounded-4 change-radiologist-modal">
   <div class="modal-header">
     <h5 class="modal-title">Change Radiologist</h5>
-    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
+    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="closeDialog()"></dfm-button-icon>
   </div>
 
   <div class="modal-body d-flex flex-column dfm-gap-24 dfm-mb-8">
@@ -21,7 +21,7 @@
   </div>
 
   <div class="modal-footer">
-    <dfm-button color="secondary" size="md" (click)="close(false)">Cancel</dfm-button>
-    <dfm-button color="primary" size="md" (click)="close(true)">Change</dfm-button>
+    <dfm-button color="secondary" size="md" (click)="closeDialog()">Cancel</dfm-button>
+    <dfm-button color="primary" size="md" (click)="save()">Change</dfm-button>
   </div>
 </div>

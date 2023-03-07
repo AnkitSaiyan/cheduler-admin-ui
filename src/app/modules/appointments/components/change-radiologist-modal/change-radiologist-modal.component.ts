@@ -62,12 +62,12 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
     // });
   }
 
-  public close(result: boolean) {
-    if (!result) {
-      this.dialogSvc.close(null);
-    }
+  public closeDialog(): void {
+    this.dialogSvc.close(null);
+  }
 
-    if (result && this.radiologistFormControl.invalid) {
+  public save(): void {
+    if (this.radiologistFormControl.invalid) {
       this.radiologistFormControl.markAsTouched();
       return;
     }
