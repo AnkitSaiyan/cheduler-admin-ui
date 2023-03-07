@@ -4,7 +4,7 @@
 
     <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper">
       <div>
-        <input class="w-full hidden" [formControl]="dataControl" placeholder="yyyy-mm-dd" ngbDatepicker #date="ngbDatepicker" [positionTarget]="datePickerToggle"/>
+        <input class="w-full hidden" [formControl]="dataControl" placeholder="yyyy-mm-dd" ngbDatepicker #date="ngbDatepicker" [positionTarget]="datePickerToggle" placement="auto"/>
         <div>
           <div #datePickerToggle>
             <dfm-button-icon color="secondary-gray" size="md" icon="calendar-date"

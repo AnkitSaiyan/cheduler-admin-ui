@@ -108,7 +108,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
 
-      const filteredAps = appointments.filter((ap) => ap.approval === AppointmentStatus.Approved).sort((ap1, ap2) => {
+      const filteredAps = [...appointments].sort((ap1, ap2) => {
         if (ap1.startedAt && ap2.startedAt) {
           return new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime()
         }
