@@ -169,7 +169,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         takeUntil(this.destroy$$),
       )
       .subscribe((staffs) => {
-        this.staffs$$.next(staffs.map((staff) => ({ name: staff.firstname, value: staff.id.toString() })) as NameValue[]);
+        this.staffs$$.next(staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() })) as NameValue[]);
         this.cdr.detectChanges();
       });
 
@@ -209,6 +209,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   private createForm(absenceDetails?: Absence | undefined): void {
+    console.log(absenceDetails);
     let startTime;
     let endTime;
 
@@ -256,19 +257,24 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       endTime: [endTime, [Validators.required]],
       isRepeat: [!!absenceDetails?.isRepeat, []],
       isHoliday: [!!absenceDetails?.isHoliday, []],
-      repeatType: [absenceDetails?.repeatType ?? null, []],
-      repeatDays: [absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '', []],
-      repeatFrequency: [
-        absenceDetails?.isRepeat && absenceDetails?.repeatFrequency && absenceDetails.repeatType
-          ? `${absenceDetails.repeatFrequency} ${this.repeatTypeToName[absenceDetails.repeatType]}`
-          : null,
-        [Validators.min(1)],
-      ],
+      repeatType: [null, []],
+      repeatDays: ['', []],
+      repeatFrequency: [ null, [Validators.min(1)]],
       userList: [absenceDetails?.user?.length ? absenceDetails.user.map(({ id }) => id?.toString()) : [], []],
       roomList: [absenceDetails?.rooms?.length ? absenceDetails?.rooms.map(({ id }) => id?.toString()) : [], []],
       info: [absenceDetails?.info ?? '', []],
       priority: [absenceDetails?.priority ?? null, []],
     });
+
+    setTimeout(() => this.absenceForm.patchValue({
+      startTime,
+      endTime,
+      repeatType: absenceDetails?.repeatType,
+      repeatFrequency: absenceDetails?.isRepeat && absenceDetails?.repeatFrequency && absenceDetails.repeatType
+          ? `${absenceDetails.repeatFrequency} ${this.repeatTypeToName[absenceDetails.repeatType]}`
+          : null,
+      repeatDays: absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : ''
+    }), 0)
 
     this.cdr.detectChanges();
 
@@ -276,7 +282,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       .get('repeatType')
       ?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.absenceForm.get('repeatDays')?.setValue(null);
+        if (!absenceDetails) {
+          this.absenceForm.get('repeatDays')?.setValue(null);
+        }
         this.updateRepeatFrequency();
       });
 
