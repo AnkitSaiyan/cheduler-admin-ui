@@ -22,7 +22,7 @@
         color="link"
         size="md"
         leadingIcon="pencil-02"
-        (click)="openEditRoomModal()"
+        (click)="openEditRoomModal(roomDetails)"
       >{{'EditRoom' | translate}}
       </dfm-button>
 
@@ -202,7 +202,7 @@
 
   <div class="hidden bg-white rm-vw-action-buttons-mv">
     <dfm-button color="secondary" size="sm" (click)="deleteRoom(roomDetails.id)">{{'Delete' | translate}}</dfm-button>
-    <dfm-button color="primary" size="sm" (click)="openEditRoomModal()">{{'Edit' | translate}}
+    <dfm-button color="primary" size="sm" (click)="openEditRoomModal(roomDetails)">{{'Edit' | translate}}
     </dfm-button>
   </div>
 </div>

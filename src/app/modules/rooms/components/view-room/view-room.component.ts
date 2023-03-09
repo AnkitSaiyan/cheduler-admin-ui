@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import {BehaviorSubject, filter, switchMap, take, takeUntil, tap} from 'rxjs';
 import { Router } from '@angular/router';
 import { TimeSlot, Weekday, WeekWisePracticeAvailability } from '../../../../shared/models/calendar.model';
 import { RouterStateService } from '../../../../core/services/router-state.service';
@@ -26,7 +26,11 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 export class ViewRoomComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public roomDetails$$ = new BehaviorSubject<Room | undefined>(undefined);
 
+  public rooms$$ = new BehaviorSubject<Room[]>([]);
+
   public examIdToNameMap = new Map<number, string>();
+
+  public roomPlaceInToIndexMap = new Map<number, number>();
 
   public practiceAvailability$$ = new BehaviorSubject<any[]>([]);
 
@@ -60,6 +64,17 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
           this.practiceAvailability$$.next([...this.getPracticeAvailability(roomDetails.practiceAvailability)]);
         }
       });
+
+    this.roomApiSvc.allRooms$
+      .pipe(take(1))
+      .subscribe(
+        (rooms) => {
+          this.rooms$$.next(rooms);
+          this.roomPlaceInToIndexMap.clear();
+          rooms.forEach((room, index) => {
+            this.roomPlaceInToIndexMap.set(+room.placeInAgenda, index + 1);
+          });
+        });
 
     this.examApiSvc.exams$
       .pipe(takeUntil(this.destroy$$))
@@ -157,9 +172,13 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
       });
   }
 
-  public openEditRoomModal() {
+  public openEditRoomModal(roomDetails: Room) {
     this.modalSvc.open(AddRoomModalComponent, {
-      data: { edit: !!this.roomDetails$$.value?.id, roomID: this.roomDetails$$.value?.id },
+      data: {
+        edit: !!roomDetails?.id,
+        roomID: roomDetails?.id,
+        placeInAgendaIndex: roomDetails ? this.roomPlaceInToIndexMap.get(+roomDetails.placeInAgenda) : this.rooms$$.value.length + 1,
+      },
       options: {
         size: 'lg',
         centered: true,
