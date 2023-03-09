@@ -98,7 +98,7 @@
   "NoUserFound": "No user found",
   "EnterRoomName": "Enter Room Name",
   "EnterRoomDescription": "Enter Room Description",
-  "Invalidtime": "Invalid time",
+  "InvalidTime": "Invalid Time",
   "StartTimeLessThanEndTime": "Start time should be smaller than End time",
   "SlotOverlapsOtherSlots": "Slot overlaps other slots",
   "AddPrioritySlots": "Add Priority Slots",

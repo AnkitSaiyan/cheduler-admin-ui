@@ -98,7 +98,7 @@
   "NoUserFound": "Geen gebruiker gevonden",
   "EnterRoomName": "Geef naam kamer",
   "EnterRoomDescription": "Geef beschrijving kamer",
-  "Invalidtime": "Ongeldige tijd",
+  "InvalidTime": "Ongeldige Tijd",
   "StartTimeLessThanEndTime": "Begintijd moet kleiner zijn dan eindtijd",
   "SlotOverlapsOtherSlots": "Tijdslot overlapt met andere tijdslots",
   "AddPrioritySlots": "Bijvoegen Prioritaire Slots",
