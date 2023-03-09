@@ -171,7 +171,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       .getUsersByType(UserType.General)
       .pipe(takeUntil(this.destroy$$))
       .subscribe((staffs) => {
-        const keyValueExams = this.nameValuePipe.transform(staffs, 'firstname', 'id');
+        const keyValueExams = this.nameValuePipe.transform(staffs, 'fullName', 'id');
         this.filteredUserList = [...keyValueExams];
         this.userList = [...keyValueExams];
       });
@@ -179,7 +179,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.physicianApiSvc.physicians$
       .pipe(takeUntil(this.destroy$$))
       .subscribe((physicians) => {
-        const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'firstname', 'id');
+        const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
         this.filteredPhysicianList = [...keyValuePhysicians];
         this.physicianList = [...keyValuePhysicians];
       });
