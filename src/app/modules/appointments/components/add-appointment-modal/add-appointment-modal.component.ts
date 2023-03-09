@@ -273,7 +273,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
       (this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
       (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length)
     ) {
-      this.notificationSvc.showNotification(`${Translate.SelectSlots}.`, NotificationType.WARNING);
+      this.notificationSvc.showNotification(`${Translate.SelectSlots[this.selectedLang]}.`, NotificationType.WARNING);
       return;
     }
 
@@ -299,20 +299,20 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
     console.log(requestData);
 
-    this.appointmentApiSvc
-      .saveAppointment$(requestData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: () => {
-          this.notificationSvc.showNotification(`${Translate.SuccessMessage.Added[this.selectedLang]}!`);
-          this.submitting$$.next(false);
-          this.modalSvc.close(true);
-        },
-        error: (err) => {
-          this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-          this.submitting$$.next(false);
-        }
-      });
+    // this.appointmentApiSvc
+    //   .saveAppointment$(requestData)
+    //   .pipe(takeUntil(this.destroy$$))
+    //   .subscribe({
+    //     next: () => {
+    //       this.notificationSvc.showNotification(`${Translate.SuccessMessage.Added[this.selectedLang]}!`);
+    //       this.submitting$$.next(false);
+    //       this.modalSvc.close(true);
+    //     },
+    //     error: (err) => {
+    //       this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+    //       this.submitting$$.next(false);
+    //     }
+    //   });
   }
 
   private updateEventCard(slot?: Slot) {
