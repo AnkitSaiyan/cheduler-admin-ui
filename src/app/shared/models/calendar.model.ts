@@ -13,6 +13,7 @@ export interface TimeSlot {
   id?: number;
   dayStart: string;
   dayEnd: string;
+  weekday?: Weekday;
 }
 
 export interface WeekWisePracticeAvailability {

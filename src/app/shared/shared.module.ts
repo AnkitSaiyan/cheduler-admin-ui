@@ -47,6 +47,7 @@ import {TranslateLoader, TranslateModule, TranslatePipe} from '@ngx-translate/co
 // eslint-disable-next-line import/order
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import {IsDataPipe} from "./pipes/is-data.pipe";
+import { TimeSlotsComponent } from './components/time-slots/time-slots.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -80,7 +81,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     EmailInputDirective,
     NumberInputDirective,
     NumberArrayPipe,
-    IsDataPipe
+    IsDataPipe,
+    TimeSlotsComponent
   ],
   imports: [
     CommonModule,
@@ -138,7 +140,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NumberArrayPipe,
     ClipboardModule,
     TranslateModule,
-    IsDataPipe
+    IsDataPipe,
+    TimeSlotsComponent
   ],
   providers: [
     TranslatePipe
