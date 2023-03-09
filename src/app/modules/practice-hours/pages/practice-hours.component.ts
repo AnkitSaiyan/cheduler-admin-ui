@@ -1,23 +1,17 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
-import {BehaviorSubject, debounceTime, Subject, takeUntil} from 'rxjs';
+import {FormBuilder} from '@angular/forms';
+import {BehaviorSubject, Subject, take, takeUntil} from 'rxjs';
 import {BadgeColor, InputDropdownComponent, NotificationType} from 'diflexmo-angular-design';
 import {DestroyableComponent} from '../../../shared/components/destroyable.component';
 import {TimeSlot, Weekday} from '../../../shared/models/calendar.model';
 import {NotificationDataService} from '../../../core/services/notification-data.service';
 import {PracticeAvailabilityServer} from '../../../shared/models/practice.model';
 import {PracticeHoursApiService} from '../../../core/services/practice-hours-api.service';
-import {checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumber} from '../../../shared/utils/time';
 import {NameValue} from '../../../shared/components/search-modal.component';
-import {NameValuePairPipe} from '../../../shared/pipes/name-value-pair.pipe';
-import {TimeInIntervalPipe} from '../../../shared/pipes/time-in-interval.pipe';
-import {getNumberArray} from '../../../shared/utils/getNumberArray';
-import {toggleControlError} from '../../../shared/utils/toggleControlError';
-import {TIME_24} from '../../../shared/utils/const';
 import {Translate} from '../../../shared/models/translate.model';
 import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {COMING_FROM_ROUTE, EDIT, EXAM_ID, ENG_BE, DUTCH_BE, Statuses, StatusesNL} from '../../../shared/utils/const';
-import {GeneralUtils} from '../../../shared/utils/general.utils';
+import {ENG_BE} from '../../../shared/utils/const';
+
 interface PracticeHourFormValues {
   selectedWeekday: Weekday;
   practiceHours: {
@@ -62,7 +56,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
   public emitEvents$$ = new Subject<void>();
 
-  private selectedLang: string = ENG_BE;
+  private selectedLang!: string;
 
   constructor(
     private fb: FormBuilder,
@@ -72,12 +66,6 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
     private shareDataSvc: ShareDataService,
   ) {
     super();
-  }
-
-  public ngOnInit(): void {
-    this.practiceHourApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
-      this.practiceHoursData$$.next(practiceHours);
-    });
 
     this.shareDataSvc
       .getLanguage$()
@@ -85,11 +73,18 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       .subscribe((lang) => (this.selectedLang = lang));
   }
 
+  public ngOnInit(): void {
+    this.practiceHourApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
+      this.practiceHoursData$$.next(practiceHours);
+    });
+  }
+
   public override ngOnDestroy() {
     super.ngOnDestroy();
   }
 
   prv
+
   public savePracticeHours(): void {
     this.emitEvents$$.next();
   }
@@ -102,15 +97,15 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
     this.submitting$$.next(true);
 
-    const { values } = formValues;
+    const {values} = formValues;
 
 
     console.log(values);
     this.practiceHourApiSvc
       .savePracticeHours$(values)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(
-        () => {
+      .subscribe({
+        next: () => {
           if (this.practiceHoursData$$.value?.length) {
             this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
           } else {
@@ -118,7 +113,7 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
           }
           this.submitting$$.next(false);
         },
-        () => this.submitting$$.next(false),
-      );
+        error: () => this.submitting$$.next(false),
+      });
   }
 }
