@@ -50,8 +50,9 @@
   </section>
 
   <section class="h-100" *ngIf="filteredPosts$$ | async as posts">
-    <mdb-carousel [controls]="true" [indicators]="true" [dark]="true">
-      <mdb-carousel-item  *ngFor="let post of posts; let i = index" class="h-100">
+    <div *ngIf="posts[0]">
+    <mdb-carousel [controls]="true" [indicators]="true" [dark]="true" >
+      <mdb-carousel-item *ngFor="let post of posts; let i = index" class="h-100">
         <div class="d-flex flex-column dfm-gap-16 dfm-px-24 dfm-pt-16 dfm-pb-24 justify-content-between rounded-3 shadow-sm post-it-card"
              [ngStyle]="{ 'background': i % 2 === 0 ? '#EBE9FE' : '#FDF8F2' }">
           <header class="overflow-y-auto hide-scrollbar">
@@ -94,5 +95,6 @@
         </div>
       </mdb-carousel-item>
     </mdb-carousel>
+  </div>
   </section>
 </div>

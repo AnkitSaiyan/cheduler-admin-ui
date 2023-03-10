@@ -69,15 +69,15 @@
                    height="40">
 
               <div *ngIf="!item.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
-                {{ item?.patientName?.toString()[0]?.toUpperCase() }}
+                {{ item?.patientFname?.toString()[0]?.toUpperCase() }}
               </div>
             </div>
-            <span>{{ item.patientName }}</span>
+            <span>{{ item.patientFname }}</span>
           </div>
         </dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.emailId }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.patientEmail }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.doctor }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.appointmentDate | date : 'short' }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.startedAt | date : 'short' }}</dfm-table-body-cell>
 
         <dfm-table-body-cell>
           <div class="d-flex dfm-gap-16">
