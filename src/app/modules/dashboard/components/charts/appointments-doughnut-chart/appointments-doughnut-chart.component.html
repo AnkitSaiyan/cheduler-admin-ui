@@ -8,7 +8,7 @@
     </header>
   </section>
 
-  <section class="chart-wrapper align-self-center dfm-mb-16">
+  <section class="chart-wrapper align-self-center dfm-mb-16" *ngIf="appointmentDetails">
     <canvas baseChart
             [type]="'doughnut'"
             [data]="doughnutChartConfig"
@@ -19,18 +19,18 @@
     </canvas>
   </section>
 
-  <section class="d-flex flex-column text-sm dfm-gap-4 dfm-ms-4">
+  <section class="d-flex flex-column text-sm dfm-gap-4 dfm-ms-4" *ngIf="appointmentDetails">
     <div class="d-flex dfm-gap-8">
-      <span class="font-weight-medium">{{ appointmentDetails.total }}</span>
+      <span class="font-weight-medium">{{ appointmentDetails['Total'] }}</span>
       <span class="dfm-text-main-400">Total</span>
     </div>
     <div class="d-flex dfm-gap-8">
-      <span class="font-weight-medium">{{ appointmentDetails.new }}</span>
+      <span class="font-weight-medium">{{ appointmentDetails['Pending'] }}</span>
       <span class="dfm-text-main-400">New</span>
     </div>
     <div class="d-flex dfm-gap-8">
-      <span class="font-weight-medium">{{ appointmentDetails.unconfirmed }}</span>
-      <span class="dfm-text-main-400">Unconfirmed</span>
+      <span class="font-weight-medium">{{ appointmentDetails['Approved'] }}</span>
+      <span class="dfm-text-main-400">Confirmed</span>
     </div>
   </section>
 

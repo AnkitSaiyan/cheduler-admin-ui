@@ -27,6 +27,8 @@ export class DashboardApiService {
 
   private refreshPost$$ = new Subject<void>();
 
+  private refreshAppointmentChart$$ = new Subject<void>();
+
   private refreshDoctors$$ = new Subject<void>();
 
   private upcommingAppointments$$ = new Subject<void>();
@@ -92,6 +94,14 @@ export class DashboardApiService {
 
   private fetchPosts(): Observable<PostIt[]> {
     return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/postit`).pipe(map((response) => response.data));
+  }
+
+  public get appointmentChart$(): Observable<any> {
+    return combineLatest([this.refreshAppointmentChart$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAppointmentChart()));
+  }
+
+  private fetchAppointmentChart(): Observable<any> {
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/appointmentsstatus`).pipe(map((response) => response.data));
   }
 
   // public upsertAppointment$(requestData: AddAppointmentRequestData): Observable<string> {

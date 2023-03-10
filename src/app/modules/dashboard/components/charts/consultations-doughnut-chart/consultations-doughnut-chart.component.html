@@ -1,32 +1,28 @@
-<div class="consultations-chart-wrapper d-flex flex-column justify-content-between dfm-gap-16 dfm-p-16">
+<div class="cancelled-bar-chart-wrapper d-flex flex-column justify-content-between dfm-gap-16 dfm-p-16">
   <section class="d-flex justify-content-between dfm-gap-8 align-items-center">
     <header>
       <span class="font-weight-medium">Consultations</span>
     </header>
-    <div class="d-flex dfm-gap-8">
-      <div class="chart-arrow-up">
+    <div class="d-flex">
+      <div class="chart-arrow-down">
         <dfm-button
           color="link-gray"
           size="sm"
-          trailingIcon="arrow-up"
+          trailingIcon="arrow-down"
         ></dfm-button>
       </div>
-      <span style="color:#12B76A;" class="font-weight-medium">21.77%</span>
+      <span class="font-weight-medium text-red">6.09%</span>
     </div>
   </section>
 
-  <section>
-    <div class="position-absolute d-flex flex-column align-items-center flex-shrink-1">
-      <span class="font-weight-medium text-md fw-bold fs-4">21</span>
-      <span class="text-sm dfm-text-main-400">Today</span>
-    </div>
+  <section class="d-flex justify-content-end bar-chart-tab-view">
     <canvas baseChart
-            [type]="'doughnut'"
-            [data]="doughnutChartConfig"
-            [labels]="doughnutChartLabels"
-            [options]="doughnutChartOptions"
-            [plugins]="doughnutChartPlugins"
-            [legend]="doughnutChartLegend">
+            [type]="'bar'" r
+            [data]="cancelledBarChartConfig"
+            [labels]="cancelledBarChartLabels"
+            [options]="cancelledBarChartOptions"
+            [plugins]="cancelledBarChartPlugins"
+            [legend]="cancelledBarChartLegend">
     </canvas>
   </section>
 </div>
