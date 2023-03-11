@@ -20,31 +20,19 @@
         <div class="circle-icon"></div>
         <div
           class="d-flex flex-column justify-content-center dfm-bg-main-50 dfm-px-10 dfm-py-4 text-xs text-center rounded">
-          <ng-container class="font-weight-medium" *ngFor="let exam of appointment.exams;let i = index" > 
-            <span>{{ exam.startedAt | date : 'h:mm' }} {{i !== (appointment.exams.length - 1) ? ',' : ''}}</span>
-          </ng-container>
-
-          <span>Room :</span>
-          <ng-container class="font-weight-medium" *ngFor="let exam of appointment.exams;let i = index" > 
-            <span class="dfm-text-main-400" *ngFor="let room of exam.rooms;let i = index">{{ room.placeInAgenda}} {{i !== (exam.rooms.length - 1) ? ',' : ''}}</span>
+          <ng-container class="font-weight-medium"> 
+            <span>{{ appointment.exam.startedAt | date : 'h:mm a' }}</span>
           </ng-container>
         </div>
 
         <div class="d-flex flex-row align-items-center">
           <div class="rounded-circle avatar-container">
-            <img *ngIf="appointment.avatar" [src]="appointment.avatar"
-                 class="rounded-circle border-light border-1"
-                 alt="Doctor's avatar"
-                 width="40"
-                 height="40">
-
-            <div *ngIf="!appointment.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+            <div class="circle-gray-200-40 d-flex justify-content-center align-items-center">
               {{ appointment?.patientFname?.toString()[0].toUpperCase() }}
             </div>
           </div>
           <div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs">
             <span class="font-weight-medium"> {{ appointment?.patientFname | titlecase }} </span>
-            <!-- <span class="dfm-text-main-400"> Room {{ appointment.post | titlecase }} </span> -->
           </div>
         </div>
       </div>
