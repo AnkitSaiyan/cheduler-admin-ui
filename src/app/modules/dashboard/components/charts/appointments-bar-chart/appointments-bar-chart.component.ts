@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration, ChartOptions } from 'chart.js/dist/types';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
+import { BehaviorSubject, takeUntil } from 'rxjs';
+import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
+import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 
 @Component({
   selector: 'dfm-appointments-bar-chart',
   templateUrl: './appointments-bar-chart.component.html',
   styleUrls: ['./appointments-bar-chart.component.scss'],
 })
-export class AppointmentsBarChartComponent implements OnInit {
-  public appointmentBarChartLabels = [ '2006', '2007', '2008', '2009', '2010', '2011', '2012' ];
+export class AppointmentsBarChartComponent extends DestroyableComponent implements OnInit {
+  public appointmentBarChartLabels = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
 
   public appointmentBarChartOptions!: ChartOptions<'bar'>;
 
@@ -18,7 +21,20 @@ export class AppointmentsBarChartComponent implements OnInit {
 
   public appointmentBarChartPlugins = [pluginDataLabels.default];
 
+  public appointmentDetails: any;
+
+  constructor(private dashboardApiService: DashboardApiService) {
+    super();
+  }
+
   public ngOnInit(): void {
+    this.dashboardApiService.appointmentBarChart$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
+      console.log(appointment);
+      this.appointmentDetails = appointment.weeklyappointments;
+      // appointment['appointments'].forEach((element) => {
+      //   // this.appointmentDetails[element.label] = element.value;
+      // });
+    });
     this.appointmentBarChartConfig = {
       labels: this.appointmentBarChartLabels,
       datasets: [

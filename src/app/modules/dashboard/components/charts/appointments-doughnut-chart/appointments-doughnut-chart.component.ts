@@ -27,14 +27,8 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
 
   public doughnutChartPlugins = [pluginDataLabels.default];
 
-  public appoinmtnetData$$: BehaviorSubject<any[]>;
-
-  public filteredAppointment$$: BehaviorSubject<any[]>;
-
   constructor(private dashboardApiService: DashboardApiService) {
     super();
-    this.appoinmtnetData$$ = new BehaviorSubject<any[]>([]);
-    this.filteredAppointment$$ = new BehaviorSubject<any[]>([]);
   }
 
   public ngOnInit(): void {

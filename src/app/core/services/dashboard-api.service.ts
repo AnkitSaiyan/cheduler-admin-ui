@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, startWith, Subject, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, startWith, Subject, switchMap, tap } from 'rxjs';
 import { Appointment } from 'src/app/shared/models/appointment.model';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { Exam } from 'src/app/shared/models/exam.model';
@@ -29,6 +29,16 @@ export class DashboardApiService {
 
   private refreshAppointmentChart$$ = new Subject<void>();
 
+  private refreshAppointmentBarChart$$ = new Subject<void>();
+
+  private refreshPatientBarChart$$ = new Subject<void>();
+
+  private refreshCompletedBarChart$$ = new Subject<void>();
+
+  private refreshCancelledBarChart$$ = new Subject<void>();
+
+  private refreshOverallLineChart$$ = new Subject<void>();
+
   private refreshDoctors$$ = new Subject<void>();
 
   private upcommingAppointments$$ = new Subject<void>();
@@ -48,6 +58,10 @@ export class DashboardApiService {
   private refreshCanceledAppointmentGrowth$$ = new Subject<void>();
 
   private refreshYearlyAppointments$$ = new Subject<void>();
+
+  public notificationData$$ = new BehaviorSubject<any>([]);
+
+  public postItData$$ = new BehaviorSubject<any>([]);
 
   public get appointment$(): Observable<Appointment[]> {
     return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
@@ -102,6 +116,50 @@ export class DashboardApiService {
 
   private fetchAppointmentChart(): Observable<any> {
     return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/appointmentsstatus`).pipe(map((response) => response.data));
+  }
+
+  public get appointmentBarChart$(): Observable<any> {
+    return combineLatest([this.refreshAppointmentBarChart$$.pipe(startWith(''))]).pipe(switchMap(() => this.appointmentBarChart()));
+  }
+
+  private appointmentBarChart(): Observable<any> {
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklyappointments`).pipe(map((response) => response.data));
+  }
+
+  public get patientsBarChart$(): Observable<any> {
+    return combineLatest([this.refreshPatientBarChart$$.pipe(startWith(''))]).pipe(switchMap(() => this.patientsBarChart()));
+  }
+
+  private patientsBarChart(): Observable<any> {
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklypatients`).pipe(map((response) => response.data));
+  }
+
+  public get completedBarChart$(): Observable<any> {
+    return combineLatest([this.refreshCompletedBarChart$$.pipe(startWith(''))]).pipe(switchMap(() => this.completedBarChart()));
+  }
+
+  private completedBarChart(): Observable<any> {
+    return this.http
+      .get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklycompletedappointments`)
+      .pipe(map((response) => response.data));
+  }
+
+  public get cancelledBarChart$(): Observable<any> {
+    return combineLatest([this.refreshCancelledBarChart$$.pipe(startWith(''))]).pipe(switchMap(() => this.cancelledBarChart()));
+  }
+
+  private cancelledBarChart(): Observable<any> {
+    return this.http
+      .get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklycancelledappointments`)
+      .pipe(map((response) => response.data));
+  }
+
+  public get overallStatusBarChart$(): Observable<any> {
+    return combineLatest([this.refreshOverallLineChart$$.pipe(startWith(''))]).pipe(switchMap(() => this.overallStatusBarChart()));
+  }
+
+  private overallStatusBarChart(): Observable<any> {
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/yearlyappointments`).pipe(map((response) => response.data));
   }
 
   // public upsertAppointment$(requestData: AddAppointmentRequestData): Observable<string> {

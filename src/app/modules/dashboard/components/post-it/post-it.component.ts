@@ -84,7 +84,12 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
 
   public filteredPosts$$: BehaviorSubject<any[]>;
 
-  constructor(private dashboardApiService: DashboardApiService, private formBuilder: FormBuilder, private modalSvc: ModalService, private notificationSvc: NotificationDataService) {
+  constructor(
+    private dashboardApiService: DashboardApiService,
+    private formBuilder: FormBuilder,
+    private modalSvc: ModalService,
+    private notificationSvc: NotificationDataService,
+  ) {
     super();
     this.posts$$ = new BehaviorSubject<any[]>([]);
     this.filteredPosts$$ = new BehaviorSubject<any[]>([]);
@@ -92,9 +97,9 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
 
   ngOnInit(): void {
     this.dashboardApiService.posts$.pipe(takeUntil(this.destroy$$)).subscribe((posts) => {
-      console.log('posts: ', posts);
       this.posts$$.next(posts);
       this.filteredPosts$$.next(posts);
+      this.dashboardApiService.postItData$$.next(posts);
     });
   }
 
@@ -109,14 +114,14 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
 
     dialogRef.closed
       .pipe(
-        switchMap((response: string)=>this.dashboardApiService.addPost({message: response})),
+        switchMap((response: string) => this.dashboardApiService.addPost({ message: response })),
         take(1),
       )
-      .subscribe((response)=>{
-          if (response) {
-            this.notificationSvc.showNotification('Post Added successfully');
-          }
-        });
+      .subscribe((response) => {
+        if (response) {
+          this.notificationSvc.showNotification('Post Added successfully');
+        }
+      });
   }
 
   public reomvePost(id: number) {
@@ -132,14 +137,14 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
 
     dialogRef.closed
       .pipe(
-        switchMap(()=>this.dashboardApiService.deletePost(id)),
+        switchMap(() => this.dashboardApiService.deletePost(id)),
         take(1),
       )
-      .subscribe((response)=>{
-          console.log('response: ', response);
-          if (response) {
-            this.notificationSvc.showNotification('Post deleted successfully');
-          }
-        });
+      .subscribe((response) => {
+        console.log('response: ', response);
+        if (response) {
+          this.notificationSvc.showNotification('Post deleted successfully');
+        }
+      });
   }
 }
