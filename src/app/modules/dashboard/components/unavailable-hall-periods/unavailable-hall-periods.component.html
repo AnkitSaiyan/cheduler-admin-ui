@@ -4,19 +4,19 @@
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
       </div>
-      <span class="font-weight-medium">Unavailable periods of the halls within 31 days</span>
+      <span class="font-weight-medium">{{"UnavailablePeriodsOfTheHalls" | translate}}</span>
     </header>
 
     <div class="d-flex dfm-gap-16">
       <dfm-input
         size="md"
-        placeholder="Search room name" class="flex-1 search-room-name-placeholder"
+        placeholder="{{'SearchRoomName' | translate}}" class="flex-1 search-room-name-placeholder"
         icon="search-sm"
       ></dfm-input>
 
       <dfm-input
         size="md"
-        placeholder="Room name" class="flex-1 room-name-placeholder"
+        placeholder="{{'RoomName' | translate}}" class="flex-1 room-name-placeholder"
         icon="search-sm"
       ></dfm-input>
 
@@ -33,7 +33,7 @@
           <div class="download-dropdown-max-w-144">
             <dfm-input-dropdown
               [items]="downloadItems"
-              placeholder="Download"
+              placeholder="{{'Download' | translate}}"
               size="md"
             ></dfm-input-dropdown>
           </div>
@@ -69,7 +69,7 @@
   <section class="table-wrapper" *ngIf="filteredRoomAbsence$$ | async as roomAbsence">
     <dfm-table [items]="roomAbsence">
       <ng-template #headerRowTemplate>
-        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
       </ng-template>
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-body-cell>

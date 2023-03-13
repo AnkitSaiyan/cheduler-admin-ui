@@ -9,7 +9,7 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
   styleUrls: ['./recent-patients.component.scss'],
 })
 export class RecentPatientsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public columns: string[] = ['Patient Name', 'Email ID', 'Doctor', 'Appointment Date', 'Actions'];
+  public columns: string[] = ['PatientName', 'Email ID', 'Doctor', 'AppointmentDate', 'Actions'];
 
   // public recentPatients: any = [
   //   {

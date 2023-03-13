@@ -1,16 +1,16 @@
 <div #content class="bg-white rounded-4 confirm-action-modal">
   <div class="modal-header">
-    <h5 class="modal-title">{{ dialogData.titleText }}</h5>
+    <h5 class="modal-title">{{ dialogData.titleText | translate}}</h5>
     <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
   </div>
 
   <div class="modal-body">
 
-    <dfm-text-area [placeholder]="'Enter Message'" [formControl]="postItMessage"></dfm-text-area>
+    <dfm-text-area placeholder="{{'EnterMessage' | translate}}" [formControl]="postItMessage"></dfm-text-area>
   </div>
 
   <div class="modal-footer">
-    <dfm-button color="secondary" size="md" (click)="close(false)">{{ dialogData.cancelButtonText }}</dfm-button>
-    <dfm-button color="primary" size="md" (click)="close(true)">{{ dialogData.confirmButtonText }}</dfm-button>
+    <dfm-button color="secondary" size="md" (click)="close(false)">{{ dialogData.cancelButtonText | translate }}</dfm-button>
+    <dfm-button color="primary" size="md" (click)="close(true)">{{ dialogData.confirmButtonText | translate }}</dfm-button>
   </div>
 </div>
