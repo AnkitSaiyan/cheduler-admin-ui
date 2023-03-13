@@ -14,7 +14,7 @@ export class AddPostComponent extends DestroyableComponent implements OnInit, On
   public dialogData: DialogData = {
     confirmButtonText: 'Proceed',
     cancelButtonText: 'Cancel',
-    titleText: 'Post It',
+    titleText: 'PostIt',
     bodyText: 'Are you sure you want to perform this action?',
   };
 

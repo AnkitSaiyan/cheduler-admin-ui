@@ -4,7 +4,7 @@
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
       </div>
-      <span class="font-weight-medium">Post It ({{ posts.length }})</span>
+      <span class="font-weight-medium">{{"PostIt" | translate}} ({{ posts.length }})</span>
     </header>
 
     <div>
@@ -13,7 +13,7 @@
         color="primary"
         (click)="addPost()"
       >
-        Add
+        {{"Add" | translate}}
       </dfm-button>
     </div>
   </section>
@@ -22,14 +22,14 @@
     <dfm-input
       class="flex-grow-1"
       size="md"
-      placeholder="Search post it" class="post-search-it-placeholder"
+      placeholder="{{'SearchPostIt' | translate}}" class="post-search-it-placeholder"
       icon="search-sm"
     ></dfm-input>
 
     <div class="d-flex flex-row justify-content-between dfm-gap-16">
       <dfm-input
         size="md"
-        placeholder="Search" class="post-search-placeholder flex-grow-1"
+        placeholder="{{'Search' | translate}}" class="post-search-placeholder flex-grow-1"
         icon="search-sm"
       ></dfm-input>
 
@@ -44,7 +44,7 @@
         color="secondary"
         class="text-nowrap post-view-all-btn"
       >
-        View All
+        {{"ViewAll" | translate}}
       </dfm-button>
     </div>
   </section>
@@ -87,7 +87,7 @@
             <div class="d-flex flex-column text-sm">
               <div class="d-flex align-items-center flex-wrap">
                 <span class="font-weight-medium dfm-me-8">Maaike Penoit</span>
-                <span class="text-xs dfm-text-main-500">General User</span>
+                <span class="text-xs dfm-text-main-500">{{"GeneralUser" | translate}}</span>
               </div>
               <span class="text-xs dfm-text-main-600">{{ post?.createdAt | date : 'M.d.yy, h:mm' }}</span>
             </div>
