@@ -88,6 +88,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     private shareDataSvc: ShareDataService,
     private staffApiSvc: StaffApiService,
   ) {}
+
   public ngOnChanges(changes: SimpleChanges) {
     if (!this.selectedDate) {
       this.updateDate(new Date());
@@ -99,11 +100,12 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
       this.dataGroupedByDateAndRoom = currentValue;
     }
+
     this.grayOutSlot$$.next([]);
-    if (this.timeSlot.intervals.length > 1) {
+
+    if (this.timeSlot?.intervals?.length > 1) {
       this.getGrayOutArea(this.timeSlot.intervals);
     }
-    console.log(this.timeSlot, 'slottest');
   }
 
   public ngOnInit(): void {
@@ -173,13 +175,15 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   public getTop(groupedData: any[]): number {
-    const startHour = new Date(groupedData[0].startedAt).getHours();
-    const startMinute = new Date(groupedData[0].startedAt).getMinutes();
-    const barHeight = 1;
-    const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-    const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
-
-    return top;
+    // const startHour = new Date(groupedData[0].startedAt).getHours();
+    // const startMinute = new Date(groupedData[0].startedAt).getMinutes();
+    // const barHeight = 1;
+    // const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
+    // const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
+    const start = this.myDate(this.timeSlot.timings[0]);
+    const end = new Date(groupedData[0].startedAt);
+    const minutes = getDurationMinutes(start, end);
+    return minutes * this.pixelsPerMin;
   }
 
   private handleDocumentClick() {
