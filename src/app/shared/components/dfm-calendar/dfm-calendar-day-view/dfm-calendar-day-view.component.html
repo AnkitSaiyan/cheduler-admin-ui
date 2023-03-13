@@ -1,6 +1,6 @@
 <div role="grid" class="calender-day-view">
   <div class="calender-day-view-absolute">
-    <div class="calender-day-view-container">
+    <div class="calender-day-view-container" *ngIf="timeSlot?.timings">
       <div role="presentation" class="calender-day-view-header " >
         <div class="text-xs calender-day-view-time-zone">
           <div>
@@ -49,10 +49,10 @@
         </div>
       </div>
 
-      <div class="calender-day-view-body-container hide-scrollbar">
+      <div class="calender-day-view-body-container hide-scrollbar" >
         <div role="presentation" class="calender-day-view-body">
           <div role="row" class="calender-day-view-time-slot-container">
-            <div class="calender-day-view-time-slot text-sm" *ngFor="let time of 15 | timeInInterval : 12 :true">
+            <div class="calender-day-view-time-slot text-sm" *ngFor="let time of timeSlot.timings">
               <span>{{ time }}</span>
               <div class="calender-day-view-horizontal-line"></div>
             </div>
@@ -61,7 +61,7 @@
           <div role="presentation" class="calender-day-view-events-container-main" (scroll)="onScroll(scrollTwo, scrollOne)" #scrollTwo>
             <div role="row" class="calender-day-view-events-container">
               <div>
-                <ng-container *ngFor="let i of 15 | timeInInterval">
+                <ng-container *ngFor="let i of timeSlot.timings">
                   <div class="calender-day-view-horizontal-line"></div>
                   <div class="calender-day-view-horizontal-line-light"></div>
                 </ng-container>

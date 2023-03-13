@@ -106,7 +106,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
   public addPost() {
     const dialogRef = this.modalSvc.open(AddPostComponent, {
       data: {
-        titleText: 'Post it',
+        titleText: 'Post It',
         confirmButtonText: 'Add',
         cancelButtonText: 'Cancel',
       } as DialogData,
@@ -130,7 +130,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Post?',
+        bodyText: 'AreYouSureYouWantToDeleteThisPost',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as DialogData,

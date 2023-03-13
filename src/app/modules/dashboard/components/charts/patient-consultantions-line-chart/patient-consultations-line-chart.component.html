@@ -5,13 +5,13 @@
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
         </div>
-        <span class="font-weight-medium">Overall Status</span>
+        <span class="font-weight-medium">{{"OverallStatus" | translate}}</span>
       </header>
 
      <div class="dfm-input-dropdown-wrapper-wo-label overall-sort-icon dfm-me-12">
        <dfm-input-dropdown
          [items]="[]"
-         placeholder="Sort By"
+         placeholder="{{'SortBy' | translate}}"
          [showDescription]="true"
          size="md"
          [loading]="false"
@@ -28,7 +28,7 @@
   <section class="d-flex dfm-gap-16 justify-content-end dfm-px-8 text-sm w-100 overall-patients-consultations">
     <div class="d-flex align-items-center dfm-gap-8">
       <div class="line-chart-legend patients-legend"></div>
-      <span>Patients</span>
+      <span>{{"Patients" | translate}}</span>
     </div>
 
     <!-- <div class="d-flex align-items-center dfm-gap-8">

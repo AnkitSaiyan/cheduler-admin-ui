@@ -27,4 +27,8 @@ export class CalendarUtils {
 
     return `${date.getHours()}:${date.getMinutes()}:00`;
   }
+
+  public static DurationInMinFromHour(hour: number, minute = 0): number {
+    return hour * 60 + minute;
+  }
 }
