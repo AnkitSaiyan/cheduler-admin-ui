@@ -24,6 +24,7 @@ import { ReadStatus } from '../../../models/status.model';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import {Translate} from "../../../models/translate.model";
+import {PracticeHoursApiService} from "../../../../core/services/practice-hours-api.service";
 
 @Component({
   selector: 'dfm-calendar-day-view',
@@ -86,7 +87,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     private notificationSvc: NotificationDataService,
     private modalSvc: ModalService,
     private shareDataSvc: ShareDataService,
-    private staffApiSvc: StaffApiService,
+    private staffApiSvc: StaffApiService
   ) {}
 
   public ngOnChanges(changes: SimpleChanges) {
@@ -104,6 +105,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
 
   public ngOnInit(): void {
     console.log(this.dataGroupedByDateAndRoom);
+
     this.changeDate$$
       .asObservable()
       .pipe(filter((offset) => !!offset))
