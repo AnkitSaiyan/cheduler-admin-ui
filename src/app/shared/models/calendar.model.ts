@@ -121,7 +121,7 @@ export function getAllDaysOfWeek(selectedDate: Date): number[][] {
 }
 
 export function getDurationMinutes(start: Date, end: Date): number {
-  // console.log(start, end)
+  console.log('duration', start, end);
   if (start && end) {
     const startDate = new Date(start);
     const endDate = new Date(end);
