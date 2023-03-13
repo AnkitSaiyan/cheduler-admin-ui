@@ -322,7 +322,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
         }
       }
     });
-    console.log('test', this.appointmentGroupedByDateAndRoom);
   }
 
   private updateQuery(queryStr?: string, date?: Date) {
