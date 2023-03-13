@@ -1,17 +1,12 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, switchMap, take } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationType } from 'diflexmo-angular-design';
 import { NameValue } from '../../search-modal.component';
-import {
-  AddAppointmentRequestData,
-  Appointment,
-  UpdateDurationRequestData,
-  UpdateRadiologistRequestData
-} from '../../../models/appointment.model';
+import { AddAppointmentRequestData, Appointment, UpdateDurationRequestData, UpdateRadiologistRequestData } from '../../../models/appointment.model';
 import { Exam } from '../../../models/exam.model';
-import { CalenderTimeSlot, getDurationMinutes } from '../../../models/calendar.model';
+import { CalenderTimeSlot, getDurationMinutes, Interval } from '../../../models/calendar.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -24,7 +19,6 @@ import { ReadStatus } from '../../../models/status.model';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { Translate } from '../../../models/translate.model';
-import { PracticeHoursApiService } from '../../../../core/services/practice-hours-api.service';
 
 @Component({
   selector: 'dfm-calendar-day-view',
@@ -80,6 +74,8 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
 
   public addingAppointment = false;
 
+  public grayOutSlot$$: BehaviorSubject<any[]> = new BehaviorSubject<Interval[]>([]);
+
   private lastScrollTime: number = 0;
 
   private requestId: number | null = null;
@@ -92,7 +88,6 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     private shareDataSvc: ShareDataService,
     private staffApiSvc: StaffApiService,
   ) {}
-
   public ngOnChanges(changes: SimpleChanges) {
     if (!this.selectedDate) {
       this.updateDate(new Date());
@@ -104,7 +99,10 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
       this.dataGroupedByDateAndRoom = currentValue;
     }
-
+    this.grayOutSlot$$.next([]);
+    if (this.timeSlot.intervals.length > 1) {
+      this.getGrayOutArea(this.timeSlot.intervals);
+    }
     console.log(this.timeSlot, 'slottest');
   }
 
@@ -401,5 +399,32 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         this.requestId = null;
       });
     }
+  }
+
+  private getGrayOutArea(intervals: Interval[]) {
+    const grayOutSlot: any = [];
+    for (let i = 0; i < intervals.length - 1; i++) {
+      const start = this.myDate(this.timeSlot.timings[0]);
+      const end = this.myDate(intervals[i].dayEnd);
+      const minutes = getDurationMinutes(start, end);
+      const timeInterval = getDurationMinutes(end, this.myDate(intervals[i + 1].dayStart));
+      grayOutSlot.push({
+        dayStart: intervals[i].dayEnd,
+        dayEnd: intervals[i + 1].dayStart,
+        top: minutes * this.pixelsPerMin,
+        height: timeInterval * this.pixelsPerMin,
+      });
+    }
+    this.grayOutSlot$$.next([...grayOutSlot]);
+    console.log('ankit', grayOutSlot);
+  }
+
+  private myDate(date: string): Date {
+    const formattedDate = new Date();
+    const splitDate = date.split(':');
+    formattedDate.setHours(+splitDate[0]);
+    formattedDate.setMinutes(+splitDate[1]);
+    formattedDate.setSeconds(0);
+    return formattedDate;
   }
 }
