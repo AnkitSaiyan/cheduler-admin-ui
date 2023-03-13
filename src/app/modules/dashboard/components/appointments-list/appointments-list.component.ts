@@ -115,7 +115,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
 
   public ngOnInit() {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
-
+    console.log(this.downloadItems);
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
       console.log('appointments main: ', appointments);
       this.appointments$$.next(appointments);
@@ -153,11 +153,11 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
           value as DownloadAsType,
           this.columns.slice(0, -1),
           this.filteredAppointments$$.value.map((ap: Appointment) => [
-            ap.startedAt.toString(),
-            ap.endedAt.toString(),
-            `${this.titleCasePipe.transform(ap.patientFname)} ${this.titleCasePipe.transform(ap.patientLname)}`,
-            this.titleCasePipe.transform(ap.doctor),
-            ap.id.toString(),
+            ap?.startedAt?.toString(),
+            ap?.endedAt?.toString(),
+            `${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
+            this.titleCasePipe.transform(ap?.doctor),
+            ap?.id.toString(),
             ap.createdAt.toString(),
             ap.readStatus ? 'Yes' : 'No',
             AppointmentStatusToName[+ap.approval],
@@ -293,15 +293,15 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
       dataString += `${this.columns.slice(2, -1).join('\t\t')}\n`;
 
       this.filteredAppointments$$.value.forEach((ap: Appointment) => {
-        dataString += `${ap.startedAt.toString()}\t${ap.endedAt.toString()}\t${this.titleCasePipe.transform(
-          ap.patientFname,
-        )} ${this.titleCasePipe.transform(ap.patientLname)}\t\t${this.titleCasePipe.transform(
-          ap.doctor,
-        )}\t\t${ap.id.toString()}\t\t${ap.createdAt.toString()}\t\t${ap.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap.approval]}\n`;
+        dataString += `${ap?.startedAt?.toString()}\t${ap?.endedAt?.toString()}\t${this.titleCasePipe.transform(
+          ap?.patientFname,
+        )} ${this.titleCasePipe.transform(ap?.patientLname)}\t\t${this.titleCasePipe.transform(
+          ap?.doctor,
+          // eslint-disable-next-line no-unsafe-optional-chaining
+        )}\t\t${ap?.id.toString()}\t\t${ap.createdAt.toString()}\t\t${ap?.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap?.approval]}\n`;
       });
 
       this.clipboardData = dataString;
-
       this.cdr.detectChanges();
       this.notificationSvc.showNotification('Data copied to clipboard successfully');
     } catch (e) {

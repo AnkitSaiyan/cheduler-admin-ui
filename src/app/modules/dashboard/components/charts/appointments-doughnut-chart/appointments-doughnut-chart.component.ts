@@ -25,6 +25,8 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
 
   public doughnutChartLegend = false;
 
+  public noDataFound: boolean = false;
+
   public doughnutChartPlugins = [pluginDataLabels.default];
 
   constructor(private dashboardApiService: DashboardApiService) {
@@ -36,6 +38,12 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
       appointment['appointments'].forEach((element) => {
         this.appointmentDetails[element.label] = element.value;
       });
+
+      if (this.appointmentDetails.Total === 0 && this.appointmentDetails.Pending === 0 && this.appointmentDetails.Approved === 0) {
+        this.noDataFound = true;
+      } else {
+        this.noDataFound = false;
+      }
 
       this.doughnutChartConfig = {
         labels: this.doughnutChartLabels,

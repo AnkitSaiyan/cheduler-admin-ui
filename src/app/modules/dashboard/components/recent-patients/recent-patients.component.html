@@ -14,14 +14,16 @@
       size="md"
       placeholder="{{'SearchByPatientName' | translate}}"
       icon="search-sm"
+      [formControl]="searchControl"
     ></dfm-input>
 
     <div class="d-flex align-items-center dfm-button-group-wrapper rec-pt-buttons">
-      <div>
+      <div [cdkCopyToClipboard]="clipboardData">
         <dfm-button-icon
           color="tertiary-gray"
           size="md"
           icon="copy-03"
+          (click)="copyToClipboard()"
         ></dfm-button-icon>
       </div>
 
@@ -30,6 +32,8 @@
           [items]="downloadItems"
           placeholder="{{'Download' | translate}}"
           size="md"
+          [showDescription]="false"
+          [formControl]="downloadDropdownControl"
         ></dfm-input-dropdown>
       </div>
     </div>

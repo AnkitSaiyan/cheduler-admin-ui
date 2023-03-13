@@ -51,6 +51,7 @@ export class DownloadService {
   }
 
   public downloadJsonAs(downloadAs: DownloadAsType, headers: string[], data: string[][], filename = 'data'): void {
+    console.log(downloadAs)
     switch (downloadAs) {
       case 'CSV':
         this.download(this.generateCSV(headers, data), downloadAs, `${filename}.csv`);

@@ -1,0 +1,13 @@
+
+<div #content class="bg-white rounded-4 confirm-action-modal">
+    <div class="modal-header">
+      <h5 class="modal-title">{{ dialogData.titleText }}</h5>
+      <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close()"></dfm-button-icon>
+    </div>
+  
+    <div class="modal-body" *ngIf="postItData">
+        <div *ngFor="let item of postItData;let i = index">
+            {{item | json}}
+        </div>
+    </div>
+  </div>

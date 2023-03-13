@@ -27,28 +27,23 @@
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper">
-        <div>
+        <div [cdkCopyToClipboard]="clipboardData">
           <dfm-button-icon
             color="tertiary-gray"
             size="md"
             icon="copy-03"
+            (click)="copyToClipboard()"
           ></dfm-button-icon>
         </div>
 
         <div class="download-dropdown-max-w-144">
           <dfm-input-dropdown
             [items]="downloadItems"
+            [showDescription]="false"
+            [formControl]="downloadDropdownControl"
             placeholder="{{'Download' | translate}}"
             size="md"
           ></dfm-input-dropdown>
-        </div>
-
-        <div>
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="calendar-date"
-          ></dfm-button-icon>
         </div>
       </div>
 

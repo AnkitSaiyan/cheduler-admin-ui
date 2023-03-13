@@ -84,6 +84,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((types) => {
       this.downloadItems = types;
     });
+    console.log('inn', this.downloadItems);
 
     this.userApiSvc.userLists$
       .pipe(

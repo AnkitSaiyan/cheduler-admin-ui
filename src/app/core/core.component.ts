@@ -85,19 +85,18 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
   }
 
   public ngOnInit(): void {
-    console.log();
     this.dataShareService.getLanguage$().subscribe((language: string) => {
       this.profileData.user.name = language === ENG_BE ? 'Profile' : 'Profiel';
     });
     this.dashboardApiService.notificationData$$.subscribe((res) => {
-      console.log('result', res);
+      this.notifications = [];
       res.forEach((element) => {
-        this.notifications.push(new NavigationItemEvent('1', new Date(element.date), element.message));
+        this.notifications.push(new NavigationItemEvent('1', new Date(element.date), element.message, element.title, element.subTitle));
       });
     });
 
     this.dashboardApiService.postItData$$.subscribe((res) => {
-      console.log('result', res);
+      this.messages = [];
       res.forEach((element) => {
         this.messages.push(new NavigationItemEvent('1', new Date(element.createdAt), element.message));
       });

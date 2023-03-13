@@ -8,7 +8,7 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
 @Component({
   selector: 'dfm-add-post',
   templateUrl: './add-post.component.html',
-  styleUrls: ['./add-post.component.scss']
+  styleUrls: ['./add-post.component.scss'],
 })
 export class AddPostComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public dialogData: DialogData = {
@@ -20,11 +20,11 @@ export class AddPostComponent extends DestroyableComponent implements OnInit, On
 
   postItMessage = new FormControl('', []);
 
-  
   constructor(private dialogSvc: ModalService) {
     super();
-   }
-   public ngOnInit() {
+  }
+
+  public ngOnInit() {
     this.dialogSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data: DialogData) => {
       if (data.bodyText) this.dialogData.bodyText = data.bodyText;
       if (this.postItMessage.value) this.dialogData.titleText = this.postItMessage.value;

@@ -9,14 +9,14 @@
   <section class="d-flex flex-column justify-content-between align-items-end h-100 dfm-pt-16 patients-bar-tab-view">
     <header class="d-flex dfm-gap-8">
       <div class="d-flex">
-        <div class="chart-arrow-down">
+        <div [ngClass]="{'chart-arrow-up': patienttDetails?.isUp, 'chart-arrow-down': !patienttDetails?.isUp }">
           <dfm-button
             color="link-gray"
             size="sm"
-            trailingIcon="arrow-down"
+            trailingIcon="{{patienttDetails?.isUp ? 'arrow-up' : 'arrow-down'}}"
           ></dfm-button>
         </div>
-        <span class="font-weight-medium text-red">{{patienttDetails?.percentage}}</span>
+        <span [ngStyle]="{'color':patienttDetails?.isUp? '#12B76A' : 'red' }" class="font-weight-medium">{{patienttDetails?.percentage}}</span>
       </div>
     </header>
     <canvas baseChart
