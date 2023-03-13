@@ -63,13 +63,11 @@ export class PatientsBarChartComponent extends DestroyableComponent implements O
         legend: {
           display: false,
         },
+        tooltip: {
+          enabled: false,
+        },
         datalabels: {
-          anchor: 'end',
-          align: 'end',
-          color: '#7839EE',
-          font: {
-            size: 8,
-          },
+          display: false,
         },
       },
     };

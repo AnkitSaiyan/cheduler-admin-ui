@@ -12,20 +12,23 @@
         size="md"
         placeholder="Search room name" class="flex-1 search-room-name-placeholder"
         icon="search-sm"
+        [formControl]="searchControl"
       ></dfm-input>
 
       <dfm-input
         size="md"
         placeholder="Room name" class="flex-1 room-name-placeholder"
         icon="search-sm"
+        [formControl]="searchControl"
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper">
-        <div>
+        <div [cdkCopyToClipboard]="clipboardData">
           <dfm-button-icon
             color="tertiary-gray"
             size="md"
             icon="copy-03"
+            (click)="copyToClipboard()"
           ></dfm-button-icon>
         </div>
 
@@ -35,6 +38,8 @@
               [items]="downloadItems"
               placeholder="Download"
               size="md"
+              [showDescription]="false"
+              [formControl]="downloadDropdownControl"
             ></dfm-input-dropdown>
           </div>
 

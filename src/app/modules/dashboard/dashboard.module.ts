@@ -21,6 +21,7 @@ import { EmployeeAbsencesComponent } from './components/employee-absences/employ
 import { PostItComponent } from './components/post-it/post-it.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddPostComponent } from './components/post-it/add-post/add-post.component';
+import { ViewPostComponent } from './components/post-it/view-post/view-post.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { AddPostComponent } from './components/post-it/add-post/add-post.compone
     EmployeeAbsencesComponent,
     PostItComponent,
     AddPostComponent,
+    ViewPostComponent,
   ],
   imports: [CommonModule, DashboardRoutingModule, SharedModule, FormsModule, ReactiveFormsModule],
 })

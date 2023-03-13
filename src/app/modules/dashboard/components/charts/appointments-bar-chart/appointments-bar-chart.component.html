@@ -3,29 +3,25 @@
     <header>
       <span class="dfm-text-main-400">Appointments</span>
     </header>
-    <h2 class="card-value-text">{{appointmentDetails?.count}}</h2>
+    <h2 class="card-value-text">{{ appointmentDetails?.count }}</h2>
   </section>
 
   <section class="d-flex flex-column justify-content-between align-items-end h-100 dfm-pt-16 appointment-bar-tab-view">
     <header class="d-flex align-items-center">
-      <div class="chart-arrow-up">
-        <dfm-button
-          color="link-gray"
-          size="sm"
-          trailingIcon="arrow-up"
-        ></dfm-button>
+      <div [ngClass]="{ 'chart-arrow-up': appointmentDetails?.isUp, 'chart-arrow-down': !appointmentDetails?.isUp }">
+        <dfm-button color="link-gray" size="sm" trailingIcon="{{ appointmentDetails?.isUp ? 'arrow-up' : 'arrow-down' }}"></dfm-button>
       </div>
-      <span style="color:#12B76A;" class="font-weight-medium">{{appointmentDetails?.percentage}}</span>
+      <span [ngStyle]="{ color: appointmentDetails?.isUp ? '#12B76A' : 'red' }" class="font-weight-medium">{{ appointmentDetails?.percentage }}</span>
     </header>
-    <canvas baseChart
-            width="120"
-            [type]="'bar'" r
-            [data]="appointmentBarChartConfig"
-            [labels]="appointmentBarChartLabels"
-            [options]="appointmentBarChartOptions"
-            [plugins]="appointmentBarChartPlugins"
-            [legend]="appointmentBarChartLegend">
+    <canvas
+      baseChart
+      width="120"
+      [type]="'bar'"
+      [data]="appointmentBarChartConfig"
+      [options]="appointmentBarChartOptions"
+      [plugins]="appointmentBarChartPlugins"
+      [legend]="appointmentBarChartLegend"
+    >
     </canvas>
   </section>
 </div>
-
