@@ -1,15 +1,5 @@
 .pr-hr-main-wrapper {
   transition: all ease 200ms;
-
-  .pr-hr-form-fields {
-    row-gap: 32px;
-    transition: 150ms all linear;
-  }
-
-  .pr-hr-time-dropdown {
-    transition: 150ms all linear;
-    max-width: fit-content;
-  }
 }
 
 
@@ -42,9 +32,9 @@
       }
     }
 
-    .pr-hr-save-changes-btn-mv {
-      display: flex;
-      margin-left: auto;
-    }
+    //.pr-hr-save-changes-btn-mv {
+    //  display: flex;
+    //  margin-left: auto;
+    //}
   }
 }

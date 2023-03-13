@@ -171,7 +171,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       .getUsersByType(UserType.General)
       .pipe(takeUntil(this.destroy$$))
       .subscribe((staffs) => {
-        const keyValueExams = this.nameValuePipe.transform(staffs, 'firstname', 'id');
+        const keyValueExams = this.nameValuePipe.transform(staffs, 'fullName', 'id');
         this.filteredUserList = [...keyValueExams];
         this.userList = [...keyValueExams];
       });
@@ -179,7 +179,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.physicianApiSvc.physicians$
       .pipe(takeUntil(this.destroy$$))
       .subscribe((physicians) => {
-        const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'firstname', 'id');
+        const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
         this.filteredPhysicianList = [...keyValuePhysicians];
         this.physicianList = [...keyValuePhysicians];
       });
@@ -198,7 +198,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           console.log('appointmentID: ', appointmentID);
           return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
         }),
-        debounceTime(300),
+        debounceTime(0),
         takeUntil(this.destroy$$),
       )
       .subscribe((appointment) => {
@@ -276,7 +276,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   private updateForm(appointment: Appointment | undefined) {
     console.log(appointment)
-    // let time;
     let date!: Date;
     let dateDistributed: DateDistributed = {} as DateDistributed;
 
@@ -288,9 +287,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
     dateDistributed = CalendarUtils.DateToDateDistributed(date);
 
-    // if (date) {
-    //   time = this.datePipe.transform(date, 'HH:mm');
-    // }
+    console.log(dateDistributed);
 
     this.appointmentForm.patchValue(
       {
@@ -308,7 +305,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       {emitEvent: false},
     );
 
-    const examList = appointment?.exams?.map((exam) => exam?.id) ?? [];
+    const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
 
     this.loadingSlots$$.next(true);
 
@@ -338,9 +335,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
             )
           });
         }
-      });
 
-    this.cdr.detectChanges();
+        console.log(this.selectedTimeSlot);
+        this.cdr.detectChanges();
+      });
   }
 
   private findSlot(examID: number, start: string, end: string): SlotModified | undefined {

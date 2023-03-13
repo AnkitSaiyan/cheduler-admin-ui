@@ -75,7 +75,6 @@ export class AppointmentApiService {
       });
     }
 
-    console.log(examIdToRooms, examIdToUsers)
     let startedAt;
     let endedAt;
 

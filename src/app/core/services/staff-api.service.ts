@@ -50,7 +50,7 @@ export class StaffApiService {
   private get fetchAllUsers$(): Observable<User[]> {
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
       switchMap(() => {
-        return this.http.get<BaseResponse<User[]>>(`${environment.serverBaseUrl}/common/getusers`).pipe(map((response) => response.data));
+        return this.http.get<BaseResponse<User[]>>(`${environment.serverBaseUrl}/common/getusers`).pipe(map((response) => response.data?.map((u) => ({...u, fullName: `${u.firstname} ${u.lastname}`}))));
       }),
     );
   }

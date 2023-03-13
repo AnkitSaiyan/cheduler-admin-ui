@@ -13,6 +13,7 @@ export interface TimeSlot {
   id?: number;
   dayStart: string;
   dayEnd: string;
+  weekday?: Weekday;
 }
 
 export interface WeekWisePracticeAvailability {
@@ -159,4 +160,15 @@ export function stringToTimeArray(timeString: string | undefined, splitBy: strin
   console.log('min', min);
 
   return [hour, min, second];
+}
+
+
+export interface Interval {
+  dayStart: string;
+  dayEnd: string;
+}
+
+export interface CalenderTimeSlot {
+  timings: string[];
+  intervals: Interval[];
 }

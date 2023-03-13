@@ -200,7 +200,7 @@
                    *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched">{{'RepeatFrequency' | translate}}</small>
           </div>
 
-          <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-repeat-every"
+          <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-repeat-every"
                *ngIf="repeatType.value && repeatType.value !== 'daily'">
             <dfm-input-dropdown #repeatEveryDropdown
                                 [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
@@ -216,34 +216,34 @@
         </div>
       </ng-container>
 
-      <div class="d-flex flex-wrap flex-1 gap" *ngIf="!formValues.isHoliday">
-        <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-rooms" *ngIf="roomList$$ | async as roomList">
+      <div class="d-flex flex-wrap flex-1 gap" [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" *ngIf="!formValues.isHoliday">
+        <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-rooms" *ngIf="roomList$$ | async as roomList">
           <dfm-input-dropdown #roomDropdown
                               [items]="roomList"
                               [multiple]="true"
-                              placeholder="{{!!roomDropdown.value?.length ? roomDropdown.value.length + ('Selected' | translate) : ('SelectRooms' | translate) }}"
+                              placeholder="{{!!roomDropdown.value?.length ? roomDropdown.value.length + ' ' + ('Selected' | translate) : ('SelectRooms' | translate) }}"
                               size="md"
                               formControlName="roomList"
                               label="{{'Rooms' | translate}}">
           </dfm-input-dropdown>
         </div>
 
-        <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-ab-staffs" *ngIf="staffs$$ | async as staffList">
+        <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-staffs" *ngIf="staffs$$ | async as staffList">
           <dfm-input-dropdown #staffDropDown
                               [items]="staffList"
                               [multiple]="true"
                               size="md"
                               formControlName="userList"
                               label="{{'Staff' | translate}}"
-                              placeholder="{{!!staffDropDown.value?.length ? staffDropDown.value.length + ('Selected' | translate) : ('SelectStaff' | translate)}}">
+                              placeholder="{{!!staffDropDown.value?.length ? staffDropDown.value.length + ' ' + ('Selected' | translate) : ('SelectStaff' | translate)}}">
           </dfm-input-dropdown>
         </div>
-        <div class="w-full" style="margin-top: -24px;">
-          <small class="validation-error" *ngIf="isAbsenceStaffRoomInvalid | async">Please select either Room or Staff for Absence</small>
+        <div class="w-full" style="margin-top: -24px;" *ngIf="isAbsenceStaffRoomInvalid | async">
+          <small class="validation-error">Please select either Room or Staff for Absence</small>
         </div>
       </div>
 
-      <div>
+      <div [ngClass]="{ 'dfm-mt-8': formValues.userList?.length || formValues.roomList?.length }">
         <dfm-text-area label="Info" placeholder="{{'EnterAbsenceInfo' | translate}}" formControlName="info"></dfm-text-area>
       </div>
       <!--      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">-->

@@ -9,7 +9,7 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
   styleUrls: ['./unavailable-hall-periods.component.scss']
 })
 export class UnavailableHallPeriodsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public columns: string[] = ['Room Name', 'Get Started', 'End', 'Absence Name'];
+  public columns: string[] = ['RoomName', 'GetStarted', 'End', 'AbsenceName'];
 
     
   private roomAbsence$$: BehaviorSubject<any[]>;

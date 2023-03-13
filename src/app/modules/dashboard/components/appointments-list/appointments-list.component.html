@@ -4,7 +4,7 @@
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
       </div>
-      <span class="font-weight-medium">Appointments List</span>
+      <span class="font-weight-medium">{{"AppointmentsList" | translate}}</span>
     </header>
   </section>
 
@@ -12,7 +12,7 @@
     <div class="d-flex dfm-gap-8 align-items-center flex-1 dfm-px-16 ap-li-section2-action-bar">
       <dfm-input
         size="md"
-        placeholder="Search"
+        placeholder="{{'Search' | translate}}"
         icon="search-sm"
         class="flex-1"
         [formControl]="searchControl"
@@ -20,7 +20,7 @@
 
       <dfm-input
         size="md"
-        placeholder="Advanced Search"
+        placeholder="{{'AdvancedSearch' | translate}}"
         icon="search-sm"
         class="flex-1"
         [formControl]="searchControl"
@@ -38,7 +38,7 @@
         <div class="download-dropdown-max-w-144">
           <dfm-input-dropdown
             [items]="downloadItems"
-            placeholder="Download"
+            placeholder="{{'Download' | translate}}"
             size="md"
           ></dfm-input-dropdown>
         </div>
@@ -55,7 +55,7 @@
       <dfm-button
         color="secondary"
         size="md"
-      >Confirm
+      >{{"Confirm" | translate}}
       </dfm-button>
 
       <dfm-button
@@ -64,7 +64,7 @@
         class="text-nowrap"
         routerLink="/appointment/add"
         [state]="{ comingFromRoute: 'dashboard' }"
-      >Add Appointment
+      >{{"AddAppointment" | translate}}
       </dfm-button>
     </div>
 
@@ -113,10 +113,12 @@
         <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
       </ng-template>
       <ng-template #bodyRowTemplate let-item>
-        <dfm-table-body-cell>{{ item.startedAt | date  : 'short' }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.endedAt | date : 'mediumTime' }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.patientFname  | titlecase }} {{ item.patientLname | titlecase }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.id }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ (item?.exams.length ? (item.startedAt | date : 'y-MM-dd HH:mm') : 'abc') | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ (item?.exams.length ? (item.endedAt | date : 'y-MM-dd HH:mm') : 'bh') | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item?.patientFname  | titlecase }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item?.doctor  | titlecase }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item?.id }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item?.createdAt }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <span>{{ item.readStatus === readStatus.Read ? 'Yes' : 'No' }}</span>
         </dfm-table-body-cell>

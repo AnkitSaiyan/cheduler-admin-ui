@@ -333,6 +333,10 @@ dfm-input-dropdown {
   border-radius: 8px;
   height: fit-content;
   margin-top: 28px;
+
+  .selected-items {
+    right: 48px !important;
+  }
   //margin-bottom: 28px;
 }
 

@@ -6,6 +6,7 @@ import { DUTCH_BE, ENG_BE } from '../shared/utils/const';
 import defaultLanguage from '../../assets/i18n/en-BE.json';
 import dutchLangauge from '../../assets/i18n/nl-BE.json';
 import { ShareDataService } from './services/share-data.service';
+import { DashboardApiService } from './services/dashboard-api.service';
 
 @Component({
   selector: 'dfm-main',
@@ -45,17 +46,16 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     ]),
   ];
 
-
   public notifications: NavigationItemEvent[] = [
-    new NavigationItemEvent('1', new Date(), 'Test notification 1'),
-    new NavigationItemEvent('2', new Date(), 'Test notification 2'),
-    new NavigationItemEvent('3', new Date(), 'Test notification 3'),
+    // new NavigationItemEvent('1', new Date(), 'Test notification 1'),
+    // new NavigationItemEvent('2', new Date(), 'Test notification 2'),
+    // new NavigationItemEvent('3', new Date(), 'Test notification 3'),
   ];
 
   public messages: NavigationItemEvent[] = [
-    new NavigationItemEvent('1', new Date(), 'Test Message 1'),
-    new NavigationItemEvent('2', new Date(), 'Test Message 2'),
-    new NavigationItemEvent('3', new Date(), 'Test Message 3'),
+    // new NavigationItemEvent('1', new Date(), 'Test Message 1'),
+    // new NavigationItemEvent('2', new Date(), 'Test Message 2'),
+    // new NavigationItemEvent('3', new Date(), 'Test Message 3'),
   ];
 
   public currentTenant: string = 'en-BE';
@@ -73,18 +73,35 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     },
     links: [new NavigationProfileLink('Test Link', './', '', true)],
   };
-  
+
   isDutchLanguage: boolean = false;
 
-  constructor(private translateService: TranslateService, private dataShareService: ShareDataService) {
+  constructor(
+    private translateService: TranslateService,
+    private dataShareService: ShareDataService,
+    private dashboardApiService: DashboardApiService,
+  ) {
     super();
   }
 
   public ngOnInit(): void {
     console.log();
-    this.dataShareService.getLanguage$().subscribe((language: string)=>{
-      this.profileData.user.name = (language === ENG_BE)? "Profile": "Profiel"
-    })
+    this.dataShareService.getLanguage$().subscribe((language: string) => {
+      this.profileData.user.name = language === ENG_BE ? 'Profile' : 'Profiel';
+    });
+    this.dashboardApiService.notificationData$$.subscribe((res) => {
+      console.log('result', res);
+      res.forEach((element) => {
+        this.notifications.push(new NavigationItemEvent('1', new Date(element.date), element.message));
+      });
+    });
+
+    this.dashboardApiService.postItData$$.subscribe((res) => {
+      console.log('result', res);
+      res.forEach((element) => {
+        this.messages.push(new NavigationItemEvent('1', new Date(element.createdAt), element.message));
+      });
+    });
   }
 
   public override ngOnDestroy() {

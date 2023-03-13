@@ -4,7 +4,7 @@
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
       </div>
-      <span class="font-weight-medium">Employee Absences ({{employeeAbsences.length}})</span>
+      <span class="font-weight-medium">{{"EmployeeAbsences" | translate}} ({{employeeAbsences.length}})</span>
     </header>
   </section>
 
@@ -12,7 +12,7 @@
     <dfm-input
       class="flex-grow-1"
       size="sm"
-      placeholder="Search employee"
+      placeholder="{{'SearchEmployee' | translate}}"
       icon="search-sm"
     ></dfm-input>
 
@@ -40,9 +40,9 @@
       <div class="d-flex flex-column text-sm">
         <div class="d-flex align-items-center dfm-gap-8">
           <span class="font-weight-medium">{{ employee.name }}</span>
-          <span class="text-xs dfm-text-main-400">({{employee.post}})</span>
+          <span class="text-xs dfm-text-main-400">({{employee.info}})</span>
         </div>
-        <span class="text-xs dfm-text-main-500">{{ employee.fromDate | date : 'shortDate' }} - {{ employee.toDate | date : 'shortDate' }}</span>
+        <span class="text-xs dfm-text-main-500">{{ employee.startedAt | date : 'shortDate' }} - {{ employee.endedAt | date : 'shortDate' }}</span>
       </div>
     </div>
   </section>

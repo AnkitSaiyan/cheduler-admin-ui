@@ -11,7 +11,7 @@ import {
   UpdateRadiologistRequestData
 } from '../../../models/appointment.model';
 import { Exam } from '../../../models/exam.model';
-import { getDurationMinutes } from '../../../models/calendar.model';
+import { CalenderTimeSlot, getDurationMinutes } from '../../../models/calendar.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -23,7 +23,8 @@ import { getAddAppointmentRequestData } from '../../../utils/getAddAppointmentRe
 import { ReadStatus } from '../../../models/status.model';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
-import {Translate} from "../../../models/translate.model";
+import { Translate } from '../../../models/translate.model';
+import { PracticeHoursApiService } from '../../../../core/services/practice-hours-api.service';
 
 @Component({
   selector: 'dfm-calendar-day-view',
@@ -43,6 +44,9 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
 
   @Input()
   public newDate$$ = new BehaviorSubject<Date | null>(null);
+
+  @Input()
+  public timeSlot!: CalenderTimeSlot;
 
   @Input()
   public dataGroupedByDateAndRoom!: {
@@ -100,10 +104,13 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
       this.dataGroupedByDateAndRoom = currentValue;
     }
+
+    console.log(this.timeSlot, 'slottest');
   }
 
   public ngOnInit(): void {
     console.log(this.dataGroupedByDateAndRoom);
+
     this.changeDate$$
       .asObservable()
       .pipe(filter((offset) => !!offset))
@@ -197,7 +204,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
 
   public changeRadiologists(appointment: Appointment) {
     const modalRef = this.modalSvc.open(ChangeRadiologistModalComponent, {
-      data: appointment
+      data: appointment,
     });
 
     modalRef.closed
@@ -207,7 +214,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
           const requestData = {
             appointmentId: appointment.id,
             examId: appointment.exams[0].id,
-            userId: ids
+            userId: ids,
           } as UpdateRadiologistRequestData;
 
           return this.appointmentApiSvc.updateRadiologist$(requestData);
@@ -255,7 +262,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
             extensionType: extend ? 'extend' : 'shorten',
             from: res.top ? 'AtTheTop' : 'AtTheBottom',
             appointmentId: appointment.id,
-            examId: appointment.exams[0].id
+            examId: appointment.exams[0].id,
           } as UpdateDurationRequestData;
 
           eventContainer?.scrollIntoView({ behavior: 'smooth', block: 'start' });
