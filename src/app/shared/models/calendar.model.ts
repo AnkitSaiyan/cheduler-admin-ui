@@ -161,3 +161,14 @@ export function stringToTimeArray(timeString: string | undefined, splitBy: strin
 
   return [hour, min, second];
 }
+
+
+export interface Interval {
+  dayStart: string;
+  dayEnd: string;
+}
+
+export interface CalenderTimeSlot {
+  timings: string[];
+  intervals: Interval[];
+}
