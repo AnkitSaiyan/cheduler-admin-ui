@@ -6,7 +6,7 @@ import { RouterStateService } from '../../../../core/services/router-state.servi
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { STAFF_ID } from '../../../../shared/utils/const';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { User } from '../../../../shared/models/user.model';
@@ -61,7 +61,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
         bodyText: 'AreyousureyouwanttodeletethisUser',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     modalRef.closed

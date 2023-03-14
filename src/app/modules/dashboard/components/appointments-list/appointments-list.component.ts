@@ -9,7 +9,7 @@ import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } f
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -267,7 +267,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
         bodyText: 'AreYouSureYouWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed

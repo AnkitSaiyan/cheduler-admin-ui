@@ -10,7 +10,7 @@ import { Weekday } from '../../../../shared/models/calendar.model';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { AddStaffComponent } from '../add-staff/add-staff.component';
 import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
@@ -169,7 +169,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
         bodyText: 'AreyousureyouwanttodeletethisStaff?',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed

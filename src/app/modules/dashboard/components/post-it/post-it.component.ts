@@ -4,7 +4,7 @@ import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
 import { DashboardApiService, PostIt } from 'src/app/core/services/dashboard-api.service';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
-import { ConfirmActionModalComponent, DialogData } from 'src/app/shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { AddPostComponent } from './add-post/add-post.component';
 import { ViewPostComponent } from './view-post/view-post.component';
@@ -109,7 +109,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
         titleText: 'Post It',
         confirmButtonText: 'Add',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
@@ -133,7 +133,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
         bodyText: 'AreYouSureYouWantToDeleteThisPost',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed

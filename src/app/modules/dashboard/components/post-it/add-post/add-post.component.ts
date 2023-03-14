@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { takeUntil } from 'rxjs';
 import { ModalService } from 'src/app/core/services/modal.service';
-import { DialogData } from 'src/app/shared/components/confirm-action-modal.component';
+import { ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 
 @Component({
@@ -11,7 +11,7 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
   styleUrls: ['./add-post.component.scss'],
 })
 export class AddPostComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public dialogData: DialogData = {
+  public dialogData: ConfirmActionModalData = {
     confirmButtonText: 'Proceed',
     cancelButtonText: 'Cancel',
     titleText: 'PostIt',
@@ -25,7 +25,7 @@ export class AddPostComponent extends DestroyableComponent implements OnInit, On
   }
 
   public ngOnInit() {
-    this.dialogSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data: DialogData) => {
+    this.dialogSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data: ConfirmActionModalData) => {
       if (data.bodyText) this.dialogData.bodyText = data.bodyText;
       if (this.postItMessage.value) this.dialogData.titleText = this.postItMessage.value;
       if (data.confirmButtonText) this.dialogData.confirmButtonText = data.confirmButtonText;

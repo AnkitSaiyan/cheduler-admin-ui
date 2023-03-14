@@ -10,7 +10,7 @@ import { CalenderTimeSlot, getDurationMinutes, Interval } from '../../../models/
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, DialogData } from '../../confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../confirm-action-modal.component';
 import { ChangeRadiologistModalComponent } from '../../../../modules/appointments/components/change-radiologist-modal/change-radiologist-modal.component';
 import { AppointmentTimeChangeModalComponent } from '../../../../modules/appointments/components/appointment-time-change-modal/appointment-time-change-modal.component';
 import { ShareDataService } from '../../../../core/services/share-data.service';
@@ -286,7 +286,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         titleText: 'Read Status Confirmation',
         confirmButtonText: 'Change',
         bodyText: `Are you sure you want to mark the appointment with Appointment No: ${appointment.id} as read?`,
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     modalRef.closed
@@ -313,7 +313,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         bodyText: 'AreYouSureWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
@@ -336,8 +336,10 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
       this.modalSvc
         .open(ConfirmActionModalComponent, {
           data: {
+            titleText: 'Add Appointment Confirmation',
             bodyText: 'Are you sure you want to make an appointment outside the operating hours?',
-          },
+            confirmButtonText: 'Yes'
+          } as ConfirmActionModalData,
         })
         .closed.pipe(
           tap((value) => {
