@@ -61,13 +61,14 @@
            *ngIf="filteredPrioritySlots$$ | async as prioritySlots">
     <dfm-table [items]="prioritySlots" [rowClickable]="true" (rowClicked)="navigateToViewAbsence($event)"
                class="dfm-table-wrapper">
+
       <ng-template #headerRowTemplate>
         <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
       </ng-template>
 
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-body-cell>{{ item.startedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ (item.endedAt) ? (item.endedAt| date: 'dd/MM/yyyy, HH:mm') : (item.startedAt  | date: 'dd/MM/yyyy,') }} {{(!item.endedAt) ? item.slotEndTime.slice(0, -3) : ''}}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.endedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <div class="text-truncate pr-li-info-cell"> {{ item.priority | dashIfNothing | translate }} </div>
         </dfm-table-body-cell>
