@@ -102,10 +102,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     }
 
     this.grayOutSlot$$.next([]);
-
-    if (this.timeSlot?.intervals?.length > 1) {
-      this.getGrayOutArea(this.timeSlot.intervals);
-    }
+    this.getGrayOutArea(this.timeSlot);
   }
 
   public ngOnInit(): void {
@@ -269,8 +266,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         take(1),
       )
       .subscribe({
-        next: (res) => {
-        },
+        next: (res) => {},
         error: (err) => {
           this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
           if (eventContainer && top && height) {
@@ -399,19 +395,41 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     }
   }
 
-  private getGrayOutArea(intervals: Interval[]) {
+  private getGrayOutArea(timeSlot: CalenderTimeSlot) {
+    const intervals = timeSlot?.intervals;
+    const timings = timeSlot?.timings;
     const grayOutSlot: any = [];
-    for (let i = 0; i < intervals.length - 1; i++) {
-      const start = this.myDate(this.timeSlot.timings[0]);
-      const end = this.myDate(intervals[i].dayEnd);
-      const minutes = getDurationMinutes(start, end);
-      const timeInterval = getDurationMinutes(end, this.myDate(intervals[i + 1].dayStart));
-      grayOutSlot.push({
-        dayStart: intervals[i].dayEnd,
-        dayEnd: intervals[i + 1].dayStart,
-        top: minutes * this.pixelsPerMin,
-        height: timeInterval * this.pixelsPerMin,
-      });
+    grayOutSlot.push({
+      dayStart: timings[0],
+      dayEnd: timings[0],
+      top: 0,
+      height: 120 * this.pixelsPerMin,
+    });
+    const dayStart = this.subtractMinutes(105, timings[timings.length - 1]);
+    const startTime = this.myDate(this.timeSlot.timings[0]);
+    const endTime = this.myDate(dayStart);
+    const lastMinutes = getDurationMinutes(startTime, endTime);
+
+    grayOutSlot.push({
+      dayStart,
+      dayEnd: timings[timings.length - 1],
+      top: lastMinutes * this.pixelsPerMin,
+      height: 120 * this.pixelsPerMin,
+    });
+
+    if (intervals?.length > 1) {
+      for (let i = 0; i < intervals.length - 1; i++) {
+        const start = this.myDate(this.timeSlot.timings[0]);
+        const end = this.myDate(intervals[i].dayEnd);
+        const minutes = getDurationMinutes(start, end);
+        const timeInterval = getDurationMinutes(end, this.myDate(intervals[i + 1].dayStart));
+        grayOutSlot.push({
+          dayStart: intervals[i].dayEnd,
+          dayEnd: intervals[i + 1].dayStart,
+          top: minutes * this.pixelsPerMin,
+          height: timeInterval * this.pixelsPerMin,
+        });
+      }
     }
     this.grayOutSlot$$.next([...grayOutSlot]);
   }
@@ -423,5 +441,15 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     formattedDate.setMinutes(+splitDate[1]);
     formattedDate.setSeconds(0);
     return formattedDate;
+  }
+
+  private subtractMinutes(minutes: number, time: string): string {
+    const date = new Date();
+    const [hour, minute] = time.split(':');
+    date.setHours(+hour);
+    date.setMinutes(+minute);
+    date.setSeconds(0);
+    const subtractedDate = new Date(date.getTime() - minutes * 60 * 1000);
+    return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
   }
 }
