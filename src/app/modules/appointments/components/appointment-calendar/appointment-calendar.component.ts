@@ -161,11 +161,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
       this.newDate$$.next(date);
     });
 
-    this.changeDate$$.pipe().subscribe((value) => {
-    });
-    this.newDate$$.pipe().subscribe((value) => {
-    });
-
     combineLatest([this.selectedDate$$, this.weekdayToPractice$$])
       .pipe(
         filter(([_, weekdayToPractice]) => this.calendarViewFormControl.value === 'day' && weekdayToPractice),
