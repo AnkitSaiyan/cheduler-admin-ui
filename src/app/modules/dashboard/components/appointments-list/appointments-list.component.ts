@@ -117,18 +117,17 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
   public ngOnInit() {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-      console.log('appointments main: ', appointments);
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
 
       // appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
       //
-      // console.log(appointments);
+      //
       //
       // this.groupAppointmentsForCalendar(...appointments);
       // this.groupAppointmentByDateAndRoom(...appointments);
       //
-      // console.log(this.appointmentsGroupedByDate);
+      //
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
@@ -237,7 +236,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
 
   public handleCheckboxSelection(selected: string[]) {
     // this.toggleMenu(true);
-    console.log(selected);
+
     this.selectedAppointmentIDs = [...selected];
   }
 
@@ -283,7 +282,6 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: AppointmentStatus | null }) {
-    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
@@ -352,7 +350,6 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
   }
 
   private filterAppointments(result: { name: string; value: string }[]) {
-    console.log(result, this.appointments$$.value);
     if (!result?.length) {
       this.filteredAppointments$$.next([...this.appointments$$.value]);
       return;

@@ -55,7 +55,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     this.modalSvc.dialogData$.pipe(take(1)).subscribe((data) => {
       this.modalData = data;
-      console.log(this.modalData);
+
       this.createForm(this.modalData?.userDetails);
     });
   }
@@ -148,8 +148,6 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
     }
 
     addUserReqData.id = this.modalData?.userDetails?.id ?? 0;
-
-    console.log(addUserReqData);
 
     this.userApiSvc
       .addNewStaff$(addUserReqData)

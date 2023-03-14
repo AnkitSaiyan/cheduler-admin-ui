@@ -84,7 +84,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((types) => {
       this.downloadItems = types;
     });
-    console.log('inn', this.downloadItems);
 
     this.userApiSvc.userLists$
       .pipe(
@@ -252,7 +251,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
-    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
@@ -319,7 +317,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
   }
 
   private filterUserList(result: { name: string; value: string }[]) {
-    console.log(result, this.users$$.value);
     if (!result?.length) {
       this.filteredUsers$$.next([...this.users$$.value]);
       return;

@@ -109,8 +109,6 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   public ngOnInit(): void {
-    console.log(this.dataGroupedByDateAndRoom);
-
     this.changeDate$$
       .asObservable()
       .pipe(filter((offset) => !!offset))
@@ -136,7 +134,6 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   private changeDate(offset: number) {
-    console.log({ offset });
     if (this.selectedDate) {
       const date = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + offset));
       this.updateDate(date);
@@ -224,7 +221,6 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         take(1),
       )
       .subscribe((res) => {
-        console.log(res);
         this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated}!`);
       });
   }
@@ -274,10 +270,8 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
       )
       .subscribe({
         next: (res) => {
-          console.log(res);
         },
         error: (err) => {
-          console.log(err);
           this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
           if (eventContainer && top && height) {
             // eslint-disable-next-line no-param-reassign
@@ -311,7 +305,6 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         take(1),
       )
       .subscribe((res) => {
-        console.log(res);
         this.notificationSvc.showNotification('Appointment has been read');
       });
   }
@@ -346,6 +339,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         element: eventCard,
         elementContainer: eventsContainer,
         startedAt: this.selectedDate,
+        startTime: this.timeSlot.timings[0],
       },
       options: {
         backdrop: false,
@@ -420,7 +414,6 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
       });
     }
     this.grayOutSlot$$.next([...grayOutSlot]);
-    console.log('ankit', grayOutSlot);
   }
 
   private myDate(date: string): Date {

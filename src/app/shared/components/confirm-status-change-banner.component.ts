@@ -158,20 +158,19 @@ export class ConfirmStatusChangeBannerComponent implements OnInit {
     }
 
     this.dataShareService.getLanguage$().subscribe((language: string) => {
-      console.log('language: ', language);
       switch (this.statusType) {
         case 'appointment':
           this.statuses = [
             {
-              name: language === ENG_BE ?'Pending' : 'In afwachting',
+              name: language === ENG_BE ? 'Pending' : 'In afwachting',
               value: AppointmentStatus.Pending,
             },
             {
-              name: language === ENG_BE? 'Approved': 'Goedgekeurd',
+              name: language === ENG_BE ? 'Approved' : 'Goedgekeurd',
               value: AppointmentStatus.Approved,
             },
             {
-              name: language === ENG_BE ? 'Cancelled': "Geannuleerd",
+              name: language === ENG_BE ? 'Cancelled' : 'Geannuleerd',
               value: AppointmentStatus.Cancelled,
             },
           ] as any[];

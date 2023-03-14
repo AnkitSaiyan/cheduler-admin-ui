@@ -209,6 +209,5 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
   }
 
   public deletePatient(id: number) {
-    console.log(id);
   }
 }

@@ -25,7 +25,7 @@ export interface DialogData {
       </div>
 
       <div class="modal-footer">
-        <dfm-button color="secondary" size="md" (click)="close(false)">{{ dialogData.cancelButtonText | translate }} abc</dfm-button>
+        <dfm-button color="secondary" size="md" (click)="close(false)">{{ dialogData.cancelButtonText | translate }}</dfm-button>
         <dfm-button color="primary" size="md" (click)="close(true)">{{ dialogData.confirmButtonText | translate }}</dfm-button>
       </div>
     </div>
@@ -64,7 +64,6 @@ export class ConfirmActionModalComponent extends DestroyableComponent implements
       if (data.confirmButtonText) this.dialogData.confirmButtonText = data.confirmButtonText;
       if (data.cancelButtonText) this.dialogData.cancelButtonText = data.cancelButtonText;
     });
-    console.log(this.dialogData);
   }
 
   public override ngOnDestroy() {
@@ -72,7 +71,6 @@ export class ConfirmActionModalComponent extends DestroyableComponent implements
   }
 
   public close(result: boolean) {
-    console.log(result);
     this.dialogSvc.close(result);
   }
 }

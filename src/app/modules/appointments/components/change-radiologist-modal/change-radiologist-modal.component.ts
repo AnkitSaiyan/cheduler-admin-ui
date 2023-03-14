@@ -27,30 +27,38 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
   public ngOnInit(): void {
     this.dialogSvc.dialogData$.pipe(take(1)).subscribe((data: Appointment) => {
-      console.log(data);
+
 
       if (data.exams[0].allUsers) {
         this.radiologists = [
-          ...this.nameValuePipe.transform(data.exams[0].allUsers.filter((user) => user.userType === UserType.Radiologist), 'firstname', 'id')
+          ...this.nameValuePipe.transform(
+            data.exams[0].allUsers.filter((user) => user.userType === UserType.Radiologist),
+            'firstname',
+            'id',
+          ),
         ];
       }
 
       if (data.exams[0].users) {
-        const selected: string[] = []
+        const selected: string[] = [];
         this.selectedRadiologists = [
-          ...this.nameValuePipe.transform(data.exams[0].users.filter((user) => {
-            if (user.userType === UserType.Radiologist) {
-              selected.push(user.id.toString());
-              return true;
-            }
-            return false;
-          }), 'firstname', 'id')
+          ...this.nameValuePipe.transform(
+            data.exams[0].users.filter((user) => {
+              if (user.userType === UserType.Radiologist) {
+                selected.push(user.id.toString());
+                return true;
+              }
+              return false;
+            }),
+            'firstname',
+            'id',
+          ),
         ];
 
         this.radiologistFormControl.setValue(selected);
       }
 
-      console.log(this.selectedRadiologists);
+
     })
     // this.staffApiSvc.radiologists$.pipe(takeUntil(this.destroy$$)).subscribe((radiologists) => {
     //   radiologists.forEach(({ id, firstname, lastname }) =>

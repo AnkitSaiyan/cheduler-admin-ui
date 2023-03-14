@@ -81,13 +81,15 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
   }
 
   public openEditPriorityModal(prioritySlotID: any) {
-    this.priorityApiSvc.getPrioritySlotsByID(prioritySlotID).pipe(takeUntil(this.destroy$$)).subscribe((priorityDetail) => {
-      console.log('priorityDetail: ', priorityDetail);
-      this.prioritySlotDetails$$.next(priorityDetail);  
-    });
+    this.priorityApiSvc
+      .getPrioritySlotsByID(prioritySlotID)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((priorityDetail) => {
+        this.prioritySlotDetails$$.next(priorityDetail);
+      });
 
 
-    console.log('this.prioritySlotDetails$$: ', this.prioritySlotDetails$$.value);
+
     this.modalSvc.open(AddPrioritySlotsComponent, {
       data: { edit: !!this.prioritySlotDetails$$.value?.id, prioritySlotDetails: { ...this.prioritySlotDetails$$.value } },
       options: {
@@ -98,3 +100,4 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
     }).result;
   }
 }
+

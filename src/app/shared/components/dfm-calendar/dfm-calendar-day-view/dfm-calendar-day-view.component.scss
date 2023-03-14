@@ -202,13 +202,6 @@ h3 {
       align-items: flex-start;
       -webkit-align-items: flex-start;
       flex: 1;
-      .gray-out-area {
-          background: gray;
-          width: 100%;
-          position: absolute;
-          opacity: .5;
-          z-index: 2;
-        }
 
       .calender-day-view-events-container {
         min-width: 100%;
@@ -451,6 +444,14 @@ h3 {
   .modal-content {
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
   }
+}
+
+.gray-out-area {
+  background: var(--dfm-main-200);
+  width: 100%;
+  position: absolute;
+  opacity: .5;
+  z-index: 2;
 }
 
 @media (max-width: 680px) {

@@ -61,7 +61,6 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
   ngOnInit(): void {
     this.dashboardApiService.upcommingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
       if (appointments['upcomingAppointments'].length > 0) {
-        console.log('upcomming appointments: ', appointments['upcomingAppointments']);
         this.upcomingAppointments$$.next(appointments['upcomingAppointments']);
         this.filteredUpcommingAppointments$$.next(appointments['upcomingAppointments']);
         this.noDataFound = false;
@@ -71,3 +70,4 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
     });
   }
 }
+

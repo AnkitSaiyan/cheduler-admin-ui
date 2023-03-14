@@ -138,7 +138,6 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
         try {
           introductoryTextObj = JSON.parse(siteManagementData.introductoryText);
         } catch (e) {
-          console.log(e);
         }
       }
 
@@ -230,8 +229,6 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       requestData.id = this.siteManagementData$$.value.id;
     }
 
-    console.log(requestData);
-
     this.siteManagementApiSvc
       .saveSiteManagementData$(requestData)
       .pipe(takeUntil(this.destroy$$))
@@ -254,7 +251,6 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
   public onFileChange(event: Event) {
     const { files } = event.target as HTMLInputElement;
 
-    console.log(files);
     if (files && files?.length) {
       const fileControl = this.siteManagementForm.get('file');
 

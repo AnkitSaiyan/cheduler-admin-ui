@@ -127,7 +127,6 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
   ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
     this.dashboardApiService.roomAbsence$.pipe(takeUntil(this.destroy$$)).subscribe((roomAbsence) => {
-      console.log(roomAbsence['roomAbsence']);
       this.roomAbsence$$.next(roomAbsence['roomAbsence']);
       this.filteredRoomAbsence$$.next(roomAbsence['roomAbsence']);
     });
@@ -203,3 +202,4 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
     }
   }
 }
+

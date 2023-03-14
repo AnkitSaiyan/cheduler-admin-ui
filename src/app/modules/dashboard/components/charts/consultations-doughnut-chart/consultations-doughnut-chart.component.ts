@@ -27,7 +27,6 @@ export class ConsultationsDoughnutChartComponent extends DestroyableComponent im
 
   public ngOnInit(): void {
     this.dashboardApiService.completedBarChart$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
-      console.log(appointment);
       const dataset: any = [];
       appointment.completedappointments.forEach((element) => {
         if (element?.label === 'Sunday') dataset[0] = element.value;

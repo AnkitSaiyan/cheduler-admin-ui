@@ -633,8 +633,6 @@ export class AbsenceApiService {
   }
 
   public deleteAbsence$(absenceID: number): Observable<boolean> {
-    console.log('absenceID: ', absenceID);
-    console.log('called');
     return this.http.delete<BaseResponse<boolean>>(`${environment.serverBaseUrl}/absences/${absenceID}`).pipe(
       map((response) => response.data),
       tap(() => {

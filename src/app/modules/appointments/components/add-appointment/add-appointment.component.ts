@@ -122,7 +122,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       this.comingFromRoute = state[COMING_FROM_ROUTE];
       this.edit = state[EDIT];
 
-      console.log('this.comingFromRoute: ', this.comingFromRoute);
       localStorage.setItem(COMING_FROM_ROUTE, this.comingFromRoute);
       if (typeof this.edit === 'boolean') {
         localStorage.setItem(EDIT, this.edit.toString());
@@ -137,7 +136,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     const comingFromRoute = localStorage.getItem(COMING_FROM_ROUTE);
     if (comingFromRoute) {
       this.comingFromRoute = comingFromRoute;
-      console.log('this.comingFromRoute: ', this.comingFromRoute);
     }
     const edit = localStorage.getItem(EDIT);
     if (edit) {
@@ -188,21 +186,18 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       .listenForParamChange$(APPOINTMENT_ID)
       .pipe(
         filter((appointmentID: string) => {
-          console.log('appointmentID in filter: ', appointmentID);
           if (!appointmentID) {
             this.appointment$$.next({} as Appointment);
           }
           return !!appointmentID;
         }),
         switchMap((appointmentID) => {
-          console.log('appointmentID: ', appointmentID);
           return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
         }),
         debounceTime(0),
         takeUntil(this.destroy$$),
       )
       .subscribe((appointment) => {
-        console.log('appointment: ', appointment);
         this.appointment$$.next(appointment ?? ({} as Appointment));
         this.updateForm(appointment);
       });
@@ -275,7 +270,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   private updateForm(appointment: Appointment | undefined) {
-    console.log(appointment)
+
     let date!: Date;
     let dateDistributed: DateDistributed = {} as DateDistributed;
 
@@ -287,7 +282,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
     dateDistributed = CalendarUtils.DateToDateDistributed(date);
 
-    console.log(dateDistributed);
+
 
     this.appointmentForm.patchValue(
       {
@@ -316,27 +311,33 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
         this.loadingSlots$$.next(false);
 
-        const slotData = (start, end, examId, roomList, userList) => ({
-          start, end, roomList, userList, examId
-        } as SlotModified)
+        const slotData = (start, end, examId, roomList, userList) =>
+          ({
+            start,
+            end,
+            roomList,
+            userList,
+            examId,
+          } as SlotModified);
 
         if (appointment?.exams?.length) {
           const exams = this.isCombinable ? [appointment.exams[0]] : [...appointment.exams];
 
           exams.forEach((exam) => {
-            const start = CalendarUtils.DateTo24TimeString(exam.startedAt)
-            const end = CalendarUtils.DateTo24TimeString(exam.endedAt)
+            const start = CalendarUtils.DateTo24TimeString(exam.startedAt);
+            const end = CalendarUtils.DateTo24TimeString(exam.endedAt);
             this.handleSlotSelectionToggle(
               slotData(
-                start, end, +exam.id,
+                start,
+                end,
+                +exam.id,
                 this.findSlot(+exam.id, start, end)?.roomList ?? [],
                 this.findSlot(+exam.id, start, end)?.userList ?? [],
-              )
-            )
+              ),
+            );
           });
         }
 
-        console.log(this.selectedTimeSlot);
         this.cdr.detectChanges();
       });
   }
@@ -348,8 +349,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   private setSlots(slots: Slot[]) {
-    const {examIdToSlots, newSlots} = AppointmentUtils.GetModifiedSlotData(slots);
-    console.log(examIdToSlots, newSlots)
+    const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots);
+
     this.examIdToAppointmentSlots = examIdToSlots;
     this.slots = newSlots;
 
@@ -369,7 +370,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   public saveAppointment(): void {
-    console.log(this.selectedTimeSlot);
+
 
     try {
       if (this.appointmentForm.invalid) {
@@ -395,19 +396,17 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           if (!this.selectedTimeSlot[+examID]) {
             this.selectedTimeSlot[+examID] = {
               ...selectedSlot,
-              examId: +examID
-            }
+              examId: +examID,
+            };
           }
-        })
+        });
       }
 
       const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
-        {...this.formValues},
-        {...this.selectedTimeSlot},
-        {...this.appointment$$.value ?? {} as Appointment}
+        { ...this.formValues },
+        { ...this.selectedTimeSlot },
+        { ...(this.appointment$$.value ?? ({} as Appointment)) },
       );
-
-      console.log(requestData);
 
       if (this.edit) {
         this.appointmentApiSvc
@@ -417,17 +416,17 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
             next: () => {
               this.shareDataService.getLanguage$().subscribe((language: string) => {
                 this.notificationSvc.showNotification(language === ENG_BE ? `Appointment updated successfully` : 'Afspraak succesvol geupdated');
-              })
+              });
               this.submitting$$.next(false);
 
               let route: string;
-              console.log('this.comingFromRoute: ', this.comingFromRoute);
+
               if (this.comingFromRoute === 'view') {
                 route = '../view';
               } else {
                 route = this.edit ? '/appointment' : '/dashboard';
               }
-              this.router.navigate([route], {relativeTo: this.route});
+              this.router.navigate([route], { relativeTo: this.route });
             },
             error: (err) => {
               this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
@@ -442,7 +441,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
             next: () => {
               this.shareDataService.getLanguage$().subscribe((language: string) => {
                 this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully` : 'Appointment saved successfully');
-              })
+              });
               this.submitting$$.next(false);
 
               let route: string;
@@ -456,7 +455,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
                 default:
                   route = this.edit ? '/appointment' : '../';
               }
-              this.router.navigate([route], {relativeTo: this.route});
+              this.router.navigate([route], { relativeTo: this.route });
             },
             error: (err) => {
               this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
@@ -465,7 +464,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           });
       }
     } catch (e) {
-      console.log(e);
       this.notificationSvc.showNotification('Failed to save the appointment', NotificationType.DANGER);
       this.submitting$$.next(false);
       return;

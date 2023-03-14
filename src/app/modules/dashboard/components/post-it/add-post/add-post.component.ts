@@ -38,7 +38,7 @@ export class AddPostComponent extends DestroyableComponent implements OnInit, On
   }
 
   public close(result: boolean) {
-    console.log('this.postItMessage.value: ', this.postItMessage.value);
     this.dialogSvc.close(this.postItMessage.value);
   }
 }
+

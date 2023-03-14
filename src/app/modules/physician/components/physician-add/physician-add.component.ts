@@ -108,7 +108,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       addPhysicianReqData.email = null;
     }
 
-    console.log(addPhysicianReqData);
+
 
     if (this.modalData.edit) {
       this.physicianApiSvc
@@ -116,7 +116,6 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            console.log(Translate.SuccessMessage.Updated[this.selectedLanguage]);
             this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated[this.selectedLanguage]}!`);
             this.closeModal(true);
             this.loading$$.next(false);

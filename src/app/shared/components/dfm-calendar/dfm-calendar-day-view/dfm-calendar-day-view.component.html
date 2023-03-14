@@ -58,15 +58,16 @@
             </div>
           </div>
 
-          <div role="presentation" class="calender-day-view-events-container-main" (scroll)="onScroll(scrollTwo, scrollOne)" #scrollTwo>
-            <div role="disable" class="gray-out-area"  *ngFor="let item of grayOutSlot$$ | async" [ngStyle]="{'top.px': item.top, 'height.px': item.height}" ></div>
+          <div role="presentation" class="calender-day-view-events-container-main" #bodyMain (scroll)="onScroll(scrollTwo, scrollOne)" #scrollTwo>
             <div role="row" class="calender-day-view-events-container">
+              <div class="gray-out-area"  *ngFor="let item of grayOutSlot$$ | async" [ngStyle]="{'top.px': item.top, 'height.px': item.height, 'width': bodyMain.style.width }" ></div>
               <div>
                 <ng-container *ngFor="let i of timeSlot.timings">
                   <div class="calender-day-view-horizontal-line"></div>
                   <div class="calender-day-view-horizontal-line-light"></div>
                 </ng-container>
               </div>
+
               <div class="calender-day-view-events-left-vertical-line"></div>
               <ng-container *ngIf="headerList.length; else singleGridCol;">
                 <div *ngFor="let h of headerList" role="gridcell" class="calender-day-view-body-grid-column">

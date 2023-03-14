@@ -5,7 +5,7 @@ import { User } from "./user.model";
 export interface PrioritySlot {
   id?: number;
   startedAt: string;
-  endedAt: string | null;
+  endedAt: string;
   priority: PriorityType;
   isRepeat: boolean;
   repeatType: RepeatType | null;
@@ -15,5 +15,5 @@ export interface PrioritySlot {
   users: User[];
   slotStartTime: string;
   slotEndTime: string | null;
-
 }
+

@@ -104,7 +104,6 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
       );
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-      console.log(searchText);
       if (searchText) {
         this.handleSearch(searchText.toLowerCase());
       } else {
@@ -238,7 +237,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     this.filteredRooms$$.next([
       ...this.rooms$$.value.filter((room) => {
         // this.translate.get(searchText).subscribe((res) => {
-        //   console.log(res);
+        //
         // });
         return (
           room.name?.toLowerCase()?.includes(searchText) ||
@@ -278,7 +277,6 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
-    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
@@ -447,7 +445,6 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
       .pipe(takeUntil(this.destroy$$))
       .subscribe(
         (res) => {
-          console.log(res);
           this.loading$$.next(false);
         },
         () => this.loading$$.next(false),

@@ -80,7 +80,7 @@ export const Translate = Object.freeze({
     [DUTCH_BE]: 'Begin',
   },
   End: {
-    [ENG_BE]: 'Start',
+    [ENG_BE]: 'End',
     [DUTCH_BE]: 'Eind',
   },
   Priority: {
@@ -208,3 +208,4 @@ export const Translate = Object.freeze({
     [DUTCH_BE]: 'Formulier is niet geldig',
   },
 });
+
