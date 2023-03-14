@@ -76,11 +76,11 @@
                 {{ item?.patientFname?.toString()[0]?.toUpperCase() }}
               </div>
             </div>
-            <span>{{ item.patientFname }}</span>
+            <span>{{ item.patientFname | dashIfNothing }}</span>
           </div>
         </dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.patientEmail }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.doctor }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.patientEmail | dashIfNothing  }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.doctor | titlecase | dashIfNothing  }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.startedAt | date : 'short' }}</dfm-table-body-cell>
 
         <!-- <dfm-table-body-cell>
