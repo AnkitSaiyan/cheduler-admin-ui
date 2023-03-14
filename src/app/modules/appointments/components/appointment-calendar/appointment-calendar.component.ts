@@ -149,7 +149,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
         this.updateQuery(value[0]);
       });
 
-    this.calendarViewFormControl.setValue('day');
+    // this.calendarViewFormControl.setValue('day');
 
     this.roomApiSvc.allRooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
       this.headerList = rooms.map(({ name, id }) => ({ name, value: id }));
