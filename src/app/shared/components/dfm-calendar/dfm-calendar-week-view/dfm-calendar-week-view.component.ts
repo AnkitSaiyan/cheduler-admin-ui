@@ -96,8 +96,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   public ngOnInit(): void {
     this.updateCalendarDays();
 
-    console.log(this.dataGroupedByDateAndTime);
-
     this.changeWeek$$
       .pipe(
         filter((offset) => !!offset),
@@ -138,7 +136,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   public changeWeek(offset: number) {
     if (offset !== 0) {
       const date = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + offset * 7));
-      console.log(date);
+
       this.updateDate(date);
       this.changeWeek$$.next(0);
     }
@@ -175,13 +173,13 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   private renderEvents(): void {
     //   // debugger;
     //   if (this.dataGroupedByDateAndTime) {
-    //     console.log(this.eventContainer);
+    //
     //     this.eventContainer.forEach((elementRef) => {
     //       const div = elementRef.nativeElement as HTMLDivElement;
     //       const dataArray = this.dataGroupedByDateAndTime[div.id] as { group: number; data: any }[];
     //
     //       if (dataArray?.length) {
-    //         console.log(dataArray);
+    //
     //         const pixelsPerMin = 4;
     //         const barHeight = 1;
     //         const title = 'Appointments';

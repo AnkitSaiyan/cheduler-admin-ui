@@ -30,7 +30,6 @@ export class AppointmentsBarChartComponent extends DestroyableComponent implemen
   public ngOnInit(): void {
     this.dashboardApiService.appointmentBarChart$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
       this.appointmentDetails = appointment.weeklyappointments;
-      console.log( "hello", this.appointmentDetails);
 
       // appointment['appointments'].forEach((element) => {
       //   this.appointmentDetails[element.label] = element.value;

@@ -104,7 +104,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
     this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
       this.modalData = data;
-      console.log(data);
 
       if (this.modalData.event.offsetY) {
         let minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
@@ -128,7 +127,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     combineLatest([this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length))])
       .pipe(debounceTime(0), takeUntil(this.destroy$$))
       .subscribe((res) => {
-        console.log(res);
       });
 
     this.appointmentForm
@@ -145,7 +143,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
       this.examList = [...keyValueExams];
 
       exams.forEach((exam) => {
-        console.log(exam);
         if (!this.examIdToDetails[+exam.id]) {
           this.examIdToDetails[+exam.id] = {
             name: exam.name,
@@ -257,8 +254,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
   }
 
   private setSlots(slots: Slot[]) {
-    const {examIdToSlots, newSlots} = AppointmentUtils.GetModifiedSlotData(slots);
-    console.log(examIdToSlots, newSlots)
+    const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots);
+
     this.examIdToAppointmentSlots = examIdToSlots;
     this.slots = newSlots;
   }
@@ -296,18 +293,16 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
         if (!this.selectedTimeSlot[+examID]) {
           this.selectedTimeSlot[+examID] = {
             ...selectedSlot,
-            examId: +examID
-          }
+            examId: +examID,
+          };
         }
-      })
+      });
     }
 
     const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
-      {...this.formValues},
-      {...this.selectedTimeSlot},
+      { ...this.formValues },
+      { ...this.selectedTimeSlot },
     );
-
-    console.log(requestData);
 
     this.appointmentApiSvc
       .saveAppointment$(requestData)
@@ -321,7 +316,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
         error: (err) => {
           this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
           this.submitting$$.next(false);
-        }
+        },
       });
   }
 

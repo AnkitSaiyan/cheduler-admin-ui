@@ -52,7 +52,7 @@ export class ViewPostComponent extends DestroyableComponent implements OnInit, O
   //       take(1),
   //     )
   //     .subscribe((response) => {
-  //       console.log(response);
+  //
   //       if (response) {
   //         this.notificationSvc.showNotification('Post deleted successfully');
   //         this.ngOnInit();
@@ -60,4 +60,5 @@ export class ViewPostComponent extends DestroyableComponent implements OnInit, O
   //     });
   // }
 }
+
 

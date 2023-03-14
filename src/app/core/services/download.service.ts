@@ -51,7 +51,7 @@ export class DownloadService {
   }
 
   public downloadJsonAs(downloadAs: DownloadAsType, headers: string[], data: string[][], filename = 'data'): void {
-    console.log(downloadAs)
+
     switch (downloadAs) {
       case 'CSV':
         this.download(this.generateCSV(headers, data), downloadAs, `${filename}.csv`);
@@ -65,7 +65,6 @@ export class DownloadService {
         });
         break;
       case 'PRINT':
-        console.log(data)
         this.printPDF(headers, data);
         break;
       default:
@@ -94,7 +93,7 @@ export class DownloadService {
     if (data.length) {
       data.forEach((row) => (csv += `${row.join(',')}\n`));
     }
-    console.log(csv);
+
     return csv;
   }
 

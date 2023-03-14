@@ -65,7 +65,6 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe((absences) => {
-      console.log('absences: ', absences);
       this.absences$$.next(absences);
       this.filteredAbsences$$.next(absences);
     });
@@ -167,7 +166,6 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         take(1),
       )
       .subscribe((res) => {
-        console.log(res);
         this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
       });
   }

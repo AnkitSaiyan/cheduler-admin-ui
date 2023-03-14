@@ -124,7 +124,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     });
 
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-      console.log('appointments: ', appointments);
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
 
@@ -163,10 +162,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     });
 
     this.changeDate$$.pipe().subscribe((value) => {
-      console.log({ value });
     });
     this.newDate$$.pipe().subscribe((value) => {
-      console.log('new date', value);
     });
 
     combineLatest([this.selectedDate$$, this.weekdayToPractice$$])
@@ -177,7 +174,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
       )
       .subscribe(([value]) => {
         this.selectedSlot$$.next(this.weekdayToPractice$$.value[value.getDay()]);
-        console.log('tested', this.selectedSlot$$.value);
       });
   }
 
@@ -296,8 +292,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
       });
     });
 
-    console.log({ appointments });
-
     appointments.forEach((appointment) => {
       if (appointment.startedAt) {
         const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
@@ -360,7 +354,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
         let startMinutes = CalendarUtils.DurationInMinFromHour(+startTime.split(':')[0], +startTime.split(':')[1]);
         let endMinutes = CalendarUtils.DurationInMinFromHour(+endTime.split(':')[0], +endTime.split(':')[1]);
 
-        console.log(startMinutes, endMinutes);
+
         if (startMinutes - 120 > 0) {
           startMinutes -= 120;
         } else {
@@ -373,7 +367,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
           endMinutes = 24 * 60;
         }
 
-        console.log(startMinutes, endMinutes);
+
 
         const timings = this.timeIntervalPipe.transform(15, 24, false, startMinutes, endMinutes);
 

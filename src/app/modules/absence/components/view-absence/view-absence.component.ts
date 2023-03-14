@@ -47,7 +47,6 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
       )
       .subscribe((absenceDetails) => {
         this.absenceDetails$$.next(absenceDetails);
-        console.log(absenceDetails);
       });
 
       this.shareDataService
@@ -57,7 +56,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
   }
 
   public deleteAbsence(id: number) {
-    console.log('id: ', id);
+
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
@@ -70,7 +69,6 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
     modalRef.closed
       .pipe(
         filter((res: boolean) => {
-          console.log('res', res);
           return res;
         }),
         switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),

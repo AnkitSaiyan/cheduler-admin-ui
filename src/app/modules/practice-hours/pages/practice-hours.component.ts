@@ -97,10 +97,8 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
     this.submitting$$.next(true);
 
-    const {values} = formValues;
+    const { values } = formValues;
 
-
-    console.log(values);
     this.practiceHourApiSvc
       .savePracticeHours$(values)
       .pipe(takeUntil(this.destroy$$))

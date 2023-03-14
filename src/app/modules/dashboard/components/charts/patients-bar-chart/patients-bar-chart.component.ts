@@ -29,7 +29,6 @@ export class PatientsBarChartComponent extends DestroyableComponent implements O
 
   public ngOnInit(): void {
     this.dashboardApiService.patientsBarChart$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
-      console.log(appointment);
       this.patienttDetails = appointment.patients;
       // appointment['appointments'].forEach((element) => {
       //   // this.appointmentDetails[element.label] = element.value;

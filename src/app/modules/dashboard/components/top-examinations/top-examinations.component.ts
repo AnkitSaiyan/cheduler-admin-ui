@@ -23,7 +23,7 @@ export class TopExaminationsComponent extends DestroyableComponent implements On
   //   'X-ray',
   // ];
 
-  
+
   private exams$$: BehaviorSubject<any[]>;
 
   public filteredExams$$: BehaviorSubject<any[]>;
@@ -35,9 +35,8 @@ export class TopExaminationsComponent extends DestroyableComponent implements On
   }
 
   public ngOnInit(): void {
-    
+
     this.dashboardApiService.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
-      console.log('exams: ', exams['exams']);
       this.exams$$.next(exams['exams']);
       this.filteredExams$$.next(exams['exams']);
     });

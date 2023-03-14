@@ -209,7 +209,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   private createForm(absenceDetails?: Absence | undefined): void {
-    console.log(absenceDetails);
     let startTime;
     let endTime;
 
@@ -259,22 +258,27 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       isHoliday: [!!absenceDetails?.isHoliday, []],
       repeatType: [null, []],
       repeatDays: ['', []],
-      repeatFrequency: [ null, [Validators.min(1)]],
+      repeatFrequency: [null, [Validators.min(1)]],
       userList: [absenceDetails?.user?.length ? absenceDetails.user.map(({ id }) => id?.toString()) : [], []],
       roomList: [absenceDetails?.rooms?.length ? absenceDetails?.rooms.map(({ id }) => id?.toString()) : [], []],
       info: [absenceDetails?.info ?? '', []],
       priority: [absenceDetails?.priority ?? null, []],
     });
 
-    setTimeout(() => this.absenceForm.patchValue({
-      startTime,
-      endTime,
-      repeatType: absenceDetails?.repeatType,
-      repeatFrequency: absenceDetails?.isRepeat && absenceDetails?.repeatFrequency && absenceDetails.repeatType
-          ? `${absenceDetails.repeatFrequency} ${this.repeatTypeToName[absenceDetails.repeatType]}`
-          : null,
-      repeatDays: absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : ''
-    }), 0)
+    setTimeout(
+      () =>
+        this.absenceForm.patchValue({
+          startTime,
+          endTime,
+          repeatType: absenceDetails?.repeatType,
+          repeatFrequency:
+            absenceDetails?.isRepeat && absenceDetails?.repeatFrequency && absenceDetails.repeatType
+              ? `${absenceDetails.repeatFrequency} ${this.repeatTypeToName[absenceDetails.repeatType]}`
+              : null,
+          repeatDays: absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '',
+        }),
+      0,
+    );
 
     this.cdr.detectChanges();
 
@@ -501,7 +505,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public handleChange(repeatFrequency: InputComponent) {
-    console.log(repeatFrequency);
   }
 
   private handleTimeChange() {

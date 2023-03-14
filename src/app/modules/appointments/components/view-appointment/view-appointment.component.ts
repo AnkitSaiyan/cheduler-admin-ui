@@ -67,7 +67,6 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
         takeUntil(this.destroy$$),
       )
       .subscribe((appointment) => {
-        console.log(appointment);
       });
   }
 

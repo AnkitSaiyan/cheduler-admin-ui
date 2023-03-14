@@ -64,7 +64,6 @@ export class ConfirmActionModalComponent extends DestroyableComponent implements
       if (data.confirmButtonText) this.dialogData.confirmButtonText = data.confirmButtonText;
       if (data.cancelButtonText) this.dialogData.cancelButtonText = data.cancelButtonText;
     });
-    console.log(this.dialogData);
   }
 
   public override ngOnDestroy() {
@@ -72,7 +71,6 @@ export class ConfirmActionModalComponent extends DestroyableComponent implements
   }
 
   public close(result: boolean) {
-    console.log(result);
     this.dialogSvc.close(result);
   }
 }

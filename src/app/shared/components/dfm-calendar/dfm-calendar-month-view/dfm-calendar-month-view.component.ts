@@ -41,7 +41,6 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
       this.selectedDate = new Date();
     }
 
-    console.log(changes);
     const currentValue = changes['dataGroupedByDate']?.currentValue;
     const previousValue = changes['dataGroupedByDate']?.previousValue;
 
@@ -52,8 +51,6 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 
   public ngOnInit(): void {
     this.updateCalendarDays();
-
-    console.log(this.dataGroupedByDate);
 
     this.changeMonth$$
       .asObservable()

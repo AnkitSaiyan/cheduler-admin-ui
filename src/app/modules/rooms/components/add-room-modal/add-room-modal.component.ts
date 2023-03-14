@@ -141,7 +141,6 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   }
 
   public handle(e: Event) {
-    console.log(e);
   }
 
   public saveRoom() {
@@ -154,7 +153,6 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
   }
 
   public saveForm(timeSlotFormValues?: { isValid: boolean; values: TimeSlot[] }) {
-    console.log('in')
     if (this.addRoomForm.invalid) {
       this.addRoomForm.markAllAsTouched();
       this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
@@ -173,8 +171,8 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
     const addRoomReqData: AddRoomRequestData = {
       ...rest,
       availabilityType: timeSlotFormValues ? +!!timeSlotFormValues.values?.length : 0,
-      practiceAvailability: timeSlotFormValues ? timeSlotFormValues.values : []
-    }
+      practiceAvailability: timeSlotFormValues ? timeSlotFormValues.values : [],
+    };
 
     if (this.modalData?.roomID) {
       addRoomReqData.id = this.modalData.roomID;
