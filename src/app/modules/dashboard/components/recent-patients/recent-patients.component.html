@@ -83,7 +83,7 @@
         <dfm-table-body-cell>{{ item.doctor }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.startedAt | date : 'short' }}</dfm-table-body-cell>
 
-        <dfm-table-body-cell>
+        <!-- <dfm-table-body-cell>
           <div class="d-flex dfm-gap-16">
             <dfm-button
               color="link-gray"
@@ -94,9 +94,10 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
+              (click)="deletePatient(item.id)"
             ></dfm-button>
           </div>
-        </dfm-table-body-cell>
+        </dfm-table-body-cell> -->
       </ng-template>
     </dfm-table>
   </section>

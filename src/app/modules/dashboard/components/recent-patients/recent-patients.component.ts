@@ -20,7 +20,7 @@ import { NotificationType, TableItem } from 'diflexmo-angular-design';
   styleUrls: ['./recent-patients.component.scss'],
 })
 export class RecentPatientsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public columns: string[] = ['PatientName', 'Email ID', 'Doctor', 'AppointmentDate', 'Actions'];
+  public columns: string[] = ['PatientName', 'Email ID', 'Doctor', 'AppointmentDate'];
 
   public searchControl = new FormControl('', []);
 
@@ -133,7 +133,6 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
   public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
     this.dashboardApiService.recentPatient$.pipe(takeUntil(this.destroy$$)).subscribe((recentPatient) => {
-      console.log('101 rercent patients: ', recentPatient);
       this.recentPatients$$.next(recentPatient);
       this.filteredRecentPatients$$.next(recentPatient);
     });
@@ -158,7 +157,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
         this.downloadSvc.downloadJsonAs(
           value as DownloadAsType,
-          this.columns.slice(0, -1),
+          this.columns.slice(0),
           this.filteredRecentPatients$$.value.map((ap: any) => [
             ap?.patientFname?.toString(),
             ap?.patientEmail?.toString(),
@@ -194,7 +193,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
   public copyToClipboard() {
     try {
       let dataString = `Patient Name\t\t\tEmail Id\t\t\t`;
-      dataString += `${this.columns.slice(2, -1).join('\t\t')}\n`;
+      dataString += `${this.columns.slice(2).join('\t\t')}\n`;
 
       this.filteredRecentPatients$$.value.forEach((ap: any) => {
         dataString += `${ap?.patientFname?.toString()}\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${ap.startedAt.toString()}\n`;
@@ -207,5 +206,9 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
       this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
       this.clipboardData = '';
     }
+  }
+
+  public deletePatient(id: number) {
+    console.log(id);
   }
 }
