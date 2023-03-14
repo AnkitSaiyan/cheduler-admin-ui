@@ -6,7 +6,7 @@ import {RouterStateService} from '../../../../core/services/router-state.service
 import {NotificationDataService} from '../../../../core/services/notification-data.service';
 import {ModalService} from '../../../../core/services/modal.service';
 import {ENG_BE, PHYSICIAN_ID} from '../../../../shared/utils/const';
-import {ConfirmActionModalComponent, DialogData} from '../../../../shared/components/confirm-action-modal.component';
+import {ConfirmActionModalComponent, ConfirmActionModalData} from '../../../../shared/components/confirm-action-modal.component';
 import {PhysicianApiService} from '../../../../core/services/physician.api.service';
 import {Physician} from '../../../../shared/models/physician.model';
 import {PhysicianAddComponent} from '../physician-add/physician-add.component';
@@ -56,7 +56,7 @@ export class PhysicianViewComponent extends DestroyableComponent implements OnIn
         bodyText: 'AreyousureyouwanttodeletethisPhysician',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     modalRef.closed
