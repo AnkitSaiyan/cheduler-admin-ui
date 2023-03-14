@@ -1,5 +1,5 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take } from 'rxjs';
+import { BehaviorSubject, filter, switchMap, take, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationType } from 'diflexmo-angular-design';
@@ -19,6 +19,7 @@ import { ReadStatus } from '../../../models/status.model';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { Translate } from '../../../models/translate.model';
+import { CalendarUtils } from 'src/app/shared/utils/calendar.utils';
 
 @Component({
   selector: 'dfm-calendar-day-view',
@@ -327,30 +328,72 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement) {
+    if (!e.offsetY) return;
+    const isGrayOutArea = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
     const eventCard = this.createAppointmentCard(e, eventsContainer);
 
-    const modalRef = this.modalSvc.open(AddAppointmentModalComponent, {
-      data: {
-        event: e,
-        element: eventCard,
-        elementContainer: eventsContainer,
-        startedAt: this.selectedDate,
-        startTime: this.timeSlot.timings[0],
-      },
-      options: {
-        backdrop: false,
-        centered: true,
-        modalDialogClass: 'ad-ap-modal-shadow',
-      },
-    });
-
-    modalRef.closed.pipe(take(1)).subscribe((res) => {
-      eventCard.remove();
-      if (res) {
-        // show the created card
-        // In progress
-      }
-    });
+    if (isGrayOutArea) {
+      this.modalSvc
+        .open(ConfirmActionModalComponent, {
+          data: {
+            bodyText: 'Are you sure you want to make an appointment outside the operating hours?',
+          },
+        })
+        .closed.pipe(
+          tap((value) => {
+            if (!value) eventCard.remove();
+          }),
+          filter(Boolean),
+          switchMap(() => {
+            return this.modalSvc.open(AddAppointmentModalComponent, {
+              data: {
+                event: e,
+                element: eventCard,
+                elementContainer: eventsContainer,
+                startedAt: this.selectedDate,
+                startTime: this.timeSlot.timings[0],
+              },
+              options: {
+                backdrop: false,
+                centered: true,
+                modalDialogClass: 'ad-ap-modal-shadow',
+              },
+            }).closed;
+          }),
+          take(1),
+        )
+        .subscribe((res) => {
+          eventCard.remove();
+          if (res) {
+            // show the created card
+            // In progress
+          }
+        });
+    } else {
+      this.modalSvc
+        .open(AddAppointmentModalComponent, {
+          data: {
+            event: e,
+            element: eventCard,
+            elementContainer: eventsContainer,
+            startedAt: this.selectedDate,
+            startTime: this.timeSlot.timings[0],
+          },
+          options: {
+            backdrop: false,
+            centered: true,
+            modalDialogClass: 'ad-ap-modal-shadow',
+          },
+        })
+        .closed.pipe(take(1))
+        .subscribe((res) => {
+          eventCard.remove();
+          if (res) {
+            // show the created card
+            // In progress
+          }
+        });
+    }
   }
 
   private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {
