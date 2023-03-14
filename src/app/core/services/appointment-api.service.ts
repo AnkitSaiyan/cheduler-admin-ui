@@ -40,14 +40,13 @@ export class AppointmentApiService {
 
   public fetchAllAppointments$(data?: any): Observable<Appointment[]> {
     if (data) {
-      const queryParams = {
-        id: data.appointmentNumber,
-        roomId: data.roomsId ? data.roomsId : '',
-        examId: data.examList ? data.examList : '',
-        doctorId: data.doctorId ? data.doctorId : '',
-        startDate: data.startedAt ? data.startedAt : '',
-        endDate: data.endedAt ? data.endedAt : '',
-      };
+      const queryParams = {};
+      if (data.appointmentNumber) queryParams['id'] = data.appointmentNumber;
+      if (data.roomsId) queryParams['roomId'] = data.roomsId;
+      if (data.examList) queryParams['examId'] = data.examList;
+      if (data.doctorId) queryParams['doctorId'] = data.doctorId;
+      if (data.startedAt) queryParams['startDate'] = data.startedAt;
+      if (data.endedAt) queryParams['endDate'] = data.endedAt;
 
       return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
         map((response) => {
