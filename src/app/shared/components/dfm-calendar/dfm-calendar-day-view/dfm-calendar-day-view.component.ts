@@ -346,6 +346,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         element: eventCard,
         elementContainer: eventsContainer,
         startedAt: this.selectedDate,
+        startTime: this.timeSlot.timings[0],
       },
       options: {
         backdrop: false,

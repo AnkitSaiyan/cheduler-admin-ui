@@ -25,6 +25,7 @@ import {SiteManagementApiService} from '../../../../core/services/site-managemen
 import {EMAIL_REGEX, ENG_BE} from '../../../../shared/utils/const';
 import {GeneralUtils} from '../../../../shared/utils/general.utils';
 import {Translate} from "../../../../shared/models/translate.model";
+import {CalendarUtils} from "../../../../shared/utils/calendar.utils";
 
 @Component({
   selector: 'dfm-add-appointment-modal',
@@ -62,6 +63,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     element: HTMLDivElement;
     elementContainer: HTMLDivElement;
     startedAt: Date;
+    startTime?: string;
   };
 
   public slots: SlotModified[] = [];
@@ -105,8 +107,16 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
       console.log(data);
 
       if (this.modalData.event.offsetY) {
-        const minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
+        let minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
+
+        // In case if calendar start time is not 00:00 then adding extra minutes
+        if (this.modalData?.startTime) {
+          const startTime = this.modalData.startTime.split(':');
+          minutes += CalendarUtils.DurationInMinFromHour(+startTime[0], +startTime[1]);
+        }
+
         const roundedMin = minutes - (minutes % 5);
+
         const hour = `0${Math.floor(minutes / 60)}`.slice(-2);
         const min = `0${roundedMin % 60}`.slice(-2);
         this.selectedTime = `${hour}:${min}:00`;

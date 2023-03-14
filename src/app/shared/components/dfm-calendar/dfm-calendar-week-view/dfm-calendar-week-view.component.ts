@@ -303,9 +303,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     });
 
     modalRef.closed.pipe(take(1)).subscribe((res) => {
-      if (!res) {
-        eventCard.remove();
-      }
+      eventCard.remove();
+      // if (!res) {
+      // }
     });
   }
 
