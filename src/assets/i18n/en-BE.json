@@ -333,5 +333,6 @@
   "Search" : "Search",
   "AdvancedSearch" : " Advanced Search",
   "AreYouSureYouWantToDeleteThisPost" : "Are you sure you want to delete this Post?",
-  "EnterMessage" : "Enter Message"
+  "EnterMessage" : "Enter Message",
+  "Today":"Today"
 }

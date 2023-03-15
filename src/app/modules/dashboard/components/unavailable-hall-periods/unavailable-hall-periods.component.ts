@@ -21,7 +21,7 @@ import { NotificationType, TableItem } from 'diflexmo-angular-design';
   styleUrls: ['./unavailable-hall-periods.component.scss'],
 })
 export class UnavailableHallPeriodsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public columns: string[] = ['Room Name', 'Started At', 'End', 'Absence Name'];
+  public columns: string[] = ['RoomName', 'StartedAt', 'End', 'AbsenceName'];
 
   private roomAbsence$$: BehaviorSubject<any[]>;
 

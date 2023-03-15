@@ -14,7 +14,7 @@
           <div class="calendar-week-view-header-cell-left-line"></div>
           <h3>
             <div
-              class="text-xs font-weight-medium w-fit calendar-week-view-day-name">{{ weekday | weekdayToName : true : true | uppercase }}</div>
+              class="text-xs font-weight-medium w-fit calendar-week-view-day-name">{{ weekday | weekdayToName : true : true | uppercase | translate }}</div>
             <div class="w-fit calendar-week-view-date"
                  [ngClass]="{
                     'calendar-week-view-date-today': todayDate.getDate() === day[0] && todayDate.getMonth() === day[1],
