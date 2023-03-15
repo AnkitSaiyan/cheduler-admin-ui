@@ -192,7 +192,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Exam?',
+        bodyText: 'AreYouSureYouWantToDeleteThisExam',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
       } as ConfirmActionModalData,

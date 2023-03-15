@@ -62,6 +62,7 @@
                 >
                 </dfm-input-dropdown>
               </div>
+              
               <small class="validation-error text-center d-flex" *ngIf="(slotStartTime.control.hasError('time') && slotEndTime.control.value && slotStartTime.control.value)">{{
                 'StartTimeSmallerEndTime' | translate
               }}</small>
