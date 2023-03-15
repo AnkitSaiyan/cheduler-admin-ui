@@ -5,7 +5,7 @@ export function formatTime(timeString: string, format: 12 | 24 = 12, interval = 
 
   const [hourPart, minutePart]: string[] = timeString.split(':');
 
-  // console.log(hourPart, minutePart);
+  //
 
   if (!hourPart || !minutePart) {
     return '';

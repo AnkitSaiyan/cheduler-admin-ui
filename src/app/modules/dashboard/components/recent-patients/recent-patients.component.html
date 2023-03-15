@@ -14,14 +14,16 @@
       size="md"
       placeholder="{{'SearchByPatientName' | translate}}"
       icon="search-sm"
+      [formControl]="searchControl"
     ></dfm-input>
 
     <div class="d-flex align-items-center dfm-button-group-wrapper rec-pt-buttons">
-      <div>
+      <div [cdkCopyToClipboard]="clipboardData">
         <dfm-button-icon
           color="tertiary-gray"
           size="md"
           icon="copy-03"
+          (click)="copyToClipboard()"
         ></dfm-button-icon>
       </div>
 
@@ -30,6 +32,8 @@
           [items]="downloadItems"
           placeholder="{{'Download' | translate}}"
           size="md"
+          [showDescription]="false"
+          [formControl]="downloadDropdownControl"
         ></dfm-input-dropdown>
       </div>
     </div>
@@ -72,14 +76,14 @@
                 {{ item?.patientFname?.toString()[0]?.toUpperCase() }}
               </div>
             </div>
-            <span>{{ item.patientFname }}</span>
+            <span>{{ item.patientFname | dashIfNothing }}</span>
           </div>
         </dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.patientEmail }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.doctor }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.patientEmail | dashIfNothing  }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.doctor | titlecase | dashIfNothing  }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.startedAt | date : 'short' }}</dfm-table-body-cell>
 
-        <dfm-table-body-cell>
+        <!-- <dfm-table-body-cell>
           <div class="d-flex dfm-gap-16">
             <dfm-button
               color="link-gray"
@@ -90,9 +94,10 @@
               color="link-gray"
               size="sm"
               trailingIcon="trash-01"
+              (click)="deletePatient(item.id)"
             ></dfm-button>
           </div>
-        </dfm-table-body-cell>
+        </dfm-table-body-cell> -->
       </ng-template>
     </dfm-table>
   </section>

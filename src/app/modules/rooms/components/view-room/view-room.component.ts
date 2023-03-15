@@ -8,7 +8,7 @@ import { NotificationDataService } from '../../../../core/services/notification-
 import { ModalService } from '../../../../core/services/modal.service';
 import { ROOM_ID } from '../../../../shared/utils/const';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room } from '../../../../shared/models/rooms.model';
@@ -157,7 +157,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
         bodyText: 'AreYouSureYouWantThisRoom',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed

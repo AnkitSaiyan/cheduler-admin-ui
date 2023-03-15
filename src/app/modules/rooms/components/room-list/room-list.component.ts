@@ -10,7 +10,7 @@ import { ChangeStatusRequestData, Status, StatusToName } from '../../../../share
 import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
@@ -104,7 +104,6 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
       );
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-      console.log(searchText);
       if (searchText) {
         this.handleSearch(searchText.toLowerCase());
       } else {
@@ -238,7 +237,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     this.filteredRooms$$.next([
       ...this.rooms$$.value.filter((room) => {
         // this.translate.get(searchText).subscribe((res) => {
-        //   console.log(res);
+        //
         // });
         return (
           room.name?.toLowerCase()?.includes(searchText) ||
@@ -263,7 +262,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
         bodyText: 'AreYouSureYouWantThisRoom',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
@@ -278,7 +277,6 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
-    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
@@ -447,7 +445,6 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
       .pipe(takeUntil(this.destroy$$))
       .subscribe(
         (res) => {
-          console.log(res);
           this.loading$$.next(false);
         },
         () => this.loading$$.next(false),

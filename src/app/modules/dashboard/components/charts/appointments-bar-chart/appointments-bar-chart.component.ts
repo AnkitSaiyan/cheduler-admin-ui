@@ -29,12 +29,13 @@ export class AppointmentsBarChartComponent extends DestroyableComponent implemen
 
   public ngOnInit(): void {
     this.dashboardApiService.appointmentBarChart$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
-      console.log(appointment);
       this.appointmentDetails = appointment.weeklyappointments;
+
       // appointment['appointments'].forEach((element) => {
-      //   // this.appointmentDetails[element.label] = element.value;
+      //   this.appointmentDetails[element.label] = element.value;
       // });
     });
+
     this.appointmentBarChartConfig = {
       labels: this.appointmentBarChartLabels,
       datasets: [
@@ -43,7 +44,6 @@ export class AppointmentsBarChartComponent extends DestroyableComponent implemen
           // categoryPercentage: 1.0,
           data: [65, 59, 80, 81, 56, 55, 40],
           backgroundColor: ['#FEEE95'],
-          hoverBackgroundColor: ['#FEEE95'],
         },
       ],
     };
@@ -62,13 +62,11 @@ export class AppointmentsBarChartComponent extends DestroyableComponent implemen
         legend: {
           display: false,
         },
+        tooltip: {
+          enabled: false,
+        },
         datalabels: {
-          anchor: 'end',
-          align: 'end',
-          color: '#531422',
-          font: {
-            size: 8,
-          },
+          display: false,
         },
       },
     };

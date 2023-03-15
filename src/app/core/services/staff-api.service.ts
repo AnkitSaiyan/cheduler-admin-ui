@@ -84,7 +84,6 @@ export class StaffApiService {
         this.http.get<BaseResponse<User>>(`${this.userUrl}/${staffId}`).pipe(
           map((response) => response.data),
           catchError((e) => {
-            console.log('error', e);
             return of({} as User);
           }),
         ),
@@ -96,7 +95,6 @@ export class StaffApiService {
     return this.allUsers$.pipe(
       map((staffs) =>
         staffs.filter((staff) => {
-          console.log('staff: ', staff);
           return staff.userType === userType;
         }),
       ),

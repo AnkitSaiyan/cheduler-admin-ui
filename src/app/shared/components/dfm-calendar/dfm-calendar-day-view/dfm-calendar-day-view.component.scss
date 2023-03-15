@@ -446,6 +446,13 @@ h3 {
   }
 }
 
+.gray-out-area {
+  background: var(--dfm-main-200);
+  width: 100%;
+  position: absolute;
+  opacity: .5;
+}
+
 @media (max-width: 680px) {
   .calender-day-view-event-details-expanded {
     min-width: auto !important;

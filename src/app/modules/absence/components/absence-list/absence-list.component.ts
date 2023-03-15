@@ -9,7 +9,7 @@ import { AbsenceApiService } from '../../../../core/services/absence-api.service
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { Absence } from '../../../../shared/models/absence.model';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
@@ -65,7 +65,6 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe((absences) => {
-      console.log('absences: ', absences);
       this.absences$$.next(absences);
       this.filteredAbsences$$.next(absences);
     });
@@ -157,7 +156,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         bodyText: 'AreyousureyouwanttodeletethisAbsence',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     modalRef.closed
@@ -167,7 +166,6 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         take(1),
       )
       .subscribe((res) => {
-        console.log(res);
         this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
       });
   }

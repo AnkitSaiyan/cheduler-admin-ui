@@ -1,0 +1,173 @@
+<div #content class="bg-white rounded-4 confirm-action-modal">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ dialogData.titleText | translate }}</h5>
+    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close()"></dfm-button-icon>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="appointmentForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+      <div class="d-flex dfm-gap-32 align-items-start">
+        <dfm-input
+          class="flex-1"
+          size="md"
+          placeholder="Type Appointment Number"
+          label="Appointment Number"
+          formControlName="appointmentNumber"
+        ></dfm-input>
+      </div>
+
+      <div class="d-flex dfm-gap-32 ad-ab-dates">
+        <div class="ad-ab-from-date flex-1 max-w-5">
+          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
+            {{ 'From' | translate }}
+          </div>
+
+          <div class="d-flex align-items-start dfm-gap-16 flex-1">
+            <div class="flex-1 d-flex flex-column">
+              <div class="dfm-button-group-wrapper h-fit flex-1">
+                <div class="input-as-dfm-input flex-1">
+                  <input
+                    class="w-full min-w-128"
+                    formControlName="startedAt"
+                    placeholder="{{ 'dateFormat' | translate }}"
+                    ngbDatepicker
+                    #startedAt="ngbDatepicker"
+                  />
+                </div>
+                <div>
+                  <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date" (click)="startedAt.toggle()"></dfm-button-icon>
+                </div>
+              </div>
+            </div>
+
+            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
+              <dfm-input-dropdown
+                #startTime
+                [items]="startTimes"
+                [typeToSearch]="true"
+                [typeToSearchText]="startTime.value"
+                formControlName="startTime"
+                size="md"
+                placeholder="{{ 'hh:mm' | translate }}"
+              >
+              </dfm-input-dropdown>
+            </div>
+          </div>
+        </div>
+
+        <div class="ad-ab-to-date flex-1 max-w-5">
+          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ 'Until' | translate }} *</div>
+          <div class="d-flex align-items-start dfm-gap-16">
+            <div class="flex-1 d-flex flex-column">
+              <div class="dfm-button-group-wrapper flex-1">
+                <div class="input-as-dfm-input flex-1">
+                  <input
+                    class="w-full min-w-128"
+                    formControlName="endedAt"
+                    placeholder="{{ 'dateFormat' | translate }}"
+                    ngbDatepicker
+                    #endedAt="ngbDatepicker"
+                    [minDate]="formValues.startedAt"
+                  />
+                </div>
+                <div>
+                  <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date" (click)="endedAt.toggle()"></dfm-button-icon>
+                </div>
+              </div>
+            </div>
+
+            <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
+              <dfm-input-dropdown
+                #endTime
+                [items]="endTimes"
+                [typeToSearch]="true"
+                [typeToSearchText]="endTime.value"
+                formControlName="endTime"
+                size="md"
+                placeholder="{{ 'hh:mm' | translate }}"
+              >
+              </dfm-input-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- (searchInput)="handleDropdownSearch($event, 'doctor')" -->
+      <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
+        <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
+          <dfm-input-dropdown
+            [items]="filteredPateintsList"
+            [multiple]="false"
+            class="flex-1"
+            size="md"
+            placeholder="Select Patient"
+            label="Patient"
+            formControlName="patientId"
+          >
+          </dfm-input-dropdown>
+        </div>
+
+        <div class="dfm-input-dropdown-wrapper flex-1 w-full">
+          <dfm-input-dropdown
+            #exams
+            [items]="filteredExamList"
+            [placeholder]="'SelectExams' | translate"
+            formControlName="examList"
+            size="md"
+            label="{{ 'Exams' | translate }}"
+          >
+          </dfm-input-dropdown>
+        </div>
+      </div>
+
+      <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
+        <div class="dfm-input-dropdown-wrapper flex-1 w-full">
+          <dfm-input-dropdown
+            #generalUser
+            [items]="filteredUserList"
+            [typeToSearch]="true"
+            placeholder="Select Staff"
+            formControlName="userId"
+            size="md"
+            label="Staff"
+          >
+          </dfm-input-dropdown>
+        </div>
+
+        <div class="dfm-input-dropdown-wrapper flex-1 w-full">
+          <dfm-input-dropdown
+            #generalUser
+            [items]="filteredRoomList"
+            [typeToSearch]="true"
+            placeholder="Select Rooms"
+            formControlName="roomsId"
+            size="md"
+            label="Rooms"
+          >
+          </dfm-input-dropdown>
+        </div>
+      </div>
+
+      <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
+        <div class="dfm-input-dropdown-wrapper flex-1 w-full">
+          <dfm-input-dropdown
+            #generalUser
+            [items]="filteredPhysicianList"
+            [typeToSearch]="true"
+            placeholder="Select Doctor"
+            formControlName="doctorId"
+            size="md"
+            label="Doctor"
+          >
+          </dfm-input-dropdown>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer text-left">
+    <dfm-button color="secondary" size="md" (click)="close()">{{ dialogData.cancelButtonText | translate }}</dfm-button>
+    <dfm-button color="primary" size="md" (click)="submitSearch()">{{ dialogData.confirmButtonText | translate }}</dfm-button>
+  </div>
+</div>
+

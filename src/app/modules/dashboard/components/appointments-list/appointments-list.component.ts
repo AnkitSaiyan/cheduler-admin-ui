@@ -9,7 +9,7 @@ import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } f
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -21,6 +21,7 @@ import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
+import { AppointmentAdvanceSearchComponent } from './appointment-advance-search/appointment-advance-search.component';
 
 @Component({
   selector: 'dfm-appointments-list',
@@ -115,20 +116,18 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
 
   public ngOnInit() {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
-
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-      console.log('appointments main: ', appointments);
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
 
       // appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
       //
-      // console.log(appointments);
+      //
       //
       // this.groupAppointmentsForCalendar(...appointments);
       // this.groupAppointmentByDateAndRoom(...appointments);
       //
-      // console.log(this.appointmentsGroupedByDate);
+      //
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
@@ -153,11 +152,11 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
           value as DownloadAsType,
           this.columns.slice(0, -1),
           this.filteredAppointments$$.value.map((ap: Appointment) => [
-            ap.startedAt.toString(),
-            ap.endedAt.toString(),
-            `${this.titleCasePipe.transform(ap.patientFname)} ${this.titleCasePipe.transform(ap.patientLname)}`,
-            this.titleCasePipe.transform(ap.doctor),
-            ap.id.toString(),
+            ap?.startedAt?.toString(),
+            ap?.endedAt?.toString(),
+            `${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
+            this.titleCasePipe.transform(ap?.doctor),
+            ap?.id.toString(),
             ap.createdAt.toString(),
             ap.readStatus ? 'Yes' : 'No',
             AppointmentStatusToName[+ap.approval],
@@ -237,7 +236,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
 
   public handleCheckboxSelection(selected: string[]) {
     // this.toggleMenu(true);
-    console.log(selected);
+
     this.selectedAppointmentIDs = [...selected];
   }
 
@@ -268,7 +267,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
         bodyText: 'AreYouSureYouWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
@@ -283,7 +282,6 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: AppointmentStatus | null }) {
-    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
@@ -293,15 +291,15 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
       dataString += `${this.columns.slice(2, -1).join('\t\t')}\n`;
 
       this.filteredAppointments$$.value.forEach((ap: Appointment) => {
-        dataString += `${ap.startedAt.toString()}\t${ap.endedAt.toString()}\t${this.titleCasePipe.transform(
-          ap.patientFname,
-        )} ${this.titleCasePipe.transform(ap.patientLname)}\t\t${this.titleCasePipe.transform(
-          ap.doctor,
-        )}\t\t${ap.id.toString()}\t\t${ap.createdAt.toString()}\t\t${ap.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap.approval]}\n`;
+        dataString += `${ap?.startedAt?.toString()}\t${ap?.endedAt?.toString()}\t${this.titleCasePipe.transform(
+          ap?.patientFname,
+        )} ${this.titleCasePipe.transform(ap?.patientLname)}\t\t${this.titleCasePipe.transform(
+          ap?.doctor,
+          // eslint-disable-next-line no-unsafe-optional-chaining
+        )}\t\t${ap?.id.toString()}\t\t${ap.createdAt.toString()}\t\t${ap?.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap?.approval]}\n`;
       });
 
       this.clipboardData = dataString;
-
       this.cdr.detectChanges();
       this.notificationSvc.showNotification('Data copied to clipboard successfully');
     } catch (e) {
@@ -352,7 +350,6 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
   }
 
   private filterAppointments(result: { name: string; value: string }[]) {
-    console.log(result, this.appointments$$.value);
     if (!result?.length) {
       this.filteredAppointments$$.next([...this.appointments$$.value]);
       return;
@@ -372,109 +369,47 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
     });
   }
 
-  private groupAppointmentsForCalendar(...appointments: Appointment[]) {
-    let startDate: Date;
-    let endDate: Date;
-    // let group: number;
-    let sameGroup: boolean;
-    let groupedAppointments: Appointment[] = [];
-    let lastDateString: string;
-
-    this.appointmentsGroupedByDate = {};
-    this.appointmentsGroupedByDateAndTime = {};
-    this.appointmentGroupedByDateAndRoom = {};
-
-    appointments.push({} as Appointment);
-    appointments.forEach((appointment, index) => {
-      if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
-        const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
-
-        if (dateString) {
-          if (!this.appointmentsGroupedByDate[dateString]) {
-            this.appointmentsGroupedByDate[dateString] = [];
-          }
-
-          if (!this.appointmentsGroupedByDateAndTime[dateString]) {
-            this.appointmentsGroupedByDateAndTime[dateString] = [];
-
-            startDate = new Date(appointment.startedAt);
-            endDate = new Date(appointment.endedAt);
-            // group = 0;
-            sameGroup = false;
-          } else {
-            const currSD = new Date(appointment.startedAt);
-            const currED = new Date(appointment.endedAt);
-
-            if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
-              sameGroup = true;
-              if (currED > endDate) {
-                endDate = currED;
-              }
-            } else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
-              sameGroup = true;
-              if (currED > endDate) {
-                endDate = currED;
-              }
-            } else {
-              startDate = currSD;
-              endDate = currED;
-              sameGroup = false;
-            }
-          }
-
-          if (!sameGroup) {
-            // group++;
-
-            if (index !== 0) {
-              this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
-              groupedAppointments = [];
-            }
-          }
-
-          lastDateString = dateString;
-
-          groupedAppointments.push(appointment);
-          this.appointmentsGroupedByDate[dateString].push(appointment);
-        }
-      } else if (lastDateString) {
-        this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
-      }
+  openAdvancePopup() {
+    const modalRef = this.modalSvc.open(AppointmentAdvanceSearchComponent, {
+      data: {
+        titleText: 'Advnace Search',
+        confirmButtonText: 'Search',
+        cancelButtonText: 'Reset',
+        items: [
+          ...this.appointments$$.value.map(({ id, patientLname, patientFname }) => {
+            return {
+              name: `${patientFname} ${patientLname}`,
+              key: `${patientFname} ${patientLname} ${id}`,
+              value: id,
+            };
+          }),
+        ],
+      },
+      options: {
+        size: 'xl',
+        centered: true,
+        backdropClass: 'modal-backdrop-remove-mv',
+      },
     });
-  }
 
-  private groupAppointmentByDateAndRoom(...appointments: Appointment[]) {
-    // const groupBy: {
-    //   [key: string]: {
-    //     [key: number]: {
-    //       appointment: Appointment;
-    //       exam: Exam[];
-    //     };
-    //   };
-    // } = {};
+    modalRef.closed.pipe(take(1)).subscribe((result) => {
+      this.appointmentApiSvc
+        .fetchAllAppointments$(result)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe((appointments) => {
+          console.log('appointments filtered: ', appointments);
+          this.appointments$$.next(appointments);
+          this.filteredAppointments$$.next(appointments);
 
-    appointments.forEach((appointment) => {
-      const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
-
-      if (dateString) {
-        if (!this.appointmentGroupedByDateAndRoom[dateString]) {
-          this.appointmentGroupedByDateAndRoom[dateString] = {};
-        }
-
-        appointment.exams?.forEach((exam) => {
-          exam.rooms?.forEach((room) => {
-            if (!this.appointmentGroupedByDateAndRoom[dateString][room.id]) {
-              this.appointmentGroupedByDateAndRoom[dateString][room.id] = [];
-            }
-
-            this.appointmentGroupedByDateAndRoom[dateString][room.id].push({
-              appointment,
-              exams: appointment.exams ?? [],
-            });
-          });
+          // appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
+          //
+          // console.log(appointments);
+          //
+          // this.groupAppointmentsForCalendar(...appointments);
+          // this.groupAppointmentByDateAndRoom(...appointments);
+          //
+          // console.log(this.appointmentsGroupedByDate);
         });
-      }
     });
-
-    console.log(groupBy);
   }
 }

@@ -11,7 +11,7 @@ import { NotificationDataService } from '../../../../core/services/notification-
 import { ModalService } from '../../../../core/services/modal.service';
 import { EXAM_ID, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { Exam, Uncombinables } from '../../../../shared/models/exam.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { NameValue } from '../../../../shared/components/search-modal.component';
@@ -194,7 +194,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
         bodyText: 'Are you sure you want to delete this Exam?',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed

@@ -10,7 +10,7 @@ import { getStatusEnum, getUserTypeEnum } from '../../../../shared/utils/getEnum
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { User } from '../../../../shared/models/user.model';
 import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
@@ -236,7 +236,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         bodyText: 'AreyousureyouwanttodeletethisUser',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
@@ -251,7 +251,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
-    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
@@ -318,7 +317,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
   }
 
   private filterUserList(result: { name: string; value: string }[]) {
-    console.log(result, this.users$$.value);
     if (!result?.length) {
       this.filteredUsers$$.next([...this.users$$.value]);
       return;

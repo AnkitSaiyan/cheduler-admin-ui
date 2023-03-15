@@ -16,13 +16,13 @@ export class AppendTextToInputDirective {
 
   private handleChange(e: InputEvent) {
     // testing
-    console.log(e.target);
+
     const { value } = e.target as HTMLInputElement;
     this.elementRef.nativeElement.type = 'text';
     this.elementRef.nativeElement.value = 'g';
 
     this.r.setProperty(this.elementRef.nativeElement, 'value', 'sfdfd');
 
-    console.log(value);
+
   }
 }

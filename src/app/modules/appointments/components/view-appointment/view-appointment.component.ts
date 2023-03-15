@@ -6,7 +6,7 @@ import { RouterStateService } from '../../../../core/services/router-state.servi
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { APPOINTMENT_ID } from '../../../../shared/utils/const';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 
@@ -67,7 +67,6 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
         takeUntil(this.destroy$$),
       )
       .subscribe((appointment) => {
-        console.log(appointment);
       });
   }
 
@@ -78,7 +77,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
         bodyText: 'AreYouSureYouWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed

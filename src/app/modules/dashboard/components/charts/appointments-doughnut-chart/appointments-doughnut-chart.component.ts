@@ -25,6 +25,8 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
 
   public doughnutChartLegend = false;
 
+  public noDataFound: boolean = false;
+
   public doughnutChartPlugins = [pluginDataLabels.default];
 
   constructor(private dashboardApiService: DashboardApiService) {
@@ -37,14 +39,20 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
         this.appointmentDetails[element.label] = element.value;
       });
 
+      if (this.appointmentDetails.Total === 0 && this.appointmentDetails.Pending === 0 && this.appointmentDetails.Approved === 0) {
+        this.noDataFound = true;
+      } else {
+        this.noDataFound = false;
+      }
+
       this.doughnutChartConfig = {
         labels: this.doughnutChartLabels,
         datasets: [
           {
             data: [this.appointmentDetails.Total, this.appointmentDetails.Pending, this.appointmentDetails.Approved],
-            backgroundColor: ['#FDF8F2', '#F4E3CF', '#F1D2AE'],
-            hoverBackgroundColor: ['#FDF8F2', '#F4E3CF', '#F1D2AE'],
-            hoverBorderColor: ['#531422', '#531422', '#531422'],
+            backgroundColor: ['#E0DDE4', '#C3B3CD', '#A589B7'],
+            hoverBackgroundColor: ['#E0DDE4', '#C3B3CD', '#A589B7'],
+            hoverBorderColor: ['#4E2267', '#4E2267', '#4E2267'],
             hoverOffset: 0,
           },
         ],

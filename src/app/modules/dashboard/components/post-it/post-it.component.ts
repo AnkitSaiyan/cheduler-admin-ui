@@ -4,9 +4,10 @@ import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
 import { DashboardApiService, PostIt } from 'src/app/core/services/dashboard-api.service';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
-import { ConfirmActionModalComponent, DialogData } from 'src/app/shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { AddPostComponent } from './add-post/add-post.component';
+import { ViewPostComponent } from './view-post/view-post.component';
 
 @Component({
   selector: 'dfm-post-it',
@@ -80,9 +81,9 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
   //   },
   // ];
 
-  private posts$$: BehaviorSubject<any[]>;
-
   public filteredPosts$$: BehaviorSubject<any[]>;
+
+  postData!: PostIt[];
 
   constructor(
     private dashboardApiService: DashboardApiService,
@@ -91,14 +92,13 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
     private notificationSvc: NotificationDataService,
   ) {
     super();
-    this.posts$$ = new BehaviorSubject<any[]>([]);
     this.filteredPosts$$ = new BehaviorSubject<any[]>([]);
   }
 
   ngOnInit(): void {
     this.dashboardApiService.posts$.pipe(takeUntil(this.destroy$$)).subscribe((posts) => {
-      this.posts$$.next(posts);
       this.filteredPosts$$.next(posts);
+      this.postData = posts;
       this.dashboardApiService.postItData$$.next(posts);
     });
   }
@@ -109,7 +109,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
         titleText: 'Post It',
         confirmButtonText: 'Add',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
@@ -120,30 +120,58 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
       .subscribe((response) => {
         if (response) {
           this.notificationSvc.showNotification('Post Added successfully');
+          // this.filteredPosts$$.next([]);
+          // this.ngOnInit();
         }
       });
   }
 
   public reomvePost(id: number) {
-    console.log('id: ', id);
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
         bodyText: 'AreYouSureYouWantToDeleteThisPost',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
       .pipe(
+        filter((value) => !!value),
         switchMap(() => this.dashboardApiService.deletePost(id)),
         take(1),
       )
       .subscribe((response) => {
-        console.log('response: ', response);
         if (response) {
           this.notificationSvc.showNotification('Post deleted successfully');
+          this.ngOnInit();
+        }
+      });
+  }
+
+  public openViewPostModal() {
+    const dialogRef = this.modalSvc.open(ViewPostComponent, {
+      data: {
+        titleText: 'Post it',
+        postData: this.postData,
+      },
+      options: {
+        size: 'xl',
+        centered: true,
+        backdropClass: 'modal-backdrop-remove-mv',
+        keyboard: false,
+      },
+    });
+
+    dialogRef.closed
+      .pipe(
+        switchMap((response: string) => this.dashboardApiService.addPost({ message: response })),
+        take(1),
+      )
+      .subscribe((response) => {
+        if (response) {
+          this.notificationSvc.showNotification('Post Added successfully');
         }
       });
   }

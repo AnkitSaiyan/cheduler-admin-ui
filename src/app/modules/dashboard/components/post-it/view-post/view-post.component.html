@@ -1,0 +1,46 @@
+<div #content class="bg-white rounded-4 confirm-action-modal">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ dialogData.titleText }}</h5>
+    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close()"></dfm-button-icon>
+  </div>
+
+  <div class="modal-body d-flex-main" *ngIf="postItData">
+    <div *ngFor="let post of postItData; let i = index" class="h-100 main-post">
+      <div
+        class="d-flex flex-column dfm-gap-16 dfm-px-24 dfm-pt-16 dfm-pb-24 justify-content-between rounded-3 shadow-sm post-it-card"
+        [ngStyle]="{ background: i % 2 === 0 ? '#EBE9FE' : '#FDF8F2' }"
+      >
+        <header class="overflow-y-auto hide-scrollbar">
+          <div class="d-flex flex-column dfm-gap-16 h-100">
+            <div class="d-flex dfm-gap-16 align-items-center justify-content-between">
+              <span class="font-weight-medium" [ngStyle]="{ color: i % 2 === 0 ? '#5720B7' : '#531422' }">{{ i + 1 }} / {{ postItData.length }} </span>
+
+              <!-- <dfm-button-icon color="secondary-gray" size="sm" icon="trash-01" (click)="reomvePost(post.id)"></dfm-button-icon> -->
+            </div>
+
+            <span class="text-xs">
+              {{ post?.message }}
+            </span>
+          </div>
+        </header>
+
+        <div class="d-flex align-items-center dfm-gap-8 carousel-footer-content">
+          <div class="rounded-circle avatar-container">
+            <div *ngIf="!post?.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+              <!-- {{'M'}} -->
+            </div>
+          </div>
+
+          <div class="d-flex flex-column text-sm">
+            <div class="d-flex align-items-center flex-wrap">
+              <span class="font-weight-medium dfm-me-8">Maaike Penoit</span>
+              <span class="text-xs dfm-text-main-500">{{ 'GeneralUser' | translate }}</span>
+            </div>
+            <span class="text-xs dfm-text-main-600">{{ post?.createdAt | date : 'M.d.yy, h:mm' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

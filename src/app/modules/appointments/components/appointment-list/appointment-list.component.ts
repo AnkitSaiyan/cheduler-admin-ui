@@ -9,7 +9,7 @@ import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } f
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -114,18 +114,17 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-      console.log('appointments: ', appointments);
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
 
       // appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
       //
-      // console.log(appointments);
+      //
       //
       // this.groupAppointmentsForCalendar(...appointments);
       // this.groupAppointmentByDateAndRoom(...appointments);
       //
-      // console.log(this.appointmentsGroupedByDate);
+      //
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
@@ -234,7 +233,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public handleCheckboxSelection(selected: string[]) {
     // this.toggleMenu(true);
-    console.log(selected);
+
     this.selectedAppointmentIDs = [...selected];
   }
 
@@ -265,7 +264,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         bodyText: 'AreYouSureYouWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
@@ -280,7 +279,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: AppointmentStatus | null }) {
-    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
@@ -349,7 +347,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   }
 
   private filterAppointments(result: { name: string; value: string }[]) {
-    console.log(result, this.appointments$$.value);
     if (!result?.length) {
       this.filteredAppointments$$.next([...this.appointments$$.value]);
       return;
@@ -471,7 +468,5 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         });
       }
     });
-
-    console.log(groupBy);
   }
 }

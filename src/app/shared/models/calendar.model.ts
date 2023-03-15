@@ -121,7 +121,6 @@ export function getAllDaysOfWeek(selectedDate: Date): number[][] {
 }
 
 export function getDurationMinutes(start: Date, end: Date): number {
-  // console.log(start, end)
   if (start && end) {
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -149,15 +148,12 @@ export function stringToTimeArray(timeString: string | undefined, splitBy: strin
   if (!timeString) {
     return [0, 0, 0];
   }
-  console.log('timeString: ', timeString);
 
   const timeStringArray = timeString.split(splitBy);
-  console.log('timeStringArray', !Number.isNaN(+timeStringArray[0]));
+
   const hour = timeStringArray.length && !Number.isNaN(+timeStringArray[0]) ? +timeStringArray[0] : 0;
   const min = timeStringArray.length > 1 && !Number.isNaN(+timeStringArray[1]) ? +timeStringArray[1] : 0;
   const second = timeStringArray.length > 2 && !Number.isNaN(+timeStringArray[2]) ? +timeStringArray[2] : 0;
-  console.log('hour', hour);
-  console.log('min', min);
 
   return [hour, min, second];
 }

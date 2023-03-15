@@ -9,7 +9,7 @@ export class IsDataPipe implements PipeTransform {
       return false;
     }
 
-    console.log(value.some((v) => v[key]?.length))
     return value.some((v) => v[key]?.length);
   }
 }
+
