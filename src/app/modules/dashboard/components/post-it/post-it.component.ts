@@ -138,6 +138,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
 
     dialogRef.closed
       .pipe(
+        filter((value) => !!value),
         switchMap(() => this.dashboardApiService.deletePost(id)),
         take(1),
       )
