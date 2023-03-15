@@ -206,30 +206,52 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   private createForm(prioritySlotDetails?: PrioritySlot | undefined): void {
-    let slotStartTime;
-    let slotEndTime;
+    let startTime;
+    let endTime;
 
     if (prioritySlotDetails?.startedAt) {
       const date = new Date(prioritySlotDetails.startedAt);
-      slotStartTime = this.datePipe.transform(date, 'HH:mm');
+      startTime = this.datePipe.transform(date, 'HH:mm');
 
-      if (slotStartTime && !this.startTimes.find((time) => time.value === slotStartTime)) {
-        this.startTimes.push({ name: slotStartTime, value: slotStartTime });
+      if (startTime && !this.startTimes.find((time) => time.value === startTime)) {
+        this.startTimes.push({ name: startTime, value: startTime });
       }
     }
 
     if (prioritySlotDetails?.endedAt) {
       const date = new Date(prioritySlotDetails.endedAt);
-      slotEndTime = this.datePipe.transform(date, 'HH:mm');
+      endTime = this.datePipe.transform(date, 'HH:mm');
 
-
-      if (slotEndTime && !this.endTimes.find((time) => time.value === slotEndTime)) {
-        this.endTimes.push({ name: slotEndTime, value: slotEndTime });
+      if (endTime && !this.endTimes.find((time) => time.value === endTime)) {
+        this.endTimes.push({ name: endTime, value: endTime });
       }
     }
-    if (prioritySlotDetails?.slotEndTime) {
-      slotEndTime = prioritySlotDetails?.slotEndTime.slice(0, -3);
-    }
+
+    // let slotStartTime;
+    // let slotEndTime;
+    //
+    // if (prioritySlotDetails?.startedAt) {
+    //   const date = new Date(prioritySlotDetails.startedAt);
+    //   slotStartTime = this.datePipe.transform(date, 'HH:mm');
+    //
+    //   if (slotStartTime && !this.startTimes.find((time) => time.value === slotStartTime)) {
+    //     this.startTimes.push({ name: slotStartTime, value: slotStartTime });
+    //   }
+    // }
+    //
+    // if (prioritySlotDetails?.endedAt) {
+    //   const date = new Date(prioritySlotDetails.endedAt);
+    //   slotEndTime = this.datePipe.transform(date, 'HH:mm');
+    //
+    //
+    //   if (slotEndTime && !this.endTimes.find((time) => time.value === slotEndTime)) {
+    //     this.endTimes.push({ name: slotEndTime, value: slotEndTime });
+    //   }
+    // }
+    //
+    // if (prioritySlotDetails?.slotEndTime) {
+    //   slotEndTime = prioritySlotDetails?.slotEndTime.slice(0, -3);
+    // }
 
     const radiologists: string[] = [];
 
@@ -259,7 +281,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
           : null,
         [Validators.required],
       ],
-      slotStartTime: [slotStartTime, [Validators.required]],
+      slotStartTime: [endTime, [Validators.required]],
       endedAt: [
         prioritySlotDetails?.endedAt
           ? {
@@ -270,10 +292,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
           : null,
         [],
       ],
-      slotEndTime: [slotEndTime, [Validators.required]],
+      slotEndTime: [startTime, [Validators.required]],
       isRepeat: [!!prioritySlotDetails?.isRepeat, []],
-      repeatType: [prioritySlotDetails?.repeatType ?? null, []],
-      repeatDays: [prioritySlotDetails?.repeatDays ? prioritySlotDetails.repeatDays.split(',') : '', []],
+      repeatType: [null, []],
+      repeatDays: ['', []],
       repeatFrequency: [
         prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
           ? `${prioritySlotDetails.repeatFrequency} ${this.repeatTypeToName[prioritySlotDetails.repeatType]}`
@@ -284,13 +306,30 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       priority: [prioritySlotDetails?.priority ?? null, [Validators.required]],
     });
 
+    setTimeout(
+      () =>
+        this.prioritySlotForm.patchValue({
+          slotStartTime: startTime,
+          slotEndTime: endTime,
+          repeatType: prioritySlotDetails?.repeatType,
+          repeatFrequency:
+            prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
+              ? `${prioritySlotDetails.repeatFrequency} ${this.repeatTypeToName[prioritySlotDetails.repeatType]}`
+              : null,
+          repeatDays: prioritySlotDetails?.repeatDays ? prioritySlotDetails.repeatDays.split(',') : '',
+        }),
+      0,
+    );
+
     this.cdr.detectChanges();
 
     this.prioritySlotForm
       ?.get('repeatType')
       ?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.prioritySlotForm?.get('repeatDays')?.setValue(null);
+        if (!prioritySlotDetails) {
+          this.prioritySlotForm?.get('repeatDays')?.setValue(null);
+        }
         this.updateRepeatFrequency();
       });
 
@@ -298,7 +337,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       ?.get('slotStartTime')
       ?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
       .subscribe(() => {
-
         this.handleTimeChange();
       });
 
@@ -318,8 +356,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       .get('slotEndTime')
       ?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
       .subscribe((data: any) => {
-
-
         this.handleTimeChange();
       });
   }
