@@ -73,6 +73,11 @@
 
   // textarea
   --dfm-text-area-focus-border-color: #{$diflexmo-secondary};
+    //priority slots color
+
+    --dfm-priority-slot-high-color: #{$diflexmo-priority-slot-high};
+    --dfm-priority-slot-medium-color: #{$diflexmo-priority-slot-medium};
+    --dfm-priority-slot-low-color: #{$diflexmo-priority-slot-low};
 }
 
 .light {

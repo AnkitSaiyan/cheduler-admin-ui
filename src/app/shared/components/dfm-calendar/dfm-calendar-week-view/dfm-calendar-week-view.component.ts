@@ -64,6 +64,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   @Input()
   public dataGroupedByDateAndTime!: { [key: string]: any[][] };
 
+  @Input()
+  public prioritySlots!: { [key: string]: any[] };
+
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
 
@@ -91,6 +94,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     if (!this.selectedDate) {
       this.selectedDate = new Date();
     }
+    console.log(this.prioritySlots);
   }
 
   public ngOnInit(): void {
@@ -271,11 +275,31 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     return durationMinutes * this.pixelsPerMin;
   }
 
+  public getPrioritySlotHeight(prioritySlot: any): number {
+    const startDate: Date = this.myDate(prioritySlot.start);
+    const endDate: Date = this.myDate(prioritySlot.end);
+    const durationMinutes = getDurationMinutes(startDate, endDate);
+    return durationMinutes * this.pixelsPerMin;
+  }
+
   public getTop(groupedData: any[]): number {
     const startHour = new Date(groupedData[0].startedAt).getHours();
     const startMinute = new Date(groupedData[0].startedAt).getMinutes();
     const barHeight = 1;
     const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
+    const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
+    if (top % 20) {
+      return Math.floor(top / 20) * 20 + 20;
+    }
+    return top;
+  }
+
+  public getPrioritySlotTop(prioritySlot: any): number {
+    const startDate = this.myDate(prioritySlot.start);
+    const startHour = startDate.getHours();
+    const startMinute = startDate.getMinutes();
+    const barHeight = 1;
+    const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
     const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
     if (top % 20) {
       return Math.floor(top / 20) * 20 + 20;
@@ -325,5 +349,14 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     eventsContainer.appendChild(eventCard);
 
     return eventCard;
+  }
+
+  private myDate(date: string): Date {
+    const formattedDate = new Date();
+    const splitDate = date.split(':');
+    formattedDate.setHours(+splitDate[0]);
+    formattedDate.setMinutes(+splitDate[1]);
+    formattedDate.setSeconds(0);
+    return formattedDate;
   }
 }

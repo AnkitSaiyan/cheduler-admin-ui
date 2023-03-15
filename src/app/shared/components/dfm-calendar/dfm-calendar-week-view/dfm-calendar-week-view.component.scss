@@ -345,6 +345,29 @@ h3 {
   }
 }
 
+.priority-slots-area {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  display: flex;
+  z-index: 1;
+  transition: 200ms all linear;
+  opacity: .2;
+  background-color: red;
+  width: calc(100% + 12px);
+
+  &.High {
+    background: var(--dfm-priority-slot-high-color);
+  }
+
+  &.Medium {
+    background: var(--dfm-priority-slot-medium-color);
+  }
+
+  &.Low {
+    background: var(--dfm-priority-slot-low-color);
+  }
+}
 .appointment-title {
   font-weight: 500;
   font-size: 0.6rem;

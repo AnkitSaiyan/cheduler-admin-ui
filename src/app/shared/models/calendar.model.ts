@@ -126,11 +126,11 @@ export function getDurationMinutes(start: Date, end: Date): number {
     const endDate = new Date(end);
 
     const startH = startDate.getHours();
-    let endH = endDate.getHours();
+    const endH = endDate.getHours();
 
-    if (endH === 0) {
-      endH = 24;
-    }
+    // if (endH === 0) {
+    //   endH = 24;
+    // }
 
     if (startH === endH) {
       return endDate.getMinutes() - startDate.getMinutes();

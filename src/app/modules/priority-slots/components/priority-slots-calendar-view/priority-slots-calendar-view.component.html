@@ -53,6 +53,7 @@
           [selectedDate]="selectedDate"
           [newDate$$]="newDate$$"
           [dataGroupedByDateAndTime]="appointmentsGroupedByDateAndTIme"
+          [prioritySlots] = "prioritySlots$$ | async"
         ></dfm-calendar-week-view>
   </section>
 </div>

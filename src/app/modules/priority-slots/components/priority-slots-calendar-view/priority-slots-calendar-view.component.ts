@@ -22,7 +22,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 
   public newDate$$ = new BehaviorSubject<Date | null>(null);
 
-  private prioritySlots$$: BehaviorSubject<any>;
+  public prioritySlots$$: BehaviorSubject<any>;
 
   constructor(private router: Router, private datePipe: DatePipe, private priorityApiSvc: PrioritySlotApiService) {
     super();
@@ -82,6 +82,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
     const myPrioritySlots = {};
     prioritySlots.forEach((prioritySlot: PrioritySlot) => {
       let { repeatFrequency } = prioritySlot;
+      const { priority } = prioritySlot;
       const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
       let firstDate = new Date(new Date(prioritySlot.startedAt).toDateString());
       const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
@@ -91,7 +92,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
           repeatFrequency = prioritySlot.isRepeat ? repeatFrequency : 1;
           while (true) {
             const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
-            const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5) };
+            const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5), priority };
             myPrioritySlots[dateString] = myPrioritySlots[dateString] ? [...myPrioritySlots[dateString], customPrioritySlot] : [customPrioritySlot];
             if (firstDate.toDateString() === lastDate.toDateString()) break;
             firstDate.setDate(firstDate.getDate() + repeatFrequency);
@@ -106,7 +107,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
               firstDate.setDate(closestSunday.getDate() + +day);
               if (firstDate.getTime() > startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
                 const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
-                const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5) };
+                const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5), priority };
                 myPrioritySlots[dateString] = myPrioritySlots[dateString]
                   ? [...myPrioritySlots[dateString], customPrioritySlot]
                   : [customPrioritySlot];
@@ -123,7 +124,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
               firstDate.setDate(+day);
               if (firstDate.getTime() > startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
                 const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
-                const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5) };
+                const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5), priority };
                 myPrioritySlots[dateString] = myPrioritySlots[dateString]
                   ? [...myPrioritySlots[dateString], customPrioritySlot]
                   : [customPrioritySlot];
@@ -141,6 +142,10 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
     this.prioritySlots$$.next({ ...myPrioritySlots });
   }
 }
+
+
+
+
 
 
 
