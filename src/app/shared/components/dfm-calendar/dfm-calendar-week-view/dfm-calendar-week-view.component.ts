@@ -73,6 +73,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   @Output()
   public dayViewEvent = new EventEmitter<number>();
 
+  @Output()
+  public addAppointment = new EventEmitter<{ e: MouseEvent; eventsContainer: HTMLDivElement; day: number[] }>();
+
   public daysOfWeekArr: number[][] = [];
 
   public todayDate = new Date();
@@ -307,48 +310,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     return top;
   }
 
-  public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[]) {
-    const eventCard = this.createAppointmentCard(e, eventsContainer);
-
-    const modalRef = this.modalSvc.open(AddAppointmentModalComponent, {
-      data: {
-        event: e,
-        element: eventCard,
-        elementContainer: eventsContainer,
-        startedAt: new Date(this.selectedDate.getFullYear(), day[1], day[0]),
-      },
-      options: {
-        backdrop: false,
-        centered: true,
-        modalDialogClass: 'ad-ap-modal-shadow',
-      },
-    });
-
-    modalRef.closed.pipe(take(1)).subscribe((res) => {
-      eventCard.remove();
-      // if (!res) {
-      // }
-    });
-  }
-
-  private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {
-    const top = e.offsetY - (e.offsetY % 20);
-    const eventCard = document.createElement('div');
-    eventCard.classList.add('calendar-week-view-event-container');
-    eventCard.style.height = `20px`;
-    eventCard.style.top = `${top}px`;
-
-    const appointmentText = document.createElement('span');
-    // const textNode = document.createTextNode('Appointment');
-
-    appointmentText.innerText = 'Appointment';
-
-    appointmentText.classList.add('appointment-title');
-
-    eventCard.appendChild(appointmentText);
-    eventsContainer.appendChild(eventCard);
-
-    return eventCard;
+  public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[]) {
+    this.addAppointment.emit({ e, eventsContainer, day });
   }
 
   private myDate(date: string): Date {

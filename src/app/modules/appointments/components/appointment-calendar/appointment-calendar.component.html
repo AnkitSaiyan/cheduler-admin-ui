@@ -73,6 +73,7 @@
           [selectedDate]="selectedDate"
           [newDate$$]="newDate$$"
           [dataGroupedByDateAndTime]="appointmentsGroupedByDateAndTIme"
+          (addAppointment)="addAppointment($event)"
         ></dfm-calendar-week-view>
       </ng-container>
 
