@@ -19,7 +19,7 @@
       <div class="d-flex dfm-gap-32 ad-ab-dates">
         <div class="ad-ab-from-date flex-1 max-w-5">
           <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
-            {{ 'From' | translate }} 
+            {{ 'From' | translate }}
           </div>
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
@@ -95,7 +95,15 @@
       <!-- (searchInput)="handleDropdownSearch($event, 'doctor')" -->
       <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
         <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
-          <dfm-input-dropdown [typeToSearch]="true" class="flex-1" size="md" placeholder="Select Patient" label="Patient" formControlName="patientId">
+          <dfm-input-dropdown
+            [items]="filteredPateintsList"
+            [multiple]="false"
+            class="flex-1"
+            size="md"
+            placeholder="Select Patient"
+            label="Patient"
+            formControlName="patientId"
+          >
           </dfm-input-dropdown>
         </div>
 
