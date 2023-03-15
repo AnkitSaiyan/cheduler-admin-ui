@@ -372,7 +372,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
   openAdvancePopup() {
     const modalRef = this.modalSvc.open(AppointmentAdvanceSearchComponent, {
       data: {
-        titleText: 'Advnace Search',
+        titleText: 'AdvancedSearch',
         confirmButtonText: 'Search',
         cancelButtonText: 'Reset',
         items: [

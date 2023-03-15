@@ -10,8 +10,8 @@
         <dfm-input
           class="flex-1"
           size="md"
-          placeholder="Type Appointment Number"
-          label="Appointment Number"
+          placeholder="{{'TypeAppointmentNumber' | translate}}"
+          label="{{'AppointmentNumber' | translate}}"
           formControlName="appointmentNumber"
         ></dfm-input>
       </div>
@@ -95,7 +95,7 @@
       <!-- (searchInput)="handleDropdownSearch($event, 'doctor')" -->
       <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
         <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
-          <dfm-input-dropdown [typeToSearch]="true" class="flex-1" size="md" placeholder="Select Patient" label="Patient" formControlName="patientId">
+          <dfm-input-dropdown [typeToSearch]="true" class="flex-1" size="md" placeholder="{{'SelectPatient' | translate}}" label="{{'Patient' | translate}}" formControlName="patientId">
           </dfm-input-dropdown>
         </div>
 
@@ -118,10 +118,10 @@
             #generalUser
             [items]="filteredUserList"
             [typeToSearch]="true"
-            placeholder="Select Staff"
+            placeholder="{{'SelectStaff' | translate}}"
             formControlName="userId"
             size="md"
-            label="Staff"
+            label="{{'Staff' | translate}}"
           >
           </dfm-input-dropdown>
         </div>
@@ -131,10 +131,10 @@
             #generalUser
             [items]="filteredRoomList"
             [typeToSearch]="true"
-            placeholder="Select Rooms"
+            placeholder="{{'SelectRooms' | translate}}"
             formControlName="roomsId"
             size="md"
-            label="Rooms"
+            label="{{'Rooms' | translate}}"
           >
           </dfm-input-dropdown>
         </div>
@@ -146,10 +146,10 @@
             #generalUser
             [items]="filteredPhysicianList"
             [typeToSearch]="true"
-            placeholder="Select Doctor"
+            placeholder="{{'SelectDoctor' | translate}}"
             formControlName="doctorId"
             size="md"
-            label="Doctor"
+            label="{{'Doctor' | translate}}"
           >
           </dfm-input-dropdown>
         </div>
