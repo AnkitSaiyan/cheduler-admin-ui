@@ -2,7 +2,6 @@ import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { start } from 'repl';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -82,12 +81,14 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
   private setPrioritySlots(prioritySlots: PrioritySlot[]) {
     const myPrioritySlots = {};
     prioritySlots.forEach((prioritySlot: PrioritySlot) => {
+      let { repeatFrequency } = prioritySlot;
+      const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
+      let firstDate = new Date(new Date(prioritySlot.startedAt).toDateString());
+      const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
       switch (true) {
         case !prioritySlot.isRepeat:
         case prioritySlot.repeatType === RepeatType.Daily: {
-          const repeatFrequency = prioritySlot.isRepeat ? prioritySlot.repeatFrequency : 1;
-          const firstDate = new Date(prioritySlot.startedAt);
-          const lastDate = new Date(prioritySlot.endedAt);
+          repeatFrequency = prioritySlot.isRepeat ? repeatFrequency : 1;
           while (true) {
             const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
             const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5) };
@@ -98,16 +99,11 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
           break;
         }
         case prioritySlot.repeatType === RepeatType.Weekly: {
-          const { repeatFrequency } = prioritySlot;
-          const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
-          const firstDate = new Date(startDate.getTime() - (startDate.getDay() + 1) * 24 * 60 * 60 * 1000);
-          const closestSunday = new Date(startDate.getTime() - (startDate.getDay() + 1) * 24 * 60 * 60 * 1000);
-          const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
+          firstDate = new Date(startDate.getTime() - startDate.getDay() * 24 * 60 * 60 * 1000);
+          const closestSunday = new Date(startDate.getTime() - startDate.getDay() * 24 * 60 * 60 * 1000);
           while (true) {
-            const tempDate = new Date(firstDate);
             prioritySlot.repeatDays.split(',').forEach((day) => {
-              firstDate.setDate(firstDate.getDate() + +day);
-              console.log({ firstDate }, closestSunday.getDate());
+              firstDate.setDate(closestSunday.getDate() + +day);
               if (firstDate.getTime() > startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
                 const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
                 const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5) };
@@ -116,17 +112,12 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
                   : [customPrioritySlot];
               }
             });
-            if (tempDate.getTime() >= lastDate.getTime()) break;
-            tempDate.setDate(tempDate.getDate() + repeatFrequency * 7);
-            firstDate.setTime(tempDate.getTime());
+            if (closestSunday.getTime() >= lastDate.getTime()) break;
+            closestSunday.setDate(closestSunday.getDate() + repeatFrequency * 7);
           }
           break;
         }
         case prioritySlot.repeatType === RepeatType.Monthly: {
-          const { repeatFrequency } = prioritySlot;
-          const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
-          const firstDate = new Date(new Date(prioritySlot.startedAt).toDateString());
-          const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
           while (true) {
             prioritySlot.repeatDays.split(',').forEach((day) => {
               firstDate.setDate(+day);
@@ -147,18 +138,9 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
           break;
       }
     });
-    console.log(myPrioritySlots);
     this.prioritySlots$$.next({ ...myPrioritySlots });
   }
 }
-
-
-
-
-
-
-
-
 
 
 
