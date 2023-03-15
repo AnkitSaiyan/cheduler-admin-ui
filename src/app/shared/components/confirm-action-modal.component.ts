@@ -71,6 +71,7 @@ export class ConfirmActionModalComponent extends DestroyableComponent implements
   }
 
   public close(result: boolean) {
+    console.log(result);
     this.dialogSvc.close(result);
   }
 }

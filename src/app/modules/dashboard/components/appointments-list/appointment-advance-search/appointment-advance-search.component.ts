@@ -69,6 +69,10 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 
   private physicianList: NameValue[] = [];
 
+  public filteredPateintsList: NameValue[] = [];
+
+  private patientsList: NameValue[] = [];
+
   public roomType = RoomType;
 
   public edit = false;
@@ -187,9 +191,25 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
     });
 
     this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
+      console.log(physicians);
       const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
       this.filteredPhysicianList = [...keyValuePhysicians];
       this.physicianList = [...keyValuePhysicians];
+    });
+
+    this.shareDataService.patient$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
+      console.log(physicians);
+      const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'patientFname', 'appointmentId', 'patientLname');
+      const tempKeyValue = physicians.map((val) => ({
+        // eslint-disable-next-line no-unsafe-optional-chaining
+        name: val.patientFname ? val['patientFname']?.toString() + '  ' + val['patientLname']?.toString() : val?.toString(),
+
+        // eslint-disable-next-line no-unsafe-optional-chaining
+        value: val.patientFname ? val['patientFname']?.toString() + ':' + val['patientLname']?.toString() + ':' + val['appointmentId']?.toString() : val?.toString(),
+      }));
+      this.filteredPateintsList = [...tempKeyValue];
+      console.log(this.filteredPateintsList);
+      this.patientsList = [...keyValuePhysicians];
     });
 
     this.routerStateSvc
@@ -426,6 +446,11 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 
   public submitSearch() {
     const data = this.appointmentForm.value;
+    if (data.patientId) {
+      let abc = data.patientId.split(':');
+      data['FirstName'] = abc[0]
+      data['LastName'] = abc[1]
+    }
     if (data.startedAt) data['startedAt'] = `${data.startedAt?.year}-${data.startedAt?.month}-${data.startedAt?.day} ${data?.startTime}:00`;
     else data['startedAt'] = '';
     if (data.endedAt) data['endedAt'] = `${data.endedAt?.year}-${data.endedAt?.month}-${data.endedAt?.day} ${data?.endTime}:00`;
