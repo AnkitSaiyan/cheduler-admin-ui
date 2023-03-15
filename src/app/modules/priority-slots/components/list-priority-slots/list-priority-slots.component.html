@@ -8,7 +8,7 @@
     >Priority Slots
     </dfm-button>
 
-    <ng-container *ngIf="(calendarView$$ | async) === false">
+    <ng-container *ngIf="(calendarView$$ | async) === false; else space">
       <dfm-input
         class="flex-1 pr-li-search"
         size="md"
@@ -37,6 +37,9 @@
         </div>
       </div>
     </ng-container>
+    <ng-template #space>
+      <span class="d-flex flex-1"></span>
+    </ng-template>
 
     <div class="d-flex dfm-gap-8 align-items-center">
       <dfm-button-icon
@@ -141,7 +144,7 @@
     </section>
   </ng-container>
   <ng-template #calendarView>
-    <div>calendar view works</div>
+    <dfm-priority-slots-calendar-view></dfm-priority-slots-calendar-view>
   </ng-template>
 
   <!-- <div ngbDropdown #optionsMenu="ngbDropdown">
