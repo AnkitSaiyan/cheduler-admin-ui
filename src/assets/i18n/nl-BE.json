@@ -335,7 +335,13 @@
   "EnterMessage" : "Voer bericht in",
   "Today" : "Vandaag",
   "NoAppointmentsFound" : "Geen afspraken gevonden",
-  "Type" : "Type"
+  "Type" : "Type",
+  "ClickToCopy":"Kopieren",
+  "Reset" : "Resetten",
+  "TypeAppointmentNumber": "Vul het afspraak nummer in",
+  "AppointmentNumber" : "Afspraak nummer",
+  "Patient" : "Patiënt",
+  "SelectPatient" : "Patiënt Selecteren"
 
 }
 

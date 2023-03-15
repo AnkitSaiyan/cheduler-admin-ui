@@ -336,5 +336,11 @@
   "AreYouSureYouWantToDeleteThisExam" : "Are you sure you want to delete this Exam?",
   "EnterMessage" : "Enter Message",
   "Today":"Today",
-  "NoAppointmentsFound" : "No Appointment Found"
+  "NoAppointmentsFound" : "No Appointment Found",
+  "ClickToCopy":"Copy",
+  "Reset" : "Reset",
+  "TypeAppointmentNumber": "Type Appointment Number",
+  "AppointmentNumber" : "Appointment Number",
+  "Patient" : "Patient",
+  "SelectPatient" : "Select Patient"
 }

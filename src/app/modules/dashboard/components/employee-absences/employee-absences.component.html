@@ -10,15 +10,19 @@
 
   <section class="d-flex dfm-gap-16 align-items-center">
     <div class="flex-grow-1">
-      <dfm-input
-        size="sm"
-        placeholder="{{ 'SearchEmployee' | translate }}"
-        icon="search-sm"
-        [formControl]="searchControl"
-      ></dfm-input>
+      <dfm-input size="sm" placeholder="{{ 'SearchEmployee' | translate }}" icon="search-sm" [formControl]="searchControl"></dfm-input>
     </div>
     <div [cdkCopyToClipboard]="clipboardData">
-      <dfm-button-icon color="secondary-gray" size="md" icon="copy-03" (click)="copyToClipboard()"></dfm-button-icon>
+      <dfm-button-icon
+        color="secondary-gray"
+        size="md"
+        icon="copy-03"
+        ngbPopover="{{ 'ClickToCopy' | translate }}"
+        triggers="mouseenter:mouseleave"
+        popoverClass="popover-p-8"
+        [openDelay]="200"
+        (click)="copyToClipboard()"
+      ></dfm-button-icon>
     </div>
   </section>
 

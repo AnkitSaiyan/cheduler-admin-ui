@@ -4,27 +4,15 @@
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
       </div>
-      <span class="font-weight-medium">{{"AppointmentsList" | translate}}</span>
+      <span class="font-weight-medium">{{ 'AppointmentsList' | translate }}</span>
     </header>
   </section>
 
   <section>
     <div class="d-flex dfm-gap-8 align-items-center flex-1 dfm-px-16 ap-li-section2-action-bar">
-      <dfm-input
-        size="md"
-        placeholder="{{'Search' | translate}}"
-        icon="search-sm"
-        class="flex-1"
-        [formControl]="searchControl"
-      ></dfm-input>
+      <dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" class="flex-1" [formControl]="searchControl"></dfm-input>
 
-      <dfm-input
-        size="md"
-        placeholder="{{'AdvancedSearch' | translate}}"
-        icon="search-sm"
-        class="flex-1"
-        (click)="openAdvancePopup()"
-      ></dfm-input>
+      <dfm-input size="md" placeholder="{{ 'AdvancedSearch' | translate }}" icon="search-sm" class="flex-1" (click)="openAdvancePopup()"></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper">
         <div [cdkCopyToClipboard]="clipboardData">
@@ -32,6 +20,10 @@
             color="tertiary-gray"
             size="md"
             icon="copy-03"
+            ngbPopover="{{ 'ClickToCopy' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
             (click)="copyToClipboard()"
           ></dfm-button-icon>
         </div>
@@ -41,7 +33,7 @@
             [items]="downloadItems"
             [showDescription]="false"
             [formControl]="downloadDropdownControl"
-            placeholder="{{'Download' | translate}}"
+            placeholder="{{ 'Download' | translate }}"
             size="md"
           ></dfm-input-dropdown>
         </div>
@@ -53,13 +45,8 @@
       >{{"Confirm" | translate}}
       </dfm-button> -->
 
-      <dfm-button
-        color="primary"
-        size="md"
-        class="text-nowrap"
-        routerLink="/appointment/add"
-        [state]="{ comingFromRoute: 'dashboard' }"
-      >{{"AddAppointment" | translate}}
+      <dfm-button color="primary" size="md" class="text-nowrap" routerLink="/appointment/add" [state]="{ comingFromRoute: 'dashboard' }"
+        >{{ 'AddAppointment' | translate }}
       </dfm-button>
     </div>
 
@@ -74,31 +61,21 @@
             color="tertiary-gray"
             size="md"
             icon="copy-03"
+            ngbPopover="{{ 'ClickToCopy' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
           ></dfm-button-icon>
         </div>
 
         <div>
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="download-01"
-          ></dfm-button-icon>
+          <dfm-button-icon color="tertiary-gray" size="md" icon="download-01"></dfm-button-icon>
         </div>
       </div>
 
-      <dfm-button-icon
-        color="secondary-gray"
-        size="md"
-        icon="calendar-date"
-      ></dfm-button-icon>
+      <dfm-button-icon color="secondary-gray" size="md" icon="calendar-date"></dfm-button-icon>
 
-      <dfm-button
-        color="primary"
-        size="md"
-        class="text-nowrap"
-        [disabled]="false"
-      >Add
-      </dfm-button>
+      <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false">Add </dfm-button>
     </div>
   </section>
 
@@ -110,30 +87,16 @@
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-body-cell>{{ (item?.exams.length ? (item.startedAt | date : 'y-MM-dd HH:mm') : 'abc') | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ (item?.exams.length ? (item.endedAt | date : 'y-MM-dd HH:mm') : 'bh') | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item?.patientFname  | titlecase }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item?.doctor  | titlecase }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item?.patientFname | titlecase }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item?.doctor | titlecase }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item?.id }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item?.createdAt }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <span>{{ item.readStatus === readStatus.Read ? 'Yes' : 'No' }}</span>
         </dfm-table-body-cell>
         <dfm-table-body-cell>
-          <dfm-badge
-            *ngIf="item.confirm"
-            fontWeight="medium"
-            color="success"
-            size="sm"
-          >
-            Yes
-          </dfm-badge>
-          <dfm-badge
-            *ngIf="!item.confirm"
-            fontWeight="medium"
-            color="warning"
-            size="sm"
-          >
-            No
-          </dfm-badge>
+          <dfm-badge *ngIf="item.confirm" fontWeight="medium" color="success" size="sm"> Yes </dfm-badge>
+          <dfm-badge *ngIf="!item.confirm" fontWeight="medium" color="warning" size="sm"> No </dfm-badge>
         </dfm-table-body-cell>
         <dfm-table-body-cell>
           <div class="d-flex align-items-center dfm-gap-14">
@@ -142,17 +105,29 @@
               color="link-gray"
               size="md"
               trailingIcon="check-circle"
+              ngbPopover="{{ 'ChangeStatus' | translate }}"
+              triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
             ></dfm-button>
             <dfm-button
               *ngIf="item.confirm"
               color="link-gray"
               size="md"
               trailingIcon="x-circle"
+              ngbPopover="{{ 'ChangeStatus' | translate }}"
+              triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
             ></dfm-button>
             <dfm-button
               color="link-gray"
               size="md"
               trailingIcon="pencil-02"
+              ngbPopover="{{ 'Edit' | translate }}"
+              triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
               [routerLink]="['/appointment', item.id, 'edit']"
               [state]="{ comingFromRoute: 'dashboard', edit: true }"
             ></dfm-button>
@@ -160,7 +135,12 @@
               color="link-gray"
               size="md"
               trailingIcon="trash-01"
-              (click)="deleteAppointment(item.id)">
+              ngbPopover="{{ 'Delete' | translate }}"
+              triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
+              (click)="deleteAppointment(item.id)"
+            >
             </dfm-button>
           </div>
         </dfm-table-body-cell>
