@@ -50,9 +50,9 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
         datasets: [
           {
             data: [this.appointmentDetails.Total, this.appointmentDetails.Pending, this.appointmentDetails.Approved],
-            backgroundColor: ['#FDF8F2', '#F4E3CF', '#F1D2AE'],
-            hoverBackgroundColor: ['#FDF8F2', '#F4E3CF', '#F1D2AE'],
-            hoverBorderColor: ['#531422', '#531422', '#531422'],
+            backgroundColor: ['#E0DDE4', '#C3B3CD', '#A589B7'],
+            hoverBackgroundColor: ['#E0DDE4', '#C3B3CD', '#A589B7'],
+            hoverBorderColor: ['#4E2267', '#4E2267', '#4E2267'],
             hoverOffset: 0,
           },
         ],

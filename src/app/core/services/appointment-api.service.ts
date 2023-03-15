@@ -8,15 +8,16 @@ import {
   Appointment,
   AppointmentSlot,
   AppointmentSlotsRequestData,
-  UpdateDurationRequestData, UpdateRadiologistRequestData,
+  UpdateDurationRequestData,
+  UpdateRadiologistRequestData,
 } from '../../shared/models/appointment.model';
 import { AppointmentStatus, ChangeStatusRequestData } from '../../shared/models/status.model';
 import { PhysicianApiService } from './physician.api.service';
 import { StaffApiService } from './staff-api.service';
 import { DashboardApiService } from './dashboard-api.service';
-import {Exam} from "../../shared/models/exam.model";
-import {Room} from "../../shared/models/rooms.model";
-import {User} from "../../shared/models/user.model";
+import { Exam } from '../../shared/models/exam.model';
+import { Room } from '../../shared/models/rooms.model';
+import { User } from '../../shared/models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -37,20 +38,47 @@ export class AppointmentApiService {
     return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments$()));
   }
 
-  private fetchAllAppointments$(): Observable<Appointment[]> {
-    return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`).pipe(map((response) => {
-      if (!response?.data?.length) {
-        return [];
-      }
+  public fetchAllAppointments$(data?: any): Observable<Appointment[]> {
+    if (data) {
+      const queryParams = {};
+      if (data.appointmentNumber) queryParams['id'] = data.appointmentNumber;
+      if (data.roomsId) queryParams['roomId'] = data.roomsId;
+      if (data.examList) queryParams['examId'] = data.examList;
+      if (data.doctorId) queryParams['doctorId'] = data.doctorId;
+      if (data.startedAt) queryParams['startDate'] = data.startedAt;
+      if (data.endedAt) queryParams['endDate'] = data.endedAt;
 
-      const appointments = response.data;
+      return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
+        map((response) => {
+          if (!response?.data?.length) {
+            return [];
+          }
 
-      if (!appointments?.length) {
-        return [];
-      }
+          const appointments = response.data;
 
-      return appointments.map((appointment) => this.getAppointmentModified(appointment))
-    }));
+          if (!appointments?.length) {
+            return [];
+          }
+
+          return appointments.map((appointment) => this.getAppointmentModified(appointment));
+        }),
+      );
+    }
+    return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`).pipe(
+      map((response) => {
+        if (!response?.data?.length) {
+          return [];
+        }
+
+        const appointments = response.data;
+
+        if (!appointments?.length) {
+          return [];
+        }
+
+        return appointments.map((appointment) => this.getAppointmentModified(appointment));
+      }),
+    );
   }
 
   private getAppointmentModified(appointment: Appointment): Appointment {
@@ -90,10 +118,13 @@ export class AppointmentApiService {
         }
 
         return {
-          ...exam, rooms: examIdToRooms[+exam.id], allUsers: exam?.users ?? [], users: examIdToUsers[+exam.id]
+          ...exam,
+          rooms: examIdToRooms[+exam.id],
+          allUsers: exam?.users ?? [],
+          users: examIdToUsers[+exam.id],
         };
       }),
-    }
+    };
 
     ap.startedAt = startedAt;
     ap.endedAt = endedAt;
@@ -120,12 +151,16 @@ export class AppointmentApiService {
 
   public getAppointmentByID$(appointmentID: number): Observable<Appointment | undefined> {
     return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
-      switchMap(() => this.http.get<BaseResponse<Appointment>>(`${this.appointmentUrl}/${appointmentID}`).pipe(map((response) => {
-        if (!response?.data) {
-          return {} as Appointment;
-        }
-        return this.getAppointmentModified(response.data);
-      }))),
+      switchMap(() =>
+        this.http.get<BaseResponse<Appointment>>(`${this.appointmentUrl}/${appointmentID}`).pipe(
+          map((response) => {
+            if (!response?.data) {
+              return {} as Appointment;
+            }
+            return this.getAppointmentModified(response.data);
+          }),
+        ),
+      ),
     );
   }
 
@@ -156,8 +191,9 @@ export class AppointmentApiService {
   }
 
   public updateRadiologist$(requestData: UpdateRadiologistRequestData): Observable<any> {
-    return this.http
-      .put<BaseResponse<any>>(`${this.appointmentUrl}/updateradiologist`, requestData)
-      .pipe(map((res) => res?.data), tap(() => this.refreshAppointment$$.next()));
+    return this.http.put<BaseResponse<any>>(`${this.appointmentUrl}/updateradiologist`, requestData).pipe(
+      map((res) => res?.data),
+      tap(() => this.refreshAppointment$$.next()),
+    );
   }
 }

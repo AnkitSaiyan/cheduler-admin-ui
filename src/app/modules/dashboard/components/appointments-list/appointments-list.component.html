@@ -23,7 +23,7 @@
         placeholder="{{'AdvancedSearch' | translate}}"
         icon="search-sm"
         class="flex-1"
-        [formControl]="searchControl"
+        (click)="openAdvancePopup()"
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper">
@@ -47,11 +47,11 @@
         </div>
       </div>
 
-      <dfm-button
+      <!-- <dfm-button
         color="secondary"
         size="md"
       >{{"Confirm" | translate}}
-      </dfm-button>
+      </dfm-button> -->
 
       <dfm-button
         color="primary"

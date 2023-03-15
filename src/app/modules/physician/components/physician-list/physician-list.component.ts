@@ -5,7 +5,7 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -214,7 +214,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         bodyText: 'AreyousureyouwanttodeletethisPhysician',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     modalRef.closed
