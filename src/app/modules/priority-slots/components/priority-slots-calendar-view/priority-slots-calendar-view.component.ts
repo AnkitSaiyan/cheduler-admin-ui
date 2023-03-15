@@ -2,8 +2,12 @@ import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
+import { start } from 'repl';
 import { BehaviorSubject, takeUntil } from 'rxjs';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import { RepeatType } from 'src/app/shared/models/absence.model';
+import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 
 @Component({
   selector: 'dfm-priority-slots-calendar-view',
@@ -19,8 +23,11 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 
   public newDate$$ = new BehaviorSubject<Date | null>(null);
 
-  constructor(private router: Router, private datePipe: DatePipe) {
+  private prioritySlots$$: BehaviorSubject<any>;
+
+  constructor(private router: Router, private datePipe: DatePipe, private priorityApiSvc: PrioritySlotApiService) {
     super();
+    this.prioritySlots$$ = new BehaviorSubject<any>({});
   }
 
   public appointmentsGroupedByDateAndTIme: { [key: string]: any[][] } = {};
@@ -30,6 +37,10 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
       const date = new Date(value.year, value.month - 1, value.day);
       this.updateDate(date);
       this.newDate$$.next(date);
+    });
+
+    this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
+      this.setPrioritySlots(prioritySlots);
     });
   }
 
@@ -67,5 +78,90 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
       queryParamsHandling: 'merge',
     });
   }
+
+  private setPrioritySlots(prioritySlots: PrioritySlot[]) {
+    const myPrioritySlots = {};
+    prioritySlots.forEach((prioritySlot: PrioritySlot) => {
+      switch (true) {
+        case !prioritySlot.isRepeat:
+        case prioritySlot.repeatType === RepeatType.Daily: {
+          const repeatFrequency = prioritySlot.isRepeat ? prioritySlot.repeatFrequency : 1;
+          const firstDate = new Date(prioritySlot.startedAt);
+          const lastDate = new Date(prioritySlot.endedAt);
+          while (true) {
+            const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+            const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5) };
+            myPrioritySlots[dateString] = myPrioritySlots[dateString] ? [...myPrioritySlots[dateString], customPrioritySlot] : [customPrioritySlot];
+            if (firstDate.toDateString() === lastDate.toDateString()) break;
+            firstDate.setDate(firstDate.getDate() + repeatFrequency);
+          }
+          break;
+        }
+        case prioritySlot.repeatType === RepeatType.Weekly: {
+          const { repeatFrequency } = prioritySlot;
+          const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
+          const firstDate = new Date(startDate.getTime() - (startDate.getDay() + 1) * 24 * 60 * 60 * 1000);
+          const closestSunday = new Date(startDate.getTime() - (startDate.getDay() + 1) * 24 * 60 * 60 * 1000);
+          const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
+          while (true) {
+            const tempDate = new Date(firstDate);
+            prioritySlot.repeatDays.split(',').forEach((day) => {
+              firstDate.setDate(firstDate.getDate() + +day);
+              console.log({ firstDate }, closestSunday.getDate());
+              if (firstDate.getTime() > startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
+                const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+                const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5) };
+                myPrioritySlots[dateString] = myPrioritySlots[dateString]
+                  ? [...myPrioritySlots[dateString], customPrioritySlot]
+                  : [customPrioritySlot];
+              }
+            });
+            if (tempDate.getTime() >= lastDate.getTime()) break;
+            tempDate.setDate(tempDate.getDate() + repeatFrequency * 7);
+            firstDate.setTime(tempDate.getTime());
+          }
+          break;
+        }
+        case prioritySlot.repeatType === RepeatType.Monthly: {
+          const { repeatFrequency } = prioritySlot;
+          const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
+          const firstDate = new Date(new Date(prioritySlot.startedAt).toDateString());
+          const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
+          while (true) {
+            prioritySlot.repeatDays.split(',').forEach((day) => {
+              firstDate.setDate(+day);
+              if (firstDate.getTime() > startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
+                const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+                const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5) };
+                myPrioritySlots[dateString] = myPrioritySlots[dateString]
+                  ? [...myPrioritySlots[dateString], customPrioritySlot]
+                  : [customPrioritySlot];
+              }
+            });
+            if (firstDate.getTime() >= lastDate.getTime()) break;
+            firstDate.setMonth(firstDate.getMonth() + repeatFrequency);
+          }
+          break;
+        }
+        default:
+          break;
+      }
+    });
+    console.log(myPrioritySlots);
+    this.prioritySlots$$.next({ ...myPrioritySlots });
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
