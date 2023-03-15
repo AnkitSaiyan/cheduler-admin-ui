@@ -122,7 +122,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
           while (true) {
             prioritySlot.repeatDays.split(',').forEach((day) => {
               firstDate.setDate(+day);
-              if (firstDate.getTime() > startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
+              if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
                 const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
                 const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5), priority };
                 myPrioritySlots[dateString] = myPrioritySlots[dateString]
@@ -142,6 +142,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
     this.prioritySlots$$.next({ ...myPrioritySlots });
   }
 }
+
+
 
 
 
