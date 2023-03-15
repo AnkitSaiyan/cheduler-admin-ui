@@ -45,6 +45,9 @@ $diflexmo-admin-theme: mat.define-light-theme((
 @import '../../node_modules/bootstrap/scss/bootstrap';
 
 @import './themes/theme';
+// @import './abstracts/variables';
+@import './themes/dark-theme';
+// @import './themes/light-theme';
 
 //.dfm-card-header {
 //  display: none !important;

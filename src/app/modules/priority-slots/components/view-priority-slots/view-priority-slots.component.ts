@@ -6,7 +6,7 @@ import { RouterStateService } from '../../../../core/services/router-state.servi
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { PRIORITY_ID } from '../../../../shared/utils/const';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-slots.component';
 import { getUserTypeEnum } from 'src/app/shared/utils/getEnums';
@@ -65,7 +65,7 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
         bodyText: 'Are you sure you want to delete this Priority Slot?',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     modalRef.closed
