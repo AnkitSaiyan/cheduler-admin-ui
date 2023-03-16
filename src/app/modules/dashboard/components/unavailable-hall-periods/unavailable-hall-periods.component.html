@@ -4,20 +4,22 @@
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
       </div>
-      <span class="font-weight-medium">{{"UnavailablePeriodsOfTheHalls" | translate}}</span>
+      <span class="font-weight-medium">{{ 'UnavailablePeriodsOfTheHalls' | translate }}</span>
     </header>
 
     <div class="d-flex dfm-gap-16">
       <dfm-input
         size="md"
-        placeholder="{{'SearchRoomName' | translate}}" class="flex-1 search-room-name-placeholder"
+        placeholder="{{ 'SearchRoomName' | translate }}"
+        class="flex-1 search-room-name-placeholder"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
 
       <dfm-input
         size="md"
-        placeholder="{{'RoomName' | translate}}" class="flex-1 room-name-placeholder"
+        placeholder="{{ 'RoomName' | translate }}"
+        class="flex-1 room-name-placeholder"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
@@ -28,6 +30,10 @@
             color="tertiary-gray"
             size="md"
             icon="copy-03"
+            ngbPopover="{{ 'ClickToCopy' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
             (click)="copyToClipboard()"
           ></dfm-button-icon>
         </div>
@@ -36,7 +42,7 @@
           <div class="download-dropdown-max-w-144">
             <dfm-input-dropdown
               [items]="downloadItems"
-              placeholder="{{'Download' | translate}}"
+              placeholder="{{ 'Download' | translate }}"
               size="md"
               [showDescription]="false"
               [formControl]="downloadDropdownControl"
@@ -45,7 +51,8 @@
 
           <dfm-input-dropdown
             [items]="downloadItems"
-            placeholder="" class="unavailable-hall-download-icon-placeholder"
+            placeholder=""
+            class="unavailable-hall-download-icon-placeholder"
             size="md"
           ></dfm-input-dropdown>
         </div>
@@ -57,15 +64,15 @@
             color="tertiary-gray"
             size="md"
             icon="copy-03"
+            ngbPopover="{{ 'ClickToCopy' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
           ></dfm-button-icon>
         </div>
 
         <div>
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="download-01"
-          ></dfm-button-icon>
+          <dfm-button-icon color="tertiary-gray" size="md" icon="download-01"></dfm-button-icon>
         </div>
       </div>
     </div>

@@ -168,7 +168,15 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
       reminderTime: [reminderDuration, []],
       reminderTimeType: [reminderDurationTYpe, []],
+      isAppointmentAutoConfirm: [!!siteManagementData?.isAppointmentAutoConfirm, [Validators.required]]
     });
+
+    setTimeout(() => {
+      this.siteManagementForm.patchValue({
+        reminderTimeType: reminderDurationTYpe,
+        cancelAppointmentType: durationType,
+      });
+    }, 0);
 
     this.cdr.detectChanges();
   }

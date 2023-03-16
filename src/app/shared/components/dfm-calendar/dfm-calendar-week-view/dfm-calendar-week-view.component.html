@@ -55,7 +55,7 @@
           <div *ngFor="let day of daysOfWeekArr" role="gridcell" class="calendar-week-view-body-grid-column">
             <div class="calendar-week-view-body-grid-absolute"></div>
             <div #eventsContainer
-                 (dblclick)="addAppointment($event, eventsContainer, day)"
+                 (dblclick)="onDblClick($event, eventsContainer, day)"
                  class="calendar-week-view-body-events-container"
                  role="presentation">
               <ng-container
@@ -147,6 +147,22 @@
                     </div>
                   </div>
                 </ng-container>
+              </ng-container>
+              <ng-container *ngIf="prioritySlots">
+                <ng-container
+                *ngIf="prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
+                <ng-container
+                  *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
+
+                  <div *ngIf="getPrioritySlotHeight(prioritySlot) as eventHeight" class="priority-slots-area" [ngClass]="prioritySlot.priority"
+                       [ngStyle]="{
+                          'top.px': getPrioritySlotTop(prioritySlot),
+                          'height.px': eventHeight
+                       }"
+                  >
+                  </div>
+                </ng-container>
+              </ng-container>
               </ng-container>
             </div>
           </div>

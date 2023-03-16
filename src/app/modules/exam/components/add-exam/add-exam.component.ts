@@ -338,23 +338,35 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       roomType: [null, [Validators.required]],
       roomsForExam: this.fb.array([]),
       info: [examDetails?.info, []],
-      uncombinables: [[...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])], []],
-      mandatoryStaffs: [mandatory, []],
-      assistantCount: [examDetails?.assistantCount ? examDetails.assistantCount.toString() : '0', []],
-      assistants: [assistants, []],
-      radiologistCount: [examDetails?.radiologistCount?.toString() ?? '0', []],
-      radiologists: [radiologists, []],
-      nursingCount: [examDetails?.nursingCount?.toString() ?? '0', []],
-      nursing: [nursing, []],
-      secretaryCount: [examDetails?.secretaryCount?.toString() ?? '0', []],
-      secretaries: [secretaries, []],
+      uncombinables: [[], []],
+      mandatoryStaffs: [[], []],
+      assistantCount: [null, []],
+      assistants: [[], []],
+      radiologistCount: [null, []],
+      radiologists: [[], []],
+      nursingCount: [null, []],
+      nursing: [[], []],
+      secretaryCount: [null, []],
+      secretaries: [[], []],
       selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceAvailabilityToggle: [!!examDetails?.practiceAvailability?.length, []],
       status: [this.edit ? +!!examDetails?.status : Status.Active, []],
       practiceAvailability: this.fb.group({}),
     });
 
-    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.examForm.patchValue({
+        assistantCount: examDetails?.assistantCount ? examDetails?.assistantCount?.toString() : '0',
+        radiologistCount: examDetails?.radiologistCount?.toString() ?? '0',
+        nursingCount: examDetails?.nursingCount?.toString() ?? '0',
+        secretaryCount: examDetails?.secretaryCount.toString() ?? '0',
+        mandatoryStaffs: mandatory,
+        assistants, nursing, secretaries, radiologists,
+        uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])]
+      });
+
+      this.cdr.detectChanges();
+    }, 0);
 
     if (examDetails?.practiceAvailability?.length) {
       const weekdays = new Set([0, 1, 2, 3, 4, 5, 6]);

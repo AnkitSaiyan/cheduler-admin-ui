@@ -113,6 +113,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
       .pipe(takeUntil(this.destroy$$))
       .subscribe((lang) => {
         this.selectedLang = lang;
+
         this.columns = [
           Translate.Title[lang],
           Translate.StartDate[lang],

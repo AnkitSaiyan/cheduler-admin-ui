@@ -23,6 +23,10 @@
           color="tertiary-gray"
           size="md"
           icon="copy-03"
+          ngbPopover="{{ 'ClickToCopy' | translate }}"
+          triggers="mouseenter:mouseleave"
+          popoverClass="popover-p-8"
+          [openDelay]="200"
         ></dfm-button-icon>
       </div>
 

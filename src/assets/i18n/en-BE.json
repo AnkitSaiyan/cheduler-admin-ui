@@ -83,7 +83,7 @@
   "Saturday": "Saturday",
   "Sunday": "Sunday",
   "AreYouSureYouWantThisRoom": "Are you sure you want to delete the Room?",
-  "AreYouSureYouWantToDelete":"Are you sure you want to delete this Staff?",
+  "AreYouSureYouWantToDeleteThisStaff":"Are you sure you want to delete this staff?",
 
   "AddStaff" :"Add Staff",
   "StaffView": "Staff View",
@@ -333,6 +333,15 @@
   "Search" : "Search",
   "AdvancedSearch" : " Advanced Search",
   "AreYouSureYouWantToDeleteThisPost" : "Are you sure you want to delete this Post?",
+  "AreYouSureYouWantToDeleteThisExam" : "Are you sure you want to delete this Exam?",
   "EnterMessage" : "Enter Message",
-  "Today":"Today"
+  "Today":"Today",
+  "NoAppointmentsFound" : "No Appointment Found",
+  "ClickToCopy":"Copy",
+  "Reset" : "Reset",
+  "TypeAppointmentNumber": "Type Appointment Number",
+  "AppointmentNumber" : "Appointment Number",
+  "Patient" : "Patient",
+  "SelectPatient" : "Select Patient",
+  "AutoConfirmAppointment": "Auto Confirm Appointment"
 }
