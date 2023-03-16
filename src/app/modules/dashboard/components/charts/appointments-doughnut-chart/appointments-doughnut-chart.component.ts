@@ -40,9 +40,9 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
       });
 
       if (this.appointmentDetails.Total === 0 && this.appointmentDetails.Pending === 0 && this.appointmentDetails.Approved === 0) {
-        this.noDataFound = true;
-      } else {
         this.noDataFound = false;
+      } else {
+        this.noDataFound = true;
       }
 
       this.doughnutChartConfig = {

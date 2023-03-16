@@ -444,6 +444,10 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
     this.dialogSvc.close();
   }
 
+  public resetForm() {
+    this.appointmentForm.reset();
+  }
+
   public submitSearch() {
     const data = this.appointmentForm.value;
     if (data.patientId) {
