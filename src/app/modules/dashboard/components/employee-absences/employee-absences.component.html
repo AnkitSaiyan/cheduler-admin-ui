@@ -41,7 +41,7 @@
           <span class="font-weight-medium">{{ employee.name }}</span>
           <span class="text-xs dfm-text-main-400">({{ employee.info }})</span>
         </div>
-        <span class="text-xs dfm-text-main-500">{{ employee.startedAt | date : 'shortDate' }} - {{ employee.endedAt | date : 'shortDate' }}</span>
+        <span class="text-xs dfm-text-main-500">{{ employee?.startedAt | date : 'shortDate' }} - {{ employee?.endedAt | date : 'shortDate' }}</span>
       </div>
     </div>
   </section>
