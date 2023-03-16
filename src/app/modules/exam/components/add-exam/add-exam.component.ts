@@ -364,9 +364,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         assistants, nursing, secretaries, radiologists,
         uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])]
       });
-    }, 0);
 
-    this.cdr.detectChanges();
+      this.cdr.detectChanges();
+    }, 0);
 
     if (examDetails?.practiceAvailability?.length) {
       const weekdays = new Set([0, 1, 2, 3, 4, 5, 6]);
