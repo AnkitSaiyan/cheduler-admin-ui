@@ -1,16 +1,31 @@
-import { Injectable } from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest, filter,
+  map,
+  Observable,
+  of,
+  startWith,
+  Subject,
+  switchMap,
+  takeUntil,
+  tap
+} from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { User, UserType } from '../../shared/models/user.model';
 import { AddStaffRequestData, StaffType } from '../../shared/models/staff.model';
 import { ChangeStatusRequestData } from '../../shared/models/status.model';
+import {ShareDataService} from "./share-data.service";
+import {DestroyableComponent} from "../../shared/components/destroyable.component";
+import {Translate} from "../../shared/models/translate.model";
 
 @Injectable({
   providedIn: 'root',
 })
-export class StaffApiService {
+export class StaffApiService extends DestroyableComponent implements OnDestroy {
   private readonly userUrl = `${environment.serverBaseUrl}/user`;
 
   private refreshStaffs$$ = new Subject<void>();
@@ -22,7 +37,19 @@ export class StaffApiService {
     StaffType.Secretary,
   ]);
 
-  constructor(private http: HttpClient) {}
+  private selectedLang$$ = new BehaviorSubject<string>('');
+
+  constructor(private http: HttpClient, private shareDataSvc: ShareDataService) {
+    super();
+
+    this.shareDataSvc.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe((lang) => {
+      this.selectedLang$$.next(lang);
+    })
+  }
+
+  public override ngOnDestroy() {
+    super.ngOnDestroy();
+  }
 
   public get staffList$(): Observable<User[]> {
     return this.users$.pipe(map((users) => users.filter((user) => ![UserType.Scheduler, UserType.General].includes(user.userType))));
@@ -106,7 +133,12 @@ export class StaffApiService {
   }
 
   public get staffTypes$(): Observable<StaffType[]> {
-    return this.staffTypes$$.asObservable();
+    return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
+      switchMap(([lang]) => this.staffTypes$$.asObservable().pipe(
+        filter(() => !!lang),
+        map((staffTypes) => staffTypes.map((staffType) => Translate.StaffTypes[staffType][lang]))
+      ))
+    )
   }
 
   public changeUserStatus$(requestData: ChangeStatusRequestData[]): Observable<null> {

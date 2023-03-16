@@ -108,7 +108,7 @@ export function getAllDaysOfWeek(selectedDate: Date): number[][] {
   tempDate = new Date(tempDate.setDate(tempDate.getDate() - weekday));
 
   for (let day = weekday; day >= 0; day--) {
-    daysOfWeekArr.push([getDateOfMonth(year, tempDate.getMonth(), date - day), tempDate.getMonth()]);
+    daysOfWeekArr.push([getDateOfMonth(year, tempDate.getMonth() + 1, date - day), tempDate.getMonth()]);
     tempDate = new Date(tempDate.setDate(tempDate.getDate() + 1));
   }
 
@@ -126,11 +126,12 @@ export function getDurationMinutes(start: Date, end: Date): number {
     const endDate = new Date(end);
 
     const startH = startDate.getHours();
-    let endH = endDate.getHours();
+    const endH = endDate.getHours();
 
-    if (endH === 0) {
-      endH = 24;
-    }
+    // if (endH === 0) {
+    //   endH = 24;
+    // }
+
 
     if (startH === endH) {
       return endDate.getMinutes() - startDate.getMinutes();

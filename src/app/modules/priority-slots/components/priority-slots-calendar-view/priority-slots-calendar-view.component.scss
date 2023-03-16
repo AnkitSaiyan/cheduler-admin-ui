@@ -1,0 +1,76 @@
+.calendar-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  row-gap: 16px;
+
+  h4 {
+    margin: 0;
+  }
+}
+
+.calendar-body {
+  overflow: auto;
+  height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px);
+  max-height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px);
+}
+
+@media (max-width: 1440px) {
+  .calendar-body {
+    overflow: auto;
+    height: calc(100vh - 46px - 48px - 42px - 16px - 48px - 38px - 20px);
+    max-height: calc(100vh - 46px - 48px - 42px - 16px - 48px - 38px - 20px);
+  }
+}
+
+@media (max-width: 960px) {
+  .calendar-body {
+    overflow: auto;
+    height: calc(100vh - 36px - 56px - 48px - 42px - 16px - 48px - 38px - 20px);
+    height: calc(100dvh - 36px - 56px - 48px - 42px - 16px - 48px - 38px - 20px);
+    max-height: calc(100vh - 36px - 56px - 48px - 42px - 16px - 48px - 38px - 20px);
+    max-height: calc(100dvh - 36px - 56px - 48px - 42px - 16px - 48px - 38px - 20px);
+  }
+}
+
+@media (max-width: 680px) {
+  .calendar-main-wrapper {
+    padding: 16px 4px 4px;
+  }
+
+  .calendar-header {
+    padding: 0 12px;
+  }
+
+  .calendar-body {
+    overflow: auto;
+    height: calc(100vh - 36px - 56px - 48px - 42px - 16px - 20px - 92px - 20px);
+    height: calc(100dvh - 36px - 56px - 48px - 42px - 16px - 20px - 92px - 20px);
+    max-height: calc(100vh - 36px - 56px - 48px - 42px - 16px - 20px - 92px - 20px);
+    max-height: calc(100dvh - 36px - 56px - 48px - 42px - 16px - 20px - 92px - 20px);
+
+    &::-webkit-scrollbar {
+      display: none !important;
+    }
+  }
+
+  .calendar-header {
+    width: 100%;
+    justify-content: space-between;
+
+    .calendar-view-dropdown-wrapper {
+      flex: 1;
+      margin-left: 0;
+
+      .calendar-view-dropdown {
+        flex: 1;
+        max-width: 100%;
+      }
+    }
+
+    .calendar-date-buttons {
+      width: 100%;
+    }
+  }
+}

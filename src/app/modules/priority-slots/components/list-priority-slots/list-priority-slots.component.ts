@@ -44,6 +44,8 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
   public statuses = Statuses;
 
+  public calendarView$$ = new BehaviorSubject<boolean>(false);
+
   constructor(
     private priorityApiSvc: PrioritySlotApiService,
     private notificationSvc: NotificationDataService,
@@ -61,6 +63,20 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
   ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
+
+    this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe((params) => {
+      if (params['v']) {
+        this.calendarView$$.next(params['v'] !== 't');
+      } else {
+        this.router.navigate([], {
+          replaceUrl: true,
+          queryParams: {
+            v: 'w',
+          },
+        });
+        this.calendarView$$.next(true);
+      }
+    });
 
     this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
       this.prioritySlots$$.next(prioritySlots);
@@ -244,7 +260,22 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
       },
     });
   }
+
+  public toggleView(): void {
+    this.router.navigate([], {
+      replaceUrl: true,
+      queryParams: {
+        v: !this.calendarView$$.value ? 'w' : 't',
+      },
+    });
+  }
 }
+
+
+
+
+
+
 
 
 
