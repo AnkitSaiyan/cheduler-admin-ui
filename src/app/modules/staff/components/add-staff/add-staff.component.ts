@@ -247,7 +247,10 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       this.addPracticeAvailabilityControls();
     }
 
-    setTimeout(() => this.addStaffForm.get('userType')?.setValue(staffDetails?.userType), 0);
+    setTimeout(() => {
+      this.addStaffForm.get('userType')?.setValue(staffDetails?.userType);
+      this.addStaffForm.get('userType')?.markAsUntouched();
+    }, 0);
   }
 
   private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string): FormGroup {

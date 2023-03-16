@@ -266,7 +266,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     });
 
     setTimeout(
-      () =>
+      () => {
         this.absenceForm.patchValue({
           startTime,
           endTime,
@@ -276,10 +276,12 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
               ? `${absenceDetails.repeatFrequency} ${this.repeatTypeToName[absenceDetails.repeatType]}`
               : null,
           repeatDays: absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '',
-        }),
-      0,
-    );
+        });
 
+        this.absenceForm.get('startTime')?.markAsUntouched();
+          this.absenceForm.get('endTime')?.markAsUntouched();
+      }, 0
+    );
     this.cdr.detectChanges();
 
     this.absenceForm

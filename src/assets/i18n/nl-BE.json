@@ -341,7 +341,7 @@
   "TypeAppointmentNumber": "Vul het afspraak nummer in",
   "AppointmentNumber" : "Afspraak nummer",
   "Patient" : "Patiënt",
-  "SelectPatient" : "Patiënt Selecteren"
-
+  "SelectPatient" : "Patiënt Selecteren",
+  "AutoConfirmAppointment": "Afspraak automatisch bevestigen"
 }
 
