@@ -128,20 +128,18 @@
         </dfm-text-area>
 
         <div class="d-flex flex-1 dfm-gap-24">
-          <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1" *ngIf="exams$$ | async as exams"
-               [ngClass]="{ 'dfm-mb-32': uncombinableDropdown.value?.length }">
+          <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1" [ngClass]="{ 'dfm-mb-32': uncombinableDropdown.value?.length }">
             <dfm-input-dropdown #uncombinableDropdown size="md" [multiple]="true"
                                 [placeholder]="!!uncombinableDropdown.value?.length ? uncombinableDropdown.value.length + ' Selected' : ('SelectExam' | translate)"
-                                label="{{'Uncombinable' | translate}}" [items]="exams"
+                                label="{{'Uncombinable' | translate}}" [items]="exams$$.value"
                                 formControlName="uncombinables">
             </dfm-input-dropdown>
           </div>
 
-          <div *ngIf="mandatoryStaffs$$ | async as mandatory" class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1"
-               [ngClass]="{ 'dfm-mb-32': mandatoryStaffsDropdown.value?.length }">
+          <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1" [ngClass]="{ 'dfm-mb-32': mandatoryStaffsDropdown.value?.length }">
             <dfm-input-dropdown #mandatoryStaffsDropdown size="md" [multiple]="true"
                                 [placeholder]="!!mandatoryStaffsDropdown.value?.length ? mandatoryStaffsDropdown.value.length + ' Selected' : ('SelectStaff' | translate)"
-                                label="{{'MandatoryStaffs' | translate}}" [items]="mandatory"
+                                label="{{'MandatoryStaffs' | translate}}" [items]="mandatoryStaffs$$.value"
                                 formControlName="mandatoryStaffs">
             </dfm-input-dropdown>
           </div>
@@ -150,12 +148,12 @@
         <span class="text-sm font-weight-medium dfm-text-main-700 dfm-mt-16">{{'GeneralStaff' | translate}}</span>
 
         <div class="ad-ex-general-staff">
-          <div class="d-flex flex-column flex-1" *ngIf="assistants$$ | async as assistants">
+          <div class="d-flex flex-column flex-1">
             <div class="d-flex dfm-gap-16">
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
                 <dfm-input-dropdown class="flex-1" size="md" label="{{'SelectNo' | translate}}" placeholder="{{'Select' | translate}}"
                                     formControlName="assistantCount"
-                                    [items]="assistants.length | numberArray : 0 | nameValuePair">
+                                    [items]="assistants$$.value.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
               </div>
 
@@ -164,7 +162,7 @@
                 <dfm-input-dropdown #assistantDropdown size="md" label="{{'Assistant' | translate}}" placeholder="{{'SelectAssistant' | translate}}"
                                     [multiple]="true" formControlName="assistants"
                                     [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : 'SelectAssistant' | translate"
-                                    [items]="assistants">
+                                    [items]="assistants$$.value">
                 </dfm-input-dropdown>
               </div>
             </div>
@@ -174,11 +172,11 @@
             </small>
           </div>
 
-          <div class="d-flex flex-column flex-1" *ngIf="radiologists$$ | async as radiologists">
+          <div class="d-flex flex-column flex-1">
             <div class="d-flex dfm-gap-16">
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
                 <dfm-input-dropdown size="md" label="{{'SelectNo' | translate}}" placeholder="Select" formControlName="radiologistCount"
-                                    [items]="radiologists.length | numberArray : 0 | nameValuePair">
+                                    [items]="radiologists$$.value.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
               </div>
 
@@ -188,7 +186,7 @@
                                     placeholder="{{'SelectRadiologist'| translate}}"
                                     [multiple]="true" formControlName="radiologists"
                                     [placeholder]="!!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : 'Select Radiologists' | translate"
-                                    [items]="radiologists">
+                                    [items]="radiologists$$.value">
                 </dfm-input-dropdown>
               </div>
             </div>
@@ -198,11 +196,11 @@
             </small>
           </div>
 
-          <div class="d-flex flex-column flex-1" *ngIf="nursing$$ | async as nursing">
+          <div class="d-flex flex-column flex-1">
             <div class="d-flex dfm-gap-16">
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
                 <dfm-input-dropdown size="md" label="{{'SelectNo' | translate}}" placeholder="{{'Select' | translate}}" formControlName="nursingCount"
-                                    [items]="nursing.length | numberArray : 0 | nameValuePair">
+                                    [items]="nursing$$.value.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
               </div>
 
@@ -211,7 +209,7 @@
                 <dfm-input-dropdown #nursingDropdown size="md" label="{{'Nursing' | translate}}" placeholder="{{'SelectNursing' | translate}}"
                                     [multiple]="true" formControlName="nursing"
                                     [placeholder]="!!nursingDropdown.value?.length ? nursingDropdown.value.length + ' Selected' : 'SelectNursing' | translate"
-                                    [items]="nursing">
+                                    [items]="nursing$$.value">
                 </dfm-input-dropdown>
               </div>
             </div>
@@ -221,11 +219,11 @@
             </small>
           </div>
 
-          <div class="d-flex flex-column flex-1" *ngIf="secretaries$$ | async as secretaries">
+          <div class="d-flex flex-column flex-1">
             <div class="d-flex dfm-gap-16">
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
                 <dfm-input-dropdown size="md" label="{{'SelectNo' | translate}}" placeholder="{{'Select' | translate}}" formControlName="secretaryCount"
-                                    [items]="secretaries.length | numberArray : 0 | nameValuePair">
+                                    [items]="secretaries$$.value.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
               </div>
 
@@ -234,7 +232,7 @@
                 <dfm-input-dropdown #secretaryDropdown size="md" label="{{'Secretary' | translate}}" placeholder="{{'SelectSecretary' | translate}}"
                                     [multiple]="true" formControlName="secretaries"
                                     [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ' Selected' : 'SelectSecretary' | translate"
-                                    [items]="secretaries">
+                                    [items]="secretaries$$.value">
                 </dfm-input-dropdown>
               </div>
             </div>
@@ -273,7 +271,7 @@
 
         <ng-container *ngIf="formValues.practiceAvailabilityToggle">
           <dfm-time-slots
-            [timeSlotData$$]="roomAvailabilityData$$"
+            [timeSlotData$$]="examAvailabilityData$$"
             [emitEvents$$]="emitEvents$$"
             (formValuesEvent)="saveForm($event)"
           ></dfm-time-slots>

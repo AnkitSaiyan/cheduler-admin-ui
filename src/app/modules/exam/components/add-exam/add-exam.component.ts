@@ -88,19 +88,19 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   public submitting$$ = new BehaviorSubject(false);
 
-  public assistants$$ = new BehaviorSubject<NameValue[] | null>(null);
+  public assistants$$ = new BehaviorSubject<NameValue[]>([]);
 
-  public nursing$$ = new BehaviorSubject<NameValue[] | null>(null);
+  public nursing$$ = new BehaviorSubject<NameValue[]>([]);
 
-  public radiologists$$ = new BehaviorSubject<NameValue[] | null>(null);
+  public radiologists$$ = new BehaviorSubject<NameValue[]>([]);
 
-  public secretaries$$ = new BehaviorSubject<NameValue[] | null>(null);
+  public secretaries$$ = new BehaviorSubject<NameValue[]>([]);
 
-  public mandatoryStaffs$$ = new BehaviorSubject<NameValue[] | null>(null);
+  public mandatoryStaffs$$ = new BehaviorSubject<NameValue[]>([]);
 
-  public exams$$ = new BehaviorSubject<null | NameValue[]>(null);
+  public exams$$ = new BehaviorSubject<NameValue[]>([]);
 
-  public roomAvailabilityData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
+  public examAvailabilityData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
 
   public emitEvents$$ = new Subject<void>();
 
@@ -120,21 +120,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     selectRoomErr: false,
     expensiveErr: false,
   };
-
-  public count: any[] = [
-    {
-      value: '1',
-      name: '1',
-    },
-    {
-      value: '2',
-      name: '2',
-    },
-    {
-      value: '3',
-      name: '3',
-    },
-  ];
 
   public timings: NameValue[] = [];
 
@@ -209,7 +194,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         if (examDetails) {
           this.updateForm(examDetails);
           if (examDetails?.practiceAvailability?.length) {
-            this.roomAvailabilityData$$.next(examDetails.practiceAvailability);
+            this.examAvailabilityData$$.next(examDetails.practiceAvailability);
           }
         }
         this.loading$$.next(false);
@@ -414,7 +399,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       assistants, nursing, secretaries, radiologists,
       uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
       practiceAvailabilityToggle: !!examDetails?.practiceAvailability?.length,
-      status: this.edit ? +!!examDetails?.status : Status.Active
+      status: this.edit ? +!!examDetails?.status : Status.Active,
+      info: examDetails?.info
     });
 
     setTimeout(() => {
