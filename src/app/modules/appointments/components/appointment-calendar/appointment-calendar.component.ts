@@ -18,6 +18,8 @@ import { CalendarUtils } from '../../../../shared/utils/calendar.utils';
 import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
 import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
+import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
+import { ModalService } from 'src/app/core/services/modal.service';
 
 @Component({
   selector: 'dfm-appointment-calendar',
@@ -91,6 +93,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     private routerStateSvc: RouterStateService,
     private practiceHoursApiSvc: PracticeHoursApiService,
     private timeIntervalPipe: TimeInIntervalPipe,
+    private modalSvc: ModalService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -349,7 +352,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
         let startMinutes = CalendarUtils.DurationInMinFromHour(+startTime.split(':')[0], +startTime.split(':')[1]);
         let endMinutes = CalendarUtils.DurationInMinFromHour(+endTime.split(':')[0], +endTime.split(':')[1]);
 
-
         if (startMinutes - 120 > 0) {
           startMinutes -= 120;
         } else {
@@ -362,8 +364,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
           endMinutes = 24 * 60;
         }
 
-
-
         const timings = this.timeIntervalPipe.transform(15, 24, false, startMinutes, endMinutes);
 
         weekdayToPractice[weekday].timings = [...timings];
@@ -371,5 +371,51 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     });
 
     this.weekdayToPractice$$.next(weekdayToPractice);
+  }
+
+  public addAppointment(event: any) {
+    console.log(event);
+    const { e, eventsContainer, day } = event;
+    const eventCard = this.createAppointmentCard(e, eventsContainer);
+
+    const modalRef = this.modalSvc.open(AddAppointmentModalComponent, {
+      data: {
+        event: e,
+        element: eventCard,
+        elementContainer: eventsContainer,
+        startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
+      },
+      options: {
+        backdrop: false,
+        centered: true,
+        modalDialogClass: 'ad-ap-modal-shadow',
+      },
+    });
+
+    modalRef.closed.pipe(take(1)).subscribe((res) => {
+      eventCard.remove();
+      // if (!res) {
+      // }
+    });
+  }
+
+  private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {
+    const top = e.offsetY - (e.offsetY % 20);
+    const eventCard = document.createElement('div');
+    eventCard.classList.add('calendar-week-view-event-container');
+    eventCard.style.height = `20px`;
+    eventCard.style.top = `${top}px`;
+
+    const appointmentText = document.createElement('span');
+    // const textNode = document.createTextNode('Appointment');
+
+    appointmentText.innerText = 'Appointment';
+
+    appointmentText.classList.add('appointment-title');
+
+    eventCard.appendChild(appointmentText);
+    eventsContainer.appendChild(eventCard);
+
+    return eventCard;
   }
 }

@@ -12,11 +12,6 @@
           </div>
         </div>
       </div>
-
-      <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown">
-        <dfm-input-dropdown size="sm" [formControl]="calendarViewFormControl" [showDescription]="false"
-                            [items]="calendarViewType"></dfm-input-dropdown>
-      </div>
     </div>
 
     <div class="d-flex dfm-gap-8 calendar-date-buttons">
@@ -35,7 +30,7 @@
           size="sm"
           class="h-100"
           (click)="updateToToday()"
-        >{{"Today" | translate}}
+        >Today
         </dfm-button>
       </div>
 
@@ -51,43 +46,15 @@
   </section>
 
   <section class="calendar-body">
-    <ng-container [ngSwitch]="calendarViewFormControl.value">
-      <ng-container *ngSwitchCase="'month'">
-        <dfm-calendar-month-view
-          class="h-100"
-          (selectedDateEvent)="updateDate($event)"
-          [changeMonth$$]="changeMonth$$"
-          (dayViewEvent)="changeToDayView($event)"
-          [selectedDate]="selectedDate"
-          [newDate$$]="newDate$$"
-          [dataGroupedByDate]="appointmentsGroupedByDate"
-        >
-        </dfm-calendar-month-view>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'week'">
-        <dfm-calendar-week-view
+    <dfm-calendar-week-view
           (selectedDateEvent)="updateDate($event)"
           [changeWeek$$]="changeWeek$$"
           (dayViewEvent)="changeToDayView($event)"
           [selectedDate]="selectedDate"
           [newDate$$]="newDate$$"
           [dataGroupedByDateAndTime]="appointmentsGroupedByDateAndTIme"
-          (addAppointment)="addAppointment($event)"
+          [prioritySlots] = "prioritySlots$$ | async"
         ></dfm-calendar-week-view>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'day'">
-        <dfm-calendar-day-view
-          class="h-full"
-          (selectedDateEvent)="updateDate($event)"
-          [changeDate$$]="changeDate$$"
-          [newDate$$]="newDate$$"
-          [headerList]="headerList"
-          [dataGroupedByDateAndRoom]="appointmentGroupedByDateAndRoom"
-          [timeSlot] = "selectedSlot$$ | async"
-        ></dfm-calendar-day-view>
-      </ng-container>
-    </ng-container>
   </section>
 </div>
+

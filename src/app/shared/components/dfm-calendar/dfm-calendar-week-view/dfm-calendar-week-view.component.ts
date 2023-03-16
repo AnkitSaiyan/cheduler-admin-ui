@@ -64,11 +64,17 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   @Input()
   public dataGroupedByDateAndTime!: { [key: string]: any[][] };
 
+  @Input()
+  public prioritySlots!: { [key: string]: any[] };
+
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
 
   @Output()
   public dayViewEvent = new EventEmitter<number>();
+
+  @Output()
+  public addAppointment = new EventEmitter<{ e: MouseEvent; eventsContainer: HTMLDivElement; day: number[] }>();
 
   public daysOfWeekArr: number[][] = [];
 
@@ -91,6 +97,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     if (!this.selectedDate) {
       this.selectedDate = new Date();
     }
+    console.log(this.prioritySlots);
   }
 
   public ngOnInit(): void {
@@ -271,6 +278,13 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     return durationMinutes * this.pixelsPerMin;
   }
 
+  public getPrioritySlotHeight(prioritySlot: any): number {
+    const startDate: Date = this.myDate(prioritySlot.start);
+    const endDate: Date = this.myDate(prioritySlot.end);
+    const durationMinutes = getDurationMinutes(startDate, endDate);
+    return durationMinutes * this.pixelsPerMin;
+  }
+
   public getTop(groupedData: any[]): number {
     const startHour = new Date(groupedData[0].startedAt).getHours();
     const startMinute = new Date(groupedData[0].startedAt).getMinutes();
@@ -283,47 +297,29 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     return top;
   }
 
-  public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[]) {
-    const eventCard = this.createAppointmentCard(e, eventsContainer);
-
-    const modalRef = this.modalSvc.open(AddAppointmentModalComponent, {
-      data: {
-        event: e,
-        element: eventCard,
-        elementContainer: eventsContainer,
-        startedAt: new Date(this.selectedDate.getFullYear(), day[1], day[0]),
-      },
-      options: {
-        backdrop: false,
-        centered: true,
-        modalDialogClass: 'ad-ap-modal-shadow',
-      },
-    });
-
-    modalRef.closed.pipe(take(1)).subscribe((res) => {
-      eventCard.remove();
-      // if (!res) {
-      // }
-    });
+  public getPrioritySlotTop(prioritySlot: any): number {
+    const startDate = this.myDate(prioritySlot.start);
+    const startHour = startDate.getHours();
+    const startMinute = startDate.getMinutes();
+    const barHeight = 1;
+    const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
+    const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
+    if (top % 20) {
+      return Math.floor(top / 20) * 20 + 20;
+    }
+    return top;
   }
 
-  private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {
-    const top = e.offsetY - (e.offsetY % 20);
-    const eventCard = document.createElement('div');
-    eventCard.classList.add('calendar-week-view-event-container');
-    eventCard.style.height = `20px`;
-    eventCard.style.top = `${top}px`;
+  public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[]) {
+    this.addAppointment.emit({ e, eventsContainer, day });
+  }
 
-    const appointmentText = document.createElement('span');
-    // const textNode = document.createTextNode('Appointment');
-
-    appointmentText.innerText = 'Appointment';
-
-    appointmentText.classList.add('appointment-title');
-
-    eventCard.appendChild(appointmentText);
-    eventsContainer.appendChild(eventCard);
-
-    return eventCard;
+  private myDate(date: string): Date {
+    const formattedDate = new Date();
+    const splitDate = date.split(':');
+    formattedDate.setHours(+splitDate[0]);
+    formattedDate.setMinutes(+splitDate[1]);
+    formattedDate.setSeconds(0);
+    return formattedDate;
   }
 }
