@@ -10,8 +10,8 @@
         <dfm-input
           class="flex-1"
           size="md"
-          placeholder="{{'TypeAppointmentNumber' | translate}}"
-          label="{{'AppointmentNumber' | translate}}"
+          placeholder="{{ 'TypeAppointmentNumber' | translate }}"
+          label="{{ 'AppointmentNumber' | translate }}"
           formControlName="appointmentNumber"
         ></dfm-input>
       </div>
@@ -95,7 +95,15 @@
       <!-- (searchInput)="handleDropdownSearch($event, 'doctor')" -->
       <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
         <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
-          <dfm-input-dropdown [typeToSearch]="true" class="flex-1" size="md" placeholder="{{'SelectPatient' | translate}}" label="{{'Patient' | translate}}" formControlName="patientId">
+          <dfm-input-dropdown
+            [items]="filteredPateintsList"
+            [typeToSearch]="true"
+            class="flex-1"
+            size="md"
+            placeholder="{{ 'SelectPatient' | translate }}"
+            label="{{ 'Patient' | translate }}"
+            formControlName="patientId"
+          >
           </dfm-input-dropdown>
         </div>
 
@@ -118,10 +126,10 @@
             #generalUser
             [items]="filteredUserList"
             [typeToSearch]="true"
-            placeholder="{{'SelectStaff' | translate}}"
+            placeholder="{{ 'SelectStaff' | translate }}"
             formControlName="userId"
             size="md"
-            label="{{'Staff' | translate}}"
+            label="{{ 'Staff' | translate }}"
           >
           </dfm-input-dropdown>
         </div>
@@ -131,10 +139,10 @@
             #generalUser
             [items]="filteredRoomList"
             [typeToSearch]="true"
-            placeholder="{{'SelectRooms' | translate}}"
+            placeholder="{{ 'SelectRooms' | translate }}"
             formControlName="roomsId"
             size="md"
-            label="{{'Rooms' | translate}}"
+            label="{{ 'Rooms' | translate }}"
           >
           </dfm-input-dropdown>
         </div>
@@ -146,10 +154,10 @@
             #generalUser
             [items]="filteredPhysicianList"
             [typeToSearch]="true"
-            placeholder="{{'SelectDoctor' | translate}}"
+            placeholder="{{ 'SelectDoctor' | translate }}"
             formControlName="doctorId"
             size="md"
-            label="{{'Doctor' | translate}}"
+            label="{{ 'Doctor' | translate }}"
           >
           </dfm-input-dropdown>
         </div>
@@ -162,4 +170,3 @@
     <dfm-button color="primary" size="md" (click)="submitSearch()">{{ dialogData.confirmButtonText | translate }}</dfm-button>
   </div>
 </div>
-

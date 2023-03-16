@@ -209,7 +209,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
       }));
       this.filteredPateintsList = [...tempKeyValue];
       console.log(this.filteredPateintsList);
-      this.patientsList = [...keyValuePhysicians];
+      this.patientsList = [...tempKeyValue];
     });
 
     this.routerStateSvc
@@ -270,7 +270,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
     let dateDistributed: DateDistributed = {} as DateDistributed;
 
     if (appointment?.startedAt) {
-      date = new Date(appointment.startedAt);
+      date = new Date(appointment?.startedAt);
     } else if (appointment?.exams[0]?.startedAt) {
       date = new Date(appointment?.exams[0]?.startedAt);
     }
@@ -455,11 +455,10 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
       data['FirstName'] = abc[0]
       data['LastName'] = abc[1]
     }
-    if (data.startedAt) data['startedAt'] = `${data.startedAt?.year}-${data.startedAt?.month}-${data.startedAt?.day} ${data?.startTime}:00`;
+    if (data?.startedAt) data['startedAt'] = `${data?.startedAt?.year}-${data?.startedAt?.month}-${data?.startedAt?.day} ${data?.startTime}:00`;
     else data['startedAt'] = '';
-    if (data.endedAt) data['endedAt'] = `${data.endedAt?.year}-${data.endedAt?.month}-${data.endedAt?.day} ${data?.endTime}:00`;
+    if (data?.endedAt) data['endedAt'] = `${data?.endedAt?.year}-${data?.endedAt?.month}-${data?.endedAt?.day} ${data?.endTime}:00`;
     else data['endedAt'] = '';
     this.dialogSvc.close(data);
   }
 }
-
