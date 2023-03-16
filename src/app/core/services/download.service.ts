@@ -47,7 +47,7 @@ export class DownloadService extends DestroyableComponent implements OnDestroy {
     XLSX: (file: string): Blob => new Blob([file], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
   };
 
-  private selectedLang$$ = new BehaviorSubject<string>('');
+  private selectedLang$$ = new BehaviorSubject<string>(''); 
 
   constructor(
     private shareDataSvc: ShareDataService

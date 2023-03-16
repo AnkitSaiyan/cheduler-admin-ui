@@ -97,7 +97,7 @@ export const Translate = Object.freeze({
   },
   Type: {
     [ENG_BE]: 'Type',
-    [DUTCH_BE]: 'Vul in',
+    [DUTCH_BE]: 'Type',
   },
   Description: {
     [ENG_BE]: 'Description',
@@ -178,6 +178,14 @@ export const Translate = Object.freeze({
       [ENG_BE]: 'Data copied to clipboard successfully',
       [DUTCH_BE]: 'Gegevens succesvol naar clipboard gecopieerd',
     },
+    PostAddedSuccessfully:{
+      [ENG_BE]: 'Post added successfully',
+      [DUTCH_BE]: 'Post added successfully NL',
+    },
+    PostDeletedSuccessfully:{
+      [ENG_BE]: 'Post deleted successfully',
+      [DUTCH_BE]: 'Post deleted successfully NL',
+    }
   },
 
   ErrorMessage: {
