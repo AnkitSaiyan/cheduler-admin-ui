@@ -235,9 +235,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       startedAt: [
         absenceDetails?.startedAt
           ? {
-              year: new Date(absenceDetails.startedAt).getFullYear(),
-              month: new Date(absenceDetails.startedAt).getMonth() + 1,
-              day: new Date(absenceDetails.startedAt).getDate(),
+              year: new Date(absenceDetails?.startedAt).getFullYear(),
+              month: new Date(absenceDetails?.startedAt).getMonth() + 1,
+              day: new Date(absenceDetails?.startedAt).getDate(),
             }
           : null,
         [Validators.required],
@@ -246,9 +246,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       endedAt: [
         absenceDetails?.endedAt
           ? {
-              year: new Date(absenceDetails.endedAt).getFullYear(),
-              month: new Date(absenceDetails.endedAt).getMonth() + 1,
-              day: new Date(absenceDetails.endedAt).getDate(),
+              year: new Date(absenceDetails?.endedAt).getFullYear(),
+              month: new Date(absenceDetails?.endedAt).getMonth() + 1,
+              day: new Date(absenceDetails?.endedAt).getDate(),
             }
           : null,
         [Validators.required],

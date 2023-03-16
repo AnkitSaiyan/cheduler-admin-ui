@@ -22,7 +22,7 @@
         <div
           class="d-flex flex-column justify-content-center dfm-bg-main-50 dfm-px-10 dfm-py-4 text-xs text-center rounded">
           <ng-container class="font-weight-medium"> 
-            <span>{{ appointment.exam.startedAt | date : 'h:mm a' }}</span>
+            <span>{{ appointment?.exam?.startedAt | date : 'h:mm a' }}</span>
           </ng-container>
         </div>
 

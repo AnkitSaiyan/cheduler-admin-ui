@@ -92,7 +92,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
           this.columns.slice(0, -1),
           this.filteredAbsences$$.value.map((u: Absence) => [
             u.name,
-            u.startedAt ? new Date(u.startedAt)?.toDateString() : '',
+            u.startedAt ? new Date(u?.startedAt)?.toDateString() : '',
             u.endedAt ? new Date(u?.endedAt)?.toDateString() : '',
             u.info,
           ]),
@@ -143,8 +143,8 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
       ...this.absences$$.value.filter((absence: Absence) => {
         return (
           absence.name?.toLowerCase()?.includes(searchText) ||
-          this.datePipe.transform(absence.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ||
-          this.datePipe.transform(absence.endedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText)
+          this.datePipe.transform(absence?.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ||
+          this.datePipe.transform(absence?.endedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText)
         );
       }),
     ]);
@@ -176,7 +176,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
       let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
 
       this.filteredAbsences$$.value.forEach((absence: Absence) => {
-        dataString += `${absence.name}\t${absence.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
+        dataString += `${absence.name}\t${absence?.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
       });
 
       this.clipboardData = dataString;
