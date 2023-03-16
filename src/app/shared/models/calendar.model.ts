@@ -132,6 +132,7 @@ export function getDurationMinutes(start: Date, end: Date): number {
     //   endH = 24;
     // }
 
+
     if (startH === endH) {
       return endDate.getMinutes() - startDate.getMinutes();
     }

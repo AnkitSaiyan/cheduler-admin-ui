@@ -6,6 +6,7 @@ import { BehaviorSubject, takeUntil } from 'rxjs';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { RepeatType } from 'src/app/shared/models/absence.model';
+import { getDateOfMonth } from 'src/app/shared/models/calendar.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 
 @Component({
@@ -121,13 +122,15 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
         case prioritySlot.repeatType === RepeatType.Monthly: {
           while (true) {
             prioritySlot.repeatDays.split(',').forEach((day) => {
-              firstDate.setDate(+day);
-              if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
-                const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
-                const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5), priority };
-                myPrioritySlots[dateString] = myPrioritySlots[dateString]
-                  ? [...myPrioritySlots[dateString], customPrioritySlot]
-                  : [customPrioritySlot];
+              if (getDateOfMonth(firstDate.getFullYear(), firstDate.getMonth() + 1, 0) >= +day) {
+                firstDate.setDate(+day);
+                if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
+                  const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+                  const customPrioritySlot = { start: prioritySlot.slotStartTime.slice(0, 5), end: prioritySlot.slotEndTime?.slice(0, 5), priority };
+                  myPrioritySlots[dateString] = myPrioritySlots[dateString]
+                    ? [...myPrioritySlots[dateString], customPrioritySlot]
+                    : [customPrioritySlot];
+                }
               }
             });
             if (firstDate.getTime() >= lastDate.getTime()) break;
@@ -142,14 +145,6 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
     this.prioritySlots$$.next({ ...myPrioritySlots });
   }
 }
-
-
-
-
-
-
-
-
 
 
 
