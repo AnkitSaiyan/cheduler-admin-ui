@@ -397,7 +397,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
         .fetchAllAppointments$(result)
         .pipe(takeUntil(this.destroy$$))
         .subscribe((appointments) => {
-          console.log('appointments filtered: ', appointments);
+          // console.log('appointments filtered: ', appointments);
           this.appointments$$.next(appointments);
           this.filteredAppointments$$.next(appointments);
 

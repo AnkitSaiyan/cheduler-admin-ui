@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -52,7 +53,7 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
   //     avatar: ''
   //   }
   // ]
-  constructor(private dashboardApiService: DashboardApiService) {
+  constructor(private dashboardApiService: DashboardApiService, private router: Router) {
     super();
     this.upcomingAppointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredUpcommingAppointments$$ = new BehaviorSubject<any[]>([]);
@@ -69,5 +70,8 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
       }
     });
   }
-}
 
+  redirectToCalender() {
+    this.router.navigate(['/', 'appointment']);
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild , ChangeDetectorRef} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
 import { DashboardApiService, PostIt } from 'src/app/core/services/dashboard-api.service';
@@ -6,6 +6,7 @@ import { ModalService } from 'src/app/core/services/modal.service';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import $ from 'jquery';
 import { AddPostComponent } from './add-post/add-post.component';
 import { ViewPostComponent } from './view-post/view-post.component';
 
@@ -90,6 +91,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
     private formBuilder: FormBuilder,
     private modalSvc: ModalService,
     private notificationSvc: NotificationDataService,
+    private ref: ChangeDetectorRef,
   ) {
     super();
     this.filteredPosts$$ = new BehaviorSubject<any[]>([]);
@@ -145,7 +147,13 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
       .subscribe((response) => {
         if (response) {
           this.notificationSvc.showNotification('Post deleted successfully');
-          this.ngOnInit();
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          // document.getElementById('here').innerHTML.reload;
+          // $('#here').load(window.location.href + ' #here');
+          // this.ngOnInit();
+          // this.ref.detectChanges();
+          // this.filteredPosts$$.next([]);
+          // this.ngOnInit();
         }
       });
   }

@@ -6,30 +6,24 @@
       </div>
       <span class="font-weight-medium">{{"PostIt" | translate}} ({{ posts.length }})</span>
     </header>
+    
 
-    <div>
+    <div class="d-flex dfm-gap-16">
+      <dfm-button size="md" color="secondary" class="text-nowrap post-view-all-btn" (click)="openViewPostModal()"> {{"ViewAll" | translate}} </dfm-button>
       <dfm-button size="md" color="primary" (click)="addPost()"> {{"Add" | translate}} </dfm-button>
     </div>
   </section>
 
-  <section class="d-flex dfm-gap-8 align-items-center justify-content-between dfm-mb-16 dfm-mx-16 dfm-gap-32">
+  <!-- <section class="d-flex dfm-gap-8 align-items-center justify-content-between dfm-mb-16 dfm-mx-16 dfm-gap-32">
     <dfm-input class="flex-grow-1" size="md" placeholder="{{'SearchPostIt' | translate}}" class="post-search-it-placeholder" icon="search-sm"></dfm-input>
 
     <div class="d-flex flex-row justify-content-between dfm-gap-16">
       <dfm-input size="md" placeholder="{{'Search' | translate}}" class="post-search-placeholder flex-grow-1" icon="search-sm"></dfm-input>
-
-      <!-- <dfm-button-icon
-        color="secondary-gray"
-        size="md"
-        icon="copy-03"
-      ></dfm-button-icon> -->
-
-      <dfm-button size="md" color="secondary" class="text-nowrap post-view-all-btn" (click)="openViewPostModal()"> {{"ViewAll" | translate}} </dfm-button>
     </div>
-  </section>
+  </section> -->
 
-  <section  class="h-100" *ngIf="filteredPosts$$ | async as posts">
-      <mdb-carousel *ngIf="posts[0]" [controls]="true" [indicators]="true" [dark]="true">
+  <section id="here"  class="h-100" *ngIf="filteredPosts$$ | async as posts">
+      <mdb-carousel *ngIf="posts[0]" [controls]="true" [indicators]="true" [dark]="true" >
         <mdb-carousel-item *ngFor="let post of posts; let i = index" class="h-100">
           <div
             class="d-flex flex-column dfm-gap-16 dfm-px-24 dfm-pt-16 dfm-pb-24 justify-content-between rounded-3 shadow-sm post-it-card"
