@@ -1,18 +1,12 @@
 <div class="d-flex flex-column dfm-gap-16 position-relative ap-ls-main-wrapper">
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 ap-li-section-1" *ngIf="(calendarView$$ | async) === false">
-      <dfm-button
-        class="hidden ap-li-title-buttons"
-        color="link"
-        size="lg"
-        routerLink="./"
-      >{{'Appointment' | translate}}
-      </dfm-button>
+      <dfm-button class="hidden ap-li-title-buttons" color="link" size="lg" routerLink="./">{{ 'Appointment' | translate }} </dfm-button>
 
       <dfm-input
         class="flex-1 ap-li-search"
         size="md"
-        placeholder="{{'SearchbyPatientnameappointmentnoanddoctor' | translate}}"
+        placeholder="{{ 'SearchbyPatientnameappointmentnoanddoctor' | translate }}"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
@@ -23,6 +17,10 @@
             color="tertiary-gray"
             size="md"
             icon="copy-03"
+            ngbPopover="{{ 'ClickToCopy' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
             (click)="copyToClipboard()"
           ></dfm-button-icon>
         </div>
@@ -32,38 +30,23 @@
             [items]="downloadItems"
             [showDescription]="false"
             [formControl]="downloadDropdownControl"
-            placeholder="{{'Download' | translate}}"
+            placeholder="{{ 'Download' | translate }}"
             size="md"
           ></dfm-input-dropdown>
         </div>
 
         <div class="dfm-button-icon-bg-transparent">
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="calendar-date"
-            (click)="toggleView()"
-          ></dfm-button-icon>
+          <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date" (click)="toggleView()"></dfm-button-icon>
         </div>
       </div>
 
       <div class="d-flex dfm-gap-8 align-items-center">
         <div class="">
-          <dfm-button-icon
-            color="secondary-gray"
-            size="md"
-            icon="calendar-date"
-            (click)="toggleView()"
-          ></dfm-button-icon>
+          <dfm-button-icon color="secondary-gray" size="md" icon="calendar-date" (click)="toggleView()"></dfm-button-icon>
         </div>
 
-        <dfm-button
-          color="primary"
-          size="md"
-          class="text-nowrap"
-          [disabled]="false"
-          routerLink="./add"
-        >{{'AddAppointment' | translate}}
+        <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false" routerLink="./add"
+          >{{ 'AddAppointment' | translate }}
         </dfm-button>
       </div>
     </div>
@@ -71,30 +54,15 @@
     <ng-container *ngIf="calendarView$$ | async">
       <div class="d-flex dfm-gap-8 align-items-center justify-content-end">
         <div class="">
-          <dfm-button-icon
-            color="secondary-gray"
-            size="md"
-            icon="list"
-            (click)="toggleView()"
-          ></dfm-button-icon>
+          <dfm-button-icon color="secondary-gray" size="md" icon="list" (click)="toggleView()"></dfm-button-icon>
         </div>
 
-        <dfm-button
-          color="primary"
-          size="md"
-          class="text-nowrap header-buttons"
-          [disabled]="false"
-          routerLink="./add"
-        >{{'AddAppointment' | translate}}
+        <dfm-button color="primary" size="md" class="text-nowrap header-buttons" [disabled]="false" routerLink="./add"
+          >{{ 'AddAppointment' | translate }}
         </dfm-button>
 
-        <dfm-button
-          color="primary"
-          size="md"
-          class="add-app-btn-mv hidden"
-          [disabled]="false"
-          routerLink="./add"
-        >Add
+        <dfm-button color="primary" size="md" class="add-app-btn-mv hidden" [disabled]="false" routerLink="./add"
+          >{{ 'Add' | translate }}
         </dfm-button>
       </div>
     </ng-container>
@@ -104,33 +72,39 @@
     *ngIf="(calendarView$$ | async) === false"
     class="flex-1 ap-li-search-mv hidden"
     size="md"
-    placeholder="{{'SearchbyPatientnameappointmentnoanddoctor' | translate}}"
+    placeholder="{{ 'SearchbyPatientnameappointmentnoanddoctor' | translate }}"
     icon="search-sm"
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section class="overflow-y-auto list-page-content-height"
-           [ngClass]="{ 'list-page-content-height-calendar': (calendarView$$ | async) }"
-           *ngIf="filteredAppointments$$ | async as appointments">
-      <ng-container *ngIf="(calendarView$$ | async) === false">
-      <dfm-table [items]="appointments" [selectable]="true" (selected)="handleCheckboxSelection($event)"
-                 [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToView($event,appointments)"
-                 class="dfm-table-wrapper">
+  <section
+    class="overflow-y-auto list-page-content-height"
+    [ngClass]="{ 'list-page-content-height-calendar': (calendarView$$ | async) }"
+    *ngIf="filteredAppointments$$ | async as appointments"
+  >
+    <ng-container *ngIf="(calendarView$$ | async) === false">
+      <dfm-table
+        [items]="appointments"
+        [selectable]="true"
+        (selected)="handleCheckboxSelection($event)"
+        [clearSelected$]="clearSelected$$"
+        [rowClickable]="true"
+        (rowClicked)="navigateToView($event, appointments)"
+        class="dfm-table-wrapper"
+      >
         <ng-template #headerRowTemplate>
-          <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate}}</dfm-table-header-cell>
+          <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
         </ng-template>
 
         <ng-template #bodyRowTemplate let-item>
           <dfm-table-body-cell>{{ (item?.exams.length ? (item.startedAt | date : 'y-MM-dd HH:mm') : '') | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ (item?.exams.length ? (item.endedAt | date : 'y-MM-dd HH:mm') : '') | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>
-            <div class="text-truncate">
-              {{ item?.patientFname  | titlecase }} {{ item?.patientLname | titlecase }}
-            </div>
+            <div class="text-truncate">{{ item?.patientFname | titlecase }} {{ item?.patientLname | titlecase }}</div>
           </dfm-table-body-cell>
           <dfm-table-body-cell>
             <div class="text-truncate">
-              {{ item?.doctor  | titlecase }}
+              {{ item?.doctor | titlecase }}
             </div>
           </dfm-table-body-cell>
           <!-- <dfm-table-body-cell>
@@ -146,22 +120,15 @@
           </dfm-table-body-cell>
 
           <dfm-table-body-cell>
-            <dfm-badge *ngIf="item.approval === statusType.Approved"
-                       color="success"
-                       size="sm"
-                       fontWeight="medium">
+            <dfm-badge *ngIf="item.approval === statusType.Approved" color="success" size="sm" fontWeight="medium">
               {{ item.approval | approvalTypeName | dashIfNothing }}
             </dfm-badge>
 
-            <dfm-badge *ngIf="item.approval === statusType.Cancelled"
-                       color="primary"
-                       size="sm">
+            <dfm-badge *ngIf="item.approval === statusType.Cancelled" color="primary" size="sm">
               {{ item.approval | approvalTypeName | dashIfNothing }}
             </dfm-badge>
 
-            <dfm-badge *ngIf="item.approval === statusType.Pending"
-                       color="gray"
-                       size="sm">
+            <dfm-badge *ngIf="item.approval === statusType.Pending" color="gray" size="sm">
               {{ item.approval | approvalTypeName | dashIfNothing }}
             </dfm-badge>
           </dfm-table-body-cell>
@@ -172,6 +139,10 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="pencil-02"
+                ngbPopover="{{ 'Edit' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
                 (click)="$event.stopPropagation()"
                 [routerLink]="['./', item.id, 'edit']"
                 [state]="{ comingFromRoute: 'appointment', edit: true }"
@@ -181,6 +152,10 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="trash-01"
+                ngbPopover="{{ 'Delete' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
                 (click)="$event.stopPropagation(); deleteAppointment(item.id)"
               ></dfm-button>
             </div>
@@ -201,17 +176,41 @@
             ></dfm-button>
 
             <ng-template #actionMenu>
-              <div class="ap-li-menus"
-                   aria-labelledby="dropdownManual">
-                <div (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"
-                     [state]="{ comingFromRoute: 'appointment', edit: true }" ngbPopover="{{'Edit' | translate}}"
-                     triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
-                  <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
+              <div class="ap-li-menus" aria-labelledby="dropdownManual">
+                <div
+                  (click)="$event.stopPropagation()"
+                  [routerLink]="['./', item.id, 'edit']"
+                  [state]="{ comingFromRoute: 'appointment', edit: true }"
+                  ngbPopover="{{ 'Edit' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                >
+                  <dfm-button
+                    trailingIcon="pencil-02"
+                    ngbPopover="{{ 'Edit' | translate }}"
+                    triggers="mouseenter:mouseleave"
+                    popoverClass="popover-p-8"
+                    [openDelay]="200"
+                    color="link-gray"
+                  ></dfm-button>
                 </div>
 
-                <div (click)="$event.stopPropagation(); deleteAppointment(item.id)" ngbPopover="{{'Delete' | translate}}"
-                     triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
-                  <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
+                <div
+                  (click)="$event.stopPropagation(); deleteAppointment(item.id)"
+                  ngbPopover="{{ 'Delete' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                >
+                  <dfm-button
+                    trailingIcon="trash-01"
+                    ngbPopover="{{ 'Delete' | translate }}"
+                    triggers="mouseenter:mouseleave"
+                    popoverClass="popover-p-8"
+                    [openDelay]="200"
+                    color="link-gray"
+                  ></dfm-button>
                 </div>
               </div>
             </ng-template>
@@ -219,36 +218,37 @@
         </ng-template>
       </dfm-table>
       <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!appointments.length">
-        {{"NoDataFound" | translate}}
+        {{ 'NoAppointmentsFound' | translate }}
       </div>
     </ng-container>
 
     <ng-container *ngIf="calendarView$$ | async">
-      <dfm-appointment-calendar class="h-100">
-      </dfm-appointment-calendar>
+      <dfm-appointment-calendar class="h-100"> </dfm-appointment-calendar>
     </ng-container>
   </section>
 
+  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
+  <!--    <div class="shadow-lg ap-li-plus-btn-menu ap-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
+  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
+  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
 
-<!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
-<!--    <div class="shadow-lg ap-li-plus-btn-menu ap-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
-<!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-<!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg ap-li-plus-btn rounded-2"-->
-<!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
-<!--    <dfm-icon #showMoreButtonIcon name="plus" class="ap-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
-<!--  </dfm-button>-->
+  <!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg ap-li-plus-btn rounded-2"-->
+  <!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
+  <!--    <dfm-icon #showMoreButtonIcon name="plus" class="ap-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
+  <!--  </dfm-button>-->
 </div>
 
-<dfm-confirm-status-change-banner [display]="selectedAppointmentIDs.length" [statusType]="'appointment'"
-                                  (confirmationEvent)="handleConfirmation($event)"></dfm-confirm-status-change-banner>
+<dfm-confirm-status-change-banner
+  [display]="selectedAppointmentIDs.length"
+  [statusType]="'appointment'"
+  (confirmationEvent)="handleConfirmation($event)"
+></dfm-confirm-status-change-banner>

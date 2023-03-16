@@ -97,7 +97,7 @@ export const Translate = Object.freeze({
   },
   Type: {
     [ENG_BE]: 'Type',
-    [DUTCH_BE]: 'Vul in',
+    [DUTCH_BE]: 'Type',
   },
   Description: {
     [ENG_BE]: 'Description',
@@ -178,6 +178,14 @@ export const Translate = Object.freeze({
       [ENG_BE]: 'Data copied to clipboard successfully',
       [DUTCH_BE]: 'Gegevens succesvol naar clipboard gecopieerd',
     },
+    PostAddedSuccessfully:{
+      [ENG_BE]: 'Post added successfully',
+      [DUTCH_BE]: 'Post added successfully NL',
+    },
+    PostDeletedSuccessfully:{
+      [ENG_BE]: 'Post deleted successfully',
+      [DUTCH_BE]: 'Post deleted successfully NL',
+    }
   },
 
   ErrorMessage: {
@@ -207,5 +215,39 @@ export const Translate = Object.freeze({
     [ENG_BE]: 'Please fill current slot before adding new',
     [DUTCH_BE]: 'Formulier is niet geldig',
   },
+
+  StaffTypes: {
+    Radiologist: {
+      [ENG_BE]: 'Radiologist',
+      [DUTCH_BE]: 'Radioloog'
+    },
+    Nursing: {
+      [ENG_BE]: 'Nursing',
+      [DUTCH_BE]: 'Verpleging'
+    },
+    Assistant: {
+      [ENG_BE]: 'Assistant',
+      [DUTCH_BE]: 'Assistent'
+    },
+    Secretary: {
+      [ENG_BE]: 'Secretary',
+      [DUTCH_BE]: 'Secretaresse'
+    }
+  },
+
+  PrioritySlots:{
+    Daily:{
+      [ENG_BE]: 'Daily',
+      [DUTCH_BE]: 'Daily NL'
+    },
+    Weekly:{
+      [ENG_BE]: 'Weekly',
+      [DUTCH_BE]: 'Weekly NL'
+    },
+    Monthly:{
+      [ENG_BE]: 'Monthly',
+      [DUTCH_BE]: 'Monthly NL'
+    }
+  }
 });
 

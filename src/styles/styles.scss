@@ -32,6 +32,7 @@ $diflexmo-admin-theme: mat.define-light-theme((
   typography: $typography-config
 ));
 
+
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
@@ -106,6 +107,9 @@ $view-page-content-height-mobile-vh: calc(100vh - $nav-bar-mobile-top-height - $
   //--list-page-height-1440: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total - $list-page-section1-height);
   //--list-page-height-960: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height);
   //--list-page-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height-mobile);
+  .form-check-input:checked {
+    border-color: var(--dfm-primary);
+  }
 }
 
 // Main contents height

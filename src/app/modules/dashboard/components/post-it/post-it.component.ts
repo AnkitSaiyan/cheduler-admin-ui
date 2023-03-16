@@ -6,7 +6,8 @@ import { ModalService } from 'src/app/core/services/modal.service';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
-import $ from 'jquery';
+import { Translate } from 'src/app/shared/models/translate.model';
+import { DUTCH_BE, ENG_BE } from '../../../../shared/utils/const';
 import { AddPostComponent } from './add-post/add-post.component';
 import { ViewPostComponent } from './view-post/view-post.component';
 
@@ -83,6 +84,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
   // ];
 
   public filteredPosts$$: BehaviorSubject<any[]>;
+  private selectedLang: string = ENG_BE;
 
   postData!: PostIt[];
 
@@ -121,7 +123,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
       )
       .subscribe((response) => {
         if (response) {
-          this.notificationSvc.showNotification('Post Added successfully');
+          this.notificationSvc.showNotification(Translate.SuccessMessage.PostAddedSuccessfully[this.selectedLang]);
           // this.filteredPosts$$.next([]);
           // this.ngOnInit();
         }
@@ -146,14 +148,8 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
       )
       .subscribe((response) => {
         if (response) {
-          this.notificationSvc.showNotification('Post deleted successfully');
-          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-          // document.getElementById('here').innerHTML.reload;
-          // $('#here').load(window.location.href + ' #here');
-          // this.ngOnInit();
-          // this.ref.detectChanges();
-          // this.filteredPosts$$.next([]);
-          // this.ngOnInit();
+          this.notificationSvc.showNotification(Translate.SuccessMessage.PostDeletedSuccessfully[this.selectedLang]);
+          this.ngOnInit();
         }
       });
   }
