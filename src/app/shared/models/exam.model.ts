@@ -1,7 +1,7 @@
 import { AvailabilityType, User } from './user.model';
 import { Status } from './status.model';
 import { Room, RoomType } from './rooms.model';
-import { Weekday } from './calendar.model';
+import {TimeSlot, Weekday} from './calendar.model';
 import { PracticeAvailability } from './practice.model';
 
 export interface Exam {
@@ -54,7 +54,7 @@ export interface CreateExamRequestData {
   usersList: number[];
   mandatoryUsers: number[];
   availabilityType: AvailabilityType;
-  practiceAvailability: PracticeAvailability[];
+  practiceAvailability: TimeSlot[];
   status: Status;
   id?: number;
 }

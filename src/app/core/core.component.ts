@@ -90,6 +90,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     });
     this.dashboardApiService.notificationData$$.subscribe((res) => {
       this.notifications = [];
+      console.log(res)
       res.forEach((element) => {
         this.notifications.push(new NavigationItemEvent('1', new Date(element.date), element.message, element.title, element.subTitle));
       });
