@@ -11,6 +11,7 @@
       color="secondary"
       size="sm"
       icon="calendar-date"
+      (click)="redirectToCalender()"
     ></dfm-button-icon>
   </section>
 
@@ -33,6 +34,12 @@
           </div>
           <div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs">
             <span class="font-weight-medium"> {{ appointment?.patientFname | titlecase }} </span>
+          </div>
+          <div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs">
+            <span class="font-weight-medium"> {{ appointment?.exam?.name | titlecase }}</span>
+          </div>
+          <div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs">
+            <span class="font-weight-medium" *ngFor="let room of appointment.rooms; let i = index;"> {{ room?.name | titlecase }}{{i < appointment.rooms.length ? ',' : ''}} </span>
           </div>
         </div>
       </div>
