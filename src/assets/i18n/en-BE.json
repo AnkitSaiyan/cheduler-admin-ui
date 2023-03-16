@@ -342,5 +342,6 @@
   "TypeAppointmentNumber": "Type Appointment Number",
   "AppointmentNumber" : "Appointment Number",
   "Patient" : "Patient",
-  "SelectPatient" : "Select Patient"
+  "SelectPatient" : "Select Patient",
+  "AutoConfirmAppointment": "Auto Confirm Appointment"
 }
