@@ -101,10 +101,11 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
           break;
         }
         case prioritySlot.repeatType === RepeatType.Weekly: {
-          firstDate = new Date(startDate.getTime() - startDate.getDay() * 24 * 60 * 60 * 1000);
           const closestSunday = new Date(startDate.getTime() - startDate.getDay() * 24 * 60 * 60 * 1000);
+          firstDate = new Date(closestSunday);
           while (true) {
             prioritySlot.repeatDays.split(',').forEach((day) => {
+              firstDate.setTime(closestSunday.getTime());
               firstDate.setDate(closestSunday.getDate() + +day);
               if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
                 const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
@@ -145,6 +146,29 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
     this.prioritySlots$$.next({ ...myPrioritySlots });
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
