@@ -207,5 +207,24 @@ export const Translate = Object.freeze({
     [ENG_BE]: 'Please fill current slot before adding new',
     [DUTCH_BE]: 'Formulier is niet geldig',
   },
+
+  StaffTypes: {
+    Radiologist: {
+      [ENG_BE]: 'Radiologist',
+      [DUTCH_BE]: 'R'
+    },
+    Nursing: {
+      [ENG_BE]: 'Nursing',
+      [DUTCH_BE]: 'N'
+    },
+    Assistant: {
+      [ENG_BE]: 'Assistant',
+      [DUTCH_BE]: 'A'
+    },
+    Secretary: {
+      [ENG_BE]: 'Secretary',
+      [DUTCH_BE]: 'S'
+    }
+  }
 });
 
