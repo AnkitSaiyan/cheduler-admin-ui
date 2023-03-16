@@ -16,4 +16,9 @@ export interface PrioritySlot {
   slotStartTime: string;
   slotEndTime: string | null;
 }
+export enum prioritySlot {
+  Daily = 'Daily',
+  Weekly = 'Weekly',
+  Monthly = 'Monthly',
+}
 
