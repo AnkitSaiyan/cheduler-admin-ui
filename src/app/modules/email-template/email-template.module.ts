@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { EmailTemplateComponent } from './pages/email/email-template.component';
 import { EmailTemplateListComponent } from './components/email-template-list/email-template-list.component';
 import { EditEmailTemplateComponent } from './components/edit-email-template/edit-email-template.component';
-import { EmailRoutingModule } from './email-routing.module';
+import { EmailTemplateRoutingModule } from './email-template-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AngularEditorModule } from '@kolkov/angular-editor';
@@ -17,7 +17,7 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
   ],
   imports: [
     CommonModule,
-    EmailRoutingModule,
+    EmailTemplateRoutingModule,
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
