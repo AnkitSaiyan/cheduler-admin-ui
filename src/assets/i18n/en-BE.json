@@ -346,6 +346,6 @@
   "AutoConfirmAppointment": "Auto Confirm Appointment",
   "TodaysAppointments": "Today's Appointment",
   "NoAppointmentFound":"No Appointments Found",
-  "NoUppcomingAppointment":"No Upcoming Appointments"
-
+  "NoUppcomingAppointment":"No Upcoming Appointments",
+  "Calendar" : "Calendar"
 }

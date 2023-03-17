@@ -40,7 +40,7 @@ label{
   .st-mg-main-wrapper {
 
     .st-mg-title-buttons-mv {
-      display: flex;
+      display: flex!important;
     }
 
     .st-mg-title-buttons {
@@ -95,5 +95,11 @@ label{
         }
       }
     }
+  }
+  .mv.hidden{
+    display: block!important;
+  }
+  .mv .st-mg-title-buttons{
+    display: block!important;
   }
 }

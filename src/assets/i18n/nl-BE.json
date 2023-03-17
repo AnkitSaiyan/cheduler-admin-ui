@@ -345,6 +345,9 @@
   "AutoConfirmAppointment": "Afspraak automatisch bevestigen",
   "TodaysAppointments": "Afspraak van vandaag",
   "NoAppointmentFound":"Geen afspraken gevonden",
-  "NoUppcomingAppointment":"Geen komende afspraken"
+  "NoUppcomingAppointment":"Geen komende afspraken",
+  "Calendar" : "Kalendar"
+
+
 }
 
