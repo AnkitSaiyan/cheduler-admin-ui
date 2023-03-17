@@ -160,7 +160,7 @@
           </div>
 
             <span class="dfm-text-main-600"
-                  *ngIf="!staffsGroupedByTypes.secretaries.length && !staffsGroupedByTypes.nursing.length && !staffsGroupedByTypes.radiologists.length && !staffsGroupedByTypes.assistants.length">No General Staff found</span>
+                  *ngIf="!staffsGroupedByTypes.secretaries.length && !staffsGroupedByTypes.nursing.length && !staffsGroupedByTypes.radiologists.length && !staffsGroupedByTypes.assistants.length">{{"NoGeneralStafFfound" | translate}}</span>
           </div>
         </div>
 
@@ -180,7 +180,7 @@
           </div>
         </div>
 
-          <span class="dfm-text-main-600" *ngIf="!staffsGroupedByTypes.mandatory.length">No Mandatory Staff found</span>
+          <span class="dfm-text-main-600" *ngIf="!staffsGroupedByTypes.mandatory.length">{{"NoMandatoryStaffFound" | translate}}</span>
         </div>
 
         <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
@@ -268,7 +268,7 @@
         </dfm-table>
         <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom dfm-text-main-600"
              *ngIf="!examDetails?.practiceAvailability?.length">
-          {{"NoDataFound" | translate}}
+          {{"NoExceptionFound" | translate}}
         </div>
       </div>
     </section>
