@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'dfm-email-template',
-  templateUrl: './email.component.html',
-  styleUrls: ['./email.component.scss'],
+  templateUrl: './email-template.component.html',
+  styleUrls: ['./email-template.component.scss'],
 })
-export class EmailComponent implements OnInit {
+export class EmailTemplateComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
