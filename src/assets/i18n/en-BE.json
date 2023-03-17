@@ -317,7 +317,7 @@
   "TopTenReferringDoctors": " Top 10 Referring Doctors",
   "Notifications": "Notifications",
   "NewAppointmentCreated" : "New appointment created",
-  "TopTenExaminations": "Top Ten Examinations",
+  "TopTenExaminations": "Top 10 Examinations",
   "UnavailablePeriodsOfTheHalls" : "Unavailable periods of the rooms within 31 days",
   "SearchRoomName" : "Search Room Name",
   "Patients" : "Patients",
@@ -343,5 +343,7 @@
   "AppointmentNumber" : "Appointment Number",
   "Patient" : "Patient",
   "SelectPatient" : "Select Patient",
-  "AutoConfirmAppointment": "Auto Confirm Appointment"
+  "AutoConfirmAppointment": "Auto Confirm Appointment",
+  "TodaysAppointments": "Today's Appointment",
+  "NoAppointmentFound":"No Appointments Found"
 }

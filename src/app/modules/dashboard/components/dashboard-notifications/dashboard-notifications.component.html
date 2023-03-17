@@ -7,12 +7,12 @@
       <span>{{"Notifications" | translate}} ({{ notifications.length }})</span>
     </header>
 
-    <div>
+    <!-- <div>
       <dfm-button
         size="md"
         color="secondary"
       >{{"ViewAll" | translate}}</dfm-button>
-    </div>
+    </div> -->
   </section>
 
   <section class="d-flex flex-column doctor-list-wrapper" *ngIf="filteredNotifications$$ | async as notifications">

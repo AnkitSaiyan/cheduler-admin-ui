@@ -107,9 +107,9 @@
           <dfm-table-body-cell>{{ item?.doctor | titlecase }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.id }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.createdAt }}</dfm-table-body-cell>
-          <dfm-table-body-cell>
+          <!-- <dfm-table-body-cell>
             <span>{{ item.readStatus === readStatus.Read ? 'Yes' : 'No' }}</span>
-          </dfm-table-body-cell>
+          </dfm-table-body-cell> -->
           <dfm-table-body-cell>
             <dfm-badge *ngIf="item.approval === statusType.Approved" color="success" size="sm" fontWeight="medium">
               {{ item.approval | approvalTypeName | dashIfNothing }}

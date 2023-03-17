@@ -167,12 +167,12 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
 
     console.log('requestData: ', requestData);
 
-    // this.emailTemplateApiSvc
-    //   .updateEmailTemplate(requestData)
-    //   .pipe(takeUntil(this.destroy$$))
-    //   .subscribe(() => {
-    //     this.notificationSvc.showNotification(`Email template updated successfully`);
-    //   });
+    this.emailTemplateApiSvc
+      .updateEmailTemplate(requestData)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.notificationSvc.showNotification(`Email template updated successfully`);
+      });
   }
 }
 

@@ -11,7 +11,8 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
   styleUrls: ['./appointments-doughnut-chart.component.scss'],
 })
 export class AppointmentsDoughnutChartComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public appointmentDetails = {
+  // eslint-disable-next-line prettier/prettier
+  public appointmentDetails:any = {
     Total: 0,
     Approved: 0,
     Pending: 0,
@@ -49,7 +50,13 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
         labels: this.doughnutChartLabels,
         datasets: [
           {
-            data: [this.appointmentDetails.Total, this.appointmentDetails.Pending, this.appointmentDetails.Approved],
+            data: [
+              this.appointmentDetails.Total ? this.appointmentDetails.Total : '',
+              this.appointmentDetails.Pending ? this.appointmentDetails.Pending : '',
+              this.appointmentDetails.Approved ? this.appointmentDetails.Approved : '',
+              // this.appointmentDetails.Pending,
+              // this.appointmentDetails.Approved,
+            ],
             backgroundColor: ['#E0DDE4', '#C3B3CD', '#A589B7'],
             hoverBackgroundColor: ['#E0DDE4', '#C3B3CD', '#A589B7'],
             hoverBorderColor: ['#4E2267', '#4E2267', '#4E2267'],
