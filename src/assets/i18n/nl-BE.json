@@ -346,7 +346,11 @@
   "TodaysAppointments": "Afspraak van vandaag",
   "NoAppointmentFound":"Geen afspraken gevonden",
   "NoUppcomingAppointment":"Geen komende afspraken",
-  "Calendar" : "Kalendar"
+  "Calendar" : "Kalendar",
+  "ListView" : "Lijstweergave",
+  "NoExceptionFound" : "Geen uitzonderingen gevonden",
+  "NoMandatoryStaffFound" : "Geen verplicht personeel gevonden",
+  "NoGeneralStafFfound" : "Geen generale staf gevonden"
 
 
 }
