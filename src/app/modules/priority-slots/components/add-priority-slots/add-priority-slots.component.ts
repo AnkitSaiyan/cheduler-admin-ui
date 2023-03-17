@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -149,7 +149,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         take(1),
       )
       .subscribe((prioritySlot) => {
-
         this.prioritySlot$$.next(prioritySlot);
         this.createForm(prioritySlot);
       });
@@ -341,10 +340,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       });
 
     combineLatest([
-      this.prioritySlotForm?.get('slotStartTime')?.valueChanges,
-      this.prioritySlotForm?.get('slotEndTime')?.valueChanges,
-      this.prioritySlotForm?.get('startedAt')?.valueChanges,
-      this.prioritySlotForm?.get('endedAt')?.valueChanges,
+      this.prioritySlotForm?.get('slotStartTime')?.valueChanges.pipe(startWith('')),
+      this.prioritySlotForm?.get('slotEndTime')?.valueChanges.pipe(startWith('')),
+      this.prioritySlotForm?.get('startedAt')?.valueChanges.pipe(startWith('')),
+      this.prioritySlotForm?.get('endedAt')?.valueChanges.pipe(startWith('')),
     ])
       .pipe(debounceTime(0), takeUntil(this.destroy$$))
       .subscribe(() => this.handleTimeChange());
@@ -363,7 +362,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   public savePrioritySlot() {
-
     if (this.formValues.isRepeat) {
       if (this.prioritySlotForm.invalid) {
         this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
@@ -386,7 +384,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     }
 
     this.submitting$$.next(true);
-
 
     const { startedAt, endedAt, repeatDays, slotStartTime, slotEndTime, ...rest } = this.formValues;
 
@@ -414,7 +411,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     if (this.modalData?.prioritySlotDetails) {
       addPriorityReqData.id = this.modalData.prioritySlotDetails.id;
     }
-
 
     if (this.modalData.edit) {
       this.priorityApiSvc
@@ -537,9 +533,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     }
   }
 
-  public handleChange(repeatFrequency: InputComponent) {
-
-  }
+  public handleChange(repeatFrequency: InputComponent) {}
 
   private handleTimeChange() {
     console.log('in')
@@ -580,5 +574,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
   }
 }
+
 
 
