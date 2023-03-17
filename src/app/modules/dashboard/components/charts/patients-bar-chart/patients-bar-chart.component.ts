@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
+import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
+import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'dfm-patients-bar-chart',
   templateUrl: './patients-bar-chart.component.html',
   styleUrls: ['./patients-bar-chart.component.scss'],
 })
-export class PatientsBarChartComponent implements OnInit {
+export class PatientsBarChartComponent extends DestroyableComponent implements OnInit {
   public patientsBarChartLabels = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
 
   public patientsBarChartOptions!: ChartOptions<'bar'>;
@@ -18,7 +21,20 @@ export class PatientsBarChartComponent implements OnInit {
 
   public patientsBarChartPlugins = [pluginDataLabels.default];
 
+  public patienttDetails: any;
+
+  constructor(private dashboardApiService: DashboardApiService) {
+    super();
+  }
+
   public ngOnInit(): void {
+    this.dashboardApiService.patientsBarChart$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
+      this.patienttDetails = appointment.patients;
+      // appointment['appointments'].forEach((element) => {
+      //   // this.appointmentDetails[element.label] = element.value;
+      // });
+    });
+
     this.patientsBarChartConfig = {
       labels: this.patientsBarChartLabels,
       datasets: [
@@ -46,13 +62,11 @@ export class PatientsBarChartComponent implements OnInit {
         legend: {
           display: false,
         },
+        tooltip: {
+          enabled: false,
+        },
         datalabels: {
-          anchor: 'end',
-          align: 'end',
-          color: '#7839EE',
-          font: {
-            size: 8,
-          },
+          display: false,
         },
       },
     };

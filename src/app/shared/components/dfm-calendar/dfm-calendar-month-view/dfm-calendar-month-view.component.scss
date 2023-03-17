@@ -7,7 +7,8 @@ table, th, tr, td {
   transition: all 200ms linear;
   width: 100%;
   height: 100%;
-
+  min-height: 528px;
+  min-width: 528px;
   th, td {
     padding: 12px;
   }
@@ -93,14 +94,14 @@ table, th, tr, td {
               display: flex;
               flex-direction: column;
 
-              .calender-month-view-day-exam-details-expanded-patient-details {
-                display: flex;
-                flex-direction: column;
-                padding: 8px;
-                //&:hover {
-                //  background: var(--dfm-main-100);
-                //}
-              }
+              //.calender-month-view-day-exam-details-expanded-patient-details {
+              //  display: flex;
+              //  flex-direction: column;
+              //  padding: 8px !important;
+              //  //&:hover {
+              //  //  background: var(--dfm-main-100);
+              //  //}
+              //}
 
               .calender-month-view-day-exam-details-expanded-patient-details-divider {
                 border-bottom: 1px solid var(--dfm-main-200);
@@ -137,9 +138,8 @@ table, th, tr, td {
       .calender-month-view-day-exam-event-details {
         display: flex;
         flex-direction: column;
-        justify-content: center;
         width: 100%;
-        padding: 4px 8px;
+        padding: 8px;
         font-size: 0.9rem;
         cursor: pointer;
       }
@@ -158,5 +158,44 @@ table, th, tr, td {
   .calender-month-view-selected-day {
     background: var(--dfm-main-200);
     color: black;
+  }
+}
+
+@media (max-width: 680px) {
+  .calender-month-view-day-exam-event-container {
+    left: -8px
+  }
+  //
+  //.calender-month-view-day-exam-event-details {
+  //  display: none !important;
+  //}
+  //
+  .calender-month-view-event-circle-icon {
+    top: unset !important;
+    bottom: 8px !important;
+    left: 8px !important;
+  }
+
+  .calender-month-view-day-exam-event-time, .calender-month-view-day-exam-event-title {
+    display: none;
+  }
+
+  .calender-month-view-day-exam-details-expanded {
+    min-width: auto;
+  }
+
+  .calender-month-view-day-exam-details-expanded-patients-container {
+    max-height: 256px;
+    overflow: auto;
+  }
+}
+
+@media (max-height: 1000px) {
+  .calender-month-view-day-exam-event-time {
+    display: none;
+  }
+
+  .calender-month-view-day-exam-event-title {
+    font-size: 0.8rem !important;
   }
 }

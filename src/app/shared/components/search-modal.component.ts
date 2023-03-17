@@ -96,7 +96,6 @@ export class SearchModalComponent extends DestroyableComponent implements OnInit
   }
 
   handleSearch(searchText: string | undefined) {
-    console.log(searchText);
     if (searchText?.toString()?.toLowerCase()) {
       this.filteredItems$$.next([...this.items$$.value.filter((item) => item?.key?.toLowerCase()?.includes(searchText))]);
     } else {

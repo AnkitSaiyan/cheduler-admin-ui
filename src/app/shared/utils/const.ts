@@ -9,11 +9,17 @@ export const APPOINTMENT_ID = 'appointmentID';
 export const EMAIL_TEMPLATE_ID = 'emailID';
 export const PRIORITY_ID = 'priorityID';
 
+// Language Constants
+
+export const ENG_BE = 'en-BE';
+export const DUTCH_BE = 'nl-BE';
+
 // Other constants
 
 export const COMING_FROM_ROUTE = 'comingFromRoute';
 export const EDIT = 'edit';
 export const Statuses = Object.freeze(['inactive', 'active']);
+export const StatusesNL = Object.freeze(['inactief', 'actief']);
 
 // RegExp Const
 

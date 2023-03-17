@@ -3,9 +3,6 @@
 }
 
 section.ad-ex-section2 {
-  // header height - content padding top bottom - section 1 height - row gap - maintaining bottom gap
-  max-height: calc(100dvh - 64px - 48px - 40px - 16px);
-
   .ad-ex-name {
     width: 512px;
   }
@@ -24,10 +21,6 @@ section.ad-ex-section2 {
     }
   }
 
-  //.ad-ex-staff-dropdown, .ad-ex-exam-dropdown {
-  //  max-width: 504px;
-  //}
-
   .ad-ex-info-input {
     max-width: 70%;
   }
@@ -43,20 +36,6 @@ section.ad-ex-section2 {
   }
 }
 
-@media (max-width: 1440px) {
-  section.ad-ex-section2 {
-    // header height - content padding - section 1 height - row gap - extra gap
-    //max-height: calc(100vh - 64px - 48px - 40px - 16px);
-    max-height: calc(100dvh - 46px - 48px - 40px - 16px);
-  }
-}
-
-@media (max-width: 960px) {
-  section.ad-ex-section2 {
-    max-height: calc(100dvh - 36px - 56px - 48px - 40px - 16px)
-  }
-}
-
 @media (max-width: 720px) {
   .ad-ex-availability-form-fields {
     transition: all linear 200ms;
@@ -65,18 +44,12 @@ section.ad-ex-section2 {
 }
 
 @media (max-width: 680px) {
-  .ad-ex-main-wrapper {
-    padding: 0;
-  }
-
   .ad-ex-title-buttons {
     display: none !important;
   }
 
   .ad-ex-title-buttons-mv {
-    margin-left: 8px;
     display: flex;
-    //margin-bottom: 16px;
   }
 
   .ad-ex-name-expense-room > dfm-input {
@@ -121,9 +94,6 @@ section.ad-ex-section2 {
   }
 
   section.ad-ex-section2 {
-    // header height - content padding - section 1 height - row gap - bottom nav bar height - extra gap
-    //max-height: calc(100vh - 36px - 24px - 36px - 24px - 65px - 24px);
-    max-height: calc(100dvh - 36px - 76px - 48px - 36px - 16px);
     box-shadow: none;
     background: transparent;
     padding: 0;

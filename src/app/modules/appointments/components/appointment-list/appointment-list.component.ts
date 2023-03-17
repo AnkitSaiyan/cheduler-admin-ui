@@ -1,22 +1,26 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TableItem } from 'diflexmo-angular-design';
-import { DatePipe } from '@angular/common';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { AppointmentStatus, Status } from '../../../../shared/models/status.model';
+import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { DownloadService } from '../../../../core/services/download.service';
+import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { getDurationMinutes } from '../../../../shared/models/calendar.model';
 import { Exam } from '../../../../shared/models/exam.model';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {RouterStateService} from "../../../../core/services/router-state.service";
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -32,7 +36,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Started At', 'Ended At', 'Patient Name', 'Doctor', 'Appointment No', 'Applied On', 'Read', 'Status', 'Actions'];
+  public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Doctor', 'AppointmentNo', 'AppliedOn', 'Read', 'Status', 'Actions'];
 
   public downloadItems: NameValue[] = [];
 
@@ -42,7 +46,11 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public appointmentsGroupedByDate: { [key: string]: Appointment[] } = {};
 
-  public appointmentsGroupedByDateAndTime: { [key: string]: Appointment[][] } = {};
+  public appointmentsGroupedByDateAndTime: { [keydeployed: string]: Appointment[][] } = {};
+
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
 
   public appointmentGroupedByDateAndRoom: {
     [key: string]: {
@@ -57,7 +65,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: AppointmentStatus | null } | null>(null);
 
-  public calendarView$$ = new BehaviorSubject<boolean>(true);
+  public calendarView$$ = new BehaviorSubject<boolean>(false);
 
   public selectedAppointmentIDs: string[] = [];
 
@@ -66,6 +74,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   public statusType = getAppointmentStatusEnum();
 
   public readStatus = getReadStatusEnum();
+
+  public clipboardData: string = '';
 
   constructor(
     private downloadSvc: DownloadService,
@@ -76,28 +86,45 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private modalSvc: ModalService,
     private roomApiSvc: RoomsApiService,
     private datePipe: DatePipe,
+    private cdr: ChangeDetectorRef,
+    private titleCasePipe: TitleCasePipe,
+    private routerStateSvc: RouterStateService,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
+
+    this.routerStateSvc.listenForQueryParamsChanges$().pipe(debounceTime(100)).subscribe((params) => {
+      if (params['v']) {
+        this.calendarView$$.next(params['v'] !== 't');
+      } else {
+        this.router.navigate([], {
+          replaceUrl: true,
+          queryParams: {
+            v: 'w'
+          }
+        });
+        this.calendarView$$.next(true);
+      }
+    });
   }
 
   public ngOnInit() {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-      console.log('appointments: ', appointments);
       this.appointments$$.next(appointments);
       this.filteredAppointments$$.next(appointments);
 
-      appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
-
-      console.log(appointments);
-
-      this.groupAppointmentsForCalendar(...appointments);
-      this.groupAppointmentByDateAndRoom(...appointments);
-
-      console.log(this.appointmentsGroupedByDate);
+      // appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
+      //
+      //
+      //
+      // this.groupAppointmentsForCalendar(...appointments);
+      // this.groupAppointmentByDateAndRoom(...appointments);
+      //
+      //
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
@@ -114,36 +141,90 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        switch (value) {
-          case 'print':
-            this.notificationSvc.showNotification(`Data printed successfully`);
-            break;
-          default:
-            this.notificationSvc.showNotification(`Download in ${value?.toUpperCase()} successfully`);
+        if (!this.filteredAppointments$$.value.length) {
+          return;
         }
+
+        this.downloadSvc.downloadJsonAs(
+          value as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.filteredAppointments$$.value.map((ap: Appointment) => [
+            ap.startedAt.toString(),
+            ap.endedAt.toString(),
+            `${this.titleCasePipe.transform(ap.patientFname)} ${this.titleCasePipe.transform(ap.patientLname)}`,
+            this.titleCasePipe.transform(ap.doctor),
+            ap.id.toString(),
+            ap.createdAt.toString(),
+            ap.readStatus ? 'Yes' : 'No',
+            AppointmentStatusToName[+ap.approval],
+          ]),
+          'physician',
+        );
+
+        if (value !== 'PRINT') {
+          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+        }
+
+        this.downloadDropdownControl.setValue(null);
+
+        this.cdr.detectChanges();
       });
 
-    this.afterBannerClosed$$.pipe(
-      map((value) => {
-        if (value?.proceed) {
-          return [...this.selectedAppointmentIDs.map((id) => ({ id: +id, newStatus: value.newStatus }))];
-        }
-
-        return [];
-      }),
-      switchMap((changes) => this.appointmentApiSvc.changeAppointmentStatus$(changes)),
-      takeUntil(this.destroy$$),
-    );
-    // .subscribe((value) => {
-    //   if (value) {
-    //     this.notificationSvc.showNotification('Status has changed successfully');
-    //   }
-    //   this.clearSelected$$.next();
-    // });
+    this.afterBannerClosed$$
+      .pipe(
+        map((value) => {
+          if (value?.proceed) {
+            return [...this.selectedAppointmentIDs.map((id) => ({id: +id, status: value.newStatus as number}))];
+          }
+          return [];
+        }),
+        filter((changes) => {
+          if (!changes.length) {
+            this.clearSelected$$.next();
+          }
+          return !!changes.length;
+        }),
+        switchMap((changes) => this.appointmentApiSvc.changeAppointmentStatus$(changes)),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe({
+        next: () => {
+          this.notificationSvc.showNotification('Status has changed successfully');
+          this.clearSelected$$.next();
+        },
+      });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
+      this.roomList = rooms.map(({name, id}) => ({name, value: id}));
     });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        this.columns = [
+          Translate.StartedAt[lang],
+          Translate.EndedAt[lang],
+          Translate.PatientName[lang],
+          Translate.Doctor[lang],
+          Translate.AppointmentNo[lang],
+          Translate.AppliedOn[lang],
+          Translate.Read[lang],
+          Translate.Status[lang],
+          Translate.Actions[lang],
+        ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
   }
 
   public override ngOnDestroy() {
@@ -151,7 +232,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   }
 
   public handleCheckboxSelection(selected: string[]) {
-    this.toggleMenu(true);
+    // this.toggleMenu(true);
+
     this.selectedAppointmentIDs = [...selected];
   }
 
@@ -168,7 +250,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     ]);
   }
 
-  public changeStatus(changes: { id: number | string; newStatus: AppointmentStatus | null }[]) {
+  public changeStatus(changes: ChangeStatusRequestData[]) {
     this.appointmentApiSvc
       .changeAppointmentStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
@@ -179,10 +261,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Appointment?',
+        bodyText: 'AreYouSureYouWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
@@ -197,18 +279,35 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: AppointmentStatus | null }) {
-    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
   public copyToClipboard() {
-    this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    try {
+      let dataString = `Started At\t\t\tEnded At\t\t\t`;
+      dataString += `${this.columns.slice(2, -1).join('\t\t')}\n`;
+
+      this.filteredAppointments$$.value.forEach((ap: Appointment) => {
+        dataString += `${ap.startedAt.toString()}\t${ap.endedAt.toString()}\t${this.titleCasePipe.transform(
+          ap.patientFname,
+        )} ${this.titleCasePipe.transform(ap.patientLname)}\t\t${this.titleCasePipe.transform(
+          ap.doctor,
+        )}\t\t${ap.id.toString()}\t\t${ap.createdAt.toString()}\t\t${ap.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap.approval]}\n`;
+      });
+
+      this.clipboardData = dataString;
+
+      this.cdr.detectChanges();
+      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+    } catch (e) {
+      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.clipboardData = '';
+    }
   }
 
-  public navigateToView(e: TableItem) {
+  public navigateToView(e: TableItem, appointments: Appointment[]) {
     if (e?.id) {
-      console.log('in');
-      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+      this.router.navigate([`./${e.id}/view`], {replaceUrl: true, relativeTo: this.route});
     }
   }
 
@@ -229,10 +328,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.toggleMenu();
 
     const modalRef = this.modalSvc.open(SearchModalComponent, {
-      options: { fullscreen: true },
+      options: {fullscreen: true},
       data: {
         items: [
-          ...this.appointments$$.value.map(({ id, patientLname, patientFname }) => {
+          ...this.appointments$$.value.map(({id, patientLname, patientFname}) => {
             return {
               name: `${patientFname} ${patientLname}`,
               key: `${patientFname} ${patientLname} ${id}`,
@@ -248,7 +347,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   }
 
   private filterAppointments(result: { name: string; value: string }[]) {
-    console.log(result, this.appointments$$.value);
     if (!result?.length) {
       this.filteredAppointments$$.next([...this.appointments$$.value]);
       return;
@@ -260,7 +358,12 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   }
 
   public toggleView(): void {
-    this.calendarView$$.next(!this.calendarView$$.value);
+    this.router.navigate([], {
+      replaceUrl: true,
+      queryParams: {
+        v: !this.calendarView$$.value ? 'w' : 't'
+      }
+    });
   }
 
   private groupAppointmentsForCalendar(...appointments: Appointment[]) {
@@ -277,7 +380,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
     appointments.push({} as Appointment);
     appointments.forEach((appointment, index) => {
-      if (Object.keys(appointment).length) {
+      if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
         const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
 
         if (dateString) {
@@ -327,7 +430,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
           groupedAppointments.push(appointment);
           this.appointmentsGroupedByDate[dateString].push(appointment);
         }
-      } else {
+      } else if (lastDateString) {
         this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
       }
     });
@@ -365,7 +468,5 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         });
       }
     });
-
-    console.log(groupBy);
   }
 }

@@ -1,16 +1,16 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, switchMap, take, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationType } from 'diflexmo-angular-design';
 import { NameValue } from '../../search-modal.component';
-import { AddAppointmentRequestData, Appointment, UpdateDurationRequestData } from '../../../models/appointment.model';
+import { AddAppointmentRequestData, Appointment, UpdateDurationRequestData, UpdateRadiologistRequestData } from '../../../models/appointment.model';
 import { Exam } from '../../../models/exam.model';
-import { getDurationMinutes } from '../../../models/calendar.model';
+import { CalenderTimeSlot, getDurationMinutes, Interval } from '../../../models/calendar.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, DialogData } from '../../confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../confirm-action-modal.component';
 import { ChangeRadiologistModalComponent } from '../../../../modules/appointments/components/change-radiologist-modal/change-radiologist-modal.component';
 import { AppointmentTimeChangeModalComponent } from '../../../../modules/appointments/components/appointment-time-change-modal/appointment-time-change-modal.component';
 import { ShareDataService } from '../../../../core/services/share-data.service';
@@ -18,6 +18,8 @@ import { getAddAppointmentRequestData } from '../../../utils/getAddAppointmentRe
 import { ReadStatus } from '../../../models/status.model';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
+import { Translate } from '../../../models/translate.model';
+import { CalendarUtils } from 'src/app/shared/utils/calendar.utils';
 
 @Component({
   selector: 'dfm-calendar-day-view',
@@ -37,6 +39,9 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
 
   @Input()
   public newDate$$ = new BehaviorSubject<Date | null>(null);
+
+  @Input()
+  public timeSlot!: CalenderTimeSlot;
 
   @Input()
   public dataGroupedByDateAndRoom!: {
@@ -70,6 +75,12 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
 
   public addingAppointment = false;
 
+  public grayOutSlot$$: BehaviorSubject<any[]> = new BehaviorSubject<Interval[]>([]);
+
+  private lastScrollTime: number = 0;
+
+  private requestId: number | null = null;
+
   constructor(
     private datePipe: DatePipe,
     private appointmentApiSvc: AppointmentApiService,
@@ -90,10 +101,12 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
       this.dataGroupedByDateAndRoom = currentValue;
     }
+
+    this.grayOutSlot$$.next([]);
+    this.getGrayOutArea(this.timeSlot);
   }
 
   public ngOnInit(): void {
-    console.log(this.dataGroupedByDateAndRoom);
     this.changeDate$$
       .asObservable()
       .pipe(filter((offset) => !!offset))
@@ -127,6 +140,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   private updateDate(date: Date) {
+    date.setMinutes(date.getMinutes() - (date.getMinutes() % 5));
     this.selectedDate = date;
     this.selectedDateOnly = date.getDate();
     const dateString = this.datePipe.transform(date, 'd-M-yyyy');
@@ -156,13 +170,15 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   public getTop(groupedData: any[]): number {
-    const startHour = new Date(groupedData[0].startedAt).getHours();
-    const startMinute = new Date(groupedData[0].startedAt).getMinutes();
-    const barHeight = 1;
-    const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-    const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
-
-    return top;
+    // const startHour = new Date(groupedData[0].startedAt).getHours();
+    // const startMinute = new Date(groupedData[0].startedAt).getMinutes();
+    // const barHeight = 1;
+    // const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
+    // const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
+    const start = this.myDate(this.timeSlot.timings[0]);
+    const end = new Date(groupedData[0].startedAt);
+    const minutes = getDurationMinutes(start, end);
+    return minutes * this.pixelsPerMin;
   }
 
   private handleDocumentClick() {
@@ -184,20 +200,26 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   }
 
   public changeRadiologists(appointment: Appointment) {
-    const modalRef = this.modalSvc.open(ChangeRadiologistModalComponent);
+    const modalRef = this.modalSvc.open(ChangeRadiologistModalComponent, {
+      data: appointment,
+    });
 
     modalRef.closed
       .pipe(
         filter((res) => !!res),
-        switchMap((id) => {
-          const requestData = { ...getAddAppointmentRequestData(appointment, true, { userId: id }) };
-          return this.appointmentApiSvc.updateAppointment$(requestData);
+        switchMap((ids: number[]) => {
+          const requestData = {
+            appointmentId: appointment.id,
+            examId: appointment.exams[0].id,
+            userId: ids,
+          } as UpdateRadiologistRequestData;
+
+          return this.appointmentApiSvc.updateRadiologist$(requestData);
         }),
         take(1),
       )
       .subscribe((res) => {
-        console.log(res);
-        this.notificationSvc.showNotification('Radiologist updated');
+        this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated}!`);
       });
   }
 
@@ -235,7 +257,8 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
             amountofMinutes: +res.minutes,
             extensionType: extend ? 'extend' : 'shorten',
             from: res.top ? 'AtTheTop' : 'AtTheBottom',
-            id: appointment.id,
+            appointmentId: appointment.id,
+            examId: appointment.exams[0].id,
           } as UpdateDurationRequestData;
 
           eventContainer?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -243,12 +266,9 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         }),
         take(1),
       )
-      .subscribe(
-        (res) => {
-          console.log(res);
-        },
-        (err) => {
-          console.log(err);
+      .subscribe({
+        next: (res) => {},
+        error: (err) => {
           this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
           if (eventContainer && top && height) {
             // eslint-disable-next-line no-param-reassign
@@ -257,7 +277,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
             eventContainer.style.height = height;
           }
         },
-      );
+      });
   }
 
   public readAppointment(appointment: Appointment) {
@@ -266,7 +286,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         titleText: 'Read Status Confirmation',
         confirmButtonText: 'Change',
         bodyText: `Are you sure you want to mark the appointment with Appointment No: ${appointment.id} as read?`,
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     modalRef.closed
@@ -282,7 +302,6 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         take(1),
       )
       .subscribe((res) => {
-        console.log(res);
         this.notificationSvc.showNotification('Appointment has been read');
       });
   }
@@ -291,10 +310,10 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Appointment?',
+        bodyText: 'AreYouSureWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
@@ -304,40 +323,87 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         take(1),
       )
       .subscribe((res) => {
-        console.log(res);
-        this.notificationSvc.showNotification('Appointment deleted successfully');
+        this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted}!`);
       });
   }
 
   public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement) {
+    if (!e.offsetY) return;
+    const isGrayOutArea = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
     const eventCard = this.createAppointmentCard(e, eventsContainer);
 
-    const modalRef = this.modalSvc.open(AddAppointmentModalComponent, {
-      data: {
-        event: e,
-        element: eventCard,
-        elementContainer: eventsContainer,
-        startedAt: this.selectedDate,
-      },
-      options: {
-        backdrop: false,
-        centered: true,
-        modalDialogClass: 'ad-ap-modal-shadow',
-      },
-    });
-
-    modalRef.closed.pipe(take(1)).subscribe((res) => {
-      if (!res) {
-        eventCard.remove();
-      }
-    });
+    if (isGrayOutArea) {
+      this.modalSvc
+        .open(ConfirmActionModalComponent, {
+          data: {
+            titleText: 'Add Appointment Confirmation',
+            bodyText: 'Are you sure you want to make an appointment outside the operating hours?',
+            confirmButtonText: 'Yes'
+          } as ConfirmActionModalData,
+        })
+        .closed.pipe(
+          tap((value) => {
+            if (!value) eventCard.remove();
+          }),
+          filter(Boolean),
+          switchMap(() => {
+            return this.modalSvc.open(AddAppointmentModalComponent, {
+              data: {
+                event: e,
+                element: eventCard,
+                elementContainer: eventsContainer,
+                startedAt: this.selectedDate,
+                startTime: this.timeSlot.timings[0],
+              },
+              options: {
+                backdrop: false,
+                centered: true,
+                modalDialogClass: 'ad-ap-modal-shadow',
+              },
+            }).closed;
+          }),
+          take(1),
+        )
+        .subscribe((res) => {
+          eventCard.remove();
+          if (res) {
+            // show the created card
+            // In progress
+          }
+        });
+    } else {
+      this.modalSvc
+        .open(AddAppointmentModalComponent, {
+          data: {
+            event: e,
+            element: eventCard,
+            elementContainer: eventsContainer,
+            startedAt: this.selectedDate,
+            startTime: this.timeSlot.timings[0],
+          },
+          options: {
+            backdrop: false,
+            centered: true,
+            modalDialogClass: 'ad-ap-modal-shadow',
+          },
+        })
+        .closed.pipe(take(1))
+        .subscribe((res) => {
+          eventCard.remove();
+          if (res) {
+            // show the created card
+            // In progress
+          }
+        });
+    }
   }
 
   private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {
+    const top = e.offsetY - (e.offsetY % 20);
     const eventCard = document.createElement('div');
     eventCard.classList.add('calender-day-view-event-container');
     eventCard.style.height = `20px`;
-    eventCard.style.top = `${e.offsetY}px`;
+    eventCard.style.top = `${top}px`;
 
     const appointmentText = document.createElement('span');
     // const textNode = document.createTextNode('Appointment');
@@ -350,5 +416,85 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     eventsContainer.appendChild(eventCard);
 
     return eventCard;
+  }
+
+  public onScroll(scrolledElement: HTMLElement, targetElement: HTMLElement) {
+    const now = performance.now();
+
+    if (!this.lastScrollTime || now - this.lastScrollTime > 16) {
+      // eslint-disable-next-line no-param-reassign
+      targetElement.scrollLeft = scrolledElement.scrollLeft;
+      // eslint-disable-next-line no-param-reassign
+      targetElement.scrollTop = scrolledElement.scrollTop;
+
+      this.lastScrollTime = now;
+    } else if (!this.requestId) {
+      this.requestId = window.requestAnimationFrame(() => {
+        // eslint-disable-next-line no-param-reassign
+        targetElement.scrollLeft = scrolledElement.scrollLeft;
+        // eslint-disable-next-line no-param-reassign
+        targetElement.scrollTop = scrolledElement.scrollTop;
+        this.lastScrollTime = performance.now();
+        this.requestId = null;
+      });
+    }
+  }
+
+  private getGrayOutArea(timeSlot: CalenderTimeSlot) {
+    const intervals = timeSlot?.intervals;
+    const timings = timeSlot?.timings;
+    const grayOutSlot: any = [];
+    grayOutSlot.push({
+      dayStart: timings[0],
+      dayEnd: timings[0],
+      top: 0,
+      height: 120 * this.pixelsPerMin,
+    });
+    const dayStart = this.subtractMinutes(105, timings[timings.length - 1]);
+    const startTime = this.myDate(this.timeSlot.timings[0]);
+    const endTime = this.myDate(dayStart);
+    const lastMinutes = getDurationMinutes(startTime, endTime);
+
+    grayOutSlot.push({
+      dayStart,
+      dayEnd: timings[timings.length - 1],
+      top: lastMinutes * this.pixelsPerMin,
+      height: 120 * this.pixelsPerMin,
+    });
+
+    if (intervals?.length > 1) {
+      for (let i = 0; i < intervals.length - 1; i++) {
+        const start = this.myDate(this.timeSlot.timings[0]);
+        const end = this.myDate(intervals[i].dayEnd);
+        const minutes = getDurationMinutes(start, end);
+        const timeInterval = getDurationMinutes(end, this.myDate(intervals[i + 1].dayStart));
+        grayOutSlot.push({
+          dayStart: intervals[i].dayEnd,
+          dayEnd: intervals[i + 1].dayStart,
+          top: minutes * this.pixelsPerMin,
+          height: timeInterval * this.pixelsPerMin,
+        });
+      }
+    }
+    this.grayOutSlot$$.next([...grayOutSlot]);
+  }
+
+  private myDate(date: string): Date {
+    const formattedDate = new Date();
+    const splitDate = date.split(':');
+    formattedDate.setHours(+splitDate[0]);
+    formattedDate.setMinutes(+splitDate[1]);
+    formattedDate.setSeconds(0);
+    return formattedDate;
+  }
+
+  private subtractMinutes(minutes: number, time: string): string {
+    const date = new Date();
+    const [hour, minute] = time.split(':');
+    date.setHours(+hour);
+    date.setMinutes(+minute);
+    date.setSeconds(0);
+    const subtractedDate = new Date(date.getTime() - minutes * 60 * 1000);
+    return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
   }
 }

@@ -20,6 +20,7 @@ export interface User {
   id: number;
   firstname: string;
   lastname: string;
+  fullName: string;
   email: string;
   telephone: string | number;
   address: string;
@@ -35,4 +36,5 @@ export interface User {
   rights?: any[];
   rizivNumber?: string;
   isMandate: boolean;
+  examId: number;
 }

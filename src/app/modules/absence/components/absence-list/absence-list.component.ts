@@ -9,10 +9,13 @@ import { AbsenceApiService } from '../../../../core/services/absence-api.service
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { Absence } from '../../../../shared/models/absence.model';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-absence-list',
@@ -30,13 +33,17 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Title', 'Start Date', 'End Date', 'Absence Info', 'Actions'];
+  public columns: string[] = ['Title', 'StartDate', 'EndDate', 'AbsenceInfo', 'Actions'];
 
   public downloadItems: DownloadType[] = [];
 
   private absences$$: BehaviorSubject<any[]>;
 
   public filteredAbsences$$: BehaviorSubject<any[]>;
+
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
 
   constructor(
     private absenceApiSvc: AbsenceApiService,
@@ -47,6 +54,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     private downloadSvc: DownloadService,
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     this.absences$$ = new BehaviorSubject<any[]>([]);
@@ -57,7 +65,6 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe((absences) => {
-      console.log('absences: ', absences);
       this.absences$$.next(absences);
       this.filteredAbsences$$.next(absences);
     });
@@ -85,7 +92,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
           this.columns.slice(0, -1),
           this.filteredAbsences$$.value.map((u: Absence) => [
             u.name,
-            u.startedAt ? new Date(u.startedAt)?.toDateString() : '',
+            u.startedAt ? new Date(u?.startedAt)?.toDateString() : '',
             u.endedAt ? new Date(u?.endedAt)?.toDateString() : '',
             u.info,
           ]),
@@ -93,12 +100,37 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         );
 
         if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
 
         this.downloadDropdownControl.setValue('');
 
         this.cdr.detectChanges();
+      });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+
+        this.columns = [
+          Translate.Title[lang],
+          Translate.StartDate[lang],
+          Translate.EndDate[lang],
+          Translate.AbsenceInfo[lang],
+          Translate.Actions[lang],
+        ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
       });
   }
 
@@ -111,8 +143,8 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
       ...this.absences$$.value.filter((absence: Absence) => {
         return (
           absence.name?.toLowerCase()?.includes(searchText) ||
-          this.datePipe.transform(absence.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ||
-          this.datePipe.transform(absence.endedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText)
+          this.datePipe.transform(absence?.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ||
+          this.datePipe.transform(absence?.endedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText)
         );
       }),
     ]);
@@ -122,10 +154,10 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Absence?',
+        bodyText: 'AreyousureyouwanttodeletethisAbsence',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     modalRef.closed
@@ -135,8 +167,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         take(1),
       )
       .subscribe((res) => {
-        console.log(res);
-        this.notificationSvc.showNotification('Absence deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
       });
   }
 
@@ -145,15 +176,15 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
       let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
 
       this.filteredAbsences$$.value.forEach((absence: Absence) => {
-        dataString += `${absence.name}\t${absence.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
+        dataString += `${absence.name}\t${absence?.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
       });
 
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
       this.clipboardData = '';
     }
   }

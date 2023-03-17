@@ -4,6 +4,7 @@ import { map, Observable, of, Subject, combineLatest, startWith, switchMap, tap,
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { PracticeAvailabilityServer } from '../../shared/models/practice.model';
+import {TimeSlot} from "../../shared/models/calendar.model";
 
 @Injectable({
   providedIn: 'root',
@@ -24,10 +25,10 @@ export class PracticeHoursApiService {
     );
   }
 
-  public savePracticeHours$(requestData: PracticeAvailabilityServer[]): Observable<PracticeAvailabilityServer[]> {
+  public savePracticeHours$(requestData: TimeSlot[]): Observable<PracticeAvailabilityServer[]> {
     return this.http.post<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.serverBaseUrl}/practice`, requestData).pipe(
       map((response) => response.data),
-      // tap(() => this.refreshPracticeHours$$.next()),
+      tap(() => this.refreshPracticeHours$$.next()),
     );
   }
 }

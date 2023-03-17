@@ -13,6 +13,7 @@ export interface TimeSlot {
   id?: number;
   dayStart: string;
   dayEnd: string;
+  weekday?: Weekday;
 }
 
 export interface WeekWisePracticeAvailability {
@@ -41,6 +42,12 @@ export enum Month {
   OCT,
   NOV,
   DEC,
+}
+
+export interface DateDistributed {
+  day: number;
+  month: number;
+  year: number
 }
 
 export function getDaysOfMonth(year: number, month: number): number {
@@ -101,7 +108,7 @@ export function getAllDaysOfWeek(selectedDate: Date): number[][] {
   tempDate = new Date(tempDate.setDate(tempDate.getDate() - weekday));
 
   for (let day = weekday; day >= 0; day--) {
-    daysOfWeekArr.push([getDateOfMonth(year, tempDate.getMonth(), date - day), tempDate.getMonth()]);
+    daysOfWeekArr.push([getDateOfMonth(year, tempDate.getMonth() + 1, date - day), tempDate.getMonth()]);
     tempDate = new Date(tempDate.setDate(tempDate.getDate() + 1));
   }
 
@@ -114,17 +121,17 @@ export function getAllDaysOfWeek(selectedDate: Date): number[][] {
 }
 
 export function getDurationMinutes(start: Date, end: Date): number {
-  // console.log(start, end)
   if (start && end) {
     const startDate = new Date(start);
     const endDate = new Date(end);
 
     const startH = startDate.getHours();
-    let endH = endDate.getHours();
+    const endH = endDate.getHours();
 
-    if (endH === 0) {
-      endH = 24;
-    }
+    // if (endH === 0) {
+    //   endH = 24;
+    // }
+
 
     if (startH === endH) {
       return endDate.getMinutes() - startDate.getMinutes();
@@ -142,15 +149,23 @@ export function stringToTimeArray(timeString: string | undefined, splitBy: strin
   if (!timeString) {
     return [0, 0, 0];
   }
-  console.log('timeString: ', timeString);
 
   const timeStringArray = timeString.split(splitBy);
-  console.log('timeStringArray', !Number.isNaN(+timeStringArray[0]));
+
   const hour = timeStringArray.length && !Number.isNaN(+timeStringArray[0]) ? +timeStringArray[0] : 0;
   const min = timeStringArray.length > 1 && !Number.isNaN(+timeStringArray[1]) ? +timeStringArray[1] : 0;
   const second = timeStringArray.length > 2 && !Number.isNaN(+timeStringArray[2]) ? +timeStringArray[2] : 0;
-  console.log('hour', hour);
-  console.log('min', min);
 
   return [hour, min, second];
+}
+
+
+export interface Interval {
+  dayStart: string;
+  dayEnd: string;
+}
+
+export interface CalenderTimeSlot {
+  timings: string[];
+  intervals: Interval[];
 }

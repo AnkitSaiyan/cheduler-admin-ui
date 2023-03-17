@@ -1,36 +1,35 @@
 <div class="d-flex flex-column dfm-gap-8 dfm-p-16 employee-absences-wrapper">
   <section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-mb-16">
-    <header class="d-flex align-items-center dfm-gap-8" *ngIf="filteredAppointments$$ | async as employeeAbsences">
+    <header class="d-flex align-items-center dfm-gap-8" *ngIf="filteredAbsence$$ | async as employeeAbsences">
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
       </div>
-      <span class="font-weight-medium">Employee Absences ({{employeeAbsences.length}})</span>
+      <span class="font-weight-medium">{{ 'EmployeeAbsences' | translate }} ({{ employeeAbsences.length }})</span>
     </header>
   </section>
 
   <section class="d-flex dfm-gap-16 align-items-center">
-    <dfm-input
-      class="flex-grow-1"
-      size="sm"
-      placeholder="Search employee"
-      icon="search-sm"
-    ></dfm-input>
-
-    <dfm-button-icon
-      color="secondary-gray"
-      size="md"
-      icon="copy-03"
-    ></dfm-button-icon>
+    <div class="flex-grow-1">
+      <dfm-input size="sm" placeholder="{{ 'SearchEmployee' | translate }}" icon="search-sm" [formControl]="searchControl"></dfm-input>
+    </div>
+    <div [cdkCopyToClipboard]="clipboardData">
+      <dfm-button-icon
+        color="secondary-gray"
+        size="md"
+        icon="copy-03"
+        ngbPopover="{{ 'ClickToCopy' | translate }}"
+        triggers="mouseenter:mouseleave"
+        popoverClass="popover-p-8"
+        [openDelay]="200"
+        (click)="copyToClipboard()"
+      ></dfm-button-icon>
+    </div>
   </section>
 
-  <section class="d-flex flex-column dfm-gap-16" *ngIf="filteredAppointments$$ | async as employeeAbsences">
+  <section class="d-flex flex-column dfm-gap-16" *ngIf="filteredAbsence$$ | async as employeeAbsences">
     <div *ngFor="let employee of employeeAbsences" class="d-flex align-items-center dfm-gap-8">
       <div class="rounded-circle avatar-container">
-        <img *ngIf="employee.avatar" [src]="employee.avatar"
-             class="rounded-circle border-1"
-             alt="Doctor's avatar"
-             width="32"
-             height="32">
+        <img *ngIf="employee.avatar" [src]="employee.avatar" class="rounded-circle border-1" alt="Doctor's avatar" width="32" height="32" />
 
         <div *ngIf="!employee.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
           {{ employee.name.toString()[0].toUpperCase() }}
@@ -40,9 +39,9 @@
       <div class="d-flex flex-column text-sm">
         <div class="d-flex align-items-center dfm-gap-8">
           <span class="font-weight-medium">{{ employee.name }}</span>
-          <span class="text-xs dfm-text-main-400">({{employee.post}})</span>
+          <span class="text-xs dfm-text-main-400">({{ employee.info }})</span>
         </div>
-        <span class="text-xs dfm-text-main-500">{{ employee.fromDate | date : 'shortDate' }} - {{ employee.toDate | date : 'shortDate' }}</span>
+        <span class="text-xs dfm-text-main-500">{{ employee?.startedAt | date : 'shortDate' }} - {{ employee?.endedAt | date : 'shortDate' }}</span>
       </div>
     </div>
   </section>

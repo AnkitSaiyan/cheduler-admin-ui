@@ -1,9 +1,10 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { debounceTime, takeUntil } from 'rxjs';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalService } from '../../../../core/services/modal.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ShareDataService } from '../../../../core/services/share-data.service';
+import { InputComponent } from 'diflexmo-angular-design';
 
 interface FormValues {
   minutes: number;
@@ -135,5 +136,21 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
 
   private setOverFlowNone() {
     this.eventContainer.style.overflow = 'none';
+  }
+
+  public handleExpenseInput(e: Event, element: InputComponent, control: AbstractControl | null | undefined) {
+    if (!element.value && element.value < 5) {
+      e.preventDefault();
+      return;
+    }
+
+    if (element.value % 5 !== 0) {
+      const newValue = element.value - (element.value % 5);
+
+      element.value = newValue;
+      if (control) {
+        control.setValue(newValue);
+      }
+    }
   }
 }

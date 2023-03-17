@@ -4,14 +4,14 @@
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
       </div>
-      <span>Notifications ({{ notifications.length }})</span>
+      <span>{{"Notifications" | translate}} ({{ notifications.length }})</span>
     </header>
 
     <div>
       <dfm-button
         size="md"
         color="secondary"
-      >View All</dfm-button>
+      >{{"ViewAll" | translate}}</dfm-button>
     </div>
   </section>
 
@@ -26,10 +26,10 @@
     >
       <div class="text-sm d-flex flex-column">
         <div class="d-flex dfm-gap-8">
-          <span class="font-weight-medium text-nowrap">{{ notification.name }}</span>
-          <span class="dfm-text-main-400">({{ notification.post }})</span>
+          <span class="font-weight-medium text-nowrap">{{ notification.title | translate }}</span>
+          <span class="dfm-text-main-400">({{ notification.subTitle | translate}})</span>
         </div>
-        <span>{{ notification.message }}</span>
+        <span>{{notification.message | translate}}</span>
       </div>
       <span class="dfm-text-main-400 text-nowrap"> {{ notification.date | date : 'shortTime' }} </span>
     </div>

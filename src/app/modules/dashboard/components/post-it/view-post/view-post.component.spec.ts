@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PrioritySlotsComponent } from './priority-slots.component';
+import { ViewPostComponent } from './view-post.component';
 
-describe('PrioritySlotsComponent', () => {
-  let component: PrioritySlotsComponent;
-  let fixture: ComponentFixture<PrioritySlotsComponent>;
+describe('ViewPostComponent', () => {
+  let component: ViewPostComponent;
+  let fixture: ComponentFixture<ViewPostComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PrioritySlotsComponent ]
+      declarations: [ ViewPostComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(PrioritySlotsComponent);
+    fixture = TestBed.createComponent(ViewPostComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

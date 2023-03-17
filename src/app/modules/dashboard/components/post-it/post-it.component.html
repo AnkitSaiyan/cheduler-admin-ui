@@ -4,89 +4,65 @@
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
       </div>
-      <span class="font-weight-medium">Post It ({{ posts.length }})</span>
+      <span class="font-weight-medium">{{ 'PostIt' | translate }} ({{ posts.length }})</span>
     </header>
+    
 
-    <div>
-      <dfm-button
-        size="md"
-        color="primary"
-        (click)="addPost()"
-      >
-        Add
-      </dfm-button>
+    <div class="d-flex dfm-gap-16">
+      <dfm-button size="md" color="secondary" class="text-nowrap post-view-all-btn" (click)="openViewPostModal()"> {{"ViewAll" | translate}} </dfm-button>
+      <dfm-button size="md" color="primary" (click)="addPost()"> {{"Add" | translate}} </dfm-button>
     </div>
   </section>
 
-  <section class="d-flex dfm-gap-8 align-items-center justify-content-between dfm-mb-16 dfm-mx-16 dfm-gap-32">
-    <dfm-input
-      class="flex-grow-1"
-      size="md"
-      placeholder="Search post it" class="post-search-it-placeholder"
-      icon="search-sm"
-    ></dfm-input>
+  <!-- <section class="d-flex dfm-gap-8 align-items-center justify-content-between dfm-mb-16 dfm-mx-16 dfm-gap-32">
+    <dfm-input class="flex-grow-1" size="md" placeholder="{{'SearchPostIt' | translate}}" class="post-search-it-placeholder" icon="search-sm"></dfm-input>
 
     <div class="d-flex flex-row justify-content-between dfm-gap-16">
-      <dfm-input
-        size="md"
-        placeholder="Search" class="post-search-placeholder flex-grow-1"
-        icon="search-sm"
-      ></dfm-input>
-
-      <dfm-button-icon
-        color="secondary-gray"
-        size="md"
-        icon="copy-03"
-      ></dfm-button-icon>
-
-      <dfm-button
-        size="md"
-        color="secondary"
-        class="text-nowrap post-view-all-btn"
-      >
-        View All
-      </dfm-button>
+      <dfm-input size="md" placeholder="{{'Search' | translate}}" class="post-search-placeholder flex-grow-1" icon="search-sm"></dfm-input>
     </div>
-  </section>
+  </section> -->
 
-  <section class="h-100" *ngIf="filteredPosts$$ | async as posts">
-    <mdb-carousel [controls]="true" [indicators]="true" [dark]="true">
-      <mdb-carousel-item  *ngFor="let post of posts; let i = index" class="h-100">
-        <div class="d-flex flex-column dfm-gap-16 dfm-px-24 dfm-pt-16 dfm-pb-24 justify-content-between rounded-3 shadow-sm post-it-card"
-             [ngStyle]="{ 'background': i % 2 === 0 ? '#EBE9FE' : '#FDF8F2' }">
-          <header class="overflow-y-auto hide-scrollbar">
-            <div class="d-flex flex-column dfm-gap-16 h-100">
-              <div class="d-flex dfm-gap-16 align-items-center justify-content-between">
-                <span class="font-weight-medium"
-                      [ngStyle]="{ 'color': i % 2 === 0 ? '#5720B7' : '#531422' }">{{ i + 1 }} / {{ posts.length }}
-                </span>
+  <section id="here"  class="h-100" *ngIf="filteredPosts$$ | async as posts">
+      <mdb-carousel *ngIf="posts[0]" [controls]="true" [indicators]="true" [dark]="true" >
+        <mdb-carousel-item *ngFor="let post of posts; let i = index" class="h-100">
+          <div
+            class="d-flex flex-column dfm-gap-16 dfm-px-24 dfm-pt-16 dfm-pb-24 justify-content-between rounded-3 shadow-sm post-it-card"
+            [ngStyle]="{ background: i % 2 === 0 ? '#EBE9FE' : '#FDF8F2' }"
+          >
+            <header class="overflow-y-auto hide-scrollbar">
+              <div class="d-flex flex-column dfm-gap-16 h-100">
+                <div class="d-flex dfm-gap-16 align-items-center justify-content-between">
+                  <span class="font-weight-medium" [ngStyle]="{ color: i % 2 === 0 ? '#5720B7' : '#531422' }">{{ i + 1 }} / {{ posts.length }} </span>
 
-                <dfm-button-icon color="secondary-gray" size="sm" icon="trash-01" (click)="reomvePost(post.id)"></dfm-button-icon>
+                <dfm-button-icon
+                  color="secondary-gray"
+                  size="sm"
+                  icon="trash-01"
+                  ngbPopover="{{ 'Delete' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                  (click)="reomvePost(post.id)"
+                ></dfm-button-icon>
               </div>
 
               <span class="text-xs">
-                {{post?.message}}
+                {{ post?.message }}
               </span>
             </div>
           </header>
 
           <div class="d-flex align-items-center dfm-gap-8 carousel-footer-content">
             <div class="rounded-circle avatar-container">
-              <img *ngIf="post?.avatar" [src]="post?.avatar"
-                   class="rounded-circle border-1"
-                   alt="Doctor's avatar"
-                   width="32"
-                   height="32">
-
               <div *ngIf="!post?.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
-                <!-- {{ post.author.toString()[0].toUpperCase() }} -->
+                <!-- {{'M'}} -->
               </div>
             </div>
 
             <div class="d-flex flex-column text-sm">
               <div class="d-flex align-items-center flex-wrap">
                 <span class="font-weight-medium dfm-me-8">Maaike Penoit</span>
-                <span class="text-xs dfm-text-main-500">General User</span>
+                <span class="text-xs dfm-text-main-500">{{ 'GeneralUser' | translate }}</span>
               </div>
               <span class="text-xs dfm-text-main-600">{{ post?.createdAt | date : 'M.d.yy, h:mm' }}</span>
             </div>

@@ -23,7 +23,7 @@ export class PhysicianApiService {
   private fetchAllPhysicians(): Observable<Physician[]> {
     return this.http
       .get<BaseResponse<Physician[]>>(`${environment.serverBaseUrl}/doctor`)
-      .pipe(map((response) => response.data?.sort((p1, p2) => p2.id - p1.id)));
+      .pipe(map((response) => response.data?.map((p) => ({ ...p, fullName: `${p.firstname} ${p.lastname}` })).sort((p1, p2) => p2.id - p1.id)));
   }
 
   public getPhysicianByID(physicianID: number): Observable<Physician | undefined> {

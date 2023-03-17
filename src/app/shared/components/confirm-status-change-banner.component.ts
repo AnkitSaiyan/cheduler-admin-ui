@@ -1,18 +1,21 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { AppointmentStatus, Status } from '../models/status.model';
+import { DUTCH_BE, ENG_BE } from '../utils/const';
 
 @Component({
   selector: 'dfm-confirm-status-change-banner',
   template: `
     <div *ngIf="display" class="confirm-banner dfm-gap-16 dfm-px-32 dfm-py-12 shadow-lg">
       <div class="hidden align-items-center justify-content-between dfm-gap-16">
-        <h5 class="modal-title">Confirmation</h5>
+        <h5 class="modal-title">{{ 'Confirmation' | translate }}</h5>
         <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="$event.stopPropagation(); handleClick(false)"></dfm-button-icon>
       </div>
 
       <div class="w-full">
-        <span class="font-weight-medium">Are you sure want to change Status?</span>
+        <span class="font-weight-medium">{{ 'AreYouSureWantToChangeStatus' | translate }}</span>
       </div>
 
       <div class="d-flex align-items-center dfm-gap-16 w-fit">
@@ -22,21 +25,21 @@ import { AppointmentStatus, Status } from '../models/status.model';
             #statusDropdown
             [items]="statuses"
             [showDescription]="false"
-            placeholder="Status"
+            placeholder="{{ 'Status' | translate }}"
             size="md"
             [formControl]="statusDropdownControl"
           ></dfm-input-dropdown>
         </div>
 
         <div class="d-flex flex-row dfm-gap-16 align-items-center">
-          <dfm-button color="secondary" size="md" (click)="$event.stopPropagation(); handleClick(false)">Cancel </dfm-button>
+          <dfm-button color="secondary" size="md" (click)="$event.stopPropagation(); handleClick(false)">{{ 'Cancel' | translate }} </dfm-button>
           <dfm-button
             color="primary"
             size="md"
             (click)="$event.stopPropagation(); handleClick(true)"
             [disabled]="statusDropdownControl.value === null"
           >
-            Proceed
+            {{ 'Proceed' | translate }}
           </dfm-button>
         </div>
       </div>
@@ -118,6 +121,8 @@ export class ConfirmStatusChangeBannerComponent implements OnInit {
 
   public statuses!: any[];
 
+  constructor(private dataShareService: ShareDataService) {}
+
   public ngOnInit() {
     switch (this.statusType) {
       case 'appointment':
@@ -151,6 +156,41 @@ export class ConfirmStatusChangeBannerComponent implements OnInit {
       default:
         this.statuses = [];
     }
+
+    this.dataShareService.getLanguage$().subscribe((language: string) => {
+      switch (this.statusType) {
+        case 'appointment':
+          this.statuses = [
+            {
+              name: language === ENG_BE ? 'Pending' : 'In afwachting',
+              value: AppointmentStatus.Pending,
+            },
+            {
+              name: language === ENG_BE ? 'Approved' : 'Goedgekeurd',
+              value: AppointmentStatus.Approved,
+            },
+            {
+              name: language === ENG_BE ? 'Cancelled' : 'Geannuleerd',
+              value: AppointmentStatus.Cancelled,
+            },
+          ] as any[];
+          break;
+        case 'status':
+          this.statuses = [
+            {
+              name: language === ENG_BE ? 'Active' : 'Actief',
+              value: Status.Active,
+            },
+            {
+              name: language === ENG_BE ? 'Inactive' : 'Inactief',
+              value: Status.Inactive,
+            },
+          ] as any[];
+          break;
+        default:
+          this.statuses = [];
+      }
+    });
   }
 
   public handleClick(proceed: boolean) {

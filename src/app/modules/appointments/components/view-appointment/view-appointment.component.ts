@@ -6,7 +6,7 @@ import { RouterStateService } from '../../../../core/services/router-state.servi
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { APPOINTMENT_ID } from '../../../../shared/utils/const';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 
@@ -19,6 +19,10 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
   public appointment$$ = new BehaviorSubject<Appointment | undefined>(undefined);
 
   public rooms: string[] = [];
+
+  public examDetails$$ = new BehaviorSubject<any[]>([]);
+
+  public columns = ['Name', 'Expensive', 'Room', 'StartDate', 'EndDate'];
 
   constructor(
     private appointmentApiSvc: AppointmentApiService,
@@ -35,9 +39,10 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
       .listenForParamChange$(APPOINTMENT_ID)
       .pipe(
         // filter((appointmentID) => !!appointmentID),
-        switchMap((appointmentID) => this.appointmentApiSvc.getAppointmentByID(+appointmentID)),
+        switchMap((appointmentID) => this.appointmentApiSvc.getAppointmentByID$(+appointmentID)),
         tap((appointment) => {
           this.appointment$$.next(appointment);
+          this.examDetails$$.next(appointment?.exams ?? []);
 
           if (appointment?.exams?.length) {
             const roomIdToName: { [key: string]: string } = {};
@@ -62,7 +67,6 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
         takeUntil(this.destroy$$),
       )
       .subscribe((appointment) => {
-        console.log(appointment);
       });
   }
 
@@ -70,10 +74,10 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Appointment?',
+        bodyText: 'AreYouSureYouWantToDeleteAppointment',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed

@@ -6,10 +6,13 @@ import { RouterStateService } from '../../../../core/services/router-state.servi
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { ABSENCE_ID } from '../../../../shared/utils/const';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { Absence, RepeatType } from '../../../../shared/models/absence.model';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-view-absence',
@@ -21,12 +24,16 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
   public repeatType = RepeatType;
 
+  private selectedLang: string = ENG_BE;
+
+
   constructor(
     private absenceApiSvc: AbsenceApiService,
     private routerStateSvc: RouterStateService,
     private notificationSvc: NotificationDataService,
     private router: Router,
     private modalSvc: ModalService,
+    private shareDataService: ShareDataService,
   ) {
     super();
   }
@@ -40,32 +47,35 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
       )
       .subscribe((absenceDetails) => {
         this.absenceDetails$$.next(absenceDetails);
-        console.log(absenceDetails);
       });
+
+      this.shareDataService
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => (this.selectedLang = lang));
   }
 
   public deleteAbsence(id: number) {
-    console.log('id: ', id);
+
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Absence?',
+        bodyText: 'AreyousureyouwanttodeletethisAbsence',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     modalRef.closed
       .pipe(
         filter((res: boolean) => {
-          console.log('res', res);
           return res;
         }),
         switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Absence deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
         this.router.navigate(['/', 'absence']);
       });
   }

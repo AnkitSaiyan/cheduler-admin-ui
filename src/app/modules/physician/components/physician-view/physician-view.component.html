@@ -1,11 +1,11 @@
-<div *ngIf="physicianDetails$$ | async as physicianDetails" class="d-flex flex-column dfm-gap-24 dfm-px-8 ph-vw-main-wrapper">
+<div *ngIf="physicianDetails$$ | async as physicianDetails" class="d-flex flex-column dfm-gap-24">
   <section class="d-flex align-items-center justify-content-between dfm-gap-16 ph-vw-section1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ph-vw-title-buttons">
       <dfm-button
         color="link"
         size="lg"
         routerLink="/physician"
-      >Physician
+      >{{'Physician' | translate}}
       </dfm-button>
       <div style="width: 16px; height: 16px" class="h-fit">
         <dfm-icon name="chevron-right"></dfm-icon>
@@ -13,7 +13,7 @@
       <dfm-button
         color="link-gray"
         size="lg"
-      >View
+      >{{'View' | translate}}
       </dfm-button>
     </div>
 
@@ -23,7 +23,7 @@
         size="md"
         leadingIcon="pencil-02"
         (click)="openEditPhysicianModal(physicianDetails)"
-      >Edit Physician
+      >{{'EditPhysician' | translate}}
       </dfm-button>
 
       <dfm-button
@@ -33,7 +33,7 @@
         leadingIcon="trash-01"
         (click)="deletePhysician(physicianDetails.id)"
       >
-        Delete Physician
+        {{'DeletePhysician' | translate}}
       </dfm-button>
     </div>
 
@@ -53,39 +53,39 @@
         color="link"
         size="lg"
         routerLink="./"
-      >Physician View
+      >{{'PhysicianView' | translate}}
       </dfm-button>
     </div>
     <!-- ** -->
   </section>
 
-  <section class="d-flex dfm-gap-24 ph-vw-section2">
+  <section class="d-flex dfm-gap-24 ph-vw-section2 view-page-content-height">
     <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
       <header class="d-flex align-items-center dfm-gap-8">
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
         </div>
-        <span class="font-weight-medium">Physician Details</span>
+        <span class="font-weight-medium">{{'PhysicianDetails' | translate}}</span>
       </header>
 
       <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">First Name</span>
+          <span class="flex-1">{{'FirstName' | translate}}</span>
           <span class="font-weight-medium flex-1">{{ physicianDetails.firstname | titlecase }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Last Name</span>
+          <span class="flex-1">{{'LastName' | translate}}</span>
           <span class="font-weight-medium flex-1">{{ physicianDetails.lastname | titlecase }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Email</span>
+          <span class="flex-1">{{'Email' | translate}}</span>
           <span class="font-weight-medium flex-1 text-truncate">{{ physicianDetails.email | titlecase }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Address</span>
+          <span class="flex-1">{{'Address' | translate}}</span>
           <span class="font-weight-medium flex-1 text-truncate">{{ physicianDetails.address | titlecase | dashIfNothing }}</span>
         </div>
 
@@ -95,19 +95,19 @@
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Rizv No</span>
+          <span class="flex-1">{{'RizvNumber' | translate}}</span>
           <span class="font-weight-medium flex-1 text-truncate">{{ physicianDetails?.rizivNumber | titlecase | dashIfNothing }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Phone No</span>
+          <span class="flex-1">{{'Telephone' | translate}}</span>
           <span class="font-weight-medium flex-1">{{ physicianDetails.telephone }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">Status</span>
+          <span class="flex-1">{{'Status' | translate}}</span>
           <span class="font-weight-medium flex-1" [ngClass]="physicianDetails?.status ? 'dfm-text-success-600' : 'dfm-text-danger-600'">
-            {{ (physicianDetails.status ? 1 : 0 ) | statusName }}
+            {{ (physicianDetails.status ? 1 : 0 ) | statusName | translate }}
           </span>
         </div>
       </div>
@@ -115,8 +115,8 @@
   </section>
 
   <div class="hidden bg-white ph-vw-action-buttons-mv">
-    <dfm-button color="secondary" size="sm" (click)="deletePhysician(physicianDetails.id)">Delete</dfm-button>
-    <dfm-button color="primary" size="sm" (click)="openEditPhysicianModal(physicianDetails)">Edit Physician</dfm-button>
+    <dfm-button color="secondary" size="sm" (click)="deletePhysician(physicianDetails.id)">{{'Delete' | translate}}</dfm-button>
+    <dfm-button color="primary" size="sm" (click)="openEditPhysicianModal(physicianDetails)">{{"EditPhysician" | translate}}</dfm-button>
   </div>
 </div>
 

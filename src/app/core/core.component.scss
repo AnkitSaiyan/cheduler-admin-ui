@@ -1,38 +1,6 @@
 .dfm-layout {
-  .content {
-    //padding: 24px 24px;
+  .dfm-content {
     background-color: var(--dfm-base-layout-bg);
-    height: var(--content-height);
     overflow-y: auto;
-  }
-}
-
-.nav-item-selected-bg {
-  background: var(--dfm-navbar-item-hover-bg) !important;
-}
-
-
-@media (max-width: 1440px) {
-  .dfm-layout .content {
-    max-height: var(--content-height-1440);
-    height: 100%;
-  }
-}
-
-@media (max-width: 960px) {
-  .dfm-layout .content {
-    max-height: var(--content-height-mobile);
-    height: 100%;
-  }
-}
-
-@media (max-width: 680px) {
-  .dfm-layout .content {
-    max-height: var(--content-height-mobile);
-    height: 100%;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
   }
 }

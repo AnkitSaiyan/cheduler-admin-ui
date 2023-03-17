@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import {BehaviorSubject, filter, switchMap, take, takeUntil, tap} from 'rxjs';
 import { Router } from '@angular/router';
 import { TimeSlot, Weekday, WeekWisePracticeAvailability } from '../../../../shared/models/calendar.model';
 import { RouterStateService } from '../../../../core/services/router-state.service';
@@ -8,12 +8,15 @@ import { NotificationDataService } from '../../../../core/services/notification-
 import { ModalService } from '../../../../core/services/modal.service';
 import { ROOM_ID } from '../../../../shared/utils/const';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
 import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-view-room',
@@ -23,9 +26,15 @@ import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time
 export class ViewRoomComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public roomDetails$$ = new BehaviorSubject<Room | undefined>(undefined);
 
+  public rooms$$ = new BehaviorSubject<Room[]>([]);
+
   public examIdToNameMap = new Map<number, string>();
 
+  public roomPlaceInToIndexMap = new Map<number, number>();
+
   public practiceAvailability$$ = new BehaviorSubject<any[]>([]);
+
+  private selectedLang: string = ENG_BE;
 
   public columns: Weekday[] = [Weekday.MON, Weekday.TUE, Weekday.WED, Weekday.THU, Weekday.FRI, Weekday.SAT, Weekday.SUN];
 
@@ -36,6 +45,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     private notificationSvc: NotificationDataService,
     private router: Router,
     private modalSvc: ModalService,
+    private shareDataService: ShareDataService,
   ) {
     super();
   }
@@ -55,9 +65,25 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
         }
       });
 
+    this.roomApiSvc.allRooms$
+      .pipe(take(1))
+      .subscribe(
+        (rooms) => {
+          this.rooms$$.next(rooms);
+          this.roomPlaceInToIndexMap.clear();
+          rooms.forEach((room, index) => {
+            this.roomPlaceInToIndexMap.set(+room.placeInAgenda, index + 1);
+          });
+        });
+
     this.examApiSvc.exams$
       .pipe(takeUntil(this.destroy$$))
       .subscribe((exams) => exams.forEach((exam) => this.examIdToNameMap.set(+exam.id, exam.name)));
+
+      this.shareDataService
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => (this.selectedLang = lang));
   }
 
   private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): WeekWisePracticeAvailability[] {
@@ -128,10 +154,10 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Room?',
+        bodyText: 'AreYouSureYouWantThisRoom',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
@@ -141,14 +167,18 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Room deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
         this.router.navigate(['/', 'room']);
       });
   }
 
-  public openEditRoomModal() {
+  public openEditRoomModal(roomDetails: Room) {
     this.modalSvc.open(AddRoomModalComponent, {
-      data: { edit: !!this.roomDetails$$.value?.id, roomID: this.roomDetails$$.value?.id },
+      data: {
+        edit: !!roomDetails?.id,
+        roomID: roomDetails?.id,
+        placeInAgendaIndex: roomDetails ? this.roomPlaceInToIndexMap.get(+roomDetails.placeInAgenda) : this.rooms$$.value.length + 1,
+      },
       options: {
         size: 'lg',
         centered: true,

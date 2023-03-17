@@ -1,9 +1,85 @@
+@import '../abstracts/variables';
 @mixin dark {
   --dfm-body-bg: #{$gray-modern-100};
   --dfm-base-layout-bg: #{$gray-modern-100};
 
-  --dfm-blue: #175CD3;
   --dfm-blue-light: #EFF8FF;
+
+  // global colors
+  --dfm-primary: #{$diflexmo-primary};
+  --dfm-secondary: #{$diflexmo-secondary};
+  --dfm-primary-lighter: #{$diflexmo-primary-text};
+  --dfm-secondary-lighter: #{$diflexmo-secondary-lighter};
+  --dfm-green: #{$diflexmo-green};
+
+  // button colors
+  --dfm-btn-primary-bg: #{$diflexmo-primary};
+  --dfm-btn-primary-bg-hover: #{$diflexmo-primary};
+  --dfm-btn-primary-bg-focus: #{$diflexmo-primary};
+  --dfm-btn-primary-color: #{$diflexmo-primary-text};
+  --dfm-btn-primary-border: #{$diflexmo-primary};
+  --dfm-btn-primary-border-hover: #{$diflexmo-primary};
+  --dfm-btn-primary-border-focus: #{$diflexmo-primary};
+
+  --dfm-btn-secondary-bg: #{$diflexmo-secondary};
+  --dfm-btn-secondary-bg-hover: #{$diflexmo-secondary};
+  --dfm-btn-secondary-bg-focus: #{$diflexmo-secondary};
+  --dfm-btn-secondary-color: #{$diflexmo-secondary-text};
+  --dfm-btn-secondary-color-hover: #{$diflexmo-primary};
+  --dfm-btn-secondary-color-focus: #{$diflexmo-primary};
+  --dfm-btn-secondary-border: #{$diflexmo-secondary};
+  --dfm-btn-secondary-border-hover: #{$diflexmo-secondary};
+  --dfm-btn-secondary-border-focus: #{$diflexmo-secondary};
+
+  --dfm-btn-tertiary-bg: #{$diflexmo-primary-text};
+  --dfm-btn-tertiary-bg-hover: #{$diflexmo-primary};
+  --dfm-btn-tertiary-bg-focus: #{$diflexmo-primary};
+  --dfm-btn-tertiary-bg-disabled: #{$white};
+  --dfm-btn-tertiary-color: #{$diflexmo-primary};
+  --dfm-btn-tertiary-color-hover: #{$diflexmo-primary-text};
+  --dfm-btn-tertiary-color-focus: #{$diflexmo-primary-text};
+  --dfm-btn-tertiary-color-disabled: #{$gray-modern-300};
+  --dfm-btn-tertiary-border: #{$diflexmo-primary};
+
+  --dfm-btn-link-color: #{$diflexmo-primary};
+  --dfm-btn-link-color-hover: #{$diflexmo-primary};
+  --dfm-btn-link-color-focus: #{$diflexmo-primary};
+
+  // checkbox
+  --dfm-checkbox-hover-bg: #{$diflexmo-secondary-text};
+  --dfm-checkbox-checked-bg: #{$diflexmo-secondary-text};
+  --dfm-checkbox-disabled-bg: #{$gray-modern-100};
+  --dfm-checkbox-disabled-border: #{$gray-modern-300};
+  --dfm-checkbox-focus-shadow: #{$diflexmo-primary-text};
+  --dfm-checkbox-focus-border: #{$diflexmo-primary};
+  --dfm-checkbox-border-hover: #{$diflexmo-primary};
+  --dfm-toggle-focus-shadow: #{$diflexmo-secondary-text};
+  --dfm-checkbox-bg-img-checked: url("data:image/svg+xml,<svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M20 6L9 17L4 12' stroke='rgb(78, 34, 103)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+
+  // radio
+  --dfm-radio-checked-bg: #{$diflexmo-primary-text};
+  --dfm-radio-disabled-border: #{$diflexmo-primary};
+  --dfm-radio-hover-bg: #{$diflexmo-secondary};
+  --dfm-radio-hover-border: #{$diflexmo-primary};
+  --dfm-radio-disabled-bg: #{$gray-modern-100};
+  --dfm-radio-disabled-border: #{$gray-modern-300};
+  --dfm-radio-focus-shadow: #{$diflexmo-secondary};
+  --dfm-toggle-focus-shadow: #{$diflexmo-secondary-text};
+  --dfm-radio-bg-img-checked: url("data:image/svg+xml,<svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><circle cx='12' cy='12' r='5' fill='rgb(78, 34, 103)'/></svg>");
+
+  // dropdown
+  --dfm-input-dropdown-option-selected-color: #{$diflexmo-primary};
+
+  // input
+  --dfm-input-border-focus: #{$diflexmo-secondary};
+
+  // textarea
+  --dfm-text-area-focus-border-color: #{$diflexmo-secondary};
+    //priority slots color
+
+    --dfm-priority-slot-high-color: #{$diflexmo-priority-slot-high};
+    --dfm-priority-slot-medium-color: #{$diflexmo-priority-slot-medium};
+    --dfm-priority-slot-low-color: #{$diflexmo-priority-slot-low};
 }
 
 .dark {

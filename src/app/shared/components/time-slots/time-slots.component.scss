@@ -1,0 +1,12 @@
+.hidden-slot {
+  height: 0px;
+  width: 0px;
+  position: fixed;
+  overflow: hidden;
+  transition: all 150ms linear;
+}
+
+.show-sot {
+  overflow: unset;
+  height: auto;
+}

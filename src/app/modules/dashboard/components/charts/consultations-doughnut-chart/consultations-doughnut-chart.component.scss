@@ -1,51 +1,41 @@
-.consultations-chart-wrapper {
-  height: inherit;
+.cancelled-bar-chart-wrapper {
+  height: 100%;
+
+  section:first-child {
+  }
 
   section:last-child {
-    height: 90%;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    object-fit: contain;
-
-    div, span {
-      height: fit-content;
-      width: fit-content;
-    }
-
-    div {
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      margin: auto;
-    }
+    flex: 1;
 
     canvas {
-      width: 100%;
-      height: 100%;
       display: flex;
-      justify-content: center;
-      align-items: center;
+      align-self: end;
+      width: 100%!important;
+      // height: 90%!important;
     }
   }
 }
+
+
 
 // ======================Media Query for Mobile view=================
 @media (min-width:180px) and (max-width:680px) {
   .percentage-text{
     font-weight:600;
   }
-  canvas{
-    width: 50% !important;
-    height: 50% !important;
-  }
 }
-
 // ======================Media Query for Tab view=================
 @media (min-width:680px) and (max-width:1060px) {
-  canvas{
-    width: 30% !important;
-    height: 30% !important;
+  .cancelled-bar-chart-wrapper
+    canvas{
+      width: 80% !important;
+      height: 80% !important;
+    }
+    .bar-chart-tab-view{
+      display: flex!important;
+      flex-direction: row !important;
+      justify-content: center !important;
+      align-items: center !important;
+    }
   }
-}
+

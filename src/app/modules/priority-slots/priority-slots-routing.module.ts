@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { PRIORITY_ID } from '../../shared/utils/const';
 import { ListPrioritySlotsComponent } from './components/list-priority-slots/list-priority-slots.component';
 import { ViewPrioritySlotsComponent } from './components/view-priority-slots/view-priority-slots.component';
-import { PrioritySlotsComponent } from './pages/priority-slots/priority-slots.component';
+import { PrioritySlotsComponent } from './pages/priority-slots.component';
 
 const prioritySlotsRoutes: Routes = [
   {

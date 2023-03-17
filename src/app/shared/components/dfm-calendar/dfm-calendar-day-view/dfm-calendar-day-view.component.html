@@ -1,14 +1,14 @@
 <div role="grid" class="calender-day-view">
   <div class="calender-day-view-absolute">
-    <div class="calender-day-view-container">
-      <div role="presentation" class="calender-day-view-header">
+    <div class="calender-day-view-container" *ngIf="timeSlot?.timings">
+      <div role="presentation" class="calender-day-view-header " >
         <div class="text-xs calender-day-view-time-zone">
           <div>
             {{ (selectedDate | date : 'OOOO')?.split('+')?.join(' +') }}
           </div>
         </div>
 
-        <div role="presentation" class="calender-day-view-weekday-header">
+        <div role="presentation" class="calender-day-view-weekday-header hide-scrollbar" (scroll)="onScroll(scrollOne, scrollTwo)" #scrollOne>
           <div role="row" class="calender-day-view-weekdays">
             <div class="calender-day-view-weekday-header-left-vertical-line"></div>
             <ng-container *ngIf="headerList?.length; else todayHeader">
@@ -22,7 +22,7 @@
             </ng-container>
 
             <ng-template #todayHeader>
-              <div role="columnheader" class="calender-day-view-weekday">
+              <div role="columnheader" class="calender-day-view-weekday-alt">
                 <div class="calender-day-view-header-cell-left-line"></div>
                 <h3>
                   <div
@@ -34,7 +34,7 @@
                 </h3>
               </div>
 
-              <div role="columnheader" class="calender-day-view-weekday flex-1">
+              <div role="columnheader" class="calender-day-view-weekday-alt flex-1 max-w-full">
                 <h3>
                   <div class="text-xs font-weight-medium w-fit calender-day-view-day-name"></div>
                   <div class="w-fit calender-day-view-date"></div>
@@ -49,23 +49,25 @@
         </div>
       </div>
 
-      <div class="calender-day-view-body-container">
+      <div class="calender-day-view-body-container hide-scrollbar" >
         <div role="presentation" class="calender-day-view-body">
-          <div role="row" class="calender-day-view-time-slot-container">
-            <div class="calender-day-view-time-slot text-sm" *ngFor="let time of 15 | timeInInterval : 12 :true">
+          <div role="row" class="calender-day-view-time-slot-container" >
+            <div class="calender-day-view-time-slot text-sm" *ngFor="let time of timeSlot.timings" >
               <span>{{ time }}</span>
               <div class="calender-day-view-horizontal-line"></div>
             </div>
           </div>
 
-          <div role="presentation" class="calender-day-view-events-container-main">
+          <div role="presentation" class="calender-day-view-events-container-main" #bodyMain (scroll)="onScroll(scrollTwo, scrollOne)" #scrollTwo>
             <div role="row" class="calender-day-view-events-container">
+              <div class="gray-out-area"  *ngFor="let item of grayOutSlot$$ | async" [ngStyle]="{'top.px': item.top, 'height.px': item.height, 'width': bodyMain.style.width }" ></div>
               <div>
-                <ng-container *ngFor="let i of 15 | timeInInterval">
+                <ng-container *ngFor="let i of timeSlot.timings">
                   <div class="calender-day-view-horizontal-line"></div>
                   <div class="calender-day-view-horizontal-line-light"></div>
                 </ng-container>
               </div>
+
               <div class="calender-day-view-events-left-vertical-line"></div>
               <ng-container *ngIf="headerList.length; else singleGridCol;">
                 <div *ngFor="let h of headerList" role="gridcell" class="calender-day-view-body-grid-column">
@@ -97,18 +99,23 @@
 
                                   <div class="d-flex flex-column dfm-gap-4">
                                     <span class="font-weight-medium dfm-mt-8">Staff</span>
-                                    <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
-                                      <div *ngFor="let user of exam?.users"
-                                           class="d-flex align-items-center dfm-gap-8">
-                                        <div class="circle-gray-200-40">
-                                          <!--                                    {{ user ? user?.firstname[0] : 'U' | uppercase }}-->
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                          <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
-                                          <span class="dfm-text-main-500">{{ user?.userType | titlecase }}</span>
+                                    <ng-container *ngIf="data.exams | isData : 'users'; else dash">
+                                      <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
+                                        <div *ngFor="let user of exam?.users"
+                                             class="d-flex align-items-center dfm-gap-8">
+                                          <div class="circle-gray-200-40">
+                                            <!--                                    {{ user ? user?.firstname[0] : 'U' | uppercase }}-->
+                                          </div>
+                                          <div class="d-flex flex-column">
+                                            <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
+                                            <span class="dfm-text-main-500">{{ user?.userType | titlecase }}</span>
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
+                                    </ng-container>
+                                    <ng-template #dash>
+                                      <span>{{ '' | dashIfNothing }}</span>
+                                    </ng-template>
                                   </div>
                                 </div>
                               </ng-template>
@@ -159,7 +166,7 @@
                                     <div class="icon-20">
                                       <dfm-icon name="home-03"></dfm-icon>
                                     </div>
-                                    <span>Change Radiologist</span>
+                                    <span>{{ 'Change' | translate }} {{ 'Radiologist' | translate }}</span>
                                   </button>
 
 <!--                                  <button ngbDropdownItem-->
@@ -183,7 +190,7 @@
                                     <div class="icon-20">
                                       <dfm-icon name="arrow-right"></dfm-icon>
                                     </div>
-                                    <span>Move</span>
+                                    <span>{{ 'Move' | translate }}</span>
                                     <div class="icon-20 ml-auto">
                                       <dfm-icon name="chevron-right"></dfm-icon>
                                     </div>
@@ -202,12 +209,12 @@
 
                                         <button ngbDropdownItem
                                                 (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); openChangeTimeModal(data.appointment, false, eventContainer)">
-                                          <span>Shorten</span>
+                                          <span>{{ 'Shorten' | translate }}</span>
                                         </button>
 
                                         <button ngbDropdownItem
                                                 (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); openChangeTimeModal(data.appointment, true, eventContainer)">
-                                          <span>Extend</span>
+                                          <span>{{ 'Extend' | translate }}</span>
                                         </button>
                                       </div>
                                     </div>
@@ -219,7 +226,7 @@
                                     <div class="icon-20">
                                       <dfm-icon name="pencil-02"></dfm-icon>
                                     </div>
-                                    <span>Edit</span>
+                                    <span>{{ 'Edit' | translate }}</span>
                                   </button>
 
                                   <div class="dropdown-divider"></div>
@@ -229,7 +236,7 @@
                                     <div class="icon-20">
                                       <dfm-icon name="trash-01"></dfm-icon>
                                     </div>
-                                    <span>Delete</span>
+                                    <span>{{ 'Delete' | translate}}</span>
                                   </button>
                                 </div>
                               </div>

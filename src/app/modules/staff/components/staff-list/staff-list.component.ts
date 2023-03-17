@@ -8,11 +8,14 @@ import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { User } from '../../../../shared/models/user.model';
 import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-staff-list',
@@ -32,7 +35,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['First Name', 'Last Name', 'Type', 'Email', 'Status', 'Actions'];
+  public columns: string[] = ['FirstName', 'LastName', 'Type', 'Email', 'Status', 'Actions'];
 
   public downloadItems: DownloadType[] = [];
 
@@ -48,6 +51,10 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
   public statusType = getStatusEnum();
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   constructor(
     private staffApiSvc: StaffApiService,
     private notificationSvc: NotificationDataService,
@@ -56,6 +63,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     this.staffs$$ = new BehaviorSubject<any[]>([]);
@@ -93,12 +101,18 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
         this.downloadSvc.downloadJsonAs(
           value as DownloadAsType,
           this.columns.slice(0, -1),
-          this.filteredStaffs$$.value.map((u: User) => [u.firstname, u.lastname, u.userType, u.email, StatusToName[+u.status]]),
+          this.filteredStaffs$$.value.map((u: User) => [
+            u.firstname,
+            u.lastname,
+            u.userType,
+            u.email,
+            Translate[StatusToName[+u.status]][this.selectedLang],
+          ]),
           'staffs',
         );
 
         if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+          this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
         }
 
         this.downloadDropdownControl.setValue(null);
@@ -125,8 +139,33 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        this.notificationSvc.showNotification('Status has changed successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
         this.clearSelected$$.next();
+      });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        this.columns = [
+          Translate.FirstName[lang],
+          Translate.LastName[lang],
+          Translate.Type[lang],
+          Translate.Email[lang],
+          Translate.Status[lang],
+          Translate.Actions[lang],
+        ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
       });
   }
 
@@ -157,7 +196,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       .changeUserStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(
-        () => this.notificationSvc.showNotification('Status has changed successfully'),
+        () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
         (err) => this.notificationSvc.showNotification(err, NotificationType.DANGER),
       );
   }
@@ -166,10 +205,10 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Staff?',
+        bodyText: 'AreYouSureYouWantToDeleteThisStaff',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     dialogRef.closed
@@ -180,13 +219,12 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       )
       .subscribe((response) => {
         if (response) {
-          this.notificationSvc.showNotification('Staff deleted successfully');
+          this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
         }
       });
   }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
-    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
@@ -201,9 +239,9 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
       this.clipboardData = '';
     }
   }
@@ -251,7 +289,6 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   }
 
   private filterStaffList(result: { name: string; value: string }[]) {
-    console.log(result, this.staffs$$.value);
     if (!result?.length) {
       this.filteredStaffs$$.next([...this.staffs$$.value]);
       return;

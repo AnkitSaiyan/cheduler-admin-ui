@@ -44,7 +44,7 @@ export class PrioritySlotApiService {
             return response.data;
           }),
           catchError((e) => {
-            console.log('error', e);
+
             return of({} as PrioritySlot);
           }),
         ),
@@ -64,13 +64,10 @@ export class PrioritySlotApiService {
   }
 
   public updatePrioritySlot$(requestData: PrioritySlot) {
-    console.log("67 update slot called api");
-    
     let { id, ...restData } = requestData;
     let queryParams = new HttpParams();
     queryParams.append('id', String(id));
-    console.log('id: ', id);
-    console.log('restData: ', restData);
+
     return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}?id=${id}`, restData).pipe(
       map((response) => response.data),
       tap(() => this.refreshPrioritySlots$$.next()),

@@ -21,7 +21,9 @@ import { checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumbe
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
-
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 interface FormValues {
   firstname: string;
   lastname: string;
@@ -82,6 +84,10 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
   public readonly slotExistsError: string = 'slotExists';
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   constructor(
     private fb: FormBuilder,
     private userApiSvc: UserApiService,
@@ -94,6 +100,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     private nameValuePipe: NameValuePairPipe,
     private timeInIntervalPipe: TimeInIntervalPipe,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     const state = this.router.getCurrentNavigation()?.extras?.state;
@@ -146,7 +153,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     this.staffApiSvc.staffTypes$
       .pipe(
-        map((staffTypes) => staffTypes.map((staffType) => ({ name: staffType, value: staffType }))),
+        map((staffTypes) => staffTypes.map((staffType) => ({ name: staffType, value: staffType.toString() }))),
         takeUntil(this.destroy$$),
       )
       .subscribe((staffTypes) => this.staffTypes$$.next(staffTypes));
@@ -157,7 +164,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe((exams) => {
-        console.log('exams: ', exams);
         this.exams$$.next(exams);
       });
 
@@ -169,6 +175,32 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe(() => this.addPracticeAvailabilityControls());
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        // this.columns = [
+        //   Translate.FirstName[lang],
+        //   Translate.LastName[lang],
+        //   Translate.Email[lang],
+        //   Translate.Telephone[lang],
+        //   Translate.Category[lang],
+        //   Translate.Status[lang],
+        //   Translate.Actions[lang],
+        // ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
   }
 
   public override ngOnDestroy() {
@@ -184,9 +216,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       lastname: [staffDetails?.lastname, [Validators.required]],
       email: [staffDetails?.email, [Validators.required]],
       telephone: [staffDetails?.telephone, []],
-      userType: [staffDetails?.userType, [Validators.required]],
+      userType: [null, [Validators.required]],
       info: [staffDetails?.info, []],
-      examList: [staffDetails?.exams?.map((exam) => exam?.id?.toString()), []],
+      // examList: [staffDetails?.exams?.map((exam) => exam?.id?.toString()), []],
       status: [staffDetails?.status ?? Status.Active, []],
       selectedWeekday: [this.weekdayEnum.ALL, []],
       availabilityType: [!!staffDetails?.availabilityType, []],
@@ -214,6 +246,11 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     } else {
       this.addPracticeAvailabilityControls();
     }
+
+    setTimeout(() => {
+      this.addStaffForm.get('userType')?.setValue(staffDetails?.userType);
+      this.addStaffForm.get('userType')?.markAsUntouched();
+    }, 0);
   }
 
   private getPracticeAvailabilityFormGroup(weekday?: Weekday, dayStart?: string, dayEnd?: string): FormGroup {
@@ -352,6 +389,13 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
   }
 
   public removeSlot(controlArray: FormArray, i: number) {
+    if (controlArray.length === 1) {
+      controlArray.controls[i].patchValue({
+        dayStart: null,
+        dayEnd: null,
+      });
+      return;
+    }
     controlArray.removeAt(i);
 
     const formArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
@@ -360,8 +404,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
   }
 
   public saveStaff(): void {
-    console.log(this.formValues);
-
     const requiredKeys: string[] = ['firstname', 'lastname', 'email', 'userType'];
     let valid = true;
 
@@ -381,7 +423,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     }
 
     if (!valid) {
-      this.notificationSvc.showNotification('Form is not valid.', NotificationType.WARNING);
+      this.notificationSvc.showNotification(Translate.FormInvalidSimple[this.selectedLang], NotificationType.WARNING);
       return;
     }
 
@@ -416,55 +458,38 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         : [],
     };
 
-    console.log(addStaffReqData.info);
-
     if (!addStaffReqData.info) {
       delete addStaffReqData.info;
     }
+
     if (!addStaffReqData.address) {
       delete addStaffReqData.address;
     }
+
     if (!addStaffReqData.practiceAvailability?.length) {
       addStaffReqData.availabilityType = AvailabilityType.Unavailable;
     }
-    if (this.staffID) {
-      addStaffReqData.id = this.staffID;
-    }
 
-    console.log(addStaffReqData);
-    if (this.edit) {
-      this.staffApiSvc
-        .updateStaff(addStaffReqData)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`Staff updated successfully`);
-          let route: string;
-          if (this.comingFromRoute === 'view') {
-            route = '../view';
-          } else {
-            route = this.edit ? '/staff' : '../';
-          }
+    addStaffReqData.id = Number.isNaN(+this.staffID) ? 0 : +this.staffID;
 
-          console.log(route);
-          this.router.navigate([route], { relativeTo: this.route });
-        });
-    } else {
-      this.staffApiSvc
-        .addNewStaff$(addStaffReqData)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe(() => {
-          this.notificationSvc.showNotification(`Staff updated successfully`);
-          let route: string;
-          if (this.comingFromRoute === 'view') {
-            route = '../view';
-          } else {
-            route = this.edit ? '/staff' : '../';
-          }
+    this.staffApiSvc
+      .addNewStaff$(addStaffReqData)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => {
+        if (this.staffID) {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+        } else {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+        }
+        let route: string;
+        if (this.comingFromRoute === 'view') {
+          route = '../view';
+        } else {
+          route = this.edit ? '/staff' : '../';
+        }
 
-          console.log(route);
-          this.router.navigate([route], { relativeTo: this.route });
-        });
-    }
+        this.router.navigate([route], { relativeTo: this.route });
+      });
   }
 
   private isPracticeFormInvalid(controlArrays: FormArray[]): boolean {
@@ -512,7 +537,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
   }
 
   public handleTimeFocusOut(time: string, control: AbstractControl | null | undefined) {
-    console.log('in');
     this.handleError(time, control);
   }
 

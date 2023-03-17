@@ -5,7 +5,7 @@ export function formatTime(timeString: string, format: 12 | 24 = 12, interval = 
 
   const [hourPart, minutePart]: string[] = timeString.split(':');
 
-  // console.log(hourPart, minutePart);
+  //
 
   if (!hourPart || !minutePart) {
     return '';
@@ -81,15 +81,12 @@ export function timeToNumber(timeString: string): number {
 }
 
 export function checkTimeRangeOverlapping(start1: string, end1: string, start2: string, end2: string): boolean {
+  // debugger
   const a = timeToNumber(start1);
   const b = timeToNumber(end1);
 
   const c = timeToNumber(start2);
   const d = timeToNumber(end2);
 
-  if (b <= c || d <= a) {
-    return false;
-  }
-
-  return true;
+  return !(b <= c || d <= a);
 }

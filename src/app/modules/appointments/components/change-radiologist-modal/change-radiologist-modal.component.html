@@ -1,13 +1,19 @@
 <div class="bg-white rounded-4 change-radiologist-modal">
   <div class="modal-header">
-    <h5 class="modal-title">Change Radiologist</h5>
-    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
+    <h5 class="modal-title">{{ 'Change' | translate }} {{ 'Radiologist' | translate}}</h5>
+    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="closeDialog()"></dfm-button-icon>
   </div>
 
-  <div class="modal-body dfm-mb-8">
-    <div class="dfm-input-dropdown-wrapper-wo-label">
+  <div class="modal-body d-flex flex-column dfm-gap-24 dfm-mb-8">
+    <div class="text-sm">
+      <span class="font-weight-medium dfm-text-main-400">{{ 'Selected' | translate }} {{ 'Radiologist' | translate }} : </span>
+      <span>{{ selectedRadiologists | joinWithAnd : 'name' | dashIfNothing }}</span>
+    </div>
+    <div class="dfm-input-multi-dropdown-wrapper-wo-label">
       <dfm-input-dropdown size="md"
-                          placeholder="Select Radiologist*"
+                          placeholder="{{ doctor.value?.length ? (doctor.value.length) + ' ' + ('Selected' | translate) : ('Select' | translate) + ' ' + ('Radiologist' | translate) }} *"
+                          #doctor
+                          [multiple]="true"
                           [items]="radiologists"
                           [formControl]="radiologistFormControl">
       </dfm-input-dropdown>
@@ -15,7 +21,7 @@
   </div>
 
   <div class="modal-footer">
-    <dfm-button color="secondary" size="md" (click)="close(false)">Cancel</dfm-button>
-    <dfm-button color="primary" size="md" (click)="close(true)">Change</dfm-button>
+    <dfm-button color="secondary" size="md" (click)="closeDialog()">{{ 'Cancel' | translate }}</dfm-button>
+    <dfm-button color="primary" size="md" (click)="save()">{{ 'Change' | translate }}</dfm-button>
   </div>
 </div>

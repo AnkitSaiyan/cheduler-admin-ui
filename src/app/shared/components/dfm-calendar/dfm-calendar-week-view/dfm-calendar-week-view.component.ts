@@ -64,11 +64,17 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   @Input()
   public dataGroupedByDateAndTime!: { [key: string]: any[][] };
 
+  @Input()
+  public prioritySlots!: { [key: string]: any[] };
+
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
 
   @Output()
   public dayViewEvent = new EventEmitter<number>();
+
+  @Output()
+  public addAppointment = new EventEmitter<{ e: MouseEvent; eventsContainer: HTMLDivElement; day: number[] }>();
 
   public daysOfWeekArr: number[][] = [];
 
@@ -81,6 +87,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
   public rendered = false;
 
+  public getDurationFn = (s, e) => getDurationMinutes(s, e);
+
   constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private renderer: Renderer2, private modalSvc: ModalService) {
     super();
   }
@@ -89,12 +97,11 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     if (!this.selectedDate) {
       this.selectedDate = new Date();
     }
+    console.log(this.prioritySlots);
   }
 
   public ngOnInit(): void {
     this.updateCalendarDays();
-
-    console.log(this.dataGroupedByDateAndTime);
 
     this.changeWeek$$
       .pipe(
@@ -134,9 +141,10 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   public changeWeek(offset: number) {
+    console.log(offset);
     if (offset !== 0) {
       const date = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + offset * 7));
-      console.log(date);
+      console.log('147', date);
       this.updateDate(date);
       this.changeWeek$$.next(0);
     }
@@ -145,11 +153,14 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   private updateCalendarDays() {
+    // debugger;
     this.daysOfWeekArr = getAllDaysOfWeek(this.selectedDate);
+    console.log(this.daysOfWeekArr);
     this.rendered = false;
   }
 
   private updateDate(date: Date) {
+    date.setMinutes(date.getMinutes() - (date.getMinutes() % 5));
     this.selectedDate = date;
     this.emitDate();
   }
@@ -172,13 +183,13 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   private renderEvents(): void {
     //   // debugger;
     //   if (this.dataGroupedByDateAndTime) {
-    //     console.log(this.eventContainer);
+    //
     //     this.eventContainer.forEach((elementRef) => {
     //       const div = elementRef.nativeElement as HTMLDivElement;
     //       const dataArray = this.dataGroupedByDateAndTime[div.id] as { group: number; data: any }[];
     //
     //       if (dataArray?.length) {
-    //         console.log(dataArray);
+    //
     //         const pixelsPerMin = 4;
     //         const barHeight = 1;
     //         const title = 'Appointments';
@@ -267,7 +278,13 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     });
 
     const durationMinutes = getDurationMinutes(groupedData[0].startedAt, endDate);
+    return durationMinutes * this.pixelsPerMin;
+  }
 
+  public getPrioritySlotHeight(prioritySlot: any): number {
+    const startDate: Date = this.myDate(prioritySlot.start);
+    const endDate: Date = this.myDate(prioritySlot.end);
+    const durationMinutes = getDurationMinutes(startDate, endDate);
     return durationMinutes * this.pixelsPerMin;
   }
 
@@ -277,50 +294,35 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     const barHeight = 1;
     const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
     const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
-
+    if (top % 20) {
+      return Math.floor(top / 20) * 20 + 20;
+    }
     return top;
   }
 
-  public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[]) {
-    const eventCard = this.createAppointmentCard(e, eventsContainer);
-
-    const modalRef = this.modalSvc.open(AddAppointmentModalComponent, {
-      data: {
-        event: e,
-        element: eventCard,
-        elementContainer: eventsContainer,
-        startedAt: new Date(this.selectedDate.getFullYear(), day[1], day[0]),
-      },
-      options: {
-        backdrop: false,
-        centered: true,
-        modalDialogClass: 'ad-ap-modal-shadow',
-      },
-    });
-
-    modalRef.closed.pipe(take(1)).subscribe((res) => {
-      if (!res) {
-        eventCard.remove();
-      }
-    });
+  public getPrioritySlotTop(prioritySlot: any): number {
+    const startDate = this.myDate(prioritySlot.start);
+    const startHour = startDate.getHours();
+    const startMinute = startDate.getMinutes();
+    const barHeight = 1;
+    const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
+    const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
+    if (top % 20) {
+      return Math.floor(top / 20) * 20 + 20;
+    }
+    return top;
   }
 
-  private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {
-    const eventCard = document.createElement('div');
-    eventCard.classList.add('calender-week-view-event-container');
-    eventCard.style.height = `20px`;
-    eventCard.style.top = `${e.offsetY}px`;
+  public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[]) {
+    this.addAppointment.emit({ e, eventsContainer, day });
+  }
 
-    const appointmentText = document.createElement('span');
-    // const textNode = document.createTextNode('Appointment');
-
-    appointmentText.innerText = 'Appointment';
-
-    appointmentText.classList.add('appointment-title');
-
-    eventCard.appendChild(appointmentText);
-    eventsContainer.appendChild(eventCard);
-
-    return eventCard;
+  private myDate(date: string): Date {
+    const formattedDate = new Date();
+    const splitDate = date.split(':');
+    formattedDate.setHours(+splitDate[0]);
+    formattedDate.setMinutes(+splitDate[1]);
+    formattedDate.setSeconds(0);
+    return formattedDate;
   }
 }

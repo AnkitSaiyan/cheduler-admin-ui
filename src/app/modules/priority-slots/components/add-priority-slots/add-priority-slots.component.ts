@@ -19,6 +19,9 @@ import { toggleControlError } from '../../../../shared/utils/toggleControlError'
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { User, UserType } from 'src/app/shared/models/user.model';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
   name: string;
@@ -86,6 +89,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
   public endTimes: NameValue[];
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   public repeatEvery = {
     // daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
     weekly: [...this.getRepeatEveryItems(RepeatType.Weekly)],
@@ -118,6 +125,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     private timeInIntervalPipe: TimeInIntervalPipe,
     private nameValuePairPipe: NameValuePairPipe,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
 
@@ -133,22 +141,22 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
           this.modalData = modalData;
           if (modalData?.prioritySlotDetails?.id) {
             return this.priorityApiSvc.getPrioritySlotsByID(modalData?.prioritySlotDetails.id);
-          } else {
-            this.createForm();
           }
+          this.createForm();
+
           return of({} as PrioritySlot);
         }),
         take(1),
       )
       .subscribe((prioritySlot) => {
-        console.log(prioritySlot);
+
         this.prioritySlot$$.next(prioritySlot);
         this.createForm(prioritySlot);
       });
 
     this.staffApiSvc.staffList$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
       this.staffDetails = staffs;
-      console.log('this.staffDetails: ', this.staffDetails);
+
       const radiologist: NameValue[] = [];
       staffs.forEach((staff) => {
         const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff.id.toString() };
@@ -161,6 +169,32 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       });
       this.radiologist$$.next(radiologist);
     });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        // this.columns = [
+        //   Translate.FirstName[lang],
+        //   Translate.LastName[lang],
+        //   Translate.Email[lang],
+        //   Translate.Telephone[lang],
+        //   Translate.Category[lang],
+        //   Translate.Status[lang],
+        //   Translate.Actions[lang],
+        // ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
   }
 
   public override ngOnDestroy() {
@@ -172,30 +206,52 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   private createForm(prioritySlotDetails?: PrioritySlot | undefined): void {
-    let slotStartTime;
-    let slotEndTime;
+    let startTime;
+    let endTime;
 
     if (prioritySlotDetails?.startedAt) {
       const date = new Date(prioritySlotDetails.startedAt);
-      slotStartTime = this.datePipe.transform(date, 'HH:mm');
+      startTime = this.datePipe.transform(date, 'HH:mm');
 
-      if (slotStartTime && !this.startTimes.find((time) => time.value === slotStartTime)) {
-        this.startTimes.push({ name: slotStartTime, value: slotStartTime });
+      if (startTime && !this.startTimes.find((time) => time.value === startTime)) {
+        this.startTimes.push({ name: startTime, value: startTime });
       }
     }
 
     if (prioritySlotDetails?.endedAt) {
       const date = new Date(prioritySlotDetails.endedAt);
-      slotEndTime = this.datePipe.transform(date, 'HH:mm');
-      console.log('slotEndTime: ', slotEndTime);
+      endTime = this.datePipe.transform(date, 'HH:mm');
 
-      if (slotEndTime && !this.endTimes.find((time) => time.value === slotEndTime)) {
-        this.endTimes.push({ name: slotEndTime, value: slotEndTime });
+      if (endTime && !this.endTimes.find((time) => time.value === endTime)) {
+        this.endTimes.push({ name: endTime, value: endTime });
       }
     }
-    if (prioritySlotDetails?.slotEndTime) {
-      slotEndTime = prioritySlotDetails?.slotEndTime.slice(0, -3);
-    }
+
+    // let slotStartTime;
+    // let slotEndTime;
+    //
+    // if (prioritySlotDetails?.startedAt) {
+    //   const date = new Date(prioritySlotDetails.startedAt);
+    //   slotStartTime = this.datePipe.transform(date, 'HH:mm');
+    //
+    //   if (slotStartTime && !this.startTimes.find((time) => time.value === slotStartTime)) {
+    //     this.startTimes.push({ name: slotStartTime, value: slotStartTime });
+    //   }
+    // }
+    //
+    // if (prioritySlotDetails?.endedAt) {
+    //   const date = new Date(prioritySlotDetails.endedAt);
+    //   slotEndTime = this.datePipe.transform(date, 'HH:mm');
+    //
+    //
+    //   if (slotEndTime && !this.endTimes.find((time) => time.value === slotEndTime)) {
+    //     this.endTimes.push({ name: slotEndTime, value: slotEndTime });
+    //   }
+    // }
+    //
+    // if (prioritySlotDetails?.slotEndTime) {
+    //   slotEndTime = prioritySlotDetails?.slotEndTime.slice(0, -3);
+    // }
 
     const radiologists: string[] = [];
 
@@ -225,7 +281,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
           : null,
         [Validators.required],
       ],
-      slotStartTime: [slotStartTime, [Validators.required]],
+      slotStartTime: [endTime, [Validators.required]],
       endedAt: [
         prioritySlotDetails?.endedAt
           ? {
@@ -236,10 +292,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
           : null,
         [],
       ],
-      slotEndTime: [slotEndTime, [Validators.required]],
+      slotEndTime: [startTime, [Validators.required]],
       isRepeat: [!!prioritySlotDetails?.isRepeat, []],
-      repeatType: [prioritySlotDetails?.repeatType ?? null, []],
-      repeatDays: [prioritySlotDetails?.repeatDays ? prioritySlotDetails.repeatDays.split(',') : '', []],
+      repeatType: [null, []],
+      repeatDays: ['', []],
       repeatFrequency: [
         prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
           ? `${prioritySlotDetails.repeatFrequency} ${this.repeatTypeToName[prioritySlotDetails.repeatType]}`
@@ -250,14 +306,38 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       priority: [prioritySlotDetails?.priority ?? null, [Validators.required]],
     });
 
+    setTimeout(
+      () =>
+        this.prioritySlotForm.patchValue({
+          slotStartTime: startTime,
+          slotEndTime: endTime,
+          repeatType: prioritySlotDetails?.repeatType,
+          repeatFrequency:
+            prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
+              ? `${prioritySlotDetails.repeatFrequency} ${this.repeatTypeToName[prioritySlotDetails.repeatType]}`
+              : null,
+          repeatDays: prioritySlotDetails?.repeatDays ? prioritySlotDetails.repeatDays.split(',') : '',
+        }),
+      0,
+    );
+
     this.cdr.detectChanges();
 
     this.prioritySlotForm
       ?.get('repeatType')
       ?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.prioritySlotForm?.get('repeatDays')?.setValue(null);
+        if (!prioritySlotDetails) {
+          this.prioritySlotForm?.get('repeatDays')?.setValue(null);
+        }
         this.updateRepeatFrequency();
+      });
+
+    this.prioritySlotForm
+      ?.get('slotStartTime')
+      ?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
+      .subscribe(() => {
+        this.handleTimeChange();
       });
 
     combineLatest([
@@ -268,7 +348,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     ])
       .pipe(debounceTime(0), takeUntil(this.destroy$$))
       .subscribe(() => {
-        console.log('in');
+
         this.handleTimeChange();
       });
 
@@ -276,8 +356,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       .get('slotEndTime')
       ?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
       .subscribe((data: any) => {
-        console.log("called");
-        
         this.handleTimeChange();
       });
   }
@@ -288,10 +366,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   public savePrioritySlot() {
-    console.log(this.prioritySlotForm);
+
     if (this.formValues.isRepeat) {
       if (this.prioritySlotForm.invalid) {
-        this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+        this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 
         Object.keys(this.prioritySlotForm.controls).map((key) => this.prioritySlotForm.get(key)?.markAsTouched());
 
@@ -305,20 +383,20 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       });
 
       if (invalid) {
-        this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+        this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
         return;
       }
     }
 
     this.submitting$$.next(true);
-    console.log(this.formValues);
+
 
     const { startedAt, endedAt, repeatDays, slotStartTime, slotEndTime, ...rest } = this.formValues;
 
     const addPriorityReqData: PrioritySlot = {
       ...rest,
       startedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day} ${slotStartTime}:00`,
-      endedAt: rest.isRepeat ? `${endedAt.year}-${endedAt.month}-${endedAt.day} ${slotEndTime}:00` : null,
+      endedAt: `${endedAt.year}-${endedAt.month}-${endedAt.day} ${slotEndTime}:00`,
       repeatType: rest.isRepeat ? rest.repeatType : null,
       repeatFrequency: rest.isRepeat && rest.repeatFrequency ? +rest.repeatFrequency.toString().split(' ')[0] : 0,
       repeatDays: '',
@@ -340,14 +418,14 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       addPriorityReqData.id = this.modalData.prioritySlotDetails.id;
     }
 
-    console.log(addPriorityReqData);
+
     if (this.modalData.edit) {
       this.priorityApiSvc
         .updatePrioritySlot$(addPriorityReqData)
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Priority Slots updated successfully`);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },
@@ -362,7 +440,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Priority Slots added successfully`);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },
@@ -388,11 +466,11 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   public handleTimeInput(time: string, controlName: 'slotStartTime' | 'slotEndTime') {
-    console.log(time);
+
 
     const formattedTime = formatTime(time, 24, 5);
 
-    console.log(formattedTime);
+
 
     if (!formattedTime) {
       return;
@@ -435,14 +513,14 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   private updateRepeatFrequency(type: 'number' | 'text' = 'text') {
-    console.log(type, this.repeatFrequency);
+
     if (!this.repeatFrequency?.value || !this.formValues.repeatFrequency) {
       return;
     }
 
     const { repeatFrequency } = this.formValues;
 
-    console.log(repeatFrequency);
+
 
     switch (type) {
       case 'text':
@@ -470,15 +548,14 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   public handleChange(repeatFrequency: InputComponent) {
-    console.log(repeatFrequency);
+
   }
 
   private handleTimeChange() {
-    console.log('function called');
-    console.log('slotStartTime: ', this.formValues.slotStartTime);
 
-    
-    if (this.formValues.slotStartTime < this.formValues.slotEndTime) {
+
+
+    if (this.formValues.slotStartTime !== '' && this.formValues.slotStartTime < this.formValues.slotEndTime) {
       toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', false);
       toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
       return;
@@ -488,8 +565,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       timeToNumber(this.formValues.slotStartTime) >= timeToNumber(this.formValues.slotEndTime) ||
       timeToNumber(this.formValues.slotEndTime) <= timeToNumber(this.formValues.slotStartTime)
     ) {
-      console.log('called');
-
       toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', true);
       toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', true);
 
@@ -502,10 +577,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
     const { startedAt, endedAt, slotStartTime, slotEndTime } = this.formValues;
 
-    console.log(startedAt, slotStartTime, endedAt, slotEndTime);
-
     if (startedAt.day === endedAt.day && startedAt.month === endedAt.month && startedAt.year === endedAt.year) {
-      console.log('in');
       if (timeToNumber(slotStartTime) >= timeToNumber(slotEndTime)) {
         toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time');
         toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time');
@@ -520,3 +592,5 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
   }
 }
+
+

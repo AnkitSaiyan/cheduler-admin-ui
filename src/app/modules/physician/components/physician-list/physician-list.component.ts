@@ -5,7 +5,7 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -13,10 +13,13 @@ import { ModalService } from '../../../../core/services/modal.service';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Statuses } from '../../../../shared/utils/const';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
 import { User } from '../../../../shared/models/user.model';
+import { ShareDataService } from '../../../../core/services/share-data.service';
+import { TranslatePipe } from '@ngx-translate/core';
+import { Translate } from '../../../../shared/models/translate.model';
 
 @Component({
   selector: 'dfm-physician-list',
@@ -40,7 +43,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['First Name', 'Last Name', 'Email', 'Status', 'Actions'];
+  public columns: string[] = ['FirstName', 'LastName', 'Email', 'Status', 'Actions'];
 
   public downloadItems: any[] = [];
 
@@ -58,6 +61,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public loading$$ = new BehaviorSubject(true);
 
+  public statuses = Statuses;
+
+  private selectedLang: string = ENG_BE;
+
   constructor(
     private physicianApiSvc: PhysicianApiService,
     private notificationSvc: NotificationDataService,
@@ -66,6 +73,8 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
+    private translatePipe: TranslatePipe,
   ) {
     super();
     this.physicians$$ = new BehaviorSubject<any[]>([]);
@@ -107,12 +116,12 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         this.downloadSvc.downloadJsonAs(
           value as DownloadAsType,
           this.columns.slice(0, -1),
-          this.filteredPhysicians$$.value.map((u: User) => [u.firstname, u.lastname, u.userType, u.email, StatusToName[+u.status]]),
+          this.filteredPhysicians$$.value.map((u: User) => [u.firstname, u.lastname, u.email, Translate[StatusToName[+u.status]][this.selectedLang]]),
           'physician',
         );
 
         if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+          this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
         }
 
         this.downloadDropdownControl.setValue(null);
@@ -138,7 +147,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
-        this.notificationSvc.showNotification('Status has changed successfully');
+        this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`);
         this.clearSelected$$.next();
       });
 
@@ -146,6 +155,23 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         this.closeMenus();
+      });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang], Translate.Actions[lang]];
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
       });
   }
 
@@ -165,7 +191,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
           physician.firstname?.toLowerCase()?.includes(searchText) ||
           physician.lastname?.toLowerCase()?.includes(searchText) ||
           physician.email?.toLowerCase()?.includes(searchText) ||
-          Statuses[+physician.status] === searchText
+          this.statuses[+physician.status] === searchText
         );
       }),
     ]);
@@ -176,7 +202,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       .changePhysicianStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(
-        () => this.notificationSvc.showNotification('Status has changed successfully'),
+        () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`),
         (err) => this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER),
       );
   }
@@ -185,10 +211,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Physician?',
+        bodyText: 'AreyousureyouwanttodeletethisPhysician',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     modalRef.closed
@@ -199,7 +225,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       )
       .subscribe((response) => {
         if (response) {
-          this.notificationSvc.showNotification('Physician deleted successfully');
+          this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted[this.selectedLang]}!`);
         }
       });
   }
@@ -219,9 +245,9 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
       this.clipboardData = '';
     }
   }

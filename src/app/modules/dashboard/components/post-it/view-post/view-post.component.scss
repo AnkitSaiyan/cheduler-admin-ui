@@ -1,0 +1,9 @@
+.d-flex-main{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.d-flex-main .main-post {
+    flex: 46%;
+    margin  :10px
+}

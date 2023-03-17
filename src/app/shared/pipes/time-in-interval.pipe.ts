@@ -4,11 +4,11 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'timeInInterval',
 })
 export class TimeInIntervalPipe implements PipeTransform {
-  public transform(interval: number = 30, format: 12 | 24 = 24, formatted = false): string[] {
+  public transform(interval: number = 30, format: 12 | 24 = 24, formatted = false, startMin?: number, endMin?: number): string[] {
     const times: any[] = []; // time array
     const ap = ['AM', 'PM']; // AM-PM
 
-    for (let startTime = 0; startTime < 24 * 60; startTime += interval) {
+    for (let startTime = startMin ?? 0; startTime < (endMin ?? 24 * 60); startTime += interval) {
       // getting hours of day in 0-24 format
       const hour = Math.floor(startTime / 60);
 
@@ -35,13 +35,13 @@ export class TimeInIntervalPipe implements PipeTransform {
       times.push(time);
     }
 
-    if (format === 24) {
-      times.push('24:00');
-    } else if (formatted) {
-      times.push('24:00 PM');
-    } else {
-      times.push('24:00PM');
-    }
+    // if (format === 24) {
+    //   times.push('24:00');
+    // } else if (formatted) {
+    //   times.push('24:00 PM');
+    // } else {
+    //   times.push('24:00PM');
+    // }
 
     return times;
   }

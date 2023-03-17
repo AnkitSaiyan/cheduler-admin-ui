@@ -8,7 +8,9 @@ import { NotificationDataService } from '../../../../core/services/notification-
 import { AddPhysicianRequestData, Physician } from '../../../../shared/models/physician.model';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { Status } from '../../../../shared/models/status.model';
-import { EMAIL_REGEX } from '../../../../shared/utils/const';
+import {EMAIL_REGEX, ENG_BE} from '../../../../shared/utils/const';
+import {ShareDataService} from "../../../../core/services/share-data.service";
+import {Translate} from "../../../../shared/models/translate.model";
 
 interface FormValues {
   firstname: string;
@@ -34,11 +36,14 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 
   public loading$$ = new BehaviorSubject<boolean>(false);
 
+  private selectedLanguage: string = ENG_BE;
+
   constructor(
     private modalSvc: ModalService,
     private fb: FormBuilder,
     private notificationSvc: NotificationDataService,
     private physicianApiSvc: PhysicianApiService,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
   }
@@ -48,6 +53,10 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       this.modalData = data;
       this.createForm(this.modalData?.physicianDetails);
     });
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => (this.selectedLanguage = lang));
   }
 
   public override ngOnDestroy() {
@@ -68,7 +77,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       gsm: [physicianDetails?.gsm, []],
       address: [physicianDetails?.address, []],
       notifyDoctor: [!!physicianDetails?.notifyDoctor, []],
-      status: [this.modalData.edit ? !!physicianDetails?.status : false, []],
+      status: [this.modalData.edit ? !!physicianDetails?.status : true, []],
     });
   }
 
@@ -79,7 +88,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 
   public savePhysician() {
     if (this.addPhysicianForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+      this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLanguage]}!`, NotificationType.WARNING);
       this.addPhysicianForm.updateValueAndValidity();
       return;
     }
@@ -99,7 +108,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       addPhysicianReqData.email = null;
     }
 
-    console.log(addPhysicianReqData);
+
 
     if (this.modalData.edit) {
       this.physicianApiSvc
@@ -107,7 +116,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Physician updated successfully`);
+            this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated[this.selectedLanguage]}!`);
             this.closeModal(true);
             this.loading$$.next(false);
           },
@@ -119,7 +128,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`Physician added successfully`);
+            this.notificationSvc.showNotification(`${Translate.SuccessMessage.Added[this.selectedLanguage]}!`);
             this.closeModal(true);
             this.loading$$.next(false);
           },

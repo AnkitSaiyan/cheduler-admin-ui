@@ -3,17 +3,20 @@ import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
-import { Statuses } from '../../../../shared/utils/const';
-import { ConfirmActionModalComponent, DialogData } from '../../../../shared/components/confirm-action-modal.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { Exam } from '../../../../shared/models/exam.model';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+// import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-exam-list',
@@ -53,6 +56,10 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
   public clipboardData: string = '';
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   constructor(
     private examApiSvc: ExamApiService,
     private notificationSvc: NotificationDataService,
@@ -61,13 +68,14 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     private modalSvc: ModalService,
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
+    private shareDataService: ShareDataService,
   ) {
     super();
     this.exams$$ = new BehaviorSubject<any[]>([]);
     this.filteredExams$$ = new BehaviorSubject<any[]>([]);
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
     this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
@@ -96,12 +104,12 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         this.downloadSvc.downloadJsonAs(
           downloadAs as DownloadAsType,
           this.columns.slice(0, -1),
-          this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), StatusToName[ex.status]]),
+          this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), Translate[StatusToName[+ex.status]][this.selectedLang]]),
           'exams',
         );
 
         if (downloadAs !== 'PRINT') {
-          this.notificationSvc.showNotification(`${downloadAs} file downloaded successfully`);
+          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
         }
 
         this.downloadDropdownControl.setValue(null);
@@ -128,8 +136,26 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         takeUntil(this.destroy$$),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Status has changed successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
         this.clearSelected$$.next();
+      });
+
+    this.shareDataService
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        this.columns = [Translate.Name[lang], Translate.Expensive[lang], Translate.Status[lang], Translate.Actions[lang]];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
       });
   }
 
@@ -159,17 +185,17 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     this.examApiSvc
       .changeExamStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
+      .subscribe(() => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]));
   }
 
   public deleteExam(id: number) {
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Exam?',
+        bodyText: 'AreYouSureYouWantToDeleteThisExam',
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
-      } as DialogData,
+      } as ConfirmActionModalData,
     });
 
     modalRef.closed
@@ -179,7 +205,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Exam deleted successfully');
+        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
       });
   }
 
@@ -198,9 +224,9 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
       this.clipboardData = '';
     }
   }

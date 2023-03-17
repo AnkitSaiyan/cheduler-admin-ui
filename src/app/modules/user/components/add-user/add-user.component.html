@@ -1,6 +1,6 @@
 <div class="bg-white rounded-4 ad-us-main-wrapper dfm-px-16">
   <section class="modal-header ad-us-section1">
-    <h5 class="modal-title ad-us-title-buttons">{{ modalData.edit ? 'Edit' : 'Add' }} User</h5>
+    <h5 class="modal-title ad-us-title-buttons">{{ modalData.edit ?  ('EditUser' | translate) : ('AddUser' | translate) }}</h5>
     <dfm-button-icon class="ad-us-title-buttons" color="tertiary-gray" icon="x-close"
                      (click)="closeModal(false)"></dfm-button-icon>
 
@@ -18,55 +18,55 @@
       <dfm-button
         color="link"
         size="lg"
-      > {{ modalData.edit ? 'Edit' : 'Add' }} User
+      > {{ modalData.edit ? ('EditUser' | translate) : ('AddUser' | translate) }}
       </dfm-button>
     </div>
   </section>
 
-  <section class="modal-body ad-us-section2 overflow-y-auto">
+  <section class="modal-body ad-us-section2 ">
     <form [formGroup]="addUserForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex flex-column dfm-gap-16 flex-1">
-        <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Select User Type *</span>
+        <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{'SelectUserType' | translate}}*</span>
         <div class="w-fit d-flex justify-content-between dfm-gap-24">
-          <dfm-radio-button class="font-weight-normal" label="Scheduler User"
+          <dfm-radio-button class="font-weight-normal" label="{{'SchedulerUser' | translate}}"
                             *ngIf="modalData?.userDetails?.userType !== userType.Secretary"
                             [checkedValue]="userType.Scheduler"
                             formControlName="userType"></dfm-radio-button>
-          <dfm-radio-button class="font-weight-normal" label="Scheduler User"
+          <dfm-radio-button class="font-weight-normal" label="{{'SchedulerUser' | translate}}"
                             *ngIf="modalData?.userDetails?.userType === userType.Secretary"
                             [checkedValue]="userType.Secretary"
                             formControlName="userType"></dfm-radio-button>
-          <dfm-radio-button class="font-weight-normal" label="General user"
+          <dfm-radio-button class="font-weight-normal" label="{{'GeneralUser' | translate}}"
                             [checkedValue]="userType.General"
                             formControlName="userType"></dfm-radio-button>
         </div>
       </div>
 
-      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
-        <dfm-input #firstname [dfmNameInput]="firstname" class="flex-1" size="md" placeholder="Enter first name"
-                   label="First Name *"
+      <div class="d-flex dfm-gap-32 flex-wrap">
+        <dfm-input #firstname [dfmNameInput]="firstname" class="flex-1" size="md" placeholder="{{'EnterFirstName' | translate}}"
+                   label="{{'FirstName' | translate}} *"
                    formControlName="firstname">
         </dfm-input>
 
-        <dfm-input #lastname [dfmNameInput]="lastname" class="flex-1" size="md" placeholder="Enter last name"
-                   label="Last Name *" formControlName="lastname">
+        <dfm-input #lastname [dfmNameInput]="lastname" class="flex-1" size="md" placeholder="{{'EnterLastName' | translate}}"
+                   label="{{'LastName' | translate}} *" formControlName="lastname">
         </dfm-input>
       </div>
 
-      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">
+      <div class="d-flex dfm-gap-32  flex-wrap">
         <div class="d-flex flex-column flex-1 w-full">
           <dfm-input
             [required]="modalData?.userDetails?.userType ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler"
-            [label]="modalData?.userDetails?.userType ? (modalData.userDetails.userType === userType.General ? 'Email' : 'Email *' ) : (formValues.userType === userType.General ? 'Email' : 'Email *')"
+            [label]="modalData?.userDetails?.userType ? (modalData.userDetails.userType === userType.General ? ('Email' | translate) :('RequiredEmail' | translate ) ) : (formValues.userType === userType.General ? ('Email' | translate) :('RequiredEmail' | translate ))"
             class="flex-1" size="md"
-            placeholder="Enter email"
+            placeholder="{{'EnterEmail' | translate}}"
             formControlName="email" (focusout)="handleEmailInput($event)">
           </dfm-input>
-          <small *ngIf="addUserForm.get('email')?.hasError('email')" class="validation-error">Email is Invalid.</small>
+          <small *ngIf="addUserForm.get('email')?.hasError('email')" class="validation-error">{{'InvalidEmail' | translate}}</small>
         </div>
 
-        <dfm-input #phone [dfmNumberInput]="phone" class="flex-1" size="md" placeholder="Enter telephone"
-                   label="Telephone"
+        <dfm-input #phone [dfmNumberInput]="phone" class="flex-1" size="md" placeholder="{{'EnterTelephone' | translate}}"
+                   label="{{'Telephone' | translate}}"
                    formControlName="telephone">
         </dfm-input>
       </div>
@@ -74,18 +74,18 @@
       <div
         *ngIf="modalData.edit ? (modalData.userDetails.userType === userType.Scheduler || modalData.userDetails.userType === userType.Secretary) : (formValues.userType === userType.Scheduler || formValues.userType === userType.Secretary)"
         class="d-flex dfm-gap-32 flex-wrap">
-        <dfm-input class="flex-1" size="md" placeholder="Enter GSM" label="GSM" formControlName="gsm">
+        <dfm-input class="flex-1" size="md" placeholder="{{'EnterGsm' | translate}}" label="GSM" formControlName="gsm">
         </dfm-input>
 
-        <dfm-text-area class="flex-1" label="Address" placeholder="Enter address"
+        <dfm-text-area class="flex-1" label="{{'Address' | translate}}" placeholder="{{'EnterAddress' | translate}}"
                        formControlName="address"></dfm-text-area>
       </div>
     </form>
   </section>
 
   <section class="modal-footer ad-us-footer-buttons">
-    <dfm-button color="secondary" size="md" (click)="closeModal(false)">Cancel</dfm-button>
+    <dfm-button color="secondary" size="md" (click)="closeModal(false)">{{'Cancel' | translate}}</dfm-button>
     <dfm-button color="primary" size="md" [disabled]="(loading$$ | async) === true"
-                (click)="saveUser()">{{ modalData.edit ? 'Save Changes' : 'Add User' }}</dfm-button>
+                (click)="saveUser()">{{ modalData.edit ? ('SaveChanges' | translate) : ('AddUser' | translate) }}</dfm-button>
   </section>
 </div>

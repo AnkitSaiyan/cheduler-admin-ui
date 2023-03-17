@@ -11,6 +11,9 @@ import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { AddStaffRequestData } from '../../../../shared/models/staff.model';
 import { Status } from '../../../../shared/models/status.model';
 import { EMAIL_REGEX } from '../../../../shared/utils/const';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
   userType: UserType;
@@ -37,22 +40,44 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
   public loading$$ = new BehaviorSubject<boolean>(false);
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   constructor(
     private modalSvc: ModalService,
     private fb: FormBuilder,
     private notificationSvc: NotificationDataService,
     private userApiSvc: StaffApiService,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
 
     this.modalSvc.dialogData$.pipe(take(1)).subscribe((data) => {
       this.modalData = data;
-      console.log(this.modalData);
+
       this.createForm(this.modalData?.userDetails);
     });
   }
 
-  public ngOnInit(): void {}
+  public ngOnInit(): void {
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
+  }
 
   public override ngOnDestroy() {
     super.ngOnDestroy();
@@ -83,13 +108,13 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
   public closeModal(res: boolean) {
     this.modalSvc.close(res);
-    this.ngOnDestroy();
+    // this.ngOnDestroy();
   }
 
   public saveUser() {
     if (this.addUserForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      this.addUserForm.markAsTouched();
+      this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}`, NotificationType.WARNING);
+      this.addUserForm.markAllAsTouched();
       return;
     }
 
@@ -101,7 +126,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     if (
       [UserType.Scheduler, UserType.Secretary].includes(this.formValues.userType) ||
-      [UserType.Scheduler, UserType.Secretary].includes(this.modalData.userDetails.userType)
+      [UserType.Scheduler, UserType.Secretary].includes(this.modalData?.userDetails?.userType)
     ) {
       addUserReqData = {
         ...addUserReqData,
@@ -122,39 +147,58 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       addUserReqData.email = null;
     }
 
-    console.log(addUserReqData);
+    addUserReqData.id = this.modalData?.userDetails?.id ?? 0;
 
-    if (this.modalData.edit) {
-      this.userApiSvc
-        .updateStaff(addUserReqData)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe(
-          () => {
-            this.notificationSvc.showNotification(`User updated successfully`);
-            this.loading$$.next(false);
-            this.closeModal(true);
-          },
-          (err) => {
-            this.loading$$.next(false);
-            this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-          },
-        );
-    } else {
-      this.userApiSvc
-        .addNewStaff$(addUserReqData)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe(
-          () => {
-            this.notificationSvc.showNotification(`User added successfully`);
-            this.loading$$.next(false);
-            this.closeModal(true);
-          },
-          (err) => {
-            this.loading$$.next(false);
-            this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-          },
-        );
-    }
+    this.userApiSvc
+      .addNewStaff$(addUserReqData)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(
+        () => {
+          if (this.modalData.edit) {
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+          } else {
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+          }
+          this.loading$$.next(false);
+          this.closeModal(true);
+        },
+        (err) => {
+          this.loading$$.next(false);
+          this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+        },
+      );
+
+    // if (this.modalData.edit) {
+    //   this.userApiSvc
+    //     .updateStaff(addUserReqData)
+    //     .pipe(takeUntil(this.destroy$$))
+    //     .subscribe(
+    //       () => {
+    //         this.notificationSvc.showNotification(`User updated successfully`);
+    //         this.loading$$.next(false);
+    //         this.closeModal(true);
+    //       },
+    //       (err) => {
+    //         this.loading$$.next(false);
+    //         this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+    //       },
+    //     );
+    // } else {
+    //   this.userApiSvc
+    //     .addNewStaff$(addUserReqData)
+    //     .pipe(takeUntil(this.destroy$$))
+    //     .subscribe(
+    //       () => {
+    //         this.notificationSvc.showNotification(`User added successfully`);
+    //         this.loading$$.next(false);
+    //         this.closeModal(true);
+    //       },
+    //       (err) => {
+    //         this.loading$$.next(false);
+    //         this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+    //       },
+    //     );
+    // }
   }
 
   public handleEmailInput(e: Event): void {

@@ -9,7 +9,6 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
   styleUrls: ['./dashboard-notifications.component.scss'],
 })
 export class DashboardNotificationsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  
   private notifications$$: BehaviorSubject<any[]>;
 
   public filteredNotifications$$: BehaviorSubject<any[]>;
@@ -67,10 +66,9 @@ export class DashboardNotificationsComponent extends DestroyableComponent implem
 
   public ngOnInit(): void {
     this.dashboardApiService.notification$.pipe(takeUntil(this.destroy$$)).subscribe((notifications) => {
-      console.log('notifications: ', notifications['notifications']);
       this.notifications$$.next(notifications['notifications']);
       this.filteredNotifications$$.next(notifications['notifications']);
+      this.dashboardApiService.notificationData$$.next(notifications['notifications']);
     });
-
   }
 }

@@ -1,16 +1,31 @@
-import { Injectable } from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest, filter,
+  map,
+  Observable,
+  of,
+  startWith,
+  Subject,
+  switchMap,
+  takeUntil,
+  tap
+} from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { User, UserType } from '../../shared/models/user.model';
 import { AddStaffRequestData, StaffType } from '../../shared/models/staff.model';
 import { ChangeStatusRequestData } from '../../shared/models/status.model';
+import {ShareDataService} from "./share-data.service";
+import {DestroyableComponent} from "../../shared/components/destroyable.component";
+import {Translate} from "../../shared/models/translate.model";
 
 @Injectable({
   providedIn: 'root',
 })
-export class StaffApiService {
+export class StaffApiService extends DestroyableComponent implements OnDestroy {
   private readonly userUrl = `${environment.serverBaseUrl}/user`;
 
   private refreshStaffs$$ = new Subject<void>();
@@ -22,29 +37,54 @@ export class StaffApiService {
     StaffType.Secretary,
   ]);
 
-  constructor(private http: HttpClient) {}
+  private selectedLang$$ = new BehaviorSubject<string>('');
+
+  constructor(private http: HttpClient, private shareDataSvc: ShareDataService) {
+    super();
+
+    this.shareDataSvc.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe((lang) => {
+      this.selectedLang$$.next(lang);
+    })
+  }
+
+  public override ngOnDestroy() {
+    super.ngOnDestroy();
+  }
 
   public get staffList$(): Observable<User[]> {
-    return this.allUsers$.pipe(map((users) => users.filter((user) => ![UserType.Scheduler, UserType.General].includes(user.userType))));
+    return this.users$.pipe(map((users) => users.filter((user) => ![UserType.Scheduler, UserType.General].includes(user.userType))));
   }
 
   public get userLists$(): Observable<User[]> {
-    return this.allUsers$.pipe(
+    return this.users$.pipe(
       map((users) => users.filter((user) => [UserType.Scheduler, UserType.General, UserType.Secretary].includes(user.userType))),
     );
   }
 
-  private get allUsers$(): Observable<User[]> {
+  private get users$(): Observable<User[]> {
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
       switchMap(() => {
-        return this.http.get<BaseResponse<User[]>>(`${this.userUrl}?pageNo=1`).pipe(map((response) => response.data));
+        return this.http.get<BaseResponse<User[]>>(this.userUrl).pipe(map((response) => response.data));
+      }),
+    );
+  }
+
+  public get allUsers$(): Observable<User[]> {
+    return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
+      switchMap(() => this.fetchAllUsers$)
+    )
+  }
+  private get fetchAllUsers$(): Observable<User[]> {
+    return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
+      switchMap(() => {
+        return this.http.get<BaseResponse<User[]>>(`${environment.serverBaseUrl}/common/getusers`).pipe(map((response) => response.data?.map((u) => ({...u, fullName: `${u.firstname} ${u.lastname}`}))));
       }),
     );
   }
 
   public addNewStaff$(requestData: AddStaffRequestData): Observable<User> {
     const { id, ...restData } = requestData;
-    return this.http.post<BaseResponse<User>>(`${this.userUrl}`, restData).pipe(
+    return this.http.post<BaseResponse<User>>(`${this.userUrl}?userId=${id}`, restData).pipe(
       map((response) => response.data),
       tap(() => this.refreshStaffs$$.next()),
     );
@@ -71,7 +111,6 @@ export class StaffApiService {
         this.http.get<BaseResponse<User>>(`${this.userUrl}/${staffId}`).pipe(
           map((response) => response.data),
           catchError((e) => {
-            console.log('error', e);
             return of({} as User);
           }),
         ),
@@ -83,7 +122,6 @@ export class StaffApiService {
     return this.allUsers$.pipe(
       map((staffs) =>
         staffs.filter((staff) => {
-          console.log('staff: ', staff);
           return staff.userType === userType;
         }),
       ),
@@ -95,7 +133,12 @@ export class StaffApiService {
   }
 
   public get staffTypes$(): Observable<StaffType[]> {
-    return this.staffTypes$$.asObservable();
+    return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
+      switchMap(([lang]) => this.staffTypes$$.asObservable().pipe(
+        filter(() => !!lang),
+        map((staffTypes) => staffTypes.map((staffType) => Translate.StaffTypes[staffType][lang]))
+      ))
+    )
   }
 
   public changeUserStatus$(requestData: ChangeStatusRequestData[]): Observable<null> {

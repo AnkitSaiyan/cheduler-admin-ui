@@ -4,28 +4,37 @@
       <div class="dfm-button-gray-400">
         <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
       </div>
-      <span class="font-weight-medium">Unavailable periods of the halls within 31 days</span>
+      <span class="font-weight-medium">{{ 'UnavailablePeriodsOfTheHalls' | translate }}</span>
     </header>
 
     <div class="d-flex dfm-gap-16">
       <dfm-input
         size="md"
-        placeholder="Search room name" class="flex-1 search-room-name-placeholder"
+        placeholder="{{ 'SearchRoomName' | translate }}"
+        class="flex-1 search-room-name-placeholder"
         icon="search-sm"
+        [formControl]="searchControl"
       ></dfm-input>
 
       <dfm-input
         size="md"
-        placeholder="Room name" class="flex-1 room-name-placeholder"
+        placeholder="{{ 'RoomName' | translate }}"
+        class="flex-1 room-name-placeholder"
         icon="search-sm"
+        [formControl]="searchControl"
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper">
-        <div>
+        <div [cdkCopyToClipboard]="clipboardData">
           <dfm-button-icon
             color="tertiary-gray"
             size="md"
             icon="copy-03"
+            ngbPopover="{{ 'ClickToCopy' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
+            (click)="copyToClipboard()"
           ></dfm-button-icon>
         </div>
 
@@ -33,43 +42,46 @@
           <div class="download-dropdown-max-w-144">
             <dfm-input-dropdown
               [items]="downloadItems"
-              placeholder="Download"
+              placeholder="{{ 'Download' | translate }}"
               size="md"
+              [showDescription]="false"
+              [formControl]="downloadDropdownControl"
             ></dfm-input-dropdown>
           </div>
 
           <dfm-input-dropdown
             [items]="downloadItems"
-            placeholder="" class="unavailable-hall-download-icon-placeholder"
+            placeholder=""
+            class="unavailable-hall-download-icon-placeholder"
             size="md"
           ></dfm-input-dropdown>
         </div>
       </div>
 
-      <div class="d-flex align-items-center dfm-button-group-wrapper hidden un-hl-mv-buttons">
+      <!-- <div class="d-flex align-items-center dfm-button-group-wrapper hidden un-hl-mv-buttons">
         <div>
           <dfm-button-icon
             color="tertiary-gray"
             size="md"
             icon="copy-03"
+            ngbPopover="{{ 'ClickToCopy' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
           ></dfm-button-icon>
         </div>
 
         <div>
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="download-01"
-          ></dfm-button-icon>
+          <dfm-button-icon color="tertiary-gray" size="md" icon="download-01"></dfm-button-icon>
         </div>
-      </div>
+      </div> -->
     </div>
   </section>
 
   <section class="table-wrapper" *ngIf="filteredRoomAbsence$$ | async as roomAbsence">
     <dfm-table [items]="roomAbsence">
       <ng-template #headerRowTemplate>
-        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
       </ng-template>
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-body-cell>

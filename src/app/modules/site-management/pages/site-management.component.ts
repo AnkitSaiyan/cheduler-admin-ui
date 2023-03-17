@@ -9,6 +9,9 @@ import { NotificationDataService } from '../../../core/services/notification-dat
 import { SiteManagementApiService } from '../../../core/services/site-management-api.service';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
 import { EMAIL_REGEX } from '../../../shared/utils/const';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../shared/utils/const';
+import { Translate } from '../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
   name: string;
@@ -57,12 +60,15 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     },
   ];
 
+  private selectedLang: string = ENG_BE;
+
   constructor(
     private fb: FormBuilder,
     private notificationSvc: NotificationDataService,
     private siteManagementApiSvc: SiteManagementApiService,
     private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
   }
@@ -72,6 +78,13 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       this.createForm(siteManagementData);
       this.siteManagementData$$.next(siteManagementData ?? {});
     });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+      });
   }
 
   public override ngOnDestroy() {
@@ -125,7 +138,6 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
         try {
           introductoryTextObj = JSON.parse(siteManagementData.introductoryText);
         } catch (e) {
-          console.log(e);
         }
       }
 
@@ -156,14 +168,22 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
       reminderTime: [reminderDuration, []],
       reminderTimeType: [reminderDurationTYpe, []],
+      isAppointmentAutoConfirm: [!!siteManagementData?.isAppointmentAutoConfirm, [Validators.required]]
     });
+
+    setTimeout(() => {
+      this.siteManagementForm.patchValue({
+        reminderTimeType: reminderDurationTYpe,
+        cancelAppointmentType: durationType,
+      });
+    }, 0);
 
     this.cdr.detectChanges();
   }
 
   public saveSiteManagementData(): void {
     if (this.siteManagementForm.invalid) {
-      this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+      this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
       Object.keys(this.siteManagementForm.controls).forEach((key) => {
         if (this.siteManagementForm.get(key)?.invalid) {
           this.siteManagementForm.get(key)?.markAsTouched();
@@ -217,15 +237,17 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       requestData.id = this.siteManagementData$$.value.id;
     }
 
-    console.log(requestData);
-
     this.siteManagementApiSvc
       .saveSiteManagementData$(requestData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(
         () => {
           this.submitting$$.next(false);
-          this.notificationSvc.showNotification(`${this.siteManagementData$$.value?.id ? 'Changes updated' : 'Saved'} successfully`);
+          if (this.siteManagementData$$.value?.id) {
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+          } else {
+            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+          }
         },
         (err) => {
           this.submitting$$.next(false);
@@ -237,7 +259,6 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
   public onFileChange(event: Event) {
     const { files } = event.target as HTMLInputElement;
 
-    console.log(files);
     if (files && files?.length) {
       const fileControl = this.siteManagementForm.get('file');
 

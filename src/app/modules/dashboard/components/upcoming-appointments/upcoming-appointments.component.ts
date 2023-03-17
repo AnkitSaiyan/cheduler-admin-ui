@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -6,13 +7,14 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
 @Component({
   selector: 'dfm-upcoming-appointments',
   templateUrl: './upcoming-appointments.component.html',
-  styleUrls: ['./upcoming-appointments.component.scss']
+  styleUrls: ['./upcoming-appointments.component.scss'],
 })
 export class UpcomingAppointmentsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-
   private upcomingAppointments$$: BehaviorSubject<any[]>;
 
   public filteredUpcommingAppointments$$: BehaviorSubject<any[]>;
+
+  public noDataFound: boolean = false;
 
   // public upcomingAppointments: any[] = [
   //   {
@@ -51,19 +53,25 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
   //     avatar: ''
   //   }
   // ]
-  constructor(private dashboardApiService: DashboardApiService) { 
+  constructor(private dashboardApiService: DashboardApiService, private router: Router) {
     super();
     this.upcomingAppointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredUpcommingAppointments$$ = new BehaviorSubject<any[]>([]);
   }
 
   ngOnInit(): void {
-    
     this.dashboardApiService.upcommingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-      console.log('upcomming appointments: ', appointments['upcomingAppointments']);
-      this.upcomingAppointments$$.next(appointments['upcomingAppointments']);
-      this.filteredUpcommingAppointments$$.next(appointments['upcomingAppointments']);
+      if (appointments['upcomingAppointments'].length > 0) {
+        this.upcomingAppointments$$.next(appointments['upcomingAppointments']);
+        this.filteredUpcommingAppointments$$.next(appointments['upcomingAppointments']);
+        this.noDataFound = false;
+      } else {
+        this.noDataFound = true;
+      }
     });
   }
 
+  redirectToCalender() {
+    this.router.navigate(['/', 'appointment']);
+  }
 }
