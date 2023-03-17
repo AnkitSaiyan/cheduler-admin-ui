@@ -11,10 +11,11 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
   styleUrls: ['./appointments-doughnut-chart.component.scss'],
 })
 export class AppointmentsDoughnutChartComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public appointmentDetails = {
-    // Total: ,
-    // Approved: 0,
-    // Pending: 0,
+  // eslint-disable-next-line prettier/prettier
+  public appointmentDetails:any = {
+    Total: 0,
+    Approved: 0,
+    Pending: 0,
   };
 
   public doughnutChartLabels = ['Total', 'New', 'Confirmed'];
@@ -39,13 +40,10 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
         this.appointmentDetails[element.label] = element.value;
       });
 
-      if (this.appointmentDetails['Total'] === 0 && this.appointmentDetails['Pending'] === 0 && this.appointmentDetails['Approved'] === 0) {
+      if (this.appointmentDetails.Total === 0 && this.appointmentDetails.Pending === 0 && this.appointmentDetails.Approved === 0) {
         this.noDataFound = false;
       } else {
         this.noDataFound = true;
-        // this.appointmentDetails['Total'] ? this.appointmentDetails['Total'] : 0;
-        // this.appointmentDetails['Pending'] ? this.appointmentDetails['Pending'] : 0;
-        // this.appointmentDetails['Approved'] ? this.appointmentDetails['Approved'] : 0;
       }
 
       this.doughnutChartConfig = {
@@ -53,9 +51,9 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
         datasets: [
           {
             data: [
-              this.appointmentDetails['Total'] ? this.appointmentDetails['Total'] : '',
-              this.appointmentDetails['Pending'] ? this.appointmentDetails['Pending'] : '',
-              this.appointmentDetails['Approved'] ? this.appointmentDetails['Approved'] : '',
+              this.appointmentDetails.Total ? this.appointmentDetails.Total : '',
+              this.appointmentDetails.Pending ? this.appointmentDetails.Pending : '',
+              this.appointmentDetails.Approved ? this.appointmentDetails.Approved : '',
               // this.appointmentDetails.Pending,
               // this.appointmentDetails.Approved,
             ],
