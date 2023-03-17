@@ -1,16 +1,14 @@
-import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
-import { EditEmailTemplateComponent } from '../edit-email/edit-email-template.component';
-import { EmailTemplateApiService } from 'src/app/core/services/email-template-api.service';
-import { Status, StatusToName } from 'src/app/shared/models/status.model';
-import { getStatusEnum, getUserTypeEnum } from 'src/app/shared/utils/getEnums';
-import { Email } from 'src/app/shared/models/email-template.model';
+import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {BehaviorSubject, debounceTime, filter, map, Subject, takeUntil} from 'rxjs';
+import {NotificationType} from 'diflexmo-angular-design';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {DownloadAsType, DownloadService} from '../../../../core/services/download.service';
+import {EmailTemplateApiService} from 'src/app/core/services/email-template-api.service';
+import {Status, StatusToName} from 'src/app/shared/models/status.model';
+import {getStatusEnum, getUserTypeEnum} from 'src/app/shared/utils/getEnums';
+import {Email} from 'src/app/shared/models/email-template.model';
 
 @Component({
   selector: 'dfm-email-template-list',
