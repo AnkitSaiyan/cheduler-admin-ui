@@ -58,7 +58,8 @@ const routes: Routes = [
         loadChildren: async () => (await import('../modules/appointments/appointments.module')).AppointmentsModule,
       },
       {
-        path: 'email',
+        path: 'email-template',
+        title: 'Diflexmo - Email Template',
         loadChildren: async () => (await import('../modules/email-template/email-template.module')).EmailTemplateModule,
       },
       {

@@ -26,4 +26,4 @@ const emailRoutes: Routes = [
   imports: [RouterModule.forChild(emailRoutes)],
   exports: [RouterModule],
 })
-export class EmailRoutingModule {}
+export class EmailTemplateRoutingModule {}

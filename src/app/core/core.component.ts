@@ -26,7 +26,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       new NavigationItem('Exam', 'microscope', '/exam', false),
       new NavigationItem('Practice Hours', 'clock', '/practice-hours', false),
       new NavigationItem('Priority Slots', 'calendar-date', '/priority-slots', false),
-      new NavigationItem('Email Template', 'mail-05', '/email-template', false),
+      new NavigationItem('E-mail Template', 'mail-05', '/email-template', false),
       new NavigationItem('Site Management', 'tool-01', '/site-management', false),
     ]),
   ];
@@ -43,6 +43,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       new NavigationItem('Onderzoek', 'microscope', '/exam', false),
       new NavigationItem('Uren praktijk', 'clock', '/practice-hours', false),
       new NavigationItem('Prioritaire slots', 'calendar-date', '/priority-slots', false),
+      new NavigationItem('E-mail Sjabloon', 'mail-05', '/email-template', false),
       new NavigationItem('Site Beheer', 'tool-01', '/site-management', false),
     ]),
   ];

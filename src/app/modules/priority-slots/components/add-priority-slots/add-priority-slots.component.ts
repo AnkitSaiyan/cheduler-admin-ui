@@ -347,10 +347,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       this.prioritySlotForm?.get('endedAt')?.valueChanges,
     ])
       .pipe(debounceTime(0), takeUntil(this.destroy$$))
-      .subscribe(() => {
-
-        this.handleTimeChange();
-      });
+      .subscribe(() => this.handleTimeChange());
 
     this.prioritySlotForm
       .get('slotEndTime')
@@ -466,11 +463,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   public handleTimeInput(time: string, controlName: 'slotStartTime' | 'slotEndTime') {
-
-
     const formattedTime = formatTime(time, 24, 5);
-
-
 
     if (!formattedTime) {
       return;
@@ -513,14 +506,11 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   private updateRepeatFrequency(type: 'number' | 'text' = 'text') {
-
     if (!this.repeatFrequency?.value || !this.formValues.repeatFrequency) {
       return;
     }
 
     const { repeatFrequency } = this.formValues;
-
-
 
     switch (type) {
       case 'text':
@@ -552,10 +542,8 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   private handleTimeChange() {
-
-
-
-    if (this.formValues.slotStartTime !== '' && this.formValues.slotStartTime < this.formValues.slotEndTime) {
+    console.log('in')
+    if (this.formValues.slotStartTime !== '' && timeToNumber(this.formValues.slotStartTime) < timeToNumber(this.formValues.slotEndTime)) {
       toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', false);
       toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
       return;
