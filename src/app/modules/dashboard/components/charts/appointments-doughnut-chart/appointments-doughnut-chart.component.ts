@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 

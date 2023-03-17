@@ -112,6 +112,8 @@ $view-page-content-height-mobile-vh: calc(100vh - $nav-bar-mobile-top-height - $
   }
 }
 
+
+
 // Main contents height
 .content-height {
   height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total);

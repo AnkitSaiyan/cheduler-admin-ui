@@ -8,6 +8,7 @@
   section:last-child {
     margin-top: 8px;
     max-height: 384px;
+    // height :inherit;
     overflow-y: scroll;
 
     .avatar-container {
@@ -15,4 +16,11 @@
       border: 1px solid var(--bs-gray-200)
     }
   }
+}
+
+.no-data-found-wrapper {
+  height: inherit;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
 }

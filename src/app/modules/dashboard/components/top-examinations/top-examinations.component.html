@@ -12,5 +12,8 @@
     <div *ngFor="let exam of topExaminations" class="d-flex dfm-gap-8 align-items-center">
       <span>{{ exam.name }}</span>
     </div>
+    <div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!topExaminations.length">
+      {{ 'NoDataFound' | translate }}
+    </div>
   </section>
 </div>
