@@ -11,7 +11,7 @@
       <div [ngClass]="{ 'chart-arrow-up': appointmentDetails?.isUp, 'chart-arrow-down': !appointmentDetails?.isUp }">
         <dfm-button color="link-gray" size="sm" trailingIcon="{{ appointmentDetails?.isUp ? 'arrow-up' : 'arrow-down' }}"></dfm-button>
       </div>
-      <span [ngStyle]="{ color: appointmentDetails?.isUp ? '#12B76A' : 'red' }" class="font-weight-medium">{{ appointmentDetails?.percentage }}</span>
+      <span [ngStyle]="{ color: appointmentDetails?.isUp ? '#12B76A' : 'red' }" class="font-weight-medium">{{ appointmentDetails?.percentage | number : '1.2-2'}}</span>
     </header>
     <canvas
       baseChart
