@@ -58,7 +58,7 @@
       </div>
 
       <div class="hidden align-items-center dfm-gap-16 dfm-px-8 justify-content-center ap-li-section2-action-bar-mv hide-scrollbar overflow-x-auto">
-        <dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm"  [formControl]="searchControl"></dfm-input>
+        <dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" [formControl]="searchControl"></dfm-input>
 
         <dfm-button-icon color="secondary-gray" size="md" icon="filter-funnel-01" (click)="openAdvancePopup()"></dfm-button-icon>
 
@@ -81,9 +81,23 @@
           </div> -->
         </div>
 
-        <dfm-button-icon color="secondary-gray" size="md" icon="calendar-date" routerLink="/appointment" [state]="{ comingFromRoute: 'dashboard' }"></dfm-button-icon>
+        <dfm-button-icon
+          color="secondary-gray"
+          size="md"
+          icon="calendar-date"
+          routerLink="/appointment"
+          [state]="{ comingFromRoute: 'dashboard' }"
+        ></dfm-button-icon>
 
-        <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false" routerLink="/appointment/add" [state]="{ comingFromRoute: 'dashboard' }">Add </dfm-button>
+        <dfm-button
+          color="primary"
+          size="md"
+          class="text-nowrap"
+          [disabled]="false"
+          routerLink="/appointment/add"
+          [state]="{ comingFromRoute: 'dashboard' }"
+          >Add
+        </dfm-button>
       </div>
     </section>
 
@@ -145,10 +159,24 @@
                 color="link-gray"
                 size="md"
                 trailingIcon="pencil-02"
+                ngbPopover="{{ 'Edit' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
                 [routerLink]="['/appointment', item.id, 'edit']"
                 [state]="{ comingFromRoute: 'dashboard', edit: true }"
               ></dfm-button>
-              <dfm-button color="link-gray" size="md" trailingIcon="trash-01" (click)="deleteAppointment(item.id)"> </dfm-button>
+              <dfm-button
+                color="link-gray"
+                size="md"
+                trailingIcon="trash-01"
+                ngbPopover="{{ 'Delete' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
+                (click)="deleteAppointment(item.id)"
+              >
+              </dfm-button>
             </div>
           </dfm-table-body-cell>
         </ng-template>

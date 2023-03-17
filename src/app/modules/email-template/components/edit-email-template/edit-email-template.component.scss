@@ -139,3 +139,44 @@
     gap: 8px;
   }
 }
+
+.pr-hr-main-wrapper {
+  transition: all ease 200ms;
+}
+
+
+@media (max-width: 680px) {
+  .pr-hr-main-wrapper {
+    .pr-hr-time-dropdown {
+      min-width: 96px !important;
+    }
+
+    .pr-hr-title-buttons-mv {
+      display: flex;
+    }
+
+    .pr-hr-title-buttons {
+      display: none !important;
+    }
+
+    .pr-hr-section2 {
+      background: transparent;
+      padding: 0;
+      box-shadow: none;
+      border-radius: 0;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .pr-hr-weekdays-tab {
+        overflow-x: scroll !important;
+      }
+    }
+
+    //.pr-hr-save-changes-btn-mv {
+    //  display: flex;
+    //  margin-left: auto;
+    //}
+  }
+}

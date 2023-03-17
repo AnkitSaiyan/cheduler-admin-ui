@@ -16,7 +16,8 @@
     </ng-container>
 
     <!--  Mobile View Elements -->
-    <div class="hidden dfm-gap-8 align-items-center st-mg-title-buttons-mv">
+    <div class="mv hidden dfm-gap-8 align-items-center justify-content-between st-mg-title-buttons-mv w-full">
+      <div class="d-flex dfm-gap-8 align-items-center">
       <div class="rounded-circle overflow-hidden">
         <dfm-button-icon
           color="tertiary-gray"
@@ -24,10 +25,16 @@
           icon="chevron-left"
         >
         </dfm-button-icon>
-      </div>
+        </div>
+      
 
-      <dfm-button color="link" size="lg">{{'SiteManagement' | translate}}</dfm-button>
+      <dfm-button color="link" size="sm">{{'SiteManagement' | translate}}</dfm-button>
     </div>
+      
+        <!-- <dfm-button color="secondary" size="md">Cancel</dfm-button> -->
+        <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveSiteManagementData()">{{'SaveChanges' | translate}}</dfm-button>
+      </div>
+  
     <!--  Mobile View Elements End  -->
   </section>
 
