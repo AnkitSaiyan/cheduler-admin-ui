@@ -82,7 +82,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NumberInputDirective,
     NumberArrayPipe,
     IsDataPipe,
-    TimeSlotsComponent
+    TimeSlotsComponent,
   ],
   imports: [
     CommonModule,

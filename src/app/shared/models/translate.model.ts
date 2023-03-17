@@ -179,12 +179,12 @@ export const Translate = Object.freeze({
       [DUTCH_BE]: 'Gegevens succesvol naar clipboard gecopieerd',
     },
     PostAddedSuccessfully:{
-      [ENG_BE]: 'Post added successfully',
-      [DUTCH_BE]: 'Post added successfully NL',
+      [ENG_BE]: 'Post it added successfully',
+      [DUTCH_BE]: 'Post it added successfully NL',
     },
     PostDeletedSuccessfully:{
-      [ENG_BE]: 'Post deleted successfully',
-      [DUTCH_BE]: 'Post deleted successfully NL',
+      [ENG_BE]: 'Post it deleted successfully',
+      [DUTCH_BE]: 'Post it deleted successfully NL',
     }
   },
 
