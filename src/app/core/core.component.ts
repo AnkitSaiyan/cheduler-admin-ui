@@ -15,7 +15,7 @@ import { DashboardApiService } from './services/dashboard-api.service';
 })
 export class CoreComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public navigationItems: NavigationItem[] = [
-    new NavigationItem('Dashboard', 'home-03', '/dashboard', true),
+    new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
     new NavigationItem('Appointment', 'file-06', '/appointment', false),
     new NavigationItem('Absence', 'user-x-01', '/absence', false),
     new NavigationItem('Configuration', 'tool-02', undefined, false, [
@@ -26,12 +26,13 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       new NavigationItem('Exam', 'microscope', '/exam', false),
       new NavigationItem('Practice Hours', 'clock', '/practice-hours', false),
       new NavigationItem('Priority Slots', 'calendar-date', '/priority-slots', false),
+      new NavigationItem('Email Template', 'mail-05', '/email-template', false),
       new NavigationItem('Site Management', 'tool-01', '/site-management', false),
     ]),
   ];
 
   public navigationItemsNL: NavigationItem[] = [
-    new NavigationItem('Dashboard', 'home-03', '/dashboard', true),
+    new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
     new NavigationItem('Afspraak', 'file-06', '/appointment', false),
     new NavigationItem('Afwezigheid', 'user-x-01', '/absence', false),
     new NavigationItem('Configuratie', 'tool-02', undefined, false, [
@@ -90,16 +91,16 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     });
     this.dashboardApiService.notificationData$$.subscribe((res) => {
       this.notifications = [];
-      console.log(res)
-      res.forEach((element) => {
-        this.notifications.push(new NavigationItemEvent('1', new Date(element?.date), element?.message, element?.title, element?.subTitle));
+      // console.log(res)
+      res.forEach((element, index) => {
+        this.notifications.push(new NavigationItemEvent(index + 1, new Date(element?.date), element?.title, element?.message));
       });
     });
 
     this.dashboardApiService.postItData$$.subscribe((res) => {
       this.messages = [];
-      res.forEach((element) => {
-        this.messages.push(new NavigationItemEvent('1', new Date(element?.createdAt), element?.message));
+      res.forEach((element, index) => {
+        this.messages.push(new NavigationItemEvent(index + 1, new Date(element?.createdAt), element?.message));
       });
     });
   }

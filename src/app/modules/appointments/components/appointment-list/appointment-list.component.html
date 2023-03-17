@@ -115,9 +115,9 @@
           <dfm-table-body-cell>{{ item.id | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.createdAt | dashIfNothing }}</dfm-table-body-cell>
 
-          <dfm-table-body-cell>
+          <!-- <dfm-table-body-cell>
             <span>{{ item.readStatus === readStatus.Read ? 'Yes' : 'No' }}</span>
-          </dfm-table-body-cell>
+          </dfm-table-body-cell> -->
 
           <dfm-table-body-cell>
             <dfm-badge *ngIf="item.approval === statusType.Approved" color="success" size="sm" fontWeight="medium">

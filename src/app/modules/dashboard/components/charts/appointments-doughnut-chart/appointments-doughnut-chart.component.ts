@@ -12,9 +12,9 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
 })
 export class AppointmentsDoughnutChartComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public appointmentDetails = {
-    Total: 0,
-    Approved: 0,
-    Pending: 0,
+    // Total: ,
+    // Approved: 0,
+    // Pending: 0,
   };
 
   public doughnutChartLabels = ['Total', 'New', 'Confirmed'];
@@ -39,17 +39,26 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
         this.appointmentDetails[element.label] = element.value;
       });
 
-      if (this.appointmentDetails.Total === 0 && this.appointmentDetails.Pending === 0 && this.appointmentDetails.Approved === 0) {
+      if (this.appointmentDetails['Total'] === 0 && this.appointmentDetails['Pending'] === 0 && this.appointmentDetails['Approved'] === 0) {
         this.noDataFound = false;
       } else {
         this.noDataFound = true;
+        // this.appointmentDetails['Total'] ? this.appointmentDetails['Total'] : 0;
+        // this.appointmentDetails['Pending'] ? this.appointmentDetails['Pending'] : 0;
+        // this.appointmentDetails['Approved'] ? this.appointmentDetails['Approved'] : 0;
       }
 
       this.doughnutChartConfig = {
         labels: this.doughnutChartLabels,
         datasets: [
           {
-            data: [this.appointmentDetails.Total, this.appointmentDetails.Pending, this.appointmentDetails.Approved],
+            data: [
+              this.appointmentDetails['Total'] ? this.appointmentDetails['Total'] : '',
+              this.appointmentDetails['Pending'] ? this.appointmentDetails['Pending'] : '',
+              this.appointmentDetails['Approved'] ? this.appointmentDetails['Approved'] : '',
+              // this.appointmentDetails.Pending,
+              // this.appointmentDetails.Approved,
+            ],
             backgroundColor: ['#E0DDE4', '#C3B3CD', '#A589B7'],
             hoverBackgroundColor: ['#E0DDE4', '#C3B3CD', '#A589B7'],
             hoverBorderColor: ['#4E2267', '#4E2267', '#4E2267'],

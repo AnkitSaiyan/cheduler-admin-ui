@@ -16,7 +16,7 @@
             trailingIcon="{{patienttDetails?.isUp ? 'arrow-up' : 'arrow-down'}}"
           ></dfm-button>
         </div>
-        <span [ngStyle]="{'color':patienttDetails?.isUp? '#12B76A' : 'red' }" class="font-weight-medium">{{patienttDetails?.percentage}}</span>
+        <span [ngStyle]="{'color':patienttDetails?.isUp? '#12B76A' : 'red' }" class="font-weight-medium">{{patienttDetails?.percentage | number : '1.2-2'}}</span>
       </div>
     </header>
     <canvas baseChart
