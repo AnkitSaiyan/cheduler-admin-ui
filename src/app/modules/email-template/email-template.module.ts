@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EmailComponent } from './pages/email/email.component';
-import { EmailListComponent } from './components/email-list/email-list.component';
-import { EditEmailComponent } from './components/edit-email/edit-email.component';
+import { EmailTemplateListComponent } from './components/email-template-list/email-template-list.component';
+import { EditEmailTemplateComponent } from './components/edit-email/edit-email-template.component';
 import { EmailRoutingModule } from './email-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -12,8 +12,8 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
 @NgModule({
   declarations: [
     EmailComponent,
-    EmailListComponent,
-    EditEmailComponent,
+    EmailTemplateListComponent,
+    EditEmailTemplateComponent,
   ],
   imports: [
     CommonModule,
@@ -24,4 +24,4 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
     AngularEditorModule
   ]
 })
-export class EmailModule { }
+export class EmailTemplateModule { }

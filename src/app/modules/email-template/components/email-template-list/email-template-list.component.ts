@@ -6,18 +6,18 @@ import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
-import { EditEmailComponent } from '../edit-email/edit-email.component';
+import { EditEmailTemplateComponent } from '../edit-email/edit-email-template.component';
 import { EmailTemplateApiService } from 'src/app/core/services/email-template-api.service';
 import { Status, StatusToName } from 'src/app/shared/models/status.model';
 import { getStatusEnum, getUserTypeEnum } from 'src/app/shared/utils/getEnums';
 import { Email } from 'src/app/shared/models/email-template.model';
 
 @Component({
-  selector: 'dfm-email-list',
-  templateUrl: './email-list.component.html',
-  styleUrls: ['./email-list.component.scss'],
+  selector: 'dfm-email-template-list',
+  templateUrl: './email-template-list.component.html',
+  styleUrls: ['./email-template-list.component.scss'],
 })
-export class EmailListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+export class EmailTemplateListComponent extends DestroyableComponent implements OnInit, OnDestroy {
   clipboardData: string = '';
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
@@ -143,7 +143,7 @@ export class EmailListComponent extends DestroyableComponent implements OnInit, 
       let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
 
       this.filteredEmails$$.value.forEach((email: Email) => {
-        console.log('email: ', email);
+        console.log('email-template: ', email);
         dataString += `${email.title}\t${email.subject}\t${StatusToName[email.status]}\n`;
       });
 
