@@ -94,5 +94,8 @@
         </dfm-table-body-cell>
       </ng-template>
     </dfm-table>
+    <div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!roomAbsence.length">
+      {{ 'NoDataFound' | translate }}
+    </div>
   </section>
 </div>

@@ -70,5 +70,8 @@
         </div>
       </mdb-carousel-item>
     </mdb-carousel>
+    <div class=" no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!posts.length">
+      {{ 'NoDataFound' | translate }}
+    </div>
   </section>
 </div>

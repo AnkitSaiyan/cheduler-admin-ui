@@ -2,12 +2,20 @@
   height: inherit;
 
   section:last-child {
+    height: inherit;
     overflow-y: auto;
   }
 }
 
 .patient-placeholder {
   display: none;
+}
+
+.no-data-found-wrapper {
+  height: inherit;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
 }
 
 // ======================Media Query for Mobile view=================

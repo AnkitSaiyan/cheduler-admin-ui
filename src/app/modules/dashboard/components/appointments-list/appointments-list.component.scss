@@ -12,6 +12,13 @@
   height: inherit;
 }
 
+.no-data-found-wrapper {
+  height: inherit;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
 // ======================Media Query for Mobile view=================
 @media (min-width:180px) and (max-width:680px) {
   .ap-li-section2-action-bar {

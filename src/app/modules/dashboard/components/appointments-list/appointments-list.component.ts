@@ -158,7 +158,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
             this.titleCasePipe.transform(ap?.doctor),
             ap?.id.toString(),
             ap.createdAt.toString(),
-            ap.readStatus ? 'Yes' : 'No',
+            // ap.readStatus ? 'Yes' : 'No',
             AppointmentStatusToName[+ap.approval],
           ]),
           'physician',
@@ -213,7 +213,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
           Translate.Doctor[lang],
           Translate.AppointmentNo[lang],
           Translate.AppliedOn[lang],
-          Translate.Read[lang],
+          // Translate.Read[lang],
           Translate.Status[lang],
           Translate.Actions[lang],
         ];
@@ -310,7 +310,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
 
   public navigateToView(e: TableItem, appointments: Appointment[]) {
     if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], { replaceUrl: true, relativeTo: this.route });
+      this.router.navigate([`/appointment/${e.id}/view`], { replaceUrl: true });
     }
   }
 

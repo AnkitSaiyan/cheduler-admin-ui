@@ -11,11 +11,13 @@
     }
 
     div:last-child {
+      height:inherit;
       flex: 1 ;
     }
   }
 
   .table-wrapper {
+    height:inherit;
     overflow-y: auto;
   }
 }
@@ -24,6 +26,13 @@
 }
 .unavailable-hall-download-icon-placeholder{
   display: none;
+}
+
+.no-data-found-wrapper {
+  height: inherit;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
 }
 // ======================Media Query for Mobile view=================
 @media (min-width:180px) and (max-width:680px) {

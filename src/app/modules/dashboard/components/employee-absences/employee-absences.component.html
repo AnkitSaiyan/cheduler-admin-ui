@@ -28,6 +28,7 @@
 
   <section class="d-flex flex-column dfm-gap-16" *ngIf="filteredAbsence$$ | async as employeeAbsences">
     <div *ngFor="let employee of employeeAbsences" class="d-flex align-items-center dfm-gap-8">
+
       <div class="rounded-circle avatar-container">
         <img *ngIf="employee.avatar" [src]="employee.avatar" class="rounded-circle border-1" alt="Doctor's avatar" width="32" height="32" />
 
@@ -42,6 +43,10 @@
           <span class="text-xs dfm-text-main-400">({{ employee.info }})</span>
         </div>
         <span class="text-xs dfm-text-main-500">{{ employee?.startedAt | date : 'shortDate' }} - {{ employee?.endedAt | date : 'shortDate' }}</span>
+      </div>
+
+      <div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!employeeAbsences.length">
+        {{ 'NoDataFound' | translate }}
       </div>
     </div>
   </section>

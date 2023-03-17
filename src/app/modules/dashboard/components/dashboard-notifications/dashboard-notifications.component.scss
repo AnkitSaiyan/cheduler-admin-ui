@@ -2,12 +2,20 @@
   height: inherit;
 
   section:last-child {
+    height: inherit;
     overflow-y: auto;
   }
 
   section:last-child>div {
     border-bottom: 1px solid var(--dfm-secondary);
   }
+}
+
+.no-data-found-wrapper {
+  height: inherit;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
 }
 
 

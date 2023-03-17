@@ -16,6 +16,7 @@
 div section:last-child {
   overflow-y: scroll;
   max-height: 280px;
+  // height: inherit;
 
   div.upcoming-events-container {
     border-left: 1px solid var(--dfm-input-border);

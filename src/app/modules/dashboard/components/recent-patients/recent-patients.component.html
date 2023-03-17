@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <div class="d-flex align-items-center dfm-button-group-wrapper hidden rec-pt-mv-buttons">
+    <div class="hidden align-items-center rec-pt-mv-buttons dfm-button-group-wrapper  rec-pt-mv-buttons">
       <div>
         <dfm-button-icon color="tertiary-gray" size="md" icon="copy-03"   (click)="copyToClipboard()"></dfm-button-icon>
       </div>
@@ -99,5 +99,8 @@
         </dfm-table-body-cell> -->
       </ng-template>
     </dfm-table>
+    <div class="no-data-found-wrapper justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!recentPatients.length">
+      {{ 'NoDataFound' | translate }}
+    </div>
   </section>
 </div>
