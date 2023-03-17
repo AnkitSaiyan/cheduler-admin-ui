@@ -4,7 +4,6 @@ import { takeUntil } from 'rxjs';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
-import { AutoFocus } from '../../../../../shared/directives/auto-focus.directive';
 
 @Component({
   selector: 'dfm-add-post',
