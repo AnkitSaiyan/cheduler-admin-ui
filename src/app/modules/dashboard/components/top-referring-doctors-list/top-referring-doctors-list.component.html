@@ -25,5 +25,8 @@
         <span class="font-weight-medium">{{ doctorDetails.firstname }} {{doctorDetails.lastname}}</span>
       </div>
     </div>
+    <div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!top10Doctors.length">
+      {{ 'NoDataFound' | translate }}
+    </div>
   </section>
 </div>
