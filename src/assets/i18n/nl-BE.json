@@ -344,6 +344,7 @@
   "SelectPatient" : "Patiënt Selecteren",
   "AutoConfirmAppointment": "Afspraak automatisch bevestigen",
   "TodaysAppointments": "Today's Appointment",
-  "NoAppointmentFound":"No Appointments Found"
+  "NoAppointmentFound":"No Appointments Found",
+  "Calendar" : "Kalendar"
 }
 

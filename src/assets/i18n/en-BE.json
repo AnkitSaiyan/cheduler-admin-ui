@@ -345,5 +345,6 @@
   "SelectPatient" : "Select Patient",
   "AutoConfirmAppointment": "Auto Confirm Appointment",
   "TodaysAppointments": "Today's Appointment",
-  "NoAppointmentFound":"No Appointments Found"
+  "NoAppointmentFound":"No Appointments Found",
+  "Calendar" : "Calendar"
 }
