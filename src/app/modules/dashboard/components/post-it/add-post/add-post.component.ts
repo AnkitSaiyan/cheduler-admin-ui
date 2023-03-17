@@ -1,22 +1,29 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { takeUntil } from 'rxjs';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import { AutoFocus } from '../../../../../shared/directives/auto-focus.directive';
 
 @Component({
   selector: 'dfm-add-post',
   templateUrl: './add-post.component.html',
   styleUrls: ['./add-post.component.scss'],
 })
-export class AddPostComponent extends DestroyableComponent implements OnInit, OnDestroy {
+export class AddPostComponent extends DestroyableComponent implements OnInit, OnDestroy, AfterViewInit {
   public dialogData: ConfirmActionModalData = {
     confirmButtonText: 'Proceed',
     cancelButtonText: 'Cancel',
     titleText: 'PostIt',
     bodyText: 'Are you sure you want to perform this action?',
   };
+
+  @ViewChild('myinput') myInputField!: ElementRef;
+
+  ngAfterViewInit() {
+    this.myInputField.nativeElement.focus();
+  }
 
   postItMessage = new FormControl('', []);
 
@@ -31,6 +38,8 @@ export class AddPostComponent extends DestroyableComponent implements OnInit, On
       if (data.confirmButtonText) this.dialogData.confirmButtonText = data.confirmButtonText;
       if (data.cancelButtonText) this.dialogData.cancelButtonText = data.cancelButtonText;
     });
+
+    // this.postItMessage.
   }
 
   public override ngOnDestroy() {
@@ -41,4 +50,3 @@ export class AddPostComponent extends DestroyableComponent implements OnInit, On
     this.dialogSvc.close(this.postItMessage.value);
   }
 }
-

@@ -342,6 +342,8 @@
   "AppointmentNumber" : "Afspraak nummer",
   "Patient" : "Patiënt",
   "SelectPatient" : "Patiënt Selecteren",
-  "AutoConfirmAppointment": "Afspraak automatisch bevestigen"
+  "AutoConfirmAppointment": "Afspraak automatisch bevestigen",
+  "TodaysAppointments": "Todays Appointment",
+  "NoAppointmentFound":"No Appointments Found"
 }
 

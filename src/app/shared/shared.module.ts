@@ -48,6 +48,7 @@ import {TranslateLoader, TranslateModule, TranslatePipe} from '@ngx-translate/co
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import {IsDataPipe} from "./pipes/is-data.pipe";
 import { TimeSlotsComponent } from './components/time-slots/time-slots.component';
+import {AutoFocus} from './directives/auto-focus.directive';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -82,7 +83,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NumberInputDirective,
     NumberArrayPipe,
     IsDataPipe,
-    TimeSlotsComponent
+    TimeSlotsComponent,
+    AutoFocus,
   ],
   imports: [
     CommonModule,
