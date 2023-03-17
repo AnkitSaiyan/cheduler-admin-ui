@@ -10,7 +10,7 @@
     }
 
     .pr-hr-title-buttons-mv {
-      display: flex;
+      display: flex!important;
     }
 
     .pr-hr-title-buttons {
@@ -36,5 +36,8 @@
     //  display: flex;
     //  margin-left: auto;
     //}
+  }
+  .hidden{
+    display: block!important;
   }
 }
