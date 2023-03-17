@@ -155,7 +155,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
             this.titleCasePipe.transform(ap.doctor),
             ap.id.toString(),
             ap.createdAt.toString(),
-            ap.readStatus ? 'Yes' : 'No',
+            // ap.readStatus ? 'Yes' : 'No',
             AppointmentStatusToName[+ap.approval],
           ]),
           'physician',
@@ -210,7 +210,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
           Translate.Doctor[lang],
           Translate.AppointmentNo[lang],
           Translate.AppliedOn[lang],
-          Translate.Read[lang],
+          // Translate.Read[lang],
           Translate.Status[lang],
           Translate.Actions[lang],
         ];

@@ -343,7 +343,7 @@
   "Patient" : "Patiënt",
   "SelectPatient" : "Patiënt Selecteren",
   "AutoConfirmAppointment": "Afspraak automatisch bevestigen",
-  "TodaysAppointments": "Todays Appointment",
+  "TodaysAppointments": "Today's Appointment",
   "NoAppointmentFound":"No Appointments Found"
 }
 
