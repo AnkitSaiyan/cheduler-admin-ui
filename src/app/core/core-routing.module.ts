@@ -59,7 +59,7 @@ const routes: Routes = [
       },
       {
         path: 'email',
-        loadChildren: async () => (await import('../modules/email/email.module')).EmailModule,
+        loadChildren: async () => (await import('../modules/email-template/email-template.module')).EmailTemplateModule,
       },
       {
         path: 'priority-slots',

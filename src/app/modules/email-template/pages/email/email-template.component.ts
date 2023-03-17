@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'dfm-email',
+  selector: 'dfm-email-template',
   templateUrl: './email.component.html',
   styleUrls: ['./email.component.scss'],
 })

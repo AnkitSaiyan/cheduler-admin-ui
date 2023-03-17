@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EMAIL_TEMPLATE_ID } from '../../shared/utils/const';
-import { EditEmailComponent } from './components/edit-email/edit-email.component';
-import { EmailListComponent } from './components/email-list/email-list.component';
+import { EditEmailTemplateComponent } from './components/edit-email/edit-email-template.component';
+import { EmailTemplateListComponent } from './components/email-template-list/email-template-list.component';
 import { EmailComponent } from './pages/email/email.component';
 
 const emailRoutes: Routes = [
@@ -12,11 +12,11 @@ const emailRoutes: Routes = [
     children: [
       {
         path: '',
-        component: EmailListComponent,
+        component: EmailTemplateListComponent,
       },
       {
         path: `:${EMAIL_TEMPLATE_ID}/edit`,
-        component: EditEmailComponent,
+        component: EditEmailTemplateComponent,
       },
     ],
   },

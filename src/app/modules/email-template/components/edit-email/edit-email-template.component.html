@@ -14,7 +14,7 @@
   </section>
 
   <section class="dfm-card dfm-p-16 ed-et-section2 hide-scrollbar">
-    <form [formGroup]="emailTemplateForm" *ngIf="email$$ | async" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+    <form [formGroup]="emailTemplateForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-center">
         <dfm-input class="flex-1" size="md" placeholder="Appointment Confirmation Diflexmo" label="Title *" formControlName="title"></dfm-input>
 
@@ -46,7 +46,7 @@
 
     <div class="dfm-gap-16 ed-et-action-buttons">
       <dfm-button color="secondary" size="md" routerLink="/email"> Cancel </dfm-button>
-      <dfm-button color="primary" size="md" class="text-nowrap" (click)="saveEmailTemplate(email$$)">Save Changes </dfm-button>
+      <dfm-button color="primary" size="md" class="text-nowrap" (click)="saveEmailTemplate()">Save Changes </dfm-button>
     </div>
   </section>
 </div>
