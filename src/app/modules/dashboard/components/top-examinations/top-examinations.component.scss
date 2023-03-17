@@ -3,5 +3,13 @@
 
   section:last-child {
     overflow-y: auto;
+    height: inherit;
   }
+}
+
+.no-data-found-wrapper {
+  height: inherit;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
 }

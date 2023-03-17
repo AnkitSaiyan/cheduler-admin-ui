@@ -314,7 +314,7 @@
   "SearchPostIt": "Search post it",
   "EmployeeAbsences" :"Staff Absences",
   "SearchEmployee" : "Search by Absence Title",
-  "TopTenReferringDoctors": " Top 10 Referring Doctors",
+  "TopTenReferringDoctors": " Top 10 Referring Physician",
   "Notifications": "Notifications",
   "NewAppointmentCreated" : "New appointment created",
   "TopTenExaminations": "Top 10 Examinations",
@@ -346,5 +346,6 @@
   "AutoConfirmAppointment": "Auto Confirm Appointment",
   "TodaysAppointments": "Today's Appointment",
   "NoAppointmentFound":"No Appointments Found",
+  "NoUppcomingAppointment":"No Upcoming Appointments",
   "Calendar" : "Calendar"
 }
