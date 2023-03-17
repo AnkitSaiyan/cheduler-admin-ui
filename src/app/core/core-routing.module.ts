@@ -58,6 +58,10 @@ const routes: Routes = [
         loadChildren: async () => (await import('../modules/appointments/appointments.module')).AppointmentsModule,
       },
       {
+        path: 'email',
+        loadChildren: async () => (await import('../modules/email/email.module')).EmailModule,
+      },
+      {
         path: 'priority-slots',
         title: 'Diflexmo - Priority Slots',
         loadChildren: async () => (await import('../modules/priority-slots/priority-slots.module')).PrioritySlotsModule,
