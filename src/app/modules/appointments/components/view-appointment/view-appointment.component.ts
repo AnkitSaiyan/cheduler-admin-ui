@@ -5,10 +5,12 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { APPOINTMENT_ID } from '../../../../shared/utils/const';
+import { APPOINTMENT_ID, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
+import { Translate } from 'src/app/shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-view-appointment',
@@ -23,6 +25,9 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
   public examDetails$$ = new BehaviorSubject<any[]>([]);
 
   public columns = ['Name', 'Expensive', 'Room', 'StartDate', 'EndDate'];
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
 
   constructor(
     private appointmentApiSvc: AppointmentApiService,
@@ -30,6 +35,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
     private notificationSvc: NotificationDataService,
     private router: Router,
     private modalSvc: ModalService,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
   }
@@ -68,6 +74,21 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
       )
       .subscribe((appointment) => {
       });
+      this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
   }
 
   public deleteAppointment(id: number) {
@@ -87,7 +108,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
       )
       .subscribe(() => {
         this.appointmentApiSvc.deleteAppointment$(id);
-        this.notificationSvc.showNotification('Appointment deleted successfully');
+        this.notificationSvc.showNotification(Translate.DeleteAppointment[this.selectedLang]);
         this.router.navigate(['/', 'appointment']);
       });
   }
