@@ -179,7 +179,7 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
       .pipe(takeUntil(this.destroy$$))
       .subscribe({
         next: () => {
-          this.notificationSvc.showNotification(`Email template updated successfully`);
+          this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
           this.submitting$$.next(false);
           this.router.navigate(['../../'], { relativeTo: this.route })
         },

@@ -477,9 +477,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         if (this.staffID) {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+          this.notificationSvc.showNotification(Translate.SuccessMessage.StaffUpdated[this.selectedLang]);
         } else {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+          this.notificationSvc.showNotification(Translate.SuccessMessage.StaffAdded[this.selectedLang]);
         }
         let route: string;
         if (this.comingFromRoute === 'view') {

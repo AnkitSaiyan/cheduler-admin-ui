@@ -166,13 +166,25 @@ export const Translate = Object.freeze({
       [ENG_BE]: 'Deleted successfully',
       [DUTCH_BE]: 'Succesvol Verwijderd',
     },
+    UserDeleted: {
+      [ENG_BE]: 'User deleted successfully',
+      [DUTCH_BE]: 'Gebruiker succesvol verwijderd',
+    },
     Updated: {
       [ENG_BE]: 'Updated successfully',
       [DUTCH_BE]: 'Succesvol geüpdated',
     },
+    UserUpdated:{
+      [ENG_BE]: 'User Updated successfully',
+      [DUTCH_BE]: 'Gebruiker Succesvol geüpdated',
+    },
     Added: {
       [ENG_BE]: 'Added successfully',
       [DUTCH_BE]: 'Succesvol toegevoegd',
+    },
+    UserAdded:{
+      [ENG_BE]: 'User Added successfully',
+      [DUTCH_BE]: 'Gebruiker succesvol toegevoegd',
     },
     CopyToClipboard: {
       [ENG_BE]: 'Data copied to clipboard successfully',
@@ -185,6 +197,34 @@ export const Translate = Object.freeze({
     PostDeletedSuccessfully:{
       [ENG_BE]: 'Post it deleted successfully',
       [DUTCH_BE]: 'Post-it succesvol verwijderd',
+    },
+    RoomsDeleted:{
+      [ENG_BE]: 'Room deleted successfully',
+      [DUTCH_BE]: 'Zaal succesvol verwijderd',
+    },
+    RoomsAdded:{
+      [ENG_BE]: 'Room Added successfully',
+      [DUTCH_BE]: 'Zaal succesvol toegevoegd',
+    },
+    RoomsUpdated:{
+      [ENG_BE]: 'Room Updated successfully',
+      [DUTCH_BE]: 'Zaal Succesvol geüpdated',
+    },
+    StaffAdded:{
+      [ENG_BE]: 'Staff Added successfully',
+      [DUTCH_BE]: 'Medewerker succesvol toegevoegd',
+    },
+    StaffDeleted:{
+      [ENG_BE]: 'Staff deleted successfully',
+      [DUTCH_BE]: 'Medewerker succesvol verwijderd ',
+    },
+    StaffUpdated:{
+      [ENG_BE]: 'Staff Updated successfully',
+      [DUTCH_BE]: 'Medewerker succesvol geüpdated ',
+    },
+    EmailTemplateAdded:{
+      [ENG_BE]: 'Email Template Added successfully',
+      [DUTCH_BE]: 'E-mail Sjabloon succesvol toegevoegd ',
     }
   },
 

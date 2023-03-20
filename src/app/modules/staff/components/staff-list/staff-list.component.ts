@@ -219,7 +219,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       )
       .subscribe((response) => {
         if (response) {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
+          this.notificationSvc.showNotification(Translate.SuccessMessage.StaffDeleted[this.selectedLang]);
         }
       });
   }

@@ -185,9 +185,9 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
         .subscribe(
           () => {
             if (this.modalData.edit) {
-              this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+              this.notificationSvc.showNotification(Translate.SuccessMessage.RoomsUpdated[this.selectedLang]);
             } else {
-              this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+              this.notificationSvc.showNotification(Translate.SuccessMessage.RoomsAdded[this.selectedLang]);
             }
             this.closeModal(true);
             this.submitting$$.next(false);
