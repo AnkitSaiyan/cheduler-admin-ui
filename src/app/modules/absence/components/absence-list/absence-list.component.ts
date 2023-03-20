@@ -167,7 +167,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         take(1),
       )
       .subscribe((res) => {
-        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
+        this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang]);
       });
   }
 

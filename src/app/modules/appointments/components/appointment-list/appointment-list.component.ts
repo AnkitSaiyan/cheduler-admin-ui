@@ -298,9 +298,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(Translate.ErrorMessage.FailedToCopyData[this.selectedLang], NotificationType.DANGER);
       this.clipboardData = '';
     }
   }

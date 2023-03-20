@@ -309,7 +309,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
       .pipe(takeUntil(this.destroy$$))
       .subscribe({
         next: () => {
-          this.notificationSvc.showNotification(`${Translate.SuccessMessage.Added[this.selectedLang]}!`);
+          this.notificationSvc.showNotification(`${Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`);
           this.submitting$$.next(false);
           this.modalSvc.close(true);
         },

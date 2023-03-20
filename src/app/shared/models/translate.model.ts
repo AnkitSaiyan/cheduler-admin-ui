@@ -225,6 +225,78 @@ export const Translate = Object.freeze({
     EmailTemplateAdded:{
       [ENG_BE]: 'Email Template Added successfully',
       [DUTCH_BE]: 'E-mail Sjabloon succesvol toegevoegd ',
+    },
+    EmailTemplateUpdated : {
+      [ENG_BE]: 'Email Template Updated successfully',
+      [DUTCH_BE]: 'E-mail Sjabloon succesvol geüpdated ',
+    },
+    PhysicianAdded:{
+      [ENG_BE]: 'Physician Added successfully',
+      [DUTCH_BE]: 'Dokter succesvol toegevoegd',
+    },
+    PhysicianUpdated:{
+      [ENG_BE]: 'Physician Updated successfully',
+      [DUTCH_BE]: 'Dokter succesvol geüpdated ',
+    },
+    PhysicianDeleted: {
+      [ENG_BE]: 'Physician deleted successfully',
+      [DUTCH_BE]: 'Dokter succesvol verwijderd',
+    },
+    ExamDeleted:{
+      [ENG_BE]: 'Exam deleted successfully',
+      [DUTCH_BE]: 'Onderzoek succesvol verwijderd',
+    },
+    PracticeHoursUpdated: {
+      [ENG_BE]: 'Practice hours updated successfully',
+      [DUTCH_BE]: 'Uren praktijk succesvol geüpdated',
+    },
+    PracticeHoursAdded: {
+      [ENG_BE]: 'Practice hours Added successfully',
+      [DUTCH_BE]: 'Uren praktijk succesvol toegevoegd',
+    },
+    PrioritySlotsUpdated:{
+      [ENG_BE]: 'Priority Slot Updated successfully',
+      [DUTCH_BE]: 'Prioritaire slots succesvol geüpdated',
+    },
+    PrioritySlotsAdded:{
+      [ENG_BE]: 'Priority Slot Added successfully',
+      [DUTCH_BE]: 'Prioritaire slots succesvol toegevoegd',
+    },
+    PrioritySlotsDeleted: {
+      [ENG_BE]: 'Priority Slot deleted successfully',
+      [DUTCH_BE]: 'Prioritaire slots succesvol verwijderd',
+    },
+    AbsenceAdded: {
+      [ENG_BE]: 'Absence Added Successfully',
+      [DUTCH_BE]: 'Afwezigheid succesvol toegevoegd',
+    },
+    AbsenceUpdated: {
+      [ENG_BE]: 'Absence Updated Successfully',
+      [DUTCH_BE]: 'Afwezigheid succesvol geüpdated',
+    },
+    AbsenceDeleted: {
+      [ENG_BE]: 'Absence Deleted Successfully',
+      [DUTCH_BE]: 'Afwezigheid succesvol verwijderd',
+    },
+    AppointmentAdded:{
+      [ENG_BE]: 'Appointment Added Successfully',
+      [DUTCH_BE]: 'Afspraak succesvol toegevoegd',
+    },
+    ExamAdded:{
+      [ENG_BE]: 'Exam Added Successfully',
+      [DUTCH_BE]: 'Onderzoek succesvol toegevoegd',
+    },
+    ExamUpdated:{
+      [ENG_BE]: 'Exam Updated Successfully',
+      [DUTCH_BE]: 'Onderzoek succesvol geüpdated',
+    },
+    SiteAdded: {
+      [ENG_BE]: 'Site Added Successfully',
+      [DUTCH_BE]: 'Site succesvol toegevoegd',
+    },
+    SiteUpdated :{
+      [ENG_BE]: 'Site Updated Successfully',
+      [DUTCH_BE]: 'Site succesvol geüpdated',
     }
   },
 
@@ -232,6 +304,10 @@ export const Translate = Object.freeze({
     CopyToClipboard: {
       [ENG_BE]: 'Failed to copy Data',
       [DUTCH_BE]: 'Gegevens succesvol naar clipboard gecopieerd',
+    },
+    FailedToCopyData: {
+      [ENG_BE]: 'Failed to copy Data',
+      [DUTCH_BE]: 'Kan gegevens niet kopiëren',
     },
   },
 

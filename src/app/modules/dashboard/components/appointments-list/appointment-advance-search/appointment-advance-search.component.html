@@ -35,7 +35,16 @@
                   />
                 </div>
                 <div>
-                  <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date" (click)="startedAt.toggle()"></dfm-button-icon>
+                  <dfm-button-icon
+                    color="tertiary-gray"
+                    size="md"
+                    icon="calendar-date"
+                    ngbPopover="{{ 'Calendar' | translate }}"
+                    triggers="mouseenter:mouseleave"
+                    popoverClass="popover-p-8"
+                    [openDelay]="200"
+                    (click)="startedAt.toggle()"
+                  ></dfm-button-icon>
                 </div>
               </div>
             </div>
@@ -71,7 +80,16 @@
                   />
                 </div>
                 <div>
-                  <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date" (click)="endedAt.toggle()"></dfm-button-icon>
+                  <dfm-button-icon
+                    color="tertiary-gray"
+                    size="md"
+                    icon="calendar-date"
+                    ngbPopover="{{ 'ClickToCopy' | translate }}"
+                    triggers="mouseenter:mouseleave"
+                    popoverClass="popover-p-8"
+                    [openDelay]="200"
+                    (click)="endedAt.toggle()"
+                  ></dfm-button-icon>
                 </div>
               </div>
             </div>

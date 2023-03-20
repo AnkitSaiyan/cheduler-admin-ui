@@ -244,9 +244,9 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
         () => {
           this.submitting$$.next(false);
           if (this.siteManagementData$$.value?.id) {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.SiteUpdated[this.selectedLang]);
           } else {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.SiteAdded[this.selectedLang]);
           }
         },
         (err) => {

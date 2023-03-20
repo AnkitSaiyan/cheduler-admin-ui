@@ -225,7 +225,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       )
       .subscribe((response) => {
         if (response) {
-          this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted[this.selectedLang]}!`);
+          this.notificationSvc.showNotification(`${Translate.SuccessMessage.PhysicianDeleted[this.selectedLang]}!`);
         }
       });
   }
