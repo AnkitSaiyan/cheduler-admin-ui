@@ -13,7 +13,7 @@
     [profileData]="profileData"
     [logoPath]="'../../assets/images/logo.svg'"
   >
-    <mat-progress-bar *ngIf="loaderService.isActive$ | async" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="isLoaderActive$$ | async" mode="indeterminate"></mat-progress-bar>
     <div class="dfm-content content-height" #content>
       <dfm-notification [position]="2"></dfm-notification>
 

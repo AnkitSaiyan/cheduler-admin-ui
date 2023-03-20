@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationItem, NavigationItemEvent, NavigationProfileData, NavigationProfileLink, SelectItem } from 'diflexmo-angular-design';
 import { TranslateService } from '@ngx-translate/core';
 import { DestroyableComponent } from '../shared/components/destroyable.component';
@@ -8,13 +8,14 @@ import dutchLangauge from '../../assets/i18n/nl-BE.json';
 import { ShareDataService } from './services/share-data.service';
 import { DashboardApiService } from './services/dashboard-api.service';
 import { LoaderService } from './services/loader.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'dfm-main',
   templateUrl: './core.component.html',
   styleUrls: ['./core.component.scss'],
 })
-export class CoreComponent extends DestroyableComponent implements OnInit, OnDestroy {
+export class CoreComponent extends DestroyableComponent implements OnInit, OnDestroy, AfterViewInit {
   public navigationItems: NavigationItem[] = [
     new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
     new NavigationItem('Appointment', 'file-06', '/appointment', false),
@@ -79,11 +80,14 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 
   isDutchLanguage: boolean = false;
 
+  public isLoaderActive$$ = new Subject<boolean>();
+
   constructor(
     private translateService: TranslateService,
     private dataShareService: ShareDataService,
     private dashboardApiService: DashboardApiService,
     public loaderService: LoaderService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
   }
@@ -105,6 +109,13 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       res.forEach((element, index) => {
         this.messages.push(new NavigationItemEvent(index + 1, new Date(element?.createdAt), element?.message));
       });
+    });
+  }
+
+  public ngAfterViewInit(): void {
+    this.loaderService.isActive$.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
+      this.isLoaderActive$$.next(value);
+      this.cdr.detectChanges();
     });
   }
 
