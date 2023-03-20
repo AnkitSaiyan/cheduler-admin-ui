@@ -202,55 +202,50 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         this.cdr.detectChanges();
       });
 
-    this.staffApiSvc.allUsers$
-      .pipe(
-        debounceTime(0),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((staffs) => {
-        const radiologists: NameValue[] = [];
-        const assistants: NameValue[] = [];
-        const nursing: NameValue[] = [];
-        const secretaries: NameValue[] = [];
-        const mandatory: NameValue[] = [];
+    this.staffApiSvc.allUsers$.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe((staffs) => {
+      const radiologists: NameValue[] = [];
+      const assistants: NameValue[] = [];
+      const nursing: NameValue[] = [];
+      const secretaries: NameValue[] = [];
+      const mandatory: NameValue[] = [];
 
-        staffs.forEach((staff) => {
-          const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff?.id?.toString() };
+      staffs.forEach((staff) => {
+        const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff?.id?.toString() };
 
-          mandatory.push({ ...nameValue });
+        mandatory.push({ ...nameValue });
 
-          switch (staff.userType) {
-            case UserType.Assistant:
-              assistants.push({ ...nameValue });
-              break;
-            case UserType.Radiologist:
-              radiologists.push({ ...nameValue });
-              break;
-            // case UserType.Scheduler:
-            case UserType.Secretary:
-              secretaries.push({ ...nameValue });
-              break;
-            case UserType.Nursing:
-              nursing.push({ ...nameValue });
-              break;
-            default:
-          }
-        });
-
-        this.filteredRadiologists$$.next([...radiologists]);
-        this.filteredAssistants$$.next([...assistants]);
-        this.filteredNursing$$.next([...nursing]);
-        this.filteredSecretaries$$.next([...secretaries]);
-        this.filteredMandatoryStaffs$$.next([...mandatory]);
-
-        this.mandatoryStaffs = [...mandatory];
-        this.assistants = [...assistants];
-        this.nursing = [...nursing];
-        this.secretaries = [...secretaries];
-        this.radiologists = [...radiologists];
-
-        this.cdr.detectChanges();
+        switch (staff.userType) {
+          case UserType.Assistant:
+            assistants.push({ ...nameValue });
+            break;
+          case UserType.Radiologist:
+            radiologists.push({ ...nameValue });
+            break;
+          // case UserType.Scheduler:
+          case UserType.Secretary:
+            secretaries.push({ ...nameValue });
+            break;
+          case UserType.Nursing:
+            nursing.push({ ...nameValue });
+            break;
+          default:
+        }
       });
+
+      this.filteredRadiologists$$.next([...radiologists]);
+      this.filteredAssistants$$.next([...assistants]);
+      this.filteredNursing$$.next([...nursing]);
+      this.filteredSecretaries$$.next([...secretaries]);
+      this.filteredMandatoryStaffs$$.next([...mandatory]);
+
+      this.mandatoryStaffs = [...mandatory];
+      this.assistants = [...assistants];
+      this.nursing = [...nursing];
+      this.secretaries = [...secretaries];
+      this.radiologists = [...radiologists];
+
+      this.cdr.detectChanges();
+    });
 
     this.roomApiSvc
       .getRoomTypes()
@@ -297,11 +292,12 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
           }
           return of({} as Exam);
         }),
-        debounceTime(0),
+        debounceTime(500),
         take(1),
       )
       .subscribe((examDetails) => {
         if (examDetails) {
+          console.log({ examDetails });
           this.updateForm(examDetails);
           if (examDetails?.practiceAvailability?.length) {
             this.examAvailabilityData$$.next(examDetails.practiceAvailability);
@@ -381,8 +377,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   private updateForm(examDetails?: Exam): void {
-    console.log(examDetails);
-
     const assistants: string[] = [];
     const radiologists: string[] = [];
     const nursing: string[] = [];
@@ -423,40 +417,47 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       radiologistCount: examDetails?.radiologistCount?.toString() ?? '0',
       nursingCount: examDetails?.nursingCount?.toString() ?? '0',
       secretaryCount: examDetails?.secretaryCount?.toString() ?? '0',
-      assistants, nursing, secretaries, radiologists,
+      assistants,
+      nursing,
+      secretaries,
+      radiologists,
       mandatoryStaffs: mandatory,
+      uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
     });
 
-    setTimeout(() => {
-      this.examForm.patchValue({
-        name: examDetails?.name,
-        expensive: examDetails?.expensive,
-        practiceAvailabilityToggle: !!examDetails?.practiceAvailability?.length,
-        status: this.edit ? +!!examDetails?.status : Status.Active,
-        info: examDetails?.info,
-        assistantCount: examDetails?.assistantCount?.toString() ?? '0',
-        radiologistCount: examDetails?.radiologistCount?.toString() ?? '0',
-        nursingCount: examDetails?.nursingCount?.toString() ?? '0',
-        secretaryCount: examDetails?.secretaryCount?.toString() ?? '0',
-        assistants, nursing, secretaries, radiologists,
-        mandatoryStaffs: mandatory,
-        uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
-      });
+    if (examDetails?.roomsForExam?.length) {
+      this.roomApiSvc
+        .getRoomByID(examDetails.roomsForExam[0].roomId)
+        .pipe(takeUntil(this.destroy$$))
+        .subscribe((room) => {
+          this.examForm.get('roomType')?.setValue(room?.type);
+          this.cdr.detectChanges();
+        });
+    }
 
-      if (examDetails?.roomsForExam?.length) {
-        this.roomApiSvc
-          .getRoomByID(examDetails.roomsForExam[0].roomId)
-          .pipe(takeUntil(this.destroy$$))
-          .subscribe((room) => {
-            this.examForm.get('roomType')?.setValue(room?.type);
-            this.cdr.detectChanges();
-          });
-      }
+    // setTimeout(() => {
+    //   this.examForm.patchValue({
+    //     name: examDetails?.name,
+    //     expensive: examDetails?.expensive,
+    //     practiceAvailabilityToggle: !!examDetails?.practiceAvailability?.length,
+    //     status: this.edit ? +!!examDetails?.status : Status.Active,
+    //     info: examDetails?.info,
+    //     assistantCount: examDetails?.assistantCount?.toString() ?? '0',
+    //     radiologistCount: examDetails?.radiologistCount?.toString() ?? '0',
+    //     nursingCount: examDetails?.nursingCount?.toString() ?? '0',
+    //     secretaryCount: examDetails?.secretaryCount?.toString() ?? '0',
+    //     assistants,
+    //     nursing,
+    //     secretaries,
+    //     radiologists,
+    //     mandatoryStaffs: mandatory,
+    //     uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
+    //   });
 
-      console.log(this.formValues);
+    //   console.log(this.formValues);
 
-      this.cdr.detectChanges();
-    }, 200);
+    //   this.cdr.detectChanges();
+    // }, 500);
   }
 
   private getRoomsForExamFormGroup(room: Room): FormGroup {
@@ -570,11 +571,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
 
     if (element.value % 5 !== 0) {
-      const newValue = element.value - element.value % 5;
+      const newValue = element.value - (element.value % 5);
 
       element.value = newValue;
       if (control) {
-        control.setValue(newValue)
+        control.setValue(newValue);
       }
     }
   }
@@ -723,10 +724,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
   }
 
-  public handleDropdownSearch(
-    searchText: string,
-    type: 'mandatory' | 'radio' | 'nursing' | 'assistant' | 'secretary' | 'exam'
-  ): void {
+  public handleDropdownSearch(searchText: string, type: 'mandatory' | 'radio' | 'nursing' | 'assistant' | 'secretary' | 'exam'): void {
     switch (type) {
       case 'mandatory':
         this.filteredMandatoryStaffs$$.next(GeneralUtils.FilterArray(this.mandatoryStaffs, searchText, 'name'));
@@ -744,7 +742,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         this.filteredAssistants$$.next(GeneralUtils.FilterArray(this.assistants, searchText, 'name'));
         break;
       case 'exam':
-        this.filteredExams$$.next(GeneralUtils.FilterArray(this.exams, searchText, 'name'))
+        this.filteredExams$$.next(GeneralUtils.FilterArray(this.exams, searchText, 'name'));
         break;
     }
   }
