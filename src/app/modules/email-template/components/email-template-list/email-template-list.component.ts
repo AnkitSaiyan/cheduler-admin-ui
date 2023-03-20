@@ -1,14 +1,17 @@
 import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {BehaviorSubject, debounceTime, filter, map, Subject, takeUntil} from 'rxjs';
-import {NotificationType} from 'diflexmo-angular-design';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {DownloadAsType, DownloadService} from '../../../../core/services/download.service';
-import {EmailTemplateApiService} from 'src/app/core/services/email-template-api.service';
-import {Status, StatusToName} from 'src/app/shared/models/status.model';
-import {getStatusEnum, getUserTypeEnum} from 'src/app/shared/utils/getEnums';
-import {Email} from 'src/app/shared/models/email-template.model';
+import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
+import { NotificationType } from 'diflexmo-angular-design';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
+import { EmailTemplateApiService } from 'src/app/core/services/email-template-api.service';
+import { Status, StatusToName } from 'src/app/shared/models/status.model';
+import { getStatusEnum, getUserTypeEnum } from 'src/app/shared/utils/getEnums';
+import { Email } from 'src/app/shared/models/email-template.model';
+import { Translate } from 'src/app/shared/models/translate.model';
+import { ENG_BE, Statuses, StatusesNL, DUTCH_BE } from 'src/app/shared/utils/const';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
   selector: 'dfm-email-template-list',
@@ -45,11 +48,16 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
   public userType = getUserTypeEnum();
 
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
+
   constructor(
     private notificationSvc: NotificationDataService,
     private downloadSvc: DownloadService,
     private emailTemplateApiSvc: EmailTemplateApiService,
     private cdr: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     this.emails$$ = new BehaviorSubject<any[]>([]);
@@ -58,7 +66,6 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
   public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
-
 
     this.emailTemplateApiSvc.emailTemplates$.pipe(takeUntil(this.destroy$$)).subscribe((emails) => {
       this.emails$$.next(emails);
@@ -74,42 +81,81 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     });
 
     this.downloadDropdownControl.valueChanges
-    .pipe(
-      filter((value) => !!value),
+      .pipe(
+        filter((value) => !!value),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe((downloadAs) => {
+        if (!this.filteredEmails$$.value.length) {
+          return;
+        }
+
+        this.downloadSvc.downloadJsonAs(
+          downloadAs as DownloadAsType,
+          this.columns.slice(0, -1),
+          this.filteredEmails$$.value.map((em: Email) => [em.title, em.subject?.toString(), StatusToName[em.status]]),
+          'exams',
+        );
+
+        if (downloadAs !== 'PRINT') {
+          this.notificationSvc.showNotification(`${downloadAs} file downloaded successfully`);
+        }
+
+        this.downloadDropdownControl.setValue(null);
+
+        this.cdr.detectChanges();
+      });
+
+    this.afterBannerClosed$$.pipe(
+      map((value) => {
+        if (value?.proceed) {
+          return [...this.selectedUserIds.map((id) => ({ id: +id, newStatus: value.newStatus }))];
+        }
+
+        return [];
+      }),
       takeUntil(this.destroy$$),
-    )
-    .subscribe((downloadAs) => {
-      if (!this.filteredEmails$$.value.length) {
-        return;
-      }
-
-      this.downloadSvc.downloadJsonAs(
-        downloadAs as DownloadAsType,
-        this.columns.slice(0, -1),
-        this.filteredEmails$$.value.map((em: Email) => [em.title, em.subject?.toString(), StatusToName[em.status]]),
-        'exams',
-      );
-
-      if (downloadAs !== 'PRINT') {
-        this.notificationSvc.showNotification(`${downloadAs} file downloaded successfully`);
-      }
-
-      this.downloadDropdownControl.setValue(null);
-
-      this.cdr.detectChanges();
-    });
+    );
 
     this.afterBannerClosed$$
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedUserIds.map((id) => ({ id: +id, newStatus: value.newStatus }))];
+            return [...this.selectedUserIds.map((id) => ({ id: +id, status: value.newStatus as number }))];
           }
 
           return [];
         }),
+        filter((changes) => {
+          if (!changes.length) {
+            this.clearSelected$$.next();
+          }
+          return !!changes.length;
+        }),
+        switchMap((changes) => this.emailTemplateApiSvc.changeEmailStatus$(changes)),
         takeUntil(this.destroy$$),
       )
+      .subscribe(() => {
+        this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
+        this.clearSelected$$.next();
+      });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
   }
 
   public override ngOnDestroy() {
@@ -129,10 +175,14 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     ]);
   }
 
-  public changeStatus(changes: { id: number | string; newStatus: Status | null }[]) {}
+  public changeStatus(changes: { id: number ; status: number }[]) {
+    this.emailTemplateApiSvc
+      .changeEmailStatus$(changes)
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(() => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]));
+  }
 
   public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
-    console.log(e);
     this.afterBannerClosed$$.next(e);
   }
 
@@ -168,4 +218,21 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

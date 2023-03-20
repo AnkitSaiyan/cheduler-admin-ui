@@ -1,6 +1,9 @@
 <div class="d-flex flex-column dfm-gap-16 position-relative">
+
   <section>
-    <div class="d-flex align-items-center dfm-gap-16 flex-1 et-ls-section-1">
+    <div class="d-flex align-items-center dfm-gap-16 flex-1 ap-li-section-1" >
+      <dfm-button class="hidden ap-li-title-buttons" color="link" size="lg" routerLink="./">Email Template </dfm-button>
+
       <dfm-input
         class="flex-1 et-ls-search"
         size="md"
@@ -9,23 +12,42 @@
         [formControl]="searchControl"
       ></dfm-input>
 
-      <div class="d-flex align-items-center dfm-button-group-wrapper et-ls-button-dropdown-group">
+      <div class="d-flex align-items-center dfm-button-group-wrapper ap-li-button-dropdown-group bg-white">
         <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
-          <dfm-button-icon color="tertiary-gray" size="md" icon="copy-03" (click)="copyToClipboard()"></dfm-button-icon>
+          <dfm-button-icon
+            color="tertiary-gray"
+            size="md"
+            icon="copy-03"
+            ngbPopover="{{ 'ClickToCopy' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
+            (click)="copyToClipboard()"
+          ></dfm-button-icon>
         </div>
 
-        <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
+        <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent max-w-192">
           <dfm-input-dropdown
             [items]="downloadItems"
             [showDescription]="false"
             [formControl]="downloadDropdownControl"
-            placeholder="Download"
+            placeholder="{{ 'Download' | translate }}"
             size="md"
           ></dfm-input-dropdown>
         </div>
       </div>
     </div>
   </section>
+
+  <dfm-input
+        class="flex-1 ap-li-search-mv hidden"
+        size="md"
+        placeholder="Search by Template Name"
+        icon="search-sm"
+        [formControl]="searchControl"
+      ></dfm-input>
+
+
 
 
   <section class="list-page-content-height" *ngIf="filteredEmails$$ | async as emails">
@@ -116,7 +138,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
-              (click)="$event.stopPropagation(); changeStatus([{ id: item.id, newStatus: statusType.Active }])"
+              (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: 1 }])"
             ></dfm-button>
 
             <dfm-button
@@ -124,7 +146,7 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
-              (click)="$event.stopPropagation(); changeStatus([{ id: item.id, newStatus: statusType.Inactive }])"
+              (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: 0 }])"
             ></dfm-button>
 
             <dfm-button color="link-gray" size="sm" trailingIcon="pencil-02" [routerLink]="['./', item.id, 'edit']" (click)="$event.stopPropagation()"></dfm-button>
@@ -150,18 +172,18 @@
                 aria-labelledby="dropdownManual">
                 <div
                   *ngIf="item.status === statusType.Inactive"
-                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, newStatus: statusType.Active }])"
+                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: 1 }])"
                 >
                   <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
                 </div>
                 <div
                   *ngIf="item.status === statusType.Active"
-                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, newStatus: statusType.Inactive }])"
+                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: 0 }])"
                 >
-                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+                  <dfm-button trailingIcon="x-circle" color="link-gray" ></dfm-button>
                 </div>
-                <div  (click)="$event.stopPropagation()" class="position-relative">
-                  <dfm-button trailingIcon="pencil-02" color="link-gray" [routerLink]="['./', item.id, 'edit']"></dfm-button>
+                <div   class="position-relative"  >
+                  <dfm-button (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']" trailingIcon="pencil-02" color="link-gray" ></dfm-button>
                 </div>
             </div>
           </ng-template>
