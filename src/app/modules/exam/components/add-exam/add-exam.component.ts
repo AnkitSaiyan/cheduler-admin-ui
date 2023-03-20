@@ -416,22 +416,23 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       name: examDetails?.name,
       expensive: examDetails?.expensive,
       mandatoryStaffs: mandatory,
-      assistants, nursing, secretaries, radiologists,
       uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
       practiceAvailabilityToggle: !!examDetails?.practiceAvailability?.length,
       status: this.edit ? +!!examDetails?.status : Status.Active,
       info: examDetails?.info
     });
 
+    console.log(nursing);
     setTimeout(() => {
       this.examForm.patchValue({
         assistantCount: examDetails?.assistantCount?.toString() ?? '0',
         radiologistCount: examDetails?.radiologistCount?.toString() ?? '0',
         nursingCount: examDetails?.nursingCount?.toString() ?? '0',
         secretaryCount: examDetails?.secretaryCount?.toString() ?? '0',
+        assistants, nursing, secretaries, radiologists,
       }, { emitEvent: false } );
       this.cdr.detectChanges();
-    }, 0);
+    }, 200);
 
     if (examDetails?.roomsForExam?.length) {
       this.roomApiSvc
