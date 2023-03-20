@@ -164,7 +164,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         takeUntil(this.destroy$$),
       )
       .subscribe((rooms) => {
-        this.roomList = [...rooms.map((room) => ({ name: room.name, value: room.id.toString() })) as NameValue[]]
+        this.roomList = [...rooms.map((room) => ({ name: room.name, value: room.id.toString() }))]
         this.filteredRoomList$$.next([...this.roomList]);
         this.cdr.detectChanges();
       });
@@ -175,7 +175,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         takeUntil(this.destroy$$),
       )
       .subscribe((staffs) => {
-        this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() })) as NameValue[]]
+        this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() }))]
         this.filteredStaffs$$.next([...this.staffs]);
         this.cdr.detectChanges();
       });
