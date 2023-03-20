@@ -248,6 +248,9 @@
         </div>
       </ng-container>
 
+      <div class="d-flex dfm-gap-32 flex-wrap flex-1">
+        <dfm-input type="number" placeholder="Enter Priority Percentage" #percentage (focusout)="handleExpenseInput($event, percentage, prioritySlotForm.get('nxtSlotOpenPct'))" formControlName="nxtSlotOpenPct" size="md" label="Priority Slot Percentage"></dfm-input>
+      </div>
       <!-- <div class="d-flex dfm-gap-32 flex-wrap flex-1">
         <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-pr-staffs" *ngIf="radiologist$$ | async as radiology">
           <dfm-input-dropdown

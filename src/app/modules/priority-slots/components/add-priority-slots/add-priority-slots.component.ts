@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
@@ -44,6 +44,7 @@ interface FormValues {
   repeatFrequency: string;
   repeatDays: string[];
   userList: number[];
+  nxtSlotOpenPct: number;
 }
 
 @Component({
@@ -306,6 +307,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       ],
       userList: [prioritySlotDetails?.users?.length ? prioritySlotDetails.users.map(({ id }) => id.toString()) : [], []],
       priority: [prioritySlotDetails?.priority ?? null, [Validators.required]],
+      nxtSlotOpenPct: [prioritySlotDetails?.nxtSlotOpenPct ?? null, [Validators.max(100)]],
     });
 
     setTimeout(
@@ -388,7 +390,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
     this.submitting$$.next(true);
 
-    const { startedAt, endedAt, repeatDays, slotStartTime, slotEndTime, ...rest } = this.formValues;
+    const { startedAt, endedAt, repeatDays, slotStartTime, slotEndTime, nxtSlotOpenPct, ...rest } = this.formValues;
 
     const addPriorityReqData: PrioritySlot = {
       ...rest,
@@ -400,6 +402,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       slotStartTime: `${slotStartTime}:00`,
       slotEndTime: `${slotEndTime}:00`,
       users: [],
+      nxtSlotOpenPct: +nxtSlotOpenPct,
     };
 
     if (rest.isRepeat && repeatDays?.length) {
@@ -585,7 +588,35 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', false);
     toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
   }
+
+  public handleExpenseInput(e: Event, element: InputComponent, control: AbstractControl | null | undefined) {
+    if (!element.value) {
+      e.preventDefault();
+      return;
+    }
+
+    if (element.value > 100) {
+      const newValue = 100;
+
+      element.value = newValue;
+      if (control) {
+        control.setValue(newValue);
+      }
+    }
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -15,10 +15,12 @@ export interface PrioritySlot {
   users: User[];
   slotStartTime: string;
   slotEndTime: string | null;
+  nxtSlotOpenPct: number | null;
 }
 export enum prioritySlot {
   Daily = 'Daily',
   Weekly = 'Weekly',
   Monthly = 'Monthly',
 }
+
 
