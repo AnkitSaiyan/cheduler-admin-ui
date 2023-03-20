@@ -10,6 +10,7 @@ import { Weekday } from '../../shared/models/calendar.model';
 import { StaffApiService } from './staff-api.service';
 import { DashboardApiService } from './dashboard-api.service';
 import { environment } from '../../../environments/environment';
+import { LoaderService } from './loader.service';
 
 @Injectable({
   providedIn: 'root',
@@ -614,18 +615,26 @@ export class AbsenceApiService {
 
   private refreshAbsences$$ = new Subject<void>();
 
-  constructor(private staffApiSvc: StaffApiService, private http: HttpClient) {}
+  constructor(private staffApiSvc: StaffApiService, private http: HttpClient, private loaderSvc: LoaderService) {}
 
   public get absences$(): Observable<Absence[]> {
     return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAbsence()));
   }
 
   private fetchAllAbsence(): Observable<Absence[]> {
-    return this.http.get<BaseResponse<Absence[]>>(`${environment.serverBaseUrl}/absences`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<Absence[]>>(`${environment.serverBaseUrl}/absences`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public getAbsenceByID$(absenceID: number): Observable<Absence> {
-    return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAbsenceById(absenceID)));
+    this.loaderSvc.activate();
+    return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(
+      switchMap(() => this.fetchAbsenceById(absenceID)),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   private fetchAbsenceById(absenceID: number): Observable<Absence> {
