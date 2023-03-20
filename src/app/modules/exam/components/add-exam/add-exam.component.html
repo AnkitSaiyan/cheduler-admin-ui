@@ -130,16 +130,18 @@
         <div class="d-flex flex-1 dfm-gap-24">
           <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1" [ngClass]="{ 'dfm-mb-32': uncombinableDropdown.value?.length }">
             <dfm-input-dropdown #uncombinableDropdown size="md" [multiple]="true"
+                                [typeToSearch]="true" (searchInput)="handleDropdownSearch($event, 'exam')"
                                 [placeholder]="!!uncombinableDropdown.value?.length ? uncombinableDropdown.value.length + ' Selected' : ('SelectExam' | translate)"
-                                label="{{'Uncombinable' | translate}}" [items]="exams$$.value"
+                                label="{{'Uncombinable' | translate}}" [items]="filteredExams$$.value"
                                 formControlName="uncombinables">
             </dfm-input-dropdown>
           </div>
 
           <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1" [ngClass]="{ 'dfm-mb-32': mandatoryStaffsDropdown.value?.length }">
-            <dfm-input-dropdown #mandatoryStaffsDropdown size="md" [multiple]="true"
+            <dfm-input-dropdown #mandatoryStaffsDropdown size="md"
+                                [multiple]="true" [typeToSearch]="true" (searchInput)="handleDropdownSearch($event, 'mandatory')"
                                 [placeholder]="!!mandatoryStaffsDropdown.value?.length ? mandatoryStaffsDropdown.value.length + ' Selected' : ('SelectStaff' | translate)"
-                                label="{{'MandatoryStaffs' | translate}}" [items]="mandatoryStaffs$$.value"
+                                label="{{'MandatoryStaffs' | translate}}" [items]="filteredMandatoryStaffs$$.value"
                                 formControlName="mandatoryStaffs">
             </dfm-input-dropdown>
           </div>
@@ -153,7 +155,7 @@
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
                 <dfm-input-dropdown class="flex-1" size="md" label="{{'SelectNo' | translate}}" placeholder="{{'Select' | translate}}"
                                     formControlName="assistantCount"
-                                    [items]="assistants$$.value.length | numberArray : 0 | nameValuePair">
+                                    [items]="filteredAssistants$$.value.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
               </div>
 
@@ -161,8 +163,9 @@
                    [ngClass]="{ 'dfm-mb-32': assistantDropdown.value?.length }">
                 <dfm-input-dropdown #assistantDropdown size="md" label="{{'Assistant' | translate}}" placeholder="{{'SelectAssistant' | translate}}"
                                     [multiple]="true" formControlName="assistants"
+                                    [typeToSearch]="true" (searchInput)="handleDropdownSearch($event, 'assistant')"
                                     [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : 'SelectAssistant' | translate"
-                                    [items]="assistants$$.value">
+                                    [items]="filteredAssistants$$.value">
                 </dfm-input-dropdown>
               </div>
             </div>
@@ -176,7 +179,7 @@
             <div class="d-flex dfm-gap-16">
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
                 <dfm-input-dropdown size="md" label="{{'SelectNo' | translate}}" placeholder="Select" formControlName="radiologistCount"
-                                    [items]="radiologists$$.value.length | numberArray : 0 | nameValuePair">
+                                    [items]="filteredRadiologists$$.value.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
               </div>
 
@@ -184,9 +187,10 @@
                    [ngClass]="{ 'dfm-mb-32': radiologistDropdown.value?.length }">
                 <dfm-input-dropdown #radiologistDropdown size="md" label="{{'Radiologist' | translate}}"
                                     placeholder="{{'SelectRadiologist'| translate}}"
+                                    [typeToSearch]="true" (searchInput)="handleDropdownSearch($event, 'radio')"
                                     [multiple]="true" formControlName="radiologists"
                                     [placeholder]="!!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : 'Select Radiologists' | translate"
-                                    [items]="radiologists$$.value">
+                                    [items]="filteredRadiologists$$.value">
                 </dfm-input-dropdown>
               </div>
             </div>
@@ -200,7 +204,7 @@
             <div class="d-flex dfm-gap-16">
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
                 <dfm-input-dropdown size="md" label="{{'SelectNo' | translate}}" placeholder="{{'Select' | translate}}" formControlName="nursingCount"
-                                    [items]="nursing$$.value.length | numberArray : 0 | nameValuePair">
+                                    [items]="filteredNursing$$.value.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
               </div>
 
@@ -208,8 +212,9 @@
                    [ngClass]="{ 'dfm-mb-32': nursingDropdown.value?.length }">
                 <dfm-input-dropdown #nursingDropdown size="md" label="{{'Nursing' | translate}}" placeholder="{{'SelectNursing' | translate}}"
                                     [multiple]="true" formControlName="nursing"
+                                    [typeToSearch]="true" (searchInput)="handleDropdownSearch($event, 'nursing')"
                                     [placeholder]="!!nursingDropdown.value?.length ? nursingDropdown.value.length + ' Selected' : 'SelectNursing' | translate"
-                                    [items]="nursing$$.value">
+                                    [items]="filteredNursing$$.value">
                 </dfm-input-dropdown>
               </div>
             </div>
@@ -223,7 +228,7 @@
             <div class="d-flex dfm-gap-16">
               <div class="dfm-input-dropdown-wrapper ad-ex-count-dropdown">
                 <dfm-input-dropdown size="md" label="{{'SelectNo' | translate}}" placeholder="{{'Select' | translate}}" formControlName="secretaryCount"
-                                    [items]="secretaries$$.value.length | numberArray : 0 | nameValuePair">
+                                    [items]="filteredSecretaries$$.value.length | numberArray : 0 | nameValuePair">
                 </dfm-input-dropdown>
               </div>
 
@@ -231,8 +236,9 @@
                    [ngClass]="{ 'dfm-mb-32': secretaryDropdown.value?.length }">
                 <dfm-input-dropdown #secretaryDropdown size="md" label="{{'Secretary' | translate}}" placeholder="{{'SelectSecretary' | translate}}"
                                     [multiple]="true" formControlName="secretaries"
+                                    [typeToSearch]="true" (searchInput)="handleDropdownSearch($event, 'secretary')"
                                     [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ' Selected' : 'SelectSecretary' | translate"
-                                    [items]="secretaries$$.value">
+                                    [items]="filteredSecretaries$$.value">
                 </dfm-input-dropdown>
               </div>
             </div>
