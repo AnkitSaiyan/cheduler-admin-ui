@@ -105,10 +105,16 @@
                  class="d-flex flex-row dfm-gap-8 align-items-baseline ad-ex-room-list">
               <dfm-checkbox formControlName="selectRoom" size="md"
                             [label]="roomForExamControl.value?.roomName"></dfm-checkbox>
+
               <div class="ad-ex-duration">
                 <dfm-input #duration [dfmNumberInput]="duration" type="text" size="md" placeholder="{{'DurationMins' | translate}}"
                            formControlName="duration" (focusout)="handleExpenseInput($event, duration, roomForExamControl.get('duration'))">
                 </dfm-input>
+              </div>
+              <div class="dfm-input-dropdown-wrapper-wo-label order">
+                <dfm-input-dropdown size="sm" placeholder="{{'Order' | translate}}"
+                      [items]="filteredSecretaries$$.value.length | numberArray : 0 | nameValuePair">
+                </dfm-input-dropdown>
               </div>
             </div>
             <div class="room-message" *ngIf="!roomsForExamControls.length">
