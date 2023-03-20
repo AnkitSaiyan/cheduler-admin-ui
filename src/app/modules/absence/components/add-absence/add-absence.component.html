@@ -206,7 +206,6 @@
                                 [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
                                 [multiple]="true"
                                 placeholder="{{!!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + (' Selected' | translate) : ('SelectRepeatEvery' | translate)}}"
-
                                 size="md"
                                 label="{{'RepeatOn' | translate}} *"
                                 [required]="formValues.isRepeat && formValues.repeatType !== 'daily'"
@@ -217,10 +216,11 @@
       </ng-container>
 
       <div class="d-flex flex-wrap flex-1 gap" [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" *ngIf="!formValues.isHoliday">
-        <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-rooms" *ngIf="roomList$$ | async as roomList">
+        <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
           <dfm-input-dropdown #roomDropdown
                               [items]="roomList"
                               [multiple]="true"
+                              [typeToSearch]="true" (searchInput)="handleDropdownSearch($event, 'room')"
                               placeholder="{{!!roomDropdown.value?.length ? roomDropdown.value.length + ' ' + ('Selected' | translate) : ('SelectRooms' | translate) }}"
                               size="md"
                               formControlName="roomList"
@@ -228,10 +228,11 @@
           </dfm-input-dropdown>
         </div>
 
-        <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-staffs" *ngIf="staffs$$ | async as staffList">
+        <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-staffs" *ngIf="filteredStaffs$$ | async as staffList">
           <dfm-input-dropdown #staffDropDown
                               [items]="staffList"
                               [multiple]="true"
+                              [typeToSearch]="true" (searchInput)="handleDropdownSearch($event, 'staff')"
                               size="md"
                               formControlName="userList"
                               label="{{'Staff' | translate}}"

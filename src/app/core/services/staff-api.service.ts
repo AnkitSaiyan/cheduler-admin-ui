@@ -64,7 +64,9 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
   private get users$(): Observable<User[]> {
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
       switchMap(() => {
-        return this.http.get<BaseResponse<User[]>>(this.userUrl).pipe(map((response) => response.data));
+        return this.http.get<BaseResponse<User[]>>(this.userUrl).pipe(map((response) => {
+          return response.data?.map((user) => ({ ...user, fullName: `${user.firstname} ${user.lastname}` }));
+        }));
       }),
     );
   }
