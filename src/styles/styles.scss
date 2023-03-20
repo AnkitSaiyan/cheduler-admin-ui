@@ -344,7 +344,8 @@ dfm-input-dropdown {
   margin-top: 28px;
 
   .selected-items {
-    right: 48px !important;
+    //right: 48px !important;
+    z-index: 1;
   }
   //margin-bottom: 28px;
 }

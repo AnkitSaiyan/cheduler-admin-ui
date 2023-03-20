@@ -191,29 +191,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
     this.createForm();
 
-    this.routerStateSvc
-      .listenForParamChange$(EXAM_ID)
-      .pipe(
-        switchMap((examID) => {
-          if (examID) {
-            this.examID = examID;
-            return this.examApiSvc.getExamByID(+examID);
-          }
-          return of({} as Exam);
-        }),
-        take(1),
-      )
-      .subscribe((examDetails) => {
-        if (examDetails) {
-          this.updateForm(examDetails);
-          if (examDetails?.practiceAvailability?.length) {
-            this.examAvailabilityData$$.next(examDetails.practiceAvailability);
-          }
-        }
-        this.loading$$.next(false);
-        this.examDetails$$.next(examDetails);
-      });
-
     this.examApiSvc.exams$
       .pipe(
         map((exams) => exams.filter((exam) => exam?.status && +exam.id !== (+this.examID ?? 0))),
@@ -308,6 +285,30 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
             this.statuses = StatusesNL;
             break;
         }
+      });
+
+    this.routerStateSvc
+      .listenForParamChange$(EXAM_ID)
+      .pipe(
+        switchMap((examID) => {
+          if (examID) {
+            this.examID = examID;
+            return this.examApiSvc.getExamByID(+examID);
+          }
+          return of({} as Exam);
+        }),
+        debounceTime(0),
+        take(1),
+      )
+      .subscribe((examDetails) => {
+        if (examDetails) {
+          this.updateForm(examDetails);
+          if (examDetails?.practiceAvailability?.length) {
+            this.examAvailabilityData$$.next(examDetails.practiceAvailability);
+          }
+        }
+        this.loading$$.next(false);
+        this.examDetails$$.next(examDetails);
       });
   }
 
@@ -415,34 +416,47 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     this.examForm.patchValue({
       name: examDetails?.name,
       expensive: examDetails?.expensive,
-      mandatoryStaffs: mandatory,
-      uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
       practiceAvailabilityToggle: !!examDetails?.practiceAvailability?.length,
       status: this.edit ? +!!examDetails?.status : Status.Active,
-      info: examDetails?.info
+      info: examDetails?.info,
+      assistantCount: examDetails?.assistantCount?.toString() ?? '0',
+      radiologistCount: examDetails?.radiologistCount?.toString() ?? '0',
+      nursingCount: examDetails?.nursingCount?.toString() ?? '0',
+      secretaryCount: examDetails?.secretaryCount?.toString() ?? '0',
+      assistants, nursing, secretaries, radiologists,
+      mandatoryStaffs: mandatory,
     });
 
-    console.log(nursing);
     setTimeout(() => {
       this.examForm.patchValue({
+        name: examDetails?.name,
+        expensive: examDetails?.expensive,
+        practiceAvailabilityToggle: !!examDetails?.practiceAvailability?.length,
+        status: this.edit ? +!!examDetails?.status : Status.Active,
+        info: examDetails?.info,
         assistantCount: examDetails?.assistantCount?.toString() ?? '0',
         radiologistCount: examDetails?.radiologistCount?.toString() ?? '0',
         nursingCount: examDetails?.nursingCount?.toString() ?? '0',
         secretaryCount: examDetails?.secretaryCount?.toString() ?? '0',
         assistants, nursing, secretaries, radiologists,
-      }, { emitEvent: false } );
+        mandatoryStaffs: mandatory,
+        uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
+      });
+
+      if (examDetails?.roomsForExam?.length) {
+        this.roomApiSvc
+          .getRoomByID(examDetails.roomsForExam[0].roomId)
+          .pipe(takeUntil(this.destroy$$))
+          .subscribe((room) => {
+            this.examForm.get('roomType')?.setValue(room?.type);
+            this.cdr.detectChanges();
+          });
+      }
+
+      console.log(this.formValues);
+
       this.cdr.detectChanges();
     }, 200);
-
-    if (examDetails?.roomsForExam?.length) {
-      this.roomApiSvc
-        .getRoomByID(examDetails.roomsForExam[0].roomId)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe((room) => {
-          this.examForm.get('roomType')?.setValue(room?.type);
-          this.cdr.detectChanges();
-        });
-    }
   }
 
   private getRoomsForExamFormGroup(room: Room): FormGroup {
