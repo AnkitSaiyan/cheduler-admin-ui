@@ -14,7 +14,7 @@
         </div>
       </div>
       <div>
-        <dfm-button color="primary" size="md" class="text-nowrap" (click)="saveEmailTemplate()">{{'SaveChanges' | translate}} </dfm-button>
+        <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="(submitting$$ | async) === true" (click)="saveEmailTemplate()">{{'SaveChanges' | translate}} </dfm-button>
       </div>
     </div>
 
@@ -33,7 +33,7 @@
         </div>
       </div>
 
-      <dfm-button color="primary" size="md" class="text-nowrap" (click)="saveEmailTemplate()">{{'Save' | translate}}</dfm-button>
+      <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="(submitting$$ | async) === true" (click)="saveEmailTemplate()">{{'Save' | translate}}</dfm-button>
     </div>
     <!--    -->
   </section>
