@@ -93,6 +93,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     },
   ];
 
+  private times: NameValue[];
+
   public startTimes: NameValue[];
 
   public endTimes: NameValue[];
@@ -136,9 +138,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   ) {
     super();
 
-    const times = this.nameValuePairPipe.transform(this.timeInIntervalPipe.transform(5));
-    this.startTimes = [...times];
-    this.endTimes = [...times];
+    this.times = this.nameValuePairPipe.transform(this.timeInIntervalPipe.transform(5));
+    this.startTimes = [...this.times];
+    this.endTimes = [...this.times];
   }
 
   public ngOnInit(): void {
@@ -164,7 +166,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         takeUntil(this.destroy$$),
       )
       .subscribe((rooms) => {
-        this.roomList = [...rooms.map((room) => ({ name: room.name, value: room.id.toString() }))]
+        this.roomList = [...rooms.map((room) => ({ name: room.name, value: room.id.toString() }))];
         this.filteredRoomList$$.next([...this.roomList]);
         this.cdr.detectChanges();
       });
@@ -175,7 +177,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         takeUntil(this.destroy$$),
       )
       .subscribe((staffs) => {
-        this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() }))]
+        this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() }))];
         this.filteredStaffs$$.next([...this.staffs]);
         this.cdr.detectChanges();
       });
@@ -272,23 +274,21 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       priority: [absenceDetails?.priority ?? null, []],
     });
 
-    setTimeout(
-      () => {
-        this.absenceForm.patchValue({
-          startTime,
-          endTime,
-          repeatType: absenceDetails?.repeatType,
-          repeatFrequency:
-            absenceDetails?.isRepeat && absenceDetails?.repeatFrequency && absenceDetails.repeatType
-              ? `${absenceDetails.repeatFrequency} ${this.repeatTypeToName[absenceDetails.repeatType]}`
-              : null,
-          repeatDays: absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '',
-        });
+    setTimeout(() => {
+      this.absenceForm.patchValue({
+        startTime,
+        endTime,
+        repeatType: absenceDetails?.repeatType,
+        repeatFrequency:
+          absenceDetails?.isRepeat && absenceDetails?.repeatFrequency && absenceDetails.repeatType
+            ? `${absenceDetails.repeatFrequency} ${this.repeatTypeToName[absenceDetails.repeatType]}`
+            : null,
+        repeatDays: absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '',
+      });
 
-        this.absenceForm.get('startTime')?.markAsUntouched();
-          this.absenceForm.get('endTime')?.markAsUntouched();
-      }, 0
-    );
+      this.absenceForm.get('startTime')?.markAsUntouched();
+      this.absenceForm.get('endTime')?.markAsUntouched();
+    }, 0);
     this.cdr.detectChanges();
 
     this.absenceForm
@@ -439,8 +439,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public handleTimeInput(time: string, controlName: 'startTime' | 'endTime') {
+    this.searchTime(time, controlName);
     const formattedTime = formatTime(time, 24, 5);
-
     if (!formattedTime) {
       return;
     }
@@ -471,6 +471,14 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
       },
       { emitEvent: false },
     );
+  }
+
+  private searchTime(time: string, controlName: 'startTime' | 'endTime') {
+    if (controlName === 'startTime') {
+      this.startTimes = [...GeneralUtils.FilterArray(this.times, time, 'value')];
+      return;
+    }
+    this.endTimes = [...GeneralUtils.FilterArray(this.times, time, 'value')];
   }
 
   public handleFocusOut() {
@@ -513,8 +521,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     }
   }
 
-  public handleChange(repeatFrequency: InputComponent) {
-  }
+  public handleChange(repeatFrequency: InputComponent) {}
 
   private handleTimeChange() {
     if (!this.formValues.startTime || !this.formValues.startedAt?.day || !this.formValues.endTime || !this.formValues.endTime) {
@@ -554,10 +561,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     toggleControlError(this.absenceForm.get('endTime'), 'time', false);
   }
 
-  public handleDropdownSearch(
-    searchText: string,
-    type: 'room' | 'staff'
-  ): void {
+  public handleDropdownSearch(searchText: string, type: 'room' | 'staff'): void {
     switch (type) {
       case 'room':
         this.filteredRoomList$$.next(GeneralUtils.FilterArray(this.roomList, searchText, 'name'));

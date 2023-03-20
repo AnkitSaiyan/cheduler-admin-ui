@@ -22,6 +22,7 @@ import { User, UserType } from 'src/app/shared/models/user.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
 interface FormValues {
   name: string;
@@ -85,6 +86,8 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     },
   ];
 
+  private times: NameValue[];
+
   public startTimes: NameValue[];
 
   public endTimes: NameValue[];
@@ -129,9 +132,9 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   ) {
     super();
 
-    const times = this.nameValuePairPipe.transform(this.timeInIntervalPipe.transform(5));
-    this.startTimes = [...times];
-    this.endTimes = [...times];
+    this.times = this.nameValuePairPipe.transform(this.timeInIntervalPipe.transform(5));
+    this.startTimes = [...this.times];
+    this.endTimes = [...this.times];
   }
 
   public ngOnInit(): void {
@@ -459,6 +462,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   public handleTimeInput(time: string, controlName: 'slotStartTime' | 'slotEndTime') {
+    this.searchTime(time, controlName);
     const formattedTime = formatTime(time, 24, 5);
 
     if (!formattedTime) {
@@ -491,6 +495,14 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       },
       { emitEvent: false },
     );
+  }
+
+  private searchTime(time: string, controlName: 'slotStartTime' | 'slotEndTime') {
+    if (controlName === 'slotStartTime') {
+      this.startTimes = [...GeneralUtils.FilterArray(this.times, time, 'value')];
+      return;
+    }
+    this.endTimes = [...GeneralUtils.FilterArray(this.times, time, 'value')];
   }
 
   public handleFocusOut() {
@@ -536,7 +548,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   public handleChange(repeatFrequency: InputComponent) {}
 
   private handleTimeChange() {
-    console.log('in')
+    console.log('in');
     if (this.formValues.slotStartTime !== '' && timeToNumber(this.formValues.slotStartTime) < timeToNumber(this.formValues.slotEndTime)) {
       toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', false);
       toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
@@ -574,6 +586,8 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
   }
 }
+
+
 
 
 
