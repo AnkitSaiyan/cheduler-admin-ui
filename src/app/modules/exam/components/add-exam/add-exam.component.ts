@@ -297,7 +297,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       )
       .subscribe((examDetails) => {
         if (examDetails) {
-          console.log({ examDetails });
           this.updateForm(examDetails);
           if (examDetails?.practiceAvailability?.length) {
             this.examAvailabilityData$$.next(examDetails.practiceAvailability);
