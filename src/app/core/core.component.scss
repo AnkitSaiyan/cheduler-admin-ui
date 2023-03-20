@@ -3,4 +3,8 @@
     background-color: var(--dfm-base-layout-bg);
     overflow-y: auto;
   }
+    .mat-progress-bar {
+      margin-top: -16px;
+      margin-bottom: 8px;
+    }
 }

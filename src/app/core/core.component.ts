@@ -7,6 +7,7 @@ import defaultLanguage from '../../assets/i18n/en-BE.json';
 import dutchLangauge from '../../assets/i18n/nl-BE.json';
 import { ShareDataService } from './services/share-data.service';
 import { DashboardApiService } from './services/dashboard-api.service';
+import { LoaderService } from './services/loader.service';
 
 @Component({
   selector: 'dfm-main',
@@ -82,6 +83,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     private translateService: TranslateService,
     private dataShareService: ShareDataService,
     private dashboardApiService: DashboardApiService,
+    public loaderService: LoaderService,
   ) {
     super();
   }
