@@ -357,5 +357,6 @@
   "SearchByTemplateName": "Search By Template Name",
   "Subject" : "Subject",
   "Content" : "Content",
-  "ContentForAdmin" : "Content For Admin"
+  "ContentForAdmin" : "Content For Admin",
+  "AppointmentConfirmationDiflexmo" : "Appointment Confirmation Diflexmo"
 }

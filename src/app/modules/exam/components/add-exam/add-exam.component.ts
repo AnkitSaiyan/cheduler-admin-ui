@@ -680,7 +680,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.ExamUpdated[this.selectedLang]);
             let route: string;
             if (this.comingFromRoute === 'view') {
               route = '../view';
@@ -703,7 +703,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.ExamAdded[this.selectedLang]);
             let route: string;
             if (this.comingFromRoute === 'view') {
               route = '../view';

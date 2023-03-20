@@ -116,7 +116,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated[this.selectedLanguage]}!`);
+            this.notificationSvc.showNotification(`${Translate.SuccessMessage.PhysicianUpdated[this.selectedLanguage]}!`);
             this.closeModal(true);
             this.loading$$.next(false);
           },
@@ -128,7 +128,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(`${Translate.SuccessMessage.Added[this.selectedLanguage]}!`);
+            this.notificationSvc.showNotification(`${Translate.SuccessMessage.PhysicianAdded[this.selectedLanguage]}!`);
             this.closeModal(true);
             this.loading$$.next(false);
           },

@@ -1,39 +1,35 @@
 <div class="bg-white rounded-4 ad-ab-main-wrapper dfm-px-16">
   <section class="modal-header ad-ab-section1">
     <h5 class="modal-title ad-ab-title-buttons">{{ modalData?.edit ? ('EditAbsence' | translate) : ('AddAbsence' | translate) }}</h5>
-    <dfm-button-icon class="ad-ab-title-buttons" color="tertiary-gray" icon="x-close"
-                     (click)="closeModal(false)"></dfm-button-icon>
+    <dfm-button-icon class="ad-ab-title-buttons" color="tertiary-gray" icon="x-close" (click)="closeModal(false)"></dfm-button-icon>
 
     <div class="hidden dfm-gap-8 align-items-center ad-ab-title-buttons-mv">
       <div class="rounded-circle overflow-hidden">
-        <dfm-button-icon
-          color="tertiary-gray"
-          size="sm"
-          icon="chevron-left"
-          (click)="closeModal(false)"
-        >
-        </dfm-button-icon>
+        <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" (click)="closeModal(false)"> </dfm-button-icon>
       </div>
 
-      <dfm-button
-        color="link"
-        size="lg"
-      > {{ modalData?.edit ? ('EditAbsence' | translate) : ('AddAbsence' | translate)  }}
-      </dfm-button>
+      <dfm-button color="link" size="lg"> {{ modalData?.edit ? ('EditAbsence' | translate) : ('AddAbsence' | translate) }} </dfm-button>
     </div>
   </section>
 
   <section class="modal-body ad-ab-section2">
-    <form [formGroup]="absenceForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16"
-          *ngIf="absence$$ | async as absence">
+    <form [formGroup]="absenceForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16" *ngIf="absence$$ | async as absence">
       <div class="max-w-5 ad-ab-absence-name">
-        <dfm-input class="flex-1" size="md" placeholder="{{'EnterAbsenceTitle' | translate}}" label="{{'Title' | translate}} *" formControlName="name">
+        <dfm-input
+          class="flex-1"
+          size="md"
+          placeholder="{{ 'EnterAbsenceTitle' | translate }}"
+          label="{{ 'Title' | translate }} *"
+          formControlName="name"
+        >
         </dfm-input>
       </div>
 
       <div class="d-flex dfm-gap-32 ad-ab-dates">
         <div class="ad-ab-from-date flex-1 max-w-5">
-          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ formValues.isRepeat ? ('From'| translate) : ('From' | translate) }} *</div>
+          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
+            {{ formValues.isRepeat ? ('From' | translate) : ('From' | translate) }} *
+          </div>
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
             <div class="flex-1 d-flex flex-column">
@@ -42,7 +38,7 @@
                   <input
                     class="w-full min-w-128"
                     formControlName="startedAt"
-                    placeholder="{{'dateFormat' |translate}}"
+                    placeholder="{{ 'dateFormat' | translate }}"
                     ngbDatepicker
                     #startedAt="ngbDatepicker"
                   />
@@ -52,39 +48,43 @@
                     color="tertiary-gray"
                     size="md"
                     icon="calendar-date"
+                    ngbPopover="{{ 'Calendar' | translate }}"
+                    triggers="mouseenter:mouseleave"
+                    popoverClass="popover-p-8"
+                    [openDelay]="200"
                     (click)="startedAt.toggle()"
                   ></dfm-button-icon>
                 </div>
               </div>
 
-              <small class="validation-error"
-                     *ngIf="absenceForm.get('startedAt')?.hasError('required') && absenceForm.get('startedAt')?.touched">
-                {{'RequiredField'| translate}}
+              <small class="validation-error" *ngIf="absenceForm.get('startedAt')?.hasError('required') && absenceForm.get('startedAt')?.touched">
+                {{ 'RequiredField' | translate }}
               </small>
             </div>
 
             <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
-              <dfm-input-dropdown #startTime
-                                  [items]="startTimes"
-                                  [typeToSearch]="true"
-                                  [typeToSearchText]="startTime.value"
-                                  (searchInput)="handleTimeInput($event, 'startTime')"
-                                  formControlName="startTime"
-                                  size="md"
-                                  placeholder="{{'hh:mm' | translate}}">
+              <dfm-input-dropdown
+                #startTime
+                [items]="startTimes"
+                [typeToSearch]="true"
+                [typeToSearchText]="startTime.value"
+                (searchInput)="handleTimeInput($event, 'startTime')"
+                formControlName="startTime"
+                size="md"
+                placeholder="{{ 'hh:mm' | translate }}"
+              >
               </dfm-input-dropdown>
             </div>
           </div>
 
           <!-- <small class="validation-error" *ngIf="startTime.control.hasError('time')">{{"RequiredField" | translate}}</small> -->
           <small class="validation-error" *ngIf="endTime.control.hasError('time')">
-            {{"StartTimeLessThanEndTime" | translate}}
+            {{ 'StartTimeLessThanEndTime' | translate }}
           </small>
-
         </div>
 
         <div class="ad-ab-to-date flex-1 max-w-5">
-<!--          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ formValues.isRepeat ? ('Until' | translate) : ("EndTimeRequired" | translate) }} *</div>-->
+          <!--          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ formValues.isRepeat ? ('Until' | translate) : ("EndTimeRequired" | translate) }} *</div>-->
           <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ 'Until' | translate }} *</div>
 
           <div class="d-flex align-items-start dfm-gap-16">
@@ -94,7 +94,7 @@
                   <input
                     class="w-full min-w-128"
                     formControlName="endedAt"
-                    placeholder="{{'dateFormat' |translate}}"
+                    placeholder="{{ 'dateFormat' | translate }}"
                     ngbDatepicker
                     #endedAt="ngbDatepicker"
                     [minDate]="formValues.startedAt"
@@ -106,54 +106,73 @@
                     color="tertiary-gray"
                     size="md"
                     icon="calendar-date"
+                    ngbPopover="{{ 'Calendar' | translate }}"
+                    triggers="mouseenter:mouseleave"
+                    popoverClass="popover-p-8"
+                    [openDelay]="200"
                     (click)="endedAt.toggle()"
                   ></dfm-button-icon>
                 </div>
               </div>
 
-              <small class="validation-error"
-                     *ngIf="absenceForm.get('endedAt')?.hasError('required') && absenceForm.get('endedAt')?.touched">
-               {{'RequiredField' | translate}}
+              <small class="validation-error" *ngIf="absenceForm.get('endedAt')?.hasError('required') && absenceForm.get('endedAt')?.touched">
+                {{ 'RequiredField' | translate }}
               </small>
             </div>
 
             <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
-              <dfm-input-dropdown #endTime
-                                  [items]="endTimes"
-                                  [typeToSearch]="true"
-                                  [typeToSearchText]="endTime.value"
-                                  (searchInput)="handleTimeInput($event, 'endTime')"
-                                  [required]="formValues.isRepeat"
-                                  formControlName="endTime"
-                                  size="md"
-                                  placeholder="{{'hh:mm' | translate}}">
+              <dfm-input-dropdown
+                #endTime
+                [items]="endTimes"
+                [typeToSearch]="true"
+                [typeToSearchText]="endTime.value"
+                (searchInput)="handleTimeInput($event, 'endTime')"
+                [required]="formValues.isRepeat"
+                formControlName="endTime"
+                size="md"
+                placeholder="{{ 'hh:mm' | translate }}"
+              >
               </dfm-input-dropdown>
             </div>
           </div>
         </div>
       </div>
 
-
       <div class="d-flex dfm-gap-32 flex-wrap ad-ab-radio-group">
         <div class="d-flex flex-column dfm-gap-16 flex-1 ad-ab-repeat-radio">
-          <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{'Repeat' | translate}}</span>
+          <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'Repeat' | translate }}</span>
 
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-radio-button class="font-weight-normal" label="{{'AllDay' | translate}}" [checkedValue]="false"
-                              formControlName="isRepeat"></dfm-radio-button>
-            <dfm-radio-button class="font-weight-normal" label="{{'Repeat' | translate}}" [checkedValue]="true"
-                              formControlName="isRepeat"></dfm-radio-button>
+            <dfm-radio-button
+              class="font-weight-normal"
+              label="{{ 'AllDay' | translate }}"
+              [checkedValue]="false"
+              formControlName="isRepeat"
+            ></dfm-radio-button>
+            <dfm-radio-button
+              class="font-weight-normal"
+              label="{{ 'Repeat' | translate }}"
+              [checkedValue]="true"
+              formControlName="isRepeat"
+            ></dfm-radio-button>
           </div>
         </div>
 
         <div class="d-flex flex-column dfm-gap-16 flex-1">
-          <span
-            class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{'PublicHoliday' | translate}}</span>
+          <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'PublicHoliday' | translate }}</span>
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-radio-button class="font-weight-normal" label="{{'Yes' | translate}}" [checkedValue]="true"
-                              formControlName="isHoliday"></dfm-radio-button>
-            <dfm-radio-button class="font-weight-normal" label="{{'No' | translate}}" [checkedValue]="false"
-                              formControlName="isHoliday"></dfm-radio-button>
+            <dfm-radio-button
+              class="font-weight-normal"
+              label="{{ 'Yes' | translate }}"
+              [checkedValue]="true"
+              formControlName="isHoliday"
+            ></dfm-radio-button>
+            <dfm-radio-button
+              class="font-weight-normal"
+              label="{{ 'No' | translate }}"
+              [checkedValue]="false"
+              formControlName="isHoliday"
+            ></dfm-radio-button>
           </div>
         </div>
         <!--
@@ -174,10 +193,16 @@
       <ng-container *ngIf="formValues.isRepeat">
         <div class="d-flex dfm-gap-32 flex-wrap align-items-start ad-ab-repeat-form">
           <div class="dfm-input-dropdown-wrapper flex-1">
-            <dfm-input-dropdown #repeatType [items]="repeatTypes" size="md" label="{{'RepeatType' | translate}} *"
-                                [required]="formValues.isRepeat"
-                                placeholder="{{'SelectRepeatType' | translate}} *" formControlName="repeatType"
-                                (select)="handleChange(repeatFrequency)">
+            <dfm-input-dropdown
+              #repeatType
+              [items]="repeatTypes"
+              size="md"
+              label="{{ 'RepeatType' | translate }} *"
+              [required]="formValues.isRepeat"
+              placeholder="{{ 'SelectRepeatType' | translate }} *"
+              formControlName="repeatType"
+              (select)="handleChange(repeatFrequency)"
+            >
             </dfm-input-dropdown>
           </div>
 
@@ -186,8 +211,8 @@
               #repeatFrequency
               class="flex-1"
               formControlName="repeatFrequency"
-              label="{{'RepeatEvery' | translate}} *"
-              placeholder="{{'EnterRepeatCount' | translate}}"
+              label="{{ 'RepeatEvery' | translate }} *"
+              placeholder="{{ 'EnterRepeatCount' | translate }}"
               size="md"
               type="text"
               required
@@ -196,20 +221,24 @@
               (focusout)="handleFocusOut()"
             >
             </dfm-input>
-            <small class="validation-error"
-                   *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched">{{'RepeatFrequency' | translate}}</small>
+            <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched">{{
+              'RepeatFrequency' | translate
+            }}</small>
           </div>
 
-          <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-repeat-every"
-               *ngIf="repeatType.value && repeatType.value !== 'daily'">
-            <dfm-input-dropdown #repeatEveryDropdown
-                                [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
-                                [multiple]="true"
-                                placeholder="{{!!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + (' Selected' | translate) : ('SelectRepeatEvery' | translate)}}"
-                                size="md"
-                                label="{{'RepeatOn' | translate}} *"
-                                [required]="formValues.isRepeat && formValues.repeatType !== 'daily'"
-                                formControlName="repeatDays">
+          <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
+            <dfm-input-dropdown
+              #repeatEveryDropdown
+              [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
+              [multiple]="true"
+              placeholder="{{
+                !!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + (' Selected' | translate) : ('SelectRepeatEvery' | translate)
+              }}"
+              size="md"
+              label="{{ 'RepeatOn' | translate }} *"
+              [required]="formValues.isRepeat && formValues.repeatType !== 'daily'"
+              formControlName="repeatDays"
+            >
             </dfm-input-dropdown>
           </div>
         </div>
@@ -217,35 +246,45 @@
 
       <div class="d-flex flex-wrap flex-1 gap" [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" *ngIf="!formValues.isHoliday">
         <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
-          <dfm-input-dropdown #roomDropdown
-                              [items]="roomList"
-                              [multiple]="true"
-                              [typeToSearch]="true" (searchInput)="handleDropdownSearch($event, 'room')"
-                              placeholder="{{!!roomDropdown.value?.length ? roomDropdown.value.length + ' ' + ('Selected' | translate) : ('SelectRooms' | translate) }}"
-                              size="md"
-                              formControlName="roomList"
-                              label="{{'Rooms' | translate}}">
+          <dfm-input-dropdown
+            #roomDropdown
+            [items]="roomList"
+            [multiple]="true"
+            [typeToSearch]="true"
+            (searchInput)="handleDropdownSearch($event, 'room')"
+            placeholder="{{
+              !!roomDropdown.value?.length ? roomDropdown.value.length + ' ' + ('Selected' | translate) : ('SelectRooms' | translate)
+            }}"
+            size="md"
+            formControlName="roomList"
+            label="{{ 'Rooms' | translate }}"
+          >
           </dfm-input-dropdown>
         </div>
 
         <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-staffs" *ngIf="filteredStaffs$$ | async as staffList">
-          <dfm-input-dropdown #staffDropDown
-                              [items]="staffList"
-                              [multiple]="true"
-                              [typeToSearch]="true" (searchInput)="handleDropdownSearch($event, 'staff')"
-                              size="md"
-                              formControlName="userList"
-                              label="{{'Staff' | translate}}"
-                              placeholder="{{!!staffDropDown.value?.length ? staffDropDown.value.length + ' ' + ('Selected' | translate) : ('SelectStaff' | translate)}}">
+          <dfm-input-dropdown
+            #staffDropDown
+            [items]="staffList"
+            [multiple]="true"
+            [typeToSearch]="true"
+            (searchInput)="handleDropdownSearch($event, 'staff')"
+            size="md"
+            formControlName="userList"
+            label="{{ 'Staff' | translate }}"
+            placeholder="{{
+              !!staffDropDown.value?.length ? staffDropDown.value.length + ' ' + ('Selected' | translate) : ('SelectStaff' | translate)
+            }}"
+          >
           </dfm-input-dropdown>
         </div>
-        <div class="w-full" style="margin-top: -24px;" *ngIf="isAbsenceStaffRoomInvalid | async">
+        <div class="w-full" style="margin-top: -24px" *ngIf="isAbsenceStaffRoomInvalid | async">
           <small class="validation-error">Please select either Room or Staff for Absence</small>
         </div>
       </div>
 
       <div [ngClass]="{ 'dfm-mt-8': formValues.userList?.length || formValues.roomList?.length }">
-        <dfm-text-area label="Info" placeholder="{{'EnterAbsenceInfo' | translate}}" formControlName="info"></dfm-text-area>
+        <dfm-text-area label="Info" placeholder="{{ 'EnterAbsenceInfo' | translate }}" formControlName="info"></dfm-text-area>
       </div>
       <!--      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">-->
       <!--        <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="First Name *" formControlName="firstname">-->
@@ -278,8 +317,9 @@
   </section>
 
   <section class="modal-footer ad-ab-footer-buttons">
-    <dfm-button color="secondary" size="md" (click)="closeModal(false)">{{'Cancel' | translate}}</dfm-button>
-    <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true"
-                (click)="saveAbsence()">{{ modalData?.edit ? ('SaveChanges' | translate) : ('AddAbsence' | translate) }}</dfm-button>
+    <dfm-button color="secondary" size="md" (click)="closeModal(false)">{{ 'Cancel' | translate }}</dfm-button>
+    <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveAbsence()">{{
+      modalData?.edit ? ('SaveChanges' | translate) : ('AddAbsence' | translate)
+    }}</dfm-button>
   </section>
 </div>

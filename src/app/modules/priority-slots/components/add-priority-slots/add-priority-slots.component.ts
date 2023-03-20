@@ -424,7 +424,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.PrioritySlotsUpdated[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },
@@ -439,7 +439,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.PrioritySlotsAdded[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },

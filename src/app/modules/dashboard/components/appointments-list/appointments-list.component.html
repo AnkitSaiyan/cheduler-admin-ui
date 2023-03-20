@@ -112,7 +112,7 @@
         class="dfm-table-wrapper"
       >
         <ng-template #headerRowTemplate>
-          <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+          <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
         </ng-template>
         <ng-template #bodyRowTemplate let-item>
           <dfm-table-body-cell>{{ (item?.exams.length ? (item.startedAt | date : 'y-MM-dd HH:mm') : 'abc') | dashIfNothing }}</dfm-table-body-cell>

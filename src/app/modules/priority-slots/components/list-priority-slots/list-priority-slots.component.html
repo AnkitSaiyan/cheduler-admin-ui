@@ -1,37 +1,26 @@
 <div class="d-flex flex-column dfm-gap-16 position-relative">
   <section class="list-page-section-1">
-    <dfm-button
-      class="hidden pr-li-title-buttons"
-      color="link"
-      size="lg"
-      routerLink="./"
-    >Priority Slots
-    </dfm-button>
+    <dfm-button class="hidden pr-li-title-buttons" color="link" size="lg" routerLink="./">Priority Slots </dfm-button>
 
     <ng-container *ngIf="(calendarView$$ | async) === false; else space">
       <dfm-input
         class="flex-1 pr-li-search"
         size="md"
-        placeholder="{{'SearchByPrioritySlots' | translate}}"
+        placeholder="{{ 'SearchByPrioritySlots' | translate }}"
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
 
       <div class="d-flex align-items-center dfm-button-group-wrapper pr-li-button-dropdown-group">
         <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="copy-03"
-            (click)="copyToClipboard()"
-          ></dfm-button-icon>
+          <dfm-button-icon color="tertiary-gray" size="md" icon="copy-03" (click)="copyToClipboard()"></dfm-button-icon>
         </div>
         <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
           <dfm-input-dropdown
             [items]="downloadItems"
             [showDescription]="false"
             [formControl]="downloadDropdownControl"
-            placeholder="{{'Download' | translate}}"
+            placeholder="{{ 'Download' | translate }}"
             size="md"
           ></dfm-input-dropdown>
         </div>
@@ -46,15 +35,14 @@
         color="secondary-gray"
         size="md"
         icon="list"
+        ngbPopover="{{ 'ListView' | translate }}"
+        triggers="mouseenter:mouseleave"
+        popoverClass="popover-p-8"
+        [openDelay]="200"
         (click)="toggleView()"
       ></dfm-button-icon>
-      <dfm-button
-        color="primary"
-        size="md"
-        class="text-nowrap"
-        [disabled]="false"
-        (click)="openAddPriorityModal()"
-      >{{"AddPrioritySlots" | translate}}
+      <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false" (click)="openAddPriorityModal()"
+        >{{ 'AddPrioritySlots' | translate }}
       </dfm-button>
     </div>
   </section>
@@ -67,20 +55,17 @@
       [formControl]="searchControl"
     ></dfm-input>
 
-    <section class="list-page-content-height"
-            *ngIf="filteredPrioritySlots$$ | async as prioritySlots">
-      <dfm-table [items]="prioritySlots" [rowClickable]="true" (rowClicked)="navigateToViewAbsence($event)"
-                class="dfm-table-wrapper">
-
+    <section class="list-page-content-height" *ngIf="filteredPrioritySlots$$ | async as prioritySlots">
+      <dfm-table [items]="prioritySlots" [rowClickable]="true" (rowClicked)="navigateToViewAbsence($event)" class="dfm-table-wrapper">
         <ng-template #headerRowTemplate>
           <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
         </ng-template>
 
         <ng-template #bodyRowTemplate let-item>
-          <dfm-table-body-cell>{{ item.startedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ item.endedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item.startedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item.endedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>
-            <div class="text-truncate pr-li-info-cell"> {{ item.priority | dashIfNothing | translate }} </div>
+            <div class="text-truncate pr-li-info-cell">{{ item.priority | dashIfNothing | translate }}</div>
           </dfm-table-body-cell>
 
           <dfm-table-body-cell>
@@ -89,17 +74,23 @@
                 color="link-gray"
                 size="sm"
                 trailingIcon="pencil-02"
-                ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8" [openDelay]="200"
-                (click)="$event.stopPropagation(); openAddPriorityModal(item);"
+                ngbPopover="{{ 'Edit' | translate }}"
+                triggers="mouseenter:mouseleave"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
+                (click)="$event.stopPropagation(); openAddPriorityModal(item)"
               ></dfm-button>
 
               <dfm-button
                 color="link-gray"
                 size="sm"
                 trailingIcon="trash-01"
-                ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8" [openDelay]="200"
+                ngbPopover="{{ 'Delete' | translate }}"
+                triggers="mouseenter:mouseleave"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
                 (click)="$event.stopPropagation(); deletePrioritySlot(item.id)"
               ></dfm-button>
             </div>
@@ -120,26 +111,34 @@
             ></dfm-button>
 
             <ng-template #actionMenu>
-              <div class="pr-li-menus"
-                  aria-labelledby="dropdownManual">
-                <div (click)="$event.stopPropagation(); openAddPriorityModal(item)" ngbPopover="{{'Edit' | translate}}"
-                    triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+              <div class="pr-li-menus" aria-labelledby="dropdownManual">
+                <div
+                  (click)="$event.stopPropagation(); openAddPriorityModal(item)"
+                  ngbPopover="{{ 'Edit' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                >
                   <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
                 </div>
 
-                <div (click)="$event.stopPropagation(); deletePrioritySlot(item.id)" ngbPopover="{{'Delete' | translate}}"
-                    triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                <div
+                  (click)="$event.stopPropagation(); deletePrioritySlot(item.id)"
+                  ngbPopover="{{ 'Delete' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                >
                   <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
                 </div>
               </div>
             </ng-template>
             <!-- Action Menu End-->
-
           </dfm-table-body-cell>
         </ng-template>
       </dfm-table>
       <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!prioritySlots.length">
-        {{"NoPrioritySlotFound" | translate}}
+        {{ 'NoPrioritySlotFound' | translate }}
       </div>
     </section>
   </ng-container>
