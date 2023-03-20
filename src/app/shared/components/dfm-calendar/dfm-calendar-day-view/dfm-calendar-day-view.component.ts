@@ -443,6 +443,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
   private getGrayOutArea(timeSlot: CalenderTimeSlot) {
     const intervals = timeSlot?.intervals;
     const timings = timeSlot?.timings;
+    if (!timings?.length) return;
     const grayOutSlot: any = [];
     grayOutSlot.push({
       dayStart: timings[0],
