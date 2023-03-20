@@ -180,11 +180,11 @@ export const Translate = Object.freeze({
     },
     PostAddedSuccessfully:{
       [ENG_BE]: 'Post it added successfully',
-      [DUTCH_BE]: 'Post it added successfully NL',
+      [DUTCH_BE]: 'Post-it succesvol toegevoegd',
     },
     PostDeletedSuccessfully:{
       [ENG_BE]: 'Post it deleted successfully',
-      [DUTCH_BE]: 'Post it deleted successfully NL',
+      [DUTCH_BE]: 'Post-it succesvol verwijderd',
     }
   },
 
@@ -248,6 +248,10 @@ export const Translate = Object.freeze({
       [ENG_BE]: 'Monthly',
       [DUTCH_BE]: 'Monthly NL'
     }
-  }
+  },
+  DeleteAppointment: {
+    [ENG_BE]: 'Appointment Deleted Successfully',
+      [DUTCH_BE]: 'Afspraak succesvol Verwijderd!'
+  },
 });
 

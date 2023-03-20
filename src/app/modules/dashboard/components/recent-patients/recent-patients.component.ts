@@ -13,6 +13,8 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { NameValue } from 'src/app/shared/components/search-modal.component';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { Translate } from 'src/app/shared/models/translate.model';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from 'src/app/shared/utils/const';
 
 @Component({
   selector: 'dfm-recent-patients',
@@ -25,6 +27,9 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
   public searchControl = new FormControl('', []);
 
   public downloadDropdownControl = new FormControl('', []);
+  private selectedLang: string = ENG_BE;
+
+  public statuses = Statuses;
 
   // public downloadItems: NameValue[] = [];
 
@@ -168,12 +173,33 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
         );
 
         if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
 
         this.downloadDropdownControl.setValue(null);
 
         this.cdr.detectChanges();
+      });
+      this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        this.columns = [
+          // Translate.Read[lang],
+          Translate.Status[lang],
+          Translate.Actions[lang],
+        ];
+
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
       });
   }
 

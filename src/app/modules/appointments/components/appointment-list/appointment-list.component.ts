@@ -162,7 +162,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         );
 
         if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
 
         this.downloadDropdownControl.setValue(null);
@@ -274,7 +274,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Appointment deleted successfully');
+        this.notificationSvc.showNotification(Translate.DeleteAppointment[this.selectedLang]);
       });
   }
 
