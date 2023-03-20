@@ -464,14 +464,14 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     // }, 500);
   }
 
-  private getRoomsForExamFormGroup(room: Room): FormGroup {
+  private getRoomsForExamFormGroup(room: Room, index: number): FormGroup {
     let roomForExam;
-    let order;
+    // let order;
 
     if (this.examDetails$$.value?.roomsForExam?.length) {
       roomForExam = this.examDetails$$.value?.roomsForExam.find((examRoom) => examRoom?.roomId?.toString() === room?.id?.toString());
-      order = this.examDetails$$.value?.roomsForExam.findIndex((examRoom) => examRoom?.roomId?.toString() === room?.id?.toString());
-      order += 1;
+      // order = this.examDetails$$.value?.roomsForExam.findIndex((examRoom) => examRoom?.roomId?.toString() === room?.id?.toString());
+      // order += 1;
     }
 
     const fg = this.fb.group({
@@ -483,7 +483,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         },
         [Validators.required, Validators.min(1)],
       ],
-      order: [{ value: order ? order.toString() : null, disabled: !roomForExam?.duration }, [Validators.required]],
+      order: [{ value: null, disabled: !roomForExam?.duration }, []],
       roomName: [room.name, []],
       selectRoom: [!!roomForExam?.duration, []],
     });
@@ -514,8 +514,17 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     fa.clear();
 
     if (this.availableRooms$$.value[roomType]?.length) {
-      this.availableRooms$$.value[roomType].forEach((room) => fa.push(this.getRoomsForExamFormGroup(room)));
+      this.availableRooms$$.value[roomType].forEach((room, index) => fa.push(this.getRoomsForExamFormGroup(room, index)));
       this.orderOption$$.next(this.availableRooms$$.value[roomType].length);
+
+      setTimeout(() => {
+        fa.controls.forEach((control) => {
+          const roomIndex = this.availableRooms$$.value[roomType].findIndex((room) => +room.id === +control.value.roomId);
+          if (control.get('selectRoom')?.value && roomIndex > -1) {
+            control.get('order')?.setValue((roomIndex + 1).toString());
+          }
+        });
+      }, 0)
     }
 
     this.cdr.detectChanges();
