@@ -165,7 +165,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
         );
 
         if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
 
         this.downloadDropdownControl.setValue(null);
@@ -206,18 +206,6 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
       .pipe(takeUntil(this.destroy$$))
       .subscribe((lang) => {
         this.selectedLang = lang;
-        this.columns = [
-          Translate.StartedAt[lang],
-          Translate.EndedAt[lang],
-          Translate.PatientName[lang],
-          Translate.Doctor[lang],
-          Translate.AppointmentNo[lang],
-          Translate.AppliedOn[lang],
-          // Translate.Read[lang],
-          Translate.Status[lang],
-          Translate.Actions[lang],
-        ];
-
         // eslint-disable-next-line default-case
         switch (lang) {
           case ENG_BE:
@@ -277,7 +265,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Appointment deleted successfully');
+        this.notificationSvc.showNotification(Translate.DeleteAppointment[this.selectedLang]);
       });
   }
 
@@ -301,9 +289,9 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
 
       this.clipboardData = dataString;
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(Translate.ErrorMessage.FailedToCopyData[this.selectedLang], NotificationType.DANGER);
       this.clipboardData = '';
     }
   }

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
@@ -22,6 +22,7 @@ import { User, UserType } from 'src/app/shared/models/user.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
 interface FormValues {
   name: string;
@@ -43,6 +44,7 @@ interface FormValues {
   repeatFrequency: string;
   repeatDays: string[];
   userList: number[];
+  nxtSlotOpenPct: number;
 }
 
 @Component({
@@ -84,6 +86,8 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       value: RepeatType.Monthly,
     },
   ];
+
+  private times: NameValue[];
 
   public startTimes: NameValue[];
 
@@ -129,9 +133,9 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   ) {
     super();
 
-    const times = this.nameValuePairPipe.transform(this.timeInIntervalPipe.transform(5));
-    this.startTimes = [...times];
-    this.endTimes = [...times];
+    this.times = this.nameValuePairPipe.transform(this.timeInIntervalPipe.transform(5));
+    this.startTimes = [...this.times];
+    this.endTimes = [...this.times];
   }
 
   public ngOnInit(): void {
@@ -303,6 +307,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       ],
       userList: [prioritySlotDetails?.users?.length ? prioritySlotDetails.users.map(({ id }) => id.toString()) : [], []],
       priority: [prioritySlotDetails?.priority ?? null, [Validators.required]],
+      nxtSlotOpenPct: [prioritySlotDetails?.nxtSlotOpenPct ?? null, [Validators.max(100)]],
     });
 
     setTimeout(
@@ -385,7 +390,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
     this.submitting$$.next(true);
 
-    const { startedAt, endedAt, repeatDays, slotStartTime, slotEndTime, ...rest } = this.formValues;
+    const { startedAt, endedAt, repeatDays, slotStartTime, slotEndTime, nxtSlotOpenPct, ...rest } = this.formValues;
 
     const addPriorityReqData: PrioritySlot = {
       ...rest,
@@ -397,6 +402,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       slotStartTime: `${slotStartTime}:00`,
       slotEndTime: `${slotEndTime}:00`,
       users: [],
+      nxtSlotOpenPct: +nxtSlotOpenPct,
     };
 
     if (rest.isRepeat && repeatDays?.length) {
@@ -418,7 +424,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.PrioritySlotsUpdated[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },
@@ -433,7 +439,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.PrioritySlotsAdded[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },
@@ -459,6 +465,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   public handleTimeInput(time: string, controlName: 'slotStartTime' | 'slotEndTime') {
+    this.searchTime(time, controlName);
     const formattedTime = formatTime(time, 24, 5);
 
     if (!formattedTime) {
@@ -491,6 +498,14 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       },
       { emitEvent: false },
     );
+  }
+
+  private searchTime(time: string, controlName: 'slotStartTime' | 'slotEndTime') {
+    if (controlName === 'slotStartTime') {
+      this.startTimes = [...GeneralUtils.FilterArray(this.times, time, 'value')];
+      return;
+    }
+    this.endTimes = [...GeneralUtils.FilterArray(this.times, time, 'value')];
   }
 
   public handleFocusOut() {
@@ -536,7 +551,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   public handleChange(repeatFrequency: InputComponent) {}
 
   private handleTimeChange() {
-    console.log('in')
+    console.log('in');
     if (this.formValues.slotStartTime !== '' && timeToNumber(this.formValues.slotStartTime) < timeToNumber(this.formValues.slotEndTime)) {
       toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', false);
       toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
@@ -573,7 +588,37 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', false);
     toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
   }
+
+  public handleExpenseInput(e: Event, element: InputComponent, control: AbstractControl | null | undefined) {
+    if (!element.value) {
+      e.preventDefault();
+      return;
+    }
+
+    if (element.value > 100) {
+      const newValue = 100;
+
+      element.value = newValue;
+      if (control) {
+        control.setValue(newValue);
+      }
+    }
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

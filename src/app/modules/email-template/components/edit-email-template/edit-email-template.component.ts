@@ -12,6 +12,7 @@ import {Status} from 'src/app/shared/models/status.model';
 import {ShareDataService} from "../../../../core/services/share-data.service";
 import {Translate} from "../../../../shared/models/translate.model";
 import {NotificationType} from "diflexmo-angular-design";
+import {ActivatedRoute, Router} from "@angular/router";
 
 interface FormValues {
   title: string;
@@ -34,6 +35,8 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
 
   public loading$$ = new BehaviorSubject(false);
 
+  public submitting$$ = new BehaviorSubject<boolean>(false);
+
   public edit = false;
 
   public content = '';
@@ -44,7 +47,7 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
     spellcheck: true,
     height: '15rem',
     minHeight: '5rem',
-    placeholder: 'Enter text here...',
+    placeholder: 'Enter text here....',
     translate: 'no',
     defaultParagraphSeparator: 'p',
     defaultFontName: 'Arial',
@@ -98,7 +101,9 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
     private notificationSvc: NotificationDataService,
     private emailTemplateApiSvc: EmailTemplateApiService,
     private routerStateSvc: RouterStateService,
-    private shareDataSvc: ShareDataService
+    private shareDataSvc: ShareDataService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     super();
   }
@@ -157,6 +162,8 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
       return;
     }
 
+    this.submitting$$.next(true);
+
     const {...rest} = this.formValues;
 
     const requestData = rest;
@@ -170,8 +177,13 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
     this.emailTemplateApiSvc
       .updateEmailTemplate(requestData)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.notificationSvc.showNotification(`Email template updated successfully`);
+      .subscribe({
+        next: () => {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.EmailTemplateUpdated[this.selectedLang]);
+          this.submitting$$.next(false);
+          this.router.navigate(['../../'], { relativeTo: this.route })
+        },
+        error: () => this.submitting$$.next(false)
       });
   }
 }

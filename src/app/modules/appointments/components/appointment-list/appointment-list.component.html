@@ -42,7 +42,16 @@
 
       <div class="d-flex dfm-gap-8 align-items-center">
         <div class="">
-          <dfm-button-icon color="secondary-gray" size="md" icon="calendar-date" (click)="toggleView()"></dfm-button-icon>
+          <dfm-button-icon
+            color="secondary-gray"
+            size="md"
+            icon="calendar-date"
+            ngbPopover="{{ 'Calendar' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
+            (click)="toggleView()"
+          ></dfm-button-icon>
         </div>
 
         <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false" routerLink="./add"
@@ -54,7 +63,16 @@
     <ng-container *ngIf="calendarView$$ | async">
       <div class="d-flex dfm-gap-8 align-items-center justify-content-end">
         <div class="">
-          <dfm-button-icon color="secondary-gray" size="md" icon="list" (click)="toggleView()"></dfm-button-icon>
+          <dfm-button-icon
+            color="secondary-gray"
+            size="md"
+            icon="list"
+            ngbPopover="{{ 'ListView' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
+            (click)="toggleView()"
+          ></dfm-button-icon>
         </div>
 
         <dfm-button color="primary" size="md" class="text-nowrap header-buttons" [disabled]="false" routerLink="./add"

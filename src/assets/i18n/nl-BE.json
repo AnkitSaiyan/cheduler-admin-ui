@@ -346,7 +346,18 @@
   "TodaysAppointments": "Afspraak van vandaag",
   "NoAppointmentFound":"Geen afspraken gevonden",
   "NoUppcomingAppointment":"Geen komende afspraken",
-  "Calendar" : "Kalendar"
+  "Calendar" : "Kalendar",
+  "ListView" : "Lijstweergave",
+  "NoExceptionFound" : "Geen uitzonderingen gevonden",
+  "NoMandatoryStaffFound" : "Geen verplicht personeel gevonden",
+  "NoGeneralStafFfound" : "Geen generale staf gevonden",
+  "UserDeleted" : "User deleted successfully NL",
+  "EmailTemplate" : "E-mail Sjabloon",
+  "SearchByTemplateName": "Zoek op Naam Sjabloon",
+  "Subject" : "Onderwerp",
+  "Content" : "Inhoud",
+  "ContentForAdmin" : "Inhoud voor admin",
+  "AppointmentConfirmationDiflexmo" : "afspraakbevestiging diflexmo"
 
 
 }

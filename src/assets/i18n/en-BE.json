@@ -347,5 +347,16 @@
   "TodaysAppointments": "Today's Appointment",
   "NoAppointmentFound":"No Appointments Found",
   "NoUppcomingAppointment":"No Upcoming Appointments",
-  "Calendar" : "Calendar"
+  "Calendar" : "Calendar",
+  "ListView" : "List View",
+  "NoExceptionFound" : "No Exception Found",
+  "NoMandatoryStaffFound" : "No Mandatory Staff Found",
+  "NoGeneralStafFfound" : "No General Staff Found",
+  "UserDeleted" : "User deleted successfully",
+  "EmailTemplate" : "Email Template",
+  "SearchByTemplateName": "Search By Template Name",
+  "Subject" : "Subject",
+  "Content" : "Content",
+  "ContentForAdmin" : "Content For Admin",
+  "AppointmentConfirmationDiflexmo" : "Appointment Confirmation Diflexmo"
 }

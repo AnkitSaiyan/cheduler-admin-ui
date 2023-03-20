@@ -1,13 +1,14 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild , ChangeDetectorRef} from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
 import { DashboardApiService, PostIt } from 'src/app/core/services/dashboard-api.service';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { Translate } from 'src/app/shared/models/translate.model';
-import { DUTCH_BE, ENG_BE } from '../../../../shared/utils/const';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { AddPostComponent } from './add-post/add-post.component';
 import { ViewPostComponent } from './view-post/view-post.component';
 
@@ -85,6 +86,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
 
   public filteredPosts$$: BehaviorSubject<any[]>;
   private selectedLang: string = ENG_BE;
+  public statuses = Statuses;
 
   postData!: PostIt[];
 
@@ -94,6 +96,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
     private modalSvc: ModalService,
     private notificationSvc: NotificationDataService,
     private ref: ChangeDetectorRef,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
     this.filteredPosts$$ = new BehaviorSubject<any[]>([]);
@@ -105,6 +108,21 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
       this.postData = posts;
       this.dashboardApiService.postItData$$.next(posts);
     });
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE:
+            this.statuses = Statuses;
+            break;
+          case DUTCH_BE:
+            this.statuses = StatusesNL;
+            break;
+        }
+      });
   }
 
   public addPost() {
@@ -175,7 +193,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
       )
       .subscribe((response) => {
         if (response) {
-          this.notificationSvc.showNotification('Post Added successfully');
+          this.notificationSvc.showNotification(Translate.SuccessMessage.PostAddedSuccessfully[this.selectedLang]);
         }
       });
   }

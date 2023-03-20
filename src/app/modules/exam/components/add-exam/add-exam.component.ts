@@ -36,6 +36,7 @@ import { NameValue } from '../../../../shared/components/search-modal.component'
 import { Status } from '../../../../shared/models/status.model';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
 
 interface FormValues {
   name: string;
@@ -88,17 +89,29 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
   public submitting$$ = new BehaviorSubject(false);
 
-  public assistants$$ = new BehaviorSubject<NameValue[]>([]);
+  public filteredAssistants$$ = new BehaviorSubject<NameValue[]>([]);
 
-  public nursing$$ = new BehaviorSubject<NameValue[]>([]);
+  private assistants: NameValue[] = [];
 
-  public radiologists$$ = new BehaviorSubject<NameValue[]>([]);
+  public filteredNursing$$ = new BehaviorSubject<NameValue[]>([]);
 
-  public secretaries$$ = new BehaviorSubject<NameValue[]>([]);
+  private nursing: NameValue[] = [];
 
-  public mandatoryStaffs$$ = new BehaviorSubject<NameValue[]>([]);
+  public filteredRadiologists$$ = new BehaviorSubject<NameValue[]>([]);
 
-  public exams$$ = new BehaviorSubject<NameValue[]>([]);
+  private radiologists: NameValue[] = [];
+
+  public filteredSecretaries$$ = new BehaviorSubject<NameValue[]>([]);
+
+  private secretaries: NameValue[] = [];
+
+  public filteredMandatoryStaffs$$ = new BehaviorSubject<NameValue[]>([]);
+
+  private mandatoryStaffs: NameValue[] = [];
+
+  public filteredExams$$ = new BehaviorSubject<NameValue[]>([]);
+
+  private exams: NameValue[] = [];
 
   public examAvailabilityData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
 
@@ -178,82 +191,61 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
     this.createForm();
 
-    this.routerStateSvc
-      .listenForParamChange$(EXAM_ID)
-      .pipe(
-        switchMap((examID) => {
-          if (examID) {
-            this.examID = examID;
-            return this.examApiSvc.getExamByID(+examID);
-          }
-          return of({} as Exam);
-        }),
-        take(1),
-      )
-      .subscribe((examDetails) => {
-        if (examDetails) {
-          this.updateForm(examDetails);
-          if (examDetails?.practiceAvailability?.length) {
-            this.examAvailabilityData$$.next(examDetails.practiceAvailability);
-          }
-        }
-        this.loading$$.next(false);
-        this.examDetails$$.next(examDetails);
-      });
-
     this.examApiSvc.exams$
       .pipe(
         map((exams) => exams.filter((exam) => exam?.status && +exam.id !== (+this.examID ?? 0))),
         takeUntil(this.destroy$$),
       )
       .subscribe((exams) => {
-        this.exams$$.next([...exams.map(({ id, name }) => ({ name, value: id?.toString() }))]);
+        this.filteredExams$$.next([...exams.map(({ id, name }) => ({ name, value: id?.toString() }))]);
+        this.exams = [...this.filteredExams$$.value];
         this.cdr.detectChanges();
       });
 
-    this.staffApiSvc.allUsers$
-      .pipe(
-        debounceTime(0),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((staffs) => {
-        const radiologists: NameValue[] = [];
-        const assistants: NameValue[] = [];
-        const nursing: NameValue[] = [];
-        const secretaries: NameValue[] = [];
-        const mandatory: NameValue[] = [];
+    this.staffApiSvc.allUsers$.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe((staffs) => {
+      const radiologists: NameValue[] = [];
+      const assistants: NameValue[] = [];
+      const nursing: NameValue[] = [];
+      const secretaries: NameValue[] = [];
+      const mandatory: NameValue[] = [];
 
-        staffs.forEach((staff) => {
-          const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff?.id?.toString() };
+      staffs.forEach((staff) => {
+        const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff?.id?.toString() };
 
-          mandatory.push({ ...nameValue });
+        mandatory.push({ ...nameValue });
 
-          switch (staff.userType) {
-            case UserType.Assistant:
-              assistants.push({ ...nameValue });
-              break;
-            case UserType.Radiologist:
-              radiologists.push({ ...nameValue });
-              break;
-            // case UserType.Scheduler:
-            case UserType.Secretary:
-              secretaries.push({ ...nameValue });
-              break;
-            case UserType.Nursing:
-              nursing.push({ ...nameValue });
-              break;
-            default:
-          }
-        });
-
-        this.radiologists$$.next([...radiologists]);
-        this.assistants$$.next([...assistants]);
-        this.nursing$$.next([...nursing]);
-        this.secretaries$$.next([...secretaries]);
-        this.mandatoryStaffs$$.next([...mandatory]);
-
-        this.cdr.detectChanges();
+        switch (staff.userType) {
+          case UserType.Assistant:
+            assistants.push({ ...nameValue });
+            break;
+          case UserType.Radiologist:
+            radiologists.push({ ...nameValue });
+            break;
+          // case UserType.Scheduler:
+          case UserType.Secretary:
+            secretaries.push({ ...nameValue });
+            break;
+          case UserType.Nursing:
+            nursing.push({ ...nameValue });
+            break;
+          default:
+        }
       });
+
+      this.filteredRadiologists$$.next([...radiologists]);
+      this.filteredAssistants$$.next([...assistants]);
+      this.filteredNursing$$.next([...nursing]);
+      this.filteredSecretaries$$.next([...secretaries]);
+      this.filteredMandatoryStaffs$$.next([...mandatory]);
+
+      this.mandatoryStaffs = [...mandatory];
+      this.assistants = [...assistants];
+      this.nursing = [...nursing];
+      this.secretaries = [...secretaries];
+      this.radiologists = [...radiologists];
+
+      this.cdr.detectChanges();
+    });
 
     this.roomApiSvc
       .getRoomTypes()
@@ -288,6 +280,30 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
             this.statuses = StatusesNL;
             break;
         }
+      });
+
+    this.routerStateSvc
+      .listenForParamChange$(EXAM_ID)
+      .pipe(
+        switchMap((examID) => {
+          if (examID) {
+            this.examID = examID;
+            return this.examApiSvc.getExamByID(+examID);
+          }
+          return of({} as Exam);
+        }),
+        debounceTime(500),
+        take(1),
+      )
+      .subscribe((examDetails) => {
+        if (examDetails) {
+          this.updateForm(examDetails);
+          if (examDetails?.practiceAvailability?.length) {
+            this.examAvailabilityData$$.next(examDetails.practiceAvailability);
+          }
+        }
+        this.loading$$.next(false);
+        this.examDetails$$.next(examDetails);
       });
   }
 
@@ -360,8 +376,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   private updateForm(examDetails?: Exam): void {
-    console.log(examDetails);
-
     const assistants: string[] = [];
     const radiologists: string[] = [];
     const nursing: string[] = [];
@@ -395,23 +409,20 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     this.examForm.patchValue({
       name: examDetails?.name,
       expensive: examDetails?.expensive,
-      mandatoryStaffs: mandatory,
-      assistants, nursing, secretaries, radiologists,
-      uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
       practiceAvailabilityToggle: !!examDetails?.practiceAvailability?.length,
       status: this.edit ? +!!examDetails?.status : Status.Active,
-      info: examDetails?.info
+      info: examDetails?.info,
+      assistantCount: examDetails?.assistantCount?.toString() ?? '0',
+      radiologistCount: examDetails?.radiologistCount?.toString() ?? '0',
+      nursingCount: examDetails?.nursingCount?.toString() ?? '0',
+      secretaryCount: examDetails?.secretaryCount?.toString() ?? '0',
+      assistants,
+      nursing,
+      secretaries,
+      radiologists,
+      mandatoryStaffs: mandatory,
+      uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
     });
-
-    setTimeout(() => {
-      this.examForm.patchValue({
-        assistantCount: examDetails?.assistantCount?.toString() ?? '0',
-        radiologistCount: examDetails?.radiologistCount?.toString() ?? '0',
-        nursingCount: examDetails?.nursingCount?.toString() ?? '0',
-        secretaryCount: examDetails?.secretaryCount?.toString() ?? '0',
-      }, { emitEvent: false } );
-      this.cdr.detectChanges();
-    }, 0);
 
     if (examDetails?.roomsForExam?.length) {
       this.roomApiSvc
@@ -422,6 +433,30 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
           this.cdr.detectChanges();
         });
     }
+
+    // setTimeout(() => {
+    //   this.examForm.patchValue({
+    //     name: examDetails?.name,
+    //     expensive: examDetails?.expensive,
+    //     practiceAvailabilityToggle: !!examDetails?.practiceAvailability?.length,
+    //     status: this.edit ? +!!examDetails?.status : Status.Active,
+    //     info: examDetails?.info,
+    //     assistantCount: examDetails?.assistantCount?.toString() ?? '0',
+    //     radiologistCount: examDetails?.radiologistCount?.toString() ?? '0',
+    //     nursingCount: examDetails?.nursingCount?.toString() ?? '0',
+    //     secretaryCount: examDetails?.secretaryCount?.toString() ?? '0',
+    //     assistants,
+    //     nursing,
+    //     secretaries,
+    //     radiologists,
+    //     mandatoryStaffs: mandatory,
+    //     uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
+    //   });
+
+    //   console.log(this.formValues);
+
+    //   this.cdr.detectChanges();
+    // }, 500);
   }
 
   private getRoomsForExamFormGroup(room: Room): FormGroup {
@@ -535,11 +570,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
 
     if (element.value % 5 !== 0) {
-      const newValue = element.value - element.value % 5;
+      const newValue = element.value - (element.value % 5);
 
       element.value = newValue;
       if (control) {
-        control.setValue(newValue)
+        control.setValue(newValue);
       }
     }
   }
@@ -645,7 +680,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.ExamUpdated[this.selectedLang]);
             let route: string;
             if (this.comingFromRoute === 'view') {
               route = '../view';
@@ -668,7 +703,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.ExamAdded[this.selectedLang]);
             let route: string;
             if (this.comingFromRoute === 'view') {
               route = '../view';
@@ -685,6 +720,29 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
             this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
           },
         );
+    }
+  }
+
+  public handleDropdownSearch(searchText: string, type: 'mandatory' | 'radio' | 'nursing' | 'assistant' | 'secretary' | 'exam'): void {
+    switch (type) {
+      case 'mandatory':
+        this.filteredMandatoryStaffs$$.next(GeneralUtils.FilterArray(this.mandatoryStaffs, searchText, 'name'));
+        break;
+      case 'radio':
+        this.filteredRadiologists$$.next(GeneralUtils.FilterArray(this.radiologists, searchText, 'name'));
+        break;
+      case 'nursing':
+        this.filteredNursing$$.next(GeneralUtils.FilterArray(this.nursing, searchText, 'name'));
+        break;
+      case 'secretary':
+        this.filteredSecretaries$$.next(GeneralUtils.FilterArray(this.secretaries, searchText, 'name'));
+        break;
+      case 'assistant':
+        this.filteredAssistants$$.next(GeneralUtils.FilterArray(this.assistants, searchText, 'name'));
+        break;
+      case 'exam':
+        this.filteredExams$$.next(GeneralUtils.FilterArray(this.exams, searchText, 'name'));
+        break;
     }
   }
 }

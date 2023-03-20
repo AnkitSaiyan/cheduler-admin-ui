@@ -1,14 +1,30 @@
 <div class="bg-white d-flex flex-column dfm-gap-16 dfm-p-24 calendar-main-wrapper" *ngIf="selectedDate$$ | async as selectedDate">
   <section class="calendar-header">
-    <h4 *ngIf="selectedDate"  class="">{{ selectedDate | date : 'MMM, yyyy' }}</h4>
+    <h4 *ngIf="selectedDate" class="">{{ selectedDate | date : 'MMM, yyyy' }}</h4>
 
     <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper">
       <div>
-        <input class="w-full hidden" [formControl]="dataControl" placeholder="yyyy-mm-dd" ngbDatepicker #date="ngbDatepicker" [positionTarget]="datePickerToggle" placement="auto"/>
+        <input
+          class="w-full hidden"
+          [formControl]="dataControl"
+          placeholder="yyyy-mm-dd"
+          ngbDatepicker
+          #date="ngbDatepicker"
+          [positionTarget]="datePickerToggle"
+          placement="auto"
+        />
         <div>
           <div #datePickerToggle>
-            <dfm-button-icon color="secondary-gray" size="md" icon="calendar-date"
-                             (click)="date.toggle()"></dfm-button-icon>
+            <dfm-button-icon
+              color="secondary-gray"
+              size="md"
+              icon="calendar-date"
+              ngbPopover="{{ 'Calendar' | translate }}"
+              triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
+              (click)="date.toggle()"
+            ></dfm-button-icon>
           </div>
         </div>
       </div>
@@ -16,45 +32,28 @@
 
     <div class="d-flex dfm-gap-8 calendar-date-buttons">
       <div>
-        <dfm-button-icon
-          color="secondary-gray"
-          size="sm"
-          icon="chevron-left"
-          (click)="changeDate(-1)"
-        ></dfm-button-icon>
+        <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-left" (click)="changeDate(-1)"></dfm-button-icon>
       </div>
 
       <div class="flex-1">
-        <dfm-button
-          color="secondary-gray"
-          size="sm"
-          class="h-100"
-          (click)="updateToToday()"
-        >Today
-        </dfm-button>
+        <dfm-button color="secondary-gray" size="sm" class="h-100" (click)="updateToToday()">Today </dfm-button>
       </div>
 
       <div>
-        <dfm-button-icon
-          color="secondary-gray"
-          size="sm"
-          icon="chevron-right"
-          (click)="changeDate(1)"
-        ></dfm-button-icon>
+        <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-right" (click)="changeDate(1)"></dfm-button-icon>
       </div>
     </div>
   </section>
 
   <section class="calendar-body">
     <dfm-calendar-week-view
-          (selectedDateEvent)="updateDate($event)"
-          [changeWeek$$]="changeWeek$$"
-          (dayViewEvent)="changeToDayView($event)"
-          [selectedDate]="selectedDate"
-          [newDate$$]="newDate$$"
-          [dataGroupedByDateAndTime]="appointmentsGroupedByDateAndTIme"
-          [prioritySlots] = "prioritySlots$$ | async"
-        ></dfm-calendar-week-view>
+      (selectedDateEvent)="updateDate($event)"
+      [changeWeek$$]="changeWeek$$"
+      (dayViewEvent)="changeToDayView($event)"
+      [selectedDate]="selectedDate"
+      [newDate$$]="newDate$$"
+      [dataGroupedByDateAndTime]="appointmentsGroupedByDateAndTIme"
+      [prioritySlots]="prioritySlots$$ | async"
+    ></dfm-calendar-week-view>
   </section>
 </div>
-

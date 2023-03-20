@@ -75,7 +75,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
+        this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang]);
         this.router.navigate(['/', 'absence']);
       });
   }

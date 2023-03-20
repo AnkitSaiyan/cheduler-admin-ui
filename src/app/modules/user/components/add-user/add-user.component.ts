@@ -155,9 +155,9 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       .subscribe(
         () => {
           if (this.modalData.edit) {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
           } else {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
           }
           this.loading$$.next(false);
           this.closeModal(true);

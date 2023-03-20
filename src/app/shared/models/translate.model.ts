@@ -166,13 +166,25 @@ export const Translate = Object.freeze({
       [ENG_BE]: 'Deleted successfully',
       [DUTCH_BE]: 'Succesvol Verwijderd',
     },
+    UserDeleted: {
+      [ENG_BE]: 'User deleted successfully',
+      [DUTCH_BE]: 'Gebruiker succesvol verwijderd',
+    },
     Updated: {
       [ENG_BE]: 'Updated successfully',
       [DUTCH_BE]: 'Succesvol geüpdated',
     },
+    UserUpdated:{
+      [ENG_BE]: 'User Updated successfully',
+      [DUTCH_BE]: 'Gebruiker Succesvol geüpdated',
+    },
     Added: {
       [ENG_BE]: 'Added successfully',
       [DUTCH_BE]: 'Succesvol toegevoegd',
+    },
+    UserAdded:{
+      [ENG_BE]: 'User Added successfully',
+      [DUTCH_BE]: 'Gebruiker succesvol toegevoegd',
     },
     CopyToClipboard: {
       [ENG_BE]: 'Data copied to clipboard successfully',
@@ -180,11 +192,111 @@ export const Translate = Object.freeze({
     },
     PostAddedSuccessfully:{
       [ENG_BE]: 'Post it added successfully',
-      [DUTCH_BE]: 'Post it added successfully NL',
+      [DUTCH_BE]: 'Post-it succesvol toegevoegd',
     },
     PostDeletedSuccessfully:{
       [ENG_BE]: 'Post it deleted successfully',
-      [DUTCH_BE]: 'Post it deleted successfully NL',
+      [DUTCH_BE]: 'Post-it succesvol verwijderd',
+    },
+    RoomsDeleted:{
+      [ENG_BE]: 'Room deleted successfully',
+      [DUTCH_BE]: 'Zaal succesvol verwijderd',
+    },
+    RoomsAdded:{
+      [ENG_BE]: 'Room Added successfully',
+      [DUTCH_BE]: 'Zaal succesvol toegevoegd',
+    },
+    RoomsUpdated:{
+      [ENG_BE]: 'Room Updated successfully',
+      [DUTCH_BE]: 'Zaal Succesvol geüpdated',
+    },
+    StaffAdded:{
+      [ENG_BE]: 'Staff Added successfully',
+      [DUTCH_BE]: 'Medewerker succesvol toegevoegd',
+    },
+    StaffDeleted:{
+      [ENG_BE]: 'Staff deleted successfully',
+      [DUTCH_BE]: 'Medewerker succesvol verwijderd ',
+    },
+    StaffUpdated:{
+      [ENG_BE]: 'Staff Updated successfully',
+      [DUTCH_BE]: 'Medewerker succesvol geüpdated ',
+    },
+    EmailTemplateAdded:{
+      [ENG_BE]: 'Email Template Added successfully',
+      [DUTCH_BE]: 'E-mail Sjabloon succesvol toegevoegd ',
+    },
+    EmailTemplateUpdated : {
+      [ENG_BE]: 'Email Template Updated successfully',
+      [DUTCH_BE]: 'E-mail Sjabloon succesvol geüpdated ',
+    },
+    PhysicianAdded:{
+      [ENG_BE]: 'Physician Added successfully',
+      [DUTCH_BE]: 'Dokter succesvol toegevoegd',
+    },
+    PhysicianUpdated:{
+      [ENG_BE]: 'Physician Updated successfully',
+      [DUTCH_BE]: 'Dokter succesvol geüpdated ',
+    },
+    PhysicianDeleted: {
+      [ENG_BE]: 'Physician deleted successfully',
+      [DUTCH_BE]: 'Dokter succesvol verwijderd',
+    },
+    ExamDeleted:{
+      [ENG_BE]: 'Exam deleted successfully',
+      [DUTCH_BE]: 'Onderzoek succesvol verwijderd',
+    },
+    PracticeHoursUpdated: {
+      [ENG_BE]: 'Practice hours updated successfully',
+      [DUTCH_BE]: 'Uren praktijk succesvol geüpdated',
+    },
+    PracticeHoursAdded: {
+      [ENG_BE]: 'Practice hours Added successfully',
+      [DUTCH_BE]: 'Uren praktijk succesvol toegevoegd',
+    },
+    PrioritySlotsUpdated:{
+      [ENG_BE]: 'Priority Slot Updated successfully',
+      [DUTCH_BE]: 'Prioritaire slots succesvol geüpdated',
+    },
+    PrioritySlotsAdded:{
+      [ENG_BE]: 'Priority Slot Added successfully',
+      [DUTCH_BE]: 'Prioritaire slots succesvol toegevoegd',
+    },
+    PrioritySlotsDeleted: {
+      [ENG_BE]: 'Priority Slot deleted successfully',
+      [DUTCH_BE]: 'Prioritaire slots succesvol verwijderd',
+    },
+    AbsenceAdded: {
+      [ENG_BE]: 'Absence Added Successfully',
+      [DUTCH_BE]: 'Afwezigheid succesvol toegevoegd',
+    },
+    AbsenceUpdated: {
+      [ENG_BE]: 'Absence Updated Successfully',
+      [DUTCH_BE]: 'Afwezigheid succesvol geüpdated',
+    },
+    AbsenceDeleted: {
+      [ENG_BE]: 'Absence Deleted Successfully',
+      [DUTCH_BE]: 'Afwezigheid succesvol verwijderd',
+    },
+    AppointmentAdded:{
+      [ENG_BE]: 'Appointment Added Successfully',
+      [DUTCH_BE]: 'Afspraak succesvol toegevoegd',
+    },
+    ExamAdded:{
+      [ENG_BE]: 'Exam Added Successfully',
+      [DUTCH_BE]: 'Onderzoek succesvol toegevoegd',
+    },
+    ExamUpdated:{
+      [ENG_BE]: 'Exam Updated Successfully',
+      [DUTCH_BE]: 'Onderzoek succesvol geüpdated',
+    },
+    SiteAdded: {
+      [ENG_BE]: 'Site Added Successfully',
+      [DUTCH_BE]: 'Site succesvol toegevoegd',
+    },
+    SiteUpdated :{
+      [ENG_BE]: 'Site Updated Successfully',
+      [DUTCH_BE]: 'Site succesvol geüpdated',
     }
   },
 
@@ -192,6 +304,10 @@ export const Translate = Object.freeze({
     CopyToClipboard: {
       [ENG_BE]: 'Failed to copy Data',
       [DUTCH_BE]: 'Gegevens succesvol naar clipboard gecopieerd',
+    },
+    FailedToCopyData: {
+      [ENG_BE]: 'Failed to copy Data',
+      [DUTCH_BE]: 'Kan gegevens niet kopiëren',
     },
   },
 
@@ -248,6 +364,10 @@ export const Translate = Object.freeze({
       [ENG_BE]: 'Monthly',
       [DUTCH_BE]: 'Monthly NL'
     }
-  }
+  },
+  DeleteAppointment: {
+    [ENG_BE]: 'Appointment Deleted Successfully',
+      [DUTCH_BE]: 'Afspraak succesvol Verwijderd!'
+  },
 });
 

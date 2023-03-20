@@ -162,7 +162,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         );
 
         if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${value} file downloaded successfully`);
+          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
 
         this.downloadDropdownControl.setValue(null);
@@ -274,7 +274,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification('Appointment deleted successfully');
+        this.notificationSvc.showNotification(Translate.DeleteAppointment[this.selectedLang]);
       });
   }
 
@@ -298,9 +298,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
-      this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
+      this.notificationSvc.showNotification(Translate.ErrorMessage.FailedToCopyData[this.selectedLang], NotificationType.DANGER);
       this.clipboardData = '';
     }
   }
