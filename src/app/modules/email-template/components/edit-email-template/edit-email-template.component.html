@@ -3,14 +3,14 @@
     <div class="d-flex dfm-gap-8 align-items-center justify-content-between pr-hr-title-buttons w-full">
       <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ed-et-title-buttons">
 
-        <dfm-button color="link" size="lg" routerLink="/email-template"> Email Template </dfm-button>
+        <dfm-button color="link" size="lg" routerLink="/email-template"> {{"EmailTemplate" | translate}} </dfm-button>
 
         <div style="width: 16px; height: 16px" class="h-fit">
           <dfm-icon name="chevron-right"></dfm-icon>
         </div>
 
         <div class="d-flex align-items-center dfm-gap-8">
-          <dfm-button color="link" size="lg">Edit</dfm-button>
+          <dfm-button color="link" size="lg">{{"Edit" | translate}}</dfm-button>
         </div>
       </div>
       <div>
@@ -22,7 +22,7 @@
     <div class="hidden dfm-gap-8 align-items-center justify-content-between pr-hr-title-buttons-mv w-full">
       <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary">
 
-        <dfm-button color="link" size="lg" routerLink="/email-template"> Email Template </dfm-button>
+        <dfm-button color="link" size="lg" routerLink="/email-template"> {{"EmailTemplate" | translate}} </dfm-button>
 
         <div style="width: 16px; height: 16px" class="h-fit">
           <dfm-icon name="chevron-right"></dfm-icon>
@@ -41,28 +41,28 @@
   <section class="dfm-card dfm-p-16 ed-et-section2 hide-scrollbar">
     <form [formGroup]="emailTemplateForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-center">
-        <dfm-input class="flex-1" size="md" placeholder="Appointment Confirmation Diflexmo" label="Title *" formControlName="title"></dfm-input>
+        <dfm-input class="flex-1" size="md" placeholder="Appointment Confirmation Diflexmo" label="{{'Title' | translate}} *" formControlName="title"></dfm-input>
 
-        <dfm-input class="flex-1" size="md" placeholder="Lorem Ipsum" label="Subject *" formControlName="subject"></dfm-input>
+        <dfm-input class="flex-1" size="md" placeholder="Lorem Ipsum" label="{{'Subject' | translate}} *" formControlName="subject"></dfm-input>
 
         <div class="d-flex flex-column dfm-gap-16 flex-1 ad-ab-repeat-radio align-self-start">
-          <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Status *</span>
+          <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{"Status" | translate}} *</span>
 
           <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-radio-button class="font-weight-normal" label="Active" [checkedValue]="1" formControlName="status"></dfm-radio-button>
-            <dfm-radio-button class="font-weight-normal" label="Inactive" [checkedValue]="0" formControlName="status"></dfm-radio-button>
+            <dfm-radio-button class="font-weight-normal" label="{{'Active' | translate}}" [checkedValue]="1" formControlName="status"></dfm-radio-button>
+            <dfm-radio-button class="font-weight-normal" label="{{'Inactive' | translate}}" [checkedValue]="0" formControlName="status"></dfm-radio-button>
           </div>
         </div>
       </div>
 
       <div class="d-flex gap-3 flex-column">
-        <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Content *</span>
+        <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{"Content" | translate}} *</span>
         <div class="content-div">
           <angular-editor formControlName="content" [config]="contentConfig"></angular-editor>
         </div>
       </div>
       <div class="exam-date d-flex flex-column gap-3">
-        <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Content for Admin *</span>
+        <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{"ContentForAdmin" | translate}} *</span>
         <div class="content-div">
           <angular-editor formControlName="adminContent" [config]="adminContentConfig"></angular-editor>
         </div>

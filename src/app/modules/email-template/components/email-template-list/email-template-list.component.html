@@ -1,47 +1,47 @@
 <div class="d-flex flex-column dfm-gap-16 position-relative">
   <section class="list-page-section-1">
-      <dfm-button class="hidden et-ls-title-buttons" color="link" size="lg" routerLink="./">Email Template</dfm-button>
+    <dfm-button class="hidden et-ls-title-buttons" color="link" size="lg" routerLink="./">{{ 'EmailTemplate' | translate }}</dfm-button>
 
-      <dfm-input
-        class="flex-1 et-ls-search"
-        size="md"
-        placeholder="Search by Template Name"
-        icon="search-sm"
-        [formControl]="searchControl"
-      ></dfm-input>
+    <dfm-input
+      class="flex-1 et-ls-search"
+      size="md"
+      placeholder="{{ 'SearchByTemplateName' | translate }}"
+      icon="search-sm"
+      [formControl]="searchControl"
+    ></dfm-input>
 
-      <div class="d-flex align-items-center dfm-button-group-wrapper et-ls-button-dropdown-group bg-white">
-        <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="copy-03"
-            ngbPopover="{{ 'ClickToCopy' | translate }}"
-            triggers="mouseenter:mouseleave"
-            popoverClass="popover-p-8"
-            [openDelay]="200"
-            (click)="copyToClipboard()"
-          ></dfm-button-icon>
-        </div>
-
-        <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent max-w-192">
-          <dfm-input-dropdown
-            [items]="downloadItems"
-            [showDescription]="false"
-            [formControl]="downloadDropdownControl"
-            placeholder="{{ 'Download' | translate }}"
-            size="md"
-          ></dfm-input-dropdown>
-        </div>
+    <div class="d-flex align-items-center dfm-button-group-wrapper et-ls-button-dropdown-group bg-white">
+      <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
+        <dfm-button-icon
+          color="tertiary-gray"
+          size="md"
+          icon="copy-03"
+          ngbPopover="{{ 'ClickToCopy' | translate }}"
+          triggers="mouseenter:mouseleave"
+          popoverClass="popover-p-8"
+          [openDelay]="200"
+          (click)="copyToClipboard()"
+        ></dfm-button-icon>
       </div>
+
+      <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent max-w-192">
+        <dfm-input-dropdown
+          [items]="downloadItems"
+          [showDescription]="false"
+          [formControl]="downloadDropdownControl"
+          placeholder="{{ 'Download' | translate }}"
+          size="md"
+        ></dfm-input-dropdown>
+      </div>
+    </div>
   </section>
 
   <dfm-input
-        class="flex-1 et-ls-search-mv hidden"
-        size="md"
-        placeholder="Search by Template Name"
-        icon="search-sm"
-        [formControl]="searchControl"
+    class="flex-1 et-ls-search-mv hidden"
+    size="md"
+    placeholder="Search by Template Name"
+    icon="search-sm"
+    [formControl]="searchControl"
   ></dfm-input>
 
   <section class="list-page-content-height" *ngIf="filteredEmails$$ | async as emails">
@@ -54,7 +54,7 @@
       class="dfm-table-wrapper"
     >
       <ng-template #headerRowTemplate>
-        <dfm-table-header-cell *ngFor="let column of columns">{{ column }}</dfm-table-header-cell>
+        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
       </ng-template>
 
       <ng-template #bodyRowTemplate let-item>
@@ -62,11 +62,11 @@
         <dfm-table-body-cell>{{ item.subject | titlecase | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <dfm-badge *ngIf="item.status === statusType.Active" color="success" size="sm" fontWeight="medium">
-            {{ item.status | statusName | dashIfNothing }}
+            {{ item.status | statusName | dashIfNothing | translate }}
           </dfm-badge>
 
           <dfm-badge *ngIf="item.status === statusType.Inactive" color="primary" size="sm">
-            {{ item.status | statusName | dashIfNothing }}
+            {{ item.status | statusName | dashIfNothing | translate }}
           </dfm-badge>
         </dfm-table-body-cell>
 
@@ -77,6 +77,10 @@
               color="link-gray"
               size="sm"
               trailingIcon="check-circle"
+              ngbPopover="{{ 'ChangeStatus' | translate }}"
+              triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: 1 }])"
             ></dfm-button>
 
@@ -85,10 +89,24 @@
               color="link-gray"
               size="sm"
               trailingIcon="x-circle"
+              ngbPopover="{{ 'ChangeStatus' | translate }}"
+              triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: 0 }])"
             ></dfm-button>
 
-            <dfm-button color="link-gray" size="sm" trailingIcon="pencil-02" [routerLink]="['./', item.id, 'edit']" (click)="$event.stopPropagation()"></dfm-button>
+            <dfm-button
+              color="link-gray"
+              size="sm"
+              trailingIcon="pencil-02"
+              ngbPopover="{{ 'Edit' | translate }}"
+              triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
+              [routerLink]="['./', item.id, 'edit']"
+              (click)="$event.stopPropagation()"
+            ></dfm-button>
           </div>
 
           <!-- Action Menu -->
@@ -107,31 +125,28 @@
           ></dfm-button>
 
           <ng-template #actionMenu>
-            <div class="et-ls-menus"
-                aria-labelledby="dropdownManual">
-                <div
-                  *ngIf="item.status === statusType.Inactive"
-                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: 1 }])"
-                >
-                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-                </div>
-                <div
-                  *ngIf="item.status === statusType.Active"
-                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: 0 }])"
-                >
-                  <dfm-button trailingIcon="x-circle" color="link-gray" ></dfm-button>
-                </div>
-                <div   class="position-relative"  >
-                  <dfm-button (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']" trailingIcon="pencil-02" color="link-gray" ></dfm-button>
-                </div>
+            <div class="et-ls-menus" aria-labelledby="dropdownManual">
+              <div *ngIf="item.status === statusType.Inactive" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: 1 }])">
+                <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+              </div>
+              <div *ngIf="item.status === statusType.Active" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: 0 }])">
+                <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+              </div>
+              <div class="position-relative">
+                <dfm-button
+                  (click)="$event.stopPropagation()"
+                  [routerLink]="['./', item.id, 'edit']"
+                  trailingIcon="pencil-02"
+                  color="link-gray"
+                ></dfm-button>
+              </div>
             </div>
           </ng-template>
           <!-- Action Menu End-->
-
         </dfm-table-body-cell>
       </ng-template>
     </dfm-table>
-    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!emails.length">No data found</div>
+    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!emails.length">{{"NoDataFound" | translate}}</div>
   </section>
   <div ngbDropdown #optionsMenu="ngbDropdown">
     <div class="shadow-lg et-ls-plus-btn-menu et-ls-menus" ngbDropdownMenu aria-labelledby="dropdownManual">
@@ -146,11 +161,9 @@
       </div>
     </div>
   </div>
-
 </div>
 
 <dfm-confirm-status-change-banner
   [display]="selectedUserIds.length"
   (confirmationEvent)="handleConfirmation($event)"
 ></dfm-confirm-status-change-banner>
-

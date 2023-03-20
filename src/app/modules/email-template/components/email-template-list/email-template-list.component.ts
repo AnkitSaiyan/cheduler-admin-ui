@@ -98,7 +98,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
         );
 
         if (downloadAs !== 'PRINT') {
-          this.notificationSvc.showNotification(`${downloadAs} file downloaded successfully`);
+          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
         }
 
         this.downloadDropdownControl.setValue(null);
@@ -198,7 +198,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
       this.clipboardData = dataString;
 
       this.cdr.detectChanges();
-      this.notificationSvc.showNotification('Data copied to clipboard successfully');
+      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
     } catch (e) {
       this.notificationSvc.showNotification('Failed to copy Data', NotificationType.DANGER);
       this.clipboardData = '';

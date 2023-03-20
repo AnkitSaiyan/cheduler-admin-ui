@@ -171,7 +171,7 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
       .updateEmailTemplate(requestData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
-        this.notificationSvc.showNotification(`Email template updated successfully`);
+        this.notificationSvc.showNotification(Translate.SuccessMessage.EmailTemplateAdded[this.selectedLang]);
       });
   }
 }
