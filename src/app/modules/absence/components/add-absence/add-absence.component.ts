@@ -21,6 +21,7 @@ import { toggleControlError } from '../../../../shared/utils/toggleControlError'
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
 
 interface FormValues {
   name: string;
@@ -59,9 +60,13 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
   public absenceForm!: FormGroup;
 
-  public roomList$$ = new BehaviorSubject<NameValue[] | null>(null);
+  public filteredRoomList$$ = new BehaviorSubject<NameValue[] | null>(null);
 
-  public staffs$$ = new BehaviorSubject<NameValue[] | null>(null);
+  private roomList: NameValue[] = [];
+
+  public filteredStaffs$$ = new BehaviorSubject<NameValue[] | null>(null);
+
+  private staffs: NameValue[] = [];
 
   public submitting$$ = new BehaviorSubject<boolean>(false);
 
@@ -159,7 +164,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         takeUntil(this.destroy$$),
       )
       .subscribe((rooms) => {
-        this.roomList$$.next(rooms.map((room) => ({ name: room.name, value: room.id.toString() })) as NameValue[]);
+        this.roomList = [...rooms.map((room) => ({ name: room.name, value: room.id.toString() })) as NameValue[]]
+        this.filteredRoomList$$.next([...this.roomList]);
         this.cdr.detectChanges();
       });
 
@@ -169,7 +175,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         takeUntil(this.destroy$$),
       )
       .subscribe((staffs) => {
-        this.staffs$$.next(staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() })) as NameValue[]);
+        this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() })) as NameValue[]]
+        this.filteredStaffs$$.next([...this.staffs]);
         this.cdr.detectChanges();
       });
 
@@ -545,5 +552,19 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
     toggleControlError(this.absenceForm.get('startTime'), 'time', false);
     toggleControlError(this.absenceForm.get('endTime'), 'time', false);
+  }
+
+  public handleDropdownSearch(
+    searchText: string,
+    type: 'room' | 'staff'
+  ): void {
+    switch (type) {
+      case 'room':
+        this.filteredRoomList$$.next(GeneralUtils.FilterArray(this.roomList, searchText, 'name'));
+        break;
+      case 'staff':
+        this.filteredStaffs$$.next(GeneralUtils.FilterArray(this.staffs, searchText, 'name'));
+        break;
+    }
   }
 }
