@@ -47,7 +47,7 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
     spellcheck: true,
     height: '15rem',
     minHeight: '5rem',
-    placeholder: 'Enter text here...',
+    placeholder: 'Enter text here....',
     translate: 'no',
     defaultParagraphSeparator: 'p',
     defaultFontName: 'Arial',
@@ -179,7 +179,7 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
       .pipe(takeUntil(this.destroy$$))
       .subscribe({
         next: () => {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
+          this.notificationSvc.showNotification(Translate.SuccessMessage.EmailTemplateUpdated[this.selectedLang]);
           this.submitting$$.next(false);
           this.router.navigate(['../../'], { relativeTo: this.route })
         },

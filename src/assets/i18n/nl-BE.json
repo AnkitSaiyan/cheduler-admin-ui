@@ -104,7 +104,6 @@
   "StartTimeLessThanEndTime": "Begintijd moet kleiner zijn dan eindtijd",
   "SlotOverlapsOtherSlots": "Tijdslot overlapt met andere tijdslots",
   "AddPrioritySlots": "Bijvoegen Prioritaire Slots",
-  "PrioritySlots": "Prioritaire Slots",
   "RoomView": "Zaal Bekijk",
   "RoomDetails": "Details zaal",
   "Exams": "Onderzoeken",
@@ -356,8 +355,8 @@
   "SearchByTemplateName": "Zoek op Naam Sjabloon",
   "Subject" : "Onderwerp",
   "Content" : "Inhoud",
-  "ContentForAdmin" : "Inhoud voor admin"
-
-
+  "ContentForAdmin" : "Inhoud voor admin",
+  "AppointmentConfirmationDiflexmo" : "afspraakbevestiging diflexmo",
+  "NextSlotOpen": "Volgende Open Slot"
 }
 

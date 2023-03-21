@@ -75,7 +75,7 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
         take(1),
       )
       .subscribe(() => {
-        this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
+        this.notificationSvc.showNotification(Translate.SuccessMessage.PrioritySlotsDeleted[this.selectedLang]);
         this.router.navigate(['/', 'priority-slots']);
       });
   }

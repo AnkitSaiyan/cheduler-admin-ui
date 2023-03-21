@@ -398,7 +398,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceUpdated[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },
@@ -413,7 +413,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
           () => {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceAdded[this.selectedLang]);
             this.submitting$$.next(false);
             this.closeModal(true);
           },

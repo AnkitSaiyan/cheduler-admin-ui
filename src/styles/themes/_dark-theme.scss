@@ -1,9 +1,11 @@
 @import '../abstracts/variables';
+
 @mixin dark {
   --dfm-body-bg: #{$gray-modern-100};
   --dfm-base-layout-bg: #{$gray-modern-100};
 
-  --dfm-blue-light: #EFF8FF;
+  --dfm-blue: #{$diflexmo-blue};
+  --dfm-blue-light: #{$diflexmo-blue-light};
 
   // global colors
   --dfm-primary: #{$diflexmo-primary};

@@ -105,9 +105,9 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
       .subscribe({
         next: () => {
           if (this.practiceHoursData$$.value?.length) {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Updated[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.PracticeHoursUpdated[this.selectedLang]);
           } else {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.Added[this.selectedLang]);
+            this.notificationSvc.showNotification(Translate.SuccessMessage.PracticeHoursAdded[this.selectedLang]);
           }
           this.submitting$$.next(false);
         },

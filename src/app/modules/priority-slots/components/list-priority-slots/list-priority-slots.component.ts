@@ -174,7 +174,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
       )
       .subscribe((response) => {
         if (response) {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.Deleted[this.selectedLang]);
+          this.notificationSvc.showNotification(Translate.SuccessMessage.PrioritySlotsDeleted[this.selectedLang]);
         }
       });
   }

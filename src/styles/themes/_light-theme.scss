@@ -3,7 +3,9 @@
 @mixin light {
   --dfm-body-bg: #{$gray-modern-100};
   --dfm-base-layout-bg: #{$gray-modern-100};
-  --dfm-blue-light: #eff8ff;
+
+  --dfm-blue: #{$diflexmo-blue};
+  --dfm-blue-light: #{$diflexmo-blue-light};
 
   // global colors
   --dfm-primary: #{$diflexmo-primary};
@@ -81,8 +83,8 @@
     --dfm-priority-slot-medium-color: #{$diflexmo-priority-slot-medium};
     --dfm-priority-slot-low-color: #{$diflexmo-priority-slot-low};
 
-    
-  //  Navbar 
+
+  //  Navbar
   //   --dfm-navbar-item-selected-bg: #{$diflexmo-primary};
   //   --dfm-navbar-bg: #{$diflexmo-primary-text};
   //   --dfm-navbar-item-color: #{$gray-modern-25};
@@ -92,9 +94,11 @@
 
   //badge
 
-  // --dfm-badge-secondary-color: #{$diflexmo-secondary};
-  // --dfm-badge-secondary-bg: #{$diflexmo-primary};
-  // --dfm-badge-primary-bg: #{$diflexmo-secondary};
+  --dfm-badge-secondary-color: #{$diflexmo-secondary-text};
+  --dfm-badge-secondary-bg: #{$diflexmo-secondary};
+  --dfm-badge-primary-color: #{$diflexmo-gray-color};
+  --dfm-badge-primary-bg: #{$diflexmo-gray-bg};
+  
 
 }
 
