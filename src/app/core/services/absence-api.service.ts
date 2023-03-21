@@ -638,34 +638,44 @@ export class AbsenceApiService {
   }
 
   private fetchAbsenceById(absenceID: number): Observable<Absence> {
-    return this.http.get<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences/${absenceID}`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences/${absenceID}`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public deleteAbsence$(absenceID: number): Observable<boolean> {
+    this.loaderSvc.activate();
     return this.http.delete<BaseResponse<boolean>>(`${environment.serverBaseUrl}/absences/${absenceID}`).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshAbsences$$.next();
+        this.loaderSvc.deactivate();
       }),
     );
   }
 
   public addNewAbsence$(requestData: AddAbsenceRequestDate): Observable<Absence> {
+    this.loaderSvc.activate();
     const { id, ...restdata } = requestData;
     return this.http.post<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences`, restdata).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshAbsences$$.next();
+        this.loaderSvc.deactivate();
       }),
     );
   }
 
   public updateAbsence(requestData: AddAbsenceRequestDate): Observable<Absence> {
+    this.loaderSvc.activate();
     const { id, ...restData } = requestData;
     return this.http.put<BaseResponse<Absence>>(`${environment.serverBaseUrl}/absences/${id}`, restData).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshAbsences$$.next();
+        this.loaderSvc.deactivate();
       }),
     );
   }

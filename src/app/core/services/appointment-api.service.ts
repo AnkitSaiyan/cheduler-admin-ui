@@ -41,7 +41,7 @@ export class AppointmentApiService {
   }
 
   public fetchAllAppointments$(data?: any): Observable<Appointment[]> {
-    // return data;
+    this.loaderSvc.activate();
     if (data) {
       const queryParams = {};
       if (data?.appointmentNumber) queryParams['id'] = data.appointmentNumber;
@@ -70,9 +70,11 @@ export class AppointmentApiService {
 
           return appointments.map((appointment) => this.getAppointmentModified(appointment));
         }),
+        tap(() => {
+          this.loaderSvc.deactivate();
+        }),
       );
     }
-    this.loaderSvc.activate();
     return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`).pipe(
       map((response) => {
         if (!response?.data?.length) {

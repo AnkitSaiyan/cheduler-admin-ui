@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { CreateExamRequestData, Exam } from '../../shared/models/exam.model';
 import { ChangeStatusRequestData, Status } from '../../shared/models/status.model';
 import { AvailabilityType } from '../../shared/models/user.model';
+import { LoaderService } from './loader.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,49 +16,73 @@ export class ExamApiService {
 
   private examUrl = `${environment.serverBaseUrl}/exam`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private loaderSvc: LoaderService) {}
 
   public get exams$(): Observable<Exam[]> {
     return combineLatest([this.refreshExams$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchExams()));
   }
 
   private fetchExams(): Observable<Exam[]> {
-    return this.http.get<BaseResponse<Exam[]>>(this.examUrl).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<Exam[]>>(this.examUrl).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public changeExamStatus$(requestData: ChangeStatusRequestData[]): Observable<boolean> {
+    this.loaderSvc.activate();
     return this.http.put<BaseResponse<any>>(`${this.examUrl}/updateexamstatus`, requestData).pipe(
       map((resp) => resp?.data),
-      tap(() => this.refreshExams$$.next()),
+      tap(() => {
+        this.refreshExams$$.next();
+        this.loaderSvc.deactivate();
+      }),
     );
   }
 
   public deleteExam(examID: number) {
+    this.loaderSvc.activate();
     return this.http.delete<BaseResponse<Boolean>>(`${this.examUrl}/${examID}`).pipe(
       map((response) => response.data),
-      tap(() => this.refreshExams$$.next()),
+      tap(() => {
+        this.refreshExams$$.next();
+        this.loaderSvc.deactivate();
+      }),
     );
   }
 
   public getExamByID(examID: number): Observable<Exam | undefined> {
+    this.loaderSvc.activate();
     return this.http.get<BaseResponse<Exam>>(`${this.examUrl}/${examID}`).pipe(
       map((response) => response.data),
-      tap(() => this.refreshExams$$.next()),
+      tap(() => {
+        this.refreshExams$$.next();
+        this.loaderSvc.deactivate();
+      }),
     );
   }
 
   public createExam$(requestData: CreateExamRequestData): Observable<Exam> {
+    this.loaderSvc.activate();
     return this.http.post<BaseResponse<Exam>>(`${this.examUrl}`, requestData).pipe(
       map((response) => response?.data),
-      tap(() => this.refreshExams$$.next()),
+      tap(() => {
+        this.refreshExams$$.next();
+        this.loaderSvc.deactivate();
+      }),
     );
   }
 
   public updateExam$(requestData: CreateExamRequestData): Observable<Exam> {
+    this.loaderSvc.activate();
     const { id, ...restData } = requestData;
     return this.http.put<BaseResponse<Exam>>(`${this.examUrl}/${id}`, restData).pipe(
       map((response) => response.data),
-      tap(() => this.refreshExams$$.next()),
+      tap(() => {
+        this.refreshExams$$.next();
+        this.loaderSvc.deactivate();
+      }),
     );
   }
 
@@ -66,6 +91,12 @@ export class ExamApiService {
   }
 
   private fetchAllExams$(): Observable<Exam[]> {
-    return this.http.get<BaseResponse<Exam[]>>(`${environment.serverBaseUrl}/common/getexams`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<Exam[]>>(`${environment.serverBaseUrl}/common/getexams`).pipe(
+      map((response) => response.data),
+      tap(() => {
+        this.loaderSvc.deactivate();
+      }),
+    );
   }
 }
