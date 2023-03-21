@@ -107,6 +107,19 @@
   --dfm-badge-secondary-bg: var(--dfm-secondary);
   --dfm-badge-secondary-color: #{$diflexmo-secondary-text};
 
+  //tag
+
+  // --dfm-tag-close-color: #{$gray-modern-400};
+  // --dfm-tag-count-bg: #{$gray-modern-100};
+  // --dfm-tag-color: #{$gray-modern-700};
+  // --dfm-tag-bg: #{$diflexmo-white};
+  // --dfm-tag-border: #{$gray-modern-300};
+  // --dfm-tag-icon-color: #{$gray-modern-500};
+  // --dfm-tag-default-border: #{$gray-modern-300};
+  // --dfm-tag-primary-border: var(--dfm-secondary);
+  --dfm-tag-primary-bg:#{$diflexmo-tag-bg};
+  --dfm-tag-primary-color: #{$diflexmo-primary};
+
 
 
 
