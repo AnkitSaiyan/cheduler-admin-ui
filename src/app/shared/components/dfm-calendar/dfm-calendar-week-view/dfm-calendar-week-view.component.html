@@ -154,12 +154,16 @@
                 <ng-container
                   *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
 
-                  <div *ngIf="getPrioritySlotHeight(prioritySlot) as eventHeight" class="priority-slots-area" [ngClass]="prioritySlot.priority"
+                  <div *ngIf="getPrioritySlotHeight(prioritySlot) as eventHeight" [ngbPopover]="priorityCardDetail" triggers="mouseenter:mouseleave"
+                  triggers="mouseenter:mouseleave" class="priority-slots-area" [ngClass]="prioritySlot.priority"
                        [ngStyle]="{
                           'top.px': getPrioritySlotTop(prioritySlot),
                           'height.px': eventHeight
                        }"
                   >
+                  <ng-template #priorityCardDetail>
+                    <span style="white-space: nowrap">{{prioritySlot.start}} - {{prioritySlot.end}}</span>
+                  </ng-template>
                   </div>
                 </ng-container>
               </ng-container>
