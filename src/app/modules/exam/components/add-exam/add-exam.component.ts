@@ -1,10 +1,9 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { InputComponent, NotificationType} from 'diflexmo-angular-design';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {InputComponent, NotificationType} from 'diflexmo-angular-design';
 import {
   BehaviorSubject,
   combineLatest,
   debounceTime,
-  distinctUntilChanged,
   filter,
   map,
   of,
@@ -14,30 +13,29 @@ import {
   take,
   takeUntil
 } from 'rxjs';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {TimeSlot, Weekday} from '../../../../shared/models/calendar.model';
-import { UserApiService } from '../../../../core/services/user-api.service';
-import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { COMING_FROM_ROUTE, EDIT, EXAM_ID, TIME_24, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
-import { Room, RoomsGroupedByType, RoomType} from '../../../../shared/models/rooms.model';
-import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
-import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { AvailabilityType, UserType } from '../../../../shared/models/user.model';
-import { toggleControlError } from '../../../../shared/utils/toggleControlError';
-import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
-import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { NameValue } from '../../../../shared/components/search-modal.component';
-import { Status } from '../../../../shared/models/status.model';
-import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {UserApiService} from '../../../../core/services/user-api.service';
+import {ExamApiService} from '../../../../core/services/exam-api.service';
+import {StaffApiService} from '../../../../core/services/staff-api.service';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {RouterStateService} from '../../../../core/services/router-state.service';
+import {COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, Statuses, StatusesNL} from '../../../../shared/utils/const';
+import {PracticeAvailabilityServer} from '../../../../shared/models/practice.model';
+import {Room, RoomsGroupedByType, RoomType} from '../../../../shared/models/rooms.model';
+import {CreateExamRequestData, Exam} from '../../../../shared/models/exam.model';
+import {RoomsApiService} from '../../../../core/services/rooms-api.service';
+import {AvailabilityType, UserType} from '../../../../shared/models/user.model';
+import {toggleControlError} from '../../../../shared/utils/toggleControlError';
+import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
+import {TimeInIntervalPipe} from '../../../../shared/pipes/time-in-interval.pipe';
+import {NameValue} from '../../../../shared/components/search-modal.component';
+import {Status} from '../../../../shared/models/status.model';
+import {Translate} from '../../../../shared/models/translate.model';
+import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {GeneralUtils} from "../../../../shared/utils/general.utils";
-import { NumberArrayPipe } from 'src/app/shared/pipes/number-array.pipe';
 
 interface FormValues {
   name: string;
@@ -62,16 +60,6 @@ interface FormValues {
   secretaryCount: number;
   secretaries: number[];
   practiceAvailabilityToggle?: boolean;
-  practiceAvailability: {
-    [key: string]: {
-      weekday: Weekday;
-      dayStart: string;
-      dayEnd: string;
-      startTimings: NameValue[];
-      endTimings: NameValue[];
-    }[];
-  };
-  selectedWeekday: Weekday;
   status: Status;
 }
 
