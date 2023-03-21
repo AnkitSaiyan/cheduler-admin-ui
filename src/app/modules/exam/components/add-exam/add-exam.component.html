@@ -112,7 +112,7 @@
                 </dfm-input>
               </div>
               <div class="dfm-input-dropdown-wrapper-wo-label order" *ngIf="orderOption$$ | async as orderOption">
-                <dfm-input-dropdown size="sm" formControlName="order" placeholder="{{'Order' | translate}}"
+                <dfm-input-dropdown size="sm" formControlName="sortOrder" placeholder="{{'Order' | translate}}"
                       [items]="orderOption | numberArray : 1 | nameValuePair">
                 </dfm-input-dropdown>
               </div>

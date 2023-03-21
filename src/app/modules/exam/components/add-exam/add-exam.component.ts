@@ -48,7 +48,7 @@ interface FormValues {
     duration: number;
     roomName: string;
     selectRoom: boolean;
-    order: number;
+    sortOrder: number;
   }[];
   info: string;
   uncombinables: number[];
@@ -464,14 +464,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     // }, 500);
   }
 
-  private getRoomsForExamFormGroup(room: Room, index: number): FormGroup {
+  private getRoomsForExamFormGroup(room: Room): FormGroup {
     let roomForExam;
-    // let order;
 
     if (this.examDetails$$.value?.roomsForExam?.length) {
       roomForExam = this.examDetails$$.value?.roomsForExam.find((examRoom) => examRoom?.roomId?.toString() === room?.id?.toString());
-      // order = this.examDetails$$.value?.roomsForExam.findIndex((examRoom) => examRoom?.roomId?.toString() === room?.id?.toString());
-      // order += 1;
     }
 
     const fg = this.fb.group({
@@ -483,7 +480,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         },
         [Validators.required, Validators.min(1)],
       ],
-      order: [{ value: null, disabled: !roomForExam?.duration }, []],
+      sortOrder: [{ value: roomForExam?.sortOrder ?? null, disabled: !roomForExam?.duration }, []],
       roomName: [room.name, []],
       selectRoom: [!!roomForExam?.duration, []],
     });
@@ -493,11 +490,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       .subscribe((value) => {
         if (value) {
           fg.get('duration')?.enable();
-          fg.get('order')?.enable();
+          fg.get('sortOrder')?.enable();
           this.formErrors.selectRoomErr = false;
         } else {
           fg.get('duration')?.disable();
-          fg.get('order')?.disable();
+          fg.get('sortOrder')?.disable();
         }
       });
 
@@ -514,17 +511,17 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     fa.clear();
 
     if (this.availableRooms$$.value[roomType]?.length) {
-      this.availableRooms$$.value[roomType].forEach((room, index) => fa.push(this.getRoomsForExamFormGroup(room, index)));
+      this.availableRooms$$.value[roomType].forEach((room) => fa.push(this.getRoomsForExamFormGroup(room)));
       this.orderOption$$.next(this.availableRooms$$.value[roomType].length);
 
       setTimeout(() => {
         fa.controls.forEach((control) => {
           const roomIndex = this.availableRooms$$.value[roomType].findIndex((room) => +room.id === +control.value.roomId);
           if (control.get('selectRoom')?.value && roomIndex > -1) {
-            control.get('order')?.setValue((roomIndex + 1).toString());
+            control.get('sortOrder')?.setValue((roomIndex + 1).toString());
           }
         });
-      }, 0)
+      }, 0);
     }
 
     this.cdr.detectChanges();
@@ -676,12 +673,12 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       roomsForExam: [
         ...this.formValues.roomsForExam
           .filter((room) => room.selectRoom)
-          .map(({ roomId, duration, order }) => ({
+          .map(({ roomId, duration, sortOrder }) => ({
             roomId,
             duration,
-            order,
+            sortOrder,
           })),
-      ].sort((a, b) => (+a.order < +b.order ? -1 : 1)),
+      ].sort((a, b) => (+a.sortOrder < +b.sortOrder ? -1 : 1)),
       status: this.formValues.status,
       availabilityType: timeSlotFormValues ? +!!timeSlotFormValues.values?.length : 0,
       uncombinables: this.formValues.uncombinables ?? [],
