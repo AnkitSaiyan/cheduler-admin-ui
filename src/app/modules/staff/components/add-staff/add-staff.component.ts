@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {BehaviorSubject, map, of, Subject, switchMap, takeUntil, tap} from 'rxjs';
+import {BehaviorSubject, debounceTime, map, of, Subject, switchMap, takeUntil, tap} from 'rxjs';
 import {NotificationType} from 'diflexmo-angular-design';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AvailabilityType, User, UserType} from '../../../../shared/models/user.model';
@@ -134,6 +134,8 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
     this.filteredTimings = [...this.timings];
 
+    this.createForm();
+
     this.routerStateSvc
       .listenForParamChange$(STAFF_ID)
       .pipe(
@@ -144,12 +146,15 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
           }
           return of({} as User);
         }),
+        debounceTime(0)
       )
       .subscribe((staffDetails) => {
-        this.createForm(staffDetails);
+        if (staffDetails) {
+          this.updateForm(staffDetails);
 
-        if (staffDetails && staffDetails?.practiceAvailability?.length) {
-          this.staffAvailabilityData$$.next(staffDetails.practiceAvailability);
+          if (staffDetails?.practiceAvailability?.length) {
+            this.staffAvailabilityData$$.next(staffDetails.practiceAvailability);
+          }
         }
 
         this.loading$$.next(false);
@@ -203,20 +208,32 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     super.ngOnDestroy();
   }
 
-  private createForm(staffDetails?: User | undefined): void {
+  private createForm() {
     this.addStaffForm = this.fb.group({
-      firstname: [staffDetails?.firstname, [Validators.required]],
-      lastname: [staffDetails?.lastname, [Validators.required]],
-      email: [staffDetails?.email, [Validators.required]],
-      telephone: [staffDetails?.telephone, []],
+      firstname: [null, [Validators.required]],
+      lastname: [null, [Validators.required]],
+      email: [null, [Validators.required]],
+      telephone: [null, []],
       userType: [null, [Validators.required]],
-      info: [staffDetails?.info, []],
+      info: [null, []],
+      // examList: [null, []],
+      status: [null ?? Status.Active, []],
+      availabilityType: [AvailabilityType.Unavailable, []],
+      practiceAvailabilityToggle: [false, []],
+    });
+  }
+
+  private updateForm(staffDetails?: User): void {
+    this.addStaffForm.patchValue({
+      firstname: staffDetails?.firstname,
+      lastname: staffDetails?.lastname,
+      email: staffDetails?.email,
+      telephone: staffDetails?.telephone,
+      info: staffDetails?.info,
       // examList: [staffDetails?.exams?.map((exam) => exam?.id?.toString()), []],
-      status: [staffDetails?.status ?? Status.Active, []],
-      selectedWeekday: [this.weekdayEnum.ALL, []],
-      availabilityType: [!!staffDetails?.availabilityType, []],
-      practiceAvailabilityToggle: [!!staffDetails?.practiceAvailability?.length, []],
-      practiceAvailability: this.fb.group({}),
+      status: staffDetails?.status ?? Status.Active,
+      availabilityType: !!staffDetails?.availabilityType,
+      practiceAvailabilityToggle: !!staffDetails?.practiceAvailability?.length
     });
 
     setTimeout(() => {

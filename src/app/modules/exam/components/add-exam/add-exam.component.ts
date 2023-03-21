@@ -323,10 +323,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       nursing: [[], []],
       secretaryCount: [null, []],
       secretaries: [[], []],
-      selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceAvailabilityToggle: [null, []],
       status: [Status.Active, []],
-      practiceAvailability: this.fb.group({}),
     });
 
     this.examForm
@@ -686,7 +684,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         .updateExam$(createExamRequestData)
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
-          () => {
+            () => {
             this.notificationSvc.showNotification(Translate.SuccessMessage.ExamUpdated[this.selectedLang]);
             let route: string;
             if (this.comingFromRoute === 'view') {
