@@ -152,10 +152,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       });
 
     this.staffApiSvc.staffTypes$
-      .pipe(
-        map((staffTypes) => staffTypes.map((staffType) => ({ name: staffType, value: staffType.toString() }))),
-        takeUntil(this.destroy$$),
-      )
+      .pipe(takeUntil(this.destroy$$))
       .subscribe((staffTypes) => this.staffTypes$$.next(staffTypes));
 
     this.examApiSvc.exams$
