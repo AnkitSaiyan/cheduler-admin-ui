@@ -40,7 +40,19 @@
         popoverClass="popover-p-8"
         [openDelay]="200"
         (click)="toggleView()"
+        *ngIf="(calendarView$$ | async) === true"
       ></dfm-button-icon>
+      <dfm-button-icon
+      *ngIf="(calendarView$$ | async) === false"
+            color="secondary-gray"
+            size="md"
+            icon="calendar-date"
+            ngbPopover="{{ 'Calendar' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
+            (click)="toggleView()"
+          ></dfm-button-icon>
       <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false" (click)="openAddPriorityModal()"
         >{{ 'AddPrioritySlots' | translate }}
       </dfm-button>
@@ -65,7 +77,7 @@
           <dfm-table-body-cell>{{ item.startedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item.endedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>
-            <div class="text-truncate pr-li-info-cell">{{ item.priority | dashIfNothing | translate }}</div>
+            <div class="text-truncate pr-li-info-cell" [ngClass]="item.priority">{{ item.priority | dashIfNothing | translate }}</div>
           </dfm-table-body-cell>
 
           <dfm-table-body-cell>

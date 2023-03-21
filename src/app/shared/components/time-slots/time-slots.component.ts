@@ -87,6 +87,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
     this.createForm();
 
     this.timeSlotData$$.pipe(takeUntil(this.destroy$$), filter((d) => !!d?.length)).subscribe((timeSlots) => {
+      console.log(timeSlots);
       this.updateForm(timeSlots);
     });
 
@@ -164,7 +165,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
     if (selectedTab === Weekday.ALL) {
       for (let i = 0; i < 7; i++) {
         if (!this.formValues.timeSlotGroup[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
-          return 'primary';
+          return 'gray';
         }
       }
 
@@ -176,7 +177,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
       return 'gray';
     }
 
-    return 'primary';
+    return 'gray';
   }
 
   public selectWeekday(weekday: Weekday) {
@@ -241,6 +242,8 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
   }
 
   private patchUpdatedValues(control: AbstractControl<any>, timeSlot: TimeSlot) {
+    console.log(timeSlot.dayStart, timeSlot.dayEnd)
+    console.log(get24HourTimeString(timeSlot.dayStart), get24HourTimeString(timeSlot.dayEnd));
     control.patchValue({
       id: timeSlot.id,
       dayStart: get24HourTimeString(timeSlot.dayStart),

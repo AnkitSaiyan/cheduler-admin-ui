@@ -2,6 +2,7 @@ import { UserType } from './user.model';
 import { PracticeAvailability } from './practice.model';
 import { NameValue } from '../components/search-modal.component';
 import { Status } from './status.model';
+import {TimeSlot} from "./calendar.model";
 
 export interface AddStaffRequestData {
   firstname: string;
@@ -11,7 +12,7 @@ export interface AddStaffRequestData {
   address?: string;
   userType: UserType;
   availabilityType?: number;
-  practiceAvailability?: PracticeAvailability[];
+  practiceAvailability?: TimeSlot[];
   examLists?: number[];
   gsm?: string;
   info?: string;

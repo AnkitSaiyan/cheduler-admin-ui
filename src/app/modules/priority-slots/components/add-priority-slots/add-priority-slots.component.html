@@ -66,7 +66,7 @@
                   (searchInput)="handleTimeInput($event, 'slotStartTime')"
                   formControlName="slotStartTime"
                   size="md"
-                  label="{{ 'StartTime' | translate }}"
+                  label="{{ 'StartTime' | translate }} *"
                   placeholder="{{ 'HH:MM' | translate }}"
                 >
                 </dfm-input-dropdown>
@@ -130,7 +130,7 @@
                   [required]="formValues.isRepeat"
                   formControlName="slotEndTime"
                   size="md"
-                  label="{{ 'EndTime' | translate }}"
+                  label="{{ 'EndTime' | translate }} *"
                   placeholder="{{ 'HH:MM' | translate }}"
                 >
                 </dfm-input-dropdown>
@@ -249,7 +249,13 @@
       </ng-container>
 
       <div class="d-flex dfm-gap-32 flex-wrap flex-1">
-        <dfm-input type="number" placeholder="Enter Priority Percentage" #percentage (focusout)="handleExpenseInput($event, percentage, prioritySlotForm.get('nxtSlotOpenPct'))" formControlName="nxtSlotOpenPct" size="md" label="Priority Slot Percentage"></dfm-input>
+        <dfm-input type="number" required placeholder="{{'EnterPercentage' | translate}}" #percentage (focusout)="handleExpenseInput($event, percentage, prioritySlotForm.get('nxtSlotOpenPct'))" formControlName="nxtSlotOpenPct" size="md" label="{{'NextSlotOpen' | translate}} % *"></dfm-input>
+        <!-- <small
+                class="validation-error text-center d-flex"
+                *ngIf="slotEndTime.control.hasError('time') && slotStartTime.control.value && slotEndTime.control.value"
+              >
+                {{ 'EndTimeGreaterTime' | translate }}
+              </small> -->
       </div>
       <!-- <div class="d-flex dfm-gap-32 flex-wrap flex-1">
         <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-pr-staffs" *ngIf="radiologist$$ | async as radiology">

@@ -1,10 +1,9 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { InputComponent, NotificationType} from 'diflexmo-angular-design';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {InputComponent, NotificationType} from 'diflexmo-angular-design';
 import {
   BehaviorSubject,
   combineLatest,
   debounceTime,
-  distinctUntilChanged,
   filter,
   map,
   of,
@@ -14,30 +13,29 @@ import {
   take,
   takeUntil
 } from 'rxjs';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {TimeSlot, Weekday} from '../../../../shared/models/calendar.model';
-import { UserApiService } from '../../../../core/services/user-api.service';
-import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { COMING_FROM_ROUTE, EDIT, EXAM_ID, TIME_24, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
-import { Room, RoomsGroupedByType, RoomType} from '../../../../shared/models/rooms.model';
-import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
-import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { AvailabilityType, UserType } from '../../../../shared/models/user.model';
-import { toggleControlError } from '../../../../shared/utils/toggleControlError';
-import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
-import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { NameValue } from '../../../../shared/components/search-modal.component';
-import { Status } from '../../../../shared/models/status.model';
-import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {UserApiService} from '../../../../core/services/user-api.service';
+import {ExamApiService} from '../../../../core/services/exam-api.service';
+import {StaffApiService} from '../../../../core/services/staff-api.service';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {RouterStateService} from '../../../../core/services/router-state.service';
+import {COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, Statuses, StatusesNL} from '../../../../shared/utils/const';
+import {PracticeAvailabilityServer} from '../../../../shared/models/practice.model';
+import {Room, RoomsGroupedByType, RoomType} from '../../../../shared/models/rooms.model';
+import {CreateExamRequestData, Exam} from '../../../../shared/models/exam.model';
+import {RoomsApiService} from '../../../../core/services/rooms-api.service';
+import {AvailabilityType, UserType} from '../../../../shared/models/user.model';
+import {toggleControlError} from '../../../../shared/utils/toggleControlError';
+import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
+import {TimeInIntervalPipe} from '../../../../shared/pipes/time-in-interval.pipe';
+import {NameValue} from '../../../../shared/components/search-modal.component';
+import {Status} from '../../../../shared/models/status.model';
+import {Translate} from '../../../../shared/models/translate.model';
+import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {GeneralUtils} from "../../../../shared/utils/general.utils";
-import { NumberArrayPipe } from 'src/app/shared/pipes/number-array.pipe';
 
 interface FormValues {
   name: string;
@@ -48,7 +46,7 @@ interface FormValues {
     duration: number;
     roomName: string;
     selectRoom: boolean;
-    order: number;
+    sortOrder: number;
   }[];
   info: string;
   uncombinables: number[];
@@ -62,16 +60,6 @@ interface FormValues {
   secretaryCount: number;
   secretaries: number[];
   practiceAvailabilityToggle?: boolean;
-  practiceAvailability: {
-    [key: string]: {
-      weekday: Weekday;
-      dayStart: string;
-      dayEnd: string;
-      startTimings: NameValue[];
-      endTimings: NameValue[];
-    }[];
-  };
-  selectedWeekday: Weekday;
   status: Status;
 }
 
@@ -335,10 +323,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       nursing: [[], []],
       secretaryCount: [null, []],
       secretaries: [[], []],
-      selectedWeekday: [this.weekdayEnum.ALL, []],
       practiceAvailabilityToggle: [null, []],
       status: [Status.Active, []],
-      practiceAvailability: this.fb.group({}),
     });
 
     this.examForm
@@ -464,14 +450,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     // }, 500);
   }
 
-  private getRoomsForExamFormGroup(room: Room, index: number): FormGroup {
+  private getRoomsForExamFormGroup(room: Room): FormGroup {
     let roomForExam;
-    // let order;
 
     if (this.examDetails$$.value?.roomsForExam?.length) {
       roomForExam = this.examDetails$$.value?.roomsForExam.find((examRoom) => examRoom?.roomId?.toString() === room?.id?.toString());
-      // order = this.examDetails$$.value?.roomsForExam.findIndex((examRoom) => examRoom?.roomId?.toString() === room?.id?.toString());
-      // order += 1;
     }
 
     const fg = this.fb.group({
@@ -483,7 +466,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         },
         [Validators.required, Validators.min(1)],
       ],
-      order: [{ value: null, disabled: !roomForExam?.duration }, []],
+      sortOrder: [{ value: roomForExam?.sortOrder ?? null, disabled: !roomForExam?.duration }, []],
       roomName: [room.name, []],
       selectRoom: [!!roomForExam?.duration, []],
     });
@@ -493,11 +476,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       .subscribe((value) => {
         if (value) {
           fg.get('duration')?.enable();
-          fg.get('order')?.enable();
+          fg.get('sortOrder')?.enable();
           this.formErrors.selectRoomErr = false;
         } else {
           fg.get('duration')?.disable();
-          fg.get('order')?.disable();
+          fg.get('sortOrder')?.disable();
         }
       });
 
@@ -514,17 +497,17 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     fa.clear();
 
     if (this.availableRooms$$.value[roomType]?.length) {
-      this.availableRooms$$.value[roomType].forEach((room, index) => fa.push(this.getRoomsForExamFormGroup(room, index)));
+      this.availableRooms$$.value[roomType].forEach((room) => fa.push(this.getRoomsForExamFormGroup(room)));
       this.orderOption$$.next(this.availableRooms$$.value[roomType].length);
 
       setTimeout(() => {
         fa.controls.forEach((control) => {
           const roomIndex = this.availableRooms$$.value[roomType].findIndex((room) => +room.id === +control.value.roomId);
           if (control.get('selectRoom')?.value && roomIndex > -1) {
-            control.get('order')?.setValue((roomIndex + 1).toString());
+            control.get('sortOrder')?.setValue((roomIndex + 1).toString());
           }
         });
-      }, 0)
+      }, 0);
     }
 
     this.cdr.detectChanges();
@@ -676,12 +659,12 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       roomsForExam: [
         ...this.formValues.roomsForExam
           .filter((room) => room.selectRoom)
-          .map(({ roomId, duration, order }) => ({
+          .map(({ roomId, duration, sortOrder }) => ({
             roomId,
             duration,
-            order,
+            sortOrder,
           })),
-      ].sort((a, b) => (+a.order < +b.order ? -1 : 1)),
+      ].sort((a, b) => (+a.sortOrder < +b.sortOrder ? -1 : 1)),
       status: this.formValues.status,
       availabilityType: timeSlotFormValues ? +!!timeSlotFormValues.values?.length : 0,
       uncombinables: this.formValues.uncombinables ?? [],
@@ -701,7 +684,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         .updateExam$(createExamRequestData)
         .pipe(takeUntil(this.destroy$$))
         .subscribe(
-          () => {
+            () => {
             this.notificationSvc.showNotification(Translate.SuccessMessage.ExamUpdated[this.selectedLang]);
             let route: string;
             if (this.comingFromRoute === 'view') {

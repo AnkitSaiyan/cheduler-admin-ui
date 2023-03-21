@@ -62,6 +62,8 @@ export function get24HourTimeString(timeString: string | undefined): string {
       } else {
         time = timeString.slice(0, 5);
       }
+    } else {
+      return timeString.slice(0, 5);
     }
   }
 

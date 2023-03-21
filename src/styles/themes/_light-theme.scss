@@ -77,11 +77,12 @@
 
   // textarea
   --dfm-text-area-focus-border-color: #{$diflexmo-secondary};
-    //priority slots color
 
-    --dfm-priority-slot-high-color: #{$diflexmo-priority-slot-high};
-    --dfm-priority-slot-medium-color: #{$diflexmo-priority-slot-medium};
-    --dfm-priority-slot-low-color: #{$diflexmo-priority-slot-low};
+  //priority slots color
+
+  --dfm-priority-slot-high-color: #{$diflexmo-priority-slot-high};
+  --dfm-priority-slot-medium-color: #{$diflexmo-priority-slot-medium};
+  --dfm-priority-slot-low-color: #{$diflexmo-priority-slot-low};
 
 
   //  Navbar
@@ -93,12 +94,21 @@
   //   --dfm-navbar-item-hover-color: #{$diflexmo-secondary};
 
   //badge
-
+  // --dfm-badge-secondary-bg: #{$diflexmo-secondary};
+  // --dfm-badge-success-color: #{$success-700};
+  // --dfm-badge-success-bg: #{$success-50};
+  // --dfm-badge-primary-dark-color: #{$danger-100};
+  // --dfm-badge-primary-dark-bg: #{$danger-500};
+  // --dfm-badge-primary-color: #{$danger-700};
+  // --dfm-badge-primary-bg: #{$danger-50};
+  // --dfm-badge-primary-bg: #{$diflexmo-gray-bg};
+  --dfm-badge-primary-color: #{$danger-700};
+  --dfm-badge-secondary-color: #{rgba(83, 20, 34, 0.7)};
+  --dfm-badge-secondary-bg: var(--dfm-secondary);
   --dfm-badge-secondary-color: #{$diflexmo-secondary-text};
-  --dfm-badge-secondary-bg: #{$diflexmo-secondary};
-  --dfm-badge-primary-color: #{$diflexmo-gray-color};
-  --dfm-badge-primary-bg: #{$diflexmo-gray-bg};
-  
+
+
+
 
 }
 
