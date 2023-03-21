@@ -388,10 +388,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       }
     }
 
-    if (this.formValues.nxtSlotOpenPct <= 0) {
-      controls['nxtSlotOpenPct'].markAsTouched();
-      return;
-    }
+    controls['nxtSlotOpenPct'].markAsTouched();
 
     this.submitting$$.next(true);
 
@@ -616,6 +613,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     }
   }
 }
+
 
 
 

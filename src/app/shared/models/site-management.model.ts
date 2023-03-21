@@ -13,7 +13,7 @@ export interface SiteManagement {
   file?: null | File;
   isSlotsCombinable: boolean;
   reminderTime: number;
-  isAppointmentAutoConfirm: boolean;
+  isAppointmentAutoconfirm: boolean;
 }
 
 export interface SiteManagementRequestData {
@@ -30,4 +30,5 @@ export interface SiteManagementRequestData {
   id?: number;
   isSlotsCombinable: boolean;
   reminderTime: number;
+  isAppointmentAutoconfirm: boolean;
 }
