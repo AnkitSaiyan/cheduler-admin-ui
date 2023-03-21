@@ -13,7 +13,16 @@
 
       <div class="d-flex align-items-center dfm-button-group-wrapper pr-li-button-dropdown-group">
         <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
-          <dfm-button-icon color="tertiary-gray" size="md" icon="copy-03" (click)="copyToClipboard()"></dfm-button-icon>
+          <dfm-button-icon
+            color="tertiary-gray"
+            size="md"
+            icon="copy-03"
+            ngbPopover="{{ 'Calendar' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
+            (click)="copyToClipboard()"
+          ></dfm-button-icon>
         </div>
         <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent">
           <dfm-input-dropdown
@@ -43,16 +52,16 @@
         *ngIf="(calendarView$$ | async) === true"
       ></dfm-button-icon>
       <dfm-button-icon
-      *ngIf="(calendarView$$ | async) === false"
-            color="secondary-gray"
-            size="md"
-            icon="calendar-date"
-            ngbPopover="{{ 'Calendar' | translate }}"
-            triggers="mouseenter:mouseleave"
-            popoverClass="popover-p-8"
-            [openDelay]="200"
-            (click)="toggleView()"
-          ></dfm-button-icon>
+        *ngIf="(calendarView$$ | async) === false"
+        color="secondary-gray"
+        size="md"
+        icon="calendar-date"
+        ngbPopover="{{ 'Calendar' | translate }}"
+        triggers="mouseenter:mouseleave"
+        popoverClass="popover-p-8"
+        [openDelay]="200"
+        (click)="toggleView()"
+      ></dfm-button-icon>
       <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false" (click)="openAddPriorityModal()"
         >{{ 'AddPrioritySlots' | translate }}
       </dfm-button>
