@@ -180,26 +180,18 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
         this.cdr.detectChanges();
       });
-      this.shareDataSvc
+    this.shareDataSvc
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
       .subscribe((lang) => {
         this.selectedLang = lang;
         this.columns = [
           // Translate.Read[lang],
-          Translate.Status[lang],
-          Translate.Actions[lang],
+          Translate.PatientName[lang],
+          Translate.PatientEmail[lang],
+          Translate.Doctor[lang],
+          Translate.StartedAt[lang],
         ];
-
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
-        }
       });
   }
 
@@ -234,6 +226,5 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
     }
   }
 
-  public deletePatient(id: number) {
-  }
+  public deletePatient(id: number) {}
 }
