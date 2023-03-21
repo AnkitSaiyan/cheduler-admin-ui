@@ -165,7 +165,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
     if (selectedTab === Weekday.ALL) {
       for (let i = 0; i < 7; i++) {
         if (!this.formValues.timeSlotGroup[i.toString()]?.every((pa) => pa?.dayEnd && pa?.dayStart)) {
-          return 'primary';
+          return 'gray';
         }
       }
 
@@ -177,7 +177,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
       return 'gray';
     }
 
-    return 'primary';
+    return 'gray';
   }
 
   public selectWeekday(weekday: Weekday) {
