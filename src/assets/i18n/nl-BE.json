@@ -357,6 +357,7 @@
   "Content" : "Inhoud",
   "ContentForAdmin" : "Inhoud voor admin",
   "AppointmentConfirmationDiflexmo" : "afspraakbevestiging diflexmo",
-  "NextSlotOpen": "Volgende Open Slot"
+  "NextSlotOpen": "Volgende sleuf geopend",
+  "EnterPercentage": "Voer Percentage in"
 }
 
