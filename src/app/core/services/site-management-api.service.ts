@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
+import { combineLatest, map, Observable, startWith, Subject, switchMap } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { SiteManagement, SiteManagementRequestData } from '../../shared/models/site-management.model';
@@ -28,6 +28,7 @@ export class SiteManagementApiService {
     formData.append('isSlotsCombinable', String(requestData.isSlotsCombinable));
     formData.append('cancelAppointmentTime', String(requestData.cancelAppointmentTime));
     formData.append('ReminderTime', String(requestData.reminderTime));
+    formData.append('isAppointmentAutoconfirm', String(requestData.isAppointmentAutoconfirm));
     if (requestData.file) {
       formData.append('File', requestData.file);
     }

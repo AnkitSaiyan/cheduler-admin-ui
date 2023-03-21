@@ -22,6 +22,7 @@ interface FormValues {
   subHeading: string;
   bodyText: string;
   doctorReferringConsent: 0 | 1;
+  isAppointmentAutoconfirm: boolean;
   cancelAppointmentTime: number;
   cancelAppointmentType: TimeDurationType;
   address: string;
@@ -137,8 +138,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       if (siteManagementData.introductoryText) {
         try {
           introductoryTextObj = JSON.parse(siteManagementData.introductoryText);
-        } catch (e) {
-        }
+        } catch (e) {}
       }
 
       if (siteManagementData?.logo) {
@@ -168,7 +168,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
       reminderTime: [reminderDuration, []],
       reminderTimeType: [reminderDurationTYpe, []],
-      isAppointmentAutoConfirm: [!!siteManagementData?.isAppointmentAutoConfirm, [Validators.required]]
+      isAppointmentAutoconfirm: [!!siteManagementData?.isAppointmentAutoconfirm, [Validators.required]],
     });
 
     setTimeout(() => {
