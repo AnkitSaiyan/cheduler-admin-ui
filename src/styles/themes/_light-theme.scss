@@ -94,9 +94,11 @@
 
   //badge
 
-  // --dfm-badge-secondary-color: #{$diflexmo-secondary};
-  // --dfm-badge-secondary-bg: #{$diflexmo-primary};
-  // --dfm-badge-primary-bg: #{$diflexmo-secondary};
+  --dfm-badge-secondary-color: #{$diflexmo-secondary-text};
+  --dfm-badge-secondary-bg: #{$diflexmo-secondary};
+  --dfm-badge-primary-color: #{$diflexmo-gray-color};
+  --dfm-badge-primary-bg: #{$diflexmo-gray-bg};
+  
 
 }
 
