@@ -77,7 +77,11 @@
           <dfm-table-body-cell>{{ item.startedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item.endedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>
-            <div class="text-truncate pr-li-info-cell" [ngClass]="item.priority">{{ item.priority | dashIfNothing | translate }}</div>
+            <div [ngClass]="item.priority">
+              <dfm-badge color="success" size="sm" fontWeight="medium">
+                {{ item.priority | dashIfNothing | translate }}
+              </dfm-badge>
+            </div>
           </dfm-table-body-cell>
 
           <dfm-table-body-cell>

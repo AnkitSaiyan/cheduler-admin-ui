@@ -1137,6 +1137,32 @@ ngb-datepicker {
 //  max-width: calc(100% - 200px);
 //}
 
+.High {
+  dfm-badge {
+    >div {
+      color: rgba(#ff0000, 0.7) !important;
+      background: rgba(#ff0000, 0.1) !important;
+    }
+  }
+}
+
+.Medium {
+  dfm-badge {
+    >div {
+      color: var(--dfm-badge-warning-color) !important;
+      background-color: var(--dfm-badge-warning-bg) !important;
+    }
+  }
+}
+
+.Low {
+  dfm-badge {
+    >div {
+      color: var(--dfm-badge-success-color) !important;
+      background-color: var(--dfm-badge-success-bg) !important;
+    }
+  }
+}
 html, body {
   height: 100%;
 }
