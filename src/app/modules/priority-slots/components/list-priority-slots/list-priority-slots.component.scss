@@ -3,6 +3,7 @@
 
     .pr-li-info-cell {
       max-width: 512px;
+
     }
 
     div:last-child {
@@ -82,3 +83,15 @@
       display: block;
     }
   }
+
+    .High {
+      color: var(--dfm-priority-slot-high-color);
+    }
+  
+    .Medium {
+      color: var(--dfm-priority-slot-medium-color);
+    }
+  
+    .Low {
+      color: var(--dfm-priority-slot-low-color);
+    }

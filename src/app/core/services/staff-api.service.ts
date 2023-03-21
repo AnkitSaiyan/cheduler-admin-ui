@@ -1,9 +1,10 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {
   BehaviorSubject,
   catchError,
-  combineLatest, filter,
+  combineLatest,
+  filter,
   map,
   Observable,
   of,
@@ -13,14 +14,15 @@ import {
   takeUntil,
   tap
 } from 'rxjs';
-import { BaseResponse } from 'src/app/shared/models/base-response.model';
-import { environment } from 'src/environments/environment';
-import { User, UserType } from '../../shared/models/user.model';
-import { AddStaffRequestData, StaffType } from '../../shared/models/staff.model';
-import { ChangeStatusRequestData } from '../../shared/models/status.model';
+import {BaseResponse} from 'src/app/shared/models/base-response.model';
+import {environment} from 'src/environments/environment';
+import {User, UserType} from '../../shared/models/user.model';
+import {AddStaffRequestData, StaffType} from '../../shared/models/staff.model';
+import {ChangeStatusRequestData} from '../../shared/models/status.model';
 import {ShareDataService} from "./share-data.service";
 import {DestroyableComponent} from "../../shared/components/destroyable.component";
 import {Translate} from "../../shared/models/translate.model";
+import {NameValue} from "../../shared/components/search-modal.component";
 
 @Injectable({
   providedIn: 'root',
@@ -30,11 +32,23 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
 
   private refreshStaffs$$ = new Subject<void>();
 
-  private readonly staffTypes$$ = new BehaviorSubject<StaffType[]>([
-    StaffType.Radiologist,
-    StaffType.Nursing,
-    StaffType.Assistant,
-    StaffType.Secretary,
+  private readonly staffTypes$$ = new BehaviorSubject<NameValue[]>([
+    {
+      name: StaffType.Radiologist,
+      value: StaffType.Radiologist,
+    },
+    {
+      name: StaffType.Nursing,
+      value: StaffType.Nursing,
+    },
+    {
+      name: StaffType.Assistant,
+      value: StaffType.Assistant,
+    },
+    {
+      name: StaffType.Secretary,
+      value: StaffType.Secretary,
+    }
   ]);
 
   private selectedLang$$ = new BehaviorSubject<string>('');
@@ -134,11 +148,14 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
     return this.staffList$.pipe(map((staffs) => staffs.filter((staff) => staff.userType === UserType.Radiologist)));
   }
 
-  public get staffTypes$(): Observable<StaffType[]> {
+  public get staffTypes$(): Observable<NameValue[]> {
     return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
       switchMap(([lang]) => this.staffTypes$$.asObservable().pipe(
         filter(() => !!lang),
-        map((staffTypes) => staffTypes.map((staffType) => Translate.StaffTypes[staffType][lang]))
+        map((staffTypes) => staffTypes.map((staffType) => ({
+          ...staffType,
+          name: Translate.StaffTypes[staffType.name][lang]
+        })))
       ))
     )
   }

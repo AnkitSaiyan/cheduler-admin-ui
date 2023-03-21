@@ -307,7 +307,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       ],
       userList: [prioritySlotDetails?.users?.length ? prioritySlotDetails.users.map(({ id }) => id.toString()) : [], []],
       priority: [prioritySlotDetails?.priority ?? null, [Validators.required]],
-      nxtSlotOpenPct: [prioritySlotDetails?.nxtSlotOpenPct ?? null, [Validators.max(100)]],
+      nxtSlotOpenPct: [prioritySlotDetails?.nxtSlotOpenPct ?? null, [Validators.required, Validators.max(100), Validators.minLength(1)]],
     });
 
     setTimeout(
@@ -367,6 +367,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   public savePrioritySlot() {
+    const { controls } = this.prioritySlotForm;
     if (this.formValues.isRepeat) {
       if (this.prioritySlotForm.invalid) {
         this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
@@ -376,7 +377,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         return;
       }
     } else {
-      const { controls } = this.prioritySlotForm;
       const invalid = ['startedAt', 'slotStartTime', 'priority', 'slotEndTime'].some((key) => {
         controls[key].markAsTouched();
         return controls[key].invalid;
@@ -386,6 +386,11 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
         return;
       }
+    }
+
+    if (this.formValues.nxtSlotOpenPct <= 0) {
+      controls['nxtSlotOpenPct'].markAsTouched();
+      return;
     }
 
     this.submitting$$.next(true);
@@ -603,8 +608,30 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         control.setValue(newValue);
       }
     }
+    if (element.value <= 0) {
+      element.value = 1;
+      if (control) {
+        control.setValue(1);
+      }
+    }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
