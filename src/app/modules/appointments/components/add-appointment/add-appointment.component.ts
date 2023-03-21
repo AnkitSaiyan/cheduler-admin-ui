@@ -282,23 +282,23 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
     dateDistributed = CalendarUtils.DateToDateDistributed(date);
 
-
-
-    this.appointmentForm.patchValue(
-      {
-        patientFname: appointment?.patientFname ?? null,
-        patientLname: appointment?.patientLname ?? null,
-        patientTel: appointment?.patientTel ?? null,
-        patientEmail: appointment?.patientEmail ?? null,
-        doctorId: appointment?.doctorId?.toString() ?? null,
-        startedAt: dateDistributed,
-        examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
-        userId: appointment?.userId?.toString() ?? null,
-        comments: appointment?.comments ?? null,
-        approval: appointment?.approval ?? AppointmentStatus.Pending,
-      },
-      {emitEvent: false},
-    );
+    setTimeout(() => {
+      this.appointmentForm.patchValue(
+        {
+          patientFname: appointment?.patientFname ?? null,
+          patientLname: appointment?.patientLname ?? null,
+          patientTel: appointment?.patientTel ?? null,
+          patientEmail: appointment?.patientEmail ?? null,
+          doctorId: appointment?.doctorId?.toString() ?? null,
+          startedAt: dateDistributed,
+          examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
+          userId: appointment?.userId?.toString() ?? null,
+          comments: appointment?.comments ?? null,
+          approval: appointment?.approval ?? AppointmentStatus.Pending,
+        },
+        {emitEvent: false},
+      );
+    }, 200)
 
     const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
 
