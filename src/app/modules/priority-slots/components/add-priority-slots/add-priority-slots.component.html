@@ -66,7 +66,7 @@
                   (searchInput)="handleTimeInput($event, 'slotStartTime')"
                   formControlName="slotStartTime"
                   size="md"
-                  label="{{ 'StartTime' | translate }}"
+                  label="{{ 'StartTime' | translate }} *"
                   placeholder="{{ 'HH:MM' | translate }}"
                 >
                 </dfm-input-dropdown>
@@ -130,7 +130,7 @@
                   [required]="formValues.isRepeat"
                   formControlName="slotEndTime"
                   size="md"
-                  label="{{ 'EndTime' | translate }}"
+                  label="{{ 'EndTime' | translate }} *"
                   placeholder="{{ 'HH:MM' | translate }}"
                 >
                 </dfm-input-dropdown>
