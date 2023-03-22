@@ -113,7 +113,7 @@
   // --dfm-tag-default-border: #{$gray-modern-300};
   // --dfm-tag-primary-border: var(--dfm-secondary);
   --dfm-tag-primary-bg:#{$diflexmo-tag-bg};
-  --dfm-tag-primary-color: #($diflexmo-secondary-text);
+  --dfm-tag-primary-color: #{$diflexmo-primary-text};
 }
 
 .dark {
