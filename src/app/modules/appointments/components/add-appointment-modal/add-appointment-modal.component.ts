@@ -82,6 +82,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
   private selectedLang = ENG_BE;
 
+  private currentSlot$$ = new BehaviorSubject<any[]>([]);
+
   constructor(
     private modalSvc: ModalService,
     private fb: FormBuilder,
@@ -126,8 +128,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
     combineLatest([this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length))])
       .pipe(debounceTime(0), takeUntil(this.destroy$$))
-      .subscribe((res) => {
-      });
+      .subscribe((res) => {});
 
     this.appointmentForm
       .get('startedAt')
@@ -152,13 +153,11 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
       });
     });
 
-    this.physicianApiSvc.physicians$
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((physicians) => {
-        const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id',);
-        this.filteredPhysicianList = [...keyValuePhysicians];
-        this.physicianList = [...keyValuePhysicians];
-      });
+    this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
+      const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
+      this.filteredPhysicianList = [...keyValuePhysicians];
+      this.physicianList = [...keyValuePhysicians];
+    });
 
     this.staffApiSvc
       .getUsersByType(UserType.General)
@@ -172,15 +171,15 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     this.appointmentForm
       .get('startedAt')
       ?.valueChanges.pipe(
-      debounceTime(0),
-      filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
-      tap(() => this.loadingSlots$$.next(true)),
-      map((date) => {
-        this.clearSlotDetails();
-        return AppointmentUtils.GenerateSlotRequestData(date, this.formValues.examList);
-      }),
-      switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
-    )
+        debounceTime(0),
+        filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
+        tap(() => this.loadingSlots$$.next(true)),
+        map((date) => {
+          this.clearSlotDetails();
+          return AppointmentUtils.GenerateSlotRequestData(date, this.formValues.examList);
+        }),
+        switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
+      )
       .subscribe((slots) => {
         this.setSlots(slots[0].slots);
         this.loadingSlots$$.next(false);
@@ -189,18 +188,26 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     this.appointmentForm
       .get('examList')
       ?.valueChanges.pipe(
-      debounceTime(0),
-      tap(() => this.updateEventCard()),
-      filter((examList) => examList?.length && this.formValues.startedAt?.day),
-      tap(() => this.loadingSlots$$.next(true)),
-      map((examList) => {
-        this.clearSlotDetails();
-        return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
-      }),
-      switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
-    )
+        debounceTime(0),
+        tap(() => this.updateEventCard()),
+        filter((examList) => examList?.length && this.formValues.startedAt?.day),
+        tap(() => this.loadingSlots$$.next(true)),
+        map((examList) => {
+          this.clearSlotDetails();
+          return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
+        }),
+        switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
+      )
       .subscribe((data) => {
-        const {slots} = data[0];
+        const { slots } = data[0];
+        this.currentSlot$$.next(
+          slots
+            .map((slot) => slot.exams)
+            .flatMap((flatData) => flatData)
+            .map((exam: any) => exam.rooms)
+            .flatMap((flatData) => flatData)
+            .filter((item, index, items) => items.findIndex((room) => room.roomId === item.roomId) === index),
+        );
         const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTime);
         if (matchedSlot) {
           const modifiedSlot = AppointmentUtils.GetModifiedSlotData([matchedSlot]);
@@ -212,7 +219,10 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
         this.loadingSlots$$.next(false);
       });
 
-    this.shareDataSvc.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe((lang) => this.selectedLang = lang);
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => (this.selectedLang = lang));
   }
 
   public override ngOnDestroy() {
@@ -245,7 +255,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
         month: date.getMonth() + 1,
         day: date.getDate(),
       };
-      this.appointmentForm.patchValue({startedAt}, {emitEvent: true});
+      this.appointmentForm.patchValue({ startedAt }, { emitEvent: true });
     }
   }
 
@@ -304,8 +314,19 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
       { ...this.selectedTimeSlot },
     );
 
+    const newRequestData = {
+      ...requestData,
+      examDetails: requestData.examDetails.map((exam: any) => ({
+        endedAt: exam.endedAt,
+        started: exam.startedAt,
+        examId: exam.examId,
+        users: [...exam.userList],
+        rooms: exam.roomList?.map((room) => this.currentSlot$$.value.find((value) => value.roomId === room)),
+      })),
+    };
+
     this.appointmentApiSvc
-      .saveAppointment$(requestData)
+      .saveAppointment$(newRequestData as any)
       .pipe(takeUntil(this.destroy$$))
       .subscribe({
         next: () => {
@@ -321,7 +342,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
   }
 
   private updateEventCard(slot?: Slot) {
-    const {element} = this.modalData;
+    const { element } = this.modalData;
     let totalExpense = 0;
 
     this.formValues.examList.forEach((examID) => {

@@ -202,9 +202,17 @@ export class AppointmentApiService {
 
   public getSlots$(requestData: AppointmentSlotsRequestData): Observable<AppointmentSlot[]> {
     const customRequestData = { ...requestData, date: requestData.fromDate };
-    return this.http
-      .post<BaseResponse<AppointmentSlot>>(`${environment.serverBaseUrl}/patientappointment/slots`, customRequestData)
-      .pipe(map((res) => [res?.data]));
+    return this.http.post<BaseResponse<AppointmentSlot>>(`${environment.serverBaseUrl}/patientappointment/slots`, customRequestData).pipe(
+      map((res) => [
+        {
+          ...res?.data,
+          slots: res?.data?.slots.map((slot) => ({
+            ...slot,
+            exams: slot.exams.map((exam: any) => ({ ...exam, userId: exam.users, roomId: exam.rooms.map((room) => room.roomId) })),
+          })),
+        },
+      ]),
+    );
   }
 
   public updateRadiologist$(requestData: UpdateRadiologistRequestData): Observable<any> {
