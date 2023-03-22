@@ -23,10 +23,14 @@ export class ExamApiService {
   }
 
   private fetchExams(): Observable<Exam[]> {
+    this.loaderSvc.spinnerActivate();
     this.loaderSvc.activate();
     return this.http.get<BaseResponse<Exam[]>>(this.examUrl).pipe(
       map((response) => response.data),
-      tap(() => this.loaderSvc.deactivate()),
+      tap(() => {
+        this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
+      }),
     );
   }
 
@@ -54,11 +58,13 @@ export class ExamApiService {
 
   public getExamByID(examID: number): Observable<Exam | undefined> {
     this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
     return this.http.get<BaseResponse<Exam>>(`${this.examUrl}/${examID}`).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshExams$$.next();
         this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
       }),
     );
   }
@@ -92,10 +98,13 @@ export class ExamApiService {
 
   private fetchAllExams$(): Observable<Exam[]> {
     this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
+
     return this.http.get<BaseResponse<Exam[]>>(`${environment.serverBaseUrl}/common/getexams`).pipe(
       map((response) => response.data),
       tap(() => {
         this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
       }),
     );
   }

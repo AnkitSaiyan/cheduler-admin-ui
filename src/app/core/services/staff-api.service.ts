@@ -58,9 +58,14 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
 
   public get staffList$(): Observable<User[]> {
     this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
+
     return this.users$.pipe(
       map((users) => users.filter((user) => ![UserType.Scheduler, UserType.General].includes(user.userType))),
-      tap(() => this.loaderSvc.deactivate()),
+      tap(() => {
+        this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
+      }),
     );
   }
 
@@ -92,11 +97,16 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
 
   private get fetchAllUsers$(): Observable<User[]> {
     this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
+
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
       switchMap(() => {
         return this.http.get<BaseResponse<User[]>>(`${environment.serverBaseUrl}/common/getusers`).pipe(
           map((response) => response.data?.map((u) => ({ ...u, fullName: `${u.firstname} ${u.lastname}` }))),
-          tap(() => this.loaderSvc.deactivate()),
+          tap(() => {
+            this.loaderSvc.deactivate();
+            this.loaderSvc.spinnerDeactivate();
+          }),
         );
       }),
     );
@@ -139,12 +149,14 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
 
   public getStaffByID(staffId: number): Observable<User | undefined> {
     this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
       switchMap(() =>
         this.http.get<BaseResponse<User>>(`${this.userUrl}/${staffId}`).pipe(
           map((response) => response.data),
           tap(() => {
             this.loaderSvc.deactivate();
+            this.loaderSvc.spinnerDeactivate();
           }),
           catchError((e) => {
             return of({} as User);

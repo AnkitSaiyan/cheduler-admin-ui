@@ -47,10 +47,14 @@ export class SiteManagementApiService {
   }
 
   private fetchSiteManagement(): Observable<SiteManagement> {
+    this.loaderSvc.spinnerActivate();
     this.loaderSvc.activate();
     return this.http.get<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`).pipe(
       map((response) => response.data),
-      tap(() => this.loaderSvc.deactivate()),
+      tap(() => {
+        this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
+      }),
     );
   }
 }

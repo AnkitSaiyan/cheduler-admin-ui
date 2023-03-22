@@ -51,11 +51,14 @@ export class EmailTemplateApiService {
 
   public getEmailTemplateById(id: number): Observable<Email> {
     this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
+
     return this.http.get<BaseResponse<Email>>(`${environment.serverBaseUrl}/email/${id}`).pipe(
       map((response) => response.data),
       tap(() => {
         this.emailTemplates$$.next();
         this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
       }),
     );
   }

@@ -20,10 +20,14 @@ export class PracticeHoursApiService {
   }
 
   private fetchPractices$(): Observable<any> {
+    this.loaderSvc.spinnerActivate();
     this.loaderSvc.activate();
     return this.http.get<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.serverBaseUrl}/practice`).pipe(
       map((response) => response.data),
-      tap(() => this.loaderSvc.deactivate()),
+      tap(() => {
+        this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
+      }),
       catchError((error) => of({})),
     );
   }
