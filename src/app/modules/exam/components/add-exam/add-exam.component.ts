@@ -466,7 +466,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         },
         [Validators.required, Validators.min(1)],
       ],
-      sortOrder: [{ value: roomForExam?.sortOrder ?? null, disabled: !roomForExam?.duration }, []],
+      sortOrder: [{ value: roomForExam?.sortOrder ?? null, disabled: !roomForExam?.duration }, [Validators.required]],
       roomName: [room.name, []],
       selectRoom: [!!roomForExam?.duration, []],
     });
@@ -479,6 +479,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
           fg.get('sortOrder')?.enable();
           this.formErrors.selectRoomErr = false;
         } else {
+          fg.patchValue({
+            duration: null,
+            sortOrder: null
+          });
+          
           fg.get('duration')?.disable();
           fg.get('sortOrder')?.disable();
         }
@@ -584,14 +589,39 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public saveForm(timeSlotFormValues?: { isValid: boolean; values: TimeSlot[] }) {
+    let valid = true;
+
     if (this.examForm.invalid) {
       this.examForm.markAllAsTouched();
-      this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-      return;
+      valid = false;
     }
 
-    if (this.formValues.practiceAvailabilityToggle && timeSlotFormValues && !timeSlotFormValues.isValid) {
-      this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+    if (valid && this.formValues.roomsForExam?.every((room) => !room.selectRoom)) {
+      this.formErrors.selectRoomErr = true;
+      valid = false;
+    }
+
+    if (this.formErrors.expensiveErr) {
+      valid = false;
+    }
+
+    if (valid) {
+      (this.examForm.get('roomsForExam') as FormArray).controls.forEach((control) => {
+        if (control.get('duration')?.invalid) {
+          control.get('duration')?.markAsTouched();
+          if (valid) {
+            valid = false;
+          }
+        }
+      });
+    }
+
+    if (valid && this.formValues.practiceAvailabilityToggle && timeSlotFormValues && !timeSlotFormValues.isValid) {
+      valid = false
+    }
+
+    if (!valid) {
+      this.notificationSvc.showNotification(Translate.FormInvalidSimple[this.selectedLang], NotificationType.WARNING);
       return;
     }
 
@@ -609,25 +639,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     //   }
     // });
 
-    // if (valid && this.formValues.roomsForExam?.every((room) => !room.selectRoom)) {
-    //   this.formErrors.selectRoomErr = true;
-    //   valid = false;
-    // }
-    //
-    // if (this.formErrors.expensiveErr) {
-    //   valid = false;
-    // }
-    //
-    // if (valid) {
-    //   (this.examForm.get('roomsForExam') as FormArray).controls.forEach((control) => {
-    //     if (control.get('duration')?.invalid) {
-    //       control.get('duration')?.markAsTouched();
-    //       if (valid) {
-    //         valid = false;
-    //       }
-    //     }
-    //   });
-    // }
 
     // let controlArrays!: FormArray[];
     //
@@ -636,10 +647,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     //   valid = !this.isPracticeFormInvalid(controlArrays);
     // }
     //
-    // if (!valid) {
-    //   this.notificationSvc.showNotification(Translate.FormInvalidSimple[this.selectedLang], NotificationType.WARNING);
-    //   return;
-    // }
+
 
     const createExamRequestData: CreateExamRequestData = {
       name: this.formValues.name,
