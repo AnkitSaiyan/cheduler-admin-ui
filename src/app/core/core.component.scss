@@ -3,4 +3,9 @@
     background-color: var(--dfm-base-layout-bg);
     overflow-y: auto;
   }
+    .mat-progress-bar {
+      position: absolute;
+        left: 0;
+        margin-top: -24px;
+    }
 }

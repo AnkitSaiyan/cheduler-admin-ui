@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, startWith, Subject, switchMap } from 'rxjs';
+import { combineLatest, map, tap, Observable, startWith, Subject, switchMap } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { SiteManagement, SiteManagementRequestData } from '../../shared/models/site-management.model';
+import { LoaderService } from './loader.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,9 +14,10 @@ export class SiteManagementApiService {
 
   private refreshSiteManagement$ = new Subject<void>();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private loaderSvc: LoaderService) {}
 
   public saveSiteManagementData$(requestData: SiteManagementRequestData): Observable<SiteManagement> {
+    this.loaderSvc.activate();
     const formData = new FormData();
     formData.append('Name', requestData.name);
     formData.append('DisableAppointment', String(requestData.disableAppointment));
@@ -35,6 +37,7 @@ export class SiteManagementApiService {
 
     return this.http.post<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`, formData).pipe(
       map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
       // tap(() => this.refreshSiteManagement$.next()),
     );
   }
@@ -44,6 +47,10 @@ export class SiteManagementApiService {
   }
 
   private fetchSiteManagement(): Observable<SiteManagement> {
-    return this.http.get<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 }
