@@ -288,12 +288,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     const appointments: Appointment[] = [];
     appointmentsProps.forEach((appointment: Appointment) => {
       appointment.exams.forEach((exam) => {
-        appointments.push({ ...appointment, startedAt: exam.startedAt, endedAt: exam.endedAt, exams: [exam] });
         exam.rooms?.forEach((room: any) => {
           appointments.push({ ...appointment, startedAt: room.startedAt, endedAt: room.endedAt, exams: [{ ...exam, rooms: [room] }] });
         });
       });
     });
+
+    console.log({ appointments });
 
     appointments.forEach((appointment) => {
       if (appointment.startedAt) {
