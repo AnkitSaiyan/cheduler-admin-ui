@@ -46,20 +46,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
   public submitting$$ = new BehaviorSubject<boolean>(false);
 
-  public timeDurations: { name: TimeDurationType; value: TimeDurationType }[] = [
-    {
-      name: 'Minutes',
-      value: 'Minutes',
-    },
-    {
-      name: 'Hours',
-      value: 'Hours',
-    },
-    {
-      name: 'Days',
-      value: 'Days',
-    },
-  ];
+  public timeDurations: any[] = [];
 
   private selectedLang: string = ENG_BE;
 
@@ -75,6 +62,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
   }
 
   public ngOnInit(): void {
+    this.siteManagementApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.timeDurations = items));
+
     this.siteManagementApiSvc.siteManagementData$.pipe(takeUntil(this.destroy$$)).subscribe((siteManagementData) => {
       this.createForm(siteManagementData);
       this.siteManagementData$$.next(siteManagementData ?? {});

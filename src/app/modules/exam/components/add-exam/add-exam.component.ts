@@ -178,6 +178,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
   }
 
   public ngOnInit(): void {
+    this.roomApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.roomTypes = items));
+
     this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
     this.filteredTimings = [...this.timings];
 

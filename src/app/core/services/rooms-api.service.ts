@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap, takeUntil } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { AddRoomRequestData, Room, RoomsGroupedByType, RoomType, UpdateRoomPlaceInAgendaRequestData } from '../../shared/models/rooms.model';
 import { ChangeStatusRequestData, Status } from '../../shared/models/status.model';
 import { LoaderService } from './loader.service';
+import { ShareDataService } from './share-data.service';
+import { Translate } from '../../shared/models/translate.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class RoomsApiService {
+export class RoomsApiService extends DestroyableComponent {
   private roomTypes: { name: string; value: string }[] = [
     {
       name: 'Private',
@@ -26,10 +29,41 @@ export class RoomsApiService {
 
   private readonly roomUrl = `${environment.serverBaseUrl}/room`;
 
-  constructor(private http: HttpClient, private loaderSvc: LoaderService) {}
+  private selectedLang$$ = new BehaviorSubject<string>('');
+
+  constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService) {
+    super();
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang$$.next(lang);
+      });
+  }
 
   public get rooms$(): Observable<Room[]> {
     return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRooms()));
+  }
+
+  get fileTypes$(): Observable<any[]> {
+    return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
+      switchMap(([lang]) => {
+        return of(this.roomTypes).pipe(
+          map((downloadTypeItems) => {
+            if (lang) {
+              return downloadTypeItems.map((downloadType) => {
+                return {
+                  ...downloadType,
+                  name: Translate[downloadType.name][lang],
+                };
+              });
+            }
+            return downloadTypeItems;
+          }),
+        );
+      }),
+    );
   }
 
   private fetchRooms(): Observable<Room[]> {
