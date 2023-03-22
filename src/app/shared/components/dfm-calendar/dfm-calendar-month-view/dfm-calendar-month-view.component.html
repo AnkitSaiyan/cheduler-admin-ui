@@ -1,12 +1,12 @@
 <table class="calender-month-view">
   <thead class="calender-month-view-weekday">
-  <th>{{ weekDayEnum.SUN | weekdayToName : true | uppercase }}</th>
-  <th>{{ weekDayEnum.MON | weekdayToName : true | uppercase }}</th>
-  <th>{{ weekDayEnum.TUE | weekdayToName : true | uppercase }}</th>
-  <th>{{ weekDayEnum.WED | weekdayToName : true | uppercase }}</th>
-  <th>{{ weekDayEnum.THU | weekdayToName : true | uppercase }}</th>
-  <th>{{ weekDayEnum.FRI | weekdayToName : true | uppercase }}</th>
-  <th>{{ weekDayEnum.SAT | weekdayToName : true | uppercase }}</th>
+  <th>{{ weekDayEnum.SUN | weekdayToName : true | uppercase | translate}}</th>
+  <th>{{ weekDayEnum.MON | weekdayToName : true | uppercase | translate}}</th>
+  <th>{{ weekDayEnum.TUE | weekdayToName : true | uppercase | translate}}</th>
+  <th>{{ weekDayEnum.WED | weekdayToName : true | uppercase | translate}}</th>
+  <th>{{ weekDayEnum.THU | weekdayToName : true | uppercase | translate}}</th>
+  <th>{{ weekDayEnum.FRI | weekdayToName : true | uppercase | translate}}</th>
+  <th>{{ weekDayEnum.SAT | weekdayToName : true | uppercase | translate}}</th>
   </thead>
 
     <tbody class="calendar-month-view-body">
@@ -20,7 +20,7 @@
           <ng-template #eventDetails>
             <div class="calender-month-view-day-exam-details-expanded">
                 <span class="calender-month-view-day-exam-details-expanded-title">
-                  Appointments ({{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length }})
+                  {{"Appointments" | translate}} ({{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length }})
                 </span>
               <div class="calender-month-view-day-exam-details-expanded-patients-container">
                 <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0"
@@ -42,11 +42,11 @@
 
                     <ng-template ngbPanelContent>
                      <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                       <span class="font-weight-medium"> Exam </span>
+                       <span class="font-weight-medium"> {{"Exam" | translate}} </span>
                        <span *ngIf="ap.exams?.length">{{ ap.exams | joinWithAnd : 'name'}}</span>
-                       <span class="font-weight-medium dfm-mt-8"> Comments </span>
+                       <span class="font-weight-medium dfm-mt-8"> {{"Comments" | translate}} </span>
                        <span class=""> {{ ap?.comments | dashIfNothing }} </span>
-                       <span class="font-weight-medium dfm-mt-8">Staff</span>
+                       <span class="font-weight-medium dfm-mt-8">{{"Staff" | translate}}</span>
 
                        <ng-container *ngIf="ap.exams | isData : 'users'; else dash">
                          <div *ngFor="let exam of ap.exams" class="dfm-ps-4 dfm-pt-4">
@@ -77,7 +77,7 @@
           </div>
 
           <div class="calender-month-view-day-exam-event-details" [ngbPopover]="eventDetails" triggers="click" [autoClose]="'outside'" container="body">
-            <span class="calender-month-view-day-exam-event-title text-truncate">{{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length === 1 ? 'Appointment' : 'Appointments' }}</span>
+            <span class="calender-month-view-day-exam-event-title text-truncate">{{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length === 1 ? ('Appointment' | translate) : ('Appointments' | translate) }}</span>
             <span class="calender-month-view-day-exam-event-time"
                   *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length === 1">
               {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()][0]?.startedAt | date : 'HH:mm' }}
