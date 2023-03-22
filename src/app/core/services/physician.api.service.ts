@@ -22,10 +22,14 @@ export class PhysicianApiService {
   }
 
   private fetchAllPhysicians(): Observable<Physician[]> {
+    this.loaderSvc.spinnerActivate();
     this.loaderSvc.activate();
     return this.http.get<BaseResponse<Physician[]>>(`${environment.serverBaseUrl}/doctor`).pipe(
       map((response) => response.data?.map((p) => ({ ...p, fullName: `${p.firstname} ${p.lastname}` })).sort((p1, p2) => p2.id - p1.id)),
-      tap(() => this.loaderSvc.deactivate()),
+      tap(() => {
+        this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
+      }),
     );
   }
 
