@@ -32,7 +32,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
   public searchControl = new FormControl('', []);
 
   public downloadDropdownControl = new FormControl('', []);
-    private selectedLang: string = ENG_BE;
+  private selectedLang: string = ENG_BE;
 
   public statuses = Statuses;
 
@@ -174,26 +174,18 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
         this.cdr.detectChanges();
       });
-      this.shareDataSvc
+    this.shareDataSvc
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
       .subscribe((lang) => {
         this.selectedLang = lang;
         this.columns = [
           // Translate.Read[lang],
-          Translate.Status[lang],
-          Translate.Actions[lang],
+          Translate.RoomName[lang],
+          Translate.AbsenceName[lang],
+          Translate.StartDate[lang],
+          Translate.EndDate[lang],
         ];
-
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
-        }
       });
   }
 
@@ -228,4 +220,3 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
     }
   }
 }
-
