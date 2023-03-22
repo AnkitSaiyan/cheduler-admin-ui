@@ -55,7 +55,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public filteredExamList: NameValue[] = [];
 
-  private examList: NameValue[] = []
+  private examList: NameValue[] = [];
 
   public filteredPhysicianList: NameValue[] = [];
 
@@ -112,7 +112,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     private route: ActivatedRoute,
     private shareDataService: ShareDataService,
     private siteManagementApiSvc: SiteManagementApiService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     super();
 
@@ -174,13 +174,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         this.userList = [...keyValueExams];
       });
 
-    this.physicianApiSvc.physicians$
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((physicians) => {
-        const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
-        this.filteredPhysicianList = [...keyValuePhysicians];
-        this.physicianList = [...keyValuePhysicians];
-      });
+    this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
+      const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
+      this.filteredPhysicianList = [...keyValuePhysicians];
+      this.physicianList = [...keyValuePhysicians];
+    });
 
     this.routerStateSvc
       .listenForParamChange$(APPOINTMENT_ID)
@@ -205,36 +203,36 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.appointmentForm
       ?.get('startedAt')
       ?.valueChanges.pipe(
-      debounceTime(0),
-      filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
-      tap(() => this.loadingSlots$$.next(true)),
-      map((date) => {
-        this.clearSlotDetails();
-        return AppointmentUtils.GenerateSlotRequestData(date, this.formValues.examList);
-      }),
-      switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
-      takeUntil(this.destroy$$)
-    )
+        debounceTime(0),
+        filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
+        tap(() => this.loadingSlots$$.next(true)),
+        map((date) => {
+          this.clearSlotDetails();
+          return AppointmentUtils.GenerateSlotRequestData(date, this.formValues.examList);
+        }),
+        switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
+        takeUntil(this.destroy$$),
+      )
       .subscribe((slots) => {
-        this.setSlots(slots[0].slots);
+        this.setSlots(slots[0].slots, slots[0]?.isCombined);
         this.loadingSlots$$.next(false);
       });
 
     this.appointmentForm
       .get('examList')
       ?.valueChanges.pipe(
-      debounceTime(0),
-      filter((examList) => examList?.length && this.formValues.startedAt?.day),
-      tap(() => this.loadingSlots$$.next(true)),
-      map((examList) => {
-        this.clearSlotDetails();
-        return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
-      }),
-      switchMap((reqData) => this.getSlotData(reqData)),
-      takeUntil(this.destroy$$)
-    )
+        debounceTime(0),
+        filter((examList) => examList?.length && this.formValues.startedAt?.day),
+        tap(() => this.loadingSlots$$.next(true)),
+        map((examList) => {
+          this.clearSlotDetails();
+          return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
+        }),
+        switchMap((reqData) => this.getSlotData(reqData)),
+        takeUntil(this.destroy$$),
+      )
       .subscribe((slots) => {
-        this.setSlots(slots[0].slots);
+        this.setSlots(slots[0].slots, slots[0]?.isCombined);
         this.loadingSlots$$.next(false);
       });
   }
@@ -270,7 +268,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   private updateForm(appointment: Appointment | undefined) {
-
     let date!: Date;
     let dateDistributed: DateDistributed = {} as DateDistributed;
 
@@ -296,9 +293,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           comments: appointment?.comments ?? null,
           approval: appointment?.approval ?? AppointmentStatus.Pending,
         },
-        {emitEvent: false},
+        { emitEvent: false },
       );
-    }, 200)
+    }, 200);
 
     const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
 
@@ -307,7 +304,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
       .pipe(take(1))
       .subscribe((slots) => {
-        this.setSlots(slots[0].slots);
+        this.setSlots(slots[0].slots, slots[0]?.isCombined);
 
         this.loadingSlots$$.next(false);
 
@@ -348,8 +345,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     }
   }
 
-  private setSlots(slots: Slot[]) {
-    const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots);
+  private setSlots(slots: Slot[], isCombinable: boolean) {
+    const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots, isCombinable);
+
+    console.log(examIdToSlots, newSlots, 'test');
 
     this.examIdToAppointmentSlots = examIdToSlots;
     this.slots = newSlots;
@@ -370,8 +369,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   public saveAppointment(): void {
-
-
     try {
       if (this.appointmentForm.invalid) {
         this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
@@ -389,18 +386,18 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
       this.submitting$$.next(true);
 
-      if (this.isCombinable) {
-        this.formValues.examList.forEach((examID) => {
-          const selectedSlot = Object.values(this.selectedTimeSlot)[0];
+      // if (this.isCombinable) {
+      //   this.formValues.examList.forEach((examID) => {
+      //     const selectedSlot = Object.values(this.selectedTimeSlot)[0];
 
-          if (!this.selectedTimeSlot[+examID]) {
-            this.selectedTimeSlot[+examID] = {
-              ...selectedSlot,
-              examId: +examID,
-            };
-          }
-        });
-      }
+      //     if (!this.selectedTimeSlot[+examID]) {
+      //       this.selectedTimeSlot[+examID] = {
+      //         ...selectedSlot,
+      //         examId: +examID,
+      //       };
+      //     }
+      //   });
+      // }
 
       const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
         { ...this.formValues },

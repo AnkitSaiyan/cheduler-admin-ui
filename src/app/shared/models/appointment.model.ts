@@ -49,6 +49,13 @@ export interface AddAppointmentRequestData {
     roomList?: number[];
     userList?: number[];
   }>;
+  exams: Array<{
+    examId: number;
+    startedAt: string;
+    endedAt: string;
+    rooms?: any[];
+    users?: number[];
+  }>;
   approval?: AppointmentStatus;
   createdBy?: number;
   updatedBy?: number;
@@ -75,6 +82,7 @@ export interface UpdateDurationRequestData {
 export interface Slot {
   start: string;
   end: string;
+  isCombined: boolean;
   exams: {
     examId: number;
     roomId?: number[];
@@ -87,7 +95,7 @@ export interface SlotModified {
   end: string;
   examId: number;
   userList?: number[];
-  roomList?: number[];
+  roomList?: any[];
 }
 
 export interface AppointmentSlot {
@@ -97,6 +105,7 @@ export interface AppointmentSlot {
   workStatus: WorkStatusesEnum;
   workStatusText: WorkStatuses;
   isAvailable: boolean;
+  isCombined: boolean;
   slots: Slot[];
 }
 

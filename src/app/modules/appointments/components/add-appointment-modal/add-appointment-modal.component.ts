@@ -181,7 +181,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
         switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
       )
       .subscribe((slots) => {
-        this.setSlots(slots[0].slots);
+        this.setSlots(slots[0].slots, slots[0]?.isCombined);
         this.loadingSlots$$.next(false);
       });
 
@@ -199,22 +199,22 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
         switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
       )
       .subscribe((data) => {
-        const { slots } = data[0];
-        this.currentSlot$$.next(
-          slots
-            .map((slot) => slot.exams)
-            .flatMap((flatData) => flatData)
-            .map((exam: any) => exam.rooms)
-            .flatMap((flatData) => flatData)
-            .filter((item, index, items) => items.findIndex((room) => room.roomId === item.roomId) === index),
-        );
+        const { slots }: any = data[0];
+        // this.currentSlot$$.next(
+        //   slots
+        //     .map((slot) => slot.exams)
+        //     .flatMap((flatData) => flatData)
+        //     .map((exam: any) => exam.rooms)
+        //     .flatMap((flatData) => flatData)
+        //     .filter((item, index, items) => items.findIndex((room) => room.roomId === item.roomId) === index),
+        // );
         const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTime);
         if (matchedSlot) {
-          const modifiedSlot = AppointmentUtils.GetModifiedSlotData([matchedSlot]);
+          const modifiedSlot = AppointmentUtils.GetModifiedSlotData([matchedSlot], slots.isCombined);
           this.handleSlotSelectionToggle(modifiedSlot.newSlots[0]);
-          this.setSlots([matchedSlot]);
+          this.setSlots([matchedSlot], slots.isCombined);
         } else {
-          this.setSlots(slots);
+          this.setSlots(slots, slots?.isCombined);
         }
         this.loadingSlots$$.next(false);
       });
@@ -263,8 +263,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     return this.appointmentForm?.value;
   }
 
-  private setSlots(slots: Slot[]) {
-    const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots);
+  private setSlots(slots: Slot[], isCombinable: boolean) {
+    const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots, isCombinable);
 
     this.examIdToAppointmentSlots = examIdToSlots;
     this.slots = newSlots;
@@ -296,37 +296,26 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
     this.submitting$$.next(true);
 
-    if (this.isCombinable) {
-      this.formValues.examList.forEach((examID) => {
-        const selectedSlot = Object.values(this.selectedTimeSlot)[0];
+    // if (this.isCombinable) {
+    //   this.formValues.examList.forEach((examID) => {
+    //     const selectedSlot = Object.values(this.selectedTimeSlot)[0];
 
-        if (!this.selectedTimeSlot[+examID]) {
-          this.selectedTimeSlot[+examID] = {
-            ...selectedSlot,
-            examId: +examID,
-          };
-        }
-      });
-    }
+    //     if (!this.selectedTimeSlot[+examID]) {
+    //       this.selectedTimeSlot[+examID] = {
+    //         ...selectedSlot,
+    //         examId: +examID,
+    //       };
+    //     }
+    //   });
+    // }
 
     const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
       { ...this.formValues },
       { ...this.selectedTimeSlot },
     );
 
-    const newRequestData = {
-      ...requestData,
-      examDetails: requestData.examDetails.map((exam: any) => ({
-        endedAt: exam.endedAt,
-        started: exam.startedAt,
-        examId: exam.examId,
-        users: [...exam.userList],
-        rooms: exam.roomList?.map((room) => this.currentSlot$$.value.find((value) => value.roomId === room)),
-      })),
-    };
-
     this.appointmentApiSvc
-      .saveAppointment$(newRequestData as any)
+      .saveAppointment$(requestData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe({
         next: () => {
