@@ -336,8 +336,8 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
       this.modalSvc
         .open(ConfirmActionModalComponent, {
           data: {
-            titleText: 'Add Appointment Confirmation',
-            bodyText: 'Are you sure you want to make an appointment outside the operating hours?',
+            titleText: 'AddAppointmentConfirmation',
+            bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
             confirmButtonText: 'Yes'
           } as ConfirmActionModalData,
         })
