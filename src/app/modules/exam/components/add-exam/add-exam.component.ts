@@ -479,6 +479,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
           fg.get('sortOrder')?.enable();
           this.formErrors.selectRoomErr = false;
         } else {
+          fg.patchValue({
+            duration: null,
+            sortOrder: null
+          });
+          
           fg.get('duration')?.disable();
           fg.get('sortOrder')?.disable();
         }
