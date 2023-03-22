@@ -206,9 +206,10 @@ export class AppointmentApiService {
   }
 
   public getSlots$(requestData: AppointmentSlotsRequestData): Observable<AppointmentSlot[]> {
+    const customRequestData = { ...requestData, date: requestData.fromDate };
     this.loaderSvc.spinnerActivate();
-    return this.http.post<BaseResponse<AppointmentSlot[]>>(`${environment.serverBaseUrl}/patientappointment/slots`, requestData).pipe(
-      map((res) => res?.data),
+    return this.http.post<BaseResponse<AppointmentSlot>>(`${environment.serverBaseUrl}/patientappointment/slots`, customRequestData).pipe(
+      map((res) => [res?.data]),
       tap(() => this.loaderSvc.spinnerDeactivate()),
       catchError(() => {
         this.loaderSvc.spinnerDeactivate();

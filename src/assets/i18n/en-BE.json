@@ -356,5 +356,6 @@
   "ContentForAdmin" : "Content For Admin",
   "AppointmentConfirmationDiflexmo" : "Appointment Confirmation Diflexmo",
   "NextSlotOpen": "Next Slot Open",
-  "EnterPercentage": "Enter Percentage"
+  "EnterPercentage": "Enter Percentage",
+  "Daily" : "Daily"
 }
