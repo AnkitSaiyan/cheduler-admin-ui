@@ -201,9 +201,10 @@ export class AppointmentApiService {
   }
 
   public getSlots$(requestData: AppointmentSlotsRequestData): Observable<AppointmentSlot[]> {
+    const customRequestData = { ...requestData, date: requestData.fromDate };
     return this.http
-      .post<BaseResponse<AppointmentSlot[]>>(`${environment.serverBaseUrl}/patientappointment/slots`, requestData)
-      .pipe(map((res) => res?.data));
+      .post<BaseResponse<AppointmentSlot>>(`${environment.serverBaseUrl}/patientappointment/slots`, customRequestData)
+      .pipe(map((res) => [res?.data]));
   }
 
   public updateRadiologist$(requestData: UpdateRadiologistRequestData): Observable<any> {
