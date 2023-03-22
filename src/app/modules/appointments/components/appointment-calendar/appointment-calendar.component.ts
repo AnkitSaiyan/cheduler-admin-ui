@@ -20,6 +20,7 @@ import { PracticeAvailabilityServer } from '../../../../shared/models/practice.m
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from 'src/app/core/services/modal.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'dfm-appointment-calendar',
@@ -94,6 +95,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     private practiceHoursApiSvc: PracticeHoursApiService,
     private timeIntervalPipe: TimeInIntervalPipe,
     private modalSvc: ModalService,
+    private loaderSvc: LoaderService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);

@@ -8,6 +8,7 @@ import { Physician } from 'src/app/shared/models/physician.model';
 import { Room } from 'src/app/shared/models/rooms.model';
 import { AppointmentStatus } from 'src/app/shared/models/status.model';
 import { environment } from '../../../environments/environment';
+import { LoaderService } from './loader.service';
 
 export interface PostIt {
   message: string;
@@ -17,7 +18,7 @@ export interface PostIt {
   providedIn: 'root',
 })
 export class DashboardApiService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private loaderSvc: LoaderService) {}
 
   private refreshAppointment$$ = new Subject<void>();
 
@@ -68,11 +69,15 @@ export class DashboardApiService {
   }
 
   private fetchAllAppointments(): Observable<Appointment[]> {
+    this.loaderSvc.activate();
     return (
       this.http
         .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment`)
         // .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/dashboard/appointments`)
-        .pipe(map((response) => response.data))
+        .pipe(
+          map((response) => response.data),
+          tap(() => this.loaderSvc.deactivate()),
+        )
     );
   }
 
@@ -81,7 +86,11 @@ export class DashboardApiService {
   }
 
   private fetchAllNotifications(): Observable<Notification[]> {
-    return this.http.get<BaseResponse<Notification[]>>(`${environment.serverBaseUrl}/dashboard/notifications`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<Notification[]>>(`${environment.serverBaseUrl}/dashboard/notifications`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get roomAbsence$(): Observable<Room[]> {
@@ -89,7 +98,11 @@ export class DashboardApiService {
   }
 
   private fetchRoomAbsence(): Observable<Room[]> {
-    return this.http.get<BaseResponse<Room[]>>(`${environment.serverBaseUrl}/dashboard/roomabsences`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<Room[]>>(`${environment.serverBaseUrl}/dashboard/roomabsences`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get recentPatient$(): Observable<Appointment[]> {
@@ -97,6 +110,7 @@ export class DashboardApiService {
   }
 
   private fetchRecentPatients(): Observable<Appointment[]> {
+    this.loaderSvc.activate();
     return this.http
       .get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.serverBaseUrl}/dashboard/recentpatients`)
       .pipe(map((response) => response.data?.appointment));
@@ -107,7 +121,11 @@ export class DashboardApiService {
   }
 
   private fetchPosts(): Observable<PostIt[]> {
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/postit`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/postit`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get appointmentChart$(): Observable<any> {
@@ -115,7 +133,11 @@ export class DashboardApiService {
   }
 
   private fetchAppointmentChart(): Observable<any> {
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/appointmentsstatus`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/appointmentsstatus`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get appointmentBarChart$(): Observable<any> {
@@ -123,7 +145,11 @@ export class DashboardApiService {
   }
 
   private appointmentBarChart(): Observable<any> {
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklyappointments`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklyappointments`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get patientsBarChart$(): Observable<any> {
@@ -131,7 +157,11 @@ export class DashboardApiService {
   }
 
   private patientsBarChart(): Observable<any> {
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklypatients`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklypatients`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get completedBarChart$(): Observable<any> {
@@ -139,9 +169,11 @@ export class DashboardApiService {
   }
 
   private completedBarChart(): Observable<any> {
-    return this.http
-      .get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklycompletedappointments`)
-      .pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklycompletedappointments`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get cancelledBarChart$(): Observable<any> {
@@ -149,9 +181,11 @@ export class DashboardApiService {
   }
 
   private cancelledBarChart(): Observable<any> {
-    return this.http
-      .get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklycancelledappointments`)
-      .pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklycancelledappointments`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get overallStatusBarChart$(): Observable<any> {
@@ -159,7 +193,11 @@ export class DashboardApiService {
   }
 
   private overallStatusBarChart(): Observable<any> {
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/yearlyappointments`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/yearlyappointments`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   // public upsertAppointment$(requestData: AddAppointmentRequestData): Observable<string> {
@@ -234,31 +272,38 @@ export class DashboardApiService {
   // }
 
   addPost(requestData: PostIt): Observable<PostIt> {
+    this.loaderSvc.activate();
     return this.http.post<BaseResponse<PostIt>>(`${environment.serverBaseUrl}/postit`, requestData).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshPost$$.next();
+        this.loaderSvc.deactivate();
       }),
     );
   }
 
   deletePost(id: number): Observable<PostIt> {
+    this.loaderSvc.activate();
     return this.http.delete<BaseResponse<PostIt>>(`${environment.serverBaseUrl}/postit/${id}`).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshPost$$.next();
+        this.loaderSvc.deactivate();
       }),
     );
   }
 
   public get upcommingAppointment$(): Observable<Appointment[]> {
+    this.loaderSvc.activate();
     return combineLatest([this.upcommingAppointments$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllUpcomingAppointment()));
   }
 
   private fetchAllUpcomingAppointment(): Observable<Appointment[]> {
-    return this.http
-      .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/dashboard/upcomingappointments`)
-      .pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/dashboard/upcomingappointments`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get doctors$(): Observable<Physician[]> {
@@ -266,7 +311,11 @@ export class DashboardApiService {
   }
 
   private fetchAllRefferingDoctors(): Observable<Physician[]> {
-    return this.http.get<BaseResponse<Physician[]>>(`${environment.serverBaseUrl}/dashboard/doctors`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<Physician[]>>(`${environment.serverBaseUrl}/dashboard/doctors`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get exams$(): Observable<Exam[]> {
@@ -274,7 +323,11 @@ export class DashboardApiService {
   }
 
   private fetchAllExams(): Observable<Exam[]> {
-    return this.http.get<BaseResponse<Exam[]>>(`${environment.serverBaseUrl}/dashboard/exams`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<Exam[]>>(`${environment.serverBaseUrl}/dashboard/exams`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get appointmentStatus$(): Observable<AppointmentStatus> {
@@ -282,9 +335,11 @@ export class DashboardApiService {
   }
 
   private fetchAllAppointmentStatus(): Observable<AppointmentStatus> {
-    return this.http
-      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/appointmentsstatus`)
-      .pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/appointmentsstatus`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get weeklyAppointments$(): Observable<AppointmentStatus> {
@@ -292,9 +347,11 @@ export class DashboardApiService {
   }
 
   private fetchAllWeeklyAppointments(): Observable<AppointmentStatus> {
-    return this.http
-      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklyappointments`)
-      .pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklyappointments`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get weeklyCompletedAppointments$(): Observable<AppointmentStatus> {
@@ -302,9 +359,11 @@ export class DashboardApiService {
   }
 
   private fetchAllWeeklyCompletedAppointments(): Observable<AppointmentStatus> {
-    return this.http
-      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklycompletedappointments`)
-      .pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklycompletedappointments`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get weeklycancelledappointments$(): Observable<AppointmentStatus> {
@@ -314,9 +373,11 @@ export class DashboardApiService {
   }
 
   private fetchAllWeeklycancelledappointments(): Observable<AppointmentStatus> {
-    return this.http
-      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklycancelledappointments`)
-      .pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklycancelledappointments`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get weeklyPatients$(): Observable<AppointmentStatus> {
@@ -324,9 +385,11 @@ export class DashboardApiService {
   }
 
   private fetchWeeklypatients(): Observable<AppointmentStatus> {
-    return this.http
-      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklypatients`)
-      .pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklypatients`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get completeAppointmentGrowth$(): Observable<AppointmentStatus> {
@@ -334,9 +397,11 @@ export class DashboardApiService {
   }
 
   private fetchCompleteAppointmentGrowth(): Observable<AppointmentStatus> {
-    return this.http
-      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/completeappointmentgrowth`)
-      .pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/completeappointmentgrowth`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get cancelledAppointmentGrowth$(): Observable<AppointmentStatus> {
@@ -344,9 +409,11 @@ export class DashboardApiService {
   }
 
   private fetchCancelledAppointmentGrowth(): Observable<AppointmentStatus> {
-    return this.http
-      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/cancelledappointmentgrowth`)
-      .pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/cancelledappointmentgrowth`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public get yearlyAppointments$(): Observable<AppointmentStatus> {
@@ -354,9 +421,11 @@ export class DashboardApiService {
   }
 
   private fetchYearlyAppointments(): Observable<AppointmentStatus> {
-    return this.http
-      .get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/yearlyappointments`)
-      .pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/yearlyappointments`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public refreshAppointments() {

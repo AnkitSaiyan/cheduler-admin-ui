@@ -18,6 +18,7 @@ import { DashboardApiService } from './dashboard-api.service';
 import { Exam } from '../../shared/models/exam.model';
 import { Room } from '../../shared/models/rooms.model';
 import { User } from '../../shared/models/user.model';
+import { LoaderService } from './loader.service';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +33,7 @@ export class AppointmentApiService {
     private staffApiSvc: StaffApiService,
     private http: HttpClient,
     private dashboardApiService: DashboardApiService,
+    private loaderSvc: LoaderService,
   ) {}
 
   public get appointment$(): Observable<Appointment[]> {
@@ -39,7 +41,7 @@ export class AppointmentApiService {
   }
 
   public fetchAllAppointments$(data?: any): Observable<Appointment[]> {
-    // return data;
+    this.loaderSvc.activate();
     if (data) {
       const queryParams = {};
       if (data?.appointmentNumber) queryParams['id'] = data.appointmentNumber;
@@ -54,7 +56,6 @@ export class AppointmentApiService {
       if (data?.LastName) queryParams['LastName'] = data.LastName;
       if (data?.userId) queryParams['userId'] = data.userId;
 
-
       return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
         map((response) => {
           if (!response?.data?.length) {
@@ -68,6 +69,9 @@ export class AppointmentApiService {
           }
 
           return appointments.map((appointment) => this.getAppointmentModified(appointment));
+        }),
+        tap(() => {
+          this.loaderSvc.deactivate();
         }),
       );
     }
@@ -84,6 +88,9 @@ export class AppointmentApiService {
         }
 
         return appointments.map((appointment) => this.getAppointmentModified(appointment));
+      }),
+      tap(() => {
+        this.loaderSvc.deactivate();
       }),
     );
   }
@@ -157,6 +164,7 @@ export class AppointmentApiService {
   }
 
   public getAppointmentByID$(appointmentID: number): Observable<Appointment | undefined> {
+    this.loaderSvc.activate();
     return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
       switchMap(() =>
         this.http.get<BaseResponse<Appointment>>(`${this.appointmentUrl}/${appointmentID}`).pipe(
@@ -168,6 +176,7 @@ export class AppointmentApiService {
           }),
         ),
       ),
+      tap(() => this.loaderSvc.deactivate()),
     );
   }
 
