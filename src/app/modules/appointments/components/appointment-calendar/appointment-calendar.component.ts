@@ -289,6 +289,9 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     appointmentsProps.forEach((appointment: Appointment) => {
       appointment.exams.forEach((exam) => {
         appointments.push({ ...appointment, startedAt: exam.startedAt, endedAt: exam.endedAt, exams: [exam] });
+        exam.rooms?.forEach((room: any) => {
+          appointments.push({ ...appointment, startedAt: room.startedAt, endedAt: room.endedAt, exams: [{ ...exam, rooms: [room] }] });
+        });
       });
     });
 
@@ -316,6 +319,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
         }
       }
     });
+
+    console.log(this.appointmentGroupedByDateAndRoom, 'test');
   }
 
   private updateQuery(queryStr?: string, date?: Date) {
