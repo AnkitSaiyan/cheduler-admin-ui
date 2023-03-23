@@ -3,6 +3,11 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
+import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
+import { User, UserType } from 'src/app/shared/models/user.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -16,13 +21,8 @@ import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pi
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { formatTime, timeToNumber } from '../../../../shared/utils/time';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
-import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
-import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
-import { User, UserType } from 'src/app/shared/models/user.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
 interface FormValues {
   name: string;
@@ -72,20 +72,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
   public priorityType = PriorityType;
 
-  public repeatTypes = [
-    {
-      name: 'Daily',
-      value: RepeatType.Daily,
-    },
-    {
-      name: 'Weekly',
-      value: RepeatType.Weekly,
-    },
-    {
-      name: 'Monthly',
-      value: RepeatType.Monthly,
-    },
-  ];
+  public repeatTypes: any[] = [];
 
   private times: NameValue[];
 
@@ -139,6 +126,8 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
   }
 
   public ngOnInit(): void {
+    this.priorityApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
+
     this.modalSvc.dialogData$
       .pipe(
         switchMap((modalData) => {
@@ -613,37 +602,3 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
