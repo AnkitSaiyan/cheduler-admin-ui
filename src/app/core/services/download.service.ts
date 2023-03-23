@@ -1,11 +1,11 @@
-import {Injectable, OnDestroy} from '@angular/core';
-import {BehaviorSubject, combineLatest, map, Observable, of, startWith, switchMap, takeLast, takeUntil} from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, combineLatest, map, Observable, of, startWith, switchMap, takeLast, takeUntil } from 'rxjs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as Excel from 'exceljs';
-import {Translate} from "../../shared/models/translate.model";
-import {ShareDataService} from "./share-data.service";
-import {DestroyableComponent} from "../../shared/components/destroyable.component";
+import { Translate } from '../../shared/models/translate.model';
+import { ShareDataService } from './share-data.service';
+import { DestroyableComponent } from '../../shared/components/destroyable.component';
 
 export type DownloadAsType = 'CSV' | 'XLSX' | 'PDF' | 'PRINT';
 
@@ -47,15 +47,16 @@ export class DownloadService extends DestroyableComponent implements OnDestroy {
     XLSX: (file: string): Blob => new Blob([file], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
   };
 
-  private selectedLang$$ = new BehaviorSubject<string>(''); 
+  private selectedLang$$ = new BehaviorSubject<string>('');
 
-  constructor(
-    private shareDataSvc: ShareDataService
-  ) {
+  constructor(private shareDataSvc: ShareDataService) {
     super();
-    this.shareDataSvc.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe((lang) => {
-      this.selectedLang$$.next(lang);
-    });
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang$$.next(lang);
+      });
   }
 
   public override ngOnDestroy() {
@@ -63,9 +64,7 @@ export class DownloadService extends DestroyableComponent implements OnDestroy {
   }
 
   get fileTypes$(): Observable<any[]> {
-    return combineLatest([
-      this.selectedLang$$.pipe(startWith(''))
-    ]).pipe(
+    return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
       switchMap(([lang]) => {
         return of(this.downloadItems).pipe(
           map((downloadTypeItems) => {
@@ -73,19 +72,18 @@ export class DownloadService extends DestroyableComponent implements OnDestroy {
               return downloadTypeItems.map((downloadType) => {
                 return {
                   ...downloadType,
-                  name: Translate[downloadType.name][lang]
+                  name: Translate[downloadType.name][lang],
                 };
               });
             }
-            return downloadTypeItems
-          })
+            return downloadTypeItems;
+          }),
         );
-      })
-    )
+      }),
+    );
   }
 
   public downloadJsonAs(downloadAs: DownloadAsType, headers: string[], data: string[][], filename = 'data'): void {
-
     switch (downloadAs) {
       case 'CSV':
         this.download(this.generateCSV(headers, data), downloadAs, `${filename}.csv`);
