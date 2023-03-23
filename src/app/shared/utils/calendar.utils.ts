@@ -25,10 +25,16 @@ export class CalendarUtils {
 
     date = new Date(date);
 
-    return `${date.getHours()}:${date.getMinutes()}:00`;
+    const minutes = date.getMinutes().toString();
+
+    return `${date.getHours()}:${minutes.length < 2 ? `0${minutes}` : minutes}:00`;
   }
 
   public static DurationInMinFromHour(hour: number, minute = 0): number {
     return hour * 60 + minute;
   }
 }
+
+
+
+

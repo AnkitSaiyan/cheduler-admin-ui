@@ -1,5 +1,5 @@
-import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, tap } from 'rxjs';
+import { Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { BehaviorSubject, filter, switchMap, take, takeUntil, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationType } from 'diflexmo-angular-design';
@@ -20,6 +20,8 @@ import { AddAppointmentModalComponent } from '../../../../modules/appointments/c
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { Translate } from '../../../models/translate.model';
 import { CalendarUtils } from 'src/app/shared/utils/calendar.utils';
+import { ENG_BE } from 'src/app/shared/utils/const';
+import { DestroyableComponent } from '../../destroyable.component';
 
 @Component({
   selector: 'dfm-calendar-day-view',
@@ -27,7 +29,7 @@ import { CalendarUtils } from 'src/app/shared/utils/calendar.utils';
   styleUrls: ['./dfm-calendar-day-view.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
+export class DfmCalendarDayViewComponent extends DestroyableComponent implements OnInit, OnChanges, OnDestroy {
   @HostListener('document:click')
   private onclick = () => this.handleDocumentClick();
 
@@ -81,6 +83,8 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
 
   private requestId: number | null = null;
 
+  private selectedLang: string = ENG_BE;
+
   constructor(
     private datePipe: DatePipe,
     private appointmentApiSvc: AppointmentApiService,
@@ -88,7 +92,9 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
     private modalSvc: ModalService,
     private shareDataSvc: ShareDataService,
     private staffApiSvc: StaffApiService,
-  ) {}
+  ) {
+    super();
+  }
 
   public ngOnChanges(changes: SimpleChanges) {
     if (!this.selectedDate) {
@@ -129,6 +135,17 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
       .subscribe((date) => {
         this.newDate$$.next(new Date(date));
       });
+
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang = lang;
+      });
+  }
+
+  public override ngOnDestroy() {
+    super.ngOnDestroy();
   }
 
   private changeDate(offset: number) {
@@ -323,7 +340,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
         take(1),
       )
       .subscribe((res) => {
-        this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted}!`);
+        this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted[this.selectedLang]}!`);
       });
   }
 
@@ -338,7 +355,7 @@ export class DfmCalendarDayViewComponent implements OnInit, OnChanges {
           data: {
             titleText: 'AddAppointmentConfirmation',
             bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
-            confirmButtonText: 'Yes'
+            confirmButtonText: 'Yes',
           } as ConfirmActionModalData,
         })
         .closed.pipe(

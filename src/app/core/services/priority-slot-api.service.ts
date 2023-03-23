@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap, takeUntil } from 'rxjs';
+import {BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap, takeUntil, throwError} from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { environment } from 'src/environments/environment';
@@ -54,6 +54,10 @@ export class PrioritySlotApiService extends DestroyableComponent {
     return this.http.get<BaseResponse<PrioritySlot[]>>(`${this.prioritySlots}`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
+      catchError((e) => {
+        this.loaderSvc.deactivate();
+        return throwError(e);
+      })
     );
   }
 
@@ -85,6 +89,10 @@ export class PrioritySlotApiService extends DestroyableComponent {
         this.refreshPrioritySlots$$.next();
         this.loaderSvc.deactivate();
       }),
+      catchError((e) => {
+        this.loaderSvc.deactivate();
+        return throwError(e);
+      })
     );
   }
 
@@ -108,7 +116,8 @@ export class PrioritySlotApiService extends DestroyableComponent {
             this.loaderSvc.spinnerDeactivate();
           }),
           catchError((e) => {
-            return of({} as PrioritySlot);
+            this.loaderSvc.deactivate();
+            return throwError(e);
           }),
         ),
       ),
@@ -127,6 +136,10 @@ export class PrioritySlotApiService extends DestroyableComponent {
         this.refreshPrioritySlots$$.next();
         this.loaderSvc.deactivate();
       }),
+      catchError((e) => {
+        this.loaderSvc.deactivate();
+        return throwError(e);
+      })
     );
   }
 
@@ -142,6 +155,10 @@ export class PrioritySlotApiService extends DestroyableComponent {
         this.refreshPrioritySlots$$.next();
         this.loaderSvc.deactivate();
       }),
+      catchError((e) => {
+        this.loaderSvc.deactivate();
+        return throwError(e);
+      })
     );
   }
 }

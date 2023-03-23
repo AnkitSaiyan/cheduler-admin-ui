@@ -11,7 +11,45 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$diflexmo-admin-primary: mat.define-palette(mat.$indigo-palette);
+
+$diflexmo-primary: #4e2267;
+$diflexmo-primary-text: #e0dde4;
+$diflexmo-secondary-text: #FFFFFF;
+
+$dfm-primary-palette: (
+  50: $diflexmo-primary,
+  100: $diflexmo-primary,
+  200: $diflexmo-primary,
+  300: $diflexmo-primary,
+  400: $diflexmo-primary,
+  500: $diflexmo-primary,
+  600: $diflexmo-primary,
+  700: $diflexmo-primary,
+  800: $diflexmo-primary,
+  900: $diflexmo-primary,
+  A100: $diflexmo-primary,
+  A200: $diflexmo-primary,
+  A400: $diflexmo-primary,
+  A700: $diflexmo-primary,
+  contrast: (
+    50: $diflexmo-primary-text,
+    100: $diflexmo-primary-text,
+    200: $diflexmo-primary-text,
+    300: $diflexmo-secondary-text,
+    400: $diflexmo-secondary-text,
+    500: $diflexmo-secondary-text,
+    600: $diflexmo-secondary-text,
+    700: $diflexmo-secondary-text,
+    800: $diflexmo-secondary-text,
+    900: $diflexmo-secondary-text,
+    A100: $diflexmo-primary-text,
+    A200: $diflexmo-secondary-text,
+    A400: $diflexmo-secondary-text,
+    A700: $diflexmo-secondary-text,
+  )
+);
+
+$diflexmo-admin-primary: mat.define-palette($dfm-primary-palette, 500, A100, 700);
 $diflexmo-admin-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
@@ -1147,7 +1185,7 @@ ngb-datepicker {
   dfm-badge {
     >div {
       color: var(--dfm-badge-warning-color) !important;
-      background-color: var(--dfm-badge-warning-bg) !important;
+      background-color: rgba(#ffa500, 0.2) !important;
     }
   }
 }

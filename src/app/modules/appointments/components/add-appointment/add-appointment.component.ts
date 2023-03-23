@@ -14,7 +14,7 @@ import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { formatTime } from '../../../../shared/utils/time';
+import { checkTimeRangeOverlapping, formatTime } from '../../../../shared/utils/time';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { UserType } from '../../../../shared/models/user.model';
 import {
@@ -93,6 +93,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   public selectedTimeSlot: SelectedSlots = {};
 
   public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
+
+  private initialExamIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
 
   public isSlotUpdated = false;
 
@@ -219,7 +221,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         takeUntil(this.destroy$$),
       )
       .subscribe((slots) => {
-        this.setSlots(slots[0].slots);
+        this.setSlots(slots[0].slots, slots[0]?.isCombined);
         this.loadingSlots$$.next(false);
       });
 
@@ -236,9 +238,12 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         switchMap((reqData) => this.getSlotData(reqData)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((slots) => {
-        this.setSlots(slots[0].slots);
-        this.loadingSlots$$.next(false);
+      .subscribe({
+        next: (slots) => {
+          this.setSlots(slots[0].slots, slots[0]?.isCombined);
+          this.loadingSlots$$.next(false);
+        },
+        error: () => this.loadingSlots$$.next(false),
       });
   }
 
@@ -309,7 +314,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
       .pipe(take(1))
       .subscribe((slots) => {
-        this.setSlots(slots[0]?.slots);
+        this.setSlots(slots[0].slots, slots[0]?.isCombined);
 
         this.loadingSlots$$.next(false);
 
@@ -350,10 +355,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     }
   }
 
-  private setSlots(slots: Slot[]) {
-    const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots);
+  private setSlots(slots: Slot[], isCombinable: boolean) {
+    const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots, isCombinable);
 
     this.examIdToAppointmentSlots = examIdToSlots;
+    this.initialExamIdToAppointmentSlots = examIdToSlots;
     this.slots = newSlots;
 
     // if (newSlots?.length) {
@@ -389,18 +395,18 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
       this.submitting$$.next(true);
 
-      if (this.isCombinable) {
-        this.formValues.examList.forEach((examID) => {
-          const selectedSlot = Object.values(this.selectedTimeSlot)[0];
+      // if (this.isCombinable) {
+      //   this.formValues.examList.forEach((examID) => {
+      //     const selectedSlot = Object.values(this.selectedTimeSlot)[0];
 
-          if (!this.selectedTimeSlot[+examID]) {
-            this.selectedTimeSlot[+examID] = {
-              ...selectedSlot,
-              examId: +examID,
-            };
-          }
-        });
-      }
+      //     if (!this.selectedTimeSlot[+examID]) {
+      //       this.selectedTimeSlot[+examID] = {
+      //         ...selectedSlot,
+      //         examId: +examID,
+      //       };
+      //     }
+      //   });
+      // }
 
       const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
         { ...this.formValues },
@@ -474,8 +480,20 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot);
   }
 
-  public handleSlotSelectionToggle(slot: SlotModified) {
-    AppointmentUtils.ToggleSlotSelection(slot, this.selectedTimeSlot);
+  public handleSlotSelectionToggle(slots: SlotModified) {
+    AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot);
+    Object.values(this.selectedTimeSlot)?.forEach(({ examId, slot }) => {
+      const firstSlot = slot.split('-');
+      const filterData = {};
+      Object.entries(this.initialExamIdToAppointmentSlots)?.forEach(([key, value]) => {
+        if (+key === examId) {
+          filterData[key] = [...this.examIdToAppointmentSlots[key]];
+        } else {
+          filterData[key] = value?.filter((slotVal) => !checkTimeRangeOverlapping(firstSlot[0], firstSlot[1], slotVal.start, slotVal.end));
+        }
+      });
+      this.examIdToAppointmentSlots = { ...filterData };
+    });
   }
 
   public handleEmailInput(e: Event): void {
@@ -496,6 +514,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public clearSlotDetails() {
     this.examIdToAppointmentSlots = {};
+    this.initialExamIdToAppointmentSlots = {};
     this.selectedTimeSlot = {};
     this.slots = [];
   }
