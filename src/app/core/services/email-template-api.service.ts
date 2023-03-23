@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Email, EmailTemplateRequestData } from 'src/app/shared/models/email-template.model';
 import { ChangeStatusRequestData } from 'src/app/shared/models/status.model';
+import { LoaderService } from './loader.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,43 +14,52 @@ import { ChangeStatusRequestData } from 'src/app/shared/models/status.model';
 export class EmailTemplateApiService {
   private emailTemplates$$ = new Subject<void>();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private loaderSvc: LoaderService) {}
 
   public get emailTemplates$(): Observable<Email[]> {
     return combineLatest([this.emailTemplates$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllEmailTemplates()));
   }
 
   private fetchAllEmailTemplates(): Observable<Email[]> {
-    return this.http.get<BaseResponse<Email[]>>(`${environment.serverBaseUrl}/email`).pipe(map((response) => response.data));
+    this.loaderSvc.activate();
+    return this.http.get<BaseResponse<Email[]>>(`${environment.serverBaseUrl}/email`).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public updateEmailTemplate(requestData: EmailTemplateRequestData): Observable<EmailTemplateRequestData> {
+    this.loaderSvc.activate();
     console.log('requestData: ', requestData);
     const { id, ...restData } = requestData;
-    return this.http
-      .put<BaseResponse<EmailTemplateRequestData>>(`${environment.serverBaseUrl}/email/${id}`, requestData)
-      .pipe(map((response) => response.data));
+    return this.http.put<BaseResponse<EmailTemplateRequestData>>(`${environment.serverBaseUrl}/email/${id}`, requestData).pipe(
+      map((response) => response.data),
+      tap(() => this.loaderSvc.deactivate()),
+    );
   }
 
   public changeEmailStatus$(requestData: ChangeStatusRequestData[]): Observable<boolean> {
+    this.loaderSvc.activate();
     return this.http.put<BaseResponse<any>>(`${environment.serverBaseUrl}/email/updateemailtemplatestatus`, requestData).pipe(
       map((resp) => resp?.data),
-      tap(() => this.emailTemplates$$.next()),
+      tap(() => {
+        this.emailTemplates$$.next();
+        this.loaderSvc.deactivate();
+      }),
     );
   }
 
   public getEmailTemplateById(id: number): Observable<Email> {
-    console.log('id: ', id);
+    this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
+
     return this.http.get<BaseResponse<Email>>(`${environment.serverBaseUrl}/email/${id}`).pipe(
       map((response) => response.data),
       tap(() => {
         this.emailTemplates$$.next();
+        this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
       }),
     );
   }
 }
-
-
-
-
-

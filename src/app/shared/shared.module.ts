@@ -16,6 +16,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { HttpClient } from '@angular/common/http';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DestroyableComponent } from './components/destroyable.component';
 import { StatusNamePipe } from './pipes/status-name.pipe';
 import { DashIfNothingPipe } from './pipes/dash-if-nothing.pipe';
@@ -43,11 +44,12 @@ import { EmailInputDirective } from './directives/email-input.directive';
 import { NumberInputDirective } from './directives/number-input.directive';
 import { NumberArrayPipe } from './pipes/number-array.pipe';
 // eslint-disable-next-line import/order
-import {TranslateLoader, TranslateModule, TranslatePipe} from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule, TranslatePipe } from '@ngx-translate/core';
 // eslint-disable-next-line import/order
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import {IsDataPipe} from "./pipes/is-data.pipe";
+import { IsDataPipe } from './pipes/is-data.pipe';
 import { TimeSlotsComponent } from './components/time-slots/time-slots.component';
+import { MatSpinnerComponent } from './components/mat-spinner/mat-spinner.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -83,6 +85,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NumberArrayPipe,
     IsDataPipe,
     TimeSlotsComponent,
+    MatSpinnerComponent,
   ],
   imports: [
     CommonModule,
@@ -91,6 +94,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgbDropdownModule,
     NgbPopoverModule,
     NgbAccordionModule,
+    MatProgressSpinnerModule,
     RouterLink,
     TranslateModule.forChild({
       loader: {
@@ -141,10 +145,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     ClipboardModule,
     TranslateModule,
     IsDataPipe,
-    TimeSlotsComponent
+    TimeSlotsComponent,
+    MatSpinnerComponent,
   ],
-  providers: [
-    TranslatePipe
-  ]
+  providers: [TranslatePipe],
 })
 export class SharedModule {}

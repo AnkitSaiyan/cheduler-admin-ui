@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -21,7 +21,8 @@ import { toggleControlError } from '../../../../shared/utils/toggleControlError'
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
-import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 interface FormValues {
   name: string;
@@ -135,6 +136,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     private nameValuePairPipe: NameValuePairPipe,
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
+    private loaderService: LoaderService,
   ) {
     super();
 
@@ -208,6 +210,13 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
         }
       });
   }
+
+  // public ngAfterViewInit(): void {
+  //   this.loaderService.isSpinnerActive$.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
+  //     this.isSpinnerActive$$.next(value);
+  //     this.cdr.detectChanges();
+  //   });
+  // }
 
   public override ngOnDestroy() {
     super.ngOnDestroy();

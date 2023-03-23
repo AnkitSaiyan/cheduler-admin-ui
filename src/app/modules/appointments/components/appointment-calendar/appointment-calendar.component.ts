@@ -20,6 +20,7 @@ import { PracticeAvailabilityServer } from '../../../../shared/models/practice.m
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from 'src/app/core/services/modal.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'dfm-appointment-calendar',
@@ -94,6 +95,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     private practiceHoursApiSvc: PracticeHoursApiService,
     private timeIntervalPipe: TimeInIntervalPipe,
     private modalSvc: ModalService,
+    private loaderSvc: LoaderService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -286,9 +288,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     const appointments: Appointment[] = [];
     appointmentsProps.forEach((appointment: Appointment) => {
       appointment.exams.forEach((exam) => {
-        appointments.push({ ...appointment, startedAt: exam.startedAt, endedAt: exam.endedAt, exams: [exam] });
+        exam.rooms?.forEach((room: any) => {
+          appointments.push({ ...appointment, startedAt: room.startedAt, endedAt: room.endedAt, exams: [{ ...exam, rooms: [room] }] });
+        });
       });
     });
+
+    console.log({ appointments });
 
     appointments.forEach((appointment) => {
       if (appointment.startedAt) {
@@ -314,6 +320,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
         }
       }
     });
+
+    console.log(this.appointmentGroupedByDateAndRoom, 'test');
   }
 
   private updateQuery(queryStr?: string, date?: Date) {

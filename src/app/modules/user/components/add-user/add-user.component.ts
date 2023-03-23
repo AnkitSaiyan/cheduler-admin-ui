@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationType } from 'diflexmo-angular-design';
 import { BehaviorSubject, take, takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -10,10 +11,9 @@ import { getUserTypeEnum } from '../../../../shared/utils/getEnums';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { AddStaffRequestData } from '../../../../shared/models/staff.model';
 import { Status } from '../../../../shared/models/status.model';
-import { EMAIL_REGEX } from '../../../../shared/utils/const';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { EMAIL_REGEX, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+
 import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
   userType: UserType;

@@ -357,6 +357,11 @@
   "Content" : "Inhoud",
   "ContentForAdmin" : "Inhoud voor admin",
   "AppointmentConfirmationDiflexmo" : "afspraakbevestiging diflexmo",
-  "NextSlotOpen": "Volgende Open Slot"
+  "NextSlotOpen": "Volgende sleuf geopend",
+  "EnterPercentage": "Voer Percentage in",
+  "Daily" : "Dagelijks",
+  "AddAppointmentConfirmation" : "Afspraakbevestiging toevoegen",
+  "AreYouSureWantToMakeAppointmentOutsideOperatingHours" : "Weet u zeker dat u buiten openingstijden een afspraak wilt maken?",
+  "LoadingSlots" : "Sleuven laden"
 }
 

@@ -1,3 +1,4 @@
+<dfm-mat-spinner></dfm-mat-spinner>
 <div class="bg-white rounded-4 ad-pr-main-wrapper dfm-px-16">
   <section class="modal-header">
     <h5 class="modal-title ad-pr-title-buttons">
@@ -249,7 +250,7 @@
       </ng-container>
 
       <div class="d-flex dfm-gap-32 flex-wrap flex-1">
-        <dfm-input type="number" required placeholder="Enter Percentage" #percentage (focusout)="handleExpenseInput($event, percentage, prioritySlotForm.get('nxtSlotOpenPct'))" formControlName="nxtSlotOpenPct" size="md" label="{{'NextSlotOpen' | translate}} % *"></dfm-input>
+        <dfm-input type="number" required placeholder="{{'EnterPercentage' | translate}}" #percentage (focusout)="handleExpenseInput($event, percentage, prioritySlotForm.get('nxtSlotOpenPct'))" formControlName="nxtSlotOpenPct" size="md" label="{{'NextSlotOpen' | translate}} % *"></dfm-input>
         <!-- <small
                 class="validation-error text-center d-flex"
                 *ngIf="slotEndTime.control.hasError('time') && slotStartTime.control.value && slotEndTime.control.value"

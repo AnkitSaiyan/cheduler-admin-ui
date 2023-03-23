@@ -1,0 +1,11 @@
+.mat-spinner {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    background: rgba(255, 255, 255, 0.9)!important;
+    z-index: 10;
+    transform: translate(-50%, -50%);
+    display: block;
+}

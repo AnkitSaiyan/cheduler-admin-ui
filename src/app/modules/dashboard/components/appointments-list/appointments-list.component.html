@@ -115,8 +115,8 @@
           <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
         </ng-template>
         <ng-template #bodyRowTemplate let-item>
-          <dfm-table-body-cell>{{ (item?.exams.length ? (item.startedAt | date : 'y-MM-dd HH:mm') : 'abc') | dashIfNothing }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ (item?.exams.length ? (item.endedAt | date : 'y-MM-dd HH:mm') : 'bh') | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ (item?.exams.length ? (item.startedAt | date : 'y-MM-dd HH:mm') : '-') | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ (item?.exams.length ? (item.endedAt | date : 'y-MM-dd HH:mm') : '-') | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.patientFname | titlecase }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.doctor | titlecase }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.id }}</dfm-table-body-cell>
@@ -162,7 +162,8 @@
                 ngbPopover="{{ 'Edit' | translate }}"
                 triggers="mouseenter:mouseleave"
                 popoverClass="popover-p-8"
-                [openDelay]="200"
+                [openDelay]="300"
+                (click)="$event.stopPropagation()"
                 [routerLink]="['/appointment', item.id, 'edit']"
                 [state]="{ comingFromRoute: 'dashboard', edit: true }"
               ></dfm-button>
@@ -173,8 +174,8 @@
                 ngbPopover="{{ 'Delete' | translate }}"
                 triggers="mouseenter:mouseleave"
                 popoverClass="popover-p-8"
-                [openDelay]="200"
-                (click)="deleteAppointment(item.id)"
+                [openDelay]="300"
+                (click)="$event.stopPropagation(); deleteAppointment(item.id)"
               >
               </dfm-button>
             </div>

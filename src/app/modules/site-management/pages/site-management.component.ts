@@ -22,6 +22,7 @@ interface FormValues {
   subHeading: string;
   bodyText: string;
   doctorReferringConsent: 0 | 1;
+  isAppointmentAutoconfirm: boolean;
   cancelAppointmentTime: number;
   cancelAppointmentType: TimeDurationType;
   address: string;
@@ -45,20 +46,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
   public submitting$$ = new BehaviorSubject<boolean>(false);
 
-  public timeDurations: { name: TimeDurationType; value: TimeDurationType }[] = [
-    {
-      name: 'Minutes',
-      value: 'Minutes',
-    },
-    {
-      name: 'Hours',
-      value: 'Hours',
-    },
-    {
-      name: 'Days',
-      value: 'Days',
-    },
-  ];
+  public timeDurations: any[] = [];
 
   private selectedLang: string = ENG_BE;
 
@@ -74,6 +62,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
   }
 
   public ngOnInit(): void {
+    this.siteManagementApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.timeDurations = items));
+
     this.siteManagementApiSvc.siteManagementData$.pipe(takeUntil(this.destroy$$)).subscribe((siteManagementData) => {
       this.createForm(siteManagementData);
       this.siteManagementData$$.next(siteManagementData ?? {});
@@ -137,8 +127,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       if (siteManagementData.introductoryText) {
         try {
           introductoryTextObj = JSON.parse(siteManagementData.introductoryText);
-        } catch (e) {
-        }
+        } catch (e) {}
       }
 
       if (siteManagementData?.logo) {
@@ -168,7 +157,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
       reminderTime: [reminderDuration, []],
       reminderTimeType: [reminderDurationTYpe, []],
-      isAppointmentAutoConfirm: [!!siteManagementData?.isAppointmentAutoConfirm, [Validators.required]]
+      isAppointmentAutoconfirm: [!!siteManagementData?.isAppointmentAutoconfirm, [Validators.required]],
     });
 
     setTimeout(() => {

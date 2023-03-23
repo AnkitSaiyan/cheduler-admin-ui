@@ -38,7 +38,9 @@
     <!--    -->
   </section>
 
-  <section class="dfm-card dfm-p-16 ed-et-section2 hide-scrollbar">
+  <section class="dfm-card dfm-p-16 ed-et-section2 hide-scrollbar position-relative">
+    <dfm-mat-spinner></dfm-mat-spinner>
+
     <form [formGroup]="emailTemplateForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-center">
         <dfm-input class="flex-1" size="md" placeholder="{{'AppointmentConfirmationDiflexmo' | translate}}" label="{{'Title' | translate}} *" formControlName="title"></dfm-input>

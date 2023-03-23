@@ -1,37 +1,41 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap} from 'rxjs';
-import {NotificationType} from 'diflexmo-angular-design';
-import {DatePipe} from '@angular/common';
-import {ActivatedRoute, Router} from '@angular/router';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {AppointmentApiService} from '../../../../core/services/appointment-api.service';
-import {RoomType} from '../../../../shared/models/rooms.model';
-import {NameValue} from '../../../../shared/components/search-modal.component';
-import {RoomsApiService} from '../../../../core/services/rooms-api.service';
-import {StaffApiService} from '../../../../core/services/staff-api.service';
-import {ExamApiService} from '../../../../core/services/exam-api.service';
-import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
-import {TimeInIntervalPipe} from '../../../../shared/pipes/time-in-interval.pipe';
-import {formatTime} from '../../../../shared/utils/time';
-import {PhysicianApiService} from '../../../../core/services/physician.api.service';
-import {UserType} from '../../../../shared/models/user.model';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
+import { NotificationType } from 'diflexmo-angular-design';
+import { DatePipe } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
+import { RoomType } from '../../../../shared/models/rooms.model';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { StaffApiService } from '../../../../core/services/staff-api.service';
+import { ExamApiService } from '../../../../core/services/exam-api.service';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { checkTimeRangeOverlapping, formatTime } from '../../../../shared/utils/time';
+import { PhysicianApiService } from '../../../../core/services/physician.api.service';
+import { UserType } from '../../../../shared/models/user.model';
 import {
   AddAppointmentRequestData,
   Appointment,
-  AppointmentSlotsRequestData, CreateAppointmentFormValues, SelectedSlots,
-  Slot, SlotModified
+  AppointmentSlotsRequestData,
+  CreateAppointmentFormValues,
+  SelectedSlots,
+  Slot,
+  SlotModified,
 } from '../../../../shared/models/appointment.model';
-import {APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE} from '../../../../shared/utils/const';
-import {RouterStateService} from '../../../../core/services/router-state.service';
-import {AppointmentStatus} from '../../../../shared/models/status.model';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {AppointmentUtils} from "../../../../shared/utils/appointment.utils";
-import {SiteManagementApiService} from "../../../../core/services/site-management-api.service";
-import {CalendarUtils} from "../../../../shared/utils/calendar.utils";
-import {DateDistributed} from "../../../../shared/models/calendar.model";
-import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
+import { RouterStateService } from '../../../../core/services/router-state.service';
+import { AppointmentStatus } from '../../../../shared/models/status.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { AppointmentUtils } from '../../../../shared/utils/appointment.utils';
+import { SiteManagementApiService } from '../../../../core/services/site-management-api.service';
+import { CalendarUtils } from '../../../../shared/utils/calendar.utils';
+import { DateDistributed } from '../../../../shared/models/calendar.model';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'dfm-add-appointment',
@@ -55,7 +59,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public filteredExamList: NameValue[] = [];
 
-  private examList: NameValue[] = []
+  private examList: NameValue[] = [];
 
   public filteredPhysicianList: NameValue[] = [];
 
@@ -90,6 +94,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
 
+  private initialExamIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
+
   public isSlotUpdated = false;
 
   public slots$$ = new BehaviorSubject<any>(null);
@@ -112,7 +118,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     private route: ActivatedRoute,
     private shareDataService: ShareDataService,
     private siteManagementApiSvc: SiteManagementApiService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private loaderService: LoaderService,
   ) {
     super();
 
@@ -174,13 +181,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         this.userList = [...keyValueExams];
       });
 
-    this.physicianApiSvc.physicians$
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((physicians) => {
-        const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
-        this.filteredPhysicianList = [...keyValuePhysicians];
-        this.physicianList = [...keyValuePhysicians];
-      });
+    this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
+      const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
+      this.filteredPhysicianList = [...keyValuePhysicians];
+      this.physicianList = [...keyValuePhysicians];
+    });
 
     this.routerStateSvc
       .listenForParamChange$(APPOINTMENT_ID)
@@ -205,37 +210,40 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.appointmentForm
       ?.get('startedAt')
       ?.valueChanges.pipe(
-      debounceTime(0),
-      filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
-      tap(() => this.loadingSlots$$.next(true)),
-      map((date) => {
-        this.clearSlotDetails();
-        return AppointmentUtils.GenerateSlotRequestData(date, this.formValues.examList);
-      }),
-      switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
-      takeUntil(this.destroy$$)
-    )
+        debounceTime(0),
+        filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
+        tap(() => this.loadingSlots$$.next(true)),
+        map((date) => {
+          this.clearSlotDetails();
+          return AppointmentUtils.GenerateSlotRequestData(date, this.formValues.examList);
+        }),
+        switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
+        takeUntil(this.destroy$$),
+      )
       .subscribe((slots) => {
-        this.setSlots(slots[0].slots);
+        this.setSlots(slots[0].slots, slots[0]?.isCombined);
         this.loadingSlots$$.next(false);
       });
 
     this.appointmentForm
       .get('examList')
       ?.valueChanges.pipe(
-      debounceTime(0),
-      filter((examList) => examList?.length && this.formValues.startedAt?.day),
-      tap(() => this.loadingSlots$$.next(true)),
-      map((examList) => {
-        this.clearSlotDetails();
-        return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
-      }),
-      switchMap((reqData) => this.getSlotData(reqData)),
-      takeUntil(this.destroy$$)
-    )
-      .subscribe((slots) => {
-        this.setSlots(slots[0].slots);
-        this.loadingSlots$$.next(false);
+        debounceTime(0),
+        filter((examList) => examList?.length && this.formValues.startedAt?.day),
+        tap(() => this.loadingSlots$$.next(true)),
+        map((examList) => {
+          this.clearSlotDetails();
+          return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
+        }),
+        switchMap((reqData) => this.getSlotData(reqData)),
+        takeUntil(this.destroy$$),
+      )
+      .subscribe({
+        next: (slots) => {
+          this.setSlots(slots[0].slots, slots[0]?.isCombined);
+          this.loadingSlots$$.next(false);
+        },
+        error: () => this.loadingSlots$$.next(false),
       });
   }
 
@@ -270,7 +278,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   private updateForm(appointment: Appointment | undefined) {
-
     let date!: Date;
     let dateDistributed: DateDistributed = {} as DateDistributed;
 
@@ -296,9 +303,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           comments: appointment?.comments ?? null,
           approval: appointment?.approval ?? AppointmentStatus.Pending,
         },
-        {emitEvent: false},
+        { emitEvent: false },
       );
-    }, 200)
+    }, 200);
 
     const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
 
@@ -307,7 +314,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
       .pipe(take(1))
       .subscribe((slots) => {
-        this.setSlots(slots[0].slots);
+        this.setSlots(slots[0].slots, slots[0]?.isCombined);
 
         this.loadingSlots$$.next(false);
 
@@ -348,10 +355,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     }
   }
 
-  private setSlots(slots: Slot[]) {
-    const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots);
+  private setSlots(slots: Slot[], isCombinable: boolean) {
+    const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots, isCombinable);
 
     this.examIdToAppointmentSlots = examIdToSlots;
+    this.initialExamIdToAppointmentSlots = examIdToSlots;
     this.slots = newSlots;
 
     // if (newSlots?.length) {
@@ -370,8 +378,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   }
 
   public saveAppointment(): void {
-
-
     try {
       if (this.appointmentForm.invalid) {
         this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
@@ -389,18 +395,18 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
       this.submitting$$.next(true);
 
-      if (this.isCombinable) {
-        this.formValues.examList.forEach((examID) => {
-          const selectedSlot = Object.values(this.selectedTimeSlot)[0];
+      // if (this.isCombinable) {
+      //   this.formValues.examList.forEach((examID) => {
+      //     const selectedSlot = Object.values(this.selectedTimeSlot)[0];
 
-          if (!this.selectedTimeSlot[+examID]) {
-            this.selectedTimeSlot[+examID] = {
-              ...selectedSlot,
-              examId: +examID,
-            };
-          }
-        });
-      }
+      //     if (!this.selectedTimeSlot[+examID]) {
+      //       this.selectedTimeSlot[+examID] = {
+      //         ...selectedSlot,
+      //         examId: +examID,
+      //       };
+      //     }
+      //   });
+      // }
 
       const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
         { ...this.formValues },
@@ -474,8 +480,20 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot);
   }
 
-  public handleSlotSelectionToggle(slot: SlotModified) {
-    AppointmentUtils.ToggleSlotSelection(slot, this.selectedTimeSlot);
+  public handleSlotSelectionToggle(slots: SlotModified) {
+    AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot);
+    Object.values(this.selectedTimeSlot)?.forEach(({ examId, slot }) => {
+      const firstSlot = slot.split('-');
+      const filterData = {};
+      Object.entries(this.initialExamIdToAppointmentSlots)?.forEach(([key, value]) => {
+        if (+key === examId) {
+          filterData[key] = [...this.examIdToAppointmentSlots[key]];
+        } else {
+          filterData[key] = value?.filter((slotVal) => !checkTimeRangeOverlapping(firstSlot[0], firstSlot[1], slotVal.start, slotVal.end));
+        }
+      });
+      this.examIdToAppointmentSlots = { ...filterData };
+    });
   }
 
   public handleEmailInput(e: Event): void {
@@ -496,6 +514,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public clearSlotDetails() {
     this.examIdToAppointmentSlots = {};
+    this.initialExamIdToAppointmentSlots = {};
     this.selectedTimeSlot = {};
     this.slots = [];
   }

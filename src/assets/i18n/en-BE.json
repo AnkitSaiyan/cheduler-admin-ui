@@ -355,5 +355,10 @@
   "Content" : "Content",
   "ContentForAdmin" : "Content For Admin",
   "AppointmentConfirmationDiflexmo" : "Appointment Confirmation Diflexmo",
-  "NextSlotOpen": "Next Slot Open"
+  "NextSlotOpen": "Next Slot Open",
+  "EnterPercentage": "Enter Percentage",
+  "Daily" : "Daily",
+  "AddAppointmentConfirmation" : "Add Appointment Confirmation",
+  "AreYouSureWantToMakeAppointmentOutsideOperatingHours" : "Are you sure you want to make an appointment outside the operating hours?",
+  "LoadingSlots" : "Loading Slots"
 }

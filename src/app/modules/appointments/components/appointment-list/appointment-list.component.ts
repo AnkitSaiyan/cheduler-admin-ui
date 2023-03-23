@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DatePipe, TitleCasePipe } from '@angular/common';
@@ -20,7 +20,8 @@ import { Exam } from '../../../../shared/models/exam.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
-import {RouterStateService} from "../../../../core/services/router-state.service";
+import { RouterStateService } from '../../../../core/services/router-state.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -95,19 +96,22 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.appointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
 
-    this.routerStateSvc.listenForQueryParamsChanges$().pipe(debounceTime(100)).subscribe((params) => {
-      if (params['v']) {
-        this.calendarView$$.next(params['v'] !== 't');
-      } else {
-        this.router.navigate([], {
-          replaceUrl: true,
-          queryParams: {
-            v: 'w'
-          }
-        });
-        this.calendarView$$.next(true);
-      }
-    });
+    this.routerStateSvc
+      .listenForQueryParamsChanges$()
+      .pipe(debounceTime(100))
+      .subscribe((params) => {
+        if (params['v']) {
+          this.calendarView$$.next(params['v'] !== 't');
+        } else {
+          this.router.navigate([], {
+            replaceUrl: true,
+            queryParams: {
+              v: 'w',
+            },
+          });
+          this.calendarView$$.next(true);
+        }
+      });
   }
 
   public ngOnInit() {
@@ -174,7 +178,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       .pipe(
         map((value) => {
           if (value?.proceed) {
-            return [...this.selectedAppointmentIDs.map((id) => ({id: +id, status: value.newStatus as number}))];
+            return [...this.selectedAppointmentIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
           }
           return [];
         }),
@@ -195,7 +199,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      this.roomList = rooms.map(({name, id}) => ({name, value: id}));
+      this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
     });
 
     this.shareDataSvc
@@ -307,7 +311,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public navigateToView(e: TableItem, appointments: Appointment[]) {
     if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], {replaceUrl: true, relativeTo: this.route});
+      this.router.navigate([`./${e.id}/view`], { replaceUrl: true, relativeTo: this.route });
     }
   }
 
@@ -328,10 +332,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.toggleMenu();
 
     const modalRef = this.modalSvc.open(SearchModalComponent, {
-      options: {fullscreen: true},
+      options: { fullscreen: true },
       data: {
         items: [
-          ...this.appointments$$.value.map(({id, patientLname, patientFname}) => {
+          ...this.appointments$$.value.map(({ id, patientLname, patientFname }) => {
             return {
               name: `${patientFname} ${patientLname}`,
               key: `${patientFname} ${patientLname} ${id}`,
@@ -361,8 +365,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.router.navigate([], {
       replaceUrl: true,
       queryParams: {
-        v: !this.calendarView$$.value ? 'w' : 't'
-      }
+        v: !this.calendarView$$.value ? 'w' : 't',
+      },
     });
   }
 
