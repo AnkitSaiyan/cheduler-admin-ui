@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
+import {catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap, throwError} from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { environment } from 'src/environments/environment';
@@ -25,6 +25,10 @@ export class PrioritySlotApiService {
     return this.http.get<BaseResponse<PrioritySlot[]>>(`${this.prioritySlots}`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
+      catchError((e) => {
+        this.loaderSvc.deactivate();
+        return throwError(e);
+      })
     );
   }
 
@@ -36,6 +40,10 @@ export class PrioritySlotApiService {
         this.refreshPrioritySlots$$.next();
         this.loaderSvc.deactivate();
       }),
+      catchError((e) => {
+        this.loaderSvc.deactivate();
+        return throwError(e);
+      })
     );
   }
 
@@ -59,7 +67,8 @@ export class PrioritySlotApiService {
             this.loaderSvc.spinnerDeactivate();
           }),
           catchError((e) => {
-            return of({} as PrioritySlot);
+            this.loaderSvc.deactivate();
+            return throwError(e);
           }),
         ),
       ),
@@ -78,6 +87,10 @@ export class PrioritySlotApiService {
         this.refreshPrioritySlots$$.next();
         this.loaderSvc.deactivate();
       }),
+      catchError((e) => {
+        this.loaderSvc.deactivate();
+        return throwError(e);
+      })
     );
   }
 
@@ -93,6 +106,10 @@ export class PrioritySlotApiService {
         this.refreshPrioritySlots$$.next();
         this.loaderSvc.deactivate();
       }),
+      catchError((e) => {
+        this.loaderSvc.deactivate();
+        return throwError(e);
+      })
     );
   }
 }
