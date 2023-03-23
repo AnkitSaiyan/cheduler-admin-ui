@@ -51,7 +51,7 @@
 
       <div class="calender-day-view-body-container hide-scrollbar">
         <div role="presentation" class="calender-day-view-body" >
-          <div role="row" class="calender-day-view-time-slot-container" *ngIf="timeSlot?.timings">
+          <div role="row" class="calender-day-view-time-slot-container" *ngIf="timeSlot?.timings?.length">
             <div class="calender-day-view-time-slot text-sm" *ngFor="let time of timeSlot.timings" >
               <span>{{ time }}</span>
               <div class="calender-day-view-horizontal-line"></div>
@@ -59,7 +59,7 @@
           </div>
 
           <div role="presentation" class="calender-day-view-events-container-main" #bodyMain (scroll)="onScroll(scrollTwo, scrollOne)" #scrollTwo>
-            <div role="row" class="calender-day-view-events-container" *ngIf="timeSlot?.timings">
+            <div role="row" class="calender-day-view-events-container" *ngIf="timeSlot?.timings?.length">
               <div class="gray-out-area"  *ngFor="let item of grayOutSlot$$ | async" [ngStyle]="{'top.px': item.top, 'height.px': item.height, 'width': bodyMain.style.width }" ></div>
               <div>
                 <ng-container *ngFor="let i of timeSlot.timings">
@@ -260,7 +260,7 @@
           </div>
         </div>
       </div>
-      <ng-container *ngIf="!timeSlot?.timings">
+      <ng-container *ngIf="!timeSlot?.timings?.length">
         <div class="d-flex flex-1 align-items-center justify-content-center">
           <p >Practice is not available for this day</p>
         </div>
