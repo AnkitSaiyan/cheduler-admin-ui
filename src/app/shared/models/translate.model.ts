@@ -147,6 +147,26 @@ export const Translate = Object.freeze({
     [ENG_BE]: 'Read',
     [DUTCH_BE]: 'Lees',
   },
+  Public: {
+    [ENG_BE]: 'Public',
+    [DUTCH_BE]: 'Publiek',
+  },
+  Private: {
+    [ENG_BE]: 'Private',
+    [DUTCH_BE]: 'Privaat',
+  },
+  Minutes: {
+    [ENG_BE]: 'Minutes',
+    [DUTCH_BE]: 'minuten',
+  },
+  Hours: {
+    [ENG_BE]: 'Hours',
+    [DUTCH_BE]: 'Uren',
+  },
+  Days: {
+    [ENG_BE]: 'Days',
+    [DUTCH_BE]: 'Dagen',
+  },
 
   // Toast Messages
   DownloadSuccess: (filetype) => ({
