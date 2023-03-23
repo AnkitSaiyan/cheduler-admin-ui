@@ -96,6 +96,7 @@ export interface SlotModified {
   examId: number;
   userList?: number[];
   roomList?: any[];
+  slot: string;
 }
 
 export interface AppointmentSlot {

@@ -26,6 +26,7 @@ import {EMAIL_REGEX, ENG_BE} from '../../../../shared/utils/const';
 import {GeneralUtils} from '../../../../shared/utils/general.utils';
 import {Translate} from "../../../../shared/models/translate.model";
 import {CalendarUtils} from "../../../../shared/utils/calendar.utils";
+import { checkTimeRangeOverlapping } from 'src/app/shared/utils/time';
 
 @Component({
   selector: 'dfm-add-appointment-modal',
@@ -71,6 +72,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
   public selectedTimeSlot: SelectedSlots = {};
 
   public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
+
+  public initialExamIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
 
   public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
 
@@ -267,6 +270,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots, isCombinable);
 
     this.examIdToAppointmentSlots = examIdToSlots;
+    this.initialExamIdToAppointmentSlots = examIdToSlots;
     this.slots = newSlots;
   }
 
@@ -274,9 +278,21 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot);
   }
 
-  public handleSlotSelectionToggle(slot: SlotModified) {
-    AppointmentUtils.ToggleSlotSelection(slot, this.selectedTimeSlot);
-    this.selectedTime = slot.start;
+  public handleSlotSelectionToggle(slots: SlotModified) {
+    AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot);
+    Object.values(this.selectedTimeSlot)?.forEach(({ examId, slot }) => {
+      const firstSlot = slot.split('-');
+      const filterData = {};
+      Object.entries(this.initialExamIdToAppointmentSlots)?.forEach(([key, value]) => {
+        if (+key === examId) {
+          filterData[key] = [...this.examIdToAppointmentSlots[key]];
+        } else {
+          filterData[key] = value?.filter((slotVal) => !checkTimeRangeOverlapping(firstSlot[0], firstSlot[1], slotVal.start, slotVal.end));
+        }
+      });
+      this.examIdToAppointmentSlots = { ...filterData };
+    });
+    this.selectedTime = slots.start;
   }
 
   public saveAppointment(): void {
@@ -368,6 +384,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
   public clearSlotDetails() {
     this.examIdToAppointmentSlots = {};
+    this.initialExamIdToAppointmentSlots = {};
     this.selectedTimeSlot = {};
     this.slots = [];
   }
