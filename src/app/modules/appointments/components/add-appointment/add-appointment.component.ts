@@ -236,9 +236,12 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         switchMap((reqData) => this.getSlotData(reqData)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((slots) => {
-        this.setSlots(slots[0].slots, slots[0]?.isCombined);
-        this.loadingSlots$$.next(false);
+      .subscribe({
+        next: (slots) => {
+          this.setSlots(slots[0].slots, slots[0]?.isCombined);
+          this.loadingSlots$$.next(false);
+        },
+        error: () => this.loadingSlots$$.next(false)
       });
   }
 

@@ -1,5 +1,19 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, EMPTY, map, Observable, of, shareReplay, startWith, Subject, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  EMPTY,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  startWith,
+  Subject,
+  switchMap,
+  tap,
+  throwError
+} from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -212,16 +226,16 @@ export class AppointmentApiService {
       map((res) => [
         {
           ...res?.data,
-          slots: res?.data?.slots.map((slot) => ({
+          slots: res?.data?.slots?.length ? res?.data?.slots.map((slot) => ({
             ...slot,
             exams: slot.exams.map((exam: any) => ({ ...exam, userId: exam.users, roomId: exam.rooms.map((room) => room.roomId) })),
-          })),
+          })) : []
         },
       ]),
       tap(() => this.loaderSvc.spinnerDeactivate()),
-      catchError(() => {
+      catchError((e) => {
         this.loaderSvc.spinnerDeactivate();
-        return of([]);
+        return throwError(e);
       }),
     );
   }
