@@ -34,13 +34,17 @@ export class RoomsApiService {
 
   private fetchRooms(): Observable<Room[]> {
     this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
     return this.http.get<BaseResponse<Room[]>>(`${this.roomUrl}`).pipe(
       map((response) =>
         response.data.sort((r1, r2) => {
           return r1.placeInAgenda - r2.placeInAgenda;
         }),
       ),
-      tap(() => this.loaderSvc.deactivate()),
+      tap(() => {
+        this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
+      }),
     );
   }
 
@@ -50,21 +54,32 @@ export class RoomsApiService {
 
   private fetchAllRooms$(): Observable<Room[]> {
     this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
+
     return this.http.get<BaseResponse<Room[]>>(`${environment.serverBaseUrl}/common/getrooms`).pipe(
       map((response) =>
         response.data.sort((r1, r2) => {
           return r1.placeInAgenda - r2.placeInAgenda;
         }),
       ),
-      tap(() => this.loaderSvc.deactivate()),
+      tap(() => {
+        this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
+      }),
     );
   }
 
   public getRoomByID(roomID: number): Observable<Room> {
+    this.loaderSvc.spinnerActivate();
     // return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.rooms.find((room) => +room.id === +roomID))));
     return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(
       switchMap(() => {
-        return this.http.get<BaseResponse<Room>>(`${this.roomUrl}/${roomID}`).pipe(map((response) => response.data));
+        return this.http.get<BaseResponse<Room>>(`${this.roomUrl}/${roomID}`).pipe(
+          map((response) => response.data),
+          tap(() => {
+            this.loaderSvc.spinnerDeactivate();
+          }),
+        );
       }),
     );
   }

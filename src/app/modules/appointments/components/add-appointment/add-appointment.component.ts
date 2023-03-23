@@ -1,37 +1,41 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap} from 'rxjs';
-import {NotificationType} from 'diflexmo-angular-design';
-import {DatePipe} from '@angular/common';
-import {ActivatedRoute, Router} from '@angular/router';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {AppointmentApiService} from '../../../../core/services/appointment-api.service';
-import {RoomType} from '../../../../shared/models/rooms.model';
-import {NameValue} from '../../../../shared/components/search-modal.component';
-import {RoomsApiService} from '../../../../core/services/rooms-api.service';
-import {StaffApiService} from '../../../../core/services/staff-api.service';
-import {ExamApiService} from '../../../../core/services/exam-api.service';
-import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
-import {TimeInIntervalPipe} from '../../../../shared/pipes/time-in-interval.pipe';
-import {formatTime} from '../../../../shared/utils/time';
-import {PhysicianApiService} from '../../../../core/services/physician.api.service';
-import {UserType} from '../../../../shared/models/user.model';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
+import { NotificationType } from 'diflexmo-angular-design';
+import { DatePipe } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
+import { RoomType } from '../../../../shared/models/rooms.model';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { StaffApiService } from '../../../../core/services/staff-api.service';
+import { ExamApiService } from '../../../../core/services/exam-api.service';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { formatTime } from '../../../../shared/utils/time';
+import { PhysicianApiService } from '../../../../core/services/physician.api.service';
+import { UserType } from '../../../../shared/models/user.model';
 import {
   AddAppointmentRequestData,
   Appointment,
-  AppointmentSlotsRequestData, CreateAppointmentFormValues, SelectedSlots,
-  Slot, SlotModified
+  AppointmentSlotsRequestData,
+  CreateAppointmentFormValues,
+  SelectedSlots,
+  Slot,
+  SlotModified,
 } from '../../../../shared/models/appointment.model';
-import {APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE} from '../../../../shared/utils/const';
-import {RouterStateService} from '../../../../core/services/router-state.service';
-import {AppointmentStatus} from '../../../../shared/models/status.model';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {AppointmentUtils} from "../../../../shared/utils/appointment.utils";
-import {SiteManagementApiService} from "../../../../core/services/site-management-api.service";
-import {CalendarUtils} from "../../../../shared/utils/calendar.utils";
-import {DateDistributed} from "../../../../shared/models/calendar.model";
-import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
+import { RouterStateService } from '../../../../core/services/router-state.service';
+import { AppointmentStatus } from '../../../../shared/models/status.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { AppointmentUtils } from '../../../../shared/utils/appointment.utils';
+import { SiteManagementApiService } from '../../../../core/services/site-management-api.service';
+import { CalendarUtils } from '../../../../shared/utils/calendar.utils';
+import { DateDistributed } from '../../../../shared/models/calendar.model';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'dfm-add-appointment',
@@ -113,6 +117,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     private shareDataService: ShareDataService,
     private siteManagementApiSvc: SiteManagementApiService,
     private cdr: ChangeDetectorRef,
+    private loaderService: LoaderService,
   ) {
     super();
 

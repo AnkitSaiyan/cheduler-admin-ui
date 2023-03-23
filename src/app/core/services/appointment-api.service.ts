@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, map, Observable, of, shareReplay, startWith, Subject, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, EMPTY, map, Observable, of, shareReplay, startWith, Subject, switchMap, tap } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -165,6 +165,8 @@ export class AppointmentApiService {
 
   public getAppointmentByID$(appointmentID: number): Observable<Appointment | undefined> {
     this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
+
     return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
       switchMap(() =>
         this.http.get<BaseResponse<Appointment>>(`${this.appointmentUrl}/${appointmentID}`).pipe(
@@ -176,7 +178,10 @@ export class AppointmentApiService {
           }),
         ),
       ),
-      tap(() => this.loaderSvc.deactivate()),
+      tap(() => {
+        this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
+      }),
     );
   }
 
@@ -202,6 +207,7 @@ export class AppointmentApiService {
 
   public getSlots$(requestData: AppointmentSlotsRequestData): Observable<AppointmentSlot[]> {
     const customRequestData = { ...requestData, date: requestData.fromDate };
+    this.loaderSvc.spinnerActivate();
     return this.http.post<BaseResponse<AppointmentSlot>>(`${environment.serverBaseUrl}/patientappointment/slots`, customRequestData).pipe(
       map((res) => [
         {
@@ -212,6 +218,11 @@ export class AppointmentApiService {
           })),
         },
       ]),
+      tap(() => this.loaderSvc.spinnerDeactivate()),
+      catchError(() => {
+        this.loaderSvc.spinnerDeactivate();
+        return of([]);
+      }),
     );
   }
 

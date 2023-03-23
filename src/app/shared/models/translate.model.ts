@@ -75,6 +75,14 @@ export const Translate = Object.freeze({
     [ENG_BE]: 'Absence Info',
     [DUTCH_BE]: 'Info Afwezigheid',
   },
+  AbsenceName: {
+    [ENG_BE]: 'Absence Name',
+    [DUTCH_BE]: 'Naam Afwezigheid',
+  },
+  RoomName: {
+    [ENG_BE]: 'Room Name',
+    [DUTCH_BE]: 'Zaal Naam',
+  },
   Start: {
     [ENG_BE]: 'Start',
     [DUTCH_BE]: 'Begin',
@@ -118,6 +126,10 @@ export const Translate = Object.freeze({
   PatientName: {
     [ENG_BE]: 'Patient Name',
     [DUTCH_BE]: 'Naam patiënt',
+  },
+  PatientEmail: {
+    [ENG_BE]: 'Patient Email',
+    [DUTCH_BE]: 'E-mail patiënt',
   },
   Doctor: {
     [ENG_BE]: 'Doctor',

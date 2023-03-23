@@ -41,6 +41,8 @@ export class PrioritySlotApiService {
 
   public getPrioritySlotsByID(slotID: number): Observable<PrioritySlot | undefined> {
     this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
+
     let queryParams = new HttpParams();
     queryParams = queryParams.append('id', slotID);
     return combineLatest([this.refreshPrioritySlots$$.pipe(startWith(''))]).pipe(
@@ -54,6 +56,7 @@ export class PrioritySlotApiService {
           }),
           tap(() => {
             this.loaderSvc.deactivate();
+            this.loaderSvc.spinnerDeactivate();
           }),
           catchError((e) => {
             return of({} as PrioritySlot);

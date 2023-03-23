@@ -12,19 +12,26 @@
             <span class="text-sm font-weight-medium dfm-ms-2">{{ 'StartedAt' | translate }} *</span>
             <div class="dfm-button-group-wrapper w-fit h-fit">
               <div class="input-as-dfm-input">
-                <input class="w-full" formControlName="startedAt" placeholder="yyyy-mm-dd" ngbDatepicker
-                       #date="ngbDatepicker"/>
+                <input class="w-full" formControlName="startedAt" placeholder="{{'yyyy-mm-dd' | translate}}" ngbDatepicker #date="ngbDatepicker" />
               </div>
               <div>
-                <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date"
-                                 (click)="date.toggle()"></dfm-button-icon>
+                <dfm-button-icon
+                  color="tertiary-gray"
+                  size="md"
+                  icon="calendar-date"
+                  ngbPopover="{{ 'Calendar' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                  (click)="date.toggle()"
+                ></dfm-button-icon>
               </div>
             </div>
           </div>
 
           <div class="d-flex flex-column dfm-gap-8">
             <span class="text-sm font-weight-medium">{{ 'StartTime' | translate }}</span>
-            <span class="time-text">  {{ selectedTime }} </span>
+            <span class="time-text"> {{ selectedTime }} </span>
           </div>
         </div>
 
@@ -33,7 +40,9 @@
             #exams
             [items]="filteredExamList"
             [multiple]="true"
-            [placeholder]="!!exams.value?.length ? exams.value.length + ' ' + ('Selected' | translate) : ('Select' | translate) + ' ' + ('Exams' | translate )"
+            [placeholder]="
+              !!exams.value?.length ? exams.value.length + ' ' + ('Selected' | translate) : ('Select' | translate) + ' ' + ('Exams' | translate)
+            "
             [showDescription]="false"
             [typeToSearch]="true"
             (searchInput)="handleDropdownSearch($event, 'exam')"
@@ -48,17 +57,17 @@
           class="font-weight-medium text-sm dfm-my-8"
           *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false"
         >
-        No slots found for selected Exam(s) and Time
-      </span>
+          No slots found for selected Exam(s) and Time
+        </span>
 
-        <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> Loading slots... </span>
+        <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> {{"LoadingSlots" | translate}}... </span>
 
         <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="slots?.length">
           <ng-container *ngIf="!isCombinable; else uncombinable">
             <div class="dfm-card d-flex flex-column dfm-p-16 card-item" *ngFor="let examID of exams.value">
               <div class="d-flex flex-column gap-1">
                 <div class="d-flex gap-2 align-items-center text-sm">
-                  <span class="font-weight-medium">Exam Name: </span>
+                  <span class="font-weight-medium">{{"ExamName" | translate}}: </span>
                   <span>{{ examIdToDetails[examID]?.name }}</span>
                 </div>
               </div>
@@ -69,9 +78,9 @@
                   *ngFor="let slot of examIdToAppointmentSlots[examID];"
                   (click)="handleSlotSelectionToggle(slot)"
                   [ngClass]="{
-                  'time-slot-disabled-text': !checkSlotAvailability(slot),
-                  'time-slot-selected-text': selectedTimeSlot[examID]?.slot === slot.start + '-' + slot.end
-                }"
+                    'time-slot-disabled-text': !checkSlotAvailability(slot),
+                    'time-slot-selected-text': selectedTimeSlot[examID]?.slot === slot.start + '-' + slot.end
+                  }"
                 >
                   {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
                 </div>
@@ -83,8 +92,8 @@
               <div class="d-flex gap-2 align-items-center text-sm">
                 <span class="font-weight-medium">Exam(s): </span>
                 <span>
-                  <ng-container *ngFor="let examID of exams.value;let i = index">
-                    {{ examIdToDetails[+examID]?.name }}{{i !== (exams.value.length - 1) ? ',' : ''}}
+                  <ng-container *ngFor="let examID of exams.value; let i = index">
+                    {{ examIdToDetails[+examID]?.name }}{{ i !== exams.value.length - 1 ? ',' : '' }}
                   </ng-container>
                 </span>
               </div>
@@ -92,71 +101,97 @@
               <div class="d-flex align-items-center gap-3 overflow-y-auto max-h-128 dfm-mt-12 flex-wrap">
                 <div
                   class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
-                  *ngFor="let slot of examIdToAppointmentSlots[+exams.value[0]];"
+                  *ngFor="let slot of examIdToAppointmentSlots[+exams.value[0]]"
                   (click)="handleSlotSelectionToggle(slot)"
                   [ngClass]="{
-                'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === slot.start + '-' + slot.end
-              }"
+                    'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === slot.start + '-' + slot.end
+                  }"
                 >
                   {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
                 </div>
               </div>
             </div>
           </ng-template>
-
         </div>
 
-<!--          <div class="d-flex flex-column align-items-center gap-3 overflow-x-auto max-h-128 dfm-mt-12 flex-wrap"-->
-<!--               *ngIf="slots.length">-->
-<!--            <div-->
-<!--              class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"-->
-<!--              *ngFor="let slot of examIdToAppointmentSlots[exams.value[0]];"-->
-<!--              (click)="handleSlotSelectionToggle(slot)"-->
-<!--              [ngClass]="{-->
-<!--                      'time-slot-disabled-text': !checkSlotAvailability(slot),-->
-<!--                      'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === (slot.start + '-' + slot.end)-->
-<!--                    }"-->
-<!--            >-->
-<!--              {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        -->
-<!--                <span *ngIf="slots.length && checkSlotAvailable(exams.value[0])"></span>-->
+        <!--          <div class="d-flex flex-column align-items-center gap-3 overflow-x-auto max-h-128 dfm-mt-12 flex-wrap"-->
+        <!--               *ngIf="slots.length">-->
+        <!--            <div-->
+        <!--              class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"-->
+        <!--              *ngFor="let slot of examIdToAppointmentSlots[exams.value[0]];"-->
+        <!--              (click)="handleSlotSelectionToggle(slot)"-->
+        <!--              [ngClass]="{-->
+        <!--                      'time-slot-disabled-text': !checkSlotAvailability(slot),-->
+        <!--                      'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === (slot.start + '-' + slot.end)-->
+        <!--                    }"-->
+        <!--            >-->
+        <!--              {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--        -->
+        <!--                <span *ngIf="slots.length && checkSlotAvailable(exams.value[0])"></span>-->
 
         <div class="d-flex flex-column dfm-gap-8">
           <div class="d-flex dfm-gap-8 flex-wrap">
-            <dfm-input class="flex-1" size="md" #firstname [dfmNameInput]="firstname" [placeholder]="'EnterFirstName' | translate" [label]="('PatientFirstName' | translate) + ' *'"
-                       formControlName="patientFname"></dfm-input>
+            <dfm-input
+              class="flex-1"
+              size="md"
+              #firstname
+              [dfmNameInput]="firstname"
+              [placeholder]="'EnterFirstName' | translate"
+              [label]="('PatientFirstName' | translate) + ' *'"
+              formControlName="patientFname"
+            ></dfm-input>
 
-            <dfm-input class="flex-1" size="md" #lastname [dfmNameInput]="lastname" [placeholder]="'EnterLastName' | translate" [label]="('PatientLastName' | translate) + ' *'"
-                       formControlName="patientLname"></dfm-input>
+            <dfm-input
+              class="flex-1"
+              size="md"
+              #lastname
+              [dfmNameInput]="lastname"
+              [placeholder]="'EnterLastName' | translate"
+              [label]="('PatientLastName' | translate) + ' *'"
+              formControlName="patientLname"
+            ></dfm-input>
           </div>
 
           <div class="d-flex dfm-gap-8 flex-wrap">
-            <dfm-input #phone [dfmNumberInput]="phone" class="flex-1" size="md" [placeholder]="'EnterTelephone' | translate" [label]="('PatientTelephone' | translate) + ' *'"
-                       formControlName="patientTel"></dfm-input>
+            <dfm-input
+              #phone
+              [dfmNumberInput]="phone"
+              class="flex-1"
+              size="md"
+              [placeholder]="'EnterTelephone' | translate"
+              [label]="('PatientTelephone' | translate) + ' *'"
+              formControlName="patientTel"
+            ></dfm-input>
 
             <div class="d-flex flex-column flex-1 min-w-128">
               <dfm-input
                 class="flex-1 min-w-128"
                 size="md"
                 [placeholder]="'EnterEmail' | translate"
-                [label]="('PatientEmail' | translate)"
+                [label]="'PatientEmail' | translate"
                 formControlName="patientEmail"
                 (focusout)="handleEmailInput($event)"
               >
               </dfm-input>
-              <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">{{'InvalidEmail' | translate}}.</small>
+              <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">{{ 'InvalidEmail' | translate }}.</small>
             </div>
-
           </div>
         </div>
 
         <div class="d-flex flex-column dfm-gap-16 dfm-mt-8">
           <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
-            <dfm-input-dropdown [items]="filteredPhysicianList" [typeToSearch]="true"
-                                (searchInput)="handleDropdownSearch($event, 'doctor')" class="flex-1" size="md" [placeholder]="'SelectDoctor' | translate"
-                                [label]="('Doctor' | translate)" formControlName="doctorId">
+            <dfm-input-dropdown
+              [items]="filteredPhysicianList"
+              [typeToSearch]="true"
+              (searchInput)="handleDropdownSearch($event, 'doctor')"
+              class="flex-1"
+              size="md"
+              [placeholder]="'SelectDoctor' | translate"
+              [label]="'Doctor' | translate"
+              formControlName="doctorId"
+            >
             </dfm-input-dropdown>
           </div>
 
@@ -164,7 +199,9 @@
             <dfm-input-dropdown
               #generalUsers
               [items]="filteredUserList"
-              [placeholder]="!!generalUsers.value?.length ? generalUsers.value.length + ' z' + ('Selected' | translate) : ('SelectGeneralUser' | translate)"
+              [placeholder]="
+                !!generalUsers.value?.length ? generalUsers.value.length + ' z' + ('Selected' | translate) : ('SelectGeneralUser' | translate)
+              "
               [typeToSearch]="true"
               (searchInput)="handleDropdownSearch($event, 'user')"
               formControlName="userId"
@@ -174,8 +211,11 @@
             </dfm-input-dropdown>
           </div>
 
-          <dfm-text-area [label]="('CommentsClinicalData' | translate)" [placeholder]="'EnterComments' | translate"
-                         formControlName="comments"></dfm-text-area>
+          <dfm-text-area
+            [label]="'CommentsClinicalData' | translate"
+            [placeholder]="'EnterComments' | translate"
+            formControlName="comments"
+          ></dfm-text-area>
         </div>
       </div>
     </form>
@@ -183,6 +223,8 @@
 
   <div class="modal-footer">
     <dfm-button color="secondary" size="md" (click)="close(false)">{{ 'Cancel' | translate }}</dfm-button>
-    <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveAppointment()">{{'Add' | translate}}</dfm-button>
+    <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveAppointment()">{{
+      'Add' | translate
+    }}</dfm-button>
   </div>
 </div>

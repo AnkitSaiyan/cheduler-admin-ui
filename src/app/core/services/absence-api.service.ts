@@ -630,10 +630,10 @@ export class AbsenceApiService {
   }
 
   public getAbsenceByID$(absenceID: number): Observable<Absence> {
-    this.loaderSvc.activate();
+    this.loaderSvc.spinnerActivate();
     return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(
       switchMap(() => this.fetchAbsenceById(absenceID)),
-      tap(() => this.loaderSvc.deactivate()),
+      tap(() => this.loaderSvc.spinnerDeactivate()),
     );
   }
 

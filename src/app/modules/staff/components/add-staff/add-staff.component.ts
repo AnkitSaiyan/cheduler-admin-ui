@@ -1,34 +1,25 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {BehaviorSubject, debounceTime, map, of, Subject, switchMap, takeUntil, tap} from 'rxjs';
-import {NotificationType} from 'diflexmo-angular-design';
-import {ActivatedRoute, Router} from '@angular/router';
-import {AvailabilityType, User, UserType} from '../../../../shared/models/user.model';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {ExamApiService} from '../../../../core/services/exam-api.service';
-import {UserApiService} from '../../../../core/services/user-api.service';
-import {TimeSlot, Weekday} from '../../../../shared/models/calendar.model';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {AddStaffRequestData} from '../../../../shared/models/staff.model';
-import {StaffApiService} from '../../../../core/services/staff-api.service';
-import {
-  COMING_FROM_ROUTE,
-  DUTCH_BE,
-  EDIT,
-  EMAIL_REGEX,
-  ENG_BE,
-  STAFF_ID,
-  Statuses,
-  StatusesNL
-} from '../../../../shared/utils/const';
-import {RouterStateService} from '../../../../core/services/router-state.service';
-import {PracticeAvailabilityServer} from '../../../../shared/models/practice.model';
-import {NameValue} from '../../../../shared/components/search-modal.component';
-import {Status} from '../../../../shared/models/status.model';
-import {TimeInIntervalPipe} from '../../../../shared/pipes/time-in-interval.pipe';
-import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
-import {Translate} from '../../../../shared/models/translate.model';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, debounceTime, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { NotificationType } from 'diflexmo-angular-design';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { AvailabilityType, User, UserType } from '../../../../shared/models/user.model';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { ExamApiService } from '../../../../core/services/exam-api.service';
+import { UserApiService } from '../../../../core/services/user-api.service';
+import { TimeSlot, Weekday } from '../../../../shared/models/calendar.model';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { AddStaffRequestData } from '../../../../shared/models/staff.model';
+import { StaffApiService } from '../../../../core/services/staff-api.service';
+import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { RouterStateService } from '../../../../core/services/router-state.service';
+import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { Status } from '../../../../shared/models/status.model';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { Translate } from '../../../../shared/models/translate.model';
 
 interface FormValues {
   firstname: string;
@@ -146,7 +137,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
           }
           return of({} as User);
         }),
-        debounceTime(0)
+        debounceTime(0),
       )
       .subscribe((staffDetails) => {
         if (staffDetails) {
@@ -161,9 +152,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         this.staffDetails$$.next(staffDetails);
       });
 
-    this.staffApiSvc.staffTypes$
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((staffTypes) => this.staffTypes$$.next(staffTypes));
+    this.staffApiSvc.staffTypes$.pipe(takeUntil(this.destroy$$)).subscribe((staffTypes) => this.staffTypes$$.next(staffTypes));
 
     this.examApiSvc.exams$
       .pipe(
@@ -233,7 +222,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
       // examList: [staffDetails?.exams?.map((exam) => exam?.id?.toString()), []],
       status: staffDetails?.status ?? Status.Active,
       availabilityType: !!staffDetails?.availabilityType,
-      practiceAvailabilityToggle: !!staffDetails?.practiceAvailability?.length
+      practiceAvailabilityToggle: !!staffDetails?.practiceAvailability?.length,
     });
 
     setTimeout(() => {
@@ -376,7 +365,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     this.submitting$$.next(true);
 
-    const {practiceAvailabilityToggle, ...rest} = this.formValues;
+    const { practiceAvailabilityToggle, ...rest } = this.formValues;
     const addStaffReqData: AddStaffRequestData = {
       ...rest,
       availabilityType: timeSlotFormValues ? +!!timeSlotFormValues.values?.length : 0,
@@ -413,7 +402,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
           route = this.edit ? '/staff' : '../';
         }
 
-        this.router.navigate([route], {relativeTo: this.route});
+        this.router.navigate([route], { relativeTo: this.route });
       });
   }
 }
