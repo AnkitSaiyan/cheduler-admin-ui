@@ -1,18 +1,47 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap, throwError} from 'rxjs';
+import {BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap, takeUntil, throwError} from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { environment } from 'src/environments/environment';
+import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { LoaderService } from './loader.service';
+import { RepeatType } from '../../shared/models/absence.model';
+import { ShareDataService } from './share-data.service';
+import { Translate } from '../../shared/models/translate.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class PrioritySlotApiService {
+export class PrioritySlotApiService extends DestroyableComponent {
+  public repeatTypes = [
+    {
+      name: 'Daily',
+      value: RepeatType.Daily,
+    },
+    {
+      name: 'Weekly',
+      value: RepeatType.Weekly,
+    },
+    {
+      name: 'Monthly',
+      value: RepeatType.Monthly,
+    },
+  ];
+
   private refreshPrioritySlots$$ = new Subject<void>();
 
-  constructor(private http: HttpClient, private loaderSvc: LoaderService) {}
+  private selectedLang$$ = new BehaviorSubject<string>('');
+
+  constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService) {
+    super();
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang$$.next(lang);
+      });
+  }
 
   prioritySlots: string = `${environment.serverBaseUrl}/priorityslot`;
 
@@ -29,6 +58,26 @@ export class PrioritySlotApiService {
         this.loaderSvc.deactivate();
         return throwError(e);
       })
+    );
+  }
+
+  get fileTypes$(): Observable<any[]> {
+    return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
+      switchMap(([lang]) => {
+        return of(this.repeatTypes).pipe(
+          map((downloadTypeItems) => {
+            if (lang) {
+              return downloadTypeItems.map((downloadType) => {
+                return {
+                  ...downloadType,
+                  name: Translate[downloadType.name][lang],
+                };
+              });
+            }
+            return downloadTypeItems;
+          }),
+        );
+      }),
     );
   }
 
