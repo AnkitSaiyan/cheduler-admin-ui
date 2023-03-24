@@ -23,6 +23,7 @@ import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { LoaderService } from 'src/app/core/services/loader.service';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 
 interface FormValues {
   name: string;
@@ -79,20 +80,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
   public priorityType = PriorityType;
 
-  public repeatTypes = [
-    {
-      name: 'Daily',
-      value: RepeatType.Daily,
-    },
-    {
-      name: 'Weekly',
-      value: RepeatType.Weekly,
-    },
-    {
-      name: 'Monthly',
-      value: RepeatType.Monthly,
-    },
-  ];
+  public repeatTypes: any[] = [];
 
   private times: NameValue[];
 
@@ -137,6 +125,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
     private loaderService: LoaderService,
+    private priorityApiSvc: PrioritySlotApiService,
   ) {
     super();
 
@@ -146,6 +135,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
   }
 
   public ngOnInit(): void {
+    this.priorityApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
     this.modalSvc.dialogData$
       .pipe(
         switchMap((modalData) => {
@@ -432,6 +422,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
           },
         );
     }
+  }
+
+  public get controls() {
+    return this.absenceForm.controls;
   }
 
   private getRepeatEveryItems(repeatType: RepeatType): NameValue[] {

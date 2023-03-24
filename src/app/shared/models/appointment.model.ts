@@ -120,8 +120,9 @@ export enum WorkStatusesEnum {
 }
 
 export interface AppointmentSlotsRequestData {
-  fromDate: string;
-  toDate: string;
+  fromDate?: string;
+  toDate?: string;
+  date: string;
   exams: number[];
 }
 

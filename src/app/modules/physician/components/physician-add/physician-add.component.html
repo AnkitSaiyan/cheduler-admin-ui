@@ -28,12 +28,23 @@
   <section class="modal-body dfm-pb-24 ad-ph-section2">
     <form [formGroup]="addPhysicianForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
-        <dfm-input #firstname [dfmNameInput]="firstname" class="flex-1" size="md" placeholder="{{'EnterFirstName' | translate}}"
+
+        <div  class="flex-1">
+        <dfm-input #firstname [dfmNameInput]="firstname" size="md" placeholder="{{'EnterFirstName' | translate}}"
                    label="{{'FirstName' | translate}}*" formControlName="firstname">
         </dfm-input>
-        <dfm-input #lastname [dfmNameInput]="lastname" class="flex-1" size="md" placeholder="{{'EnterLastName' | translate}}"
+        <div class="validation-error" *ngIf="addPhysicianForm.get('firstname')?.hasError('required') && addPhysicianForm.get('firstname')?.touched">
+          {{ 'RequiredField' | translate }}
+        </div>
+        </div>
+        <div class="flex-1">
+        <dfm-input #lastname [dfmNameInput]="lastname"  size="md" placeholder="{{'EnterLastName' | translate}}"
                    label="{{'LastName' | translate}} *" formControlName="lastname">
         </dfm-input>
+        <div class="validation-error" *ngIf="addPhysicianForm.get('lastname')?.hasError('required') && addPhysicianForm.get('lastname')?.touched">
+          {{ 'RequiredField' | translate }}
+        </div>
+        </div>
       </div>
 
       <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
@@ -54,6 +65,9 @@
           <dfm-input #phone [dfmNumberInput]="phone" (focusout)="handleNumberFocusOut($event)" class="flex-1" size="md" placeholder="{{'EnterTelephone' | translate}}" label="{{'Telephone' | translate}} *"
                      formControlName="telephone">
           </dfm-input>
+          <div class="validation-error" *ngIf="addPhysicianForm.get('telephone')?.hasError('required') && addPhysicianForm.get('telephone')?.touched">
+            {{ 'RequiredField' | translate }}
+          </div>
           <small *ngIf="addPhysicianForm.get('telephone')?.hasError('telephone')" class="validation-error">{{'InvalidEmail' | translate}}</small>
         </div>
 

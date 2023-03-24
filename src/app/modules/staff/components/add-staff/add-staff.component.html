@@ -1,4 +1,3 @@
-
 <div class="d-flex flex-column dfm-gap-24">
   <section class="content-section-1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-sf-title-buttons">
@@ -46,23 +45,32 @@
     <form [formGroup]="addStaffForm" class="dfm-p-16 d-flex flex-column dfm-gap-32">
       <div class="d-flex flex-column dfm-gap-16 ad-sf-form-general-info">
         <div class="d-flex dfm-gap-16 flex-wrap">
-          <dfm-input
-            #firstname
-            [dfmNameInput]="firstname"
-            size="md"
-            placeholder="{{ 'EnterFirstName' | translate }}"
-            label="{{ 'FirstName' | translate }} *"
-            formControlName="firstname"
-          ></dfm-input>
-
-          <dfm-input
-            #lastname
-            [dfmNameInput]="lastname"
-            size="md"
-            placeholder="{{ 'EnterLastName' | translate }}"
-            label="{{ 'LastName' | translate }} *"
-            formControlName="lastname"
-          ></dfm-input>
+          <div>
+            <dfm-input
+              #firstname
+              [dfmNameInput]="firstname"
+              size="md"
+              placeholder="{{ 'EnterFirstName' | translate }}"
+              label="{{ 'FirstName' | translate }} *"
+              formControlName="firstname"
+            ></dfm-input>
+            <div class="validation-error" *ngIf="addStaffForm.get('firstname')?.hasError('required') && addStaffForm.get('firstname')?.touched">
+              {{ 'RequiredField' | translate }}
+            </div>
+          </div>
+          <div>
+            <dfm-input
+              #lastname
+              [dfmNameInput]="lastname"
+              size="md"
+              placeholder="{{ 'EnterLastName' | translate }}"
+              label="{{ 'LastName' | translate }} *"
+              formControlName="lastname"
+            ></dfm-input>
+            <div class="validation-error" *ngIf="addStaffForm.get('lastname')?.hasError('required') && addStaffForm.get('lastname')?.touched">
+              {{ 'RequiredField' | translate }}
+            </div>
+          </div>
         </div>
 
         <div class="d-flex dfm-gap-16 flex-wrap">
@@ -76,8 +84,12 @@
               class="flex-1"
               (focusout)="handleEmailInput($event)"
             ></dfm-input>
+            <div class="validation-error" *ngIf="addStaffForm.get('email')?.hasError('required') && addStaffForm.get('email')?.touched">
+              {{ 'RequiredField' | translate }}
+            </div>
             <small *ngIf="addStaffForm.get('email')?.hasError('email')" class="validation-error">{{ 'InvalidEmail' | translate }} </small>
           </div>
+          <div>
 
           <dfm-input
             #phone
@@ -88,6 +100,8 @@
             label="{{ 'Telephone' | translate }}"
             formControlName="telephone"
           ></dfm-input>
+         
+          </div>
         </div>
 
         <div *ngIf="staffTypes$$ | async as staffTypes" class="ad-sf-staff-dropdown">
@@ -102,6 +116,9 @@
               formControlName="userType"
             >
             </dfm-input-dropdown>
+          </div>
+          <div class="validation-error" *ngIf="addStaffForm.get('userType')?.hasError('required') && addStaffForm.get('userType')?.touched">
+            {{ 'RequiredField' | translate }}
           </div>
         </div>
 

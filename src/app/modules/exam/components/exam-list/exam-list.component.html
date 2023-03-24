@@ -96,7 +96,7 @@
               size="sm"
               trailingIcon="check-circle"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-              ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
             ></dfm-button>
 
@@ -106,7 +106,7 @@
               size="sm"
               trailingIcon="x-circle"
               (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-              ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+              ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
             ></dfm-button>
 
