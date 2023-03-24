@@ -7,6 +7,7 @@ import {
 } from "../models/appointment.model";
 import {DateDistributed} from "../models/calendar.model";
 import {CalendarUtils} from "./calendar.utils";
+import {checkTimeRangeOverlapping} from "./time";
 
 export class AppointmentUtils {
   constructor() {}
@@ -37,6 +38,7 @@ export class AppointmentUtils {
             newSlot = {
               start: slot.start,
               end: slot.end,
+              exams: slot.exams,
               examId: exam.examId,
               roomList: exam.rooms,
               userList: exam.users,
@@ -67,16 +69,10 @@ export class AppointmentUtils {
   }
 
   public static IsSlotAvailable(slot: SlotModified, selectedTimeSlot: SelectedSlots) {
-    let isAvailable = true;
-
-    Object.entries(selectedTimeSlot).forEach(([key, value]) => {
-      const timeString = `${slot.start}-${slot.end}`;
-      if (+key !== +slot.examId && timeString === value.slot) {
-        isAvailable = false;
-      }
+    return !Object.values(selectedTimeSlot)?.some((value) => {
+      const firstSlot = value?.slot?.split('-');
+      return firstSlot?.length &&  slot.examId !==value.examId && checkTimeRangeOverlapping(firstSlot[0], firstSlot[1], slot.start, slot.end)
     });
-
-    return isAvailable;
   }
 
   public static ToggleSlotSelection(slot: SlotModified, selectedTimeSlot: SelectedSlots): void {
@@ -88,11 +84,13 @@ export class AppointmentUtils {
       selectedTimeSlot[slot.examId] = { slot: '', roomList: [], userList: [], examId: slot.examId };
     } else {
       selectedTimeSlot[slot.examId] = {
+        ...slot,
         slot: `${slot.start}-${slot.end}`,
         examId: slot.examId,
         roomList: slot?.roomList ?? [],
         userList: slot?.userList ?? [],
       };
+      console.log(selectedTimeSlot)
     }
   }
 
@@ -109,14 +107,19 @@ export class AppointmentUtils {
   public static GenerateAppointmentRequestData(
     formValues: CreateAppointmentFormValues,
     selectedTimeSlot: SelectedSlots,
-    appointment?: Appointment | undefined,
+    appointment: Appointment | undefined,
+    isCombinable:boolean
   ): AddAppointmentRequestData {
     const { startedAt, startTime, examList, ...rest } = formValues;
+    const combinableSelectedTimeSlot = {...Object.values(selectedTimeSlot)[0]}
+    delete combinableSelectedTimeSlot.userList;
+    delete combinableSelectedTimeSlot.roomList;
+    delete combinableSelectedTimeSlot.slot;
 
     const requestData: any = {
       ...rest,
       date: CalendarUtils.DateDistributedToString(startedAt, '-'),
-      slot: {
+      slot: !isCombinable ? {
         examId: 0,
         start: '',
         end: '',
@@ -126,26 +129,23 @@ export class AppointmentUtils {
             rooms: selectedTimeSlot[+examID]?.roomList ?? [],
             users: selectedTimeSlot[+examID]?.userList ?? [],
           };
-
+          debugger
           if (selectedTimeSlot[+examID]) {
-            const time = selectedTimeSlot[+examID].slot.split('-');
-            const start = time[0].split(':');
-            const end = time[1].split(':');
-
-            examDetails['start'] = `${start[0]}:${start[1]}:00`;
-            examDetails['end'] = `${end[0]}:${end[1]}:00`;
+            const time: any = selectedTimeSlot[+examID];
+            examDetails['start'] = time.start;
+            examDetails['end'] = time.end;
           } else {
-            const time = selectedTimeSlot[0].slot.split('-');
-            const start = time[0].split(':');
-            const end = time[1].split(':');
+            const time: any = selectedTimeSlot[0];
+            const start = time.start;
+            const end = time.end;
 
             examDetails['start'] = `${start[0]}:${start[1]}:00`;
             examDetails['end'] = `${end[0]}:${end[1]}:00`;
           }
 
           return examDetails;
-        }),
-      },
+        }) ,
+      } : {...combinableSelectedTimeSlot, examId: 0},
     };
 
     if (appointment && appointment?.id) {

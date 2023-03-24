@@ -10,7 +10,7 @@ import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
 import {NameValue} from '../../../../shared/components/search-modal.component';
 import {AppointmentApiService} from '../../../../core/services/appointment-api.service';
 import {
-  AddAppointmentRequestData,
+  AddAppointmentRequestData, Appointment,
   CreateAppointmentFormValues,
   SelectedSlots,
   Slot,
@@ -76,7 +76,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
   public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
 
-  public initialExamIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
 
   public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
 
@@ -273,7 +272,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots, isCombinable);
 
     this.examIdToAppointmentSlots = examIdToSlots;
-    this.initialExamIdToAppointmentSlots = examIdToSlots;
     this.slots = newSlots;
   }
 
@@ -283,18 +281,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
   public handleSlotSelectionToggle(slots: SlotModified) {
     AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot);
-    Object.values(this.selectedTimeSlot)?.forEach(({ examId, slot }) => {
-      const firstSlot = slot.split('-');
-      const filterData = {};
-      Object.entries(this.initialExamIdToAppointmentSlots)?.forEach(([key, value]) => {
-        if (+key === examId) {
-          filterData[key] = [...this.examIdToAppointmentSlots[key]];
-        } else {
-          filterData[key] = value?.filter((slotVal) => !checkTimeRangeOverlapping(firstSlot[0], firstSlot[1], slotVal.start, slotVal.end));
-        }
-      });
-      this.examIdToAppointmentSlots = { ...filterData };
-    });
     this.selectedTime = slots.start;
   }
 
@@ -331,6 +317,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
       { ...this.formValues },
       { ...this.selectedTimeSlot },
+      {} as Appointment,
+      this.isCombinable
     );
 
     this.appointmentApiSvc
@@ -387,7 +375,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
   public clearSlotDetails() {
     this.examIdToAppointmentSlots = {};
-    this.initialExamIdToAppointmentSlots = {};
     this.selectedTimeSlot = {};
     this.slots = [];
   }
