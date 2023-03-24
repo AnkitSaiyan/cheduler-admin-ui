@@ -10,7 +10,7 @@ import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
 import {NameValue} from '../../../../shared/components/search-modal.component';
 import {AppointmentApiService} from '../../../../core/services/appointment-api.service';
 import {
-  AddAppointmentRequestData,
+  AddAppointmentRequestData, Appointment,
   CreateAppointmentFormValues,
   SelectedSlots,
   Slot,
@@ -314,6 +314,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
       { ...this.formValues },
       { ...this.selectedTimeSlot },
+      {} as Appointment,
+      this.isCombinable
     );
 
     this.appointmentApiSvc

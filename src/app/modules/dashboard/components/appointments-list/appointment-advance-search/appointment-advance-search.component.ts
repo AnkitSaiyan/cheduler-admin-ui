@@ -337,6 +337,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
         { ...this.formValues },
         { ...this.selectedTimeSlot },
         { ...(this.appointment$$.value ?? ({} as Appointment)) },
+        this.isCombinable
       );
 
       console.log(requestData);

@@ -387,40 +387,44 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public saveAppointment(): void {
     try {
-      if (this.appointmentForm.invalid) {
-        this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-        Object.keys(this.appointmentForm.controls).forEach((key) => this.appointmentForm.get(key)?.markAsTouched());
-        return;
-      }
-
-      if (
-        (this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
-        (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length)
-      ) {
-        this.notificationSvc.showNotification('Please select slots for all exams.', NotificationType.WARNING);
-        return;
-      }
-
-      this.submitting$$.next(true);
-
-      // if (this.isCombinable) {
-      //   this.formValues.examList.forEach((examID) => {
-      //     const selectedSlot = Object.values(this.selectedTimeSlot)[0];
-
-      //     if (!this.selectedTimeSlot[+examID]) {
-      //       this.selectedTimeSlot[+examID] = {
-      //         ...selectedSlot,
-      //         examId: +examID,
-      //       };
-      //     }
-      //   });
+      // if (this.appointmentForm.invalid) {
+      //   this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+      //   this.appointmentForm.markAllAsTouched();
+      //   return;
       // }
+      //
+      // if (
+      //   (this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
+      //   (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length)
+      // ) {
+      //   this.notificationSvc.showNotification('Please select slots for all exams.', NotificationType.WARNING);
+      //   return;
+      // }
+
+      // this.submitting$$.next(true);
+
+      console.log(this.selectedTimeSlot)
+
+      if (this.isCombinable) {
+        this.formValues.examList.forEach((examID) => {
+          const selectedSlot = Object.values(this.selectedTimeSlot)[0];
+
+          if (!this.selectedTimeSlot[+examID]) {
+            this.selectedTimeSlot[+examID] = {
+              ...selectedSlot,
+              examId: +examID,
+            };
+          }
+        });
+      }
 
       const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
         { ...this.formValues },
         { ...this.selectedTimeSlot },
         { ...(this.appointment$$.value ?? ({} as Appointment)) },
+        this.isCombinable,
       );
+      
 
       if (this.edit) {
         this.appointmentApiSvc
@@ -478,6 +482,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           });
       }
     } catch (e) {
+      console.log(e);
       this.notificationSvc.showNotification('Failed to save the appointment', NotificationType.DANGER);
       this.submitting$$.next(false);
       return;
