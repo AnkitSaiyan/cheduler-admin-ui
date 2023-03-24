@@ -387,23 +387,21 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public saveAppointment(): void {
     try {
-      // if (this.appointmentForm.invalid) {
-      //   this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-      //   this.appointmentForm.markAllAsTouched();
-      //   return;
-      // }
-      //
-      // if (
-      //   (this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
-      //   (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length)
-      // ) {
-      //   this.notificationSvc.showNotification('Please select slots for all exams.', NotificationType.WARNING);
-      //   return;
-      // }
+      if (this.appointmentForm.invalid) {
+        this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+        this.appointmentForm.markAllAsTouched();
+        return;
+      }
 
-      // this.submitting$$.next(true);
+      if (
+        (this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
+        (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length)
+      ) {
+        this.notificationSvc.showNotification('Please select slots for all exams.', NotificationType.WARNING);
+        return;
+      }
 
-      console.log(this.selectedTimeSlot)
+      this.submitting$$.next(true);
 
       if (this.isCombinable) {
         this.formValues.examList.forEach((examID) => {
@@ -424,7 +422,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         { ...(this.appointment$$.value ?? ({} as Appointment)) },
         this.isCombinable,
       );
-      
+
 
       if (this.edit) {
         this.appointmentApiSvc
