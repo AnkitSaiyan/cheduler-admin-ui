@@ -424,6 +424,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     }
   }
 
+  public get controls() {
+    return this.absenceForm.controls;
+  }
+
   private getRepeatEveryItems(repeatType: RepeatType): NameValue[] {
     switch (repeatType) {
       case RepeatType.Daily:
