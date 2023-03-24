@@ -30,7 +30,7 @@
                   <input
                     class="w-full min-w-128"
                     formControlName="startedAt"
-                    placeholder="{{ 'yyyy-mm-dd' | translate }}"
+                    placeholder="{{ 'dateFormat' | translate }}"
                     ngbDatepicker
                     #startedAt="ngbDatepicker"
                     [minDate]="minFromDate"
@@ -92,7 +92,7 @@
                   <input
                     class="w-full min-w-128"
                     formControlName="endedAt"
-                    placeholder="{{ 'yyyy-mm-dd' | translate }}"
+                    placeholder="{{ 'dateFormat' | translate }}"
                     ngbDatepicker
                     #endedAt="ngbDatepicker"
                     [minDate]="formValues.startedAt"

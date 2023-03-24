@@ -179,6 +179,18 @@ export const Translate = Object.freeze({
     [ENG_BE]: 'Monthly',
     [DUTCH_BE]: 'Maandelijks',
   },
+  Day: {
+    [ENG_BE]: 'Day',
+    [DUTCH_BE]: 'Dag',
+  },
+  Week: {
+    [ENG_BE]: 'Week',
+    [DUTCH_BE]: 'Week',
+  },
+  Month: {
+    [ENG_BE]: 'Month',
+    [DUTCH_BE]: 'maand',
+  },
 
   // Toast Messages
   DownloadSuccess: (filetype) => ({

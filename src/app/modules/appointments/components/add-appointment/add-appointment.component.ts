@@ -1,9 +1,12 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Injectable, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -29,18 +32,18 @@ import {
 import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { AppointmentStatus } from '../../../../shared/models/status.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { AppointmentUtils } from '../../../../shared/utils/appointment.utils';
 import { SiteManagementApiService } from '../../../../core/services/site-management-api.service';
 import { CalendarUtils } from '../../../../shared/utils/calendar.utils';
 import { DateDistributed } from '../../../../shared/models/calendar.model';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
-import { LoaderService } from 'src/app/core/services/loader.service';
+import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 
 @Component({
   selector: 'dfm-add-appointment',
   templateUrl: './add-appointment.component.html',
   styleUrls: ['./add-appointment.component.scss'],
+  providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
 })
 export class AddAppointmentComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public appointmentForm!: FormGroup;
@@ -213,7 +216,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         debounceTime(0),
         filter((startedAt) => {
           console.log(startedAt, this.formValues.examList);
-          return startedAt?.day && this.formValues.examList?.length
+          return startedAt?.day && this.formValues.examList?.length;
         }),
         tap(() => this.loadingSlots$$.next(true)),
         map((date) => {
@@ -271,7 +274,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       patientTel: [null, [Validators.required]],
       patientEmail: ['', []],
       doctorId: [null, []],
-      startedAt: [null, [Validators.required]],
+      startedAt: ['', [Validators.required]],
       startTime: [null, []],
       examList: [[], [Validators.required]],
       userId: [null, [Validators.required]],

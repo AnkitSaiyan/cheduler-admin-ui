@@ -13,6 +13,7 @@ import {
   switchMap,
   tap,
   throwError,
+  takeUntil,
 } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
@@ -33,14 +34,36 @@ import { Exam } from '../../shared/models/exam.model';
 import { Room } from '../../shared/models/rooms.model';
 import { User } from '../../shared/models/user.model';
 import { LoaderService } from './loader.service';
+import { ShareDataService } from './share-data.service';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../shared/utils/const';
+import { Translate } from '../../shared/models/translate.model';
+import { NameValue } from 'src/app/shared/components/search-modal.component';
+import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AppointmentApiService {
+export class AppointmentApiService extends DestroyableComponent {
   private refreshAppointment$$ = new Subject<void>();
 
+  private selectedLang$$ = new BehaviorSubject<string>('');
+
   private appointmentUrl = `${environment.serverBaseUrl}/appointment`;
+
+  public calendarViewType: NameValue[] = [
+    {
+      name: 'Day',
+      value: 'day',
+    },
+    {
+      name: 'Week',
+      value: 'week',
+    },
+    {
+      name: 'Month',
+      value: 'month',
+    },
+  ];
 
   constructor(
     private physicianApiSvc: PhysicianApiService,
@@ -48,7 +71,16 @@ export class AppointmentApiService {
     private http: HttpClient,
     private dashboardApiService: DashboardApiService,
     private loaderSvc: LoaderService,
-  ) {}
+    private shareDataSvc: ShareDataService,
+  ) {
+    super();
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang$$.next(lang);
+      });
+  }
 
   public get appointment$(): Observable<Appointment[]> {
     return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments$()));
@@ -249,6 +281,27 @@ export class AppointmentApiService {
     return this.http.put<BaseResponse<any>>(`${this.appointmentUrl}/updateradiologist`, requestData).pipe(
       map((res) => res?.data),
       tap(() => this.refreshAppointment$$.next()),
+    );
+  }
+
+  get fileTypes$(): Observable<any[]> {
+    return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
+      switchMap(([lang]) => {
+        return of(this.calendarViewType).pipe(
+          map((downloadTypeItems) => {
+            if (lang) {
+              return downloadTypeItems.map((downloadType) => {
+                return {
+                  ...downloadType,
+                  name: Translate[downloadType.name][lang],
+                };
+              });
+            }
+            console.log(downloadTypeItems);
+            return downloadTypeItems;
+          }),
+        );
+      }),
     );
   }
 }

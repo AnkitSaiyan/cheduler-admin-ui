@@ -248,7 +248,7 @@
   "Approved": "Approved",
   "Canceled": "Canceled",
   "hh:mm": "hh:mm",
-  "dateFormat": "yyyy-mm-dd",
+  "dateFormat": "dd/mm/yyyy",
   "AbsenceDetails": "Absence Details",
   "Assistant": "Assistant",
   "ExamAvailabilityInfo": "Exam Availability Info",

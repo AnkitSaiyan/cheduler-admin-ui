@@ -1,7 +1,8 @@
-import {DateDistributed} from "../models/calendar.model";
+import { DateDistributed } from '../models/calendar.model';
 
 export class CalendarUtils {
   constructor() {}
+
   public static DateDistributedToString(date: DateDistributed, separator = '-'): string {
     return `${date.year}${separator}${date.month}${separator}${date.day}`;
   }
@@ -34,7 +35,3 @@ export class CalendarUtils {
     return hour * 60 + minute;
   }
 }
-
-
-
-
