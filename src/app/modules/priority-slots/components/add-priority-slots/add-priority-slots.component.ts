@@ -359,6 +359,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     const { controls } = this.prioritySlotForm;
     if (this.formValues.isRepeat) {
       if (this.prioritySlotForm.invalid) {
+        this.prioritySlotForm.markAllAsTouched();
         this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 
         Object.keys(this.prioritySlotForm.controls).map((key) => this.prioritySlotForm.get(key)?.markAsTouched());
@@ -372,6 +373,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       });
 
       if (invalid) {
+        this.prioritySlotForm.markAllAsTouched();
         this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
         return;
       }

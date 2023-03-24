@@ -28,12 +28,22 @@
   <section class="modal-body dfm-pb-24 ad-rm-section2">
     <form [formGroup]="addRoomForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16" *ngIf="room$$ | async">
       <div class="d-flex dfm-gap-32 flex-wrap">
-        <dfm-input class="flex-1" size="md" placeholder="{{'EnterRoomName' | translate}}" label="{{'RoomName' | translate }} *" formControlName="name">
+        <div class="flex-1">
+        <dfm-input  size="md" placeholder="{{'EnterRoomName' | translate}}" label="{{'RoomName' | translate }} *" formControlName="name">
         </dfm-input>
+        <div class="validation-error" *ngIf="addRoomForm.get('name')?.hasError('required') && addRoomForm.get('name')?.touched">
+          {{ 'RequiredField' | translate }}
+        </div>
+        </div>
+        <div class="flex-1">
 
-        <dfm-input type="number" class="flex-1" size="md" placeholder="{{'PlaceInAgenda' | translate}}" label="{{'PlaceInAgenda'|translate}} *"
+        <dfm-input type="number"  size="md" placeholder="{{'PlaceInAgenda' | translate}}" label="{{'PlaceInAgenda'|translate}} *"
                    formControlName="placeInAgendaIndex" [disabled]="true">
         </dfm-input>
+        <div class="validation-error" *ngIf="addRoomForm.get('placeInAgendaIndex')?.hasError('required') && addRoomForm.get('placeInAgendaIndex')?.touched">
+          {{ 'RequiredField' | translate }}
+        </div>
+        </div>
       </div>
 
       <div class="d-flex dfm-gap-32 flex-wrap align-items-start flex-1">
