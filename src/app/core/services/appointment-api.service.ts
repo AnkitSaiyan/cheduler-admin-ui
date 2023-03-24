@@ -12,7 +12,7 @@ import {
   Subject,
   switchMap,
   tap,
-  throwError
+  throwError,
 } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
@@ -220,21 +220,26 @@ export class AppointmentApiService {
   }
 
   public getSlots$(requestData: AppointmentSlotsRequestData): Observable<AppointmentSlot[]> {
+    console.log(requestData);
     const customRequestData = { ...requestData, date: requestData.fromDate };
-    this.loaderSvc.spinnerActivate();
+    delete customRequestData?.fromDate;
+    delete customRequestData?.toDate;
+    // this.loaderSvc.spinnerActivate();
     return this.http.post<BaseResponse<AppointmentSlot>>(`${environment.serverBaseUrl}/patientappointment/slots`, customRequestData).pipe(
       map((res) => [
         {
           ...res?.data,
-          slots: res?.data?.slots?.length ? res?.data?.slots.map((slot) => ({
-            ...slot,
-            exams: slot.exams.map((exam: any) => ({ ...exam, userId: exam.users, roomId: exam.rooms.map((room) => room.roomId) })),
-          })) : []
+          slots: res?.data?.slots?.length
+            ? res?.data?.slots.map((slot) => ({
+                ...slot,
+                exams: slot.exams.map((exam: any) => ({ ...exam, userId: exam.users, roomId: exam.rooms.map((room) => room.roomId) })),
+              }))
+            : [],
         },
       ]),
       tap(() => this.loaderSvc.spinnerDeactivate()),
       catchError((e) => {
-        this.loaderSvc.spinnerDeactivate();
+        // this.loaderSvc.spinnerDeactivate();
         return throwError(e);
       }),
     );
