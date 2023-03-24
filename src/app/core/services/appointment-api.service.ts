@@ -220,7 +220,10 @@ export class AppointmentApiService {
   }
 
   public getSlots$(requestData: AppointmentSlotsRequestData): Observable<AppointmentSlot[]> {
+    console.log(requestData);
     const customRequestData = { ...requestData, date: requestData.fromDate };
+    delete customRequestData?.fromDate;
+    delete customRequestData?.toDate;
     // this.loaderSvc.spinnerActivate();
     return this.http.post<BaseResponse<AppointmentSlot>>(`${environment.serverBaseUrl}/patientappointment/slots`, customRequestData).pipe(
       map((res) => [
