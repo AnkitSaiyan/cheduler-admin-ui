@@ -362,6 +362,8 @@
   "Daily" : "Dagelijks",
   "AddAppointmentConfirmation" : "Afspraakbevestiging toevoegen",
   "AreYouSureWantToMakeAppointmentOutsideOperatingHours" : "Weet u zeker dat u buiten openingstijden een afspraak wilt maken?",
-  "LoadingSlots" : "Sleuven laden"
+  "LoadingSlots" : "Sleuven laden",
+  "To" : "Naar",
+  "PracticeNotAvailableForDay" :"De praktijk is deze dag niet beschikbaar"
 }
 
