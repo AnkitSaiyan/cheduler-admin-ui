@@ -7,6 +7,7 @@ import {
 } from "../models/appointment.model";
 import {DateDistributed} from "../models/calendar.model";
 import {CalendarUtils} from "./calendar.utils";
+import {checkTimeRangeOverlapping} from "./time";
 
 export class AppointmentUtils {
   constructor() {}
@@ -67,16 +68,10 @@ export class AppointmentUtils {
   }
 
   public static IsSlotAvailable(slot: SlotModified, selectedTimeSlot: SelectedSlots) {
-    let isAvailable = true;
-
-    Object.entries(selectedTimeSlot).forEach(([key, value]) => {
-      const timeString = `${slot.start}-${slot.end}`;
-      if (+key !== +slot.examId && timeString === value.slot) {
-        isAvailable = false;
-      }
+    return !Object.values(selectedTimeSlot)?.some((value) => {
+      const firstSlot = value.slot.split('-');
+      return slot.examId !==value.examId && checkTimeRangeOverlapping(firstSlot[0], firstSlot[1], slot.start, slot.end)
     });
-
-    return isAvailable;
   }
 
   public static ToggleSlotSelection(slot: SlotModified, selectedTimeSlot: SelectedSlots): void {
