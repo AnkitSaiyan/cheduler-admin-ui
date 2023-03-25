@@ -242,6 +242,8 @@
   "Pending": "In afwachting",
   "Approved": "Goedgekeurd",
   "Canceled": "Geannuleerd",
+  "General": "Algemene",
+  "Scheduler": "Afspraak",
   "hh:mm": "uur:min",
   "dateFormat": "dd/mm/yy",
   "AbsenceDetails": "Details Afwezigheid",
