@@ -338,9 +338,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     if (this.formValues.isRepeat) {
       if (this.absenceForm.invalid) {
         this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-
         Object.keys(this.absenceForm.controls).map((key) => this.absenceForm.get(key)?.markAsTouched());
-
         return;
       }
     } else {
@@ -358,6 +356,12 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     }
 
     if (!this.formValues.isHoliday && !valid) {
+      if (this.formValues.roomList || this.formValues.userList) {
+        this.notificationSvc.showNotification(Translate.SelectStaffOrRoom[this.selectedLang], NotificationType.WARNING);
+        this.isAbsenceStaffRoomInvalid.next(true);
+        return;
+      }
+
       this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
       this.isAbsenceStaffRoomInvalid.next(true);
       return;

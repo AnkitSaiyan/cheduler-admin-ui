@@ -86,14 +86,13 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         if (!this.filteredAbsences$$.value.length) {
           return;
         }
-
         this.downloadSvc.downloadJsonAs(
           value as DownloadAsType,
           this.columns.slice(0, -1),
           this.filteredAbsences$$.value.map((u: Absence) => [
             u.name,
-            u.startedAt ? new Date(u?.startedAt)?.toDateString() : '',
-            u.endedAt ? new Date(u?.endedAt)?.toDateString() : '',
+            u.startedAt ? `${new Date(u?.startedAt)?.toDateString()} ${new Date(u?.startedAt)?.toLocaleTimeString()}` : '',
+            u.endedAt ? `${new Date(u?.endedAt)?.toDateString()} ${new Date(u?.endedAt)?.toLocaleTimeString()}` : '',
             u.info,
           ]),
           'absences',
