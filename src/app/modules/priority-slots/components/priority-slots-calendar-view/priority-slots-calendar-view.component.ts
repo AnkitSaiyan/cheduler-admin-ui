@@ -2,17 +2,20 @@ import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { RepeatType } from 'src/app/shared/models/absence.model';
 import { getDateOfMonth } from 'src/app/shared/models/calendar.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
+import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 
 @Component({
   selector: 'dfm-priority-slots-calendar-view',
   templateUrl: './priority-slots-calendar-view.component.html',
   styleUrls: ['./priority-slots-calendar-view.component.scss'],
+  providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
 })
 export class PrioritySlotsCalendarViewComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public selectedDate$$: BehaviorSubject<Date> = new BehaviorSubject<Date>(new Date());

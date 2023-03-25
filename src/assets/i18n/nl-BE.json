@@ -243,7 +243,7 @@
   "Approved": "Goedgekeurd",
   "Canceled": "Geannuleerd",
   "hh:mm": "uur:min",
-  "dateFormat": "jj-mm-dd",
+  "dateFormat": "dd/mm/yy",
   "AbsenceDetails": "Details Afwezigheid",
   "Assistant": "Assistent",
   "ExamAvailabilityInfo": "Info Examen Beschikbaarheid",

@@ -27,11 +27,14 @@ import {GeneralUtils} from '../../../../shared/utils/general.utils';
 import {Translate} from "../../../../shared/models/translate.model";
 import {CalendarUtils} from "../../../../shared/utils/calendar.utils";
 import { checkTimeRangeOverlapping } from 'src/app/shared/utils/time';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { CustomDateParserFormatter } from '../../../..//shared/utils/dateFormat';
 
 @Component({
   selector: 'dfm-add-appointment-modal',
   templateUrl: './add-appointment-modal.component.html',
   styleUrls: ['./add-appointment-modal.component.scss'],
+  providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
 })
 export class AddAppointmentModalComponent extends DestroyableComponent implements OnInit, OnDestroy {
   @HostListener('document:keyup.esc')
