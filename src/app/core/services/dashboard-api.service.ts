@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, startWith, Subject, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, startWith, Subject, switchMap, tap, takeUntil, of } from 'rxjs';
+import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { Appointment } from 'src/app/shared/models/appointment.model';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { Exam } from 'src/app/shared/models/exam.model';
@@ -9,7 +10,8 @@ import { Room } from 'src/app/shared/models/rooms.model';
 import { AppointmentStatus } from 'src/app/shared/models/status.model';
 import { environment } from '../../../environments/environment';
 import { LoaderService } from './loader.service';
-
+import { ShareDataService } from './share-data.service';
+import { Translate } from '../../shared/models/translate.model';
 export interface PostIt {
   message: string;
 }
@@ -17,8 +19,16 @@ export interface PostIt {
 @Injectable({
   providedIn: 'root',
 })
-export class DashboardApiService {
-  constructor(private http: HttpClient, private loaderSvc: LoaderService) {}
+export class DashboardApiService extends DestroyableComponent {
+  constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService) {
+    super();
+    this.shareDataSvc
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((lang) => {
+        this.selectedLang$$.next(lang);
+      });
+  }
 
   private refreshAppointment$$ = new Subject<void>();
 
@@ -64,8 +74,32 @@ export class DashboardApiService {
 
   public postItData$$ = new BehaviorSubject<any>([]);
 
+  private selectedLang$$ = new BehaviorSubject<string>('');
+
+  repeatTypes = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  trnalsatedRepeatedTypes: any[] = [];
+
   public get appointment$(): Observable<Appointment[]> {
     return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
+  }
+
+  get fileTypes$(): Observable<any[]> {
+    return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
+      switchMap(([lang]) => {
+        return of(this.repeatTypes).pipe(
+          map((downloadTypeItems) => {
+            if (lang) {
+              this.trnalsatedRepeatedTypes = [];
+              downloadTypeItems.map((downloadType) => {
+                return this.trnalsatedRepeatedTypes.push(Translate[downloadType][lang]);
+              });
+            }
+            return this.trnalsatedRepeatedTypes;
+          }),
+        );
+      }),
+    );
   }
 
   private fetchAllAppointments(): Observable<Appointment[]> {

@@ -18,7 +18,7 @@ import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
 import { User } from '../../../../shared/models/user.model';
 import { ShareDataService } from '../../../../core/services/share-data.service';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Translate } from '../../../../shared/models/translate.model';
 
 @Component({
@@ -75,6 +75,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
     private translatePipe: TranslatePipe,
+    private translate: TranslateService,
   ) {
     super();
     this.physicians$$ = new BehaviorSubject<any[]>([]);
@@ -187,11 +188,15 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
   private handleSearch(searchText: string): void {
     this.filteredPhysicians$$.next([
       ...this.physicians$$.value.filter((physician) => {
+        let status: any;
+        if (physician.status) status = this.translate.instant('Active');
+        if (!physician.status) status = this.translate.instant('Inactive');
+        console.log(status);
         return (
           physician.firstname?.toLowerCase()?.includes(searchText) ||
           physician.lastname?.toLowerCase()?.includes(searchText) ||
           physician.email?.toLowerCase()?.includes(searchText) ||
-          this.statuses[+physician.status] === searchText
+          status?.toLowerCase()?.includes(searchText)
         );
       }),
     ]);

@@ -16,6 +16,7 @@ import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { Exam } from '../../../../shared/models/exam.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
+import { TranslateService } from '@ngx-translate/core';
 // import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
@@ -69,6 +70,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
     private shareDataService: ShareDataService,
+    private translate: TranslateService,
   ) {
     super();
     this.exams$$ = new BehaviorSubject<any[]>([]);
@@ -171,11 +173,14 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   private handleSearch(searchText: string): void {
     this.filteredExams$$.next([
       ...this.exams$$.value.filter((exam) => {
+        let status: any;
+        if (exam.status === 1) status = this.translate.instant('Active');
+        if (exam.status === 0) status = this.translate.instant('Inactive');
         return (
           exam.name?.toLowerCase()?.includes(searchText) ||
           exam.lastname?.toLowerCase()?.includes(searchText) ||
           exam.email?.toLowerCase()?.includes(searchText) ||
-          Statuses[+exam.status] === searchText
+          status?.toLowerCase()?.includes(searchText)
         );
       }),
     ]);

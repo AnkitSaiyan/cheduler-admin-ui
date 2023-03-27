@@ -126,15 +126,15 @@
           </dfm-table-body-cell> -->
           <dfm-table-body-cell>
             <dfm-badge *ngIf="item.approval === statusType.Approved" color="success" size="sm" fontWeight="medium">
-              {{ item.approval | approvalTypeName | dashIfNothing }}
+              {{ item.approval | approvalTypeName | translate | dashIfNothing }}
             </dfm-badge>
 
             <dfm-badge *ngIf="item.approval === statusType.Cancelled" color="primary" size="sm">
-              {{ item.approval | approvalTypeName | dashIfNothing }}
+              {{ item.approval | approvalTypeName  | translate | dashIfNothing }}
             </dfm-badge>
 
             <dfm-badge *ngIf="item.approval === statusType.Pending" color="gray" size="sm">
-              {{ item.approval | approvalTypeName | dashIfNothing }}
+              {{ item.approval | approvalTypeName | translate  | dashIfNothing }}
             </dfm-badge>
           </dfm-table-body-cell>
           <dfm-table-body-cell>
