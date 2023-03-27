@@ -364,5 +364,9 @@
   "AreYouSureWantToMakeAppointmentOutsideOperatingHours" : "Are you sure you want to make an appointment outside the operating hours?",
   "LoadingSlots" : "Loading Slots",
   "To" : "To",
-  "PracticeNotAvailableForDay" :"Practice is not available for this day"
+  "PracticeNotAvailableForDay" :"Practice is not available for this day",
+  "SelectedSlot" : "Selected Slot",
+  "PleaseEnterAtLeastFiveMin" : "Please enter at least 5 min",
+  "ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame" : "Expensive of the exam and total minutes of rooms should be the same.",
+  "NoSlotsFoundForSelectedExamsAndTime" : "No slots found for selected Exam(s) and Time"
 }

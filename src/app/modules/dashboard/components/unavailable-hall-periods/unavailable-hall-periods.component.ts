@@ -23,7 +23,7 @@ import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from 'src/app/shared/utils/con
   styleUrls: ['./unavailable-hall-periods.component.scss'],
 })
 export class UnavailableHallPeriodsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public columns: string[] = ['RoomName', 'StartedAt', 'End', 'AbsenceName'];
+  public columns: string[] = ['RoomName', 'StartedAt', 'End', 'AbsenceTitle'];
 
   private roomAbsence$$: BehaviorSubject<any[]>;
 
@@ -182,9 +182,9 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
         this.columns = [
           // Translate.Read[lang],
           Translate.RoomName[lang],
-          Translate.AbsenceName[lang],
           Translate.StartDate[lang],
           Translate.EndDate[lang],
+          Translate.AbsenceName[lang],
         ];
       });
   }
