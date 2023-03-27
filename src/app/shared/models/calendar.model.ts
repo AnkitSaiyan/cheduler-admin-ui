@@ -73,7 +73,7 @@ export function getWeekdayWiseDays(date: Date): number[][] {
 
   let daysRow: number[] = [];
 
-  for (let weekday = 0; weekday < currentWeekday; weekday++) {
+  for (let weekday = 1; weekday < currentWeekday; weekday++) {
     daysRow.push(getDateOfMonth(year, month, weekday - currentWeekday + 1) + 31);
   }
 
