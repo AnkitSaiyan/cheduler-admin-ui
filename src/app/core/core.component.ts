@@ -8,7 +8,7 @@ import dutchLangauge from '../../assets/i18n/nl-BE.json';
 import { ShareDataService } from './services/share-data.service';
 import { DashboardApiService } from './services/dashboard-api.service';
 import { LoaderService } from './services/loader.service';
-import { Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'dfm-main',
@@ -62,7 +62,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     // new NavigationItemEvent('3', new Date(), 'Test Message 3'),
   ];
 
-  public currentTenant: string = 'nl-BE';
+  public currentTenant$$ = new BehaviorSubject<string>('nl-BE');
 
   public languages: SelectItem[] = [
     { name: 'EN', value: ENG_BE },
@@ -84,7 +84,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 
   constructor(
     private translateService: TranslateService,
-    private dataShareService: ShareDataService,
+    public dataShareService: ShareDataService,
     private dashboardApiService: DashboardApiService,
     public loaderService: LoaderService,
     private cdr: ChangeDetectorRef,
@@ -94,6 +94,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 
   public ngOnInit(): void {
     this.dataShareService.getLanguage$().subscribe((language: string) => {
+      this.currentTenant$$.next(language);
       this.profileData.user.name = language === ENG_BE ? 'Profile' : 'Profiel';
     });
     this.dashboardApiService.notificationData$$.subscribe((res) => {

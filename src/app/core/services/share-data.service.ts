@@ -19,7 +19,11 @@ export class ShareDataService {
 
   private readonly patientsUrl = `${environment.serverBaseUrl}/common/getpatients`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    if (localStorage.getItem('lang')) {
+      this.language$$.next(localStorage.getItem('lang') ?? '');
+    }
+  }
 
   public getChangeTimeModalData$(): Observable<any> {
     return this.changeTimeModalData$$.asObservable();
@@ -38,6 +42,7 @@ export class ShareDataService {
   }
 
   public setLanguage(languge: string) {
+    localStorage.setItem('lang', languge);
     this.language$$.next(languge);
   }
 
