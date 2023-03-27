@@ -97,7 +97,7 @@ export function getWeekdayWiseDays(date: Date): number[][] {
 }
 
 export function getAllDaysOfWeek(selectedDate: Date): number[][] {
-  const weekday = new Date(selectedDate).getDay();
+  const weekday = new Date(selectedDate).getDay() - 1;
   const date = new Date(selectedDate).getDate();
   const year = new Date(selectedDate).getFullYear();
   const month = new Date(selectedDate).getMonth();

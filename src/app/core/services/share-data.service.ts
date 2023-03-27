@@ -3,7 +3,7 @@ import { combineLatest, BehaviorSubject, map, Observable, of, startWith, Subject
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { ENG_BE } from 'src/app/shared/utils/const';
+import { DUTCH_BE } from 'src/app/shared/utils/const';
 
 @Injectable({
   providedIn: 'root',
@@ -13,13 +13,17 @@ export class ShareDataService {
 
   private date$$ = new BehaviorSubject<any>(null);
 
-  private language$$ = new BehaviorSubject<string>(ENG_BE);
+  private language$$ = new BehaviorSubject<string>(DUTCH_BE);
 
   private refreshRooms$$ = new Subject<void>();
 
   private readonly patientsUrl = `${environment.serverBaseUrl}/common/getpatients`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    if (localStorage.getItem('lang')) {
+      this.language$$.next(localStorage.getItem('lang') ?? '');
+    }
+  }
 
   public getChangeTimeModalData$(): Observable<any> {
     return this.changeTimeModalData$$.asObservable();
@@ -38,6 +42,7 @@ export class ShareDataService {
   }
 
   public setLanguage(languge: string) {
+    localStorage.setItem('lang', languge);
     this.language$$.next(languge);
   }
 
