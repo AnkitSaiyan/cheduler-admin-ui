@@ -19,11 +19,19 @@ export class PatientConsultationsLineChartComponent extends DestroyableComponent
 
   public lineChartLegend = false;
 
+  public labels: any[] = [];
+
   constructor(private dashboardApiService: DashboardApiService) {
     super();
+    this.dashboardApiService.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => {
+      this.labels = [];
+      this.labels = items;
+      this.ngOnInit();
+    });
   }
 
   public ngOnInit(): void {
+    console.log(this.labels);
     this.dashboardApiService.overallStatusBarChart$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
       const dataset: any = [];
 
@@ -55,7 +63,7 @@ export class PatientConsultationsLineChartComponent extends DestroyableComponent
       });
 
       this.lineChartConfig = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        labels: this.labels,
         datasets: [
           {
             data: dataset,

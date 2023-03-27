@@ -93,6 +93,8 @@ export interface Slot {
 export interface SlotModified {
   start: string;
   end: string;
+
+  exams?: any[];
   examId: number;
   userList?: number[];
   roomList?: any[];
@@ -130,6 +132,7 @@ export interface SelectedSlots {
   [key: number]: {
     slot: string;
     examId: number;
+    exams?:any[]
     userList: number[];
     roomList: number[];
   }

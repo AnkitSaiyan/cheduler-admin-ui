@@ -44,6 +44,9 @@
         <div class="flex-1">
           <dfm-input class="" size="md" placeholder="Enter site name" label="{{'SiteName' | translate}} *" formControlName="name">
           </dfm-input>
+          <div class="validation-error" *ngIf="siteManagementForm.get('name')?.hasError('required') && siteManagementForm.get('name')?.touched">
+            {{ 'RequiredField' | translate }}
+          </div>
         </div>
 
         <div class="d-flex dfm-gap-24 dfm-ms-8 flex-1 st-mg-choose-file-container">
@@ -161,10 +164,20 @@
           <small *ngIf="siteManagementForm.get('email')?.hasError('email')" class="validation-error">Email is
             Invalid.</small>
         </div>
-        <dfm-input #phone [dfmNumberInput]="phone" class="flex-1" size="md" placeholder="{{'EnterTelephone' | translate}}" label="{{'Telephone' | translate}} *"
+        <div class="flex-1">
+        <dfm-input #phone [dfmNumberInput]="phone"  size="md" placeholder="{{'EnterTelephone' | translate}}" label="{{'Telephone' | translate}} *"
                    formControlName="telephone">
         </dfm-input>
-        <dfm-text-area class="flex-1" label="{{'Address' | translate}} *" placeholder="{{'EnterAddress' | translate}}" formControlName="address"></dfm-text-area>
+        <div class="validation-error" *ngIf="siteManagementForm.get('telephone')?.hasError('required') && siteManagementForm.get('telephone')?.touched">
+          {{ 'RequiredField' | translate }}
+        </div>
+        </div>
+        <div class="flex-1">
+        <dfm-text-area  label="{{'Address' | translate}} *" placeholder="{{'EnterAddress' | translate}}" formControlName="address"></dfm-text-area>
+        <div class="validation-error" *ngIf="siteManagementForm.get('address')?.hasError('required') && siteManagementForm.get('address')?.touched">
+          {{ 'RequiredField' | translate }}
+        </div>
+        </div>
       </div>
 
       <dfm-button class="hidden st-mg-save-changes-btn-mv" color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveSiteManagementData()">{{'SaveChanges'| translate}}</dfm-button>

@@ -1,9 +1,12 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Injectable, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -29,18 +32,18 @@ import {
 import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { AppointmentStatus } from '../../../../shared/models/status.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { AppointmentUtils } from '../../../../shared/utils/appointment.utils';
 import { SiteManagementApiService } from '../../../../core/services/site-management-api.service';
 import { CalendarUtils } from '../../../../shared/utils/calendar.utils';
 import { DateDistributed } from '../../../../shared/models/calendar.model';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
-import { LoaderService } from 'src/app/core/services/loader.service';
+import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 
 @Component({
   selector: 'dfm-add-appointment',
   templateUrl: './add-appointment.component.html',
   styleUrls: ['./add-appointment.component.scss'],
+  providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
 })
 export class AddAppointmentComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public appointmentForm!: FormGroup;
@@ -93,8 +96,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
   public selectedTimeSlot: SelectedSlots = {};
 
   public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
-
-  private initialExamIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
 
   public isSlotUpdated = false;
 
@@ -213,7 +214,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         debounceTime(0),
         filter((startedAt) => {
           console.log(startedAt, this.formValues.examList);
-          return startedAt?.day && this.formValues.examList?.length
+          return startedAt?.day && this.formValues.examList?.length;
         }),
         tap(() => this.loadingSlots$$.next(true)),
         map((date) => {
@@ -271,7 +272,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       patientTel: [null, [Validators.required]],
       patientEmail: ['', []],
       doctorId: [null, []],
-      startedAt: [null, [Validators.required]],
+      startedAt: ['', [Validators.required]],
       startTime: [null, []],
       examList: [[], [Validators.required]],
       userId: [null, [Validators.required]],
@@ -370,7 +371,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots, isCombinable);
 
     this.examIdToAppointmentSlots = examIdToSlots;
-    this.initialExamIdToAppointmentSlots = examIdToSlots;
     this.slots = newSlots;
 
     // if (newSlots?.length) {
@@ -392,7 +392,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     try {
       if (this.appointmentForm.invalid) {
         this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-        Object.keys(this.appointmentForm.controls).forEach((key) => this.appointmentForm.get(key)?.markAsTouched());
+        this.appointmentForm.markAllAsTouched();
         return;
       }
 
@@ -406,24 +406,26 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
       this.submitting$$.next(true);
 
-      // if (this.isCombinable) {
-      //   this.formValues.examList.forEach((examID) => {
-      //     const selectedSlot = Object.values(this.selectedTimeSlot)[0];
+      if (this.isCombinable) {
+        this.formValues.examList.forEach((examID) => {
+          const selectedSlot = Object.values(this.selectedTimeSlot)[0];
 
-      //     if (!this.selectedTimeSlot[+examID]) {
-      //       this.selectedTimeSlot[+examID] = {
-      //         ...selectedSlot,
-      //         examId: +examID,
-      //       };
-      //     }
-      //   });
-      // }
+          if (!this.selectedTimeSlot[+examID]) {
+            this.selectedTimeSlot[+examID] = {
+              ...selectedSlot,
+              examId: +examID,
+            };
+          }
+        });
+      }
 
       const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
         { ...this.formValues },
         { ...this.selectedTimeSlot },
         { ...(this.appointment$$.value ?? ({} as Appointment)) },
+        this.isCombinable,
       );
+
 
       if (this.edit) {
         this.appointmentApiSvc
@@ -481,6 +483,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           });
       }
     } catch (e) {
+      console.log(e);
       this.notificationSvc.showNotification('Failed to save the appointment', NotificationType.DANGER);
       this.submitting$$.next(false);
       return;
@@ -493,18 +496,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public handleSlotSelectionToggle(slots: SlotModified) {
     AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot);
-    Object.values(this.selectedTimeSlot)?.forEach(({ examId, slot }) => {
-      const firstSlot = slot.split('-');
-      const filterData = {};
-      Object.entries(this.initialExamIdToAppointmentSlots)?.forEach(([key, value]) => {
-        if (+key === examId) {
-          filterData[key] = [...this.examIdToAppointmentSlots[key]];
-        } else {
-          filterData[key] = value?.filter((slotVal) => !checkTimeRangeOverlapping(firstSlot[0], firstSlot[1], slotVal.start, slotVal.end));
-        }
-      });
-      this.examIdToAppointmentSlots = { ...filterData };
-    });
   }
 
   public handleEmailInput(e: Event): void {
@@ -525,7 +516,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
   public clearSlotDetails() {
     this.examIdToAppointmentSlots = {};
-    this.initialExamIdToAppointmentSlots = {};
     this.selectedTimeSlot = {};
     this.slots = [];
   }

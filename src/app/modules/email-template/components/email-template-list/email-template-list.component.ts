@@ -1,5 +1,5 @@
-import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -12,6 +12,7 @@ import { Email } from 'src/app/shared/models/email-template.model';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { ENG_BE, Statuses, StatusesNL, DUTCH_BE } from 'src/app/shared/utils/const';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'dfm-email-template-list',
@@ -58,6 +59,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     private emailTemplateApiSvc: EmailTemplateApiService,
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
+    private translate: TranslateService,
   ) {
     super();
     this.emails$$ = new BehaviorSubject<any[]>([]);
@@ -170,12 +172,20 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
   private handleSearch(searchText: string): void {
     this.filteredEmails$$.next([
       ...this.emails$$.value.filter((email) => {
-        return email.title?.toLowerCase()?.includes(searchText) || email.subject?.toLowerCase()?.includes(searchText);
+        let status: any;
+        if (email.status === 1) status = this.translate.instant('Active');
+        if (email.status === 0) status = this.translate.instant('Inactive');
+
+        return (
+          email.title?.toLowerCase()?.includes(searchText) ||
+          email.subject?.toLowerCase()?.includes(searchText) ||
+          status?.toLowerCase()?.includes(searchText)
+        );
       }),
     ]);
   }
 
-  public changeStatus(changes: { id: number ; status: number }[]) {
+  public changeStatus(changes: { id: number; status: number }[]) {
     this.emailTemplateApiSvc
       .changeEmailStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
@@ -218,21 +228,3 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

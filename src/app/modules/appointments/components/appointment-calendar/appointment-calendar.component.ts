@@ -1,6 +1,6 @@
-import {DatePipe} from '@angular/common';
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import { DatePipe } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, filter, take, takeUntil, throttleTime } from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
@@ -34,20 +34,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
   public selectedDate$$: BehaviorSubject<Date> = new BehaviorSubject<Date>(new Date());
 
-  public calendarViewType: NameValue[] = [
-    {
-      name: 'Day',
-      value: 'day',
-    },
-    {
-      name: 'Week',
-      value: 'week',
-    },
-    {
-      name: 'Month',
-      value: 'month',
-    },
-  ];
+  public calendarViewType: NameValue[] = [];
 
   public changeDate$$ = new BehaviorSubject<number>(0);
 
@@ -101,6 +88,11 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     this.appointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
     this.selectedSlot$$ = new BehaviorSubject<any>(null);
+    this.appointmentApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => {
+      // console.log(items);
+      this.calendarViewType = items;
+      this.ngOnInit();
+    });
   }
 
   public ngOnInit(): void {

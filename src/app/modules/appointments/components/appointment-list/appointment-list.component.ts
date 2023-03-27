@@ -22,6 +22,7 @@ import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -91,6 +92,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private titleCasePipe: TitleCasePipe,
     private routerStateSvc: RouterStateService,
     private shareDataSvc: ShareDataService,
+    private translate: TranslateService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -244,11 +246,16 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   private handleSearch(searchText: string): void {
     this.filteredAppointments$$.next([
       ...this.appointments$$.value.filter((appointment) => {
+        let status: any;
+        if (appointment.approval === 0) status = this.translate.instant('Pending');
+        if (appointment.approval === 1) status = this.translate.instant('Approved');
+        if (appointment.approval === 2) status = this.translate.instant('Canceled');
         return (
           appointment.patientFname?.toLowerCase()?.includes(searchText) ||
           appointment.patientLname?.toLowerCase()?.includes(searchText) ||
           appointment.doctor?.toLowerCase()?.includes(searchText) ||
-          appointment.id?.toString()?.includes(searchText)
+          appointment.id?.toString()?.includes(searchText) ||
+          status?.toLowerCase()?.includes(searchText)
         );
       }),
     ]);

@@ -236,13 +236,17 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
   private handleSearch(searchText: any): void {
     this.filteredRooms$$.next([
       ...this.rooms$$.value.filter((room) => {
-        // this.translate.get(searchText).subscribe((res) => {
-        //
-        // });
+        let type: any;
+        let status: any;
+        if (room.type === 'public') type = this.translate.instant('Public');
+        if (room.type === 'private') type = this.translate.instant('Private');
+        if (room.status === 1) status = this.translate.instant('Active');
+        if (room.status === 0) status = this.translate.instant('Inactive');
         return (
           room.name?.toLowerCase()?.includes(searchText) ||
           room.description?.toLowerCase()?.includes(searchText) ||
-          room.type?.toLowerCase()?.includes(searchText)
+          type?.toLowerCase()?.includes(searchText) ||
+          status?.toLowerCase()?.includes(searchText)
         );
       }),
     ]);

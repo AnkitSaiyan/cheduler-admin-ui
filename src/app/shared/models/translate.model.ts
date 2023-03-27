@@ -179,6 +179,66 @@ export const Translate = Object.freeze({
     [ENG_BE]: 'Monthly',
     [DUTCH_BE]: 'Maandelijks',
   },
+  Day: {
+    [ENG_BE]: 'Day',
+    [DUTCH_BE]: 'Dag',
+  },
+  Week: {
+    [ENG_BE]: 'Week',
+    [DUTCH_BE]: 'Week',
+  },
+  Month: {
+    [ENG_BE]: 'Month',
+    [DUTCH_BE]: 'maand',
+  },
+  Jan: {
+    [ENG_BE]: 'Jan',
+    [DUTCH_BE]: 'Jan',
+  },
+  Feb: {
+    [ENG_BE]: 'Feb',
+    [DUTCH_BE]: 'Feb',
+  },
+  Mar: {
+    [ENG_BE]: 'Mar',
+    [DUTCH_BE]: 'Mar',
+  },
+  Apr: {
+    [ENG_BE]: 'Apr',
+    [DUTCH_BE]: 'Apr',
+  },
+  May: {
+    [ENG_BE]: 'May',
+    [DUTCH_BE]: 'Mei',
+  },
+  Jun: {
+    [ENG_BE]: 'Jun',
+    [DUTCH_BE]: 'Jun',
+  },
+  Jul: {
+    [ENG_BE]: 'Jul',
+    [DUTCH_BE]: 'Jul',
+  },
+  Aug: {
+    [ENG_BE]: 'Aug',
+    [DUTCH_BE]: 'Aug',
+  },
+  Sep: {
+    [ENG_BE]: 'Sep',
+    [DUTCH_BE]: 'Sep',
+  },
+  Oct: {
+    [ENG_BE]: 'Oct',
+    [DUTCH_BE]: 'Okt',
+  },
+  Nov: {
+    [ENG_BE]: 'Nov',
+    [DUTCH_BE]: 'Nov',
+  },
+  Dec: {
+    [ENG_BE]: 'Dec',
+    [DUTCH_BE]: 'Dec',
+  },
 
   // Toast Messages
   DownloadSuccess: (filetype) => ({
@@ -361,6 +421,10 @@ export const Translate = Object.freeze({
     [DUTCH_BE]: 'Formulier is niet geldig, vul de verplichte velden in',
   },
 
+  SelectStaffOrRoom: {
+    [ENG_BE]: 'Select a room or staff first',
+    [DUTCH_BE]: 'Select a room or staff first',
+  },
   FormInvalidSimple: {
     [ENG_BE]: 'Form is not valid',
     [DUTCH_BE]: 'Formulier is niet geldig',

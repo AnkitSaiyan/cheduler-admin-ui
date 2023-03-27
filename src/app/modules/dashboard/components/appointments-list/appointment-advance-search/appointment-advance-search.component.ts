@@ -36,11 +36,14 @@ import { CalendarUtils } from '../../../../../shared/utils/calendar.utils';
 import { DateDistributed } from '../../../../../shared/models/calendar.model';
 import { GeneralUtils } from '../../../../../shared/utils/general.utils';
 import { ModalService } from 'src/app/core/services/modal.service';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { CustomDateParserFormatter } from '../../../../../shared/utils/dateFormat';
 
 @Component({
   selector: 'dfm-appointment-advance-search',
   templateUrl: './appointment-advance-search.component.html',
   styleUrls: ['./appointment-advance-search.component.scss'],
+  providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
 })
 export class AppointmentAdvanceSearchComponent extends DestroyableComponent implements OnInit, OnDestroy {
   public appointmentForm!: FormGroup;
@@ -337,6 +340,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
         { ...this.formValues },
         { ...this.selectedTimeSlot },
         { ...(this.appointment$$.value ?? ({} as Appointment)) },
+        this.isCombinable
       );
 
       console.log(requestData);

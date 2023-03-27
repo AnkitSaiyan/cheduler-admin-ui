@@ -1094,6 +1094,10 @@ ngb-datepicker {
   color: #dc3545;
 }
 
+.invalid-feedback{
+  display: none!important;
+}
+
 .modal-backdrop-remove-mv {
   @media (max-width: 680px) {
     opacity: 0 !important;

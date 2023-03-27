@@ -8,6 +8,7 @@ import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { User, UserType } from 'src/app/shared/models/user.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -23,6 +24,7 @@ import { formatTime, timeToNumber } from '../../../../shared/utils/time';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
+import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 
 interface FormValues {
   name: string;
@@ -51,6 +53,7 @@ interface FormValues {
   selector: 'dfm-add-priority-slots',
   templateUrl: './add-priority-slots.component.html',
   styleUrls: ['./add-priority-slots.component.scss'],
+  providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
 })
 export class AddPrioritySlotsComponent extends DestroyableComponent implements OnInit, OnDestroy {
   @ViewChild('repeatFrequency')
@@ -359,6 +362,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     const { controls } = this.prioritySlotForm;
     if (this.formValues.isRepeat) {
       if (this.prioritySlotForm.invalid) {
+        this.prioritySlotForm.markAllAsTouched();
         this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 
         Object.keys(this.prioritySlotForm.controls).map((key) => this.prioritySlotForm.get(key)?.markAsTouched());
@@ -372,6 +376,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
       });
 
       if (invalid) {
+        this.prioritySlotForm.markAllAsTouched();
         this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
         return;
       }

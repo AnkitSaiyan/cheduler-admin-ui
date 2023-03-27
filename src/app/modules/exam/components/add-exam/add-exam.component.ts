@@ -206,20 +206,22 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
       staffs.forEach((staff) => {
         const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff?.id?.toString() };
 
-        mandatory.push({ ...nameValue });
-
         switch (staff.userType) {
           case UserType.Assistant:
+            mandatory.push({ ...nameValue });
             assistants.push({ ...nameValue });
             break;
           case UserType.Radiologist:
+            mandatory.push({ ...nameValue });
             radiologists.push({ ...nameValue });
             break;
           // case UserType.Scheduler:
           case UserType.Secretary:
+            mandatory.push({ ...nameValue });
             secretaries.push({ ...nameValue });
             break;
           case UserType.Nursing:
+            mandatory.push({ ...nameValue });
             nursing.push({ ...nameValue });
             break;
           default:
@@ -485,7 +487,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
             duration: null,
             sortOrder: null
           });
-          
+
           fg.get('duration')?.disable();
           fg.get('sortOrder')?.disable();
         }

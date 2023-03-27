@@ -18,6 +18,7 @@ import { AddUserComponent } from '../add-user/add-user.component';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'dfm-user-list',
@@ -74,6 +75,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
+    private translate: TranslateService,
   ) {
     super();
     this.users$$ = new BehaviorSubject<any[]>([]);
@@ -208,12 +210,19 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
   private handleSearch(searchText: string): void {
     this.filteredUsers$$.next([
       ...this.users$$.value.filter((user) => {
+        let userType: any;
+        let status: any;
+        if (user.userType === 'Scheduler') userType = this.translate.instant('SchedulerUser');
+        if (user.userType === 'General') userType = this.translate.instant('GeneralUser');
+        if (user.status === 1) status = this.translate.instant('Active');
+        if (user.status === 0) status = this.translate.instant('Inactive');
         return (
           user.firstname?.toLowerCase()?.includes(searchText) ||
           user.lastname?.toLowerCase()?.includes(searchText) ||
           user.email?.toLowerCase()?.includes(searchText) ||
-          user.userType?.toLowerCase()?.includes(searchText) ||
-          user.telephone?.toLowerCase()?.includes(searchText)
+          userType?.toLowerCase()?.includes(searchText) ||
+          user.telephone?.toLowerCase()?.includes(searchText) ||
+          status.toLowerCase()?.includes(searchText)
         );
       }),
     ]);

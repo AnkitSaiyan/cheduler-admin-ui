@@ -16,6 +16,7 @@ import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'dfm-staff-list',
@@ -64,6 +65,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
+    private translate: TranslateService,
   ) {
     super();
     this.staffs$$ = new BehaviorSubject<any[]>([]);
@@ -181,11 +183,20 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   private handleSearch(searchText: string): void {
     this.filteredStaffs$$.next([
       ...this.staffs$$.value.filter((staff) => {
+        let type: any;
+        let status: any;
+        if (staff.userType === 'Radiologist') type = this.translate.instant('Radiologist');
+        if (staff.userType === 'Nursing') type = this.translate.instant('Nursing');
+        if (staff.userType === 'Assistant') type = this.translate.instant('Assistant');
+        if (staff.userType === 'Secretary') type = this.translate.instant('Secretary');
+        if (staff.status === 1) status = this.translate.instant('Active');
+        if (staff.status === 0) status = this.translate.instant('Inactive');
         return (
           staff.firstname?.toLowerCase()?.includes(searchText) ||
           staff.lastname?.toLowerCase()?.includes(searchText) ||
           staff.email?.toLowerCase()?.includes(searchText) ||
-          staff.userType?.toLowerCase()?.includes(searchText)
+          type?.toLowerCase()?.includes(searchText) ||
+          status?.toLowerCase()?.includes(searchText)
         );
       }),
     ]);

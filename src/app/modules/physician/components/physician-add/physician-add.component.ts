@@ -88,6 +88,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 
   public savePhysician() {
     if (this.addPhysicianForm.invalid) {
+      this.addPhysicianForm.markAllAsTouched();
       this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLanguage]}!`, NotificationType.WARNING);
       this.addPhysicianForm.updateValueAndValidity();
       return;

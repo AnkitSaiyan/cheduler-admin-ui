@@ -3,6 +3,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -20,10 +24,8 @@ import { formatTime, timeToNumber } from '../../../../shared/utils/time';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
-import { LoaderService } from 'src/app/core/services/loader.service';
-import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
+import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 
 interface FormValues {
   name: string;
@@ -54,6 +56,7 @@ interface FormValues {
   selector: 'dfm-add-absence',
   templateUrl: './add-absence.component.html',
   styleUrls: ['./add-absence.component.scss'],
+  providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
   // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddAbsenceComponent extends DestroyableComponent implements OnInit, OnDestroy {
@@ -335,9 +338,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     if (this.formValues.isRepeat) {
       if (this.absenceForm.invalid) {
         this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-
         Object.keys(this.absenceForm.controls).map((key) => this.absenceForm.get(key)?.markAsTouched());
-
         return;
       }
     } else {
@@ -355,6 +356,12 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     }
 
     if (!this.formValues.isHoliday && !valid) {
+      if (this.formValues.roomList || this.formValues.userList) {
+        this.notificationSvc.showNotification(Translate.SelectStaffOrRoom[this.selectedLang], NotificationType.WARNING);
+        this.isAbsenceStaffRoomInvalid.next(true);
+        return;
+      }
+
       this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
       this.isAbsenceStaffRoomInvalid.next(true);
       return;
@@ -422,6 +429,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
           },
         );
     }
+  }
+
+  public get controls() {
+    return this.absenceForm.controls;
   }
 
   private getRepeatEveryItems(repeatType: RepeatType): NameValue[] {

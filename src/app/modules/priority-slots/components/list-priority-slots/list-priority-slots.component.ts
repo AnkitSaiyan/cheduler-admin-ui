@@ -17,6 +17,7 @@ import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'dfm-list-priority-slots',
   templateUrl: './list-priority-slots.component.html',
@@ -55,6 +56,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     private downloadSvc: DownloadService,
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
+    private translate: TranslateService,
   ) {
     super();
     this.prioritySlots$$ = new BehaviorSubject<any[]>([]);
@@ -147,10 +149,15 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
   private handleSearch(searchText: string): void {
     this.filteredPrioritySlots$$.next([
       ...this.prioritySlots$$.value.filter((priority) => {
+        let status: any;
+        if (priority.priority === 'High') status = this.translate.instant('High');
+        if (priority.priority === 'Medium') status = this.translate.instant('Medium');
+        if (priority.priority === 'Low') status = this.translate.instant('Low');
+
         return (
           priority.startedAt?.toLowerCase()?.includes(searchText) ||
           priority.endedAt?.toLowerCase()?.includes(searchText) ||
-          priority.priority?.toLowerCase()?.includes(searchText)
+          status?.toLowerCase()?.includes(searchText)
         );
       }),
     ]);

@@ -65,7 +65,7 @@
   "End": "End",
   "EndTime": "End Time",
   "ClickToAddSlot": "Click to add slot",
-  "RequiredField": "The field is Required",
+  "RequiredField": "The field is required",
   "AddAvailabilityData": "Add Availability Data",
   "ViewAll": "View All",
   "SUN": "SUN",
@@ -246,9 +246,9 @@
   "AppliedOn": "Applied On",
   "Pending": "Pending",
   "Approved": "Approved",
-  "Canceled": "Canceled",
+  "Canceled": "Cancelled",
   "hh:mm": "hh:mm",
-  "dateFormat": "yyyy-mm-dd",
+  "dateFormat": "dd/mm/yyyy",
   "AbsenceDetails": "Absence Details",
   "Assistant": "Assistant",
   "ExamAvailabilityInfo": "Exam Availability Info",
@@ -273,6 +273,8 @@
   "Doctor": "Doctor",
   "SelectDoctor": "Select Doctor",
   "SelectGeneralUser": "Select General User",
+  "General": "General",
+  "Scheduler": "Scheduler",
   "NoslotsfoundforselectedExamsandDatecombination": "No slots found for selected Exams and Date combination",
   "SlotsLoading": "Slots Loading...",
   "EnterComments": "Enter Comments",
@@ -360,5 +362,7 @@
   "Daily" : "Daily",
   "AddAppointmentConfirmation" : "Add Appointment Confirmation",
   "AreYouSureWantToMakeAppointmentOutsideOperatingHours" : "Are you sure you want to make an appointment outside the operating hours?",
-  "LoadingSlots" : "Loading Slots"
+  "LoadingSlots" : "Loading Slots",
+  "To" : "To",
+  "PracticeNotAvailableForDay" :"Practice is not available for this day"
 }

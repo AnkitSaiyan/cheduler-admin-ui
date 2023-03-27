@@ -14,7 +14,7 @@
           <div class="calendar-week-view-header-cell-left-line"></div>
           <h3>
             <div
-              class="text-xs font-weight-medium w-fit calendar-week-view-day-name">{{ weekday | weekdayToName : true : true | uppercase | translate }}</div>
+              class="text-xs font-weight-medium w-fit calendar-week-view-day-name">{{ weekday + 1 | weekdayToName : true : true | uppercase | translate }}</div>
             <div class="w-fit calendar-week-view-date"
                  [ngClass]="{
                     'calendar-week-view-date-today': todayDate.getDate() === day[0] && todayDate.getMonth() === day[1],
@@ -52,7 +52,7 @@
 
           </div>
           <div class="calendar-week-view-events-left-vertical-line"></div>
-          <div *ngFor="let day of daysOfWeekArr" role="gridcell" class="calendar-week-view-body-grid-column">
+          <div *ngFor="let day of daysOfWeekArr" role="gridcell" class="calendar-week-view-body-grid-column" >
             <div class="calendar-week-view-body-grid-absolute"></div>
             <div #eventsContainer
                  (dblclick)="onDblClick($event, eventsContainer, day)"

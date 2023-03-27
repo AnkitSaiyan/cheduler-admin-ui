@@ -30,7 +30,7 @@
                   <input
                     class="w-full min-w-128"
                     formControlName="startedAt"
-                    placeholder="{{ 'yyyy-mm-dd' | translate }}"
+                    placeholder="{{ 'dateFormat' | translate }}"
                     ngbDatepicker
                     #startedAt="ngbDatepicker"
                     [minDate]="minFromDate"
@@ -83,7 +83,7 @@
         </div>
 
         <div class="ad-pr-to-date flex-1 max-w-5">
-          <span class="text-sm font-weight-medium dfm-text-main-700">{{ 'To' | translate }} *</span>
+          <span class="text-sm font-weight-medium dfm-text-main-700">{{ "To" | translate }} *</span>
 
           <div class="d-flex align-items-start dfm-gap-16">
             <div class="flex-1 d-flex flex-column">
@@ -92,7 +92,7 @@
                   <input
                     class="w-full min-w-128"
                     formControlName="endedAt"
-                    placeholder="{{ 'yyyy-mm-dd' | translate }}"
+                    placeholder="{{ 'dateFormat' | translate }}"
                     ngbDatepicker
                     #endedAt="ngbDatepicker"
                     [minDate]="formValues.startedAt"
@@ -199,58 +199,101 @@
 
       <ng-container *ngIf="formValues.isRepeat">
         <div class="d-flex dfm-gap-32 flex-wrap align-items-start ad-pr-repeat-form">
-          <div class="dfm-input-dropdown-wrapper flex-1">
-            <dfm-input-dropdown
-              #repeatType
-              [items]="repeatTypes"
-              size="md"
-              label="{{ 'RepeatType' | translate }} *"
-              [required]="formValues.isRepeat"
-              placeholder="{{ 'SelectRepeatType' | translate }}"
-              formControlName="repeatType"
-              (select)="handleChange(repeatFrequency)"
+          <div class="flex-1">
+            <div class="dfm-input-dropdown-wrapper">
+              <dfm-input-dropdown
+                #repeatType
+                [items]="repeatTypes"
+                size="md"
+                label="{{ 'RepeatType' | translate }} *"
+                [required]="formValues.isRepeat"
+                placeholder="{{ 'SelectRepeatType' | translate }}"
+                formControlName="repeatType"
+                (select)="handleChange(repeatFrequency)"
+              >
+              </dfm-input-dropdown>
+            </div>
+            <div
+              class="validation-error"
+              *ngIf="prioritySlotForm.get('repeatType')?.hasError('required') && prioritySlotForm.get('repeatType')?.touched"
             >
-            </dfm-input-dropdown>
+              {{ 'RequiredField' | translate }}
+            </div>
           </div>
 
-          <div class="d-flex flex-column flex-1">
-            <dfm-input
-              #repeatFrequency
-              class="flex-1"
-              formControlName="repeatFrequency"
-              label="{{ 'RepeatEvery' | translate }} *"
-              placeholder="{{ 'EnterRepeatCount' | translate }}"
-              size="md"
-              type="text"
-              required
-              [readonly]="!repeatType.value"
-              (focusin)="handleFocusIn()"
-              (focusout)="handleFocusOut()"
+          <div class="flex-1">
+            <div>
+              <dfm-input
+                #repeatFrequency
+                class="flex-1"
+                formControlName="repeatFrequency"
+                label="{{ 'RepeatEvery' | translate }} *"
+                placeholder="{{ 'EnterRepeatCount' | translate }}"
+                size="md"
+                type="text"
+                required
+                [readonly]="!repeatType.value"
+                (focusin)="handleFocusIn()"
+                (focusout)="handleFocusOut()"
+              >
+              </dfm-input>
+            </div>
+            <div
+              class="validation-error"
+              *ngIf="prioritySlotForm.get('repeatFrequency')?.hasError('required') && prioritySlotForm.get('repeatFrequency')?.touched"
             >
-            </dfm-input>
+              {{ 'RequiredField' | translate }}
+            </div>
             <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched"
               >Repeat frequency should be greater than 0</small
             >
           </div>
-
-          <div class="dfm-input-multi-dropdown-wrapper flex-1 ad-pr-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
-            <dfm-input-dropdown
-              #repeatEveryDropdown
-              [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
-              [multiple]="true"
-              [placeholder]="!!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + ' Selected' : ('SelectRepeatEvery' | translate)"
-              size="md"
-              label="{{ 'RepeatOn' | translate }} *"
-              [required]="formValues.isRepeat && formValues.repeatType !== 'daily'"
-              formControlName="repeatDays"
+          <div class="flex-1">
+            <div class="dfm-input-multi-dropdown-wrapper ad-pr-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
+              <dfm-input-dropdown
+                #repeatEveryDropdown
+                [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
+                [multiple]="true"
+                [placeholder]="
+                  !!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + ' Selected' : ('SelectRepeatEvery' | translate)
+                "
+                size="md"
+                label="{{ 'RepeatOn' | translate }} *"
+                [required]="formValues.isRepeat && formValues.repeatType !== 'daily'"
+                formControlName="repeatDays"
+              >
+              </dfm-input-dropdown>
+            </div>
+            <div
+              class="validation-error"
+              *ngIf="prioritySlotForm.get('repeatDays')?.hasError('required') && prioritySlotForm.get('repeatDays')?.touched"
             >
-            </dfm-input-dropdown>
+              {{ 'RequiredField' | translate }}
+            </div>
           </div>
         </div>
       </ng-container>
 
-      <div class="d-flex dfm-gap-32 flex-wrap flex-1">
-        <dfm-input type="number" required placeholder="{{'EnterPercentage' | translate}}" #percentage (focusout)="handleExpenseInput($event, percentage, prioritySlotForm.get('nxtSlotOpenPct'))" formControlName="nxtSlotOpenPct" size="md" label="{{'NextSlotOpen' | translate}} % *"></dfm-input>
+      <div class="d-flex dfm-gap-32 flex-wrap">
+        <div class="flex-column dfm-gap-16 flex-1">
+          <dfm-input
+            type="number"
+            required
+            placeholder="{{ 'EnterPercentage' | translate }}"
+            #percentage
+            (focusout)="handleExpenseInput($event, percentage, prioritySlotForm.get('nxtSlotOpenPct'))"
+            formControlName="nxtSlotOpenPct"
+            size="md"
+            label="{{ 'NextSlotOpen' | translate }} % *"
+          ></dfm-input>
+          <div
+            class="validation-error"
+            *ngIf="prioritySlotForm.get('nxtSlotOpenPct')?.hasError('required') && prioritySlotForm.get('nxtSlotOpenPct')?.touched"
+          >
+            {{ 'RequiredField' | translate }}
+          </div>
+        </div>
+
         <!-- <small
                 class="validation-error text-center d-flex"
                 *ngIf="slotEndTime.control.hasError('time') && slotStartTime.control.value && slotEndTime.control.value"
