@@ -194,7 +194,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
       )
       .subscribe({
         next: () => {
-          this.notificationSvc.showNotification('Status has changed successfully');
+          this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
           this.clearSelected$$.next();
         },
       });
@@ -252,7 +252,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
     this.appointmentApiSvc
       .changeAppointmentStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
+      .subscribe(() => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]));
   }
 
   public deleteAppointment(id: number) {

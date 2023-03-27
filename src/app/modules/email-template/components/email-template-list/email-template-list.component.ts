@@ -96,7 +96,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
           downloadAs as DownloadAsType,
           this.columns.slice(0, -1),
           this.filteredEmails$$.value.map((em: Email) => [em.title, em.subject?.toString(), StatusToName[em.status]]),
-          'exams',
+          'email-template',
         );
 
         if (downloadAs !== 'PRINT') {

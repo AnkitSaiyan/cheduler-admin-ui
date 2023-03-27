@@ -164,7 +164,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
             // ap.readStatus ? 'Yes' : 'No',
             AppointmentStatusToName[+ap.approval],
           ]),
-          'physician',
+          'appointment',
         );
 
         if (value !== 'PRINT') {
@@ -195,7 +195,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       )
       .subscribe({
         next: () => {
-          this.notificationSvc.showNotification('Status has changed successfully');
+          this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
           this.clearSelected$$.next();
         },
       });
@@ -265,7 +265,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     this.appointmentApiSvc
       .changeAppointmentStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => this.notificationSvc.showNotification('Status has changed successfully'));
+      .subscribe(() => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]));
   }
 
   public deleteAppointment(id: number) {

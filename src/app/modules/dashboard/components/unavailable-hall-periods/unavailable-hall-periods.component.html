@@ -87,11 +87,11 @@
         <dfm-table-body-cell>
           <span class="font-weight-normal">{{ item.roomName }}</span>
         </dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.startDate | date : 'short' }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.endDate | date : 'short' }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.startDate | date : 'dd/MM/yyyy, HH:mm' }}</dfm-table-body-cell>
         <dfm-table-body-cell>
-          <span class="font-weight-medium">{{ item.absenceName }}</span>
+         {{ item.endDate | date : 'dd/MM/yyyy, HH:mm' }}
         </dfm-table-body-cell>
+        <dfm-table-body-cell> <span class="font-weight-medium">{{ item.absenceName }}</span></dfm-table-body-cell>
       </ng-template>
     </dfm-table>
     <div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!roomAbsence.length">

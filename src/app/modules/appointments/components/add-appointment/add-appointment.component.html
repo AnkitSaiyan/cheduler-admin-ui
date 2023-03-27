@@ -213,7 +213,7 @@
         class="font-weight-medium text-sm dfm-my-8"
         *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false"
       >
-        {{ 'NoslotsfoundforselectedExamsandDatecombination' | translate }}
+        {{ 'NoSlotsFoundForSelectedExamsAndTime' | translate }}
       </span>
 
       <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> {{ 'SlotsLoading' | translate }} </span>
@@ -229,7 +229,7 @@
             </div>
 
             <div *ngIf="edit" class="d-flex gap-2 text-sm">
-              <span class="font-weight-medium">Selected Slot</span>
+              <span class="font-weight-medium">{{"SelectedSlot" | translate}}</span>
               <div class="text-center">
                 {{ selectedTimeSlot[examID]?.slot?.split("-")?.[0]?.slice(0,-3) }} -
                 {{ selectedTimeSlot[examID]?.slot?.split("-")?.[1]?.slice(0,-3) }}
