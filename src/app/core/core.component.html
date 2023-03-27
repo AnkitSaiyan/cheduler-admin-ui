@@ -11,7 +11,8 @@
     (tenantChanged)="onLanguageChange($event)"
     [isProfileShown]="true"
     [profileData]="profileData"
-    [logoPath]="'assets/images/scheduler-logo.svg'"
+    logoPath="assets/images/scheduler-logo.svg"
+    miniLogoPath="assets/images/scheduler-logo-mobile.svg"
   >
     <mat-progress-bar *ngIf="isLoaderActive$$ | async" mode="indeterminate"></mat-progress-bar>
     <div class="dfm-content content-height" #content>
