@@ -75,7 +75,7 @@
             <div class="validation-error" *ngIf="examForm.get('expensive')?.hasError('required') && examForm.get('expensive')?.touched">
               {{ 'RequiredField' | translate }}
             </div>
-            <small class="validation-error" *ngIf="expensive.control.hasError('min')">Please enter at least 5 min</small>
+            <small class="validation-error" *ngIf="expensive.control.hasError('min')">{{"PleaseEnterAtLeastFiveMin" | translate}}</small>
           </div>
           <div>
             <div class="dfm-input-dropdown-wrapper">
@@ -134,7 +134,7 @@
             {{ 'PleaseSelectAtLeastOneRoom' | translate }}
           </small>
           <small *ngIf="formErrors.expensiveErr && !formErrors.selectRoomErr" class="validation-error">
-            Expensive of the exam and total minutes of rooms should be the same.
+            {{"ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame" | translate}}
           </small>
         </div>
 

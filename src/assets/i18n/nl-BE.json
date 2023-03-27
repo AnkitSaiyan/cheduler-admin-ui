@@ -366,6 +366,10 @@
   "AreYouSureWantToMakeAppointmentOutsideOperatingHours" : "Weet u zeker dat u buiten openingstijden een afspraak wilt maken?",
   "LoadingSlots" : "Sleuven laden",
   "To" : "Naar",
-  "PracticeNotAvailableForDay" :"De praktijk is deze dag niet beschikbaar"
+  "PracticeNotAvailableForDay" :"De praktijk is deze dag niet beschikbaar",
+  "SelectedSlot" : "Geselecteerde gokkast",
+  "PleaseEnterAtLeastFiveMin" : "vul a.u.b. minimaal 5 min in",
+  "ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame" : "De duur van het examen en het totale aantal minuten van de kamers moet hetzelfde zijn.",
+  "NoSlotsFoundForSelectedExamsAndTime" : "Geen slots gevonden voor geselecteerde Exam(s) en Tijd"
 }
 

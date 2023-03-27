@@ -57,7 +57,7 @@
           class="font-weight-medium text-sm dfm-my-8"
           *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false"
         >
-          No slots found for selected Exam(s) and Time
+          {{"NoSlotsFoundForSelectedExamsAndTime" | translate}}
         </span>
 
         <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> {{"LoadingSlots" | translate}}... </span>
