@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Tooltip } from 'bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import defaultLanguage from '../assets/i18n/en-BE.json';
+import defaultLanguage from '../assets/i18n/nl-BE.json';
 // import dutchLangauge from '../assets/i18n/nl-BE.json';
 
 @Component({
@@ -12,8 +12,8 @@ import defaultLanguage from '../assets/i18n/en-BE.json';
 export class AppComponent implements OnInit {
   constructor(public translate: TranslateService) {
     translate.addLangs(['en-BE', 'nl-BE']);
-    translate.setTranslation('en-BE', defaultLanguage);
-    translate.setDefaultLang('en-BE');
+    translate.setTranslation('nl-BE', defaultLanguage);
+    translate.setDefaultLang('nl-BE');
   }
 
   ngOnInit(): void {
