@@ -62,7 +62,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     // new NavigationItemEvent('3', new Date(), 'Test Message 3'),
   ];
 
-  public currentTenant: string = 'en-BE';
+  public currentTenant: string = 'nl-BE';
 
   public languages: SelectItem[] = [
     { name: 'EN', value: ENG_BE },
