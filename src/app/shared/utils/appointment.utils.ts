@@ -71,7 +71,7 @@ export class AppointmentUtils {
   public static IsSlotAvailable(slot: SlotModified, selectedTimeSlot: SelectedSlots) {
     return !Object.values(selectedTimeSlot)?.some((value) => {
       const firstSlot = value?.slot?.split('-');
-      return firstSlot?.length &&  slot.examId !==value.examId && checkTimeRangeOverlapping(firstSlot[0], firstSlot[1], slot.start, slot.end)
+      return firstSlot?.length && slot.examId !== value.examId && checkTimeRangeOverlapping(firstSlot[0], firstSlot[1], slot.start, slot.end);
     });
   }
 
@@ -90,7 +90,7 @@ export class AppointmentUtils {
         roomList: slot?.roomList ?? [],
         userList: slot?.userList ?? [],
       };
-      console.log(selectedTimeSlot)
+      console.log(selectedTimeSlot);
     }
   }
 
@@ -108,44 +108,49 @@ export class AppointmentUtils {
     formValues: CreateAppointmentFormValues,
     selectedTimeSlot: SelectedSlots,
     appointment: Appointment | undefined,
-    isCombinable:boolean
+    isCombinable: boolean,
   ): AddAppointmentRequestData {
     const { startedAt, startTime, examList, ...rest } = formValues;
-    const combinableSelectedTimeSlot = {...Object.values(selectedTimeSlot)[0]}
-    delete combinableSelectedTimeSlot.userList;
-    delete combinableSelectedTimeSlot.roomList;
-    delete combinableSelectedTimeSlot.slot;
-
+    const { userList, roomList, slot, exams, ...restData } = { ...Object.values(selectedTimeSlot)[0] } as any;
+    let finalCombinableRequestData = {};
+    if (exams?.length) {
+      finalCombinableRequestData = {
+        ...restData,
+        exams: exams.map(({ userId, roomId, ...examRest }) => ({ ...examRest })),
+      };
+    }
     const requestData: any = {
       ...rest,
       date: CalendarUtils.DateDistributedToString(startedAt, '-'),
-      slot: !isCombinable ? {
-        examId: 0,
-        start: '',
-        end: '',
-        exams: examList.map((examID) => {
-          const examDetails = {
-            examId: +examID,
-            rooms: selectedTimeSlot[+examID]?.roomList ?? [],
-            users: selectedTimeSlot[+examID]?.userList ?? [],
-          };
-          debugger
-          if (selectedTimeSlot[+examID]) {
-            const time: any = selectedTimeSlot[+examID];
-            examDetails['start'] = time.start;
-            examDetails['end'] = time.end;
-          } else {
-            const time: any = selectedTimeSlot[0];
-            const start = time.start;
-            const end = time.end;
+      slot:
+        !isCombinable || !exams?.length
+          ? {
+              examId: 0,
+              start: '',
+              end: '',
+              exams: examList.map((examID) => {
+                const examDetails = {
+                  examId: +examID,
+                  rooms: selectedTimeSlot[+examID]?.roomList ?? [],
+                  users: selectedTimeSlot[+examID]?.userList ?? [],
+                };
+                if (selectedTimeSlot[+examID]) {
+                  const time: any = selectedTimeSlot[+examID];
+                  examDetails['start'] = time.start;
+                  examDetails['end'] = time.end;
+                } else {
+                  const time: any = selectedTimeSlot[0];
+                  const start = time.start;
+                  const end = time.end;
 
-            examDetails['start'] = `${start[0]}:${start[1]}:00`;
-            examDetails['end'] = `${end[0]}:${end[1]}:00`;
-          }
+                  examDetails['start'] = `${start[0]}:${start[1]}:00`;
+                  examDetails['end'] = `${end[0]}:${end[1]}:00`;
+                }
 
-          return examDetails;
-        }) ,
-      } : {...combinableSelectedTimeSlot, examId: 0},
+                return examDetails;
+              }),
+            }
+          : { ...finalCombinableRequestData, examId: 0 },
     };
 
     if (appointment && appointment?.id) {
@@ -155,6 +160,20 @@ export class AppointmentUtils {
     return requestData;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
