@@ -42,7 +42,7 @@
     <form [formGroup]="siteManagementForm" class="d-flex flex-column dfm-gap-24">
       <div class="d-flex dfm-gap-32 flex-wrap">
         <div class="flex-1">
-          <dfm-input class="" size="md" placeholder="Enter site name" label="{{'SiteName' | translate}} *" formControlName="name">
+          <dfm-input class="" size="md" placeholder="{{'EnterSiteName' | translate}}" label="{{'SiteName' | translate}} *" formControlName="name">
           </dfm-input>
           <div class="validation-error" *ngIf="siteManagementForm.get('name')?.hasError('required') && siteManagementForm.get('name')?.touched">
             {{ 'RequiredField' | translate }}
