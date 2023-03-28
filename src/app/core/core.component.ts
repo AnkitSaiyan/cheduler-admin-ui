@@ -16,7 +16,7 @@ import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
   styleUrls: ['./core.component.scss'],
 })
 export class CoreComponent extends DestroyableComponent implements OnInit, OnDestroy, AfterViewInit {
-  public navigationItems: NavigationItem[] = [
+  private navigationItems: NavigationItem[] = [
     new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
     new NavigationItem('Appointment', 'file-06', '/appointment', false),
     new NavigationItem('Absence', 'user-x-01', '/absence', false),
@@ -33,7 +33,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     ]),
   ];
 
-  public navigationItemsNL: NavigationItem[] = [
+  private navigationItemsNL: NavigationItem[] = [
     new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
     new NavigationItem('Afspraak', 'file-06', '/appointment', false),
     new NavigationItem('Afwezigheid', 'user-x-01', '/absence', false),
@@ -78,9 +78,9 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     links: [new NavigationProfileLink('Test Link', './', '', true)],
   };
 
-  isDutchLanguage: boolean = false;
-
   public isLoaderActive$$ = new Subject<boolean>();
+
+  public navItems: NavigationItem[] = [];
 
   constructor(
     private translateService: TranslateService,
@@ -93,10 +93,25 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
   }
 
   public ngOnInit(): void {
+    // translation changes should go here
+    this.currentTenant$$.pipe(takeUntil(this.destroy$$)).subscribe((lang) => {
+      switch (lang) {
+        case ENG_BE: {
+          this.navItems = [...this.navigationItems];
+          break;
+        }
+        case DUTCH_BE: {
+          this.navItems = [...this.navigationItemsNL];
+          break;
+        }
+      }
+    });
+
     this.dataShareService.getLanguage$().subscribe((language: string) => {
       this.currentTenant$$.next(language);
       this.profileData.user.name = language === ENG_BE ? 'Profile' : 'Profiel';
     });
+
     this.dashboardApiService.notificationData$$.subscribe((res) => {
       this.notifications = [];
       // console.log(res)
@@ -128,12 +143,10 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     // eslint-disable-next-line eqeqeq
     this.dataShareService.setLanguage(lang);
     if (lang == ENG_BE) {
-      this.isDutchLanguage = false;
       this.translateService.setTranslation(lang, englishLanguage);
       this.translateService.setDefaultLang(lang);
       // eslint-disable-next-line eqeqeq
     } else if (lang == DUTCH_BE) {
-      this.isDutchLanguage = true;
       this.translateService.setTranslation(lang, dutchLangauge);
       this.translateService.setDefaultLang(lang);
     }
