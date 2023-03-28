@@ -82,7 +82,7 @@
                     <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">{{ 'InvalidTime' | translate }}</small>
                   </div>
 
-                  <div class="dfm-mt-32">
+                  <div class="dfm-mt-32 trash-btn">
                     <dfm-button-icon
                       size="sm"
                       icon="trash-01"
@@ -94,6 +94,16 @@
                       (click)="removeSlot(weekday, i)"
                     ></dfm-button-icon>
                   </div>
+                  <!--====Trash Button For Mobile Starts====-->
+                  <div class="dfm-mt-32 trash-btn-mv">
+                    <dfm-button-icon
+                      size="sm"
+                      icon="trash-01"
+                      color="tertiary"
+                      (click)="removeSlot(weekday, i)"
+                    ></dfm-button-icon>
+                  </div>
+                   <!--====Trash Button For Mobile Ends====-->
                 </div>
 
                 <small
@@ -168,7 +178,7 @@
                     <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">{{ 'Invalidtime' | translate }}</small>
                   </div>
 
-                  <div class="dfm-mt-32">
+                  <div class="dfm-mt-32 trash-btn">
                     <dfm-button-icon
                       size="sm"
                       icon="trash-01"
@@ -180,6 +190,16 @@
                       (click)="removeSlot(weekday, i)"
                     ></dfm-button-icon>
                   </div>
+                  <!--====Trash Button For Mobile Starts====-->
+                  <div class="dfm-mt-32 trash-btn-mv">
+                    <dfm-button-icon
+                      size="sm"
+                      icon="trash-01"
+                      color="tertiary"
+                      (click)="removeSlot(weekday, i)"
+                    ></dfm-button-icon>
+                  </div>
+                   <!--====Trash Button For Mobile Ends====-->
                 </div>
 
                 <small
@@ -253,7 +273,7 @@
                     <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">{{ 'InvalidTime' | translate }}</small>
                   </div>
 
-                  <div class="dfm-mt-32">
+                  <div class="dfm-mt-32 trash-btn">
                     <dfm-button-icon
                       size="sm"
                       icon="trash-01"
@@ -265,6 +285,17 @@
                       (click)="removeSlot(0, i)"
                     ></dfm-button-icon>
                   </div>
+                  <!--====Trash Button For Mobile Starts====-->
+                  <div class="dfm-mt-32 trash-btn-mv">
+                    <dfm-button-icon
+                      size="sm"
+                      icon="trash-01"
+                      color="tertiary"
+                      (click)="removeSlot(0, i)"
+                    ></dfm-button-icon>
+                  </div>
+                   <!--====Trash Button For Mobile Ends====-->
+                  
                 </div>
 
                 <small

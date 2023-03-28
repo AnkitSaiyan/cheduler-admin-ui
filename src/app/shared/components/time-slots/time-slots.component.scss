@@ -10,3 +10,16 @@
   overflow: unset;
   height: auto;
 }
+.trash-btn-mv{
+  display: none;
+}
+
+// =============Mobile View=============
+@media (max-width: 680px){
+  .trash-btn-mv{
+    display: block;
+  }
+  .trash-btn{
+    display: none;
+  }
+}
