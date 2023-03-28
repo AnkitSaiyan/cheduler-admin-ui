@@ -36,7 +36,7 @@
   <div class="calendar-week-view-body-container">
     <div role="presentation" class="calendar-week-view-body">
       <div role="row" class="calendar-week-view-time-slot-container">
-        <div class="calendar-week-view-time-slot text-sm" *ngFor="let time of timeInterval | timeInInterval : 12 : true">
+        <div class="calendar-week-view-time-slot text-sm" *ngFor="let time of timeInterval | timeInInterval : format24Hour">
           <span>{{ time }}</span>
           <div class="calendar-week-view-horizontal-line"></div>
         </div>
@@ -45,7 +45,7 @@
       <div role="presentation" class="calendar-week-view-events-container-main" (scroll)="scrollOne.scrollLeft = scrollTwo.scrollLeft" #scrollTwo>
         <div role="row" class="calendar-week-view-events-container">
           <div>
-            <ng-container *ngFor="let i of timeInterval | timeInInterval">
+            <ng-container *ngFor="let i of timeInterval | timeInInterval : format24Hour">
               <div class="calendar-week-view-horizontal-line"></div>
               <div class="calendar-week-view-horizontal-line-light"></div>
             </ng-container>
