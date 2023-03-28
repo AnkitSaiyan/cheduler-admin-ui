@@ -39,9 +39,11 @@
           size="md"
         ></dfm-input-dropdown>
       </div>
+
+
     </div>
 
-    <div class="d-flex dfm-gap-8 align-items-center">
+    <div class="d-flex dfm-gap-8 align-items-center ab-li-button-dropdown-group">
       <dfm-button
         color="primary"
         size="md"
@@ -49,6 +51,16 @@
         [disabled]="false"
         (click)="openAddAbsenceModal()"
       >{{'AddAbsence' | translate}}
+      </dfm-button>
+    </div>
+    <div class="d-flex dfm-gap-8 align-items-center ab-li-none">
+      <dfm-button
+        color="primary"
+        size="md"
+        class="text-nowrap"
+        [disabled]="false"
+        (click)="openAddAbsenceModal()"
+      >{{'Add' | translate}}
       </dfm-button>
     </div>
   </section>

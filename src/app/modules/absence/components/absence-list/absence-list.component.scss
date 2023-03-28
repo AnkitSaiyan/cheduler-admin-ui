@@ -10,6 +10,9 @@
   }
 }
 
+.ab-li-none {
+  display: none !important;
+}
 @media (max-width: 680px) {
   .ab-li-section-1 {
     justify-content: space-between;
@@ -22,6 +25,9 @@
   .ab-li-title-buttons, .ab-li-search-mv, .ab-li-plus-btn {
     display: block;
   }
+    .ab-li-none {
+      display: block !important;
+    }
 
   .ab-li-plus-btn {
     position: absolute;
