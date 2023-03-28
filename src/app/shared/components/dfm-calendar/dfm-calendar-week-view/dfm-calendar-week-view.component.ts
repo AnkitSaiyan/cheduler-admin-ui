@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import { BehaviorSubject, filter, take, takeUntil } from 'rxjs';
 import { DatePipe } from '@angular/common';
-import { getAllDaysOfWeek, getDurationMinutes } from '../../../models/calendar.model';
+import { getAllDaysOfWeek, getDurationMinutes, Interval } from '../../../models/calendar.model';
 import { DestroyableComponent } from '../../destroyable.component';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -70,6 +70,12 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   @Input()
   public format24Hour = false;
 
+  @Input()
+  public limit = { min: '00:00:00', max: '24:00:00' };
+
+  @Input()
+  public showGrayOutSlot: boolean = false;
+
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
 
@@ -90,6 +96,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
   public rendered = false;
 
+  public grayOutSlot$$: BehaviorSubject<any[]> = new BehaviorSubject<Interval[]>([]);
+
   public getDurationFn = (s, e) => getDurationMinutes(s, e);
 
   constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private renderer: Renderer2, private modalSvc: ModalService) {
@@ -100,7 +108,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     if (!this.selectedDate) {
       this.selectedDate = new Date();
     }
-    console.log(this.prioritySlots);
+    if (this.showGrayOutSlot) {
+      this.getGrayOutArea();
+    }
   }
 
   public ngOnInit(): void {
@@ -170,6 +180,11 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
   private emitDate() {
     this.selectedDateEvent.emit(this.selectedDate);
+  }
+
+  public getMinute(date: string) {
+    const splittedDate = date.split(':');
+    return +splittedDate[0] * 60 + +splittedDate[1];
   }
 
   public changeToDayView(day: number, weekday: number) {
@@ -327,5 +342,33 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     formattedDate.setMinutes(+splitDate[1]);
     formattedDate.setSeconds(0);
     return formattedDate;
+  }
+
+  private getGrayOutArea() {
+    const grayOutSlot: any = [];
+    grayOutSlot.push({
+      dayStart: this.limit.min,
+      dayEnd: this.calculate(120, this.limit.min, 'plus'),
+      top: 0,
+      height: 120 * this.pixelsPerMin,
+    });
+    const lastMinutes = getDurationMinutes(this.myDate(this.limit.min), this.myDate(this.calculate(120, this.limit.max, 'minus')));
+    grayOutSlot.push({
+      dayStart: this.calculate(120, this.limit.max, 'minus'),
+      dayEnd: this.limit.max,
+      top: lastMinutes * this.pixelsPerMin,
+      height: 120 * this.pixelsPerMin,
+    });
+    this.grayOutSlot$$.next([...grayOutSlot]);
+  }
+
+  private calculate(minutes: number, time: string, type: 'plus' | 'minus'): string {
+    const date = new Date();
+    const [hour, minute] = time.split(':');
+    date.setHours(+hour);
+    date.setMinutes(+minute);
+    date.setSeconds(0);
+    const finalDate = type === 'minus' ? new Date(date.getTime() - minutes * 60 * 1000) : new Date(date.getTime() + minutes * 60 * 1000);
+    return this.datePipe.transform(finalDate, 'HH:mm') ?? '';
   }
 }

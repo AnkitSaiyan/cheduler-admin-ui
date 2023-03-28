@@ -55,6 +55,8 @@
       [dataGroupedByDateAndTime]="appointmentsGroupedByDateAndTIme"
       [prioritySlots]="prioritySlots$$ | async"
       [format24Hour]="true"
+      [showGrayOutSlot] ="true"
+      [limit] ="(practiceHourMinMax$ | async )?? { min: '00:00:00', max: '24:00:00' }"
     ></dfm-calendar-week-view>
   </section>
 </div>
