@@ -55,6 +55,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
     };
   };
 
+  @Input()
+  public format24Hour = false;
+
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
 

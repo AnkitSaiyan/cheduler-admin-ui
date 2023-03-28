@@ -364,7 +364,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
           endMinutes = 24 * 60;
         }
 
-        const timings = this.timeIntervalPipe.transform(15, 24, false, startMinutes, endMinutes);
+        const timings = this.timeIntervalPipe.transform(15, true, false, startMinutes, endMinutes);
 
         weekdayToPractice[weekday].timings = [...timings];
       }

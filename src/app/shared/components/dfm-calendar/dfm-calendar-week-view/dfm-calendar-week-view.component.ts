@@ -67,6 +67,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   @Input()
   public prioritySlots!: { [key: string]: any[] };
 
+  @Input()
+  public format24Hour = false;
+
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
 

@@ -78,6 +78,7 @@
           [newDate$$]="newDate$$"
           [dataGroupedByDateAndTime]="appointmentsGroupedByDateAndTIme"
           (addAppointment)="addAppointment($event)"
+          [format24Hour]="true"
         ></dfm-calendar-week-view>
       </ng-container>
 
@@ -90,6 +91,7 @@
           [headerList]="headerList"
           [dataGroupedByDateAndRoom]="appointmentGroupedByDateAndRoom"
           [timeSlot]="selectedSlot$$ | async"
+          [format24Hour]="true"
         ></dfm-calendar-day-view>
       </ng-container>
     </ng-container>
