@@ -403,6 +403,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
         element: eventCard,
         elementContainer: eventsContainer,
         startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
+        limit: this.practiceHourMinMax$$.value,
       },
       options: {
         backdrop: false,
