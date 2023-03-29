@@ -102,9 +102,10 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
 
-        this.downloadDropdownControl.setValue('');
-
-        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.downloadDropdownControl.setValue('');
+          // this.cdr.detectChanges();
+        }, 0);
       });
 
     this.shareDataSvc
