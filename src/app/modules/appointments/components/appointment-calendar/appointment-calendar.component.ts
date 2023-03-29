@@ -58,6 +58,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
   private weekdayToPractice$$ = new BehaviorSubject<any>(null);
 
+  public practiceHourMinMax$$ = new BehaviorSubject<{ min: string; max: string } | null>(null);
+
   appointmentGroupedByDateAndRoom: {
     [key: string]: {
       [key: number]: {
@@ -118,6 +120,23 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
     this.practiceHoursApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
       this.createTimeInterval(practiceHours);
+      const value = [...practiceHours];
+      this.practiceHourMinMax$$.next(
+        value.reduce((pre: any, curr) => {
+          let finalValue = { ...pre };
+          if (!pre?.min || !pre?.max) {
+            finalValue = { min: curr.dayStart, max: curr.dayEnd };
+            return finalValue;
+          }
+          if (timeToNumber(curr.dayStart) <= timeToNumber(pre?.min)) {
+            finalValue = { ...finalValue, min: curr.dayStart };
+          }
+          if (timeToNumber(curr.dayEnd) >= timeToNumber(pre?.max)) {
+            finalValue = { ...finalValue, max: curr.dayEnd };
+          }
+          return finalValue;
+        }, {}),
+      );
     });
 
     this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {

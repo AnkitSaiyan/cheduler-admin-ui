@@ -290,14 +290,23 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
   public getHeight(groupedData: any[]): number {
     let endDate: Date = groupedData[0].endedAt;
-
     groupedData.forEach((data) => {
       if (data.endedAt > endDate) {
         endDate = data.endedAt;
       }
     });
 
-    const durationMinutes = getDurationMinutes(groupedData[0].startedAt, endDate);
+    const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+
+    const startDate =
+      this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
+        ? this.myDate(this.limit.min)
+        : new Date(groupedData[0].startedAt);
+
+    const groupEndDate = this.datePipe.transform(new Date(endDate), 'hh:mm:ss') ?? '';
+    const finalEndDate =
+      this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
+    const durationMinutes = getDurationMinutes(startDate, finalEndDate);
     return durationMinutes * this.pixelsPerMin;
   }
 
@@ -309,11 +318,20 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   public getTop(groupedData: any[]): number {
-    const startHour = new Date(groupedData[0].startedAt).getHours();
-    const startMinute = new Date(groupedData[0].startedAt).getMinutes();
+    const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+    const startDate =
+      this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
+        ? this.myDate(this.limit.min)
+        : new Date(groupedData[0].startedAt);
+    const startHour = startDate.getHours();
+    const startMinute = startDate.getMinutes();
+    const startCalendarDate = this.myDate(this.limit.min);
+    const startCalendarHour = startCalendarDate.getHours();
+    const startCalendarMinute = startCalendarDate.getMinutes();
     const barHeight = 1;
     const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-    const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
+    const top =
+      (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
     if (top % 20) {
       return Math.floor(top / 20) * 20 + 20;
     }
