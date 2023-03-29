@@ -46,7 +46,7 @@
         <div role="row" class="calendar-week-view-events-container">
           <div class="gray-out-area"  *ngFor="let item of grayOutSlot$$ | async" [ngStyle]="{'top.px': item.top, 'height.px': item.height, 'width': bodyMain.style.width }" ></div>
           <div>
-            <ng-container *ngFor="let i of timeInterval | timeInInterval : format24Hour">
+            <ng-container *ngFor="let i of timeInterval | timeInInterval : format24Hour : false : getMinute(limit.min) : getMinute(limit.max)">
               <div class="calendar-week-view-horizontal-line"></div>
               <div class="calendar-week-view-horizontal-line-light"></div>
             </ng-container>
