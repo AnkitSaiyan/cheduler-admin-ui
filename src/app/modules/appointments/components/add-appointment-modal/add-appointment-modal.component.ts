@@ -69,7 +69,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     elementContainer: HTMLDivElement;
     startedAt: Date;
     startTime?: string;
-    limit?: { min: string; max: string };
+    limit?: { min: string; max: string; grayOutMin: string; grayOutMax: string };
   };
 
   public slots: SlotModified[] = [];
