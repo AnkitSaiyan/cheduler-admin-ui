@@ -118,9 +118,10 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
         }
 
-        this.downloadDropdownControl.setValue(null);
-
-        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.downloadDropdownControl.setValue('');
+          // this.cdr.detectChanges();
+        }, 0);
       });
 
     this.shareDataSvc
@@ -277,6 +278,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     });
   }
 }
+
 
 
 

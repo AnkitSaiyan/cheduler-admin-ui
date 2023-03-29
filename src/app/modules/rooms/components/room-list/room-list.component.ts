@@ -138,9 +138,10 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
           this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
         }
 
-        this.downloadDropdownControl.setValue(null);
-
-        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.downloadDropdownControl.setValue('');
+          // this.cdr.detectChanges();
+        }, 0);
       });
 
     this.clearSelected$$.pipe(takeUntil(this.destroy$$)).subscribe(() => {
