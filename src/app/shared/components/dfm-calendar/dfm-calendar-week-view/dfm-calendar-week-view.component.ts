@@ -84,7 +84,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   public dayViewEvent = new EventEmitter<number>();
 
   @Output()
-  public addAppointment = new EventEmitter<{ e: MouseEvent; eventsContainer: HTMLDivElement; day: number[] }>();
+  public addAppointment = new EventEmitter<{ e: MouseEvent; eventsContainer: HTMLDivElement; day: number[]; grayOutSlot: any }>();
 
   public daysOfWeekArr: number[][] = [];
 
@@ -303,15 +303,30 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
         ? this.myDate(this.limit.min)
         : new Date(groupedData[0].startedAt);
 
-    const groupEndDate = this.datePipe.transform(new Date(endDate), 'hh:mm:ss') ?? '';
+    const groupEndDate = this.datePipe.transform(new Date(endDate), 'HH:mm:ss') ?? '';
+    if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
+      return 0;
+    }
+
+    if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
+      return 0;
+    }
     const finalEndDate =
       this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
+
     const durationMinutes = getDurationMinutes(startDate, finalEndDate);
     return durationMinutes * this.pixelsPerMin;
   }
 
   public getPrioritySlotHeight(prioritySlot: any): number {
     const startDate: Date = this.myDate(timeToNumber(prioritySlot.start) < timeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start);
+    if (this.myDate(prioritySlot.end).getTime() <= this.myDate(this.limit.min).getTime()) {
+      return 0;
+    }
+
+    if (this.myDate(prioritySlot.start).getTime() >= this.myDate(this.limit.max).getTime()) {
+      return 0;
+    }
     const endDate: Date = this.myDate(timeToNumber(prioritySlot.end) > timeToNumber(this.limit.max) ? this.limit.max : prioritySlot.end);
     const durationMinutes = getDurationMinutes(startDate, endDate);
     return durationMinutes * this.pixelsPerMin;
@@ -357,7 +372,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[]) {
-    this.addAppointment.emit({ e, eventsContainer, day });
+    this.addAppointment.emit({ e, eventsContainer, day, grayOutSlot: this.grayOutSlot$$.value });
   }
 
   private myDate(date: string): Date {
@@ -387,7 +402,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
       top: lastMinutes * this.pixelsPerMin,
       height: getDurationMinutes(this.myDate(this.limit.grayOutMax), this.myDate(this.limit.max)) * this.pixelsPerMin,
     });
-    console.log(this.limit, 'limit');
     this.grayOutSlot$$.next([...grayOutSlot]);
   }
 
