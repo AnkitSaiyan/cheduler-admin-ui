@@ -174,7 +174,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
     const practiceHours = this.formValues.timeSlotGroup[selectedTab.toString()];
     if (practiceHours?.length && practiceHours.every((pa) => pa.dayEnd && pa.dayStart)) {
-      return 'gray';
+      return 'primary';
     }
 
     return 'gray';
