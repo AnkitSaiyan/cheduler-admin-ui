@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, map, take, takeUntil, throttleTime } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -21,6 +21,7 @@ import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 
 @Component({
   selector: 'dfm-appointment-calendar',
@@ -415,30 +416,71 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
   }
 
   public addAppointment(event: any) {
-    console.log(event);
-    const { e, eventsContainer, day } = event;
+    const { e, eventsContainer, day, grayOutSlot } = event;
     const eventCard = this.createAppointmentCard(e, eventsContainer);
 
-    const modalRef = this.modalSvc.open(AddAppointmentModalComponent, {
-      data: {
-        event: e,
-        element: eventCard,
-        elementContainer: eventsContainer,
-        startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
-        limit: this.practiceHourMinMax$$.value,
-      },
-      options: {
-        backdrop: false,
-        centered: true,
-        modalDialogClass: 'ad-ap-modal-shadow',
-      },
-    });
+    const isGrayOutArea = grayOutSlot.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
 
-    modalRef.closed.pipe(take(1)).subscribe((res) => {
-      eventCard.remove();
-      // if (!res) {
-      // }
-    });
+    if (isGrayOutArea) {
+      this.modalSvc
+        .open(ConfirmActionModalComponent, {
+          data: {
+            titleText: 'AddAppointmentConfirmation',
+            bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
+            confirmButtonText: 'Yes',
+          } as ConfirmActionModalData,
+        })
+        .closed.pipe(
+          tap((value) => {
+            if (!value) eventCard.remove();
+          }),
+          filter(Boolean),
+          switchMap(() => {
+            return this.modalSvc.open(AddAppointmentModalComponent, {
+              data: {
+                event: e,
+                element: eventCard,
+                elementContainer: eventsContainer,
+                startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
+                limit: this.practiceHourMinMax$$.value,
+              },
+              options: {
+                backdrop: false,
+                centered: true,
+                modalDialogClass: 'ad-ap-modal-shadow',
+              },
+            }).closed;
+          }),
+          take(1),
+        )
+        .subscribe(() => {
+          eventCard.remove();
+          // if (!res) {
+          // }
+        });
+    } else {
+      this.modalSvc
+        .open(AddAppointmentModalComponent, {
+          data: {
+            event: e,
+            element: eventCard,
+            elementContainer: eventsContainer,
+            startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
+            limit: this.practiceHourMinMax$$.value,
+          },
+          options: {
+            backdrop: false,
+            centered: true,
+            modalDialogClass: 'ad-ap-modal-shadow',
+          },
+        })
+        .closed.pipe(take(1))
+        .subscribe((res) => {
+          eventCard.remove();
+          // if (!res) {
+          // }
+        });
+    }
   }
 
   private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {

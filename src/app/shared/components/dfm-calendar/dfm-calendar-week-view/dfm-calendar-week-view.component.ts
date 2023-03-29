@@ -84,7 +84,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   public dayViewEvent = new EventEmitter<number>();
 
   @Output()
-  public addAppointment = new EventEmitter<{ e: MouseEvent; eventsContainer: HTMLDivElement; day: number[] }>();
+  public addAppointment = new EventEmitter<{ e: MouseEvent; eventsContainer: HTMLDivElement; day: number[]; grayOutSlot: any }>();
 
   public daysOfWeekArr: number[][] = [];
 
@@ -357,7 +357,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[]) {
-    this.addAppointment.emit({ e, eventsContainer, day });
+    this.addAppointment.emit({ e, eventsContainer, day, grayOutSlot: this.grayOutSlot$$.value });
   }
 
   private myDate(date: string): Date {
