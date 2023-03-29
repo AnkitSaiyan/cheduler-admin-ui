@@ -72,7 +72,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   public format24Hour = false;
 
   @Input()
-  public limit = { min: '00:00:00', max: '24:00:00' };
+  public limit = { min: '00:00:00', max: '24:00:00', grayOutMin: '00:00:00', grayOutMax: '24:00:00' };
 
   @Input()
   public showGrayOutSlot: boolean = false;
@@ -373,17 +373,21 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     const grayOutSlot: any = [];
     grayOutSlot.push({
       dayStart: this.limit.min,
-      dayEnd: this.calculate(120, this.limit.min, 'plus'),
+      dayEnd: this.limit.grayOutMin,
       top: 0,
-      height: 120 * this.pixelsPerMin,
+      height: getDurationMinutes(this.myDate(this.limit.min), this.myDate(this.limit.grayOutMin)) * this.pixelsPerMin,
     });
-    const lastMinutes = getDurationMinutes(this.myDate(this.limit.min), this.myDate(this.calculate(120, this.limit.max, 'minus')));
+    const lastMinutes = getDurationMinutes(
+      this.myDate(this.limit.min),
+      this.myDate(this.calculate(getDurationMinutes(this.myDate(this.limit.grayOutMax), this.myDate(this.limit.max)), this.limit.max, 'minus')),
+    );
     grayOutSlot.push({
-      dayStart: this.calculate(120, this.limit.max, 'minus'),
+      dayStart: this.limit.grayOutMax,
       dayEnd: this.limit.max,
       top: lastMinutes * this.pixelsPerMin,
-      height: 120 * this.pixelsPerMin,
+      height: getDurationMinutes(this.myDate(this.limit.grayOutMax), this.myDate(this.limit.max)) * this.pixelsPerMin,
     });
+    console.log(this.limit, 'limit');
     this.grayOutSlot$$.next([...grayOutSlot]);
   }
 

@@ -10,7 +10,7 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
 import { RepeatType } from 'src/app/shared/models/absence.model';
 import { getDateOfMonth } from 'src/app/shared/models/calendar.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
-import { get24HourTimeString, timeToNumber } from 'src/app/shared/utils/time';
+import { timeToNumber } from 'src/app/shared/utils/time';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 
 @Component({
@@ -30,7 +30,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 
   public prioritySlots$$: BehaviorSubject<any>;
 
-  public practiceHourMinMax$: Observable<{ min: string; max: string } | null> = of(null);
+  public practiceHourMinMax$: Observable<{ min: string; max: string; grayOutMin: string; grayOutMax: string } | null> = of(null);
 
   constructor(
     private router: Router,
@@ -72,7 +72,33 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
           return finalValue;
         }, {}),
       ),
+      map(({ min, max }) => {
+        let finalValue = { min, max };
+        if (timeToNumber('02:00:00') >= timeToNumber(min)) {
+          finalValue = { ...finalValue, min: '00:00:00' };
+        } else {
+          finalValue = { ...finalValue, min: this.calculate(120, min, 'minus') };
+        }
+        if (timeToNumber('22:00:00') <= timeToNumber(max)) {
+          finalValue = { ...finalValue, max: '23:59:00' };
+        } else {
+          finalValue = { ...finalValue, max: this.calculate(120, max, 'plus') };
+        }
+        return { ...finalValue, grayOutMin: min, grayOutMax: max };
+      }),
     );
+
+    this.practiceHourMinMax$.subscribe(console.log);
+  }
+
+  private calculate(minutes: number, time: string, type: 'plus' | 'minus'): string {
+    const date = new Date();
+    const [hour, minute] = time.split(':');
+    date.setHours(+hour);
+    date.setMinutes(+minute);
+    date.setSeconds(0);
+    const finalDate = type === 'minus' ? new Date(date.getTime() - minutes * 60 * 1000) : new Date(date.getTime() + minutes * 60 * 1000);
+    return this.datePipe.transform(finalDate, 'HH:mm') ?? '';
   }
 
   public override ngOnDestroy() {
@@ -177,6 +203,18 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
     this.prioritySlots$$.next({ ...myPrioritySlots });
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
