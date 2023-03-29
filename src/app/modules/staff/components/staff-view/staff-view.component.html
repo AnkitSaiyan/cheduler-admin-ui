@@ -191,8 +191,8 @@
     </section>
 
     <div class="hidden bg-white sf-vw-action-buttons-mv">
-      <dfm-button color="secondary" size="sm" (click)="deleteStaff(staffDetails.id)">Delete</dfm-button>
-      <dfm-button color="primary" size="sm" [routerLink]="['../', 'edit']" [state]="{ comingFromRoute: 'view', edit: true }">Edit </dfm-button>
+      <dfm-button color="secondary" size="sm" (click)="deleteStaff(staffDetails.id)">{{"Delete" | translate}}</dfm-button>
+      <dfm-button color="primary" size="sm" [routerLink]="['../', 'edit']" [state]="{ comingFromRoute: 'view', edit: true }">{{"Edit" | translate}}</dfm-button>
     </div>
   </div>
 

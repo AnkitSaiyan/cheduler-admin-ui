@@ -42,8 +42,7 @@
   "SearchByNameEmailCategory": "Search by First Name, Last Name, Email & Category",
   "SearchByPrioritySlots": "Search By Priority Slots",
   "Priority": "Priority",
-  "Room": "Room",
-  "Rooms": "Room",
+  "Rooms": "Rooms",
   "AddRoom": "Add Room",
   "EditRoom": "Edit Room",
   "Description": "Description",
@@ -368,5 +367,6 @@
   "SelectedSlot" : "Selected Slot",
   "PleaseEnterAtLeastFiveMin" : "Please enter at least 5 min",
   "ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame" : "Expensive of the exam and total minutes of rooms should be the same.",
-  "NoSlotsFoundForSelectedExamsAndTime" : "No slots found for selected Exam(s) and Time"
+  "NoSlotsFoundForSelectedExamsAndTime" : "No slots found for selected Exam(s) and Time",
+  "Save" : "Save"
 }

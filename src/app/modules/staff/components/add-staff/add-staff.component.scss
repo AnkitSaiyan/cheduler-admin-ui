@@ -20,6 +20,9 @@ section.ad-sf-section2 {
     min-width: 96px;
   }
 }
+.textfield-length{
+  width: 30vw;
+}
 
 @media (max-width: 720px) {
   .ad-sfd-practice-availability-form-fields {
@@ -29,6 +32,9 @@ section.ad-sf-section2 {
 }
 
 @media (max-width: 680px) {
+  .mobile-view{
+    flex-direction: column;
+  }
   .ad-sf-email {
     flex: 1;
   }
@@ -82,5 +88,8 @@ section.ad-sf-section2 {
     .ad-sf-weekdays-tab {
       overflow-x: auto;
     }
+  }
+  .staff-name-mv, .staff-email-mv, .staff-phone-mv{
+    width: 100%;
   }
 }

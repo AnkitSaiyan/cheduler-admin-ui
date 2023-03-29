@@ -136,6 +136,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         if (value !== 'PRINT') {
           this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
         }
+        setTimeout(() => {
+          this.downloadDropdownControl.setValue('');
+          // this.cdr.detectChanges();
+        }, 0);
 
         this.downloadDropdownControl.setValue(null);
 

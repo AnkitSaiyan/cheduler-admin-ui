@@ -395,8 +395,8 @@ export const Translate = Object.freeze({
       [DUTCH_BE]: 'Onderzoek succesvol geüpdated',
     },
     SiteAdded: {
-      [ENG_BE]: 'Site Added Successfully',
-      [DUTCH_BE]: 'Site succesvol toegevoegd',
+      [ENG_BE]: 'Site updated Successfully',
+      [DUTCH_BE]: 'Site succesvol geüpdated',
     },
     SiteUpdated: {
       [ENG_BE]: 'Site Updated Successfully',
