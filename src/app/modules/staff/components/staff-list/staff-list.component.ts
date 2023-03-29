@@ -120,10 +120,6 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
           this.downloadDropdownControl.setValue('');
           // this.cdr.detectChanges();
         }, 0);
-
-        this.downloadDropdownControl.setValue(null);
-
-        this.cdr.detectChanges();
       });
 
     this.afterBannerClosed$$

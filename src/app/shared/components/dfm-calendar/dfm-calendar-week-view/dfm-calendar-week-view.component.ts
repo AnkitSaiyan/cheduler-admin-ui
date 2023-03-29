@@ -17,10 +17,11 @@ import {
 } from '@angular/core';
 import { BehaviorSubject, filter, take, takeUntil } from 'rxjs';
 import { DatePipe } from '@angular/common';
-import { getAllDaysOfWeek, getDurationMinutes } from '../../../models/calendar.model';
+import { getAllDaysOfWeek, getDurationMinutes, Interval } from '../../../models/calendar.model';
 import { DestroyableComponent } from '../../destroyable.component';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
+import { timeToNumber } from 'src/app/shared/utils/time';
 
 // @Pipe({
 //   name: 'calendarEventHeight',
@@ -70,6 +71,12 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   @Input()
   public format24Hour = false;
 
+  @Input()
+  public limit = { min: '00:00:00', max: '24:00:00', grayOutMin: '00:00:00', grayOutMax: '24:00:00' };
+
+  @Input()
+  public showGrayOutSlot: boolean = false;
+
   @Output()
   public selectedDateEvent = new EventEmitter<Date>();
 
@@ -90,6 +97,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
   public rendered = false;
 
+  public grayOutSlot$$: BehaviorSubject<any[]> = new BehaviorSubject<Interval[]>([]);
+
   public getDurationFn = (s, e) => getDurationMinutes(s, e);
 
   constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private renderer: Renderer2, private modalSvc: ModalService) {
@@ -99,6 +108,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   public ngOnChanges() {
     if (!this.selectedDate) {
       this.selectedDate = new Date();
+    }
+    if (this.showGrayOutSlot) {
+      this.getGrayOutArea();
     }
     console.log(this.prioritySlots);
   }
@@ -170,6 +182,11 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
   private emitDate() {
     this.selectedDateEvent.emit(this.selectedDate);
+  }
+
+  public getMinute(date: string) {
+    const splittedDate = date.split(':');
+    return +splittedDate[0] * 60 + +splittedDate[1];
   }
 
   public changeToDayView(day: number, weekday: number) {
@@ -273,30 +290,48 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
   public getHeight(groupedData: any[]): number {
     let endDate: Date = groupedData[0].endedAt;
-
     groupedData.forEach((data) => {
       if (data.endedAt > endDate) {
         endDate = data.endedAt;
       }
     });
 
-    const durationMinutes = getDurationMinutes(groupedData[0].startedAt, endDate);
+    const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+
+    const startDate =
+      this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
+        ? this.myDate(this.limit.min)
+        : new Date(groupedData[0].startedAt);
+
+    const groupEndDate = this.datePipe.transform(new Date(endDate), 'hh:mm:ss') ?? '';
+    const finalEndDate =
+      this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
+    const durationMinutes = getDurationMinutes(startDate, finalEndDate);
     return durationMinutes * this.pixelsPerMin;
   }
 
   public getPrioritySlotHeight(prioritySlot: any): number {
-    const startDate: Date = this.myDate(prioritySlot.start);
-    const endDate: Date = this.myDate(prioritySlot.end);
+    const startDate: Date = this.myDate(timeToNumber(prioritySlot.start) < timeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start);
+    const endDate: Date = this.myDate(timeToNumber(prioritySlot.end) > timeToNumber(this.limit.max) ? this.limit.max : prioritySlot.end);
     const durationMinutes = getDurationMinutes(startDate, endDate);
     return durationMinutes * this.pixelsPerMin;
   }
 
   public getTop(groupedData: any[]): number {
-    const startHour = new Date(groupedData[0].startedAt).getHours();
-    const startMinute = new Date(groupedData[0].startedAt).getMinutes();
+    const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+    const startDate =
+      this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
+        ? this.myDate(this.limit.min)
+        : new Date(groupedData[0].startedAt);
+    const startHour = startDate.getHours();
+    const startMinute = startDate.getMinutes();
+    const startCalendarDate = this.myDate(this.limit.min);
+    const startCalendarHour = startCalendarDate.getHours();
+    const startCalendarMinute = startCalendarDate.getMinutes();
     const barHeight = 1;
     const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-    const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
+    const top =
+      (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
     if (top % 20) {
       return Math.floor(top / 20) * 20 + 20;
     }
@@ -304,12 +339,17 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   public getPrioritySlotTop(prioritySlot: any): number {
-    const startDate = this.myDate(prioritySlot.start);
+    const startDate = this.myDate(timeToNumber(prioritySlot.start) < timeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start);
     const startHour = startDate.getHours();
     const startMinute = startDate.getMinutes();
+    const startCalendarDate = this.myDate(this.limit.min);
+    const startCalendarHour = startCalendarDate.getHours();
+    const startCalendarMinute = startCalendarDate.getMinutes();
     const barHeight = 1;
     const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-    const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
+    const top =
+      (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
+
     if (top % 20) {
       return Math.floor(top / 20) * 20 + 20;
     }
@@ -327,5 +367,37 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     formattedDate.setMinutes(+splitDate[1]);
     formattedDate.setSeconds(0);
     return formattedDate;
+  }
+
+  private getGrayOutArea() {
+    const grayOutSlot: any = [];
+    grayOutSlot.push({
+      dayStart: this.limit.min,
+      dayEnd: this.limit.grayOutMin,
+      top: 0,
+      height: getDurationMinutes(this.myDate(this.limit.min), this.myDate(this.limit.grayOutMin)) * this.pixelsPerMin,
+    });
+    const lastMinutes = getDurationMinutes(
+      this.myDate(this.limit.min),
+      this.myDate(this.calculate(getDurationMinutes(this.myDate(this.limit.grayOutMax), this.myDate(this.limit.max)), this.limit.max, 'minus')),
+    );
+    grayOutSlot.push({
+      dayStart: this.limit.grayOutMax,
+      dayEnd: this.limit.max,
+      top: lastMinutes * this.pixelsPerMin,
+      height: getDurationMinutes(this.myDate(this.limit.grayOutMax), this.myDate(this.limit.max)) * this.pixelsPerMin,
+    });
+    console.log(this.limit, 'limit');
+    this.grayOutSlot$$.next([...grayOutSlot]);
+  }
+
+  private calculate(minutes: number, time: string, type: 'plus' | 'minus'): string {
+    const date = new Date();
+    const [hour, minute] = time.split(':');
+    date.setHours(+hour);
+    date.setMinutes(+minute);
+    date.setSeconds(0);
+    const finalDate = type === 'minus' ? new Date(date.getTime() - minutes * 60 * 1000) : new Date(date.getTime() + minutes * 60 * 1000);
+    return this.datePipe.transform(finalDate, 'HH:mm') ?? '';
   }
 }

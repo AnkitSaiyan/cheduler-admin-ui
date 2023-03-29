@@ -175,9 +175,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
           // this.cdr.detectChanges();
         }, 0);
 
-        this.downloadDropdownControl.setValue(null);
-
-        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.downloadDropdownControl.setValue('');
+          // this.cdr.detectChanges();
+        }, 0);
       });
 
     this.afterBannerClosed$$
