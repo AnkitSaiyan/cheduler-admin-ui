@@ -21,6 +21,7 @@ import { getAllDaysOfWeek, getDurationMinutes, Interval } from '../../../models/
 import { DestroyableComponent } from '../../destroyable.component';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
+import { timeToNumber } from 'src/app/shared/utils/time';
 
 // @Pipe({
 //   name: 'calendarEventHeight',
@@ -111,6 +112,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     if (this.showGrayOutSlot) {
       this.getGrayOutArea();
     }
+    console.log(this.prioritySlots);
   }
 
   public ngOnInit(): void {
@@ -300,8 +302,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   public getPrioritySlotHeight(prioritySlot: any): number {
-    const startDate: Date = this.myDate(prioritySlot.start);
-    const endDate: Date = this.myDate(prioritySlot.end);
+    const startDate: Date = this.myDate(timeToNumber(prioritySlot.start) < timeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start);
+    const endDate: Date = this.myDate(timeToNumber(prioritySlot.end) > timeToNumber(this.limit.max) ? this.limit.max : prioritySlot.end);
     const durationMinutes = getDurationMinutes(startDate, endDate);
     return durationMinutes * this.pixelsPerMin;
   }
@@ -319,12 +321,17 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   public getPrioritySlotTop(prioritySlot: any): number {
-    const startDate = this.myDate(prioritySlot.start);
+    const startDate = this.myDate(timeToNumber(prioritySlot.start) < timeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start);
     const startHour = startDate.getHours();
     const startMinute = startDate.getMinutes();
+    const startCalendarDate = this.myDate(this.limit.min);
+    const startCalendarHour = startCalendarDate.getHours();
+    const startCalendarMinute = startCalendarDate.getMinutes();
     const barHeight = 1;
     const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-    const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
+    const top =
+      (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
+
     if (top % 20) {
       return Math.floor(top / 20) * 20 + 20;
     }
