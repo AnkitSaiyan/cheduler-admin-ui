@@ -45,7 +45,7 @@
     <form [formGroup]="addStaffForm" class="dfm-p-16 d-flex flex-column dfm-gap-32">
       <div class="d-flex flex-column dfm-gap-16 ad-sf-form-general-info">
         <div class="d-flex dfm-gap-16 flex-wrap">
-          <div>
+          <div class="textfield-length staff-name-mv">
             <dfm-input
               #firstname
               [dfmNameInput]="firstname"
@@ -53,12 +53,13 @@
               placeholder="{{ 'EnterFirstName' | translate }}"
               label="{{ 'FirstName' | translate }} *"
               formControlName="firstname"
+              class="flex-1"
             ></dfm-input>
             <div class="validation-error" *ngIf="addStaffForm.get('firstname')?.hasError('required') && addStaffForm.get('firstname')?.touched">
               {{ 'RequiredField' | translate }}
             </div>
           </div>
-          <div>
+          <div class="textfield-length staff-name-mv">
             <dfm-input
               #lastname
               [dfmNameInput]="lastname"
@@ -66,6 +67,7 @@
               placeholder="{{ 'EnterLastName' | translate }}"
               label="{{ 'LastName' | translate }} *"
               formControlName="lastname"
+              class="flex-1"
             ></dfm-input>
             <div class="validation-error" *ngIf="addStaffForm.get('lastname')?.hasError('required') && addStaffForm.get('lastname')?.touched">
               {{ 'RequiredField' | translate }}
@@ -73,8 +75,8 @@
           </div>
         </div>
 
-        <div class="d-flex dfm-gap-16 flex-wrap">
-          <div class="d-flex flex-column ad-sf-email">
+        <div class="d-flex dfm-gap-16 flex-wrap mobile-view">
+          <div class="d-flex flex-column ad-sf-email staff-email-mv textfield-length">
             <dfm-input
               type="email"
               size="md"
@@ -89,7 +91,7 @@
             </div>
             <small *ngIf="addStaffForm.get('email')?.hasError('email')" class="validation-error">{{ 'InvalidEmail' | translate }} </small>
           </div>
-          <div>
+          <div class="staff-phone-mv textfield-length">
 
           <dfm-input
             #phone
