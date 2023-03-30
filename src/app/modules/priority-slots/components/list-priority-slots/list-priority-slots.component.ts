@@ -162,7 +162,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
         return (
           priority.startedAt?.toLowerCase()?.includes(searchText) ||
           priority.endedAt?.toLowerCase()?.includes(searchText) ||
-          status?.toLowerCase()?.includes(searchText)
+          status?.toLowerCase()?.startsWith(searchText)
         );
       }),
     ]);
@@ -282,6 +282,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     });
   }
 }
+
 
 
 

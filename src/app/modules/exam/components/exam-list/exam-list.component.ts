@@ -185,7 +185,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
           exam.name?.toLowerCase()?.includes(searchText) ||
           exam.lastname?.toLowerCase()?.includes(searchText) ||
           exam.email?.toLowerCase()?.includes(searchText) ||
-          status?.toLowerCase()?.includes(searchText)
+          status?.toLowerCase()?.startsWith(searchText)
         );
       }),
     ]);

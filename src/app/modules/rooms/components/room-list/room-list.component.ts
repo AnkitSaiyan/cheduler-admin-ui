@@ -251,7 +251,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
           room.name?.toLowerCase()?.includes(searchText) ||
           room.description?.toLowerCase()?.includes(searchText) ||
           type?.toLowerCase()?.includes(searchText) ||
-          status?.toLowerCase()?.includes(searchText)
+          status?.toLowerCase()?.startsWith(searchText)
         );
       }),
     ]);

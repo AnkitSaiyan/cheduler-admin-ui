@@ -246,7 +246,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
           appointment.patientLname?.toLowerCase()?.includes(searchText) ||
           appointment.doctor?.toLowerCase()?.includes(searchText) ||
           appointment.id?.toString()?.includes(searchText) ||
-          status?.toLowerCase()?.includes(searchText)
+          status?.toLowerCase()?.startsWith(searchText)
         );
       }),
     ]);
