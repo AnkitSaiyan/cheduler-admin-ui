@@ -33,6 +33,7 @@ import { HeaderInterceptor } from './core/http/header.interceptor';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 // eslint-disable-next-line import/order
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+// @ts-ignore
 import { AuthConfig } from './configuration/auth.config';
 // eslint-disable-next-line import/no-extraneous-dependencies
 // import { DataService } from './core/services/data.service';
