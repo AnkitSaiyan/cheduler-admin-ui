@@ -29,6 +29,7 @@ import {CalendarUtils} from "../../../../shared/utils/calendar.utils";
 import { checkTimeRangeOverlapping } from 'src/app/shared/utils/time';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { CustomDateParserFormatter } from '../../../..//shared/utils/dateFormat';
+import { getDurationMinutes } from 'src/app/shared/models/calendar.model';
 
 @Component({
   selector: 'dfm-add-appointment-modal',
@@ -68,6 +69,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     elementContainer: HTMLDivElement;
     startedAt: Date;
     startTime?: string;
+    limit?: { min: string; max: string; grayOutMin: string; grayOutMax: string };
   };
 
   public slots: SlotModified[] = [];
@@ -75,7 +77,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
   public selectedTimeSlot: SelectedSlots = {};
 
   public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
-
 
   public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
 
@@ -114,6 +115,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
       if (this.modalData.event.offsetY) {
         let minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
+        if (this.modalData?.limit) {
+          minutes += getDurationMinutes(this.myDate('00:00:00'), this.myDate(this.modalData.limit.min));
+        }
 
         // In case if calendar start time is not 00:00 then adding extra minutes
         if (this.modalData?.startTime) {
@@ -238,6 +242,15 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     this.modalSvc.close(result);
   }
 
+  private myDate(date: string): Date {
+    const formattedDate = new Date();
+    const splitDate = date.split(':');
+    formattedDate.setHours(+splitDate[0]);
+    formattedDate.setMinutes(+splitDate[1]);
+    formattedDate.setSeconds(0);
+    return formattedDate;
+  }
+
   private createForm() {
     this.appointmentForm = this.fb.group({
       patientFname: [null, [Validators.required]],
@@ -318,7 +331,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
       { ...this.formValues },
       { ...this.selectedTimeSlot },
       {} as Appointment,
-      this.isCombinable
+      this.isCombinable,
     );
 
     this.appointmentApiSvc

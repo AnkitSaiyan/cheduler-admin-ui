@@ -102,10 +102,15 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
         if (downloadAs !== 'PRINT') {
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
         }
+        setTimeout(() => {
+          this.downloadDropdownControl.setValue('');
+          // this.cdr.detectChanges();
+        }, 0);
 
-        this.downloadDropdownControl.setValue(null);
-
-        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.downloadDropdownControl.setValue('');
+          // this.cdr.detectChanges();
+        }, 0);
       });
 
     this.afterBannerClosed$$.pipe(
@@ -228,3 +233,4 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     }
   }
 }
+

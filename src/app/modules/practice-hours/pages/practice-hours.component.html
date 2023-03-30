@@ -17,20 +17,11 @@
     <!--  Mobile view  -->
     <div class="hidden dfm-gap-8 align-items-center justify-content-between pr-hr-title-buttons-mv w-full">
       <div class="d-flex dfm-gap-8 align-items-center">
-        <div class="rounded-circle overflow-hidden">
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="sm"
-            icon="chevron-left"
-          >
-          </dfm-button-icon>
-        </div>
-
         <dfm-button color="link" size="lg">{{'PracticeHours' | translate}}</dfm-button>
       </div>
 
       <dfm-button color="primary" size="sm" (click)="savePracticeHours()"
-                  [disabled]="(submitting$$ | async) === true">{{'Save' | translate}}
+                  [disabled]="(submitting$$ | async) === true">{{"Save" | translate}}
       </dfm-button>
     </div>
     <!--    -->

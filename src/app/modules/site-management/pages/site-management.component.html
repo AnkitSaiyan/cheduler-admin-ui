@@ -18,16 +18,6 @@
     <!--  Mobile View Elements -->
     <div class="mv hidden dfm-gap-8 align-items-center justify-content-between st-mg-title-buttons-mv w-full">
       <div class="d-flex dfm-gap-8 align-items-center">
-      <div class="rounded-circle overflow-hidden">
-        <dfm-button-icon
-          color="tertiary-gray"
-          size="sm"
-          icon="chevron-left"
-        >
-        </dfm-button-icon>
-        </div>
-
-
       <dfm-button color="link" size="sm">{{'SiteManagement' | translate}}</dfm-button>
     </div>
 
@@ -42,7 +32,7 @@
     <form [formGroup]="siteManagementForm" class="d-flex flex-column dfm-gap-24">
       <div class="d-flex dfm-gap-32 flex-wrap">
         <div class="flex-1">
-          <dfm-input class="" size="md" placeholder="Enter site name" label="{{'SiteName' | translate}} *" formControlName="name">
+          <dfm-input class="" size="md" placeholder="{{'EnterSiteName' | translate}}" label="{{'SiteName' | translate}} *" formControlName="name">
           </dfm-input>
           <div class="validation-error" *ngIf="siteManagementForm.get('name')?.hasError('required') && siteManagementForm.get('name')?.touched">
             {{ 'RequiredField' | translate }}
@@ -74,9 +64,9 @@
         <span class="text-sm font-weight-medium dfm-text-main-700">{{'SiteIntroductionText' | translate}}</span>
 
         <div class="d-flex dfm-gap-32 flex-wrap st-mg-heading-subheading">
-          <dfm-input class="flex-1" size="md" placeholder="{{'EnterHeading' | translate}}" formControlName="heading"></dfm-input>
-          <dfm-input class="flex-1" size="md" placeholder="{{'EnterSubHeading' | translate}}" formControlName="subHeading"></dfm-input>
-          <dfm-text-area class="flex-1 st-mg-body-text" placeholder="{{'EnterBodyText' | translate}}" formControlName="bodyText"></dfm-text-area>
+          <dfm-input class="flex-1" size="md" placeholder="{{'EnterHeading' | translate}}" label="{{'Heading'}}" formControlName="heading"></dfm-input>
+          <dfm-input class="flex-1" size="md" placeholder="{{'EnterSubHeading' | translate}}" label="{{'Sub Heading'}}" formControlName="subHeading"></dfm-input>
+          <dfm-text-area class="flex-1 st-mg-body-text" placeholder="{{'EnterBodyText' | translate}}" label="{{'Body Text'}}" formControlName="bodyText"></dfm-text-area>
         </div>
       </div>
 

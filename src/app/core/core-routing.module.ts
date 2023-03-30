@@ -9,62 +9,62 @@ const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        title: 'Diflexmo - Dashboard',
+        title: 'Cheduler - Dashboard',
         loadChildren: async () => (await import('../modules/dashboard/dashboard.module')).DashboardModule,
       },
       {
         path: 'staff',
-        title: 'Diflexmo - Staff',
+        title: 'Cheduler - Staff',
         loadChildren: async () => (await import('../modules/staff/staff.module')).StaffModule,
       },
       {
         path: 'room',
-        title: 'Diflexmo - Room',
+        title: 'Cheduler - Room',
         loadChildren: async () => (await import('../modules/rooms/rooms.module')).RoomsModule,
       },
       {
         path: 'physician',
-        title: 'Diflexmo - Physician',
+        title: 'Cheduler - Physician',
         loadChildren: async () => (await import('../modules/physician/physician.module')).PhysicianModule,
       },
       {
         path: 'site-management',
-        title: 'Diflexmo - Site Management',
+        title: 'Cheduler - Site Management',
         loadChildren: async () => (await import('../modules/site-management/site-management.module')).SiteManagementModule,
       },
       {
         path: 'practice-hours',
-        title: 'Diflexmo - Practice Hours',
+        title: 'Cheduler - Practice Hours',
         loadChildren: async () => (await import('../modules/practice-hours/practice-hours.module')).PracticeHoursModule,
       },
       {
         path: 'user',
-        title: 'Diflexmo - User',
+        title: 'Cheduler - User',
         loadChildren: async () => (await import('../modules/user/user.module')).UserModule,
       },
       {
         path: 'exam',
-        title: 'Diflexmo - Exam',
+        title: 'Cheduler - Exam',
         loadChildren: async () => (await import('../modules/exam/exam.module')).ExamModule,
       },
       {
         path: 'absence',
-        title: 'Diflexmo - Absence',
+        title: 'Cheduler - Absence',
         loadChildren: async () => (await import('../modules/absence/absence.module')).AbsenceModule,
       },
       {
         path: 'appointment',
-        title: 'Diflexmo - Appointment',
+        title: 'Cheduler - Appointment',
         loadChildren: async () => (await import('../modules/appointments/appointments.module')).AppointmentsModule,
       },
       {
         path: 'email-template',
-        title: 'Diflexmo - Email Template',
+        title: 'Cheduler - Email Template',
         loadChildren: async () => (await import('../modules/email-template/email-template.module')).EmailTemplateModule,
       },
       {
         path: 'priority-slots',
-        title: 'Diflexmo - Priority Slots',
+        title: 'Cheduler - Priority Slots',
         loadChildren: async () => (await import('../modules/priority-slots/priority-slots.module')).PrioritySlotsModule,
       },
       {

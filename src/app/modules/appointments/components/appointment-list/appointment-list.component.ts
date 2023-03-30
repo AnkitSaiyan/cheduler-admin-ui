@@ -170,10 +170,15 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         if (value !== 'PRINT') {
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
+        setTimeout(() => {
+          this.downloadDropdownControl.setValue('');
+          // this.cdr.detectChanges();
+        }, 0);
 
-        this.downloadDropdownControl.setValue(null);
-
-        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.downloadDropdownControl.setValue('');
+          // this.cdr.detectChanges();
+        }, 0);
       });
 
     this.afterBannerClosed$$
