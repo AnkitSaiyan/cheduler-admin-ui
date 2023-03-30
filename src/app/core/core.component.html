@@ -13,6 +13,7 @@
     [profileData]="profileData"
     logoPath="assets/images/scheduler-logo.svg"
     miniLogoPath="assets/images/scheduler-logo-mobile.svg"
+    (logout)="logout()"
   >
     <mat-progress-bar *ngIf="isLoaderActive$$ | async" mode="indeterminate"></mat-progress-bar>
     <div class="dfm-content content-height" #content>

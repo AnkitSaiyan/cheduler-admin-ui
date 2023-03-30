@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { NavigationItem, NavigationItemEvent, NavigationProfileData, NavigationProfileLink, SelectItem } from 'diflexmo-angular-design';
 import { TranslateService } from '@ngx-translate/core';
 import { DestroyableComponent } from '../shared/components/destroyable.component';
@@ -9,6 +9,8 @@ import { ShareDataService } from './services/share-data.service';
 import { DashboardApiService } from './services/dashboard-api.service';
 import { LoaderService } from './services/loader.service';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { MsalGuardConfiguration, MsalService, MSAL_GUARD_CONFIG } from '@azure/msal-angular';
+import { InteractionType } from '@azure/msal-browser';
 
 @Component({
   selector: 'dfm-main',
@@ -83,11 +85,13 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
   public navItems: NavigationItem[] = [];
 
   constructor(
+    @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private translateService: TranslateService,
     public dataShareService: ShareDataService,
     private dashboardApiService: DashboardApiService,
     public loaderService: LoaderService,
     private cdr: ChangeDetectorRef,
+    private authService: MsalService,
   ) {
     super();
   }
@@ -149,6 +153,16 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     } else if (lang == DUTCH_BE) {
       this.translateService.setTranslation(lang, dutchLangauge);
       this.translateService.setDefaultLang(lang);
+    }
+  }
+
+  public logout() {
+    if (this.msalGuardConfig.interactionType === InteractionType.Popup) {
+      this.authService.logoutPopup({
+        mainWindowRedirectUri: '/',
+      });
+    } else {
+      this.authService.logoutRedirect();
     }
   }
 }
