@@ -1,2 +1,8 @@
+<!-- {{isIframe | json}}
+{{loginDisplay | json}}
+{{user | json}} -->
+<button (click)="logout()">logout</button>
 
-<router-outlet></router-outlet>
+<router-outlet *ngIf="(!isIframe || !loginDisplay) && user"></router-outlet>
+<!-- <p *ngIf="!user">Loading...</p> -->
+

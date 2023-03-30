@@ -7,6 +7,21 @@ import { DatePipe, TitleCasePipe } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // eslint-disable-next-line import/no-extraneous-dependencies
 // import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { environment } from 'src/environments/environment';
+import {
+  MsalBroadcastService,
+  MsalGuard,
+  MsalGuardConfiguration,
+  MsalInterceptor,
+  MsalInterceptorConfiguration,
+  MsalModule,
+  MsalRedirectComponent,
+  MsalService,
+  MSAL_GUARD_CONFIG,
+  MSAL_INSTANCE,
+  MSAL_INTERCEPTOR_CONFIG,
+} from '@azure/msal-angular';
+import { BrowserCacheLocation, InteractionType, IPublicClientApplication, LogLevel, PublicClientApplication } from '@azure/msal-browser';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { WeekdayToNamePipe } from './shared/pipes/weekday-to-name.pipe';
@@ -18,14 +33,66 @@ import { HeaderInterceptor } from './core/http/header.interceptor';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 // eslint-disable-next-line import/order
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { AuthConfig } from './configuration/auth.config';
 // eslint-disable-next-line import/no-extraneous-dependencies
 // import { DataService } from './core/services/data.service';
 
 // export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
 //   return new TranslateHttpLoader(http);
 // }
+const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigator.userAgent.indexOf('Trident/') > -1; // Remove this line to use Angular Universal
+
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
+}
+
+export function loggerCallback(logLevel: LogLevel, message: string) {
+  console.log(logLevel, message);
+}
+
+export function MSALInstanceFactory(): IPublicClientApplication {
+  return new PublicClientApplication({
+    auth: {
+      clientId: environment.authClientId,
+      authority: `${AuthConfig.fullAuthority}/${AuthConfig.authFlow}`,
+      redirectUri: '/',
+      postLogoutRedirectUri: '/',
+      knownAuthorities: [AuthConfig.authority],
+    },
+    cache: {
+      cacheLocation: BrowserCacheLocation.LocalStorage,
+      storeAuthStateInCookie: isIE,
+    },
+    system: {
+      loggerOptions: {
+        loggerCallback,
+        logLevel: LogLevel.Trace,
+        piiLoggingEnabled: true,
+      },
+    },
+  });
+}
+
+export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
+  const protectedResourceMap = new Map<string, Array<string>>();
+  AuthConfig.protectedApis.forEach((protectedApi) => {
+    protectedResourceMap.set(protectedApi.url, [protectedApi.scope]);
+  });
+
+  return {
+    interactionType: InteractionType.Redirect,
+    protectedResourceMap,
+  };
+}
+
+export function MSALGuardConfigFactory(): MsalGuardConfiguration {
+  return {
+    interactionType: InteractionType.Redirect,
+    authRequest: {
+      scopes: [environment.schedulerApiAuthScope],
+    },
+    loginFailedRoute: '/',
+  };
 }
 
 @NgModule({
@@ -38,6 +105,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     DesignSystemCoreModule,
     BrowserAnimationsModule,
+    MsalModule,
+    FormsModule,
     // TranslateModule.forRoot({
     //   defaultLanguage: 'en-BE',
     //   loader: {
@@ -56,7 +125,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     // HttpClientInMemoryWebApiModule.forRoot(DataService),
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent, MsalRedirectComponent],
   providers: [
     WeekdayToNamePipe,
     MonthToNamePipe,
@@ -69,6 +138,26 @@ export function HttpLoaderFactory(http: HttpClient) {
       useClass: HeaderInterceptor,
       multi: true,
     },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MsalInterceptor,
+      multi: true,
+    },
+    {
+      provide: MSAL_INSTANCE,
+      useFactory: MSALInstanceFactory,
+    },
+    {
+      provide: MSAL_GUARD_CONFIG,
+      useFactory: MSALGuardConfigFactory,
+    },
+    {
+      provide: MSAL_INTERCEPTOR_CONFIG,
+      useFactory: MSALInterceptorConfigFactory,
+    },
+    MsalService,
+    MsalGuard,
+    MsalBroadcastService,
   ],
 })
 export class AppModule {}
