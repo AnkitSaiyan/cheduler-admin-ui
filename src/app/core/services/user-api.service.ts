@@ -7,8 +7,9 @@ import { MsalService } from '@azure/msal-angular';
 import { AvailabilityType, UserType } from '../../shared/models/user.model';
 import { Status } from '../../shared/models/status.model';
 import { Weekday } from '../../shared/models/calendar.model';
-import { User } from '../../shared/models/login-user.model';
+// import { User } from '../../shared/models/login-user.model';
 import { UserManagementApiService } from './user-management-api.service';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -92,7 +93,7 @@ export class UserApiService {
     const user = this.msalService.instance.getActiveAccount();
     const userId = user?.localAccountId ?? '';
     return this.UserManagementApiService.getUserProperties(userId).pipe(
-      map((res) => {
+      map((res: any) => {
         try {
           const tenants = ((user?.idTokenClaims as any).extension_Tenants as string).split(',');
           if (tenants.length === 0) {

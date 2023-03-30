@@ -8,12 +8,12 @@ const rootRoutes: Routes = [
   {
     path: 'auth',
     loadChildren: async () => (await import('./core/auth/auth.module')).AuthModule,
-    canActivate: [MsalGuard]
+    canActivate: [MsalGuard],
   },
   {
     path: '',
     loadChildren: async () => (await import('./core/core.module')).CoreModule,
-    canActivate: [MsalGuard]
+    canActivate: [MsalGuard],
   },
 ];
 
