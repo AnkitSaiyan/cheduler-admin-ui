@@ -14,11 +14,8 @@
     logoPath="assets/images/scheduler-logo.svg"
     miniLogoPath="assets/images/scheduler-logo-mobile.svg"
   >
-    <mat-progress-bar *ngIf="isLoaderActive$$ | async" mode="indeterminate"></mat-progress-bar>
-    <div class="dfm-content content-height" #content>
-      <dfm-notification [position]="2"></dfm-notification>
+
 
       <router-outlet></router-outlet>
-    </div>
-  </dfm-navigation-bar>
-</div>
+    </dfm-navigation-bar>
+  </div>
