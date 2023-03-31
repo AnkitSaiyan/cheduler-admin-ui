@@ -117,11 +117,11 @@ export const Translate = Object.freeze({
   },
   StartedAt: {
     [ENG_BE]: 'Started At',
-    [DUTCH_BE]: 'Begon bij',
+    [DUTCH_BE]: 'Start',
   },
   EndedAt: {
     [ENG_BE]: 'Ended At',
-    [DUTCH_BE]: 'Geëindigd om',
+    [DUTCH_BE]: 'Eind',
   },
   PatientName: {
     [ENG_BE]: 'Patient Name',
@@ -141,7 +141,7 @@ export const Translate = Object.freeze({
   },
   AppliedOn: {
     [ENG_BE]: 'Applied On',
-    [DUTCH_BE]: 'Toegepast op',
+    [DUTCH_BE]: 'Aangevraagd op',
   },
   Read: {
     [ENG_BE]: 'Read',
