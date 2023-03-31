@@ -356,6 +356,9 @@ dfm-input-dropdown {
   height: fit-content;
 }
 
+.dfm-input-error {
+  border: 1px solid var(--dfm-danger-300);
+}
 // use this for multi type dropdown
 .dfm-input-multi-dropdown-wrapper {
   background: white;
@@ -929,6 +932,10 @@ ngb-datepicker {
 
 .max-w-192 {
   max-width: 192px;
+}
+
+.max-w-256 {
+  max-width: 256px;
 }
 
 .max-w-5 {

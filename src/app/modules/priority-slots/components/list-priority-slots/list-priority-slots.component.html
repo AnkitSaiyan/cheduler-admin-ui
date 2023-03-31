@@ -1,8 +1,8 @@
 <div class="d-flex flex-column dfm-gap-16 position-relative">
   <section class="list-page-section-1">
     <dfm-button class="hidden pr-li-title-buttons" color="link" size="lg" routerLink="./">{{"PrioritySlots" | translate}} </dfm-button>
-
     <ng-container *ngIf="(calendarView$$ | async) === false; else space">
+      <!-- <dfm-button class="pr-li-title-buttons" color="link" size="lg" routerLink="./">{{ 'PrioritySlots' | translate }} </dfm-button> -->
       <dfm-input
         class="flex-1 pr-li-search"
         size="md"
@@ -40,6 +40,7 @@
     </ng-template>
 
     <div class="d-flex dfm-gap-8 align-items-center">
+      <div class="d-flex dfm-gap-8">
       <dfm-button-icon
         color="secondary-gray"
         size="md"
@@ -65,6 +66,7 @@
       <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false" (click)="openAddPriorityModal()"
         >{{ 'AddPrioritySlots' | translate }}
       </dfm-button>
+    </div>
     </div>
   </section>
   <ng-container *ngIf="(calendarView$$ | async) === false; else calendarView">

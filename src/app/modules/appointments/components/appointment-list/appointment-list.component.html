@@ -61,8 +61,11 @@
     </div>
 
     <ng-container *ngIf="calendarView$$ | async">
-      <div class="d-flex dfm-gap-8 align-items-center justify-content-end">
-        <div class="">
+      <div class="d-flex dfm-gap-8 align-items-center justify-content-between">
+        <div>
+        <dfm-button class="ap-li-title-buttons" color="link" size="lg" routerLink="./">{{ 'Appointment' | translate }} </dfm-button>
+      </div>
+        <div class="d-flex dfm-gap-8">
           <dfm-button-icon
             color="secondary-gray"
             size="md"
@@ -73,16 +76,18 @@
             [openDelay]="200"
             (click)="toggleView()"
           ></dfm-button-icon>
-        </div>
+        
 
         <dfm-button color="primary" size="md" class="text-nowrap header-buttons" [disabled]="false" routerLink="./add"
           >{{ 'AddAppointment' | translate }}
         </dfm-button>
+      
 
         <dfm-button color="primary" size="md" class="add-app-btn-mv hidden" [disabled]="false" routerLink="./add"
           >{{ 'Add' | translate }}
         </dfm-button>
       </div>
+    </div>
     </ng-container>
   </section>
 
