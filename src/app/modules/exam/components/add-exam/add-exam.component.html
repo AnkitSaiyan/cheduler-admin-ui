@@ -117,7 +117,7 @@
                 >
                 </dfm-input>
               </div>
-              <div class="dfm-input-dropdown-wrapper-wo-label order" *ngIf="orderOption$$ | async as orderOption">
+              <div class="dfm-input-dropdown-wrapper-wo-label order" [ngClass]="{'dfm-input-error':roomForExamControl.get('sortOrder')?.hasError('required') && roomForExamControl.get('sortOrder')?.touched}" *ngIf="orderOption$$ | async as orderOption">
                 <dfm-input-dropdown
                   size="sm"
                   formControlName="sortOrder"

@@ -227,7 +227,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
           user.email?.toLowerCase()?.includes(searchText) ||
           userType?.toLowerCase()?.includes(searchText) ||
           user.telephone?.toLowerCase()?.includes(searchText) ||
-          status.toLowerCase()?.includes(searchText)
+          status.toLowerCase()?.startsWith(searchText)
         );
       }),
     ]);

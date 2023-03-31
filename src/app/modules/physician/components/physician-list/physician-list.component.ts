@@ -201,7 +201,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
           physician.firstname?.toLowerCase()?.includes(searchText) ||
           physician.lastname?.toLowerCase()?.includes(searchText) ||
           physician.email?.toLowerCase()?.includes(searchText) ||
-          status?.toLowerCase()?.includes(searchText)
+          status?.toLowerCase()?.startsWith(searchText)
         );
       }),
     ]);

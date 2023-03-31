@@ -184,7 +184,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
         return (
           email.title?.toLowerCase()?.includes(searchText) ||
           email.subject?.toLowerCase()?.includes(searchText) ||
-          status?.toLowerCase()?.includes(searchText)
+          status?.toLowerCase()?.startsWith(searchText)
         );
       }),
     ]);
@@ -233,4 +233,5 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     }
   }
 }
+
 
