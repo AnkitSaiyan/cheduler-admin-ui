@@ -89,6 +89,8 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
       )
       .subscribe((downloadAs) => {
         if (!this.filteredEmails$$.value.length) {
+          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+          this.clearDownloadDropdown();
           return;
         }
 
@@ -102,15 +104,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
         if (downloadAs !== 'PRINT') {
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
         }
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
-
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
+        this.clearDownloadDropdown()
       });
 
     this.afterBannerClosed$$.pipe(
@@ -231,6 +225,11 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
         icon.classList.toggle('rotate-z-0');
       }
     }
+  }
+  private clearDownloadDropdown() {
+    setTimeout(() => {
+      this.downloadDropdownControl.setValue('');
+    }, 0);
   }
 }
 

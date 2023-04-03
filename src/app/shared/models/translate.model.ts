@@ -135,6 +135,10 @@ export const Translate = Object.freeze({
     [ENG_BE]: 'Doctor',
     [DUTCH_BE]: 'Docter',
   },
+  Physician: {
+    [ENG_BE]: 'Physician',
+    [DUTCH_BE]: 'Dokter',
+  },
   AppointmentNo: {
     [ENG_BE]: 'Appointment No',
     [DUTCH_BE]: 'Afspraak nr.',
@@ -477,4 +481,9 @@ export const Translate = Object.freeze({
     [ENG_BE]: 'Appointment Deleted Successfully',
     [DUTCH_BE]: 'Afspraak succesvol Verwijderd!',
   },
+
+  NoDataToDownlaod: {
+    [ENG_BE]: 'No data to download',
+    [DUTCH_BE]: 'Geen gegevens om te downloaden',
+  }
 });

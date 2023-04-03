@@ -116,6 +116,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       )
       .subscribe((value) => {
         if (!this.filteredUsers$$.value.length) {
+          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+          this.clearDownloadDropdown();
           return;
         }
 
@@ -136,15 +138,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         if (value !== 'PRINT') {
           this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
         }
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
-
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
+        this.clearDownloadDropdown();
       });
 
     this.afterBannerClosed$$
@@ -359,5 +353,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         this.toggleMenu(true);
       }
     }
+  }
+  private clearDownloadDropdown() {
+    setTimeout(() => {
+      this.downloadDropdownControl.setValue('');
+    }, 0);
   }
 }

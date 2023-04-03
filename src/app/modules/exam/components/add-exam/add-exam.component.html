@@ -196,7 +196,8 @@
                 class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                 [ngClass]="{ 'dfm-mb-32': assistantDropdown.value?.length }"
               >
-                <dfm-input-dropdown
+               <div class="add-exam-dropdown"> 
+              <dfm-input-dropdown
                   #assistantDropdown
                   size="md"
                   label="{{ 'Assistant' | translate }}"
@@ -209,6 +210,7 @@
                   [items]="filteredAssistants$$.value"
                 >
                 </dfm-input-dropdown>
+              </div>
               </div>
             </div>
 
@@ -238,7 +240,8 @@
                 class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                 [ngClass]="{ 'dfm-mb-32': radiologistDropdown.value?.length }"
               >
-                <dfm-input-dropdown
+              <div class="add-exam-dropdown">  
+              <dfm-input-dropdown
                   #radiologistDropdown
                   size="md"
                   label="{{ 'Radiologist' | translate }}"
@@ -253,6 +256,7 @@
                   [items]="filteredRadiologists$$.value"
                 >
                 </dfm-input-dropdown>
+              </div>
               </div>
             </div>
 
@@ -282,7 +286,8 @@
                 class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                 [ngClass]="{ 'dfm-mb-32': nursingDropdown.value?.length }"
               >
-                <dfm-input-dropdown
+              <div class="add-exam-dropdown">  
+              <dfm-input-dropdown
                   #nursingDropdown
                   size="md"
                   label="{{ 'Nursing' | translate }}"
@@ -295,6 +300,7 @@
                   [items]="filteredNursing$$.value"
                 >
                 </dfm-input-dropdown>
+              </div>
               </div>
             </div>
 
@@ -324,7 +330,8 @@
                 class="dfm-input-multi-dropdown-wrapper-mb-0 ad-ex-general-staff-dropdown"
                 [ngClass]="{ 'dfm-mb-32': secretaryDropdown.value?.length }"
               >
-                <dfm-input-dropdown
+              <div class="add-exam-dropdown">  
+              <dfm-input-dropdown
                   #secretaryDropdown
                   size="md"
                   label="{{ 'Secretary' | translate }}"
@@ -335,8 +342,10 @@
                   (searchInput)="handleDropdownSearch($event, 'secretary')"
                   [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ' Selected' : ('SelectSecretary' | translate)"
                   [items]="filteredSecretaries$$.value"
+                  class="add-exam-dropdown"
                 >
                 </dfm-input-dropdown>
+                </div>
               </div>
             </div>
 

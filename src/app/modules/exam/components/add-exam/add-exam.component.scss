@@ -35,6 +35,9 @@ section.ad-ex-section2 {
     min-width: 96px;
   }
 }
+.add-exam-dropdown{
+  width: 25vw;
+}
 
 @media (max-width: 720px) {
   .ad-ex-availability-form-fields {
@@ -127,6 +130,9 @@ section.ad-ex-section2 {
       overflow: hidden;
       white-space: nowrap;
     }
+  }
+  .add-exam-dropdown{
+    width: 50vw;
   }
 }
 
