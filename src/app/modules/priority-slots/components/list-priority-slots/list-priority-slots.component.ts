@@ -100,6 +100,8 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
       )
       .subscribe((downloadAs) => {
         if (!this.filteredPrioritySlots$$.value.length) {
+          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+          this.clearDownloadDropdown();
           return;
         }
 
@@ -117,15 +119,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
         if (downloadAs !== 'PRINT') {
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
         }
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
-
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
+        this.clearDownloadDropdown();
       });
 
     this.shareDataSvc
@@ -162,7 +156,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
         return (
           priority.startedAt?.toLowerCase()?.includes(searchText) ||
           priority.endedAt?.toLowerCase()?.includes(searchText) ||
-          status?.toLowerCase()?.includes(searchText)
+          status?.toLowerCase()?.startsWith(searchText)
         );
       }),
     ]);
@@ -281,7 +275,13 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
       },
     });
   }
+  private clearDownloadDropdown() {
+    setTimeout(() => {
+      this.downloadDropdownControl.setValue('');
+    }, 0);
+  }
 }
+
 
 
 

@@ -377,7 +377,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
           .subscribe({
             next: () => {
               this.shareDataService.getLanguage$().subscribe((language: string) => {
-                this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully` : 'Appointment saved successfully');
+                this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully` : 'Afspraak succesvol opgeslagen');
               });
               this.submitting$$.next(false);
 

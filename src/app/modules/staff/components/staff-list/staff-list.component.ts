@@ -97,6 +97,8 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       )
       .subscribe((value) => {
         if (!this.filteredStaffs$$.value.length) {
+          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+          this.clearDownloadDropdown();
           return;
         }
 
@@ -116,10 +118,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
         if (value !== 'PRINT') {
           this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
         }
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
+        this.clearDownloadDropdown();
       });
 
     this.afterBannerClosed$$
@@ -308,5 +307,10 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     const ids = new Set<number>();
     result.forEach((item) => ids.add(+item.value));
     this.filteredStaffs$$.next([...this.staffs$$.value.filter((staff: User) => ids.has(+staff.id))]);
+  }
+  private clearDownloadDropdown() {
+    setTimeout(() => {
+      this.downloadDropdownControl.setValue('');
+    }, 0);
   }
 }

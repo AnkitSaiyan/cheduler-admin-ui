@@ -2,6 +2,7 @@ import { AvailabilityType } from './user.model';
 import { Status } from './status.model';
 import { PracticeAvailability } from './practice.model';
 import {TimeSlot} from "./calendar.model";
+import { Exam } from './exam.model';
 
 export enum RoomType {
   Private = 'private',
@@ -21,6 +22,7 @@ export interface Room {
   examId: number;
   roomNo?: number;
   examLists?: number[];
+  exams: Exam[];
 }
 
 export interface AddRoomRequestData {

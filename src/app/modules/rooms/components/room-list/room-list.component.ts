@@ -118,6 +118,8 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
       )
       .subscribe((value) => {
         if (!this.filteredRooms$$.value.length) {
+          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+          this.clearDownloadDropdown();
           return;
         }
 
@@ -137,15 +139,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
         if (value !== 'PRINT') {
           this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
         }
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
-
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
+        this.clearDownloadDropdown();
       });
 
     this.clearSelected$$.pipe(takeUntil(this.destroy$$)).subscribe(() => {
@@ -251,7 +245,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
           room.name?.toLowerCase()?.includes(searchText) ||
           room.description?.toLowerCase()?.includes(searchText) ||
           type?.toLowerCase()?.includes(searchText) ||
-          status?.toLowerCase()?.includes(searchText)
+          status?.toLowerCase()?.startsWith(searchText)
         );
       }),
     ]);
@@ -466,5 +460,10 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     this.rooms$$.value.forEach((room, index) => {
       this.roomPlaceInToIndexMap.set(+room.placeInAgenda, index + 1);
     });
+  }
+  private clearDownloadDropdown() {
+    setTimeout(() => {
+      this.downloadDropdownControl.setValue('');
+    }, 0);
   }
 }
