@@ -38,7 +38,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Doctor', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
+  public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
 
   public downloadItems: NameValue[] = [];
 
@@ -148,6 +148,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       )
       .subscribe((value) => {
         if (!this.filteredAppointments$$.value.length) {
+          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+          this.clearDownloadDropdown();
           return;
         }
 
@@ -170,15 +172,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         if (value !== 'PRINT') {
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
+        this.clearDownloadDropdown();
 
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
       });
 
     this.afterBannerClosed$$
@@ -218,7 +213,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
           Translate.StartedAt[lang],
           Translate.EndedAt[lang],
           Translate.PatientName[lang],
-          Translate.Doctor[lang],
+          Translate.Physician[lang],
           Translate.AppointmentNo[lang],
           Translate.AppliedOn[lang],
           // Translate.Read[lang],
@@ -484,5 +479,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         });
       }
     });
+  }
+  private clearDownloadDropdown() {
+    setTimeout(() => {
+      this.downloadDropdownControl.setValue('');
+    }, 0);
   }
 }

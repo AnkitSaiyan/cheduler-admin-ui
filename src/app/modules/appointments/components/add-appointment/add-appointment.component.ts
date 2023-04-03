@@ -29,7 +29,7 @@ import {
   Slot,
   SlotModified,
 } from '../../../../shared/models/appointment.model';
-import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
+import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE, Statuses } from '../../../../shared/utils/const';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { AppointmentStatus } from '../../../../shared/models/status.model';
 import { AppointmentUtils } from '../../../../shared/utils/appointment.utils';
@@ -121,6 +121,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     private siteManagementApiSvc: SiteManagementApiService,
     private cdr: ChangeDetectorRef,
     private loaderService: LoaderService,
+    private shareDataSvc: ShareDataService,
   ) {
     super();
 
@@ -392,6 +393,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     try {
       if (this.appointmentForm.invalid) {
         this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+        // this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
         this.appointmentForm.markAllAsTouched();
         return;
       }
@@ -459,7 +461,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           .subscribe({
             next: () => {
               this.shareDataService.getLanguage$().subscribe((language: string) => {
-                this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully` : 'Appointment saved successfully');
+                this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully` : 'Afspraak succesvol opgeslagen');
               });
               this.submitting$$.next(false);
 

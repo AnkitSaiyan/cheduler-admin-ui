@@ -38,7 +38,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Doctor', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
+  public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
 
   public downloadItems: NameValue[] = [];
 
@@ -147,6 +147,8 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
       )
       .subscribe((value) => {
         if (!this.filteredAppointments$$.value.length) {
+          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+          this.clearDownloadDropdown();
           return;
         }
 
@@ -169,10 +171,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
         if (value !== 'PRINT') {
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
+        this.clearDownloadDropdown();
 
         this.downloadDropdownControl.setValue(null);
 
@@ -410,5 +409,10 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
           // console.log(this.appointmentsGroupedByDate);
         });
     });
+  }
+  private clearDownloadDropdown() {
+    setTimeout(() => {
+      this.downloadDropdownControl.setValue('');
+    }, 0);
   }
 }

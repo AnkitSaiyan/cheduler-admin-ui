@@ -100,6 +100,8 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
       )
       .subscribe((downloadAs) => {
         if (!this.filteredExams$$.value.length) {
+          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+          this.clearDownloadDropdown();
           return;
         }
 
@@ -113,15 +115,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         if (downloadAs !== 'PRINT') {
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
         }
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
-
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
+        this.clearDownloadDropdown();
       });
 
     this.afterBannerClosed$$
@@ -290,5 +284,10 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     const ids = new Set<number>();
     result.forEach((item) => ids.add(+item.value));
     this.filteredExams$$.next([...this.exams$$.value.filter((exam: Exam) => ids.has(+exam.id))]);
+  }
+  private clearDownloadDropdown() {
+    setTimeout(() => {
+      this.downloadDropdownControl.setValue('');
+    }, 0);
   }
 }
