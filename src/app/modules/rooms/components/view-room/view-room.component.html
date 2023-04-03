@@ -102,11 +102,11 @@
        </header>
 
        <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-         <div class="d-flex dfm-gap-8 justify-content-between" *ngFor="let examID of roomDetails?.examLists;">
-           <span>{{ examIdToNameMap.get(+examID) | titlecase }}</span>
+         <div class="d-flex dfm-gap-8 justify-content-between" *ngFor="let exam of roomDetails?.exams;">
+           <span>{{ exam.name}}</span>
          </div>
 
-         <span class="dfm-text-main-600" *ngIf="!roomDetails?.examLists?.length">{{'NoExamsFound' | translate}}</span>
+         <span class="dfm-text-main-600" *ngIf="!roomDetails?.exams?.length">{{'NoExamsFound' | translate}}</span>
        </div>
      </div>
 

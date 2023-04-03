@@ -84,6 +84,8 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
       )
       .subscribe((value) => {
         if (!this.filteredAbsences$$.value.length) {
+          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+          this.clearDownloadDropdown();
           return;
         }
         this.downloadSvc.downloadJsonAs(
@@ -102,10 +104,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
 
-        setTimeout(() => {
-          this.downloadDropdownControl.setValue('');
-          // this.cdr.detectChanges();
-        }, 0);
+        this.clearDownloadDropdown();
       });
 
     this.shareDataSvc
@@ -249,5 +248,10 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         keyboard: false,
       },
     });
+  }
+  private clearDownloadDropdown() {
+    setTimeout(() => {
+      this.downloadDropdownControl.setValue('');
+    }, 0);
   }
 }

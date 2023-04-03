@@ -633,7 +633,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
 
     if (!valid) {
-      this.notificationSvc.showNotification(Translate.FormInvalidSimple[this.selectedLang], NotificationType.WARNING);
+      this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
       return;
     }
 
