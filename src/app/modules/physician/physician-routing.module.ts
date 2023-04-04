@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { RouteName, RouteType } from 'src/app/shared/models/permission.model';
 import { PhysicianComponent } from './pages/physician.component';
 import { PhysicianListComponent } from './components/physician-list/physician-list.component';
 import { PHYSICIAN_ID } from '../../shared/utils/const';
@@ -13,10 +14,12 @@ const physicianRoutes: Routes = [
       {
         path: '',
         component: PhysicianListComponent,
+        data: { routeType: RouteType.View, routeName: RouteName.Physicians },
       },
       {
         path: `:${PHYSICIAN_ID}/view`,
         component: PhysicianViewComponent,
+        data: { routeType: RouteType.View, routeName: RouteName.Physicians },
       },
     ],
   },

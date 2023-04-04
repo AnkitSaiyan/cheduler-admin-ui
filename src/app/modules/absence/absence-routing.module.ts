@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { RouteName, RouteType } from 'src/app/shared/models/permission.model';
 import { AbsenceComponent } from './pages/absence.component';
 import { AbsenceListComponent } from './components/absence-list/absence-list.component';
 import { ABSENCE_ID } from '../../shared/utils/const';
@@ -13,10 +14,12 @@ const absenceRoutes: Routes = [
       {
         path: '',
         component: AbsenceListComponent,
+        data: { routeType: RouteType.View, routeName: RouteName.Absence },
       },
       {
         path: `:${ABSENCE_ID}/view`,
         component: ViewAbsenceComponent,
+        data: { routeType: RouteType.View, routeName: RouteName.Absence },
       },
       {
         path: '**',
