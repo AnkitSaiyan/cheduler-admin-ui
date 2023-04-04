@@ -37,4 +37,50 @@ export interface User {
   rizivNumber?: string;
   isMandate: boolean;
   examId: number;
+  userAzureId: string | null;
 }
+
+export enum UserRoleEnum {
+  Admin = 'admin',
+  GeneralUser = 'general_user',
+  Reader = 'reader'
+}
+
+export interface AddUserRequest {
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  userAzureId?: string;
+  id?: number;
+  userRole?: string;
+  userType: string;
+  status: Status;
+}
+
+
+/*
+  * Auth User models ---
+*/
+
+export class AuthUser {
+  mail: string = '';
+  givenName: string = '';
+  surname: string = '';
+  email: string = '';
+  displayName: string = '';
+  id: string = '';
+  properties: Record<string, string> = {};
+  tenantIds: string[] = [];
+
+  constructor(mail: string, givenName: string, id: string, surname: string, displayName: string, email: string, properties: Record<string, string>, tenantIds: string[]) {
+    this.mail = mail;
+    this.givenName = givenName;
+    this.id = id;
+    this.properties = properties;
+    this.tenantIds = tenantIds;
+    this.surname = surname;
+    this.displayName = displayName;
+    this.email = email;
+  }
+}
+

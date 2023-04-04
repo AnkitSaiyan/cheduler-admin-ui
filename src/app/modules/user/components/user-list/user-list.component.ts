@@ -1,24 +1,28 @@
-import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
-import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
-import { getStatusEnum, getUserTypeEnum } from '../../../../shared/utils/getEnums';
-import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { User } from '../../../../shared/models/user.model';
-import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
-import { AddUserComponent } from '../add-user/add-user.component';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { TranslateService } from '@ngx-translate/core';
+import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {BehaviorSubject, debounceTime, filter, interval, map, of, Subject, switchMap, take, takeUntil, tap} from 'rxjs';
+import {ActivatedRoute, Router} from '@angular/router';
+import {NotificationType, TableItem} from 'diflexmo-angular-design';
+import {NgbDropdown} from '@ng-bootstrap/ng-bootstrap';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
+import {ChangeStatusRequestData, Status, StatusToName} from '../../../../shared/models/status.model';
+import {getStatusEnum, getUserTypeEnum} from '../../../../shared/utils/getEnums';
+import {StaffApiService} from '../../../../core/services/staff-api.service';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {ModalService} from '../../../../core/services/modal.service';
+import {
+  ConfirmActionModalComponent,
+  ConfirmActionModalData
+} from '../../../../shared/components/confirm-action-modal.component';
+import {SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
+import {User} from '../../../../shared/models/user.model';
+import {DownloadAsType, DownloadService, DownloadType} from '../../../../core/services/download.service';
+import {AddUserComponent} from '../add-user/add-user.component';
+import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
+import {Translate} from '../../../../shared/models/translate.model';
+import {ShareDataService} from 'src/app/core/services/share-data.service';
+import {TranslateService} from '@ngx-translate/core';
+import {UserManagementApiService} from "../../../../core/services/user-management-api.service";
 
 @Component({
   selector: 'dfm-user-list',
@@ -40,7 +44,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['FirstName', 'LastName', 'Email', 'Telephone', 'Category', 'Status', 'Actions'];
+  public columns: string[] = ['FirstName', 'LastName', 'Email', 'Category', 'Role', 'Status', 'Actions'];
 
   public downloadItems: DownloadType[] = [];
 
@@ -76,6 +80,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
+    private userManagementApiSvc: UserManagementApiService
   ) {
     super();
     this.users$$ = new BehaviorSubject<any[]>([]);
@@ -179,8 +184,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
           Translate.FirstName[lang],
           Translate.LastName[lang],
           Translate.Email[lang],
-          Translate.Telephone[lang],
           Translate.Category[lang],
+          'Role',
           Translate.Status[lang],
           Translate.Actions[lang],
         ];
@@ -237,7 +242,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       );
   }
 
-  public deleteUser(id: number) {
+  public deleteUser(id: number, userAzureId?: string | null) {
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
@@ -250,11 +255,23 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     dialogRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(() => {
+          if (userAzureId) {
+            return this.userManagementApiSvc.deleteUser(userAzureId);
+          }
+          return of({});
+        }),
         switchMap(() => this.userApiSvc.deleteStaff(id)),
         take(1),
       )
-      .subscribe(() => {
-        this.notificationSvc.showNotification(Translate.SuccessMessage.UserDeleted[this.selectedLang]);
+      .subscribe({
+        next: () => {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.UserDeleted[this.selectedLang]);
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationSvc.showNotification('Failed to delete user', NotificationType.DANGER);
+        }
       });
   }
 

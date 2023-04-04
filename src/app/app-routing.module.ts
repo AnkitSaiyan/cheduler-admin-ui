@@ -5,11 +5,11 @@ import { BrowserUtils } from '@azure/msal-browser';
 import { MsalGuard } from '@azure/msal-angular';
 
 const rootRoutes: Routes = [
-  {
-    path: 'auth',
-    loadChildren: async () => (await import('./core/auth/auth.module')).AuthModule,
-    canActivate: [MsalGuard],
-  },
+  // {
+  //   path: 'auth',
+  //   loadChildren: async () => (await import('./core/auth/auth.module')).AuthModule,
+  //   canActivate: [MsalGuard],
+  // },
   {
     path: '',
     loadChildren: async () => (await import('./core/core.module')).CoreModule,

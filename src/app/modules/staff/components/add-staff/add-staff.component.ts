@@ -387,7 +387,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     addStaffReqData.id = Number.isNaN(+this.staffID) ? 0 : +this.staffID;
 
     this.staffApiSvc
-      .addNewStaff$(addStaffReqData)
+      .upsertUser$(addStaffReqData)
       .pipe(takeUntil(this.destroy$$))
       .subscribe(() => {
         if (this.staffID) {

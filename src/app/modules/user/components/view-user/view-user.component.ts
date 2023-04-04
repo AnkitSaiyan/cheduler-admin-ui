@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import {BehaviorSubject, filter, of, switchMap, take, takeUntil} from 'rxjs';
 import { Router } from '@angular/router';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { RouterStateService } from '../../../../core/services/router-state.service';
@@ -14,6 +14,8 @@ import { getUserTypeEnum } from '../../../../shared/utils/getEnums';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {NotificationType} from "diflexmo-angular-design";
+import {UserManagementApiService} from "../../../../core/services/user-management-api.service";
 
 @Component({
   selector: 'dfm-view-user',
@@ -35,6 +37,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
     private router: Router,
     private modalSvc: ModalService,
     private shareDataService: ShareDataService,
+    private userManagementApiSvc: UserManagementApiService
   ) {
     super();
   }
@@ -54,7 +57,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
       .subscribe((lang) => (this.selectedLang = lang));
   }
 
-  public deleteUser(id: number) {
+  public deleteUser(id: number, userAzureId?: string | null) {
     const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
@@ -67,12 +70,24 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
     modalRef.closed
       .pipe(
         filter((res: boolean) => res),
+        switchMap(() => {
+          if (userAzureId) {
+            return this.userManagementApiSvc.deleteUser(userAzureId);
+          }
+          return of({});
+        }),
         switchMap(() => this.userApiSvc.deleteStaff(id)),
         take(1),
       )
-      .subscribe(() => {
-        this.notificationSvc.showNotification(Translate.SuccessMessage.UserDeleted[this.selectedLang]);
-        this.router.navigate(['/', 'user']);
+      .subscribe({
+        next: () => {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.UserDeleted[this.selectedLang]);
+          this.router.navigate(['/', 'user']);
+        },
+        error: (err) => {
+          console.log(err);
+          this.notificationSvc.showNotification('Failed to delete user', NotificationType.DANGER);
+        }
       });
   }
 

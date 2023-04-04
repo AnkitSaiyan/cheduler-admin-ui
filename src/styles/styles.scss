@@ -422,6 +422,10 @@ dfm-input-dropdown {
   //margin-bottom: 28px;
 }
 
+.dfm-input-dropdown-error {
+  border-color: var(--dfm-danger-300) !important;
+}
+
 dfm-input-dropdown {
   dfm-error {
     position: absolute !important;

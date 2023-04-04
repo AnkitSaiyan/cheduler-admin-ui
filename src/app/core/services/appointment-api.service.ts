@@ -48,7 +48,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
   private selectedLang$$ = new BehaviorSubject<string>('');
 
-  private appointmentUrl = `${environment.serverBaseUrl}/appointment`;
+  private appointmentUrl = `${environment.schedulerApiUrl}/appointment`;
 
   public calendarViewType: NameValue[] = [
     {
@@ -257,7 +257,7 @@ export class AppointmentApiService extends DestroyableComponent {
     delete customRequestData?.fromDate;
     delete customRequestData?.toDate;
     // this.loaderSvc.spinnerActivate();
-    return this.http.post<BaseResponse<AppointmentSlot>>(`${environment.serverBaseUrl}/patientappointment/slots`, customRequestData).pipe(
+    return this.http.post<BaseResponse<AppointmentSlot>>(`${environment.schedulerApiUrl}/patientappointment/slots`, customRequestData).pipe(
       map((res) => [
         {
           ...res?.data,

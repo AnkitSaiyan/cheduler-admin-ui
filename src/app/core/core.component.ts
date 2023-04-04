@@ -11,6 +11,8 @@ import { LoaderService } from './services/loader.service';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { MsalGuardConfiguration, MsalService, MSAL_GUARD_CONFIG } from '@azure/msal-angular';
 import { InteractionType } from '@azure/msal-browser';
+import {UserApiService} from "./services/user-api.service";
+import {Translate} from "../shared/models/translate.model";
 
 @Component({
   selector: 'dfm-main',
@@ -92,6 +94,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     public loaderService: LoaderService,
     private cdr: ChangeDetectorRef,
     private authService: MsalService,
+    private userApiSvc: UserApiService
   ) {
     super();
   }
@@ -99,6 +102,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
   public ngOnInit(): void {
     // translation changes should go here
     this.currentTenant$$.pipe(takeUntil(this.destroy$$)).subscribe((lang) => {
+      this.profileData.user.name = Translate.Profile[lang];
       switch (lang) {
         case ENG_BE: {
           this.navItems = [...this.navigationItems];
@@ -111,20 +115,18 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       }
     });
 
-    this.dataShareService.getLanguage$().subscribe((language: string) => {
+    this.dataShareService.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe((language: string) => {
       this.currentTenant$$.next(language);
-      this.profileData.user.name = language === ENG_BE ? 'Profile' : 'Profiel';
     });
 
-    this.dashboardApiService.notificationData$$.subscribe((res) => {
+    this.dashboardApiService.notificationData$$.pipe(takeUntil(this.destroy$$)).subscribe((res) => {
       this.notifications = [];
-      // console.log(res)
       res.forEach((element, index) => {
         this.notifications.push(new NavigationItemEvent(index + 1, new Date(element?.date), element?.title, element?.message));
       });
     });
 
-    this.dashboardApiService.postItData$$.subscribe((res) => {
+    this.dashboardApiService.postItData$$.pipe(takeUntil(this.destroy$$)).subscribe((res) => {
       this.messages = [];
       res.forEach((element, index) => {
         this.messages.push(new NavigationItemEvent(index + 1, new Date(element?.createdAt), element?.message));
@@ -164,5 +166,6 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     } else {
       this.authService.logoutRedirect();
     }
+    this.userApiSvc.removeUser();
   }
 }

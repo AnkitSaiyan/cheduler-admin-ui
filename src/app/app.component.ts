@@ -35,8 +35,6 @@ type IdTokenClaimsWithPolicyId = IdTokenClaims & {
 export class AppComponent implements OnInit {
   public user?: any;
 
-  title = 'AngularFrontend';
-
   isIframe = false;
 
   loginDisplay = false;
@@ -113,11 +111,11 @@ export class AppComponent implements OnInit {
       });
   }
 
-  setLoginDisplay() {
+  private setLoginDisplay() {
     this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
   }
 
-  checkAndSetActiveAccount() {
+  private checkAndSetActiveAccount() {
     /**
      * If no active account set but there are accounts signed in, sets first account to active account
      * To use active account set here, subscribe to inProgress$ first in your component
@@ -129,8 +127,10 @@ export class AppComponent implements OnInit {
       const accounts = this.authService.instance.getAllAccounts();
       this.authService.instance.setActiveAccount(accounts[0]);
     }
-    this.userService.user$.subscribe((x) => (this.user = x));
-    this.userService.intializeUser().subscribe((x) => {
+
+    this.userService.authUser$.subscribe((x) => (this.user = x));
+
+    this.userService.initializeUser().subscribe((x) => {
       if (!x) {
         console.log('User login failed. Logging out.');
         this.logout();
@@ -166,7 +166,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  logout() {
+  private logout() {
     if (this.msalGuardConfig.interactionType === InteractionType.Popup) {
       this.authService.logoutPopup({
         mainWindowRedirectUri: '/',
@@ -175,16 +175,4 @@ export class AppComponent implements OnInit {
       this.authService.logoutRedirect();
     }
   }
-
-  // changeLanguage(value) {
-  //   // eslint-disable-next-line eqeqeq
-  //   if (value == 'en-BE') {
-  //     this.translate.setTranslation(value, defaultLanguage);
-  //     this.translate.setDefaultLang(value);
-  //     // eslint-disable-next-line eqeqeq
-  //   } else if (value == 'nl-BE') {
-  //     this.translate.setTranslation(value, dutchLangauge);
-  //     this.translate.setDefaultLang(value);
-  //   }
-  // }
 }

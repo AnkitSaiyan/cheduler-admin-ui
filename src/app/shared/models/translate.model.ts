@@ -477,6 +477,7 @@ export const Translate = Object.freeze({
       [DUTCH_BE]: 'Monthly NL',
     },
   },
+
   DeleteAppointment: {
     [ENG_BE]: 'Appointment Deleted Successfully',
     [DUTCH_BE]: 'Afspraak succesvol Verwijderd!',
@@ -485,5 +486,10 @@ export const Translate = Object.freeze({
   NoDataToDownlaod: {
     [ENG_BE]: 'No data to download',
     [DUTCH_BE]: 'Geen gegevens om te downloaden',
+  },
+  
+  Profile: {
+    [ENG_BE]: 'Profile',
+    [DUTCH_BE]: 'Profiel',
   }
 });

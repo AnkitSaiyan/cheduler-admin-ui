@@ -3,12 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { UserPropertiesPermitItem } from '../models/user-properties-permit-item.model';
-import { UserInviteResponse } from '../models/user-invite-response.model';
-import { UserProperties } from '../models/user-properties.model';
-import { UserBase } from '../models/user-base.model';
-import { UserTenantItem } from '../models/user-tenant.model';
-import { UserInvite } from '../models/invite.model';
+import { UserPropertiesPermitItem } from '../../shared/models/user-properties-permit-item.model';
+import { UserInviteResponse } from '../../shared/models/user-invite-response.model';
+import { UserProperties } from '../../shared/models/user-properties.model';
+import { UserBase } from '../../shared/models/user-base.model';
+import { UserTenantItem } from '../../shared/models/user-tenant.model';
+import { UserInvite } from '../../shared/models/invite.model';
 
 @Injectable({
   providedIn: 'root',
@@ -52,6 +52,10 @@ export class UserManagementApiService {
 
   public getUserTenantsList(userId: string): Observable<UserTenantItem[]> {
     return this.httpClient.get<UserTenantItem[]>(`${this.baseUrl}/users/${userId}/tenants`);
+  }
+
+  public deleteUser(userId: string): Observable<{}> {
+    return this.httpClient.delete<{}>(`${this.baseUrl}/users/${userId}`);
   }
 }
 

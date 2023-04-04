@@ -17,7 +17,7 @@ export class ShareDataService {
 
   private refreshRooms$$ = new Subject<void>();
 
-  private readonly patientsUrl = `${environment.serverBaseUrl}/common/getpatients`;
+  private readonly patientsUrl = `${environment.schedulerApiUrl}/common/getpatients`;
 
   constructor(private http: HttpClient) {
     if (localStorage.getItem('lang')) {

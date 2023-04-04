@@ -22,7 +22,7 @@ export class EmailTemplateApiService {
 
   private fetchAllEmailTemplates(): Observable<Email[]> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<Email[]>>(`${environment.serverBaseUrl}/email`).pipe(
+    return this.http.get<BaseResponse<Email[]>>(`${environment.schedulerApiUrl}/email`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -32,7 +32,7 @@ export class EmailTemplateApiService {
     this.loaderSvc.activate();
     console.log('requestData: ', requestData);
     const { id, ...restData } = requestData;
-    return this.http.put<BaseResponse<EmailTemplateRequestData>>(`${environment.serverBaseUrl}/email/${id}`, requestData).pipe(
+    return this.http.put<BaseResponse<EmailTemplateRequestData>>(`${environment.schedulerApiUrl}/email/${id}`, requestData).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -40,7 +40,7 @@ export class EmailTemplateApiService {
 
   public changeEmailStatus$(requestData: ChangeStatusRequestData[]): Observable<boolean> {
     this.loaderSvc.activate();
-    return this.http.put<BaseResponse<any>>(`${environment.serverBaseUrl}/email/updateemailtemplatestatus`, requestData).pipe(
+    return this.http.put<BaseResponse<any>>(`${environment.schedulerApiUrl}/email/updateemailtemplatestatus`, requestData).pipe(
       map((resp) => resp?.data),
       tap(() => {
         this.emailTemplates$$.next();
@@ -53,7 +53,7 @@ export class EmailTemplateApiService {
     this.loaderSvc.activate();
     this.loaderSvc.spinnerActivate();
 
-    return this.http.get<BaseResponse<Email>>(`${environment.serverBaseUrl}/email/${id}`).pipe(
+    return this.http.get<BaseResponse<Email>>(`${environment.schedulerApiUrl}/email/${id}`).pipe(
       map((response) => response.data),
       tap(() => {
         this.emailTemplates$$.next();

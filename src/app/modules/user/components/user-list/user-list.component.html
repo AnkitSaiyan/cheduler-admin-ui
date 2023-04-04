@@ -68,13 +68,12 @@
         <dfm-table-body-cell>
           <span class="text-truncate">{{ item.email | dashIfNothing }}</span>
         </dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.telephone | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <span *ngIf="[userType.Scheduler, userType.General, userType.Secretary].includes(item.userType)">
             {{ item.userType === 'General' ? ('GeneralUser' | translate) : ('SchedulerUser' | translate | titlecase) }}
           </span>
         </dfm-table-body-cell>
-
+        <dfm-table-body-cell>{{ item?.userRole | roleName | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <dfm-badge *ngIf="item.status === statusType.Active" color="success" size="sm" fontWeight="medium">
             {{ item.status | statusName | translate | dashIfNothing }}
@@ -94,7 +93,6 @@
               trailingIcon="check-circle"
               ngbPopover="{{ 'ChangeStatus' | translate }}"
               triggers="mouseenter:mouseleave"
-              triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }])"
@@ -107,7 +105,6 @@
               trailingIcon="x-circle"
               ngbPopover="{{ 'ChangeStatus' | translate }}"
               triggers="mouseenter:mouseleave"
-              triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }])"
@@ -118,7 +115,6 @@
               size="sm"
               trailingIcon="pencil-02"
               ngbPopover="{{ 'Edit' | translate }}"
-              triggers="mouseenter:mouseleave"
               triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8"
               [openDelay]="200"
@@ -132,7 +128,7 @@
               triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8"
               [openDelay]="200"
-              (click)="$event.stopPropagation(); deleteUser(item.id)"
+              (click)="$event.stopPropagation(); deleteUser(item.id, item?.userAzureId)"
             ></dfm-button>
           </div>
 
@@ -186,7 +182,7 @@
               </div>
 
               <div
-                (click)="$event.stopPropagation(); deleteUser(item.id)"
+                (click)="$event.stopPropagation(); deleteUser(item.id, item?.userAzureId)"
                 ngbPopover="{{ 'Delete' | translate }}"
                 triggers="mouseenter:mouseleave"
                 popoverClass="popover-p-8"
@@ -200,30 +196,11 @@
         </dfm-table-body-cell>
       </ng-template>
     </dfm-table>
+
     <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!users.length && (loading$$ | async) === false">
       {{ 'NoUserFound' | translate }}
     </div>
   </section>
-  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
-  <!--    <div class="shadow-lg us-li-plus-btn-menu us-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
-  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
-  <!--  <div class="hidden us-li-plus-btn shadow-lg rounded-2"-->
-  <!--       (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">-->
-  <!--    <dfm-button color="secondary" size="md" class="h-full">-->
-  <!--      <dfm-icon #showMoreButtonIcon name="plus" class="us-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
-  <!--    </dfm-button>-->
-  <!--  </div>-->
 </div>
 
 <dfm-confirm-status-change-banner

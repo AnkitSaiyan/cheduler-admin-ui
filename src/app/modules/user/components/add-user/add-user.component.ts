@@ -1,29 +1,33 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NotificationType } from 'diflexmo-angular-design';
-import { BehaviorSubject, take, takeUntil } from 'rxjs';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { ModalService } from '../../../../core/services/modal.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { User, UserType } from '../../../../shared/models/user.model';
-import { getUserTypeEnum } from '../../../../shared/utils/getEnums';
-import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { AddStaffRequestData } from '../../../../shared/models/staff.model';
-import { Status } from '../../../../shared/models/status.model';
-import { EMAIL_REGEX, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {NotificationType} from 'diflexmo-angular-design';
+import {BehaviorSubject, switchMap, take, takeUntil} from 'rxjs';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ShareDataService} from 'src/app/core/services/share-data.service';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
+import {ModalService} from '../../../../core/services/modal.service';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {AddUserRequest, User, UserRoleEnum, UserType} from '../../../../shared/models/user.model';
+import {getUserTypeEnum} from '../../../../shared/utils/getEnums';
+import {StaffApiService} from '../../../../core/services/staff-api.service';
+import {Status} from '../../../../shared/models/status.model';
+import {DUTCH_BE, EMAIL_REGEX, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
 
-import { Translate } from '../../../../shared/models/translate.model';
+import {Translate} from '../../../../shared/models/translate.model';
+import {UserApiService} from "../../../../core/services/user-api.service";
+import {NameValue} from "../../../../shared/components/search-modal.component";
+import {UserManagementApiService} from "../../../../core/services/user-management-api.service";
+import {environment} from "../../../../../environments/environment";
+import {AuthService} from "../../../../core/services/auth.service";
+import {AddStaffRequestData} from "../../../../shared/models/staff.model";
+import {MsalService} from "@azure/msal-angular";
 
 interface FormValues {
   userType: UserType;
   firstname: string;
   lastname: string;
   email: string;
-  address: string;
-  telephone: number;
-  gsm: string;
-  status: Status;
+  userRole: UserRoleEnum;
+  tenantId: string;
 }
 
 @Component({
@@ -44,12 +48,20 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
   public statuses = Statuses;
 
+  public userRoles: NameValue[] = [];
+
+  public userTenants: NameValue[] = [];
+
   constructor(
     private modalSvc: ModalService,
     private fb: FormBuilder,
     private notificationSvc: NotificationDataService,
-    private userApiSvc: StaffApiService,
+    private staffApiSvc: StaffApiService,
     private shareDataSvc: ShareDataService,
+    private userSvc: UserApiService,
+    private userManagementApiSvc: UserManagementApiService,
+    private authSvc: AuthService,
+    private msalService: MsalService
   ) {
     super();
 
@@ -77,6 +89,13 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
             break;
         }
       });
+
+    const userId = this.msalService.instance.getActiveAccount()?.localAccountId ?? '';
+    this.userManagementApiSvc.getUserTenantsList(userId).pipe(takeUntil(this.destroy$$)).subscribe((tenants) => {
+      this.userTenants = tenants.map(({id, name}) => ({ name, value: id.toString()}));
+    });
+
+    this.userRoles = this.userSvc.getUserRoles();
   }
 
   public override ngOnDestroy() {
@@ -99,20 +118,34 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       firstname: [userDetails?.firstname ?? '', [Validators.required]],
       lastname: [userDetails?.lastname ?? '', [Validators.required]],
       email: [userDetails?.email ?? '', []],
-      telephone: [userDetails?.telephone, []],
-      gsm: [userDetails?.gsm, []],
-      address: [userDetails?.address, []],
-      status: [this.modalData.edit ? !!userDetails?.status : Status.Inactive, []],
+      userRole: [null, []],
+      tenantId: [null, []]
     });
   }
 
   public closeModal(res: boolean) {
     this.modalSvc.close(res);
-    // this.ngOnDestroy();
   }
 
   public saveUser() {
-    if (this.addUserForm.invalid) {
+    let isInvalid = false;
+
+    if (
+      [UserType.Scheduler, UserType.Secretary].includes(this.formValues.userType) ||
+      [UserType.Scheduler, UserType.Secretary].includes(this.modalData?.userDetails?.userType)
+    ) {
+      if (this.addUserForm.invalid) {
+        isInvalid = true;
+      }
+    } else {
+      const requiredFields = ['firstname', 'lastname'];
+      if (requiredFields.some((key) => this.addUserForm.get(key)?.invalid)) {
+        requiredFields.forEach((key) => this.addUserForm.get(key)?.markAsTouched());
+        isInvalid = true;
+      }
+    }
+
+    if (isInvalid) {
       this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}`, NotificationType.WARNING);
       this.addUserForm.markAllAsTouched();
       return;
@@ -120,40 +153,33 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     this.loading$$.next(true);
 
-    const { gsm, address, status, ...rest } = this.formValues;
-
-    let addUserReqData: AddStaffRequestData = { ...rest, status: +status };
+    console.log(this.formValues)
 
     if (
       [UserType.Scheduler, UserType.Secretary].includes(this.formValues.userType) ||
       [UserType.Scheduler, UserType.Secretary].includes(this.modalData?.userDetails?.userType)
     ) {
-      addUserReqData = {
-        ...addUserReqData,
-        gsm,
-        address,
-      };
-    }
-
-    if (this.modalData.edit) {
-      addUserReqData.userType = this.modalData.userDetails.userType;
-    }
-
-    if (this.modalData?.userDetails?.id) {
-      addUserReqData.id = this.modalData.userDetails.id;
-    }
-
-    if (!addUserReqData.email) {
-      addUserReqData.email = null;
-    }
-
-    addUserReqData.id = this.modalData?.userDetails?.id ?? 0;
-
-    this.userApiSvc
-      .addNewStaff$(addUserReqData)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(
-        () => {
+      this.userManagementApiSvc.createUserInvite({
+        givenName: this.formValues.firstname,
+        surName: this.formValues.lastname,
+        email: this.formValues.email,
+        roleName: this.formValues.userRole,
+        contextTenantId: this.formValues.tenantId,
+        redirect: {
+          redirectUrl: environment.redirectUrl
+        }
+      }).pipe(
+        switchMap((resp) => {
+          const requestBody: AddStaffRequestData = {
+            userAzureId: resp.id,
+            userRole: this.formValues.userRole,
+            userType: this.formValues.userType,
+          }
+          return this.staffApiSvc.upsertUser$(requestBody);
+        }),
+        takeUntil(this.destroy$$)
+      ).subscribe({
+        next: () => {
           if (this.modalData.edit) {
             this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
           } else {
@@ -162,43 +188,84 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
           this.loading$$.next(false);
           this.closeModal(true);
         },
-        (err) => {
-          this.loading$$.next(false);
+        error: (err) => {
+          console.log(err);
           this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+          this.loading$$.next(false);
+        }
+      });
+    } else {
+      this.staffApiSvc.upsertUser$({
+        firstname: this.formValues.firstname,
+        lastname: this.formValues.lastname,
+        email: this.formValues.email ?? null,
+        userType: this.modalData.edit ? this.modalData.userDetails.userType : this.formValues.userType,
+        ...(this.modalData.userDetails ? { id: this.modalData.userDetails.id } : {}),
+      }).pipe(takeUntil(this.destroy$$)).subscribe({
+        next: () => {
+          if (this.modalData.edit) {
+            this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
+          } else {
+            this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
+          }
+          this.loading$$.next(false);
+          this.closeModal(true);
         },
-      );
+        error: (err) => {
+          console.log(err);
+          this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+          this.loading$$.next(false);
+        }
+      })
+    }
 
-    // if (this.modalData.edit) {
-    //   this.userApiSvc
-    //     .updateStaff(addUserReqData)
-    //     .pipe(takeUntil(this.destroy$$))
-    //     .subscribe(
-    //       () => {
-    //         this.notificationSvc.showNotification(`User updated successfully`);
-    //         this.loading$$.next(false);
-    //         this.closeModal(true);
-    //       },
-    //       (err) => {
-    //         this.loading$$.next(false);
-    //         this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-    //       },
-    //     );
-    // } else {
-    //   this.userApiSvc
-    //     .addNewStaff$(addUserReqData)
-    //     .pipe(takeUntil(this.destroy$$))
-    //     .subscribe(
-    //       () => {
-    //         this.notificationSvc.showNotification(`User added successfully`);
-    //         this.loading$$.next(false);
-    //         this.closeModal(true);
-    //       },
-    //       (err) => {
-    //         this.loading$$.next(false);
-    //         this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-    //       },
-    //     );
+    // const { gsm, address, status, ...rest } = this.formValues;
+    //
+    // let addUserReqData: AddStaffRequestData = { ...rest, status: +status };
+    //
+    // if (
+    //   [UserType.Scheduler, UserType.Secretary].includes(this.formValues.userType) ||
+    //   [UserType.Scheduler, UserType.Secretary].includes(this.modalData?.userDetails?.userType)
+    // ) {
+    //   addUserReqData = {
+    //     ...addUserReqData,
+    //     gsm,
+    //     address,
+    //   };
     // }
+    //
+    // if (this.modalData.edit) {
+    //   addUserReqData.userType = this.modalData.userDetails.userType;
+    // }
+    //
+    // if (this.modalData?.userDetails?.id) {
+    //   addUserReqData.id = this.modalData.userDetails.id;
+    // }
+    //
+    // if (!addUserReqData.email) {
+    //   addUserReqData.email = null;
+    // }
+    //
+    // addUserReqData.id = this.modalData?.userDetails?.id ?? 0;
+    //
+    // this.staffApiSvc
+    //   .addNewStaff$(addUserReqData)
+    //   .pipe(takeUntil(this.destroy$$))
+    //   .subscribe(
+    //     () => {
+    //       if (this.modalData.edit) {
+    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
+    //       } else {
+    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
+    //       }
+    //       this.loading$$.next(false);
+    //       this.closeModal(true);
+    //     },
+    //     (err) => {
+    //       this.loading$$.next(false);
+    //       this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+    //     },
+    //   );
   }
 
   public handleEmailInput(e: Event): void {
@@ -216,4 +283,6 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       this.addUserForm.get('email')?.setErrors(null);
     }
   }
+
+  protected readonly UserType = UserType;
 }

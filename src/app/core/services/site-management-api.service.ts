@@ -64,7 +64,7 @@ export class SiteManagementApiService extends DestroyableComponent {
       formData.append('File', requestData.file);
     }
 
-    return this.http.post<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`, formData).pipe(
+    return this.http.post<BaseResponse<SiteManagement>>(`${environment.schedulerApiUrl}/sitesetting`, formData).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
       // tap(() => this.refreshSiteManagement$.next()),
@@ -98,7 +98,7 @@ export class SiteManagementApiService extends DestroyableComponent {
   private fetchSiteManagement(): Observable<SiteManagement> {
     this.loaderSvc.spinnerActivate();
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<SiteManagement>>(`${environment.serverBaseUrl}/sitesetting`).pipe(
+    return this.http.get<BaseResponse<SiteManagement>>(`${environment.schedulerApiUrl}/sitesetting`).pipe(
       map((response) => response.data),
       tap(() => {
         this.loaderSvc.deactivate();

@@ -31,7 +31,7 @@
         size="md"
         class="text-nowrap"
         leadingIcon="trash-01"
-        (click)="deleteUser(userDetails.id)"
+        (click)="deleteUser(userDetails.id, userDetails?.userAzureId)"
       >
         {{'DeleteUser' | translate}}
       </dfm-button>
@@ -135,7 +135,7 @@
   </section>
 
   <div class="hidden bg-white us-vw-action-buttons-mv">
-    <dfm-button color="secondary" size="sm" (click)="deleteUser(userDetails.id)">{{'Delete' | translate}}</dfm-button>
+    <dfm-button color="secondary" size="sm" (click)="deleteUser(userDetails.id, userDetails?.userAzureId)">{{'Delete' | translate}}</dfm-button>
     <dfm-button color="primary" size="sm" (click)="openEditUserModal()">{{'EditUser' | translate}}</dfm-button>
   </div>
 </div>

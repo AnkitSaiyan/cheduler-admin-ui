@@ -50,6 +50,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IsDataPipe } from './pipes/is-data.pipe';
 import { TimeSlotsComponent } from './components/time-slots/time-slots.component';
 import { MatSpinnerComponent } from './components/mat-spinner/mat-spinner.component';
+import {RoleNamePipe} from "./pipes/role-name.pipe";
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -86,6 +87,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     IsDataPipe,
     TimeSlotsComponent,
     MatSpinnerComponent,
+    RoleNamePipe
   ],
   imports: [
     CommonModule,
@@ -147,6 +149,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     IsDataPipe,
     TimeSlotsComponent,
     MatSpinnerComponent,
+    RoleNamePipe
   ],
   providers: [TranslatePipe],
 })

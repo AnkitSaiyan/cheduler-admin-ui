@@ -16,7 +16,7 @@ import { LoaderService } from './loader.service';
   providedIn: 'root',
 })
 export class StaffApiService extends DestroyableComponent implements OnDestroy {
-  private readonly userUrl = `${environment.serverBaseUrl}/user`;
+  private readonly userUrl = `${environment.schedulerApiUrl}/user`;
 
   private refreshStaffs$$ = new Subject<void>();
 
@@ -101,7 +101,7 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
 
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
       switchMap(() => {
-        return this.http.get<BaseResponse<User[]>>(`${environment.serverBaseUrl}/common/getusers`).pipe(
+        return this.http.get<BaseResponse<User[]>>(`${environment.schedulerApiUrl}/common/getusers`).pipe(
           map((response) => response.data?.map((u) => ({ ...u, fullName: `${u.firstname} ${u.lastname}` }))),
           tap(() => {
             this.loaderSvc.deactivate();
@@ -112,10 +112,17 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
     );
   }
 
-  public addNewStaff$(requestData: AddStaffRequestData): Observable<User> {
+  public upsertUser$(requestData: AddStaffRequestData): Observable<User> {
     this.loaderSvc.activate();
+
     const { id, ...restData } = requestData;
-    return this.http.post<BaseResponse<User>>(`${this.userUrl}?userId=${id}`, restData).pipe(
+
+    let url = this.userUrl;
+    if (id) {
+      url += `?userId=${id}`;
+    }
+
+    return this.http.post<BaseResponse<User>>(url, restData).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshStaffs$$.next();

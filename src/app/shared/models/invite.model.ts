@@ -10,3 +10,5 @@ export class UserInvite {
 export class UserInviteRedirect {
   redirectUrl: string = '';
 }
+
+

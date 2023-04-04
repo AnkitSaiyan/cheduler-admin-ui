@@ -43,7 +43,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
       });
   }
 
-  prioritySlots: string = `${environment.serverBaseUrl}/priorityslot`;
+  prioritySlots: string = `${environment.schedulerApiUrl}/priorityslot`;
 
   public get prioritySlots$(): Observable<PrioritySlot[]> {
     return combineLatest([this.refreshPrioritySlots$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllPrioritySlots()));

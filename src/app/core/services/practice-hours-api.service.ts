@@ -22,7 +22,7 @@ export class PracticeHoursApiService {
   private fetchPractices$(): Observable<any> {
     this.loaderSvc.spinnerActivate();
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.serverBaseUrl}/practice`).pipe(
+    return this.http.get<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.schedulerApiUrl}/practice`).pipe(
       map((response) => response.data),
       tap(() => {
         this.loaderSvc.deactivate();
@@ -34,7 +34,7 @@ export class PracticeHoursApiService {
 
   public savePracticeHours$(requestData: TimeSlot[]): Observable<PracticeAvailabilityServer[]> {
     this.loaderSvc.activate();
-    return this.http.post<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.serverBaseUrl}/practice`, requestData).pipe(
+    return this.http.post<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.schedulerApiUrl}/practice`, requestData).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshPracticeHours$$.next();

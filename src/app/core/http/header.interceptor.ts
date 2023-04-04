@@ -7,6 +7,8 @@ export class HeaderInterceptor implements HttpInterceptor {
   constructor() {}
 
   public intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    console.log(window.location);
+
     const SubDomain: string = window.location.host.split('.')[0];
 
     const newRequest = request.clone({

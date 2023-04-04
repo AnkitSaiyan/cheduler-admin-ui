@@ -106,7 +106,7 @@ export class DashboardApiService extends DestroyableComponent {
     this.loaderSvc.activate();
     return (
       this.http
-        .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/appointment`)
+        .get<BaseResponse<Appointment[]>>(`${environment.schedulerApiUrl}/appointment`)
         // .get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/dashboard/appointments`)
         .pipe(
           map((response) => response.data),
@@ -121,7 +121,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchAllNotifications(): Observable<Notification[]> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<Notification[]>>(`${environment.serverBaseUrl}/dashboard/notifications`).pipe(
+    return this.http.get<BaseResponse<Notification[]>>(`${environment.schedulerApiUrl}/dashboard/notifications`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -133,7 +133,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchRoomAbsence(): Observable<Room[]> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<Room[]>>(`${environment.serverBaseUrl}/dashboard/roomabsences`).pipe(
+    return this.http.get<BaseResponse<Room[]>>(`${environment.schedulerApiUrl}/dashboard/roomabsences`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -146,7 +146,7 @@ export class DashboardApiService extends DestroyableComponent {
   private fetchRecentPatients(): Observable<Appointment[]> {
     this.loaderSvc.activate();
     return this.http
-      .get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.serverBaseUrl}/dashboard/recentpatients`)
+      .get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/recentpatients`)
       .pipe(map((response) => response.data?.appointment));
   }
 
@@ -156,7 +156,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchPosts(): Observable<PostIt[]> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/postit`).pipe(
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/postit`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -168,7 +168,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchAppointmentChart(): Observable<any> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/appointmentsstatus`).pipe(
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/appointmentsstatus`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -180,7 +180,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private appointmentBarChart(): Observable<any> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklyappointments`).pipe(
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/weeklyappointments`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -192,7 +192,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private patientsBarChart(): Observable<any> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklypatients`).pipe(
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/weeklypatients`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -204,7 +204,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private completedBarChart(): Observable<any> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklycompletedappointments`).pipe(
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/weeklycompletedappointments`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -216,7 +216,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private cancelledBarChart(): Observable<any> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/weeklycancelledappointments`).pipe(
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/weeklycancelledappointments`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -228,7 +228,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private overallStatusBarChart(): Observable<any> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<PostIt[]>>(`${environment.serverBaseUrl}/dashboard/yearlyappointments`).pipe(
+    return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/yearlyappointments`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -307,7 +307,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   addPost(requestData: PostIt): Observable<PostIt> {
     this.loaderSvc.activate();
-    return this.http.post<BaseResponse<PostIt>>(`${environment.serverBaseUrl}/postit`, requestData).pipe(
+    return this.http.post<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/postit`, requestData).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshPost$$.next();
@@ -318,7 +318,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   deletePost(id: number): Observable<PostIt> {
     this.loaderSvc.activate();
-    return this.http.delete<BaseResponse<PostIt>>(`${environment.serverBaseUrl}/postit/${id}`).pipe(
+    return this.http.delete<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/postit/${id}`).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshPost$$.next();
@@ -334,7 +334,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchAllUpcomingAppointment(): Observable<Appointment[]> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<Appointment[]>>(`${environment.serverBaseUrl}/dashboard/upcomingappointments`).pipe(
+    return this.http.get<BaseResponse<Appointment[]>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -346,7 +346,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchAllRefferingDoctors(): Observable<Physician[]> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<Physician[]>>(`${environment.serverBaseUrl}/dashboard/doctors`).pipe(
+    return this.http.get<BaseResponse<Physician[]>>(`${environment.schedulerApiUrl}/dashboard/doctors`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -358,7 +358,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchAllExams(): Observable<Exam[]> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<Exam[]>>(`${environment.serverBaseUrl}/dashboard/exams`).pipe(
+    return this.http.get<BaseResponse<Exam[]>>(`${environment.schedulerApiUrl}/dashboard/exams`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -370,7 +370,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchAllAppointmentStatus(): Observable<AppointmentStatus> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/appointmentsstatus`).pipe(
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.schedulerApiUrl}/dashboard/appointmentsstatus`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -382,7 +382,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchAllWeeklyAppointments(): Observable<AppointmentStatus> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklyappointments`).pipe(
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.schedulerApiUrl}/dashboard/weeklyappointments`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -394,7 +394,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchAllWeeklyCompletedAppointments(): Observable<AppointmentStatus> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklycompletedappointments`).pipe(
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.schedulerApiUrl}/dashboard/weeklycompletedappointments`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -408,7 +408,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchAllWeeklycancelledappointments(): Observable<AppointmentStatus> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklycancelledappointments`).pipe(
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.schedulerApiUrl}/dashboard/weeklycancelledappointments`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -420,7 +420,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchWeeklypatients(): Observable<AppointmentStatus> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/weeklypatients`).pipe(
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.schedulerApiUrl}/dashboard/weeklypatients`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -432,7 +432,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchCompleteAppointmentGrowth(): Observable<AppointmentStatus> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/completeappointmentgrowth`).pipe(
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.schedulerApiUrl}/dashboard/completeappointmentgrowth`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -444,7 +444,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchCancelledAppointmentGrowth(): Observable<AppointmentStatus> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/cancelledappointmentgrowth`).pipe(
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.schedulerApiUrl}/dashboard/cancelledappointmentgrowth`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
@@ -456,7 +456,7 @@ export class DashboardApiService extends DestroyableComponent {
 
   private fetchYearlyAppointments(): Observable<AppointmentStatus> {
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.serverBaseUrl}/dashboard/yearlyappointments`).pipe(
+    return this.http.get<BaseResponse<AppointmentStatus>>(`${environment.schedulerApiUrl}/dashboard/yearlyappointments`).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
     );
