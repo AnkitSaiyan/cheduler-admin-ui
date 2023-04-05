@@ -19,6 +19,8 @@ import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 @Component({
   selector: 'dfm-list-priority-slots',
   templateUrl: './list-priority-slots.component.html',
@@ -60,6 +62,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
+    private permissionSvc: PermissionService,
   ) {
     super();
     this.prioritySlots$$ = new BehaviorSubject<any[]>([]);
@@ -130,7 +133,10 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
       .pipe(takeUntil(this.destroy$$))
       .subscribe((lang) => {
         this.selectedLang = lang;
-        this.columns = [Translate.Start[lang], Translate.End[lang], Translate.Priority[lang], Translate.Actions[lang]];
+        this.columns = [Translate.Start[lang], Translate.End[lang], Translate.Priority[lang]];
+        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
 
         // eslint-disable-next-line default-case
         switch (lang) {
@@ -284,6 +290,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     }, 0);
   }
 }
+
 
 
 
