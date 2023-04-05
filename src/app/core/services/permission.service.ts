@@ -9,7 +9,7 @@ export class PermissionService {
   private permissionType$$: BehaviorSubject<UserRoleEnum>;
 
   constructor() {
-    this.permissionType$$ = new BehaviorSubject<UserRoleEnum>(UserRoleEnum.Reader);
+    this.permissionType$$ = new BehaviorSubject<UserRoleEnum>(UserRoleEnum.Admin);
   }
 
   public get permissionType() {
@@ -20,6 +20,8 @@ export class PermissionService {
     this.permissionType$$.next(value);
   }
 }
+
+
 
 
 
