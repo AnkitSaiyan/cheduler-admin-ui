@@ -6,6 +6,7 @@ import {AuthUser, UserRoleEnum} from '../../shared/models/user.model';
 import {UserManagementApiService} from './user-management-api.service';
 import {NameValue} from "../../shared/components/search-modal.component";
 import {PermissionService} from "./permission.service";
+import {environment} from "../../../environments/environment";
 
 @Injectable({
   providedIn: 'root',
@@ -42,14 +43,18 @@ export class UserApiService {
 
   public removeUser() {
     this.authUser$$.next(undefined);
+    this.permissionSvc.removePermissionType();
   }
 
   public getUserRoles(): NameValue[] {
     return [...this.userRoles];
   }
 
-  public get currentUserRole$(): Observable<any> {
+  public getCurrentUserRole$(userId: string): Observable<any> {
     // Api to be integrated
+    // this.http.get(`${environment.schedulerApiUrl}/users/${userId}/roles`).subscribe((roles) => {
+    //   console.log(roles);
+    // });
     return of(UserRoleEnum.Admin);
   }
 
@@ -74,7 +79,7 @@ export class UserApiService {
       // get user role
       map((res) => {
         if (res) {
-          this.currentUserRole$.pipe(
+          this.getCurrentUserRole$(userId).pipe(
             map((role) => (this.permissionSvc.setPermissionType(role as UserRoleEnum))),
           )
           return true;

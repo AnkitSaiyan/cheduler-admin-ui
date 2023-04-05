@@ -72,7 +72,7 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
   public get userLists$(): Observable<User[]> {
     this.loaderSvc.activate();
     return this.users$.pipe(
-      map((users) => users.filter((user) => [UserType.Scheduler, UserType.General, UserType.Secretary].includes(user.userType))),
+      map((users) => users.filter((user) => [UserType.Scheduler, UserType.General].includes(user.userType))),
       tap(() => this.loaderSvc.deactivate()),
     );
   }
@@ -157,6 +157,7 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
   public getStaffByID(staffId: number): Observable<User | undefined> {
     this.loaderSvc.activate();
     this.loaderSvc.spinnerActivate();
+
     return combineLatest([this.refreshStaffs$$.pipe(startWith(''))]).pipe(
       switchMap(() =>
         this.http.get<BaseResponse<User>>(`${this.userUrl}/${staffId}`).pipe(

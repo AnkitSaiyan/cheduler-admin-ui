@@ -1,6 +1,19 @@
 import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, interval, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  filter,
+  interval,
+  map,
+  Observable,
+  Subject,
+  switchMap,
+  take,
+  takeUntil,
+  tap
+} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NotificationType, TableItem} from 'diflexmo-angular-design';
 import {NgbDropdown} from '@ng-bootstrap/ng-bootstrap';
@@ -14,8 +27,8 @@ import {
   ConfirmActionModalComponent,
   ConfirmActionModalData
 } from '../../../../shared/components/confirm-action-modal.component';
-import {SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
-import { User, UserRoleEnum } from '../../../../shared/models/user.model';
+import {NameValue, SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
+import {User, UserBase, UserRoleEnum, UserType} from '../../../../shared/models/user.model';
 import {DownloadAsType, DownloadService, DownloadType} from '../../../../core/services/download.service';
 import {AddUserComponent} from '../add-user/add-user.component';
 import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
@@ -23,8 +36,8 @@ import {Translate} from '../../../../shared/models/translate.model';
 import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {TranslateService} from '@ngx-translate/core';
 import {UserManagementApiService} from "../../../../core/services/user-management-api.service";
-import { Permission } from 'src/app/shared/models/permission.model';
-import { PermissionService } from 'src/app/core/services/permission.service';
+import {Permission} from 'src/app/shared/models/permission.model';
+import {PermissionService} from 'src/app/core/services/permission.service';
 
 @Component({
   selector: 'dfm-user-list',
@@ -46,6 +59,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   public downloadDropdownControl = new FormControl('', []);
 
+  public userTypeDropdownControl = new FormControl('', []);
+
   public columns: string[] = ['FirstName', 'LastName', 'Email', 'Category', 'Role', 'Status', 'Actions'];
 
   public downloadItems: DownloadType[] = [];
@@ -60,17 +75,26 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   public selectedUserIds: string[] = [];
 
-  public statusType = getStatusEnum();
-
-  public userType = getUserTypeEnum();
+  public statusTypeEnum = getStatusEnum();
 
   public loading$$ = new BehaviorSubject(true);
-
-  public fileName: string = '';
 
   private selectedLang: string = ENG_BE;
 
   public statuses = Statuses;
+
+  public userTypeToggle: UserType = UserType.General;
+
+  public userTypes: NameValue[] = [
+    {
+      value: UserType.General,
+      name: UserType.General + ' User'
+    },
+    {
+      value: UserType.Scheduler,
+      name: UserType.Scheduler + ' User'
+    }
+  ]
 
   public readonly Permission = Permission;
 
@@ -97,6 +121,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       this.downloadItems = types;
     });
 
+    setTimeout(() => this.userTypeDropdownControl.setValue(UserType.General), 0);
+
     this.userApiSvc.userLists$
       .pipe(
         tap(() => this.loading$$.next(true)),
@@ -110,6 +136,43 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         },
         (err) => this.loading$$.next(false),
       );
+
+    this.userTypeDropdownControl.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe((userType) => {
+      let userObservable$: Observable<UserBase[]>;
+      this.loading$$.next(true);
+
+      switch (userType) {
+        case UserType.Scheduler: {
+          userObservable$ = this.userManagementApiSvc.userList$.pipe(map((users) => users.map((user) => {
+            return {
+              id: user.id,
+              email: user.email,
+              firstname: user.givenName,
+              lastname: user.surname,
+              fullName: user.displayName,
+              userType: UserType.Scheduler,
+              status: +user.accountEnabled,
+            } as unknown as UserBase;
+          })));
+        }
+        break;
+        default:
+          userObservable$ = this.userApiSvc.userLists$;
+      }
+
+      userObservable$.pipe(takeUntil(this.destroy$$)).subscribe({
+        next: (users) => {
+          this.users$$.next([...users]);
+          this.filteredUsers$$.next([...users]);
+          this.loading$$.next(false);
+        },
+        error: (err) => {
+          this.loading$$.next(false);
+          this.users$$.next([]);
+          this.filteredUsers$$.next([]);
+        }
+      });
+    });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
       if (searchText) {
@@ -249,7 +312,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       );
   }
 
-  public deleteUser(id: number, userAzureId?: string | null) {
+  public deleteUser(id: number | string){
     const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
       data: {
         titleText: 'Confirmation',
@@ -263,12 +326,11 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       .pipe(
         filter((res: boolean) => res),
         switchMap(() => {
-          if (userAzureId) {
-            return this.userManagementApiSvc.deleteUser(userAzureId);
+          if (this.userTypeToggle === UserType.Scheduler) {
+            return this.userManagementApiSvc.deleteUser(id as string);
           }
-          return of({});
+          return this.userApiSvc.deleteStaff(id as number);
         }),
-        switchMap(() => this.userApiSvc.deleteStaff(id)),
         take(1),
       )
       .subscribe({
@@ -308,7 +370,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   public navigateToViewUser(e: TableItem) {
     if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+      let route = `./${e.id}`;
+      route += this.userTypeDropdownControl.value === UserType.Scheduler ? '/s/view' : '/g/view';
+      this.router.navigate([route], { relativeTo: this.route });
     }
   }
 
@@ -383,4 +447,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       this.downloadDropdownControl.setValue('');
     }, 0);
   }
+
+  protected readonly UserType = UserType;
 }

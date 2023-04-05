@@ -52,6 +52,7 @@ import { TimeSlotsComponent } from './components/time-slots/time-slots.component
 import { MatSpinnerComponent } from './components/mat-spinner/mat-spinner.component';
 import { RoleNamePipe } from './pipes/role-name.pipe';
 import { IsPermittedDirective } from './directives/permission.directive';
+import {UserRolePipe} from "./pipes/user-role.pipe";
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -90,6 +91,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TimeSlotsComponent,
     MatSpinnerComponent,
     RoleNamePipe,
+    UserRolePipe
   ],
   imports: [
     CommonModule,
@@ -153,6 +155,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TimeSlotsComponent,
     MatSpinnerComponent,
     RoleNamePipe,
+    UserRolePipe
   ],
   providers: [TranslatePipe],
 })

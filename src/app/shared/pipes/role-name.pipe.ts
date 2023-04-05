@@ -12,7 +12,7 @@ export class RoleNamePipe implements PipeTransform {
     'general_user': 'General User',
   };
 
-  public transform(userRole: UserRoleEnum): string {
+  public transform(userRole: UserRoleEnum | null | undefined): string {
     switch (userRole) {
       case UserRoleEnum.Admin:
       case UserRoleEnum.GeneralUser:

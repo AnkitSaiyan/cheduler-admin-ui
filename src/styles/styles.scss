@@ -462,6 +462,7 @@ dfm-input-dropdown {
 }
 
 .dfm-dropdown-bg-transparent {
+  background: transparent !important;
   dfm-input-dropdown {
     input {
       background: transparent !important;

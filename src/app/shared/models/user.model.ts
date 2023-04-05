@@ -57,10 +57,31 @@ export interface AddUserRequest {
   status: Status;
 }
 
+export interface UserBase {
+  id: number;
+  firstname: string;
+  lastname: string;
+  fullName: string;
+  email: string;
+  status: Status;
+  userType: UserType;
+  userRole?: UserRoleEnum;
+}
+
 
 /*
   * Auth User models ---
 */
+
+export interface SchedulerUser {
+  id: string;
+  email: string;
+  givenName: string;
+  surname: string;
+  displayName: string;
+  isExternal: boolean;
+  accountEnabled: boolean;
+}
 
 export class AuthUser {
   mail: string = '';
