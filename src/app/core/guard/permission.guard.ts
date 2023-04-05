@@ -12,7 +12,7 @@ export class PermissionGuard implements CanActivateChild {
   constructor(private permissionSvc: PermissionService, private router: Router) {}
 
   canActivateChild(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    switch (this.permissionSvc.permissionType$$.value) {
+    switch (this.permissionSvc.permissionType) {
       case UserRoleEnum.Reader: {
         const isPermitted = this.isReaderPermitted(route);
         return isPermitted;
@@ -38,6 +38,7 @@ export class PermissionGuard implements CanActivateChild {
     return true;
   }
 }
+
 
 
 

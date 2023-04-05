@@ -22,6 +22,8 @@ import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appoi
 import { ModalService } from 'src/app/core/services/modal.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'dfm-appointment-calendar',
@@ -86,6 +88,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     private timeIntervalPipe: TimeInIntervalPipe,
     private modalSvc: ModalService,
     private loaderSvc: LoaderService,
+    private permissionSvc: PermissionService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -416,6 +419,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
   }
 
   public addAppointment(event: any) {
+    if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
     const { e, eventsContainer, day, grayOutSlot } = event;
     const eventCard = this.createAppointmentCard(e, eventsContainer);
 

@@ -54,7 +54,7 @@
           ></dfm-button-icon>
         </div>
 
-        <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false" routerLink="./add"
+        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap" [disabled]="false" routerLink="./add"
           >{{ 'AddAppointment' | translate }}
         </dfm-button>
       </div>
@@ -76,14 +76,14 @@
             [openDelay]="200"
             (click)="toggleView()"
           ></dfm-button-icon>
-        
 
-        <dfm-button color="primary" size="md" class="text-nowrap header-buttons" [disabled]="false" routerLink="./add"
+
+        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap header-buttons" [disabled]="false" routerLink="./add"
           >{{ 'AddAppointment' | translate }}
         </dfm-button>
-      
 
-        <dfm-button color="primary" size="md" class="add-app-btn-mv hidden" [disabled]="false" routerLink="./add"
+
+        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="add-app-btn-mv hidden" [disabled]="false" routerLink="./add"
           >{{ 'Add' | translate }}
         </dfm-button>
       </div>

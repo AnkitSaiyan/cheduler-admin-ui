@@ -22,6 +22,8 @@ import { Translate } from '../../../models/translate.model';
 import { CalendarUtils } from 'src/app/shared/utils/calendar.utils';
 import { ENG_BE } from 'src/app/shared/utils/const';
 import { DestroyableComponent } from '../../destroyable.component';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'dfm-calendar-day-view',
@@ -95,6 +97,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
     private modalSvc: ModalService,
     private shareDataSvc: ShareDataService,
     private staffApiSvc: StaffApiService,
+    private permissionSvc: PermissionService,
   ) {
     super();
   }
@@ -348,6 +351,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
   }
 
   public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement) {
+    if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
     if (!e.offsetY) return;
     const isGrayOutArea = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
     const eventCard = this.createAppointmentCard(e, eventsContainer);

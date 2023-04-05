@@ -23,6 +23,7 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -53,6 +54,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   private selectedLang: string = ENG_BE;
 
   public statuses = Statuses;
+
+  public readonly Permission = Permission;
 
   public appointmentGroupedByDateAndRoom: {
     [key: string]: {
@@ -173,7 +176,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
         this.clearDownloadDropdown();
-
       });
 
     this.afterBannerClosed$$
