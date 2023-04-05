@@ -20,6 +20,7 @@ import { User } from '../../../../shared/models/user.model';
 import { ShareDataService } from '../../../../core/services/share-data.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Translate } from '../../../../shared/models/translate.model';
+import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
   selector: 'dfm-physician-list',
@@ -62,6 +63,8 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
   public loading$$ = new BehaviorSubject(true);
 
   public statuses = Statuses;
+
+  public readonly Permission = Permission;
 
   private selectedLang: string = ENG_BE;
 

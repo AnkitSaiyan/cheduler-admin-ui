@@ -55,6 +55,7 @@
         class="text-nowrap"
         [disabled]="false"
         (click)="openAddPhysicianModal()"
+        *dfmPermitted="Permission.CreatePhysicians"
       >{{'AddPhysician' | translate}}
       </dfm-button>
     </div>
