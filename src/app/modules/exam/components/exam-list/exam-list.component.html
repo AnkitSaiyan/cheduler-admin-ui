@@ -89,27 +89,29 @@
           </dfm-badge>
         </dfm-table-body-cell>
 
-        <dfm-table-body-cell>
+        <dfm-table-body-cell *dfmPermitted="[Permission.UpdateExams, Permission.DeleteExams]">
           <div class="d-flex dfm-gap-16 align-items-center ex-li-action-buttons">
-            <dfm-button
-              *ngIf="item.status === statusType.Inactive"
-              color="link-gray"
-              size="sm"
-              trailingIcon="check-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-              ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8" [openDelay]="200"
-            ></dfm-button>
+            <ng-container *dfmPermitted="Permission.UpdateExams">
+              <dfm-button
+                *ngIf="item.status === statusType.Inactive"
+                color="link-gray"
+                size="sm"
+                trailingIcon="check-circle"
+                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
+                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8" [openDelay]="200"
+              ></dfm-button>
 
-            <dfm-button
-              *ngIf="item.status === statusType.Active"
-              color="link-gray"
-              size="sm"
-              trailingIcon="x-circle"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-              ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8" [openDelay]="200"
-            ></dfm-button>
+              <dfm-button
+                *ngIf="item.status === statusType.Active"
+                color="link-gray"
+                size="sm"
+                trailingIcon="x-circle"
+                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
+                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8" [openDelay]="200"
+              ></dfm-button>
+            </ng-container>
 
             <dfm-button
               color="link-gray"
@@ -120,6 +122,7 @@
               [state]="{ comingFromRoute: 'exam', edit: true }"
               ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
+              *dfmPermitted="Permission.UpdateExams"
             ></dfm-button>
 
             <dfm-button
@@ -129,6 +132,7 @@
               (click)="$event.stopPropagation(); deleteExam(item.id)"
               ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
+              *dfmPermitted="Permission.DeleteExams"
             ></dfm-button>
           </div>
 
@@ -150,28 +154,31 @@
           <ng-template #actionMenu>
             <div class="ex-li-menus"
                  aria-labelledby="dropdownManual">
-              <div *ngIf="!item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
-                   [openDelay]="200">
-                <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-              </div>
 
-              <div *ngIf="item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
-                   [openDelay]="200">
-                <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-              </div>
+              <ng-container *dfmPermitted="Permission.UpdateExams">
+                <div *ngIf="!item.status"
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
+                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
+                     [openDelay]="200">
+                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+                </div>
+
+                <div *ngIf="item.status"
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
+                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
+                     [openDelay]="200">
+                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+                </div>
+              </ng-container>
 
               <div (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"
                    [state]="{ comingFromRoute: 'exam', edit: true }" ngbPopover="{{'Edit' | translate}}"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.UpdateExams">
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
 
               <div (click)="$event.stopPropagation(); deleteExam(item.id)" ngbPopover="{{'Delete' | translate}}"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.DeleteExams">
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>
