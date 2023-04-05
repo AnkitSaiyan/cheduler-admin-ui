@@ -21,6 +21,8 @@ import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'dfm-room-list',
@@ -82,6 +84,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
     private shareDataSvc: ShareDataService,
+    private permissionSvc: PermissionService,
   ) {
     super();
     this.rooms$$ = new BehaviorSubject<any[]>([]);
@@ -190,8 +193,10 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
           Translate.PlaceInAgenda[lang],
           Translate.Type[lang],
           Translate.Status[lang],
-          Translate.Actions[lang],
         ];
+        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
 
         // eslint-disable-next-line default-case
         switch (lang) {
