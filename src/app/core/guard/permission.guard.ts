@@ -23,13 +23,13 @@ export class PermissionGuard implements CanActivateChild {
     return true;
   }
 
-  private isReaderPermitted(route: ActivatedRouteSnapshot): boolean {
+  private isReaderPermitted(route: ActivatedRouteSnapshot): boolean | UrlTree {
     if (
       route.data['routeType'] === RouteType.Add ||
       route.data['routeName'] === RouteName.Practice ||
       route.data['routeName'] === RouteName.SiteSetting
     )
-      return false;
+      return this.router.parseUrl('/dashboard');
     return true;
   }
 
@@ -38,6 +38,8 @@ export class PermissionGuard implements CanActivateChild {
     return true;
   }
 }
+
+
 
 
 
