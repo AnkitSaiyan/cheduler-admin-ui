@@ -13,6 +13,8 @@ import { MsalGuardConfiguration, MsalService, MSAL_GUARD_CONFIG } from '@azure/m
 import { InteractionType } from '@azure/msal-browser';
 import {UserApiService} from "./services/user-api.service";
 import {Translate} from "../shared/models/translate.model";
+import { PermissionService } from './services/permission.service';
+import { UserRoleEnum } from '../shared/models/user.model';
 
 @Component({
   selector: 'dfm-main',
@@ -37,6 +39,21 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     ]),
   ];
 
+  private readerNavigationItems: NavigationItem[] = [
+    new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
+    new NavigationItem('Appointment', 'file-06', '/appointment', false),
+    new NavigationItem('Absence', 'user-x-01', '/absence', false),
+    new NavigationItem('Configuration', 'tool-02', undefined, false, [
+      new NavigationItem('User', 'user-circle', '/user', false),
+      new NavigationItem('Rooms', 'building-01', '/room', false),
+      new NavigationItem('Staff', 'user-01', '/staff', false),
+      new NavigationItem('Physician', 'medical-circle', '/physician', false),
+      new NavigationItem('Exam', 'microscope', '/exam', false),
+      new NavigationItem('Priority Slots', 'calendar-date', '/priority-slots', false),
+      new NavigationItem('E-mail Template', 'mail-05', '/email-template', false),
+    ]),
+  ];
+
   private navigationItemsNL: NavigationItem[] = [
     new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
     new NavigationItem('Afspraak', 'file-06', '/appointment', false),
@@ -51,6 +68,21 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       new NavigationItem('Prioritaire slots', 'calendar-date', '/priority-slots', false),
       new NavigationItem('E-mail Sjabloon', 'mail-05', '/email-template', false),
       new NavigationItem('Site Beheer', 'tool-01', '/site-management', false),
+    ]),
+  ];
+
+  private readerNavigationItemsNL: NavigationItem[] = [
+    new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
+    new NavigationItem('Afspraak', 'file-06', '/appointment', false),
+    new NavigationItem('Afwezigheid', 'user-x-01', '/absence', false),
+    new NavigationItem('Configuratie', 'tool-02', undefined, false, [
+      new NavigationItem('Gebruiker', 'user-circle', '/user', false),
+      new NavigationItem('Zalen', 'building-01', '/room', false),
+      new NavigationItem('Medewerkers', 'user-01', '/staff', false),
+      new NavigationItem('Dokter', 'medical-circle', '/physician', false),
+      new NavigationItem('Onderzoek', 'microscope', '/exam', false),
+      new NavigationItem('Prioritaire slots', 'calendar-date', '/priority-slots', false),
+      new NavigationItem('E-mail Sjabloon', 'mail-05', '/email-template', false),
     ]),
   ];
 
@@ -94,7 +126,8 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     public loaderService: LoaderService,
     private cdr: ChangeDetectorRef,
     private authService: MsalService,
-    private userApiSvc: UserApiService
+    private userApiSvc: UserApiService,
+    private permissionSvc: PermissionService,
   ) {
     super();
   }
@@ -103,21 +136,33 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     // translation changes should go here
     this.currentTenant$$.pipe(takeUntil(this.destroy$$)).subscribe((lang) => {
       this.profileData.user.name = Translate.Profile[lang];
+      // eslint-disable-next-line default-case
       switch (lang) {
         case ENG_BE: {
+          if (this.permissionSvc.permissionType === UserRoleEnum.Reader) {
+            this.navItems = [...this.readerNavigationItems];
+            break;
+          }
           this.navItems = [...this.navigationItems];
           break;
         }
         case DUTCH_BE: {
+          if (this.permissionSvc.permissionType === UserRoleEnum.Reader) {
+            this.navItems = [...this.readerNavigationItemsNL];
+            break;
+          }
           this.navItems = [...this.navigationItemsNL];
           break;
         }
       }
     });
 
-    this.dataShareService.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe((language: string) => {
-      this.currentTenant$$.next(language);
-    });
+    this.dataShareService
+      .getLanguage$()
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((language: string) => {
+        this.currentTenant$$.next(language);
+      });
 
     this.dashboardApiService.notificationData$$.pipe(takeUntil(this.destroy$$)).subscribe((res) => {
       this.notifications = [];
