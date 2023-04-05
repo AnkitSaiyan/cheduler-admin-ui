@@ -14,7 +14,7 @@ export class IsPermittedDirective implements OnInit {
     this.displayTemplate();
   }
 
-  constructor(private templateRef: TemplateRef<unknown>, private vcr: ViewContainerRef, private permissionSvc: PermissionService) {}
+  constructor(private templateRef: TemplateRef<unknown>, private vcr: ViewContainerRef, public permissionSvc: PermissionService) {}
 
   ngOnInit(): void {
     this.displayTemplate();
@@ -45,6 +45,7 @@ export class IsPermittedDirective implements OnInit {
     this.vcr.createEmbeddedView(this.templateRef);
   }
 }
+
 
 
 

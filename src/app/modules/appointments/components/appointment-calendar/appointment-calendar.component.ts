@@ -88,7 +88,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     private timeIntervalPipe: TimeInIntervalPipe,
     private modalSvc: ModalService,
     private loaderSvc: LoaderService,
-    private permissionSvc: PermissionService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);

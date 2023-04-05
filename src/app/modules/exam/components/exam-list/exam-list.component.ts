@@ -76,7 +76,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     private cdr: ChangeDetectorRef,
     private shareDataService: ShareDataService,
     private translate: TranslateService,
-    private permissionSvc: PermissionService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.exams$$ = new BehaviorSubject<any[]>([]);

@@ -63,7 +63,7 @@
   ></dfm-input>
 
   <section #tableWrapper class="list-page-content-height" *ngIf="filteredExams$$ | async as exams">
-    <dfm-table [items]="exams" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+    <dfm-table [items]="exams" [selectable]="permissionSvc.isNotReader" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewExam($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>

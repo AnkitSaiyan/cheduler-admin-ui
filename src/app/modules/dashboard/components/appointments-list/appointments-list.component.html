@@ -104,7 +104,7 @@
     <section class="table-wrapper" *ngIf="filteredAppointments$$ | async as appointments">
       <dfm-table
         [items]="appointments"
-        [selectable]="true"
+        [selectable]="permissionSvc.isNotReader"
         (selected)="handleCheckboxSelection($event)"
         [clearSelected$]="clearSelected$$"
         [rowClickable]="true"

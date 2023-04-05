@@ -15,7 +15,7 @@ import {
   ConfirmActionModalData
 } from '../../../../shared/components/confirm-action-modal.component';
 import {SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
-import {User} from '../../../../shared/models/user.model';
+import { User, UserRoleEnum } from '../../../../shared/models/user.model';
 import {DownloadAsType, DownloadService, DownloadType} from '../../../../core/services/download.service';
 import {AddUserComponent} from '../add-user/add-user.component';
 import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
@@ -24,6 +24,7 @@ import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {TranslateService} from '@ngx-translate/core';
 import {UserManagementApiService} from "../../../../core/services/user-management-api.service";
 import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
 
 @Component({
   selector: 'dfm-user-list',
@@ -84,6 +85,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
     private userManagementApiSvc: UserManagementApiService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.users$$ = new BehaviorSubject<any[]>([]);
@@ -190,8 +192,11 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
           Translate.Category[lang],
           'Role',
           Translate.Status[lang],
-          Translate.Actions[lang],
         ];
+
+        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
 
         // eslint-disable-next-line default-case
         switch (lang) {

@@ -71,7 +71,7 @@
 
   <section class="list-page-content-height"
            *ngIf="filteredPhysicians$$ | async as physicians">
-    <dfm-table [items]="physicians" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+    <dfm-table [items]="physicians" [selectable]="permissionSvc.isNotReader" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewPhysician($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>

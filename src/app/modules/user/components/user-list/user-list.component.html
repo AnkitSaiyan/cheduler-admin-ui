@@ -52,7 +52,7 @@
   <section class="list-page-content-height" *ngIf="filteredUsers$$ | async as users">
     <dfm-table
       [items]="users"
-      [selectable]="true"
+      [selectable]="permissionSvc.isNotReader"
       (selected)="handleCheckboxSelection($event)"
       [clearSelected$]="clearSelected$$"
       [rowClickable]="true"
@@ -85,31 +85,33 @@
           </dfm-badge>
         </dfm-table-body-cell>
 
-        <dfm-table-body-cell>
+        <dfm-table-body-cell *dfmPermitted="[Permission.UpdateUser, Permission.DeleteUser]">
           <div class="d-flex dfm-gap-16 align-items-center us-li-action-buttons">
-            <dfm-button
-              *ngIf="item.status === statusType.Inactive"
-              color="link-gray"
-              size="sm"
-              trailingIcon="check-circle"
-              ngbPopover="{{ 'ChangeStatus' | translate }}"
-              triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }])"
-            ></dfm-button>
+            <ng-container *dfmPermitted="Permission.UpdateUser">
+              <dfm-button
+                *ngIf="item.status === statusType.Inactive"
+                color="link-gray"
+                size="sm"
+                trailingIcon="check-circle"
+                ngbPopover="{{ 'ChangeStatus' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
+                (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }])"
+              ></dfm-button>
 
-            <dfm-button
-              *ngIf="item.status === statusType.Active"
-              color="link-gray"
-              size="sm"
-              trailingIcon="x-circle"
-              ngbPopover="{{ 'ChangeStatus' | translate }}"
-              triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }])"
-            ></dfm-button>
+              <dfm-button
+                *ngIf="item.status === statusType.Active"
+                color="link-gray"
+                size="sm"
+                trailingIcon="x-circle"
+                ngbPopover="{{ 'ChangeStatus' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
+                (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }])"
+              ></dfm-button>
+            </ng-container>
 
             <dfm-button
               color="link-gray"
@@ -120,6 +122,7 @@
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); openAddUserModal(item)"
+              *dfmPermitted="Permission.UpdateUser"
             ></dfm-button>
 
             <dfm-button color="link-gray"
@@ -130,6 +133,7 @@
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); deleteUser(item.id, item?.userAzureId)"
+              *dfmPermitted="Permission.DeleteUser"
             ></dfm-button>
           </div>
 
@@ -150,27 +154,29 @@
 
           <ng-template #actionMenu>
             <div class="us-li-menus" aria-labelledby="dropdownManual">
-              <div
-                *ngIf="!item.status"
-                (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }])"
-                ngbPopover="{{ 'Status' | translate }}"
-                triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8"
-                [openDelay]="200"
-              >
-                <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-              </div>
+              <ng-container *dfmPermitted="Permission.UpdateUser">
+                <div
+                  *ngIf="!item.status"
+                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }])"
+                  ngbPopover="{{ 'Status' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                >
+                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+                </div>
 
-              <div
-                *ngIf="item.status"
-                (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }])"
-                ngbPopover="{{ 'Status' | translate }}"
-                triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8"
-                [openDelay]="200"
-              >
-                <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-              </div>
+                <div
+                  *ngIf="item.status"
+                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }])"
+                  ngbPopover="{{ 'Status' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                >
+                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+                </div>
+              </ng-container>
 
               <div
                 (click)="$event.stopPropagation(); openAddUserModal(item)"
@@ -178,6 +184,7 @@
                 triggers="mouseenter:mouseleave"
                 popoverClass="popover-p-8"
                 [openDelay]="200"
+                *dfmPermitted="Permission.UpdateUser"
               >
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
@@ -188,6 +195,7 @@
                 triggers="mouseenter:mouseleave"
                 popoverClass="popover-p-8"
                 [openDelay]="200"
+                *dfmPermitted="Permission.DeleteUser"
               >
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>

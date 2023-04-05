@@ -60,7 +60,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
-    private permissionSvc: PermissionService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.absences$$ = new BehaviorSubject<any[]>([]);

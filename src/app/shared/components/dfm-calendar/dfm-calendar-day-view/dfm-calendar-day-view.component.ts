@@ -97,7 +97,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
     private modalSvc: ModalService,
     private shareDataSvc: ShareDataService,
     private staffApiSvc: StaffApiService,
-    private permissionSvc: PermissionService,
+    public permissionSvc: PermissionService,
   ) {
     super();
   }

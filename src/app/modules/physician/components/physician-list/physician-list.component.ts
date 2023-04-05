@@ -80,7 +80,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     private shareDataSvc: ShareDataService,
     private translatePipe: TranslatePipe,
     private translate: TranslateService,
-    private permissionSvc: PermissionService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.physicians$$ = new BehaviorSubject<any[]>([]);

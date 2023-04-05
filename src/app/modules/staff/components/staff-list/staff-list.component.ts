@@ -70,7 +70,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
-    private permissionSvc: PermissionService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.staffs$$ = new BehaviorSubject<any[]>([]);

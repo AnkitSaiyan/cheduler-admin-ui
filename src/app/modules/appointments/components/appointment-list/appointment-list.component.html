@@ -108,7 +108,7 @@
     <ng-container *ngIf="(calendarView$$ | async) === false">
       <dfm-table
         [items]="appointments"
-        [selectable]="true"
+        [selectable]="permissionSvc.isNotReader"
         (selected)="handleCheckboxSelection($event)"
         [clearSelected$]="clearSelected$$"
         [rowClickable]="true"

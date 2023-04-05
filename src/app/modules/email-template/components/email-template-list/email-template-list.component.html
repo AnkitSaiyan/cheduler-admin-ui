@@ -47,7 +47,7 @@
   <section class="list-page-content-height" *ngIf="filteredEmails$$ | async as emails">
     <dfm-table
       [items]="emails"
-      [selectable]="true"
+      [selectable]="permissionSvc.isNotReader"
       (selected)="handleCheckboxSelection($event)"
       [clearSelected$]="clearSelected$$"
       [rowClickable]="true"

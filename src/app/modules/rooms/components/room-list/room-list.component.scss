@@ -47,7 +47,7 @@
           z-index: 2;
           white-space: nowrap;
 
-          &:first-child {
+          &.checkbox {
             //width: fit-content;
             width: 1%;
             padding-right: 0;
@@ -95,7 +95,7 @@
           overflow: hidden;
           text-overflow: ellipsis;
 
-          &:first-child {
+          &.checkbox {
             //width: fit-content;
             width: 1%;
             padding-right: 0;

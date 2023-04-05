@@ -65,7 +65,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
-    private permissionSvc: PermissionService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.emails$$ = new BehaviorSubject<any[]>([]);
@@ -241,6 +241,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     }, 0);
   }
 }
+
 
 
 

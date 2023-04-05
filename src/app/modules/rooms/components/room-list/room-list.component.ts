@@ -84,7 +84,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
     private shareDataSvc: ShareDataService,
-    private permissionSvc: PermissionService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.rooms$$ = new BehaviorSubject<any[]>([]);

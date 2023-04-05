@@ -98,7 +98,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private routerStateSvc: RouterStateService,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
-    private permissionSvc: PermissionService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);

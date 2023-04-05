@@ -73,8 +73,8 @@
     <div class="room-table-wrapper">
       <table class="room-table">
         <thead class="room-table-header">
-        <tr class="room-table-header-row">
-          <th class="room-table-th">
+        <tr class="room-table-header-row" >
+          <th class="room-table-th checkbox" *ngIf="permissionSvc.isNotReader">
             <dfm-checkbox class="w-fit d-flex dfm-me-0" #headerCheckBox
                           (click)="$event.stopPropagation(); handleCheckboxSelection(-1)"></dfm-checkbox>
           </th>
@@ -87,7 +87,7 @@
             [ngClass]="{ 'room-table-row-disabled': (loading$$ | async) === true }"
             [routerLink]="['./', room.id, 'view']"
             cdkDrag [cdkDragDisabled]="(loading$$ | async) === true " [cdkDragStartDelay]="100">
-          <td class="room-table-td">
+          <td class="room-table-td checkbox" *ngIf="permissionSvc.isNotReader">
             <dfm-checkbox class="w-fit d-flex dfm-me-0" #rowCheckbox
                           (click)="$event.stopPropagation(); handleCheckboxSelection(+room.id)"></dfm-checkbox>
           </td>
@@ -243,7 +243,7 @@
     <!--      </tbody>-->
     <!--    </table>-->
 
-    <!--    <dfm-table [items]="rooms" [selectable]="true"-->
+    <!--    <dfm-table [items]="rooms" [selectable]="permissionSvc.isNotReader"-->
     <!--               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewRoom($event)"-->
     <!--               class="dfm-table-wrapper">-->
     <!--      <ng-template #headerRowTemplate>-->

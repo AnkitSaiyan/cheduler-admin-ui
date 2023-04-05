@@ -19,7 +19,14 @@ export class PermissionService {
   public set permissionType(value: UserRoleEnum) {
     this.permissionType$$.next(value);
   }
+
+  public get isNotReader() {
+    return this.permissionType$$.value !== UserRoleEnum.Reader;
+  }
 }
+
+
+
 
 
 

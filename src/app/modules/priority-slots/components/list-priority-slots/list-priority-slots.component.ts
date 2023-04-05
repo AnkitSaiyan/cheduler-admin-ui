@@ -62,7 +62,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
-    private permissionSvc: PermissionService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.prioritySlots$$ = new BehaviorSubject<any[]>([]);
@@ -290,6 +290,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     }, 0);
   }
 }
+
 
 
 
