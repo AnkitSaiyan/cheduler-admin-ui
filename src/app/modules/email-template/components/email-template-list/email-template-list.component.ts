@@ -13,6 +13,9 @@ import { Translate } from 'src/app/shared/models/translate.model';
 import { ENG_BE, Statuses, StatusesNL, DUTCH_BE } from 'src/app/shared/utils/const';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { TranslateService } from '@ngx-translate/core';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'dfm-email-template-list',
@@ -31,7 +34,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Title', 'Subject', 'Status', 'Actions'];
+  public columns: string[] = ['Title', 'Subject', 'Status'];
 
   public downloadItems: any[] = [];
 
@@ -53,6 +56,8 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
   public statuses = Statuses;
 
+  public readonly Permission = Permission;
+
   constructor(
     private notificationSvc: NotificationDataService,
     private downloadSvc: DownloadService,
@@ -60,6 +65,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
+    private permissionSvc: PermissionService,
   ) {
     super();
     this.emails$$ = new BehaviorSubject<any[]>([]);
@@ -104,7 +110,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
         if (downloadAs !== 'PRINT') {
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
         }
-        this.clearDownloadDropdown()
+        this.clearDownloadDropdown();
       });
 
     this.afterBannerClosed$$.pipe(
@@ -146,6 +152,9 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
       .pipe(takeUntil(this.destroy$$))
       .subscribe((lang) => {
         this.selectedLang = lang;
+        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
 
         // eslint-disable-next-line default-case
         switch (lang) {
@@ -232,5 +241,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     }, 0);
   }
 }
+
+
 
 

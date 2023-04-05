@@ -55,7 +55,7 @@
     >
       <ng-template #headerRowTemplate>
         <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
-      </ng-template>
+      </ng-template>;
 
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-body-cell>{{ item.title | titlecase | dashIfNothing }}</dfm-table-body-cell>
@@ -70,7 +70,7 @@
           </dfm-badge>
         </dfm-table-body-cell>
 
-        <dfm-table-body-cell>
+        <dfm-table-body-cell *dfmPermitted="Permission.UpdateEmailTemplate">
           <div class="d-flex dfm-gap-16 align-items-center et-ls-action-buttons">
             <dfm-button
               *ngIf="item.status === statusType.Inactive"
@@ -108,7 +108,6 @@
               (click)="$event.stopPropagation()"
             ></dfm-button>
           </div>
-
           <!-- Action Menu -->
           <dfm-button
             [ngbPopover]="actionMenu"
@@ -167,3 +166,4 @@
   [display]="selectedUserIds.length"
   (confirmationEvent)="handleConfirmation($event)"
 ></dfm-confirm-status-change-banner>
+

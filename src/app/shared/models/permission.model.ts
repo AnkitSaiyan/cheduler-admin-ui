@@ -111,7 +111,9 @@ export enum ReaderPermission {
   ReadRoles = 'can_read_roles',
   ReadStaffs = 'can_read_staffs',
   ReadUser = 'can_read_user',
+  ReadEmailTemplate = 'can_read_email_template',
 }
+
 
 
 
