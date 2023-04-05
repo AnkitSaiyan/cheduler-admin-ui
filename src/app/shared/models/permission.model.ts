@@ -60,3 +60,51 @@ export enum Permission {
   UpdateEmailTemplate = 'can_update_email_template',
 }
 
+export enum GeneralUserPermission {
+  CreateAbsences = 'can_create_absences',
+  DeleteAbsences = 'can_delete_absences',
+  ReadAbsences = 'can_read_absences',
+  UpdateAbsences = 'can_update_absences',
+  CreateAppointments = 'can_create_appointments',
+  ReadAppointments = 'can_read_appointments',
+  UpdateAppointments = 'can_update_appointments',
+  CreateExams = 'can_create_exams',
+  ReadExams = 'can_read_exams',
+  UpdateExams = 'can_update_exams',
+  CreateRooms = 'can_create_rooms',
+  ReadRooms = 'can_read_rooms',
+  UpdateRooms = 'can_update_rooms',
+  CreatePrioritySlots = 'can_create_priority_slot',
+  ReadPrioritySlots = 'can_read_priority_slot',
+  UpdatePrioritySlots = 'can_update_priority',
+  CreateSiteSetting = 'can_create_site_setting',
+  ReadSiteSetting = 'can_read_site_setting',
+  UpdateSiteSetting = 'can_update_site_setting',
+  CreatePractice = 'can_create_practice',
+  ReadPractice = 'can_read_practice',
+  UpdatePractice = 'can_update_practice',
+  CreatePhysicians = 'can_create_physicians',
+  ReadPhysicians = 'can_read_physicians',
+  UpdatePhysicians = 'can_update_physicians',
+  CreateRoles = 'can_create_user_roles',
+  ReadRoles = 'can_read_roles',
+  CreateStaffs = 'can_create_staffs',
+  ReadStaffs = 'can_read_staffs',
+  UpdateStaffs = 'can_update_staffs',
+  ReadEmailTemplate = 'can_read_email_template',
+  UpdateEmailTemplate = 'can_update_email_template',
+}
+
+export enum ReaderPermission {
+  ReadAbsences = 'can_read_absences',
+  ReadAppointments = 'can_read_appointments',
+  ReadExams = 'can_read_exams',
+  ReadRooms = 'can_read_rooms',
+  ReadPrioritySlots = 'can_read_priority_slot',
+  ReadPhysicians = 'can_read_physicians',
+  ReadRoles = 'can_read_roles',
+  ReadStaffs = 'can_read_staffs',
+}
+
+
+
