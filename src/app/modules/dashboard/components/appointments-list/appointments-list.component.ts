@@ -1,31 +1,37 @@
-import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
-import { DatePipe, TitleCasePipe } from '@angular/common';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
-import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
-import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
-import { Appointment } from '../../../../shared/models/appointment.model';
-import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { getDurationMinutes } from '../../../../shared/models/calendar.model';
-import { Exam } from '../../../../shared/models/exam.model';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { AppointmentAdvanceSearchComponent } from './appointment-advance-search/appointment-advance-search.component';
-import { TranslateService } from '@ngx-translate/core';
-import { PermissionService } from 'src/app/core/services/permission.service';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
-import { Permission } from 'src/app/shared/models/permission.model';
+import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil} from 'rxjs';
+import {ActivatedRoute, Router} from '@angular/router';
+import {NotificationType, TableItem} from 'diflexmo-angular-design';
+import {DatePipe, TitleCasePipe} from '@angular/common';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
+import {
+  AppointmentStatus,
+  AppointmentStatusToName,
+  ChangeStatusRequestData
+} from '../../../../shared/models/status.model';
+import {getAppointmentStatusEnum, getReadStatusEnum} from '../../../../shared/utils/getEnums';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {ModalService} from '../../../../core/services/modal.service';
+import {
+  ConfirmActionModalComponent,
+  ConfirmActionModalData
+} from '../../../../shared/components/confirm-action-modal.component';
+import {NameValue, SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
+import {DownloadAsType, DownloadService} from '../../../../core/services/download.service';
+import {AppointmentApiService} from '../../../../core/services/appointment-api.service';
+import {Appointment} from '../../../../shared/models/appointment.model';
+import {RoomsApiService} from '../../../../core/services/rooms-api.service';
+import {Exam} from '../../../../shared/models/exam.model';
+import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
+import {Translate} from '../../../../shared/models/translate.model';
+import {ShareDataService} from 'src/app/core/services/share-data.service';
+import {RouterStateService} from '../../../../core/services/router-state.service';
+import {AppointmentAdvanceSearchComponent} from './appointment-advance-search/appointment-advance-search.component';
+import {TranslateService} from '@ngx-translate/core';
+import {PermissionService} from 'src/app/core/services/permission.service';
+import {UserRoleEnum} from 'src/app/shared/models/user.model';
+import {Permission} from 'src/app/shared/models/permission.model';
 
 @Component({
   selector: 'dfm-appointments-list',
@@ -107,42 +113,51 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
     this.routerStateSvc
       .listenForQueryParamsChanges$()
       .pipe(debounceTime(100))
-      .subscribe((params) => {
-        if (params['v']) {
-          this.calendarView$$.next(params['v'] !== 't');
-        } else {
-          this.router.navigate([], {
-            replaceUrl: true,
-            queryParams: {
-              v: 'w',
-            },
-          });
-          this.calendarView$$.next(true);
+      .subscribe({
+        next: (params) => {
+          if (params['v']) {
+            this.calendarView$$.next(params['v'] !== 't');
+          } else {
+            this.router.navigate([], {
+              replaceUrl: true,
+              queryParams: {
+                v: 'w',
+              },
+            });
+            this.calendarView$$.next(true);
+          }
         }
       });
   }
 
   public ngOnInit() {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
-    this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-      this.appointments$$.next(appointments);
-      this.filteredAppointments$$.next(appointments);
-
-      // appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
-      //
-      //
-      //
-      // this.groupAppointmentsForCalendar(...appointments);
-      // this.groupAppointmentByDateAndRoom(...appointments);
-      //
-      //
+    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (items) => (this.downloadItems = items)
     });
 
-    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-      if (searchText) {
-        this.handleSearch(searchText.toLowerCase());
-      } else {
-        this.filteredAppointments$$.next([...this.appointments$$.value]);
+    this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (appointments) => {
+        this.appointments$$.next(appointments);
+        this.filteredAppointments$$.next(appointments);
+
+        // appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
+        //
+        //
+        //
+        // this.groupAppointmentsForCalendar(...appointments);
+        // this.groupAppointmentByDateAndRoom(...appointments);
+        //
+        //
+      }
+    });
+
+    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+      next: (searchText) => {
+        if (searchText) {
+          this.handleSearch(searchText.toLowerCase());
+        } else {
+          this.filteredAppointments$$.next([...this.appointments$$.value]);
+        }
       }
     });
 
@@ -151,37 +166,39 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
         filter((value) => !!value),
         takeUntil(this.destroy$$),
       )
-      .subscribe((value) => {
-        if (!this.filteredAppointments$$.value.length) {
-          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+      .subscribe({
+        next: (value) => {
+          if (!this.filteredAppointments$$.value.length) {
+            this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+            this.clearDownloadDropdown();
+            return;
+          }
+
+          this.downloadSvc.downloadJsonAs(
+            value as DownloadAsType,
+            this.columns.slice(0, -1),
+            this.filteredAppointments$$.value.map((ap: Appointment) => [
+              ap?.startedAt?.toString(),
+              ap?.endedAt?.toString(),
+              `${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
+              this.titleCasePipe.transform(ap?.doctor),
+              ap?.id.toString(),
+              ap.createdAt.toString(),
+              // ap.readStatus ? 'Yes' : 'No',
+              AppointmentStatusToName[+ap.approval],
+            ]),
+            'physician',
+          );
+
+          if (value !== 'PRINT') {
+            this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
+          }
           this.clearDownloadDropdown();
-          return;
+
+          this.downloadDropdownControl.setValue(null);
+
+          this.cdr.detectChanges();
         }
-
-        this.downloadSvc.downloadJsonAs(
-          value as DownloadAsType,
-          this.columns.slice(0, -1),
-          this.filteredAppointments$$.value.map((ap: Appointment) => [
-            ap?.startedAt?.toString(),
-            ap?.endedAt?.toString(),
-            `${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
-            this.titleCasePipe.transform(ap?.doctor),
-            ap?.id.toString(),
-            ap.createdAt.toString(),
-            // ap.readStatus ? 'Yes' : 'No',
-            AppointmentStatusToName[+ap.approval],
-          ]),
-          'physician',
-        );
-
-        if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
-        }
-        this.clearDownloadDropdown();
-
-        this.downloadDropdownControl.setValue(null);
-
-        this.cdr.detectChanges();
       });
 
     this.afterBannerClosed$$
@@ -208,25 +225,33 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
         },
       });
 
-    this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
+    this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (rooms) => {
+        this.roomList = rooms.map(({name, id}) => ({name, value: id}));
+      }
     });
 
     combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(([lang, permissionType]) => {
-        this.selectedLang = lang;
-        if (permissionType !== UserRoleEnum.Reader) {
-          this.columns = [...this.columns, Translate.Actions[lang]];
-        }
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
+      .subscribe({
+        next: ([lang, permissionType]) => {
+          this.selectedLang = lang;
+          if (permissionType !== UserRoleEnum.Reader) {
+            if (!this.columns.includes(Translate.Actions[lang])) {
+              this.columns.push(Translate.Actions[lang]);
+            }
+          } else if (this.columns.includes(Translate.Actions[lang])) {
+            this.columns.pop();
+          }
+          // eslint-disable-next-line default-case
+          switch (lang) {
+            case ENG_BE:
+              this.statuses = Statuses;
+              break;
+            case DUTCH_BE:
+              this.statuses = StatusesNL;
+              break;
+          }
         }
       });
   }
@@ -263,7 +288,9 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
     this.appointmentApiSvc
       .changeAppointmentStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]));
+      .subscribe({
+        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang])
+      });
   }
 
   public deleteAppointment(id: number) {
@@ -282,8 +309,8 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
         switchMap(() => this.appointmentApiSvc.deleteAppointment$(id)),
         take(1),
       )
-      .subscribe(() => {
-        this.notificationSvc.showNotification(Translate.DeleteAppointment[this.selectedLang]);
+      .subscribe({
+        next: () => this.notificationSvc.showNotification(Translate.DeleteAppointment[this.selectedLang])
       });
   }
 
@@ -352,7 +379,9 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
       } as SearchModalData,
     });
 
-    modalRef.closed.pipe(take(1)).subscribe((result) => this.filterAppointments(result));
+    modalRef.closed.pipe(take(1)).subscribe({
+      next: (result) => this.filterAppointments(result)
+    });
   }
 
   private filterAppointments(result: { name: string; value: string }[]) {
@@ -398,25 +427,25 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
       },
     });
 
-    modalRef.closed.pipe(take(1)).subscribe((result) => {
-      this.appointmentApiSvc
-        .fetchAllAppointments$(result)
-        .pipe(takeUntil(this.destroy$$))
-        .subscribe((appointments) => {
-          // console.log('appointments filtered: ', appointments);
-          this.appointments$$.next(appointments);
-          this.filteredAppointments$$.next(appointments);
+    modalRef.closed.pipe(
+      switchMap((result) => this.appointmentApiSvc.fetchAllAppointments$(result)),
+      take(1)
+    ).subscribe({
+      next: (appointments) => {
+        // console.log('appointments filtered: ', appointments);
+        this.appointments$$.next(appointments);
+        this.filteredAppointments$$.next(appointments);
 
-          // appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
-          //
-          // console.log(appointments);
-          //
-          // this.groupAppointmentsForCalendar(...appointments);
-          // this.groupAppointmentByDateAndRoom(...appointments);
-          //
-          // console.log(this.appointmentsGroupedByDate);
+        // appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
+        //
+        // console.log(appointments);
+        //
+        // this.groupAppointmentsForCalendar(...appointments);
+        // this.groupAppointmentByDateAndRoom(...appointments);
+        //
+        // console.log(this.appointmentsGroupedByDate);
+      }
         });
-    });
   }
   private clearDownloadDropdown() {
     setTimeout(() => {

@@ -74,6 +74,7 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
     return this.users$.pipe(
       map((users) => users.filter((user) => [UserType.Scheduler, UserType.General].includes(user.userType))),
       tap(() => this.loaderSvc.deactivate()),
+      catchError(() => of([]))
     );
   }
 

@@ -21,10 +21,10 @@ export class IsPermittedDirective implements OnInit {
   }
 
   private displayTemplate() {
-    this.vcr.clear();
-
     this.permissionSvc.permissionType$.subscribe({
       next: (permissionType) => {
+        this.vcr.clear();
+
         switch (permissionType) {
           case UserRoleEnum.GeneralUser: {
             if (this.elementPermission.some((permission) => Object.values(GeneralUserPermission).find((value) => value === permission))) {

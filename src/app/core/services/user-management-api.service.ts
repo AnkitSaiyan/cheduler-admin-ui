@@ -1,7 +1,7 @@
 // import { UserTenantItem } from './../models/user-tenant.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {Observable, tap} from 'rxjs';
+import {catchError, Observable, tap} from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserPropertiesPermitItem } from '../../shared/models/user-properties-permit-item.model';
 import { UserInviteResponse } from '../../shared/models/user-invite-response.model';
@@ -31,10 +31,13 @@ export class UserManagementApiService {
   public get userList$(): Observable<SchedulerUser[]> {
     this.loaderSvc.spinnerDeactivate();
     this.loaderSvc.activate();
-    return this.httpClient.get<SchedulerUser[]>(`${this.baseUrl}/users`).pipe(tap(() => {
-      this.loaderSvc.deactivate();
-      this.loaderSvc.spinnerDeactivate();
-    }));
+    return this.httpClient.get<SchedulerUser[]>(`${this.baseUrl}/users`).pipe(
+      tap(() => {
+        this.loaderSvc.deactivate();
+        this.loaderSvc.spinnerDeactivate();
+      }),
+      catchError(() => ([]))
+    );
   }
 
   public getUserById(userId: string): Observable<SchedulerUser> {

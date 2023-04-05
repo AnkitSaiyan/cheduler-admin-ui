@@ -1,9 +1,9 @@
 import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {
-  BehaviorSubject,
+  BehaviorSubject, catchError,
   combineLatest,
-  debounceTime,
+  debounceTime, distinctUntilChanged,
   filter,
   interval,
   map,
@@ -138,20 +138,24 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
     this.userTypeDropdownControl.valueChanges.pipe(
       debounceTime(0),
+      distinctUntilChanged(),
       switchMap((userType) => {
+
         switch (userType) {
           case UserType.Scheduler: {
-            return this.userManagementApiSvc.userList$.pipe(map((users) => users.map((user) => {
-              return {
-                id: user.id,
-                email: user.email,
-                firstname: user.givenName,
-                lastname: user.surname,
-                fullName: user.displayName,
-                userType: UserType.Scheduler,
-                status: +user.accountEnabled,
-              } as unknown as UserBase;
-            })));
+            return this.userManagementApiSvc.userList$.pipe(
+              map((users) => users.map((user) => {
+                return {
+                  id: user.id,
+                  email: user.email,
+                  firstname: user.givenName,
+                  lastname: user.surname,
+                  fullName: user.displayName,
+                  userType: UserType.Scheduler,
+                  status: +user.accountEnabled,
+                } as unknown as UserBase;
+              })),
+            );
           }
           default:
             return this.userApiSvc.userLists$;
@@ -164,11 +168,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         this.filteredUsers$$.next([...users]);
         this.loading$$.next(false);
       },
-      error: (err) => {
-        this.loading$$.next(false);
-        this.users$$.next([]);
-        this.filteredUsers$$.next([]);
-      }
+      error: (err) => this.loading$$.next(false)
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
