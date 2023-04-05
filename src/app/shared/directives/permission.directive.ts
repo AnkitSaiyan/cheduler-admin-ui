@@ -7,10 +7,10 @@ import { UserRoleEnum } from '../models/user.model';
   selector: '[dfmPermitted]',
 })
 export class IsPermittedDirective implements OnInit {
-  private elementPermission: string | null = null;
+  private elementPermission: string[] = [];
 
-  @Input() set dfmPermitted(permission: string) {
-    this.elementPermission = permission;
+  @Input() set dfmPermitted(permission: string | string[]) {
+    this.elementPermission = Array.isArray(permission) ? permission : [permission];
     this.displayTemplate();
   }
 
@@ -22,16 +22,15 @@ export class IsPermittedDirective implements OnInit {
 
   private displayTemplate() {
     this.vcr.clear();
-    const permission: string = this.elementPermission!;
     switch (this.permissionSvc.permissionType) {
       case UserRoleEnum.GeneralUser: {
-        if (Object.values(GeneralUserPermission).find((value) => value === permission)) {
+        if (this.elementPermission.some((permission) => Object.values(GeneralUserPermission).find((value) => value === permission))) {
           this.createEmbeddedView();
         }
         break;
       }
       case UserRoleEnum.Reader: {
-        if (Object.values(ReaderPermission).find((value) => value === permission)) {
+        if (this.elementPermission.some((permission) => Object.values(ReaderPermission).find((value) => value === permission))) {
           this.createEmbeddedView();
         }
         break;
@@ -46,5 +45,10 @@ export class IsPermittedDirective implements OnInit {
     this.vcr.createEmbeddedView(this.templateRef);
   }
 }
+
+
+
+
+
 
 

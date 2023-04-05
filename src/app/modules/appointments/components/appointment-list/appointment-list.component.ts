@@ -24,6 +24,8 @@ import { RouterStateService } from '../../../../core/services/router-state.servi
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -96,6 +98,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private routerStateSvc: RouterStateService,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
+    private permissionSvc: PermissionService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -220,8 +223,11 @@ export class AppointmentListComponent extends DestroyableComponent implements On
           Translate.AppliedOn[lang],
           // Translate.Read[lang],
           Translate.Status[lang],
-          Translate.Actions[lang],
         ];
+
+        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
 
         // eslint-disable-next-line default-case
         switch (lang) {

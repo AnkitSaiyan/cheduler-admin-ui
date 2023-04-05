@@ -156,7 +156,7 @@
             </dfm-badge>
           </dfm-table-body-cell>
 
-          <dfm-table-body-cell>
+          <dfm-table-body-cell *dfmPermitted="[Permission.DeleteAppointments, Permission.UpdateAppointments]">
             <div class="d-flex dfm-gap-16 align-items-center ap-li-action-buttons">
               <dfm-button
                 color="link-gray"
@@ -169,6 +169,7 @@
                 (click)="$event.stopPropagation()"
                 [routerLink]="['./', item.id, 'edit']"
                 [state]="{ comingFromRoute: 'appointment', edit: true }"
+                *dfmPermitted="Permission.UpdateAppointments"
               ></dfm-button>
 
               <dfm-button
@@ -180,6 +181,7 @@
                 popoverClass="popover-p-8"
                 [openDelay]="200"
                 (click)="$event.stopPropagation(); deleteAppointment(item.id)"
+                *dfmPermitted="Permission.DeleteAppointments"
               ></dfm-button>
             </div>
 
@@ -208,6 +210,7 @@
                   triggers="mouseenter:mouseleave"
                   popoverClass="popover-p-8"
                   [openDelay]="200"
+                  *dfmPermitted="Permission.UpdateAppointments"
                 >
                   <dfm-button
                     trailingIcon="pencil-02"
@@ -225,6 +228,7 @@
                   triggers="mouseenter:mouseleave"
                   popoverClass="popover-p-8"
                   [openDelay]="200"
+                  *dfmPermitted="Permission.DeleteAppointments"
                 >
                   <dfm-button
                     trailingIcon="trash-01"
