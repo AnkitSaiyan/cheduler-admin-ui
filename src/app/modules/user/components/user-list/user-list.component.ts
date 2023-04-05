@@ -180,10 +180,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         this.closeMenus();
       });
 
-    this.shareDataSvc
-      .getLanguage$()
+    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
+      .subscribe(([lang, permissionType]) => {
         this.selectedLang = lang;
         this.columns = [
           Translate.FirstName[lang],
@@ -194,7 +193,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
           Translate.Status[lang],
         ];
 
-        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
+        if (permissionType !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 

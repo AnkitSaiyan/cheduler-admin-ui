@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
@@ -113,14 +113,13 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         this.clearDownloadDropdown();
       });
 
-    this.shareDataSvc
-      .getLanguage$()
+    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
+      .subscribe(([lang, permissionType]) => {
         this.selectedLang = lang;
 
         this.columns = [Translate.Title[lang], Translate.StartDate[lang], Translate.EndDate[lang], Translate.AbsenceInfo[lang]];
-        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
+        if (permissionType !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 

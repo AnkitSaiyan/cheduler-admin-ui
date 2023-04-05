@@ -149,13 +149,12 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
         this.clearSelected$$.next();
       });
 
-    this.shareDataSvc
-      .getLanguage$()
+    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
+      .subscribe(([lang, permissionType]) => {
         this.selectedLang = lang;
         this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Type[lang], Translate.Email[lang], Translate.Status[lang]];
-        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
+        if (permissionType !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 

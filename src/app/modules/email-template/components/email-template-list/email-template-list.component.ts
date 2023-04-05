@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -147,12 +147,11 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
         this.clearSelected$$.next();
       });
 
-    this.shareDataSvc
-      .getLanguage$()
+    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
+      .subscribe(([lang, permissionType]) => {
         this.selectedLang = lang;
-        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
+        if (permissionType !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 
@@ -241,6 +240,8 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
     }, 0);
   }
 }
+
+
 
 
 

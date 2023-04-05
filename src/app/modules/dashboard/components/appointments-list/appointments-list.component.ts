@@ -212,8 +212,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
       this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
     });
 
-    this.shareDataSvc
-      .getLanguage$()
+    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
       .subscribe((lang) => {
         this.selectedLang = lang;
