@@ -16,6 +16,7 @@ import { AddAbsenceComponent } from '../add-absence/add-absence.component';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
   selector: 'dfm-absence-list',
@@ -44,6 +45,8 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
   private selectedLang: string = ENG_BE;
 
   public statuses = Statuses;
+
+  public readonly Permission = Permission;
 
   constructor(
     private absenceApiSvc: AbsenceApiService,

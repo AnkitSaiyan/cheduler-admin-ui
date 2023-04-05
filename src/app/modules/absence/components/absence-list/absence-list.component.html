@@ -50,6 +50,7 @@
         class="text-nowrap"
         [disabled]="false"
         (click)="openAddAbsenceModal()"
+        *dfmPermitted="Permission.CreateAbsences"
       >{{'AddAbsence' | translate}}
       </dfm-button>
     </div>
@@ -60,6 +61,7 @@
         class="text-nowrap"
         [disabled]="false"
         (click)="openAddAbsenceModal()"
+        *dfmPermitted="Permission.CreateAbsences"
       >{{'Add' | translate}}
       </dfm-button>
     </div>
