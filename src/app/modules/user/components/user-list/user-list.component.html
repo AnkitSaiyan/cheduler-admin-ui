@@ -36,8 +36,9 @@
     </div>
 
     <div class="d-flex dfm-gap-8 align-items-center">
-      <dfm-button color="primary" size="md" class="text-nowrap" (click)="openAddUserModal()">{{ 'AddUser' | translate }} </dfm-button>
+      <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateUser" class="text-nowrap" (click)="openAddUserModal()">{{ 'AddUser' | translate }} </dfm-button>
     </div>
+
   </section>
 
   <dfm-input

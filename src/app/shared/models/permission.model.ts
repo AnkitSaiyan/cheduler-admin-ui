@@ -31,6 +31,10 @@ export enum Permission {
   DeleteExams = 'can_delete_exams',
   ReadExams = 'can_read_exams',
   UpdateExams = 'can_update_exams',
+  CreateUser = 'can_create_user',
+  DeleteUser = 'can_delete_user',
+  ReadUser = 'can_read_user',
+  UpdateUser = 'can_update_user',
   CreateRooms = 'can_create_rooms',
   DeleteRooms = 'can_delete_rooms',
   ReadRooms = 'can_read_rooms',
@@ -93,6 +97,9 @@ export enum GeneralUserPermission {
   UpdateStaffs = 'can_update_staffs',
   ReadEmailTemplate = 'can_read_email_template',
   UpdateEmailTemplate = 'can_update_email_template',
+  CreateUser = 'can_create_user',
+  ReadUser = 'can_read_user',
+  UpdateUser = 'can_update_user',
 }
 
 export enum ReaderPermission {
@@ -104,7 +111,10 @@ export enum ReaderPermission {
   ReadPhysicians = 'can_read_physicians',
   ReadRoles = 'can_read_roles',
   ReadStaffs = 'can_read_staffs',
+  ReadUser = 'can_read_user',
 }
+
+
 
 
 

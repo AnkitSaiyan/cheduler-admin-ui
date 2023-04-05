@@ -23,6 +23,7 @@ import {Translate} from '../../../../shared/models/translate.model';
 import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {TranslateService} from '@ngx-translate/core';
 import {UserManagementApiService} from "../../../../core/services/user-management-api.service";
+import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
   selector: 'dfm-user-list',
@@ -70,6 +71,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
   public statuses = Statuses;
 
+  public readonly Permission = Permission;
+
   constructor(
     private userApiSvc: StaffApiService,
     private notificationSvc: NotificationDataService,
@@ -80,7 +83,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
-    private userManagementApiSvc: UserManagementApiService
+    private userManagementApiSvc: UserManagementApiService,
   ) {
     super();
     this.users$$ = new BehaviorSubject<any[]>([]);
@@ -271,7 +274,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         error: (err) => {
           console.log(err);
           this.notificationSvc.showNotification('Failed to delete user', NotificationType.DANGER);
-        }
+        },
       });
   }
 
