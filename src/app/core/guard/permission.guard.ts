@@ -15,8 +15,10 @@ export class PermissionGuard implements CanActivateChild {
     return this.permissionSvc.permissionType$.pipe(
       map((permissionType) => {
         switch (permissionType) {
-          case UserRoleEnum.Reader: return this.isReaderPermitted(route);
-          default: return true;
+          case UserRoleEnum.Reader:
+            return this.isReaderPermitted(route);
+          default:
+            return true;
         }
       })
     )
@@ -37,6 +39,7 @@ export class PermissionGuard implements CanActivateChild {
     return true;
   }
 }
+
 
 
 

@@ -8,11 +8,11 @@ import dutchLangauge from '../../assets/i18n/nl-BE.json';
 import { ShareDataService } from './services/share-data.service';
 import { DashboardApiService } from './services/dashboard-api.service';
 import { LoaderService } from './services/loader.service';
-import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, Subject, takeUntil } from 'rxjs';
 import { MsalGuardConfiguration, MsalService, MSAL_GUARD_CONFIG } from '@azure/msal-angular';
 import { InteractionType } from '@azure/msal-browser';
-import {UserApiService} from "./services/user-api.service";
-import {Translate} from "../shared/models/translate.model";
+import { UserApiService } from './services/user-api.service';
+import { Translate } from '../shared/models/translate.model';
 import { PermissionService } from './services/permission.service';
 import { UserRoleEnum } from '../shared/models/user.model';
 
@@ -134,28 +134,30 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 
   public ngOnInit(): void {
     // translation changes should go here
-    this.currentTenant$$.pipe(takeUntil(this.destroy$$)).subscribe((lang) => {
-      this.profileData.user.name = Translate.Profile[lang];
-      // eslint-disable-next-line default-case
-      switch (lang) {
-        case ENG_BE: {
-          if (this.permissionSvc.permissionType$ === UserRoleEnum.Reader) {
-            this.navItems = [...this.readerNavigationItems];
+    combineLatest([this.currentTenant$$, this.permissionSvc.permissionType$])
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe(([lang, permissionType]) => {
+        this.profileData.user.name = Translate.Profile[lang];
+        // eslint-disable-next-line default-case
+        switch (lang) {
+          case ENG_BE: {
+            if (permissionType === UserRoleEnum.Reader) {
+              this.navItems = [...this.readerNavigationItems];
+              break;
+            }
+            this.navItems = [...this.navigationItems];
             break;
           }
-          this.navItems = [...this.navigationItems];
-          break;
-        }
-        case DUTCH_BE: {
-          if (this.permissionSvc.permissionType$ === UserRoleEnum.Reader) {
-            this.navItems = [...this.readerNavigationItemsNL];
+          case DUTCH_BE: {
+            if (permissionType === UserRoleEnum.Reader) {
+              this.navItems = [...this.readerNavigationItemsNL];
+              break;
+            }
+            this.navItems = [...this.navigationItemsNL];
             break;
           }
-          this.navItems = [...this.navigationItemsNL];
-          break;
         }
-      }
-    });
+      });
 
     this.dataShareService
       .getLanguage$()

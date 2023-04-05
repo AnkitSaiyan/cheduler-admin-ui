@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NotificationType} from 'diflexmo-angular-design';
-import {BehaviorSubject, switchMap, take, takeUntil} from 'rxjs';
+import {BehaviorSubject, Observable, switchMap, take, takeUntil} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
@@ -130,10 +130,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
   public saveUser() {
     let isInvalid = false;
 
-    if (
-      [UserType.Scheduler, UserType.Secretary].includes(this.formValues.userType) ||
-      [UserType.Scheduler, UserType.Secretary].includes(this.modalData?.userDetails?.userType)
-    ) {
+    if ([this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {
       if (this.addUserForm.invalid) {
         isInvalid = true;
       }
@@ -153,13 +150,12 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
     this.loading$$.next(true);
 
-    console.log(this.formValues)
+    console.log(this.formValues);
 
-    if (
-      [UserType.Scheduler, UserType.Secretary].includes(this.formValues.userType) ||
-      [UserType.Scheduler, UserType.Secretary].includes(this.modalData?.userDetails?.userType)
-    ) {
-      this.userManagementApiSvc.createUserInvite({
+    let addUserObservable$: Observable<any>;
+
+    if ([this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {
+      addUserObservable$ = this.userManagementApiSvc.createUserInvite({
         givenName: this.formValues.firstname,
         surName: this.formValues.lastname,
         email: this.formValues.email,
@@ -168,56 +164,97 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
         redirect: {
           redirectUrl: environment.redirectUrl
         }
-      }).pipe(
-        switchMap((resp) => {
-          const requestBody: AddStaffRequestData = {
-            userAzureId: resp.id,
-            userRole: this.formValues.userRole,
-            userType: this.formValues.userType,
-          }
-          return this.staffApiSvc.upsertUser$(requestBody);
-        }),
-        takeUntil(this.destroy$$)
-      ).subscribe({
-        next: () => {
-          if (this.modalData.edit) {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
-          } else {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
-          }
-          this.loading$$.next(false);
-          this.closeModal(true);
-        },
-        error: (err) => {
-          console.log(err);
-          this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-          this.loading$$.next(false);
-        }
       });
     } else {
-      this.staffApiSvc.upsertUser$({
+      addUserObservable$ = this.staffApiSvc.upsertUser$({
         firstname: this.formValues.firstname,
         lastname: this.formValues.lastname,
         email: this.formValues.email ?? null,
         userType: this.modalData.edit ? this.modalData.userDetails.userType : this.formValues.userType,
         ...(this.modalData.userDetails ? { id: this.modalData.userDetails.id } : {}),
-      }).pipe(takeUntil(this.destroy$$)).subscribe({
-        next: () => {
-          if (this.modalData.edit) {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
-          } else {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
-          }
-          this.loading$$.next(false);
-          this.closeModal(true);
-        },
-        error: (err) => {
-          console.log(err);
-          this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-          this.loading$$.next(false);
-        }
-      })
+      });
     }
+
+    addUserObservable$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: () => {
+        if (this.modalData.edit) {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
+        } else {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
+        }
+        this.loading$$.next(false);
+        this.closeModal(true);
+      },
+      error: (err) => {
+        console.log(err);
+        this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+        this.loading$$.next(false);
+      }
+    });
+
+    // if (
+    //   [UserType.Scheduler, UserType.Secretary].includes(this.formValues.userType) ||
+    //   [UserType.Scheduler, UserType.Secretary].includes(this.modalData?.userDetails?.userType)
+    // ) {
+    //   this.userManagementApiSvc.createUserInvite({
+    //     givenName: this.formValues.firstname,
+    //     surName: this.formValues.lastname,
+    //     email: this.formValues.email,
+    //     roleName: this.formValues.userRole,
+    //     contextTenantId: this.formValues.tenantId,
+    //     redirect: {
+    //       redirectUrl: environment.redirectUrl
+    //     }
+    //   }).pipe(
+    //     switchMap((resp) => {
+    //       const requestBody: AddStaffRequestData = {
+    //         userAzureId: resp.id,
+    //         userRole: this.formValues.userRole,
+    //         userType: this.formValues.userType,
+    //       }
+    //       return this.staffApiSvc.upsertUser$(requestBody);
+    //     }),
+    //     takeUntil(this.destroy$$)
+    //   ).subscribe({
+    //     next: () => {
+    //       if (this.modalData.edit) {
+    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
+    //       } else {
+    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
+    //       }
+    //       this.loading$$.next(false);
+    //       this.closeModal(true);
+    //     },
+    //     error: (err) => {
+    //       console.log(err);
+    //       this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+    //       this.loading$$.next(false);
+    //     }
+    //   });
+    // } else {
+    //   this.staffApiSvc.upsertUser$({
+    //     firstname: this.formValues.firstname,
+    //     lastname: this.formValues.lastname,
+    //     email: this.formValues.email ?? null,
+    //     userType: this.modalData.edit ? this.modalData.userDetails.userType : this.formValues.userType,
+    //     ...(this.modalData.userDetails ? { id: this.modalData.userDetails.id } : {}),
+    //   }).pipe(takeUntil(this.destroy$$)).subscribe({
+    //     next: () => {
+    //       if (this.modalData.edit) {
+    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
+    //       } else {
+    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
+    //       }
+    //       this.loading$$.next(false);
+    //       this.closeModal(true);
+    //     },
+    //     error: (err) => {
+    //       console.log(err);
+    //       this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+    //       this.loading$$.next(false);
+    //     }
+    //   })
+    // }
 
     // const { gsm, address, status, ...rest } = this.formValues;
     //

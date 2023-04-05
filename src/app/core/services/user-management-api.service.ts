@@ -1,14 +1,16 @@
 // import { UserTenantItem } from './../models/user-tenant.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import {Observable, tap} from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserPropertiesPermitItem } from '../../shared/models/user-properties-permit-item.model';
 import { UserInviteResponse } from '../../shared/models/user-invite-response.model';
 import { UserProperties } from '../../shared/models/user-properties.model';
-import { UserBase } from '../../shared/models/user-base.model';
+import { UserBase } from '../../shared/models/user.model';
 import { UserTenantItem } from '../../shared/models/user-tenant.model';
 import { UserInvite } from '../../shared/models/invite.model';
+import {SchedulerUser} from "../../shared/models/user.model";
+import {LoaderService} from "./loader.service";
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +18,7 @@ import { UserInvite } from '../../shared/models/invite.model';
 export class UserManagementApiService {
   private baseUrl: string = environment.userManagementApiUrl;
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private loaderSvc: LoaderService) {}
 
   public getUserProperties(userId: string): Observable<UserProperties> {
     return this.httpClient.get<UserProperties>(`${this.baseUrl}/users/${userId}/properties`);
@@ -26,8 +28,22 @@ export class UserManagementApiService {
     return this.httpClient.patch(`${this.baseUrl}/users/${userId}/properties`, { properties });
   }
 
-  public getUserById(userId: string): Observable<UserBase> {
-    return this.httpClient.get<UserBase>(`${this.baseUrl}/users/${userId}`);
+  public get userList$(): Observable<SchedulerUser[]> {
+    this.loaderSvc.spinnerDeactivate();
+    this.loaderSvc.activate();
+    return this.httpClient.get<SchedulerUser[]>(`${this.baseUrl}/users`).pipe(tap(() => {
+      this.loaderSvc.deactivate();
+      this.loaderSvc.spinnerDeactivate();
+    }));
+  }
+
+  public getUserById(userId: string): Observable<SchedulerUser> {
+    this.loaderSvc.spinnerDeactivate();
+    this.loaderSvc.activate();
+    return this.httpClient.get<SchedulerUser>(`${this.baseUrl}/users/${userId}`).pipe(tap(() => {
+      this.loaderSvc.deactivate();
+      this.loaderSvc.spinnerDeactivate();
+    }));
   }
 
   public createUserInvite(userInvite: UserInvite): Observable<UserInviteResponse> {

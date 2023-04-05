@@ -17,7 +17,12 @@ const userRoutes: Routes = [
         data: { routeType: RouteType.View, routeName: RouteName.User },
       },
       {
-        path: `:${STAFF_ID}/view`,
+        path: `:${STAFF_ID}/g/view`,
+        component: ViewUserComponent,
+        data: { routeType: RouteType.View, routeName: RouteName.User },
+      },
+      {
+        path: `:${STAFF_ID}/s/view`,
         component: ViewUserComponent,
         data: { routeType: RouteType.View, routeName: RouteName.User },
       },

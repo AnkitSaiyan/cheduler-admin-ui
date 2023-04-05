@@ -6,11 +6,11 @@ import { UserRoleEnum } from '../../shared/models/user.model';
   providedIn: 'root',
 })
 export class PermissionService {
-  private permissionType$$: BehaviorSubject<UserRoleEnum>;
+  private permissionType$$: BehaviorSubject<UserRoleEnum | undefined>;
 
   constructor() {
     const userRole = localStorage.getItem('userRole');
-    this.permissionType$$ = new BehaviorSubject<UserRoleEnum>((userRole as UserRoleEnum) ?? UserRoleEnum.Admin);
+    this.permissionType$$ = new BehaviorSubject<UserRoleEnum | undefined>((userRole as UserRoleEnum) ?? UserRoleEnum.Admin);
   }
 
   public get permissionType$(): Observable<UserRoleEnum> {
@@ -20,6 +20,11 @@ export class PermissionService {
   public setPermissionType(value: UserRoleEnum) {
     this.permissionType$$.next(value);
     localStorage.setItem('userRole', value);
+  }
+
+  public removePermissionType() {
+    this.permissionType$$.next(undefined);
+    localStorage.removeItem('userRole');
   }
 
   public get isNotReader() {

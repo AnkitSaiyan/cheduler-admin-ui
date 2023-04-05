@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DatePipe, TitleCasePipe } from '@angular/common';
@@ -209,10 +209,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
     });
 
-    this.shareDataSvc
-      .getLanguage$()
+    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
+      .subscribe(([lang, permissionType]) => {
         this.selectedLang = lang;
         this.columns = [
           Translate.StartedAt[lang],
@@ -225,7 +224,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
           Translate.Status[lang],
         ];
 
-        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
+        if (permissionType !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 

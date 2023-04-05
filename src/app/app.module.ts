@@ -35,6 +35,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 // @ts-ignore
 import { AuthConfig } from './configuration/auth.config';
+import {ErrorInterceptor} from "./core/http/error.interceptor";
 // eslint-disable-next-line import/no-extraneous-dependencies
 // import { DataService } from './core/services/data.service';
 
@@ -156,6 +157,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
       provide: MSAL_INTERCEPTOR_CONFIG,
       useFactory: MSALInterceptorConfigFactory,
     },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     MsalService,
     MsalGuard,
     MsalBroadcastService,

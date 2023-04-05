@@ -18,20 +18,24 @@
     </div>
 
     <div class="d-flex dfm-gap-16 us-vw-action-buttons">
-      <dfm-button
-        color="link"
-        size="md"
-        leadingIcon="pencil-02"
-        (click)="openEditUserModal()"
-      >{{'EditUser' | translate}}
-      </dfm-button>
+      <ng-container *ngIf="currentUserType === UserType.General">
+        <dfm-button
+          color="link"
+          size="md"
+          leadingIcon="pencil-02"
+          (click)="openEditUserModal()"
+          *dfmPermitted="Permission.UpdateUser"
+        >{{'EditUser' | translate}}
+        </dfm-button>
+      </ng-container>
 
       <dfm-button
         color="link"
         size="md"
         class="text-nowrap"
         leadingIcon="trash-01"
-        (click)="deleteUser(userDetails.id, userDetails?.userAzureId)"
+        (click)="deleteUser(userDetails.id)"
+        *dfmPermitted="Permission.DeleteUser"
       >
         {{'DeleteUser' | translate}}
       </dfm-button>
@@ -78,12 +82,12 @@
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">{{'Category' | translate}}</span>
           <span
-            class="font-weight-medium flex-1">{{ userDetails.userType === userType.General ? 'General' : 'Scheduler' }}</span>
+            class="font-weight-medium flex-1">{{ userDetails.userType === userTypeEnum.General ? 'General' : 'Scheduler' }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
           <span class="flex-1">{{'Telephone' | translate}}</span>
-          <span class="font-weight-medium flex-1">{{ userDetails.telephone }}</span>
+          <span class="font-weight-medium flex-1">{{ userDetails?.telephone | dashIfNothing }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between">
@@ -103,15 +107,15 @@
         </div> -->
 
         <div class="d-flex dfm-gap-8 justify-content-between"
-             *ngIf="userDetails.userType === userType.Scheduler || userDetails.userType === userType.Secretary">
+             *ngIf="userDetails.userType === userTypeEnum.Scheduler || userDetails.userType === userTypeEnum.Secretary">
           <span class="flex-1">GSM</span>
-          <span class="font-weight-medium flex-1 text-break">{{ userDetails.gsm | dashIfNothing }}</span>
+          <span class="font-weight-medium flex-1 text-break">{{ userDetails?.gsm | dashIfNothing }}</span>
         </div>
 
         <div class="d-flex dfm-gap-8 justify-content-between"
-             *ngIf="userDetails.userType === userType.Scheduler || userDetails.userType === userType.Secretary">
+             *ngIf="userDetails.userType === userTypeEnum.Scheduler || userDetails.userType === userTypeEnum.Secretary">
           <span class="flex-1">{{'Address' | translate}}</span>
-          <span class="font-weight-medium flex-1 text-break">{{ userDetails.address | dashIfNothing }}</span>
+          <span class="font-weight-medium flex-1 text-break">{{ userDetails?.address | dashIfNothing }}</span>
         </div>
       </div>
     </div>
@@ -135,8 +139,10 @@
   </section>
 
   <div class="hidden bg-white us-vw-action-buttons-mv">
-    <dfm-button color="secondary" size="sm" (click)="deleteUser(userDetails.id, userDetails?.userAzureId)">{{'Delete' | translate}}</dfm-button>
-    <dfm-button color="primary" size="sm" (click)="openEditUserModal()">{{'EditUser' | translate}}</dfm-button>
+    <dfm-button color="secondary" size="sm" *dfmPermitted="Permission.DeleteUser" (click)="deleteUser(userDetails.id)">{{'Delete' | translate}}</dfm-button>
+    <ng-container *ngIf="currentUserType === UserType.General">
+      <dfm-button color="primary" size="sm" (click)="openEditUserModal()" *dfmPermitted="Permission.UpdateUser">{{'EditUser' | translate}}</dfm-button>
+    </ng-container>
   </div>
 </div>
 
