@@ -25,8 +25,8 @@ export class DashboardApiService extends DestroyableComponent {
     this.shareDataSvc
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
-        this.selectedLang$$.next(lang);
+      .subscribe({
+        next: (lang) => this.selectedLang$$.next(lang)
       });
   }
 

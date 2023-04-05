@@ -68,18 +68,24 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
   }
 
   public ngOnInit(): void {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
-
-    this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe((absences) => {
-      this.absences$$.next(absences);
-      this.filteredAbsences$$.next(absences);
+    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (items) => (this.downloadItems = items)
     });
 
-    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-      if (searchText) {
-        this.handleSearch(searchText.toLowerCase());
-      } else {
-        this.filteredAbsences$$.next([...this.absences$$.value]);
+    this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (absences) => {
+        this.absences$$.next(absences);
+        this.filteredAbsences$$.next(absences);
+      }
+    });
+
+    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+      next: (searchText) => {
+        if (searchText) {
+          this.handleSearch(searchText.toLowerCase());
+        } else {
+          this.filteredAbsences$$.next([...this.absences$$.value]);
+        }
       }
     });
 
@@ -88,49 +94,53 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         filter((value) => !!value),
         takeUntil(this.destroy$$),
       )
-      .subscribe((value) => {
-        if (!this.filteredAbsences$$.value.length) {
-          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+      .subscribe({
+        next: (value) => {
+          if (!this.filteredAbsences$$.value.length) {
+            this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+            this.clearDownloadDropdown();
+            return;
+          }
+          this.downloadSvc.downloadJsonAs(
+            value as DownloadAsType,
+            this.columns.slice(0, -1),
+            this.filteredAbsences$$.value.map((u: Absence) => [
+              u.name,
+              u.startedAt ? `${new Date(u?.startedAt)?.toDateString()} ${new Date(u?.startedAt)?.toLocaleTimeString()}` : '',
+              u.endedAt ? `${new Date(u?.endedAt)?.toDateString()} ${new Date(u?.endedAt)?.toLocaleTimeString()}` : '',
+              u.info,
+            ]),
+            'absences',
+          );
+
+          if (value !== 'PRINT') {
+            this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
+          }
+
           this.clearDownloadDropdown();
-          return;
         }
-        this.downloadSvc.downloadJsonAs(
-          value as DownloadAsType,
-          this.columns.slice(0, -1),
-          this.filteredAbsences$$.value.map((u: Absence) => [
-            u.name,
-            u.startedAt ? `${new Date(u?.startedAt)?.toDateString()} ${new Date(u?.startedAt)?.toLocaleTimeString()}` : '',
-            u.endedAt ? `${new Date(u?.endedAt)?.toDateString()} ${new Date(u?.endedAt)?.toLocaleTimeString()}` : '',
-            u.info,
-          ]),
-          'absences',
-        );
-
-        if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
-        }
-
-        this.clearDownloadDropdown();
       });
 
     combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(([lang, permissionType]) => {
-        this.selectedLang = lang;
+      .subscribe({
+        next: ([lang, permissionType]) => {
+          this.selectedLang = lang;
 
-        this.columns = [Translate.Title[lang], Translate.StartDate[lang], Translate.EndDate[lang], Translate.AbsenceInfo[lang]];
-        if (permissionType !== UserRoleEnum.Reader) {
-          this.columns = [...this.columns, Translate.Actions[lang]];
-        }
+          this.columns = [Translate.Title[lang], Translate.StartDate[lang], Translate.EndDate[lang], Translate.AbsenceInfo[lang]];
+          if (permissionType !== UserRoleEnum.Reader) {
+            this.columns = [...this.columns, Translate.Actions[lang]];
+          }
 
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
+          // eslint-disable-next-line default-case
+          switch (lang) {
+            case ENG_BE:
+              this.statuses = Statuses;
+              break;
+            case DUTCH_BE:
+              this.statuses = StatusesNL;
+              break;
+          }
         }
       });
   }
@@ -167,8 +177,8 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),
         take(1),
       )
-      .subscribe((res) => {
-        this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang]);
+      .subscribe({
+        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang])
       });
   }
 

@@ -69,11 +69,13 @@ export class AppComponent implements OnInit {
     this.authService.instance.enableAccountStorageEvents(); // Optional - This will enable ACCOUNT_ADDED and ACCOUNT_REMOVED events emitted when a user logs in or out of another tab or window
     this.msalBroadcastService.msalSubject$
       .pipe(filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_ADDED || msg.eventType === EventType.ACCOUNT_REMOVED))
-      .subscribe(() => {
-        if (this.authService.instance.getAllAccounts().length === 0) {
-          window.location.pathname = '/';
-        } else {
-          this.setLoginDisplay();
+      .subscribe({
+        next: () => {
+          if (this.authService.instance.getAllAccounts().length === 0) {
+            window.location.pathname = '/';
+          } else {
+            this.setLoginDisplay();
+          }
         }
       });
 
@@ -83,9 +85,11 @@ export class AppComponent implements OnInit {
         // eslint-disable-next-line no-underscore-dangle
         takeUntil(this._destroying$),
       )
-      .subscribe(() => {
-        this.setLoginDisplay();
-        this.checkAndSetActiveAccount();
+      .subscribe({
+        next: () => {
+          this.setLoginDisplay();
+          this.checkAndSetActiveAccount();
+        }
       });
 
     this.msalBroadcastService.msalSubject$
@@ -99,15 +103,17 @@ export class AppComponent implements OnInit {
         // eslint-disable-next-line no-underscore-dangle
         takeUntil(this._destroying$),
       )
-      .subscribe((result: EventMessage) => {
-        const payload = result.payload as AuthenticationResult;
-        const idtoken = payload.idTokenClaims as IdTokenClaimsWithPolicyId;
+      .subscribe({
+        next: (result: EventMessage) => {
+          const payload = result.payload as AuthenticationResult;
+          const idToken = payload.idTokenClaims as IdTokenClaimsWithPolicyId;
 
-        if (idtoken.acr === AuthConfig.authFlow || idtoken.tfp === AuthConfig.authFlow) {
-          this.authService.instance.setActiveAccount(payload.account);
+          if (idToken.acr === AuthConfig.authFlow || idToken.tfp === AuthConfig.authFlow) {
+            this.authService.instance.setActiveAccount(payload.account);
+          }
+
+          return result;
         }
-
-        return result;
       });
   }
 
@@ -130,12 +136,16 @@ export class AppComponent implements OnInit {
 
     console.log(this.authService.instance.getActiveAccount());
 
-    this.userService.authUser$.subscribe((x) => (this.user = x));
+    this.userService.authUser$.subscribe({
+      next: (x) => (this.user = x)
+    });
 
-    this.userService.initializeUser().subscribe((x) => {
-      if (!x) {
-        console.log('User login failed. Logging out.');
-        this.logout();
+    this.userService.initializeUser().subscribe({
+      next: (x) => {
+        if (!x) {
+          console.log('User login failed. Logging out.');
+          this.logout();
+        }
       }
     });
   }
@@ -153,12 +163,16 @@ export class AppComponent implements OnInit {
       if (this.msalGuardConfig.authRequest) {
         this.authService
           .loginPopup({ ...this.msalGuardConfig.authRequest, ...userFlowRequest } as PopupRequest)
-          .subscribe((response: AuthenticationResult) => {
-            this.authService.instance.setActiveAccount(response.account);
+          .subscribe({
+            next: (response: AuthenticationResult) => {
+              this.authService.instance.setActiveAccount(response.account);
+            }
           });
       } else {
-        this.authService.loginPopup(userFlowRequest).subscribe((response: AuthenticationResult) => {
-          this.authService.instance.setActiveAccount(response.account);
+        this.authService.loginPopup(userFlowRequest).subscribe({
+          next: (response: AuthenticationResult) => {
+            this.authService.instance.setActiveAccount(response.account);
+          }
         });
       }
     } else if (this.msalGuardConfig.authRequest) {

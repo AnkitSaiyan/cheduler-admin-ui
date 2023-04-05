@@ -86,23 +86,27 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
     this.createForm();
 
-    this.timeSlotData$$.pipe(takeUntil(this.destroy$$), filter((d) => !!d?.length)).subscribe((timeSlots) => {
-      console.log(timeSlots);
-      this.updateForm(timeSlots);
+    this.timeSlotData$$.pipe(takeUntil(this.destroy$$), filter((d) => !!d?.length)).subscribe({
+      next: (timeSlots) => {
+        console.log(timeSlots);
+        this.updateForm(timeSlots);
+      }
     });
 
-    this.emitEvents$$.pipe(takeUntil(this.destroy$$)).subscribe(() => {
-      this.formValuesEvent.emit({
-        isValid: this.isFormValid(),
-        values: this.getFormRequestBody(this.formValues)
-      });
+    this.emitEvents$$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: () => {
+        this.formValuesEvent.emit({
+          isValid: this.isFormValid(),
+          values: this.getFormRequestBody(this.formValues)
+        });
+      }
     });
 
     this.shareDataSvc
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
-        this.selectedLang = lang;
+      .subscribe({
+        next: (lang) => this.selectedLang = lang
       });
   }
 
@@ -139,8 +143,12 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
       endTimings: [[...this.filteredTimings], []],
     });
 
-    controlGroup.get('dayStart')?.valueChanges.pipe(takeUntil(this.destroy$$), debounceTime(0)).subscribe((value) => this.handleError(value as string, controlGroup.get('dayEnd'), controlGroup.value.weekday))
-    controlGroup.get('dayEnd')?.valueChanges.pipe(takeUntil(this.destroy$$),debounceTime(0)).subscribe((value) => this.handleError(value as string, controlGroup.get('dayStart'), controlGroup.value.weekday))
+    controlGroup.get('dayStart')?.valueChanges.pipe(takeUntil(this.destroy$$), debounceTime(0)).subscribe({
+      next: (value) => this.handleError(value as string, controlGroup.get('dayEnd'), controlGroup.value.weekday)
+    })
+    controlGroup.get('dayEnd')?.valueChanges.pipe(takeUntil(this.destroy$$),debounceTime(0)).subscribe({
+      next: (value) => this.handleError(value as string, controlGroup.get('dayStart'), controlGroup.value.weekday)
+    })
 
     return controlGroup;
   }

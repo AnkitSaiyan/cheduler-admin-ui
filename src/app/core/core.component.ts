@@ -136,25 +136,27 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     // translation changes should go here
     combineLatest([this.currentTenant$$, this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(([lang, permissionType]) => {
-        this.profileData.user.name = Translate.Profile[lang];
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE: {
-            if (permissionType === UserRoleEnum.Reader) {
-              this.navItems = [...this.readerNavigationItems];
+      .subscribe({
+        next: ([lang, permissionType]) => {
+          this.profileData.user.name = Translate.Profile[lang];
+          // eslint-disable-next-line default-case
+          switch (lang) {
+            case ENG_BE: {
+              if (permissionType === UserRoleEnum.Reader) {
+                this.navItems = [...this.readerNavigationItems];
+                break;
+              }
+              this.navItems = [...this.navigationItems];
               break;
             }
-            this.navItems = [...this.navigationItems];
-            break;
-          }
-          case DUTCH_BE: {
-            if (permissionType === UserRoleEnum.Reader) {
-              this.navItems = [...this.readerNavigationItemsNL];
+            case DUTCH_BE: {
+              if (permissionType === UserRoleEnum.Reader) {
+                this.navItems = [...this.readerNavigationItemsNL];
+                break;
+              }
+              this.navItems = [...this.navigationItemsNL];
               break;
             }
-            this.navItems = [...this.navigationItemsNL];
-            break;
           }
         }
       });
@@ -162,29 +164,35 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     this.dataShareService
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((language: string) => {
-        this.currentTenant$$.next(language);
+      .subscribe({
+        next: (language: string) => this.currentTenant$$.next(language)
       });
 
-    this.dashboardApiService.notificationData$$.pipe(takeUntil(this.destroy$$)).subscribe((res) => {
-      this.notifications = [];
-      res.forEach((element, index) => {
-        this.notifications.push(new NavigationItemEvent(index + 1, new Date(element?.date), element?.title, element?.message));
-      });
+    this.dashboardApiService.notificationData$$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (res) => {
+        this.notifications = [];
+        res.forEach((element, index) => {
+          this.notifications.push(new NavigationItemEvent(index + 1, new Date(element?.date), element?.title, element?.message));
+        });
+      }
     });
 
-    this.dashboardApiService.postItData$$.pipe(takeUntil(this.destroy$$)).subscribe((res) => {
-      this.messages = [];
-      res.forEach((element, index) => {
-        this.messages.push(new NavigationItemEvent(index + 1, new Date(element?.createdAt), element?.message));
-      });
+    this.dashboardApiService.postItData$$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (res) => {
+        this.messages = [];
+        res.forEach((element, index) => {
+          this.messages.push(new NavigationItemEvent(index + 1, new Date(element?.createdAt), element?.message));
+        });
+      }
     });
   }
 
   public ngAfterViewInit(): void {
-    this.loaderService.isActive$.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
-      this.isLoaderActive$$.next(value);
-      this.cdr.detectChanges();
+    this.loaderService.isActive$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (value) => {
+        this.isLoaderActive$$.next(value);
+        this.cdr.detectChanges();
+      }
     });
   }
 

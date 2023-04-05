@@ -123,17 +123,19 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
         filter((offset) => !!offset),
         takeUntil(this.destroy$$),
       )
-      .subscribe((offset) => {
-        this.changeWeek(offset);
+      .subscribe({
+        next: (offset) => this.changeWeek(offset)
       });
 
     this.newDate$$
       .asObservable()
       .pipe()
-      .subscribe((date) => {
-        if (date) {
-          this.updateDate(date);
-          this.updateCalendarDays();
+      .subscribe({
+        next: (date) => {
+          if (date) {
+            this.updateDate(date);
+            this.updateCalendarDays();
+          }
         }
       });
   }

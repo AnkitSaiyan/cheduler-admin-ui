@@ -65,10 +65,11 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
   ) {
     super();
 
-    this.modalSvc.dialogData$.pipe(take(1)).subscribe((data) => {
-      this.modalData = data;
-
-      this.createForm(this.modalData?.userDetails);
+    this.modalSvc.dialogData$.pipe(take(1)).subscribe({
+      next: (data) => {
+        this.modalData = data;
+        this.createForm(this.modalData?.userDetails);
+      }
     });
   }
 
@@ -76,23 +77,27 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
     this.shareDataSvc
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
-        this.selectedLang = lang;
+      .subscribe({
+        next: (lang) => {
+          this.selectedLang = lang;
 
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
+          // eslint-disable-next-line default-case
+          switch (lang) {
+            case ENG_BE:
+              this.statuses = Statuses;
+              break;
+            case DUTCH_BE:
+              this.statuses = StatusesNL;
+              break;
+          }
         }
       });
 
     const userId = this.msalService.instance.getActiveAccount()?.localAccountId ?? '';
-    this.userManagementApiSvc.getUserTenantsList(userId).pipe(takeUntil(this.destroy$$)).subscribe((tenants) => {
-      this.userTenants = tenants.map(({id, name}) => ({ name, value: id.toString()}));
+    this.userManagementApiSvc.getUserTenantsList(userId).pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (tenants) => {
+        this.userTenants = tenants.map(({id, name}) => ({ name, value: id.toString()}));
+      }
     });
 
     this.userRoles = this.userSvc.getUserRoles();
@@ -185,11 +190,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
         this.loading$$.next(false);
         this.closeModal(true);
       },
-      error: (err) => {
-        console.log(err);
-        this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-        this.loading$$.next(false);
-      }
+      error: (err) => this.loading$$.next(false)
     });
 
     // if (

@@ -68,14 +68,18 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
         }),
         takeUntil(this.destroy$$),
       )
-      .subscribe((userDetails) => {
-        this.userDetails$$.next(userDetails)
+      .subscribe({
+        next: (userDetails) => {
+          this.userDetails$$.next(userDetails)
+        }
       });
 
       this.shareDataService
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => (this.selectedLang = lang));
+      .subscribe({
+        next: (lang) => (this.selectedLang = lang)
+      });
   }
 
   public deleteUser(id: number | string) {
@@ -103,10 +107,6 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
         next: () => {
           this.notificationSvc.showNotification(Translate.SuccessMessage.UserDeleted[this.selectedLang]);
           this.router.navigate(['/', 'user']);
-        },
-        error: (err) => {
-          console.log(err);
-          this.notificationSvc.showNotification('Failed to delete user', NotificationType.DANGER);
         }
       });
   }

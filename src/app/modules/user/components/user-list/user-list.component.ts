@@ -7,7 +7,6 @@ import {
   filter,
   interval,
   map,
-  Observable,
   Subject,
   switchMap,
   take,
@@ -19,7 +18,7 @@ import {NotificationType, TableItem} from 'diflexmo-angular-design';
 import {NgbDropdown} from '@ng-bootstrap/ng-bootstrap';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {ChangeStatusRequestData, Status, StatusToName} from '../../../../shared/models/status.model';
-import {getStatusEnum, getUserTypeEnum} from '../../../../shared/utils/getEnums';
+import {getStatusEnum} from '../../../../shared/utils/getEnums';
 import {StaffApiService} from '../../../../core/services/staff-api.service';
 import {NotificationDataService} from '../../../../core/services/notification-data.service';
 import {ModalService} from '../../../../core/services/modal.service';
@@ -117,8 +116,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public ngOnInit(): void {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((types) => {
-      this.downloadItems = types;
+    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (types) => this.downloadItems = types
     });
 
     setTimeout(() => this.userTypeDropdownControl.setValue(UserType.General), 0);
@@ -128,57 +127,57 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         tap(() => this.loading$$.next(true)),
         takeUntil(this.destroy$$),
       )
-      .subscribe(
-        (users) => {
+      .subscribe({
+        next: (users) => {
           this.users$$.next(users);
           this.filteredUsers$$.next(users);
           this.loading$$.next(false);
         },
-        (err) => this.loading$$.next(false),
-      );
-
-    this.userTypeDropdownControl.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe((userType) => {
-      let userObservable$: Observable<UserBase[]>;
-      this.loading$$.next(true);
-
-      switch (userType) {
-        case UserType.Scheduler: {
-          userObservable$ = this.userManagementApiSvc.userList$.pipe(map((users) => users.map((user) => {
-            return {
-              id: user.id,
-              email: user.email,
-              firstname: user.givenName,
-              lastname: user.surname,
-              fullName: user.displayName,
-              userType: UserType.Scheduler,
-              status: +user.accountEnabled,
-            } as unknown as UserBase;
-          })));
-        }
-        break;
-        default:
-          userObservable$ = this.userApiSvc.userLists$;
-      }
-
-      userObservable$.pipe(takeUntil(this.destroy$$)).subscribe({
-        next: (users) => {
-          this.users$$.next([...users]);
-          this.filteredUsers$$.next([...users]);
-          this.loading$$.next(false);
-        },
-        error: (err) => {
-          this.loading$$.next(false);
-          this.users$$.next([]);
-          this.filteredUsers$$.next([]);
-        }
+        error: (err) => this.loading$$.next(false)
       });
+
+    this.userTypeDropdownControl.valueChanges.pipe(
+      debounceTime(0),
+      switchMap((userType) => {
+        switch (userType) {
+          case UserType.Scheduler: {
+            return this.userManagementApiSvc.userList$.pipe(map((users) => users.map((user) => {
+              return {
+                id: user.id,
+                email: user.email,
+                firstname: user.givenName,
+                lastname: user.surname,
+                fullName: user.displayName,
+                userType: UserType.Scheduler,
+                status: +user.accountEnabled,
+              } as unknown as UserBase;
+            })));
+          }
+          default:
+            return this.userApiSvc.userLists$;
+        }
+      }),
+      takeUntil(this.destroy$$)
+    ).subscribe({
+      next: (users) => {
+        this.users$$.next([...users]);
+        this.filteredUsers$$.next([...users]);
+        this.loading$$.next(false);
+      },
+      error: (err) => {
+        this.loading$$.next(false);
+        this.users$$.next([]);
+        this.filteredUsers$$.next([]);
+      }
     });
 
-    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-      if (searchText) {
-        this.handleSearch(searchText.toLowerCase());
-      } else {
-        this.filteredUsers$$.next([...this.users$$.value]);
+    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+      next: (searchText) => {
+        if (searchText) {
+          this.handleSearch(searchText.toLowerCase());
+        } else {
+          this.filteredUsers$$.next([...this.users$$.value]);
+        }
       }
     });
 
@@ -187,31 +186,33 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         filter((value) => !!value),
         takeUntil(this.destroy$$),
       )
-      .subscribe((value) => {
-        if (!this.filteredUsers$$.value.length) {
-          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+      .subscribe({
+        next: (value) => {
+          if (!this.filteredUsers$$.value.length) {
+            this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+            this.clearDownloadDropdown();
+            return;
+          }
+
+          this.downloadSvc.downloadJsonAs(
+            value as DownloadAsType,
+            this.columns.slice(0, -1),
+            this.filteredUsers$$.value.map((u: User) => [
+              u.firstname,
+              u.lastname,
+              u.email,
+              u.telephone?.toString(),
+              u.userType,
+              Translate[StatusToName[+u.status]][this.selectedLang],
+            ]),
+            'users',
+          );
+
+          if (value !== 'PRINT') {
+            this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
+          }
           this.clearDownloadDropdown();
-          return;
         }
-
-        this.downloadSvc.downloadJsonAs(
-          value as DownloadAsType,
-          this.columns.slice(0, -1),
-          this.filteredUsers$$.value.map((u: User) => [
-            u.firstname,
-            u.lastname,
-            u.email,
-            u.telephone?.toString(),
-            u.userType,
-            Translate[StatusToName[+u.status]][this.selectedLang],
-          ]),
-          'users',
-        );
-
-        if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
-        }
-        this.clearDownloadDropdown();
       });
 
     this.afterBannerClosed$$
@@ -232,42 +233,46 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         switchMap((changes) => this.userApiSvc.changeUserStatus$(changes)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((value) => {
-        this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
-        this.clearSelected$$.next();
+      .subscribe({
+        next: (value) => {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
+          this.clearSelected$$.next();
+        }
       });
 
     interval(0)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.closeMenus();
+      .subscribe({
+        next: () => this.closeMenus()
       });
 
     combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(([lang, permissionType]) => {
-        this.selectedLang = lang;
-        this.columns = [
-          Translate.FirstName[lang],
-          Translate.LastName[lang],
-          Translate.Email[lang],
-          Translate.Category[lang],
-          'Role',
-          Translate.Status[lang],
-        ];
+      .subscribe({
+        next: ([lang, permissionType]) => {
+          this.selectedLang = lang;
+          this.columns = [
+            Translate.FirstName[lang],
+            Translate.LastName[lang],
+            Translate.Email[lang],
+            Translate.Category[lang],
+            'Role',
+            Translate.Status[lang],
+          ];
 
-        if (permissionType !== UserRoleEnum.Reader) {
-          this.columns = [...this.columns, Translate.Actions[lang]];
-        }
+          if (permissionType !== UserRoleEnum.Reader) {
+            this.columns = [...this.columns, Translate.Actions[lang]];
+          }
 
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
+          // eslint-disable-next-line default-case
+          switch (lang) {
+            case ENG_BE:
+              this.statuses = Statuses;
+              break;
+            case DUTCH_BE:
+              this.statuses = StatusesNL;
+              break;
+          }
         }
       });
   }
@@ -306,10 +311,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     this.userApiSvc
       .changeUserStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(
-        () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
-        (err) => this.notificationSvc.showNotification(err, NotificationType.DANGER),
-      );
+      .subscribe({
+        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
+      });
   }
 
   public deleteUser(id: number | string){
@@ -336,10 +340,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       .subscribe({
         next: () => {
           this.notificationSvc.showNotification(Translate.SuccessMessage.UserDeleted[this.selectedLang]);
-        },
-        error: (err) => {
-          console.log(err);
-          this.notificationSvc.showNotification('Failed to delete user', NotificationType.DANGER);
         },
       });
   }
@@ -409,7 +409,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
       } as SearchModalData,
     });
 
-    modalRef.closed.pipe(take(1)).subscribe((result) => this.filterUserList(result));
+    modalRef.closed.pipe(take(1)).subscribe({
+      next: (result) => this.filterUserList(result)
+    });
   }
 
   private filterUserList(result: { name: string; value: string }[]) {

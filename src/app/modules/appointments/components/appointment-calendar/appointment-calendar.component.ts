@@ -106,10 +106,12 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     this.appointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
     this.selectedSlot$$ = new BehaviorSubject<any>(null);
-    this.appointmentApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => {
-      // console.log(items);
-      this.calendarViewType = items;
-      this.ngOnInit();
+    this.appointmentApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (items) => {
+        // console.log(items);
+        this.calendarViewType = items;
+        this.ngOnInit();
+      }
     });
   }
 

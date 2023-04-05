@@ -55,17 +55,19 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
     this.changeMonth$$
       .asObservable()
       .pipe(filter((offset) => !!offset))
-      .subscribe((offset) => {
-        this.changeMonth(offset);
+      .subscribe({
+        next: (offset) => this.changeMonth(offset)
       });
 
     this.newDate$$
       .asObservable()
       .pipe()
-      .subscribe((date) => {
-        if (date) {
-          this.updateDate(date);
-          this.updateCalendarDays();
+      .subscribe({
+        next: (date) => {
+          if (date) {
+            this.updateDate(date);
+            this.updateCalendarDays();
+          }
         }
       });
   }

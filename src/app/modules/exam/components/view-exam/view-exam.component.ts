@@ -71,22 +71,26 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
         switchMap((examID) => this.examApiService.getExamByID(+examID)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((exam) => {
-        this.examDetails$$.next(exam);
-        this.uncombinablesExam$$.next(exam?.uncombinablesExam ?? []);
-        if (exam?.practiceAvailability?.length) {
-          this.practiceAvailability$$.next([...this.getPracticeAvailability(exam.practiceAvailability)]);
-        }
+      .subscribe({
+        next: (exam) => {
+          this.examDetails$$.next(exam);
+          this.uncombinablesExam$$.next(exam?.uncombinablesExam ?? []);
+          if (exam?.practiceAvailability?.length) {
+            this.practiceAvailability$$.next([...this.getPracticeAvailability(exam.practiceAvailability)]);
+          }
 
-        if (exam?.users?.length) {
-          this.saveStaffDetails(exam.users);
+          if (exam?.users?.length) {
+            this.saveStaffDetails(exam.users);
+          }
         }
       });
 
     this.shareDataService
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => (this.selectedLang = lang));
+      .subscribe({
+        next: (lang) => (this.selectedLang = lang)
+      });
   }
 
   private saveStaffDetails(users: User[]) {
@@ -203,9 +207,11 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
         switchMap(() => this.examApiService.deleteExam(id)),
         take(1),
       )
-      .subscribe(() => {
-        this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang]);
-        this.router.navigate(['/', 'exam']);
+      .subscribe({
+        next: () => {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang]);
+          this.router.navigate(['/', 'exam']);
+        }
       });
   }
 }

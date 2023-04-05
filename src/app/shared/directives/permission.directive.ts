@@ -23,23 +23,25 @@ export class IsPermittedDirective implements OnInit {
   private displayTemplate() {
     this.vcr.clear();
 
-    this.permissionSvc.permissionType$.subscribe((permissionType) => {
-      switch (permissionType) {
-        case UserRoleEnum.GeneralUser: {
-          if (this.elementPermission.some((permission) => Object.values(GeneralUserPermission).find((value) => value === permission))) {
-            this.createEmbeddedView();
+    this.permissionSvc.permissionType$.subscribe({
+      next: (permissionType) => {
+        switch (permissionType) {
+          case UserRoleEnum.GeneralUser: {
+            if (this.elementPermission.some((permission) => Object.values(GeneralUserPermission).find((value) => value === permission))) {
+              this.createEmbeddedView();
+            }
+            break;
           }
-          break;
-        }
-        case UserRoleEnum.Reader: {
-          if (this.elementPermission.some((permission) => Object.values(ReaderPermission).find((value) => value === permission))) {
-            this.createEmbeddedView();
+          case UserRoleEnum.Reader: {
+            if (this.elementPermission.some((permission) => Object.values(ReaderPermission).find((value) => value === permission))) {
+              this.createEmbeddedView();
+            }
+            break;
           }
-          break;
+          default:
+            this.createEmbeddedView();
+            break;
         }
-        default:
-          this.createEmbeddedView();
-          break;
       }
     });
   }

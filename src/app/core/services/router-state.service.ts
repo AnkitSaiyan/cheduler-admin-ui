@@ -14,26 +14,28 @@ export class RouterStateService {
   }
 
   private createRouterState() {
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      const { snapshot } = this.router.routerState;
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe({
+      next: () => {
+        const { snapshot } = this.router.routerState;
 
-      let state: ActivatedRouteSnapshot = snapshot.root;
+        let state: ActivatedRouteSnapshot = snapshot.root;
 
-      // Getting params
-      let params = {};
-      while (state.firstChild) {
+        // Getting params
+        let params = {};
+        while (state.firstChild) {
+          params = { ...params, ...state.params };
+          state = state.firstChild;
+        }
         params = { ...params, ...state.params };
-        state = state.firstChild;
+
+        const url = snapshot.url.split('?')[0];
+        const { queryParams } = snapshot.root;
+        const { data } = state.data;
+
+        const routerState: RouterState = { params, queryParams, url, data };
+
+        this.routerState$$.next(routerState);
       }
-      params = { ...params, ...state.params };
-
-      const url = snapshot.url.split('?')[0];
-      const { queryParams } = snapshot.root;
-      const { data } = state.data;
-
-      const routerState: RouterState = { params, queryParams, url, data };
-
-      this.routerState$$.next(routerState);
     });
   }
 

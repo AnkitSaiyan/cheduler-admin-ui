@@ -52,9 +52,11 @@ export class UserApiService {
 
   public getCurrentUserRole$(userId: string): Observable<any> {
     // Api to be integrated
-    // this.http.get(`${environment.schedulerApiUrl}/users/${userId}/roles`).subscribe((roles) => {
-    //   console.log(roles);
-    // });
+    this.http.get(`${environment.schedulerApiUrl}/users/${userId}/roles`).subscribe({
+      next: (roles) => {
+        console.log(roles);
+      }
+    });
     return of(UserRoleEnum.Admin);
   }
 

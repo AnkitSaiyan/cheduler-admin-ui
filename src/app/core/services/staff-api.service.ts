@@ -47,8 +47,8 @@ export class StaffApiService extends DestroyableComponent implements OnDestroy {
     this.shareDataSvc
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
-        this.selectedLang$$.next(lang);
+      .subscribe({
+        next: (lang) => this.selectedLang$$.next(lang)
       });
   }
 

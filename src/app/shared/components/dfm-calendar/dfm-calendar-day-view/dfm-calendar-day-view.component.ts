@@ -122,31 +122,33 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
     this.changeDate$$
       .asObservable()
       .pipe(filter((offset) => !!offset))
-      .subscribe((offset) => {
-        this.changeDate(offset);
+      .subscribe({
+        next: (offset) => this.changeDate(offset)
       });
 
     this.newDate$$
       .asObservable()
       .pipe()
-      .subscribe((date) => {
-        if (date) {
-          this.updateDate(date);
+      .subscribe({
+        next: (date) => {
+          if (date) {
+            this.updateDate(date);
+          }
         }
       });
 
     this.shareDataSvc
       .getDate$()
       .pipe(filter((date) => !!date))
-      .subscribe((date) => {
-        this.newDate$$.next(new Date(date));
+      .subscribe({
+        next: (date) => this.newDate$$.next(new Date(date))
       });
 
     this.shareDataSvc
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
-        this.selectedLang = lang;
+      .subscribe({
+        next: (lang) => this.selectedLang = lang
       });
   }
 
@@ -241,8 +243,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
         }),
         take(1),
       )
-      .subscribe((res) => {
-        this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated}!`);
+      .subscribe({
+        next: () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated}!`)
       });
   }
 
@@ -324,8 +326,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
         }),
         take(1),
       )
-      .subscribe((res) => {
-        this.notificationSvc.showNotification('Appointment has been read');
+      .subscribe({
+        next: () => this.notificationSvc.showNotification('Appointment has been read')
       });
   }
 
@@ -345,8 +347,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
         switchMap(() => this.appointmentApiSvc.deleteAppointment$(+id)),
         take(1),
       )
-      .subscribe((res) => {
-        this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted[this.selectedLang]}!`);
+      .subscribe({
+        next: (res) => this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted[this.selectedLang]}!`)
       });
   }
 
@@ -391,11 +393,13 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
           }),
           take(1),
         )
-        .subscribe((res) => {
-          eventCard.remove();
-          if (res) {
-            // show the created card
-            // In progress
+        .subscribe({
+          next: (res) => {
+            eventCard.remove();
+            if (res) {
+              // show the created card
+              // In progress
+            }
           }
         });
     } else {
@@ -415,11 +419,13 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
           },
         })
         .closed.pipe(take(1))
-        .subscribe((res) => {
-          eventCard.remove();
-          if (res) {
-            // show the created card
-            // In progress
+        .subscribe({
+          next: (res) => {
+            eventCard.remove();
+            if (res) {
+              // show the created card
+              // In progress
+            }
           }
         });
     }

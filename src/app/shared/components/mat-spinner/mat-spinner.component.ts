@@ -18,9 +18,11 @@ export class MatSpinnerComponent extends DestroyableComponent implements OnInit,
   ngOnInit(): void {}
 
   public ngAfterViewInit(): void {
-    this.loaderService.isSpinnerActive$.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
-      this.isSpinnerActive$$.next(value);
-      this.cdr.detectChanges();
+    this.loaderService.isSpinnerActive$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (value) => {
+        this.isSpinnerActive$$.next(value);
+        this.cdr.detectChanges();
+      }
     });
   }
 }
