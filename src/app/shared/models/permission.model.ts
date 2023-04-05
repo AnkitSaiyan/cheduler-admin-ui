@@ -66,7 +66,6 @@ export enum Permission {
 
 export enum GeneralUserPermission {
   CreateAbsences = 'can_create_absences',
-  DeleteAbsences = 'can_delete_absences',
   ReadAbsences = 'can_read_absences',
   UpdateAbsences = 'can_update_absences',
   CreateAppointments = 'can_create_appointments',
@@ -113,6 +112,7 @@ export enum ReaderPermission {
   ReadStaffs = 'can_read_staffs',
   ReadUser = 'can_read_user',
 }
+
 
 
 

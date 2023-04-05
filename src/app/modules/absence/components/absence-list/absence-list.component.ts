@@ -17,6 +17,8 @@ import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'dfm-absence-list',
@@ -58,6 +60,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
+    private permissionSvc: PermissionService,
   ) {
     super();
     this.absences$$ = new BehaviorSubject<any[]>([]);
@@ -116,13 +119,10 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
       .subscribe((lang) => {
         this.selectedLang = lang;
 
-        this.columns = [
-          Translate.Title[lang],
-          Translate.StartDate[lang],
-          Translate.EndDate[lang],
-          Translate.AbsenceInfo[lang],
-          Translate.Actions[lang],
-        ];
+        this.columns = [Translate.Title[lang], Translate.StartDate[lang], Translate.EndDate[lang], Translate.AbsenceInfo[lang]];
+        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
 
         // eslint-disable-next-line default-case
         switch (lang) {
