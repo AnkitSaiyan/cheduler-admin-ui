@@ -369,5 +369,8 @@
   "ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame" : "Expensive of the exam and total minutes of rooms should be the same.",
   "NoSlotsFoundForSelectedExamsAndTime" : "No slots found for selected Exam(s) and Time",
   "Save" : "Save",
-  "SelectPhysician" : "Select Physician"
+  "SelectPhysician" : "Select Physician",
+  "Heading" : "Heading",
+  "SubHeading" : "Sub Heading",
+  "BodyText" : "Body Text"
 }

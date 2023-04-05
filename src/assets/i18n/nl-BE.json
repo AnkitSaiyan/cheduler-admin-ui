@@ -372,6 +372,9 @@
   "ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame" : "De duur van het examen en het totale aantal minuten van de kamers moet hetzelfde zijn.",
   "NoSlotsFoundForSelectedExamsAndTime" : "Geen slots gevonden voor geselecteerde Exam(s) en Tijd",
   "Save" : "Winkel",
-  "SelectPhysician" : "Selecteer dokter"
+  "SelectPhysician" : "Selecteer dokter",
+  "Heading" : "Hoofding",
+  "SubHeading" : "Sub-Hoofding",
+  "BodyText" : "Kerntekst"
 }
 
