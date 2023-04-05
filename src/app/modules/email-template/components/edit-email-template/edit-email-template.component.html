@@ -45,7 +45,7 @@
 
     <form [formGroup]="emailTemplateForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-center">
-        <div class="flex-1">
+        <div class="flex-1 email-temp-field-mv">
           <dfm-input
             size="md"
             placeholder="{{ 'AppointmentConfirmationDiflexmo' | translate }}"
@@ -56,17 +56,17 @@
             {{ 'RequiredField' | translate }}
           </div>
         </div>
-        <div class="flex-1">
-          <dfm-input  size="md" placeholder="Lorem Ipsum" label="{{ 'Subject' | translate }} *" formControlName="subject"></dfm-input>
+        <div class="flex-1 email-temp-field-mv">
+          <dfm-input  size="md" placeholder="{{ 'Subject' | translate }} " label="{{ 'Subject' | translate }} *" formControlName="subject"></dfm-input>
           <div class="validation-error" *ngIf="emailTemplateForm.get('subject')?.hasError('required') && emailTemplateForm.get('subject')?.touched">
             {{ 'RequiredField' | translate }}
           </div>
         </div>
-        <div class="flex-1">
+        <div class="flex-1 email-temp-field-mv">
           <div class="d-flex flex-column dfm-gap-16 ad-ab-repeat-radio align-self-start">
             <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'Status' | translate }} *</span>
 
-            <div class="w-fit d-flex justify-content-between dfm-gap-24">
+            <div class="w-fit d-flex justify-content-between dfm-gap-24 email-temp-radio-field-mv">
               <dfm-radio-button
                 class="font-weight-normal"
                 label="{{ 'Active' | translate }}"

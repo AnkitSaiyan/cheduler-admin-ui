@@ -128,6 +128,8 @@ export class AppComponent implements OnInit {
       this.authService.instance.setActiveAccount(accounts[0]);
     }
 
+    console.log(this.authService.instance.getActiveAccount());
+
     this.userService.authUser$.subscribe((x) => (this.user = x));
 
     this.userService.initializeUser().subscribe((x) => {
