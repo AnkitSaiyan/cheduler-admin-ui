@@ -169,7 +169,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       .subscribe((lang) => {
         this.selectedLang = lang;
         this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang]];
-        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
         // eslint-disable-next-line default-case

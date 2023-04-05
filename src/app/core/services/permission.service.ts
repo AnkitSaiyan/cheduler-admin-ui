@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import { UserRoleEnum } from '../../shared/models/user.model';
 
 @Injectable({
@@ -13,12 +13,13 @@ export class PermissionService {
     this.permissionType$$ = new BehaviorSubject<UserRoleEnum>((userRole as UserRoleEnum) ?? UserRoleEnum.Admin);
   }
 
-  public get permissionType() {
-    return this.permissionType$$.value;
+  public get permissionType$(): Observable<UserRoleEnum> {
+    return this.permissionType$$.asObservable() as Observable<UserRoleEnum>;
   }
 
-  public set permissionType(value: UserRoleEnum) {
+  public setPermissionType(value: UserRoleEnum) {
     this.permissionType$$.next(value);
+    localStorage.setItem('userRole', value);
   }
 
   public get isNotReader() {

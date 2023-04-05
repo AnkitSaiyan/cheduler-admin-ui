@@ -351,7 +351,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
   }
 
   public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement) {
-    if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
+    if (this.permissionSvc.permissionType$ === UserRoleEnum.Reader) return;
     if (!e.offsetY) return;
     const isGrayOutArea = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
     const eventCard = this.createAppointmentCard(e, eventsContainer);

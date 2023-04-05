@@ -120,7 +120,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         this.selectedLang = lang;
 
         this.columns = [Translate.Title[lang], Translate.StartDate[lang], Translate.EndDate[lang], Translate.AbsenceInfo[lang]];
-        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 

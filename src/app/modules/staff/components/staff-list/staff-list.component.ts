@@ -155,7 +155,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       .subscribe((lang) => {
         this.selectedLang = lang;
         this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Type[lang], Translate.Email[lang], Translate.Status[lang]];
-        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 

@@ -153,7 +153,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
       .subscribe((lang) => {
         this.selectedLang = lang;
         this.columns = [Translate.Name[lang], Translate.Expensive[lang], Translate.Status[lang]];
-        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 

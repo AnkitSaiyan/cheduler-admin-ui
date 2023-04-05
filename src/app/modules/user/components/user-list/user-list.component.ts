@@ -194,7 +194,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
           Translate.Status[lang],
         ];
 
-        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 

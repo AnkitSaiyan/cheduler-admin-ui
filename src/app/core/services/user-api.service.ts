@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, map, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, map, Observable, of, Subject, tap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {MsalService} from '@azure/msal-angular';
 import {AuthUser, UserRoleEnum} from '../../shared/models/user.model';
 import {UserManagementApiService} from './user-management-api.service';
 import {NameValue} from "../../shared/components/search-modal.component";
+import {PermissionService} from "./permission.service";
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +28,12 @@ export class UserApiService {
     }
   ]
 
-  constructor(private http: HttpClient, private msalService: MsalService, private UserManagementApiService: UserManagementApiService) {
+  constructor(
+    private http: HttpClient,
+    private msalService: MsalService,
+    private UserManagementApiService: UserManagementApiService,
+    private permissionSvc: PermissionService
+  ) {
   }
 
   public get authUser$(): Observable<AuthUser | undefined> {
@@ -42,9 +48,15 @@ export class UserApiService {
     return [...this.userRoles];
   }
 
+  public get currentUserRole$(): Observable<any> {
+    // Api to be integrated
+    return of(UserRoleEnum.Admin);
+  }
+
   public initializeUser(): Observable<boolean> {
     const user = this.msalService.instance.getActiveAccount();
     const userId = user?.localAccountId ?? '';
+
     return this.UserManagementApiService.getUserProperties(userId).pipe(
       map((res: any) => {
         try {
@@ -58,6 +70,17 @@ export class UserApiService {
           return false;
         }
       }),
+
+      // get user role
+      map((res) => {
+        if (res) {
+          this.currentUserRole$.pipe(
+            map((role) => (this.permissionSvc.setPermissionType(role as UserRoleEnum))),
+          )
+          return true;
+        }
+        return false;
+      })
     );
   }
 }

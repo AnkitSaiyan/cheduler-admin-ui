@@ -194,7 +194,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
           Translate.Type[lang],
           Translate.Status[lang],
         ];
-        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 

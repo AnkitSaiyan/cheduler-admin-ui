@@ -31,11 +31,11 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.userRoleControl.setValue(this.permissionSvc.permissionType);
+      this.userRoleControl.setValue(this.permissionSvc.permissionType$);
     }, 10);
     this.userRoleControl.valueChanges.pipe(filter(Boolean)).subscribe((value) => {
       localStorage.setItem('userRole', value);
-      this.permissionSvc.permissionType = value!;
+      this.permissionSvc.permissionType$ = value!;
     });
   }
 

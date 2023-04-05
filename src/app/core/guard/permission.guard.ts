@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateChild, Router, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
+import {map, Observable} from 'rxjs';
 import { RouteName, RouteType } from 'src/app/shared/models/permission.model';
 import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { PermissionService } from '../services/permission.service';
@@ -12,15 +12,14 @@ export class PermissionGuard implements CanActivateChild {
   constructor(private permissionSvc: PermissionService, private router: Router) {}
 
   canActivateChild(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    switch (this.permissionSvc.permissionType) {
-      case UserRoleEnum.Reader: {
-        const isPermitted = this.isReaderPermitted(route);
-        return isPermitted;
-      }
-      default:
-        break;
-    }
-    return true;
+    return this.permissionSvc.permissionType$.pipe(
+      map((permissionType) => {
+        switch (permissionType) {
+          case UserRoleEnum.Reader: return this.isReaderPermitted(route);
+          default: return true;
+        }
+      })
+    )
   }
 
   private isReaderPermitted(route: ActivatedRouteSnapshot): boolean | UrlTree {

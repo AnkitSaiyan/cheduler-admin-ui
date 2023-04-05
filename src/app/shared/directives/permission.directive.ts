@@ -22,7 +22,7 @@ export class IsPermittedDirective implements OnInit {
 
   private displayTemplate() {
     this.vcr.clear();
-    switch (this.permissionSvc.permissionType) {
+    switch (this.permissionSvc.permissionType$) {
       case UserRoleEnum.GeneralUser: {
         if (this.elementPermission.some((permission) => Object.values(GeneralUserPermission).find((value) => value === permission))) {
           this.createEmbeddedView();

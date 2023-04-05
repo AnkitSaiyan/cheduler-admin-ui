@@ -134,7 +134,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
       .subscribe((lang) => {
         this.selectedLang = lang;
         this.columns = [Translate.Start[lang], Translate.End[lang], Translate.Priority[lang]];
-        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 
