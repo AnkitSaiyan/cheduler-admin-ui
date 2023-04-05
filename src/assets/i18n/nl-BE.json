@@ -24,7 +24,7 @@
   "Cancel": "Annuleer",
   "EnterFirstName": "Gelieve je voornaam in te vullen",
   "EnterLastName": "Gelieve je familienaam in te vullen",
-  "EnterEmail": "Gelieve je e-mail in te vullen",
+  "EnterEmail": "Gelieve Je E-mail In Te Vullen",
   "ValidEmail": "Gelieve een geldige e-mail in te vullen",
   "Download": "Download",
   "Confirmation": "Bevestiging",
@@ -38,8 +38,8 @@
   "EnterRizvNumber": "Gelieve RIZIV no. in te vullen",
   "SearchByNameEmailCategory": "Zoek op Voornaam, Naam, Email en Categorie",
   "SearchByPrioritySlots": "Zoek Op Prioritaire Slots",
-  "EnterAddress": "Geef adres",
-  "EnterTelephone": "Geef telefoon",
+  "EnterAddress": "Geef Adres",
+  "EnterTelephone": "Geef Telefoon",
   "EnterGsm": "Geef GSM",
   "Priority": "Prioriteit",
   "Room": "Zaal",
@@ -140,7 +140,7 @@
   "AppointmentCancellationDuration": "Duur afspraak annulatie",
   "Info": "Info",
   "EnterHeading": "Geef Hoofding",
-  "EnterSubHeading": "Geef Sub-hoofding",
+  "EnterSubHeading": "Geef Sub-Hoofding",
   "EnterBodyText": "Geef Hoofdtekst",
   "EnterWarningText": "Geef Waarschuwingstekst",
   "Yes": "Ja",
@@ -371,6 +371,7 @@
   "PleaseEnterAtLeastFiveMin" : "vul a.u.b. minimaal 5 min in",
   "ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame" : "De duur van het examen en het totale aantal minuten van de kamers moet hetzelfde zijn.",
   "NoSlotsFoundForSelectedExamsAndTime" : "Geen slots gevonden voor geselecteerde Exam(s) en Tijd",
-  "Save" : "Winkel"
+  "Save" : "Winkel",
+  "SelectPhysician" : "Selecteer dokter"
 }
 
