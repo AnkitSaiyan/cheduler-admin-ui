@@ -55,6 +55,7 @@
         class="text-nowrap"
         [disabled]="(loading$$ | async) === true"
         (click)="openAddRoomModal()"
+        *dfmPermitted="Permission.CreateRooms"
       >{{'AddRoom' | translate}}
       </dfm-button>
     </div>
