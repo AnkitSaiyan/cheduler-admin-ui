@@ -18,6 +18,7 @@ import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
 @Component({
   selector: 'dfm-list-priority-slots',
   templateUrl: './list-priority-slots.component.html',
@@ -46,6 +47,8 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
   public statuses = Statuses;
 
   public calendarView$$ = new BehaviorSubject<boolean>(false);
+
+  public readonly Permission = Permission;
 
   constructor(
     private priorityApiSvc: PrioritySlotApiService,
@@ -281,6 +284,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     }, 0);
   }
 }
+
 
 
 

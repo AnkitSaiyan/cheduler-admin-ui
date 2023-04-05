@@ -63,7 +63,7 @@
         [openDelay]="200"
         (click)="toggleView()"
       ></dfm-button-icon>
-      <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false" (click)="openAddPriorityModal()"
+      <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreatePrioritySlots" class="text-nowrap" [disabled]="false" (click)="openAddPriorityModal()"
         >{{ 'AddPrioritySlots' | translate }}
       </dfm-button>
     </div>
