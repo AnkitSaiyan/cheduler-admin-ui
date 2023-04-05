@@ -1,7 +1,19 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  filter,
+  lastValueFrom,
+  map,
+  switchMap,
+  take,
+  takeUntil,
+  tap,
+  throttleTime
+} from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -418,8 +430,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     this.weekdayToPractice$$.next(weekdayToPractice);
   }
 
-  public addAppointment(event: any) {
-    if (this.permissionSvc.permissionType$ === UserRoleEnum.Reader) return;
+  public async addAppointment(event: any) {
+    const permissionType = await lastValueFrom(this.permissionSvc.permissionType$);
+    if (permissionType === UserRoleEnum.Reader) return;
+
     const { e, eventsContainer, day, grayOutSlot } = event;
     const eventCard = this.createAppointmentCard(e, eventsContainer);
 

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil, tap } from 'rxjs';
+import {BehaviorSubject, filter, lastValueFrom, switchMap, take, takeUntil, tap} from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationType } from 'diflexmo-angular-design';
@@ -350,9 +350,12 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
       });
   }
 
-  public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement) {
-    if (this.permissionSvc.permissionType$ === UserRoleEnum.Reader) return;
+  public async addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement) {
+    const permissionType = await lastValueFrom(this.permissionSvc.permissionType$);
+    if (permissionType === UserRoleEnum.Reader) return;
+
     if (!e.offsetY) return;
+
     const isGrayOutArea = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
     const eventCard = this.createAppointmentCard(e, eventsContainer);
 

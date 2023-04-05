@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CheckboxComponent, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
@@ -182,10 +182,12 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
         this.closeMenus();
       });
 
-    this.shareDataSvc
-      .getLanguage$()
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
+    combineLatest([
+      this.shareDataSvc.getLanguage$(),
+      this.permissionSvc.permissionType$
+    ]).pipe(
+      takeUntil(this.destroy$$)
+    ).subscribe(([lang, permissionType]) => {
         this.selectedLang = lang;
         this.columns = [
           Translate.Name[lang],
@@ -194,7 +196,8 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
           Translate.Type[lang],
           Translate.Status[lang],
         ];
-        if (this.permissionSvc.permissionType$ !== UserRoleEnum.Reader) {
+
+        if (permissionType !== UserRoleEnum.Reader) {
           this.columns = [...this.columns, Translate.Actions[lang]];
         }
 
