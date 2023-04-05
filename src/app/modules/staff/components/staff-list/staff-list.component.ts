@@ -11,13 +11,14 @@ import { NotificationDataService } from '../../../../core/services/notification-
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { User } from '../../../../shared/models/user.model';
+import { User, UserRoleEnum } from '../../../../shared/models/user.model';
 import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
 
 @Component({
   selector: 'dfm-staff-list',
@@ -69,6 +70,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
     private cdr: ChangeDetectorRef,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
+    private permissionSvc: PermissionService,
   ) {
     super();
     this.staffs$$ = new BehaviorSubject<any[]>([]);
@@ -152,14 +154,10 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
       .pipe(takeUntil(this.destroy$$))
       .subscribe((lang) => {
         this.selectedLang = lang;
-        this.columns = [
-          Translate.FirstName[lang],
-          Translate.LastName[lang],
-          Translate.Type[lang],
-          Translate.Email[lang],
-          Translate.Status[lang],
-          Translate.Actions[lang],
-        ];
+        this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Type[lang], Translate.Email[lang], Translate.Status[lang]];
+        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
 
         // eslint-disable-next-line default-case
         switch (lang) {
