@@ -9,7 +9,8 @@ export class PermissionService {
   private permissionType$$: BehaviorSubject<UserRoleEnum>;
 
   constructor() {
-    this.permissionType$$ = new BehaviorSubject<UserRoleEnum>(UserRoleEnum.Admin);
+    const userRole = localStorage.getItem('userRole');
+    this.permissionType$$ = new BehaviorSubject<UserRoleEnum>((userRole as UserRoleEnum) ?? UserRoleEnum.Admin);
   }
 
   public get permissionType() {
@@ -24,6 +25,9 @@ export class PermissionService {
     return this.permissionType$$.value !== UserRoleEnum.Reader;
   }
 }
+
+
+
 
 
 
