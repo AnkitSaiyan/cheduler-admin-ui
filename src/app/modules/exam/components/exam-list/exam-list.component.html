@@ -48,6 +48,7 @@
           class="text-nowrap"
           [disabled]="false"
           routerLink="./add"
+          *dfmPermitted="Permission.CreateExams"
         >{{'AddExam' | translate}}
         </dfm-button>
       </div>

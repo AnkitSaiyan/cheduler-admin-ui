@@ -17,6 +17,7 @@ import { Exam } from '../../../../shared/models/exam.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
 // import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
@@ -60,6 +61,8 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   private selectedLang: string = ENG_BE;
 
   public statuses = Statuses;
+
+  public readonly Permission = Permission;
 
   constructor(
     private examApiSvc: ExamApiService,
