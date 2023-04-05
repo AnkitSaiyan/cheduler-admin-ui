@@ -17,6 +17,7 @@ import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
   selector: 'dfm-staff-list',
@@ -55,6 +56,8 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
   private selectedLang: string = ENG_BE;
 
   public statuses = Statuses;
+
+  public readonly Permission = Permission;
 
   constructor(
     private staffApiSvc: StaffApiService,

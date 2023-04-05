@@ -55,6 +55,7 @@
         class="text-nowrap"
         [disabled]="false"
         routerLink="./add"
+        *dfmPermitted="Permission.CreateStaffs"
       >{{'AddStaff' | translate}}
       </dfm-button>
     </div>
