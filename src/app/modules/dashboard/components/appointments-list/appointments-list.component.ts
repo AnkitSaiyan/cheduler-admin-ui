@@ -23,6 +23,9 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { AppointmentAdvanceSearchComponent } from './appointment-advance-search/appointment-advance-search.component';
 import { TranslateService } from '@ngx-translate/core';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
+import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
   selector: 'dfm-appointments-list',
@@ -38,7 +41,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
+  public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status'];
 
   public downloadItems: NameValue[] = [];
 
@@ -53,6 +56,8 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
   private selectedLang: string = ENG_BE;
 
   public statuses = Statuses;
+
+  public readonly Permission = Permission;
 
   public appointmentGroupedByDateAndRoom: {
     [key: string]: {
@@ -93,6 +98,7 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
     private routerStateSvc: RouterStateService,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
+    private permissionSvc: PermissionService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -211,6 +217,9 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
       .pipe(takeUntil(this.destroy$$))
       .subscribe((lang) => {
         this.selectedLang = lang;
+        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
         // eslint-disable-next-line default-case
         switch (lang) {
           case ENG_BE:

@@ -137,7 +137,7 @@
               {{ item.approval | approvalTypeName | translate  | dashIfNothing }}
             </dfm-badge>
           </dfm-table-body-cell>
-          <dfm-table-body-cell>
+          <dfm-table-body-cell *dfmPermitted="[Permission.UpdateAppointments, Permission.DeleteAppointments]">
             <div class="d-flex align-items-center dfm-gap-14">
               <!-- <dfm-button
               *ngIf="!item.confirm"
@@ -166,6 +166,7 @@
                 (click)="$event.stopPropagation()"
                 [routerLink]="['/appointment', item.id, 'edit']"
                 [state]="{ comingFromRoute: 'dashboard', edit: true }"
+                *dfmPermitted="Permission.UpdateAppointments"
               ></dfm-button>
               <dfm-button
                 color="link-gray"
@@ -175,6 +176,7 @@
                 triggers="mouseenter:mouseleave"
                 popoverClass="popover-p-8"
                 [openDelay]="300"
+                *dfmPermitted="Permission.DeleteAppointments"
                 (click)="$event.stopPropagation(); deleteAppointment(item.id)"
               >
               </dfm-button>
