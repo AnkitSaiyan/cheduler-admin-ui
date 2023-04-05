@@ -16,11 +16,12 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
-import { User } from '../../../../shared/models/user.model';
+import { User, UserRoleEnum } from '../../../../shared/models/user.model';
 import { ShareDataService } from '../../../../core/services/share-data.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Translate } from '../../../../shared/models/translate.model';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
 
 @Component({
   selector: 'dfm-physician-list',
@@ -79,6 +80,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     private shareDataSvc: ShareDataService,
     private translatePipe: TranslatePipe,
     private translate: TranslateService,
+    private permissionSvc: PermissionService,
   ) {
     super();
     this.physicians$$ = new BehaviorSubject<any[]>([]);
@@ -166,7 +168,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       .pipe(takeUntil(this.destroy$$))
       .subscribe((lang) => {
         this.selectedLang = lang;
-        this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang], Translate.Actions[lang]];
+        this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang]];
+        if (this.permissionSvc.permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
         // eslint-disable-next-line default-case
         switch (lang) {
           case ENG_BE:

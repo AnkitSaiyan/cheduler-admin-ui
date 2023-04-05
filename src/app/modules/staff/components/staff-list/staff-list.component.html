@@ -100,7 +100,7 @@
           </dfm-badge>
         </dfm-table-body-cell>
 
-        <dfm-table-body-cell>
+        <dfm-table-body-cell *dfmPermitted="[Permission.UpdateStaffs, Permission.DeleteStaffs]">
           <div class="d-flex dfm-gap-16 align-items-center sf-li-action-buttons">
             <ng-container *dfmPermitted="Permission.UpdateStaffs">
               <dfm-button
