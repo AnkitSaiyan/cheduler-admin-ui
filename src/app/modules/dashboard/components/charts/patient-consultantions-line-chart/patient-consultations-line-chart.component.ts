@@ -31,34 +31,33 @@ export class PatientConsultationsLineChartComponent extends DestroyableComponent
   }
 
   public ngOnInit(): void {
-    console.log(this.labels);
     this.dashboardApiService.overallStatusBarChart$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
-      const dataset: any = [];
+      const dataset: any = Array(12).fill(0);
 
       appointment.yearlyappointments.forEach((element) => {
-        if (element?.label === 'January') dataset[0] = element.value;
+        if (element?.label === 'January') dataset[0] = element?.value ?? 0;
         else dataset[0] = 0;
-        if (element?.label === 'February') dataset[1] = element.value;
+        if (element?.label === 'February') dataset[1] = element?.value ?? 0;
         else dataset[1] = 0;
-        if (element?.label === 'March') dataset[2] = element.value;
+        if (element?.label === 'March') dataset[2] = element?.value ?? 0;
         else dataset[2] = 0;
-        if (element?.label === 'April') dataset[3] = element.value;
+        if (element?.label === 'April') dataset[3] = element?.value ?? 0;
         else dataset[3] = 0;
-        if (element?.label === 'May') dataset[4] = element.value;
+        if (element?.label === 'May') dataset[4] = element?.value ?? 0;
         else dataset[4] = 0;
-        if (element?.label === 'June') dataset[5] = element.value;
+        if (element?.label === 'June') dataset[5] = element?.value ?? 0;
         else dataset[5] = 0;
-        if (element?.label === 'July') dataset[6] = element.value;
+        if (element?.label === 'July') dataset[6] = element?.value ?? 0;
         else dataset[6] = 0;
-        if (element?.label === 'August') dataset[7] = element.value;
+        if (element?.label === 'August') dataset[7] = element?.value ?? 0;
         else dataset[7] = 0;
-        if (element?.label === 'September') dataset[8] = element.value;
+        if (element?.label === 'September') dataset[8] = element?.value ?? 0;
         else dataset[8] = 0;
-        if (element?.label === 'October') dataset[9] = element.value;
+        if (element?.label === 'October') dataset[9] = element?.value ?? 0;
         else dataset[9] = 0;
-        if (element?.label === 'November') dataset[10] = element.value;
+        if (element?.label === 'November') dataset[10] = element?.value ?? 0;
         else dataset[10] = 0;
-        if (element?.label === 'December') dataset[11] = element.value;
+        if (element?.label === 'December') dataset[11] = element?.value ?? 0;
         else dataset[11] = 0;
       });
 
