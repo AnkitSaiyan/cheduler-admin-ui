@@ -491,5 +491,20 @@ export const Translate = Object.freeze({
   Profile: {
     [ENG_BE]: 'Profile',
     [DUTCH_BE]: 'Profiel',
+  },
+  Error:{
+    Forbidden:{
+      [ENG_BE]: 'Forbidden! You are not permitted to perform this action',
+    [DUTCH_BE]: 'Verboden! U mag deze actie niet uitvoeren',
+
+    },
+    Unauthorized:{
+      [ENG_BE]: 'Unauthorized! You are not authorized',
+      [DUTCH_BE]: 'Ongeoorloofd! Jij bent niet geautoriseerd',
+    },
+    SomethingWrong:{
+      [ENG_BE]: 'Something Went Wrong',
+      [DUTCH_BE]: 'Er is iets fout gegaan',
+    }
   }
 });
