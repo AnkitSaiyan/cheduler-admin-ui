@@ -1,12 +1,14 @@
 import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {
-  BehaviorSubject, catchError,
+  BehaviorSubject,
   combineLatest,
-  debounceTime, distinctUntilChanged,
-  filter,
+  debounceTime,
+  distinctUntilChanged,
+  filter, from,
   interval,
   map,
+  Observable, of,
   Subject,
   switchMap,
   take,
@@ -37,6 +39,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {UserManagementApiService} from "../../../../core/services/user-management-api.service";
 import {Permission} from 'src/app/shared/models/permission.model';
 import {PermissionService} from 'src/app/core/services/permission.service';
+import {isArray} from "chart.js/helpers";
 
 @Component({
   selector: 'dfm-user-list',
@@ -122,19 +125,19 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
     setTimeout(() => this.userTypeDropdownControl.setValue(UserType.General), 0);
 
-    this.userApiSvc.userLists$
-      .pipe(
-        tap(() => this.loading$$.next(true)),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe({
-        next: (users) => {
-          this.users$$.next(users);
-          this.filteredUsers$$.next(users);
-          this.loading$$.next(false);
-        },
-        error: (err) => this.loading$$.next(false)
-      });
+    // this.userApiSvc.userLists$
+    //   .pipe(
+    //     tap(() => this.loading$$.next(true)),
+    //     takeUntil(this.destroy$$),
+    //   )
+    //   .subscribe({
+    //     next: (users) => {
+    //       this.users$$.next(users);
+    //       this.filteredUsers$$.next(users);
+    //       this.loading$$.next(false);
+    //     },
+    //     error: (err) => this.loading$$.next(false)
+    //   });
 
     this.userTypeDropdownControl.valueChanges.pipe(
       debounceTime(0),
@@ -308,12 +311,25 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public changeStatus(changes: ChangeStatusRequestData[]) {
-    this.userApiSvc
-      .changeUserStatus$(changes)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
-      });
+    of([1, 2, 3]).subscribe((res) => console.log(res));
+
+    let observable$: Observable<any> | Observable<any>[];
+
+    switch (this.userTypeDropdownControl.value) {
+      case UserType.General:
+        this.userApiSvc.changeUserStatus$(changes).pipe(takeUntil(this.destroy$$)).subscribe({
+          next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang])
+        });
+        break;
+      default:
+        changes.map((change) => {
+          this.userManagementApiSvc.patchUserProperties(change.id as string,{
+            accountEnabled: !!change.status
+          }).pipe(take(1)).subscribe({
+            next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang])
+          })
+        });
+    }
   }
 
   public deleteUser(id: number | string){

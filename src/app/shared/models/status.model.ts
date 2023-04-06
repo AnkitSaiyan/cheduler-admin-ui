@@ -30,6 +30,6 @@ export enum ReadStatus {
 }
 
 export interface ChangeStatusRequestData {
-  id: number;
+  id: number | string;
   status: number;
 }

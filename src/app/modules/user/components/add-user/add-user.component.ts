@@ -1,15 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NotificationType} from 'diflexmo-angular-design';
-import {BehaviorSubject, Observable, switchMap, take, takeUntil} from 'rxjs';
+import {BehaviorSubject, Observable, take, takeUntil} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {ModalService} from '../../../../core/services/modal.service';
 import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {AddUserRequest, User, UserRoleEnum, UserType} from '../../../../shared/models/user.model';
+import {User, UserRoleEnum, UserType} from '../../../../shared/models/user.model';
 import {getUserTypeEnum} from '../../../../shared/utils/getEnums';
 import {StaffApiService} from '../../../../core/services/staff-api.service';
-import {Status} from '../../../../shared/models/status.model';
 import {DUTCH_BE, EMAIL_REGEX, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
 
 import {Translate} from '../../../../shared/models/translate.model';
@@ -18,8 +17,9 @@ import {NameValue} from "../../../../shared/components/search-modal.component";
 import {UserManagementApiService} from "../../../../core/services/user-management-api.service";
 import {environment} from "../../../../../environments/environment";
 import {AuthService} from "../../../../core/services/auth.service";
-import {AddStaffRequestData} from "../../../../shared/models/staff.model";
 import {MsalService} from "@azure/msal-angular";
+import {Permission} from "../../../../shared/models/permission.model";
+import {PermissionService} from "../../../../core/services/permission.service";
 
 interface FormValues {
   userType: UserType;
@@ -52,6 +52,10 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
   public userTenants: NameValue[] = [];
 
+  public readonly Permission = Permission;
+
+  public permissionType!: UserRoleEnum;
+
   constructor(
     private modalSvc: ModalService,
     private fb: FormBuilder,
@@ -61,7 +65,8 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
     private userSvc: UserApiService,
     private userManagementApiSvc: UserManagementApiService,
     private authSvc: AuthService,
-    private msalService: MsalService
+    private msalService: MsalService,
+    private permissionSvc: PermissionService
   ) {
     super();
 
@@ -74,6 +79,17 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
   }
 
   public ngOnInit(): void {
+    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (permissionType) => {
+        this.permissionType = permissionType;
+        if (permissionType === UserRoleEnum.GeneralUser) {
+          this.addUserForm.patchValue({
+            userType: UserType.General
+          });
+        }
+      }
+    });
+
     this.shareDataSvc
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
@@ -116,7 +132,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
       userType: [
         {
           value: userDetails?.userType ?? UserType.Scheduler,
-          disabled: this.modalData.edit,
+          disabled: this.modalData.edit || this.permissionType === UserRoleEnum.GeneralUser,
         },
         [Validators.required],
       ],
