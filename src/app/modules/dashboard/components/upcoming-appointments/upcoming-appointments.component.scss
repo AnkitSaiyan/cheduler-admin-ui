@@ -36,10 +36,18 @@ div section:last-child {
       bottom: 0;
       margin: auto;
     }
+    .name {
+      white-space: nowrap;
+    }
 
     .avatar-container {
       object-fit: contain;
       border: 1px solid var(--bs-gray-200)
+    }
+    @media only screen and (min-width: 1060px) and (max-width: 1300px) {
+      .avatar-container {
+        display: none;
+      }
     }
   }
 }

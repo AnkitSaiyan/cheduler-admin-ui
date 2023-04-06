@@ -110,24 +110,24 @@ export class AppointmentsListComponent extends DestroyableComponent implements O
     this.appointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
 
-    this.routerStateSvc
-      .listenForQueryParamsChanges$()
-      .pipe(debounceTime(100))
-      .subscribe({
-        next: (params) => {
-          if (params['v']) {
-            this.calendarView$$.next(params['v'] !== 't');
-          } else {
-            this.router.navigate([], {
-              replaceUrl: true,
-              queryParams: {
-                v: 'w',
-              },
-            });
-            this.calendarView$$.next(true);
-          }
-        }
-      });
+    // this.routerStateSvc
+    //   .listenForQueryParamsChanges$()
+    //   .pipe(debounceTime(100))
+    //   .subscribe({
+    //     next: (params) => {
+    //       if (params['v']) {
+    //         this.calendarView$$.next(params['v'] !== 't');
+    //       } else {
+    //         this.router.navigate([], {
+    //           replaceUrl: true,
+    //           queryParams: {
+    //             v: 'w',
+    //           },
+    //         });
+    //         this.calendarView$$.next(true);
+    //       }
+    //     }
+    //   });
   }
 
   public ngOnInit() {
