@@ -192,12 +192,12 @@
           <dfm-table-body-cell>{{ item.rooms | joinWithAnd : 'name'  | dashIfNothing}}</dfm-table-body-cell>
           <dfm-table-body-cell>
             <div  class="d-flex dfm-gap-8">
-              <span> {{ item.startedAt | date: 'y-MM-dd HH:mm' }} </span>
+              <span> {{ item.startedAt | dfmDefaultDate }} </span>
             </div>
           </dfm-table-body-cell>
           <dfm-table-body-cell>
             <div  class="d-flex dfm-gap-8">
-              <span> {{ item.endedAt | date: 'y-MM-dd HH:mm' }} </span>
+              <span> {{ item.endedAt | dfmDefaultDate }} </span>
             </div>
           </dfm-table-body-cell>
         </ng-template>
