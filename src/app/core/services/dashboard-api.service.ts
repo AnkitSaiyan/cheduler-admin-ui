@@ -363,11 +363,11 @@ export class DashboardApiService extends DestroyableComponent {
 		);
 	}
 
-  clearNotification(id: number[]): Observable<PostIt> {
+  clearNotification(ids: number[]): Observable<PostIt> {
 		this.loaderSvc.activate();
 		return this.http.post<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/dashboard/clearnotifications`,{
         objectType: 'appointment',
-        objectId: id,
+        objectId: ids,
     }).pipe(
 			map((response) => response.data),
 			tap(() => {
@@ -377,11 +377,11 @@ export class DashboardApiService extends DestroyableComponent {
 		);
 	}
 
-  clearPost(id: number[]): Observable<PostIt> {
+  clearPost(ids: number[]): Observable<PostIt> {
 		this.loaderSvc.activate();
 		return this.http.post<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/dashboard/clearnotifications`,{
-        objectType: 'post-its',
-        objectId: id,
+        objectType: 'post_its',
+        objectId: ids,
     }).pipe(
 			map((response) => response.data),
 			tap(() => {
