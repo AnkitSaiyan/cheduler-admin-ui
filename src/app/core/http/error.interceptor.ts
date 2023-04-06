@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
-import {catchError, Observable, throwError} from "rxjs";
+import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from "@angular/common/http";
+import {catchError, Observable, of, throwError} from "rxjs";
 import {NotificationDataService} from "../services/notification-data.service";
 import {NotificationType} from "diflexmo-angular-design";
 import {LoaderService} from "../services/loader.service";
@@ -19,7 +19,11 @@ export class ErrorInterceptor implements HttpInterceptor {
         this.generateErrorMessage(err);
         this.stopLoaders();
 
-        return throwError(err);
+        return of(new HttpResponse({
+          body: {
+            data: null
+          }
+        }));
       })
     )
   }
