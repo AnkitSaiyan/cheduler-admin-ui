@@ -142,6 +142,11 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     },
     {
       provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
       useClass: MsalInterceptor,
       multi: true,
     },
@@ -157,7 +162,6 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
       provide: MSAL_INTERCEPTOR_CONFIG,
       useFactory: MSALInterceptorConfigFactory,
     },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     MsalService,
     MsalGuard,
     MsalBroadcastService,

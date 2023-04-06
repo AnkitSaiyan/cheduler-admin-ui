@@ -7,30 +7,41 @@ import {LoaderService} from "../services/loader.service";
 import {HttpStatusCodes} from "../../shared/models/base-response.model";
 import {ShareDataService} from "../services/share-data.service";
 import {Translate} from "../../shared/models/translate.model";
+import {ENG_BE} from "../../shared/utils/const";
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
   constructor(private notificationSvc: NotificationDataService, private loaderSvc: LoaderService, private shareDataSvc: ShareDataService) {
   }
-
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return this.shareDataSvc.getLanguage$().pipe(
-        switchMap((lang) => next.handle(req).pipe(
-            catchError((err) => {
-              console.log(err);
+    return next.handle(req).pipe(
+        catchError((err) => {
+          console.log(err);
 
-              this.generateErrorMessage(err, lang);
-              this.stopLoaders();
+          // lang hardcoded to english for now
+          this.generateErrorMessage(err, ENG_BE);
+          this.stopLoaders();
 
-              return throwError(err);
-              // return of(new HttpResponse({
-              //   body: {
-              //     data: null
-              //   }
-              // }));
-            })
-        ))
+          return throwError(err);
+        })
     );
+    // return this.shareDataSvc.getLanguage$().pipe(
+    //     switchMap((lang) => next.handle(req).pipe(
+    //         catchError((err) => {
+    //           console.log(err);
+    //
+    //           this.generateErrorMessage(err, lang);
+    //           this.stopLoaders();
+    //
+    //           return throwError(err);
+    //           // return of(new HttpResponse({
+    //           //   body: {
+    //           //     data: null
+    //           //   }
+    //           // }));
+    //         })
+    //     ))
+    // );
   }
 
   private generateErrorMessage(err: any, lang: string) {
