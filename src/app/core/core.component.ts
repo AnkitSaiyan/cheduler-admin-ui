@@ -10,7 +10,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { InteractionType } from '@azure/msal-browser';
 import { MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
-import { BehaviorSubject, combineLatest, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, Subject, take, takeUntil } from 'rxjs';
 import { DestroyableComponent } from '../shared/components/destroyable.component';
 import { DUTCH_BE, ENG_BE } from '../shared/utils/const';
 import englishLanguage from '../../assets/i18n/en-BE.json';
@@ -96,7 +96,11 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 
   public notifications: NavigationItemEvent[] = [];
 
+  public notifications$$ = new BehaviorSubject<NavigationItemEvent[]>([]);
+
   public messages: NavigationItemEvent[] = [];
+
+  public messages$$ = new BehaviorSubject<NavigationItemEvent[]>([]);
 
   public currentTenant$$ = new BehaviorSubject<string>('nl-BE');
 
@@ -168,31 +172,33 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
         next: (language: string) => this.currentTenant$$.next(language)
       });
 
-    this.dashboardApiService.notificationData$$.pipe(takeUntil(this.destroy$$)).subscribe({
+    this.dashboardApiService.clearNotification$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (res) => {
         this.notifications = [];
-        res.forEach((element, index) => {
+        res.forEach((element) => {
           this.notifications.push(
             new NavigationItemEvent(
-              (index + 1).toString(),
-              DateTimeUtils.UTCToLocalDateString(element.date),
+              element?.apmtId.toString(),
+              DateTimeUtils.UTCToLocalDateString(new Date(element.date)),
               element?.title,
               NavigationItemEventType.SUCCESS,
               element?.message,
             ),
           );
         });
+        this.notifications$$.next(this.notifications)
       }
     });
 
-    this.dashboardApiService.postItData$$.pipe(takeUntil(this.destroy$$)).subscribe({
+    this.dashboardApiService.clearPosts$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (res) => {
         this.messages = [];
-        res.forEach((element, index) => {
+        res.forEach((element) => {
           this.messages.push(
-            new NavigationItemEvent((index + 1).toString(), DateTimeUtils.UTCToLocalDateString(element.createdAt), element?.message),
+            new NavigationItemEvent(element.id.toString(), DateTimeUtils.UTCToLocalDateString(new Date(element.createdAt)), element?.message),
           );
         });
+        this.messages$$.next(this.messages)
       }
     });
   }
@@ -232,5 +238,19 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       this.authService.logoutRedirect();
     }
     this.userApiSvc.removeUser();
+  }
+
+  public onDismissed(event: string[], type: 'post-its' | 'appointment') {
+    if (type === 'post-its') {
+      this.dashboardApiService
+        .clearPost(event.map((value) => +value))
+        .pipe(take(1))
+        .subscribe();
+    } else {
+      this.dashboardApiService
+        .clearNotification(event.map((value) => +value))
+        .pipe(take(1))
+        .subscribe();
+    }
   }
 }

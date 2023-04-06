@@ -257,7 +257,7 @@ export class AppointmentApiService extends DestroyableComponent {
     delete customRequestData?.fromDate;
     delete customRequestData?.toDate;
     // this.loaderSvc.spinnerActivate();
-    return this.http.post<BaseResponse<AppointmentSlot>>(`${environment.schedulerApiUrl}/patientappointment/slots`, customRequestData).pipe(
+    return this.http.post<BaseResponse<AppointmentSlot>>(`${environment.schedulerApiUrl}/appointment/slots`, customRequestData).pipe(
       map((res) => [
         {
           ...res?.data,

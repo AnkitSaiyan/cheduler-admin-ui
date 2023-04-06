@@ -4,5 +4,5 @@ export interface Notification {
     subTitle: string
     timeSpan: string
     title: string
+    apmtId: number
   }
-  

@@ -2,9 +2,9 @@
   <dfm-navigation-bar
     [navigationItems]="navItems"
     [isNotificationsCounterShown]="true"
-    [notifications]="notifications"
+    [notifications]="(notifications$$ | async) ?? []"
     [isMessagesCounterShown]="true"
-    [messages]="messages"
+    [messages]="(messages$$ | async) ?? []"
     [isTenantDropdownShown]="true"
     [tenants]="languages"
     [currentTenant]="(currentTenant$$ | async) ?? 'nl-BE'"
@@ -14,6 +14,8 @@
     logoPath="assets/images/scheduler-logo.svg"
     miniLogoPath="assets/images/scheduler-logo-mobile.svg"
     (logout)="logout()"
+    (notificationsDismissed)="onDismissed($event, 'appointment')"
+    (messagesDismissed)="onDismissed($event, 'post-its')"
   >
     <mat-progress-bar *ngIf="isLoaderActive$$ | async" mode="indeterminate"></mat-progress-bar>
     <div class="dfm-content content-height" #content>
