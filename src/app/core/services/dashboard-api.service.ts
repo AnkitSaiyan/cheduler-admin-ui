@@ -347,6 +347,7 @@ export class DashboardApiService extends DestroyableComponent {
 			map((response) => response.data),
 			tap(() => {
 				this.refreshPost$$.next();
+				this.refreshClearPost$$.next();
 				this.loaderSvc.deactivate();
 			}),
 		);
@@ -358,6 +359,7 @@ export class DashboardApiService extends DestroyableComponent {
 			map((response) => response.data),
 			tap(() => {
 				this.refreshPost$$.next();
+				this.refreshClearPost$$.next();
 				this.loaderSvc.deactivate();
 			}),
 		);
