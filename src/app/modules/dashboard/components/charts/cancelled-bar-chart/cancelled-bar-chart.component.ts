@@ -26,7 +26,7 @@ export class CancelledBarChartComponent extends DestroyableComponent implements 
 
   public ngOnInit(): void {
     this.dashboardApiService.cancelledBarChart$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
-      const dataset: any = [];
+      const dataset: any = Array(7).fill(0);
 
       appointment.cancelledappointments.forEach((element) => {
         if (element?.label === 'Sunday') dataset[0] = element.value;

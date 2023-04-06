@@ -64,7 +64,7 @@
       grid-row: 22/26;
     }
   }
-  
+
 }
 .mv-up-arrow-btn{
   position: absolute;
@@ -126,6 +126,9 @@
     display: block;
     z-index: 999;
   }
+    .contaienr-max-height {
+      max-height: 80vh;
+    }
 }
 
 // ======================Media Query for Tab view=================
