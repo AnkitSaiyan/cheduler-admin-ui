@@ -22,17 +22,11 @@
           <dfm-radio-button
             class="font-weight-normal"
             label="{{ 'SchedulerUser' | translate }}"
-            *ngIf="modalData?.userDetails?.userType !== userType.Secretary"
+            *ngIf="modalData?.userDetails?.userType === userType.Scheduler"
             [checkedValue]="userType.Scheduler"
             formControlName="userType"
           ></dfm-radio-button>
-          <dfm-radio-button
-            class="font-weight-normal"
-            label="{{ 'SchedulerUser' | translate }}"
-            *ngIf="modalData?.userDetails?.userType === userType.Secretary"
-            [checkedValue]="userType.Secretary"
-            formControlName="userType"
-          ></dfm-radio-button>
+
           <dfm-radio-button
             class="font-weight-normal"
             label="{{ 'GeneralUser' | translate }}"
