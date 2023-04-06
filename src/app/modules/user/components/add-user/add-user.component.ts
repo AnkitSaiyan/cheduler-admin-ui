@@ -339,4 +339,5 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
   }
 
   protected readonly UserType = UserType;
+  protected readonly UserRoleEnum = UserRoleEnum;
 }

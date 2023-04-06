@@ -19,11 +19,12 @@ export class ErrorInterceptor implements HttpInterceptor {
         this.generateErrorMessage(err);
         this.stopLoaders();
 
-        return of(new HttpResponse({
-          body: {
-            data: null
-          }
-        }));
+        return throwError(err);
+        // return of(new HttpResponse({
+        //   body: {
+        //     data: null
+        //   }
+        // }));
       })
     )
   }

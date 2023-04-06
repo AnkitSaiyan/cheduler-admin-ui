@@ -22,7 +22,7 @@
           <dfm-radio-button
             class="font-weight-normal"
             label="{{ 'SchedulerUser' | translate }}"
-            *ngIf="modalData?.userDetails?.userType === userType.Scheduler"
+            *ngIf="permissionType !== UserRoleEnum.GeneralUser"
             [checkedValue]="userType.Scheduler"
             formControlName="userType"
           ></dfm-radio-button>
