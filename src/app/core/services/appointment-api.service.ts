@@ -1,23 +1,21 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
   combineLatest,
-  EMPTY,
   map,
   Observable,
   of,
-  shareReplay,
   startWith,
   Subject,
   switchMap,
+  takeUntil,
   tap,
   throwError,
-  takeUntil,
 } from 'rxjs';
-import { BaseResponse } from 'src/app/shared/models/base-response.model';
-import { environment } from 'src/environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import {BaseResponse} from 'src/app/shared/models/base-response.model';
+import {environment} from 'src/environments/environment';
+import {HttpClient} from '@angular/common/http';
 import {
   AddAppointmentRequestData,
   Appointment,
@@ -26,19 +24,17 @@ import {
   UpdateDurationRequestData,
   UpdateRadiologistRequestData,
 } from '../../shared/models/appointment.model';
-import { AppointmentStatus, ChangeStatusRequestData } from '../../shared/models/status.model';
-import { PhysicianApiService } from './physician.api.service';
-import { StaffApiService } from './staff-api.service';
-import { DashboardApiService } from './dashboard-api.service';
-import { Exam } from '../../shared/models/exam.model';
-import { Room } from '../../shared/models/rooms.model';
-import { User } from '../../shared/models/user.model';
-import { LoaderService } from './loader.service';
-import { ShareDataService } from './share-data.service';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../shared/utils/const';
-import { Translate } from '../../shared/models/translate.model';
-import { NameValue } from 'src/app/shared/components/search-modal.component';
-import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import {ChangeStatusRequestData} from '../../shared/models/status.model';
+import {PhysicianApiService} from './physician.api.service';
+import {StaffApiService} from './staff-api.service';
+import {DashboardApiService} from './dashboard-api.service';
+import {Room} from '../../shared/models/rooms.model';
+import {User} from '../../shared/models/user.model';
+import {LoaderService} from './loader.service';
+import {ShareDataService} from './share-data.service';
+import {Translate} from '../../shared/models/translate.model';
+import {NameValue} from 'src/app/shared/components/search-modal.component';
+import {DestroyableComponent} from 'src/app/shared/components/destroyable.component';
 
 @Injectable({
   providedIn: 'root',

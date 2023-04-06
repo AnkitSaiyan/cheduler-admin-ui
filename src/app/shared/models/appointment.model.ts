@@ -6,7 +6,7 @@ import {AppointmentStatus, ReadStatus} from './status.model';
 export interface Appointment {
   id: number;
   createdAt: Date;
-  updatedAt: Date | null;
+  updatedAt: string;
   doctorId: number;
   doctor: string;
   patientFname: string;
