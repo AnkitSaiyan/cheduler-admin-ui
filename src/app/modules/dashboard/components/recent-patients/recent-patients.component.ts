@@ -137,6 +137,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
   public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
+
     this.dashboardApiService.recentPatient$.pipe(takeUntil(this.destroy$$)).subscribe((recentPatient) => {
       this.recentPatients$$.next(recentPatient);
       this.filteredRecentPatients$$.next(recentPatient);
@@ -180,6 +181,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
         this.cdr.detectChanges();
       });
+
     this.shareDataSvc
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))

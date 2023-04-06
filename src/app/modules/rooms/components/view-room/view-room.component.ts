@@ -13,10 +13,10 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
-import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { ENG_BE } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
 
 @Component({
   selector: 'dfm-view-room',
@@ -94,8 +94,8 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     // creating week-wise slots
     practiceAvailabilities.forEach((practice) => {
       const timeSlot: TimeSlot = {
-        dayStart: get24HourTimeString(practice.dayStart),
-        dayEnd: get24HourTimeString(practice.dayEnd),
+        dayStart: DateTimeUtils.TimeStringIn24Hour(practice.dayStart),
+        dayEnd: DateTimeUtils.TimeStringIn24Hour(practice.dayEnd),
         id: practice.id,
       };
 
@@ -109,7 +109,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
     // sorting slots by start time
     for (let weekday = 0; weekday < 7; weekday++) {
       if (weekdayToSlotsObj[weekday.toString()]?.length) {
-        weekdayToSlotsObj[weekday.toString()].sort((a, b) => timeToNumber(a.dayStart) - timeToNumber(b.dayStart));
+        weekdayToSlotsObj[weekday.toString()].sort((a, b) => DateTimeUtils.TimeToNumber(a.dayStart) - DateTimeUtils.TimeToNumber(b.dayStart));
       }
     }
 

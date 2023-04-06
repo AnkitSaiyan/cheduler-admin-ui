@@ -15,7 +15,6 @@ import { StaffApiService } from '../../../../../core/services/staff-api.service'
 import { ExamApiService } from '../../../../../core/services/exam-api.service';
 import { NameValuePairPipe } from '../../../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../../../shared/pipes/time-in-interval.pipe';
-import { formatTime } from '../../../../../shared/utils/time';
 import { PhysicianApiService } from '../../../../../core/services/physician.api.service';
 import { UserType } from '../../../../../shared/models/user.model';
 import {
@@ -32,7 +31,7 @@ import { RouterStateService } from '../../../../../core/services/router-state.se
 import { AppointmentStatus } from '../../../../../shared/models/status.model';
 import { AppointmentUtils } from '../../../../../shared/utils/appointment.utils';
 import { SiteManagementApiService } from '../../../../../core/services/site-management-api.service';
-import { CalendarUtils } from '../../../../../shared/utils/calendar.utils';
+import { DateTimeUtils } from '../../../../../shared/utils/date-time.utils';
 import { DateDistributed } from '../../../../../shared/models/calendar.model';
 import { GeneralUtils } from '../../../../../shared/utils/general.utils';
 import { ModalService } from 'src/app/core/services/modal.service';
@@ -278,7 +277,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
       date = new Date(appointment?.exams[0]?.startedAt);
     }
 
-    dateDistributed = CalendarUtils.DateToDateDistributed(date);
+    dateDistributed = DateTimeUtils.DateToDateDistributed(date);
 
     console.log(dateDistributed);
 

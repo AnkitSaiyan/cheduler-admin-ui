@@ -115,12 +115,12 @@
           <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
         </ng-template>
         <ng-template #bodyRowTemplate let-item>
-          <dfm-table-body-cell>{{ (item?.exams.length ? (item.startedAt | date : 'dd/MM/yyyy, HH:mm') : '-') | dashIfNothing }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ (item?.exams.length ? (item.endedAt | date : 'dd/MM/yyyy, HH:mm') : '-') | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item?.exams.length ? (item.startedAt | dfmDefaultDate | dashIfNothing ) : ('' | dashIfNothing) }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item?.exams.length ? (item.endedAt | dfmDefaultDate | dashIfNothing) : ('' | dashIfNothing) }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.patientFname | titlecase }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.doctor | titlecase }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.id }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ item?.createdAt | date : 'dd/MM/yyyy, HH:mm' }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
           <!-- <dfm-table-body-cell>
             <span>{{ item.readStatus === readStatus.Read ? 'Yes' : 'No' }}</span>
           </dfm-table-body-cell> -->

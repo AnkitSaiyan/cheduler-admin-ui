@@ -10,8 +10,8 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
 import { RepeatType } from 'src/app/shared/models/absence.model';
 import { getDateOfMonth } from 'src/app/shared/models/calendar.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
-import { timeToNumber } from 'src/app/shared/utils/time';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
+import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
 
 @Component({
   selector: 'dfm-priority-slots-calendar-view',
@@ -63,10 +63,10 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
             finalValue = { min: curr.dayStart, max: curr.dayEnd };
             return finalValue;
           }
-          if (timeToNumber(curr.dayStart) <= timeToNumber(pre?.min)) {
+          if (DateTimeUtils.TimeToNumber(curr.dayStart) <= DateTimeUtils.TimeToNumber(pre?.min)) {
             finalValue = { ...finalValue, min: curr.dayStart };
           }
-          if (timeToNumber(curr.dayEnd) >= timeToNumber(pre?.max)) {
+          if (DateTimeUtils.TimeToNumber(curr.dayEnd) >= DateTimeUtils.TimeToNumber(pre?.max)) {
             finalValue = { ...finalValue, max: curr.dayEnd };
           }
           return finalValue;
@@ -74,12 +74,12 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
       ),
       map(({ min, max }) => {
         let finalValue = { min, max };
-        if (timeToNumber('02:00:00') >= timeToNumber(min)) {
+        if (DateTimeUtils.TimeToNumber('02:00:00') >= DateTimeUtils.TimeToNumber(min)) {
           finalValue = { ...finalValue, min: '00:00:00' };
         } else {
           finalValue = { ...finalValue, min: this.calculate(120, min, 'minus') };
         }
-        if (timeToNumber('22:00:00') <= timeToNumber(max)) {
+        if (DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)) {
           finalValue = { ...finalValue, max: '23:59:00' };
         } else {
           finalValue = { ...finalValue, max: this.calculate(120, max, 'plus') };

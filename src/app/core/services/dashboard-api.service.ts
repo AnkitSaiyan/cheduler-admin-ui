@@ -12,10 +12,11 @@ import { environment } from '../../../environments/environment';
 import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
 import { Translate } from '../../shared/models/translate.model';
+import {Notification} from "../../shared/models/notification.model";
 
 export interface PostIt {
   message: string;
-  createdAt?: Date;
+  createdAt: Date;
 }
 
 @Injectable({
@@ -313,9 +314,9 @@ export class DashboardApiService extends DestroyableComponent {
   //   return of('Saved');
   // }
 
-  addPost(requestData: PostIt): Observable<PostIt> {
+  addPost(message: string): Observable<PostIt> {
     this.loaderSvc.activate();
-    return this.http.post<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/postit`, requestData).pipe(
+    return this.http.post<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/postit`, { message }).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshPost$$.next();

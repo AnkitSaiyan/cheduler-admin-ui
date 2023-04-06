@@ -135,7 +135,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
 
     dialogRef.closed
       .pipe(
-        switchMap((response: string) => this.dashboardApiService.addPost({ message: response })),
+        switchMap((message: string) => this.dashboardApiService.addPost(message)),
         take(1),
       )
       .subscribe((response) => {
@@ -187,7 +187,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
 
     dialogRef.closed
       .pipe(
-        switchMap((response: string) => this.dashboardApiService.addPost({ message: response })),
+        switchMap((messsage: string) => this.dashboardApiService.addPost(messsage)),
         take(1),
       )
       .subscribe((response) => {

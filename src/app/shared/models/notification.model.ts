@@ -1,5 +1,5 @@
 export interface Notification {
-    date: string
+    date: Date
     message: string
     subTitle: string
     timeSpan: string

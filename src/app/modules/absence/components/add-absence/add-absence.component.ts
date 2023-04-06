@@ -20,12 +20,12 @@ import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
-import { formatTime, timeToNumber } from '../../../../shared/utils/time';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
+import { DateTimeUtils } from "../../../../shared/utils/date-time.utils";
 
 interface FormValues {
   name: string;
@@ -453,7 +453,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
   public handleTimeInput(time: string, controlName: 'startTime' | 'endTime') {
     this.searchTime(time, controlName);
-    const formattedTime = formatTime(time, 24, 5);
+    const formattedTime = DateTimeUtils.FormatTime(time, 24, 5);
     if (!formattedTime) {
       return;
     }
@@ -560,7 +560,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
     // }
 
     if (startedAt.day === endedAt.day && startedAt.month === endedAt.month && startedAt.year === endedAt.year) {
-      if (timeToNumber(startTime) >= timeToNumber(endTime)) {
+      if (DateTimeUtils.TimeToNumber(startTime) >= DateTimeUtils.TimeToNumber(endTime)) {
         toggleControlError(this.absenceForm.get('startTime'), 'time');
         toggleControlError(this.absenceForm.get('endTime'), 'time');
 

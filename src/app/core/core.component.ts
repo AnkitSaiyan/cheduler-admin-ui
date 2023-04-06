@@ -1,20 +1,28 @@
-import { AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { NavigationItem, NavigationItemEvent, NavigationProfileData, NavigationProfileLink, SelectItem } from 'diflexmo-angular-design';
-import { TranslateService } from '@ngx-translate/core';
-import { DestroyableComponent } from '../shared/components/destroyable.component';
-import { DUTCH_BE, ENG_BE } from '../shared/utils/const';
+import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {
+  NavigationItem,
+  NavigationItemEvent,
+  NavigationItemEventType,
+  NavigationProfileData,
+  NavigationProfileLink,
+  SelectItem
+} from 'diflexmo-angular-design';
+import {TranslateService} from '@ngx-translate/core';
+import {DestroyableComponent} from '../shared/components/destroyable.component';
+import {DUTCH_BE, ENG_BE} from '../shared/utils/const';
 import englishLanguage from '../../assets/i18n/en-BE.json';
 import dutchLangauge from '../../assets/i18n/nl-BE.json';
-import { ShareDataService } from './services/share-data.service';
-import { DashboardApiService } from './services/dashboard-api.service';
-import { LoaderService } from './services/loader.service';
-import { BehaviorSubject, combineLatest, Subject, take, takeUntil } from 'rxjs';
-import { MsalGuardConfiguration, MsalService, MSAL_GUARD_CONFIG } from '@azure/msal-angular';
-import { InteractionType } from '@azure/msal-browser';
-import { UserApiService } from './services/user-api.service';
-import { Translate } from '../shared/models/translate.model';
-import { PermissionService } from './services/permission.service';
-import { UserRoleEnum } from '../shared/models/user.model';
+import {ShareDataService} from './services/share-data.service';
+import {DashboardApiService} from './services/dashboard-api.service';
+import {LoaderService} from './services/loader.service';
+import {BehaviorSubject, combineLatest, Subject, take, takeUntil} from 'rxjs';
+import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from '@azure/msal-angular';
+import {InteractionType} from '@azure/msal-browser';
+import {UserApiService} from './services/user-api.service';
+import {Translate} from '../shared/models/translate.model';
+import {PermissionService} from './services/permission.service';
+import {UserRoleEnum} from '../shared/models/user.model';
+import {DateTimeUtils} from "../shared/utils/date-time.utils";
 
 @Component({
   selector: 'dfm-main',
@@ -86,17 +94,9 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     ]),
   ];
 
-  public notifications: NavigationItemEvent[] = [
-    // new NavigationItemEvent('1', new Date(), 'Test notification 1'),
-    // new NavigationItemEvent('2', new Date(), 'Test notification 2'),
-    // new NavigationItemEvent('3', new Date(), 'Test notification 3'),
-  ];
+  public notifications: NavigationItemEvent[] = [];
 
-  public messages: NavigationItemEvent[] = [
-    // new NavigationItemEvent('1', new Date(), 'Test Message 1'),
-    // new NavigationItemEvent('2', new Date(), 'Test Message 2'),
-    // new NavigationItemEvent('3', new Date(), 'Test Message 3'),
-  ];
+  public messages: NavigationItemEvent[] = [];
 
   public currentTenant$$ = new BehaviorSubject<string>('nl-BE');
 
@@ -171,8 +171,8 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     this.dashboardApiService.notification$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (res) => {
         this.notifications = [];
-        res.forEach((element: any, index) => {
-          this.notifications.push(new NavigationItemEvent((index + 1).toString(), new Date(element?.date), element?.title, element?.message));
+        res.forEach((element, index) => {
+          this.notifications.push(new NavigationItemEvent((index + 1).toString(), DateTimeUtils.UTCToLocalDateString(element.date), element?.title, NavigationItemEventType.SUCCESS, element?.message));
         });
       },
     });
@@ -181,7 +181,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       next: (res) => {
         this.messages = [];
         res.forEach((element, index) => {
-          this.messages.push(new NavigationItemEvent((index + 1).toString(), new Date(element?.createdAt!), element?.message));
+          this.messages.push(new NavigationItemEvent((index + 1).toString(), DateTimeUtils.UTCToLocalDateString(element.createdAt), element?.message));
         });
       },
     });

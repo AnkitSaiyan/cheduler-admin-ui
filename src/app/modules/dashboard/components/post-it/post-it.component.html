@@ -64,7 +64,7 @@
                 <span class="font-weight-medium dfm-me-8">Maaike Penoit</span>
                 <span class="text-xs dfm-text-main-500">{{ 'GeneralUser' | translate }}</span>
               </div>
-              <span class="text-xs dfm-text-main-600">{{ post?.createdAt | date : 'dd/MM/yyyy, HH:mm' }}</span>
+              <span class="text-xs dfm-text-main-600">{{ post?.createdAt | dfmUtcToLocal | dfmDefaultDate }}</span>
             </div>
           </div>
         </div>

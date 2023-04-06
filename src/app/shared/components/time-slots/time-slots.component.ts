@@ -1,21 +1,20 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormGroup, ɵElement, ɵValue} from "@angular/forms";
+import {AbstractControl, FormArray, FormBuilder, FormGroup} from "@angular/forms";
 import {Weekday} from "../../models/calendar.model";
 import {getNumberArray} from "../../utils/getNumberArray";
-import {checkTimeRangeOverlapping, formatTime, get24HourTimeString, timeToNumber} from "../../utils/time";
 import {NameValuePairPipe} from "../../pipes/name-value-pair.pipe";
 import {TimeInIntervalPipe} from "../../pipes/time-in-interval.pipe";
 import {NameValue} from "../search-modal.component";
 import {DestroyableComponent} from "../destroyable.component";
 import {BehaviorSubject, debounceTime, filter, Subject, takeUntil} from "rxjs";
 import {BadgeColor, InputDropdownComponent, NotificationType} from "diflexmo-angular-design";
-import {PracticeAvailabilityServer} from "../../models/practice.model";
 import {GeneralUtils} from "../../utils/general.utils";
 import {toggleControlError} from "../../utils/toggleControlError";
 import {ENG_BE, TIME_24} from "../../utils/const";
 import {NotificationDataService} from "../../../core/services/notification-data.service";
 import {Translate} from "../../models/translate.model";
 import {ShareDataService} from "../../../core/services/share-data.service";
+import {DateTimeUtils} from "../../utils/date-time.utils";
 
 interface TimeSlotFormValues {
   selectedWeekday: Weekday;
@@ -251,11 +250,11 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
   private patchUpdatedValues(control: AbstractControl<any>, timeSlot: TimeSlot) {
     console.log(timeSlot.dayStart, timeSlot.dayEnd)
-    console.log(get24HourTimeString(timeSlot.dayStart), get24HourTimeString(timeSlot.dayEnd));
+    console.log(DateTimeUtils.TimeStringIn24Hour(timeSlot.dayStart), DateTimeUtils.TimeStringIn24Hour(timeSlot.dayEnd));
     control.patchValue({
       id: timeSlot.id,
-      dayStart: get24HourTimeString(timeSlot.dayStart),
-      dayEnd: get24HourTimeString(timeSlot.dayEnd),
+      dayStart: DateTimeUtils.TimeStringIn24Hour(timeSlot.dayStart),
+      dayEnd: DateTimeUtils.TimeStringIn24Hour(timeSlot.dayEnd),
       weekday: timeSlot.weekday,
     }, {emitEvent: false});
   }
@@ -266,7 +265,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
     timingValueControl: AbstractControl | null | undefined,
     eleRef: InputDropdownComponent,
   ) {
-    const formattedTime = formatTime(time, 24, 5);
+    const formattedTime = DateTimeUtils.FormatTime(time, 24, 5);
 
     if (!formattedTime) {
       return;
@@ -319,7 +318,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
         const dayEnd = controlArrays[i].controls[j].get('dayEnd');
 
         if (dayStart?.value && dayEnd?.value) {
-          if (timeToNumber(dayStart.value) >= timeToNumber(dayEnd?.value)) {
+          if (DateTimeUtils.TimeToNumber(dayStart.value) >= DateTimeUtils.TimeToNumber(dayEnd?.value)) {
             toggleControlError(dayStart, this.invalidSlotRangeError);
             toggleControlError(dayEnd, this.invalidSlotRangeError);
             return;
@@ -336,7 +335,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
     controlArrays.forEach((formArray) => {
       const controls = formArray.controls;
       if (formArray.length > 1) {
-        // const sortedControls = [...controls].sort((a, b) => timeToNumber(a.value.daysStart) - timeToNumber(b.value.dayStart));
+        // const sortedControls = [...controls].sort((a, b) => DateTimeUtils.TimeToNumber(a.value.daysStart) - DateTimeUtils.TimeToNumber(b.value.dayStart));
 
         for (let i = 0; i < formArray.length - 1; i++) {
           const compareWithControl = controls[i];
@@ -345,7 +344,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
             const currControl = controls[j];
 
             if (currControl.value.dayStart && currControl.value.dayEnd) {
-              if (checkTimeRangeOverlapping(compareWithControl.value.dayStart, compareWithControl.value.dayEnd, currControl.value.dayStart, currControl.value.dayEnd)) {
+              if (DateTimeUtils.CheckTimeRangeOverlapping(compareWithControl.value.dayStart, compareWithControl.value.dayEnd, currControl.value.dayStart, currControl.value.dayEnd)) {
                 toggleControlError(currControl.get('dayStart'), this.slotExistsError);
                 toggleControlError(currControl.get('dayEnd'), this.slotExistsError);
                 toggleControlError(compareWithControl.get('dayStart'), this.slotExistsError);

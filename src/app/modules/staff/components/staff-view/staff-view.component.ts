@@ -1,22 +1,23 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
-import { Router } from '@angular/router';
-import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { User } from '../../../../shared/models/user.model';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { STAFF_ID } from '../../../../shared/utils/const';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Weekday } from '../../../../shared/models/calendar.model';
-import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { PracticeAvailability } from '../../../../shared/models/practice.model';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { ModalService } from '../../../../core/services/modal.service';
-import { AddStaffComponent } from '../add-staff/add-staff.component';
-import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {BehaviorSubject, filter, switchMap, take, takeUntil} from 'rxjs';
+import {Router} from '@angular/router';
+import {StaffApiService} from '../../../../core/services/staff-api.service';
+import {User} from '../../../../shared/models/user.model';
+import {RouterStateService} from '../../../../core/services/router-state.service';
+import {ENG_BE, STAFF_ID} from '../../../../shared/utils/const';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
+import {Weekday} from '../../../../shared/models/calendar.model';
+import {ExamApiService} from '../../../../core/services/exam-api.service';
+import {PracticeAvailability} from '../../../../shared/models/practice.model';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {
+  ConfirmActionModalComponent,
+  ConfirmActionModalData
+} from '../../../../shared/components/confirm-action-modal.component';
+import {ModalService} from '../../../../core/services/modal.service';
+import {Translate} from '../../../../shared/models/translate.model';
+import {ShareDataService} from 'src/app/core/services/share-data.service';
+import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
 
 interface TimeSlot {
   id?: number;
@@ -100,8 +101,8 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     // creating week-wise slots
     practiceAvailabilities.forEach((practice) => {
       const timeSlot: TimeSlot = {
-        dayStart: get24HourTimeString(practice.dayStart),
-        dayEnd: get24HourTimeString(practice.dayEnd),
+        dayStart: DateTimeUtils.TimeStringIn24Hour(practice.dayStart),
+        dayEnd: DateTimeUtils.TimeStringIn24Hour(practice.dayEnd),
         id: practice.id,
       };
 
@@ -115,7 +116,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
     // sorting slots by start time
     for (let weekday = 0; weekday < 7; weekday++) {
       if (weekdayToSlotsObj[weekday.toString()]?.length) {
-        weekdayToSlotsObj[weekday.toString()].sort((a, b) => timeToNumber(a.dayStart) - timeToNumber(b.dayStart));
+        weekdayToSlotsObj[weekday.toString()].sort((a, b) => DateTimeUtils.TimeToNumber(a.dayStart) - DateTimeUtils.TimeToNumber(b.dayStart));
       }
     }
 

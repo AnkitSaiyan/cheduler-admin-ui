@@ -19,7 +19,7 @@ import { ReadStatus } from '../../../models/status.model';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { Translate } from '../../../models/translate.model';
-import { CalendarUtils } from 'src/app/shared/utils/calendar.utils';
+import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 import { ENG_BE } from 'src/app/shared/utils/const';
 import { DestroyableComponent } from '../../destroyable.component';
 import { PermissionService } from 'src/app/core/services/permission.service';
