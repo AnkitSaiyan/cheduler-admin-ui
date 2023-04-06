@@ -153,6 +153,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
+        console.log('in download')
         if (!this.filteredAppointments$$.value.length) {
           this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
           this.clearDownloadDropdown();
@@ -162,15 +163,15 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         this.downloadSvc.downloadJsonAs(
           value as DownloadAsType,
           this.columns.slice(0, -1),
-          this.filteredAppointments$$.value.map((ap: Appointment) => [
-            ap.startedAt.toString(),
-            ap.endedAt.toString(),
-            `${this.titleCasePipe.transform(ap.patientFname)} ${this.titleCasePipe.transform(ap.patientLname)}`,
-            this.titleCasePipe.transform(ap.doctor),
-            ap.id.toString(),
-            ap.createdAt.toString(),
+          this.filteredAppointments$$.value?.map((ap: Appointment) => [
+            ap?.startedAt?.toString() ?? '',
+            ap?.endedAt?.toString() ?? '',
+            `${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
+            this.titleCasePipe.transform(ap?.doctor),
+            ap?.id?.toString(),
+            ap?.createdAt?.toString(),
             // ap.readStatus ? 'Yes' : 'No',
-            AppointmentStatusToName[+ap.approval],
+            AppointmentStatusToName[+ap?.approval],
           ]),
           'appointment',
         );
@@ -206,7 +207,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
+      this.roomList = rooms?.map(({ name, id }) => ({ name, value: id }));
     });
 
     combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])

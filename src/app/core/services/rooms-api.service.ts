@@ -71,7 +71,7 @@ export class RoomsApiService extends DestroyableComponent {
     this.loaderSvc.spinnerActivate();
     return this.http.get<BaseResponse<Room[]>>(`${this.roomUrl}`).pipe(
       map((response) =>
-        response.data.sort((r1, r2) => {
+        response?.data?.sort((r1, r2) => {
           return r1.placeInAgenda - r2.placeInAgenda;
         }),
       ),
