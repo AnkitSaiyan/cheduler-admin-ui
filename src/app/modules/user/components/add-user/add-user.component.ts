@@ -20,6 +20,7 @@ import {environment} from "../../../../../environments/environment";
 import {AuthService} from "../../../../core/services/auth.service";
 import {AddStaffRequestData} from "../../../../shared/models/staff.model";
 import {MsalService} from "@azure/msal-angular";
+import {Permission} from "../../../../shared/models/permission.model";
 
 interface FormValues {
   userType: UserType;
@@ -51,6 +52,8 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
   public userRoles: NameValue[] = [];
 
   public userTenants: NameValue[] = [];
+
+  public readonly Permission = Permission;
 
   constructor(
     private modalSvc: ModalService,
