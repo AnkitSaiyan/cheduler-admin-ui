@@ -8,7 +8,7 @@ import dutchLangauge from '../../assets/i18n/nl-BE.json';
 import { ShareDataService } from './services/share-data.service';
 import { DashboardApiService } from './services/dashboard-api.service';
 import { LoaderService } from './services/loader.service';
-import { BehaviorSubject, combineLatest, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, Subject, take, takeUntil } from 'rxjs';
 import { MsalGuardConfiguration, MsalService, MSAL_GUARD_CONFIG } from '@azure/msal-angular';
 import { InteractionType } from '@azure/msal-browser';
 import { UserApiService } from './services/user-api.service';
@@ -151,32 +151,32 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
               break;
             }
           }
-        }
+        },
       });
 
     this.dataShareService
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
       .subscribe({
-        next: (language: string) => this.currentTenant$$.next(language)
+        next: (language: string) => this.currentTenant$$.next(language),
       });
 
-    this.dashboardApiService.notificationData$$.pipe(takeUntil(this.destroy$$)).subscribe({
+    this.dashboardApiService.notification$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (res) => {
         this.notifications = [];
         res.forEach((element, index) => {
           this.notifications.push(new NavigationItemEvent(index + 1, DateTimeUtils.UTCToLocalDateString(element?.date), element?.title, element?.message));
         });
-      }
+      },
     });
 
-    this.dashboardApiService.postItData$$.pipe(takeUntil(this.destroy$$)).subscribe({
+    this.dashboardApiService.posts$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (res) => {
         this.messages = [];
         res.forEach((element, index) => {
           this.messages.push(new NavigationItemEvent(index + 1, DateTimeUtils.UTCToLocalDateString(element?.createdAt), element?.message));
         });
-      }
+      },
     });
   }
 
@@ -185,7 +185,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       next: (value) => {
         this.isLoaderActive$$.next(value);
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 
@@ -215,5 +215,19 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       this.authService.logoutRedirect();
     }
     this.userApiSvc.removeUser();
+  }
+
+  public onDismissed(event: string[], type: 'post-its' | 'appointment') {
+    if (type === 'post-its') {
+      this.dashboardApiService
+        .deletePost(event.map((value) => +value))
+        .pipe(take(1))
+        .subscribe();
+    } else {
+      this.dashboardApiService
+        .deleteNotification(event.map((value) => +value))
+        .pipe(take(1))
+        .subscribe();
+    }
   }
 }
