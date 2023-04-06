@@ -34,11 +34,11 @@ import {UserRoleEnum} from 'src/app/shared/models/user.model';
 import {Permission} from 'src/app/shared/models/permission.model';
 
 @Component({
-  selector: 'dfm-appointments-list',
-  templateUrl: './appointments-list.component.html',
-  styleUrls: ['./appointments-list.component.scss'],
+  selector: 'dfm-dashboard-appointments-list',
+  templateUrl: './dashboard-appointments-list.component.html',
+  styleUrls: ['./dashboard-appointments-list.component.scss'],
 })
-export class AppointmentsListComponent extends DestroyableComponent implements OnInit, OnDestroy {
+export class DashboardAppointmentsListComponent extends DestroyableComponent implements OnInit, OnDestroy {
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }

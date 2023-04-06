@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './pages/dashboard.component';
-import { AppointmentsListComponent } from './components/appointments-list/appointments-list.component';
+import { DashboardAppointmentsListComponent } from './components/dashboard-appointments-list/dashboard-appointments-list.component';
 import { AppointmentsDoughnutChartComponent } from './components/charts/appointments-doughnut-chart/appointments-doughnut-chart.component';
 import { UpcomingAppointmentsComponent } from './components/upcoming-appointments/upcoming-appointments.component';
 import { SharedModule } from '../../shared/shared.module';
@@ -22,12 +22,12 @@ import { PostItComponent } from './components/post-it/post-it.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddPostComponent } from './components/post-it/add-post/add-post.component';
 import { ViewPostComponent } from './components/post-it/view-post/view-post.component';
-import { AppointmentAdvanceSearchComponent } from './components/appointments-list/appointment-advance-search/appointment-advance-search.component';
+import { AppointmentAdvanceSearchComponent } from './components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
 
 @NgModule({
   declarations: [
     DashboardComponent,
-    AppointmentsListComponent,
+    DashboardAppointmentsListComponent,
     AppointmentsDoughnutChartComponent,
     UpcomingAppointmentsComponent,
     RecentPatientsComponent,
