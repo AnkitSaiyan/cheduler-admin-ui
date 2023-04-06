@@ -84,13 +84,9 @@
         <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
       </ng-template>
       <ng-template #bodyRowTemplate let-item>
-        <dfm-table-body-cell>
-          <span class="font-weight-normal">{{ item.roomName }}</span>
-        </dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.startDate | date : 'dd/MM/yyyy, HH:mm' }}</dfm-table-body-cell>
-        <dfm-table-body-cell>
-         {{ item.endDate | date : 'dd/MM/yyyy, HH:mm' }}
-        </dfm-table-body-cell>
+        <dfm-table-body-cell><span class="font-weight-normal">{{ item.roomName }}</span></dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.startDate | dfmDefaultDate }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.endDate | dfmDefaultDate }}</dfm-table-body-cell>
         <dfm-table-body-cell> <span class="font-weight-medium">{{ item.absenceName }}</span></dfm-table-body-cell>
       </ng-template>
     </dfm-table>

@@ -25,8 +25,7 @@ import {SiteManagementApiService} from '../../../../core/services/site-managemen
 import {EMAIL_REGEX, ENG_BE} from '../../../../shared/utils/const';
 import {GeneralUtils} from '../../../../shared/utils/general.utils';
 import {Translate} from "../../../../shared/models/translate.model";
-import {CalendarUtils} from "../../../../shared/utils/calendar.utils";
-import { checkTimeRangeOverlapping } from 'src/app/shared/utils/time';
+import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { CustomDateParserFormatter } from '../../../..//shared/utils/dateFormat';
 import { getDurationMinutes } from 'src/app/shared/models/calendar.model';
@@ -122,7 +121,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
         // In case if calendar start time is not 00:00 then adding extra minutes
         if (this.modalData?.startTime) {
           const startTime = this.modalData.startTime.split(':');
-          minutes += CalendarUtils.DurationInMinFromHour(+startTime[0], +startTime[1]);
+          minutes += DateTimeUtils.DurationInMinFromHour(+startTime[0], +startTime[1]);
         }
 
         const roundedMin = minutes - (minutes % 5);

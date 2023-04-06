@@ -15,13 +15,12 @@ import {
   ViewChildren,
   ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, filter, take, takeUntil } from 'rxjs';
-import { DatePipe } from '@angular/common';
-import { getAllDaysOfWeek, getDurationMinutes, Interval } from '../../../models/calendar.model';
-import { DestroyableComponent } from '../../destroyable.component';
-import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
-import { ModalService } from '../../../../core/services/modal.service';
-import { timeToNumber } from 'src/app/shared/utils/time';
+import {BehaviorSubject, filter, takeUntil} from 'rxjs';
+import {DatePipe} from '@angular/common';
+import {getAllDaysOfWeek, getDurationMinutes, Interval} from '../../../models/calendar.model';
+import {DestroyableComponent} from '../../destroyable.component';
+import {ModalService} from '../../../../core/services/modal.service';
+import {DateTimeUtils} from "../../../utils/date-time.utils";
 
 // @Pipe({
 //   name: 'calendarEventHeight',
@@ -321,7 +320,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   public getPrioritySlotHeight(prioritySlot: any): number {
-    const startDate: Date = this.myDate(timeToNumber(prioritySlot.start) < timeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start);
+    const startDate: Date = this.myDate(DateTimeUtils.TimeToNumber(prioritySlot.start) < DateTimeUtils.TimeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start);
     if (this.myDate(prioritySlot.end).getTime() <= this.myDate(this.limit.min).getTime()) {
       return 0;
     }
@@ -329,7 +328,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
     if (this.myDate(prioritySlot.start).getTime() >= this.myDate(this.limit.max).getTime()) {
       return 0;
     }
-    const endDate: Date = this.myDate(timeToNumber(prioritySlot.end) > timeToNumber(this.limit.max) ? this.limit.max : prioritySlot.end);
+    const endDate: Date = this.myDate(DateTimeUtils.TimeToNumber(prioritySlot.end) > DateTimeUtils.TimeToNumber(this.limit.max) ? this.limit.max : prioritySlot.end);
     const durationMinutes = getDurationMinutes(startDate, endDate);
     return durationMinutes * this.pixelsPerMin;
   }
@@ -356,7 +355,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
   }
 
   public getPrioritySlotTop(prioritySlot: any): number {
-    const startDate = this.myDate(timeToNumber(prioritySlot.start) < timeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start);
+    const startDate = this.myDate(DateTimeUtils.TimeToNumber(prioritySlot.start) < DateTimeUtils.TimeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start);
     const startHour = startDate.getHours();
     const startMinute = startDate.getMinutes();
     const startCalendarDate = this.myDate(this.limit.min);

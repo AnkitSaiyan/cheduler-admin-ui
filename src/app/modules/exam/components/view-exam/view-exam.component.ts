@@ -1,24 +1,27 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
-import { Router } from '@angular/router';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { User, UserType } from '../../../../shared/models/user.model';
-import { TimeSlot, Weekday, WeekWisePracticeAvailability } from '../../../../shared/models/calendar.model';
-import { StaffApiService } from '../../../../core/services/staff-api.service';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { EXAM_ID, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { PracticeAvailability } from '../../../../shared/models/practice.model';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { Exam, Uncombinables } from '../../../../shared/models/exam.model';
-import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { NameValue } from '../../../../shared/components/search-modal.component';
-import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {BehaviorSubject, filter, switchMap, take, takeUntil} from 'rxjs';
+import {Router} from '@angular/router';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
+import {User, UserType} from '../../../../shared/models/user.model';
+import {TimeSlot, Weekday, WeekWisePracticeAvailability} from '../../../../shared/models/calendar.model';
+import {StaffApiService} from '../../../../core/services/staff-api.service';
+import {RouterStateService} from '../../../../core/services/router-state.service';
+import {ExamApiService} from '../../../../core/services/exam-api.service';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {ModalService} from '../../../../core/services/modal.service';
+import {ENG_BE, EXAM_ID} from '../../../../shared/utils/const';
+import {PracticeAvailability} from '../../../../shared/models/practice.model';
+import {
+  ConfirmActionModalComponent,
+  ConfirmActionModalData
+} from '../../../../shared/components/confirm-action-modal.component';
+import {Exam, Uncombinables} from '../../../../shared/models/exam.model';
+import {RoomsApiService} from '../../../../core/services/rooms-api.service';
+import {NameValue} from '../../../../shared/components/search-modal.component';
 
-import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {Translate} from '../../../../shared/models/translate.model';
+import {ShareDataService} from 'src/app/core/services/share-data.service';
+import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
 
 @Component({
   selector: 'dfm-view-exam',
@@ -131,8 +134,8 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
     // creating week-wise slots
     practiceAvailabilities.forEach((practice) => {
       const timeSlot: TimeSlot = {
-        dayStart: get24HourTimeString(practice.dayStart),
-        dayEnd: get24HourTimeString(practice.dayEnd),
+        dayStart: DateTimeUtils.TimeStringIn24Hour(practice.dayStart),
+        dayEnd: DateTimeUtils.TimeStringIn24Hour(practice.dayEnd),
         id: practice.id,
       };
 
@@ -148,7 +151,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
     // sorting slots by start time
     for (let weekday = 0; weekday < 7; weekday++) {
       if (weekdayToSlotsObj[weekday.toString()]?.length) {
-        weekdayToSlotsObj[weekday.toString()].sort((a, b) => timeToNumber(a.dayStart) - timeToNumber(b.dayStart));
+        weekdayToSlotsObj[weekday.toString()].sort((a, b) => DateTimeUtils.TimeToNumber(a.dayStart) - DateTimeUtils.TimeToNumber(b.dayStart));
       }
     }
 

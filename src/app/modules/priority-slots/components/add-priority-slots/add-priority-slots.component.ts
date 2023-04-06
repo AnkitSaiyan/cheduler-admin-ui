@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
@@ -20,11 +20,11 @@ import { MonthToNamePipe } from '../../../../shared/pipes/month-to-name.pipe';
 import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
-import { formatTime, timeToNumber } from '../../../../shared/utils/time';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
+import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
 
 interface FormValues {
   name: string;
@@ -462,7 +462,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
   public handleTimeInput(time: string, controlName: 'slotStartTime' | 'slotEndTime') {
     this.searchTime(time, controlName);
-    const formattedTime = formatTime(time, 24, 5);
+    const formattedTime = DateTimeUtils.FormatTime(time, 24, 5);
 
     if (!formattedTime) {
       return;
@@ -548,15 +548,15 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
   private handleTimeChange() {
     console.log('in');
-    if (this.formValues.slotStartTime !== '' && timeToNumber(this.formValues.slotStartTime) < timeToNumber(this.formValues.slotEndTime)) {
+    if (this.formValues.slotStartTime !== '' && DateTimeUtils.TimeToNumber(this.formValues.slotStartTime) < DateTimeUtils.TimeToNumber(this.formValues.slotEndTime)) {
       toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', false);
       toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
       return;
     }
 
     if (
-      timeToNumber(this.formValues.slotStartTime) >= timeToNumber(this.formValues.slotEndTime) ||
-      timeToNumber(this.formValues.slotEndTime) <= timeToNumber(this.formValues.slotStartTime)
+      DateTimeUtils.TimeToNumber(this.formValues.slotStartTime) >= DateTimeUtils.TimeToNumber(this.formValues.slotEndTime) ||
+      DateTimeUtils.TimeToNumber(this.formValues.slotEndTime) <= DateTimeUtils.TimeToNumber(this.formValues.slotStartTime)
     ) {
       toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', true);
       toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', true);
@@ -571,7 +571,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     const { startedAt, endedAt, slotStartTime, slotEndTime } = this.formValues;
 
     if (startedAt.day === endedAt.day && startedAt.month === endedAt.month && startedAt.year === endedAt.year) {
-      if (timeToNumber(slotStartTime) >= timeToNumber(slotEndTime)) {
+      if (DateTimeUtils.TimeToNumber(slotStartTime) >= DateTimeUtils.TimeToNumber(slotEndTime)) {
         toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time');
         toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time');
 

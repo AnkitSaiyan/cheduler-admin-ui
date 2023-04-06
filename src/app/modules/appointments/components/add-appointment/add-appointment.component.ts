@@ -17,7 +17,6 @@ import { StaffApiService } from '../../../../core/services/staff-api.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { checkTimeRangeOverlapping, formatTime } from '../../../../shared/utils/time';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { UserType } from '../../../../shared/models/user.model';
 import {
@@ -34,7 +33,7 @@ import { RouterStateService } from '../../../../core/services/router-state.servi
 import { AppointmentStatus } from '../../../../shared/models/status.model';
 import { AppointmentUtils } from '../../../../shared/utils/appointment.utils';
 import { SiteManagementApiService } from '../../../../core/services/site-management-api.service';
-import { CalendarUtils } from '../../../../shared/utils/calendar.utils';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { DateDistributed } from '../../../../shared/models/calendar.model';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
@@ -292,7 +291,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
       date = new Date(appointment?.exams[0]?.startedAt);
     }
 
-    dateDistributed = CalendarUtils.DateToDateDistributed(date);
+    dateDistributed = DateTimeUtils.DateToDateDistributed(date);
 
     setTimeout(() => {
       this.appointmentForm.patchValue(
@@ -344,8 +343,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
           const exams = this.isCombinable ? [appointment.exams[0]] : [...appointment.exams];
 
           exams.forEach((exam) => {
-            const start = CalendarUtils.DateTo24TimeString(exam.startedAt);
-            const end = CalendarUtils.DateTo24TimeString(exam.endedAt);
+            const start = DateTimeUtils.DateTo24TimeString(exam.startedAt);
+            const end = DateTimeUtils.DateTo24TimeString(exam.endedAt);
             this.handleSlotSelectionToggle(
               slotData(
                 start,

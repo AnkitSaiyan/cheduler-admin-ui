@@ -15,6 +15,7 @@ import { UserApiService } from './services/user-api.service';
 import { Translate } from '../shared/models/translate.model';
 import { PermissionService } from './services/permission.service';
 import { UserRoleEnum } from '../shared/models/user.model';
+import {DateTimeUtils} from "../shared/utils/date-time.utils";
 
 @Component({
   selector: 'dfm-main',
@@ -86,17 +87,9 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
     ]),
   ];
 
-  public notifications: NavigationItemEvent[] = [
-    // new NavigationItemEvent('1', new Date(), 'Test notification 1'),
-    // new NavigationItemEvent('2', new Date(), 'Test notification 2'),
-    // new NavigationItemEvent('3', new Date(), 'Test notification 3'),
-  ];
+  public notifications: NavigationItemEvent[] = [];
 
-  public messages: NavigationItemEvent[] = [
-    // new NavigationItemEvent('1', new Date(), 'Test Message 1'),
-    // new NavigationItemEvent('2', new Date(), 'Test Message 2'),
-    // new NavigationItemEvent('3', new Date(), 'Test Message 3'),
-  ];
+  public messages: NavigationItemEvent[] = [];
 
   public currentTenant$$ = new BehaviorSubject<string>('nl-BE');
 
@@ -172,7 +165,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       next: (res) => {
         this.notifications = [];
         res.forEach((element, index) => {
-          this.notifications.push(new NavigationItemEvent(index + 1, new Date(element?.date), element?.title, element?.message));
+          this.notifications.push(new NavigationItemEvent(index + 1, DateTimeUtils.UTCToLocalDateString(element?.date), element?.title, element?.message));
         });
       }
     });
@@ -181,7 +174,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       next: (res) => {
         this.messages = [];
         res.forEach((element, index) => {
-          this.messages.push(new NavigationItemEvent(index + 1, new Date(element?.createdAt), element?.message));
+          this.messages.push(new NavigationItemEvent(index + 1, DateTimeUtils.UTCToLocalDateString(element?.createdAt), element?.message));
         });
       }
     });
