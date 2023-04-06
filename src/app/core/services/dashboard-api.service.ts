@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
 import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
 import { Translate } from '../../shared/models/translate.model';
-import {Notification} from "../../shared/models/notification.model";
+import { Notification } from '../../shared/models/notification.model';
 
 export interface PostIt {
   message: string;
@@ -29,7 +29,7 @@ export class DashboardApiService extends DestroyableComponent {
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
       .subscribe({
-        next: (lang) => this.selectedLang$$.next(lang),
+        next: (lang) => this.selectedLang$$.next(lang)
       });
   }
 
@@ -126,10 +126,7 @@ export class DashboardApiService extends DestroyableComponent {
     this.loaderSvc.activate();
     return this.http.get<BaseResponse<Notification[]>>(`${environment.schedulerApiUrl}/dashboard/notifications`).pipe(
       map((response) => response.data),
-      tap((response) => {
-        this.notificationData$$.next(response);
-        this.loaderSvc.deactivate();
-      }),
+      tap(() => this.loaderSvc.deactivate()),
     );
   }
 
@@ -164,10 +161,7 @@ export class DashboardApiService extends DestroyableComponent {
     this.loaderSvc.activate();
     return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/postit`).pipe(
       map((response) => response.data),
-      tap((response) => {
-        this.postItData$$.next(response);
-        this.loaderSvc.deactivate();
-      }),
+      tap(() => this.loaderSvc.deactivate()),
     );
   }
 
@@ -325,36 +319,15 @@ export class DashboardApiService extends DestroyableComponent {
     );
   }
 
-  deletePost(id: number[]): Observable<PostIt> {
+  deletePost(id: number): Observable<PostIt> {
     this.loaderSvc.activate();
-    return this.http
-      .post<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/dashboard/clearnotifications`, {
-        objectType: 'post-its',
-        objectId: id,
-      })
-      .pipe(
-        map((response) => response.data),
-        tap(() => {
-          this.refreshPost$$.next();
-          this.loaderSvc.deactivate();
-        }),
-      );
-  }
-
-  deleteNotification(id: number[]): Observable<PostIt> {
-    this.loaderSvc.activate();
-    return this.http
-      .post<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/dashboard/clearnotifications`, {
-        objectType: 'appointment',
-        objectId: id,
-      })
-      .pipe(
-        map((response) => response.data),
-        tap(() => {
-          this.refreshNotification$$.next();
-          this.loaderSvc.deactivate();
-        }),
-      );
+    return this.http.delete<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/postit/${id}`).pipe(
+      map((response) => response.data),
+      tap(() => {
+        this.refreshPost$$.next();
+        this.loaderSvc.deactivate();
+      }),
+    );
   }
 
   public get upcommingAppointment$(): Observable<Appointment[]> {

@@ -103,9 +103,10 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
   }
 
   ngOnInit(): void {
-    this.dashboardApiService.postItData$$.pipe(takeUntil(this.destroy$$)).subscribe((posts) => {
+    this.dashboardApiService.posts$.pipe(takeUntil(this.destroy$$)).subscribe((posts) => {
       this.filteredPosts$$.next(posts);
       this.postData = posts;
+      this.dashboardApiService.postItData$$.next(posts);
     });
     this.shareDataSvc
       .getLanguage$()
@@ -160,7 +161,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
     dialogRef.closed
       .pipe(
         filter((value) => !!value),
-        switchMap(() => this.dashboardApiService.deletePost([id])),
+        switchMap(() => this.dashboardApiService.deletePost(id)),
         take(1),
       )
       .subscribe((response) => {
