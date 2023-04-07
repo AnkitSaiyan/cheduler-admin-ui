@@ -8,7 +8,6 @@ import {ModalService} from '../../../../core/services/modal.service';
 import {NotificationDataService} from '../../../../core/services/notification-data.service';
 import {User, UserRoleEnum, UserType} from '../../../../shared/models/user.model';
 import {getUserTypeEnum} from '../../../../shared/utils/getEnums';
-import {StaffApiService} from '../../../../core/services/staff-api.service';
 import {DUTCH_BE, EMAIL_REGEX, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
 
 import {Translate} from '../../../../shared/models/translate.model';
@@ -22,322 +21,209 @@ import {Permission} from "../../../../shared/models/permission.model";
 import {PermissionService} from "../../../../core/services/permission.service";
 
 interface FormValues {
-  userType: UserType;
-  firstname: string;
-  lastname: string;
-  email: string;
-  userRole: UserRoleEnum;
-  tenantId: string;
+    userType: UserType;
+    firstname: string;
+    lastname: string;
+    email: string;
+    userRole: UserRoleEnum;
+    tenantId: string;
 }
 
 @Component({
-  selector: 'dfm-add-user',
-  templateUrl: './add-user.component.html',
-  styleUrls: ['./add-user.component.scss'],
+    selector: 'dfm-add-user',
+    templateUrl: './add-user.component.html',
+    styleUrls: ['./add-user.component.scss'],
 })
 export class AddUserComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public addUserForm!: FormGroup;
+    public addUserForm!: FormGroup;
 
-  public modalData!: { edit: boolean; userDetails: User };
+    public modalData!: { edit: boolean; userDetails: User };
 
-  public userType = getUserTypeEnum();
+    public userType = getUserTypeEnum();
 
-  public loading$$ = new BehaviorSubject<boolean>(false);
+    public loading$$ = new BehaviorSubject<boolean>(false);
 
-  private selectedLang: string = ENG_BE;
+    private selectedLang: string = ENG_BE;
 
-  public statuses = Statuses;
+    public statuses = Statuses;
 
-  public userRoles: NameValue[] = [];
+    public userRoles: NameValue[] = [];
 
-  public userTenants: NameValue[] = [];
+    public userTenants: NameValue[] = [];
 
-  public readonly Permission = Permission;
+    public readonly Permission = Permission;
 
-  public permissionType!: UserRoleEnum;
+    public permissionType!: UserRoleEnum;
 
-  constructor(
-    private modalSvc: ModalService,
-    private fb: FormBuilder,
-    private notificationSvc: NotificationDataService,
-    private staffApiSvc: StaffApiService,
-    private shareDataSvc: ShareDataService,
-    private userSvc: UserApiService,
-    private userManagementApiSvc: UserManagementApiService,
-    private authSvc: AuthService,
-    private msalService: MsalService,
-    private permissionSvc: PermissionService
-  ) {
-    super();
+    constructor(
+        private modalSvc: ModalService,
+        private fb: FormBuilder,
+        private notificationSvc: NotificationDataService,
+        private shareDataSvc: ShareDataService,
+        private userApiSvc: UserApiService,
+        private userManagementApiSvc: UserManagementApiService,
+        private authSvc: AuthService,
+        private msalService: MsalService,
+        private permissionSvc: PermissionService
+    ) {
+        super();
 
-    this.modalSvc.dialogData$.pipe(take(1)).subscribe({
-      next: (data) => {
-        this.modalData = data;
-        this.createForm(this.modalData?.userDetails);
-      }
-    });
-  }
-
-  public ngOnInit(): void {
-    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (permissionType) => {
-        this.permissionType = permissionType;
-        if (permissionType === UserRoleEnum.GeneralUser) {
-          this.addUserForm.patchValue({
-            userType: UserType.General
-          });
-        }
-      }
-    });
-
-    this.shareDataSvc
-      .getLanguage$()
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: (lang) => {
-          this.selectedLang = lang;
-
-          // eslint-disable-next-line default-case
-          switch (lang) {
-            case ENG_BE:
-              this.statuses = Statuses;
-              break;
-            case DUTCH_BE:
-              this.statuses = StatusesNL;
-              break;
-          }
-        }
-      });
-
-    const userId = this.msalService.instance.getActiveAccount()?.localAccountId ?? '';
-    this.userManagementApiSvc.getUserTenantsList(userId).pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (tenants) => {
-        this.userTenants = tenants.map(({id, name}) => ({ name, value: id.toString()}));
-      }
-    });
-
-    this.userRoles = this.userSvc.getUserRoles();
-  }
-
-  public override ngOnDestroy() {
-    super.ngOnDestroy();
-  }
-
-  public get formValues(): FormValues {
-    return this.addUserForm.value;
-  }
-
-  private createForm(userDetails?: User | undefined): void {
-    this.addUserForm = this.fb.group({
-      userType: [
-        {
-          value: userDetails?.userType ?? UserType.Scheduler,
-          disabled: this.modalData.edit || this.permissionType === UserRoleEnum.GeneralUser,
-        },
-        [Validators.required],
-      ],
-      firstname: [userDetails?.firstname ?? '', [Validators.required]],
-      lastname: [userDetails?.lastname ?? '', [Validators.required]],
-      email: [userDetails?.email ?? '', []],
-      userRole: [null, []],
-      tenantId: [null, []]
-    });
-  }
-
-  public closeModal(res: boolean) {
-    this.modalSvc.close(res);
-  }
-
-  public saveUser() {
-    let isInvalid = false;
-
-    if ([this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {
-      if (this.addUserForm.invalid) {
-        isInvalid = true;
-      }
-    } else {
-      const requiredFields = ['firstname', 'lastname'];
-      if (requiredFields.some((key) => this.addUserForm.get(key)?.invalid)) {
-        requiredFields.forEach((key) => this.addUserForm.get(key)?.markAsTouched());
-        isInvalid = true;
-      }
+        this.modalSvc.dialogData$.pipe(take(1)).subscribe({
+            next: (data) => {
+                this.modalData = data;
+                this.createForm(this.modalData?.userDetails);
+            }
+        });
     }
 
-    if (isInvalid) {
-      this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}`, NotificationType.WARNING);
-      this.addUserForm.markAllAsTouched();
-      return;
+    public ngOnInit(): void {
+        this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+            next: (permissionType) => {
+                this.permissionType = permissionType;
+                if (permissionType === UserRoleEnum.GeneralUser) {
+                    this.addUserForm.patchValue({
+                        userType: UserType.General
+                    });
+                }
+            }
+        });
+
+        this.shareDataSvc
+            .getLanguage$()
+            .pipe(takeUntil(this.destroy$$))
+            .subscribe({
+                next: (lang) => {
+                    this.selectedLang = lang;
+
+                    // eslint-disable-next-line default-case
+                    switch (lang) {
+                        case ENG_BE:
+                            this.statuses = Statuses;
+                            break;
+                        case DUTCH_BE:
+                            this.statuses = StatusesNL;
+                            break;
+                    }
+                }
+            });
+
+        const userId = this.msalService.instance.getActiveAccount()?.localAccountId ?? '';
+        this.userManagementApiSvc.getUserTenantsList(userId).pipe(takeUntil(this.destroy$$)).subscribe({
+            next: (tenants) => {
+                this.userTenants = tenants.map(({id, name}) => ({name, value: id.toString()}));
+            }
+        });
+
+        this.userRoles = this.userApiSvc.getUserRoles();
     }
 
-    this.loading$$.next(true);
-
-    console.log(this.formValues);
-
-    let addUserObservable$: Observable<any>;
-
-    if ([this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {
-      addUserObservable$ = this.userManagementApiSvc.createUserInvite({
-        givenName: this.formValues.firstname,
-        surName: this.formValues.lastname,
-        email: this.formValues.email,
-        roleName: this.formValues.userRole,
-        contextTenantId: this.formValues.tenantId,
-        redirect: {
-          redirectUrl: environment.redirectUrl
-        }
-      });
-    } else {
-      addUserObservable$ = this.staffApiSvc.upsertUser$({
-        firstname: this.formValues.firstname,
-        lastname: this.formValues.lastname,
-        email: this.formValues.email ?? null,
-        userType: this.modalData.edit ? this.modalData.userDetails.userType : this.formValues.userType,
-        ...(this.modalData.userDetails ? { id: this.modalData.userDetails.id } : {}),
-      });
+    public override ngOnDestroy() {
+        super.ngOnDestroy();
     }
 
-    addUserObservable$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: () => {
-        if (this.modalData.edit) {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
+    public get formValues(): FormValues {
+        return this.addUserForm.value;
+    }
+
+    private createForm(userDetails?: User | undefined): void {
+        this.addUserForm = this.fb.group({
+            userType: [
+                {
+                    value: userDetails?.userType ?? UserType.Scheduler,
+                    disabled: this.modalData.edit || this.permissionType === UserRoleEnum.GeneralUser,
+                },
+                [Validators.required],
+            ],
+            firstname: [userDetails?.firstname ?? '', [Validators.required]],
+            lastname: [userDetails?.lastname ?? '', [Validators.required]],
+            email: [userDetails?.email ?? '', []],
+            userRole: [null, []],
+            tenantId: [null, []]
+        });
+    }
+
+    public closeModal(res: boolean) {
+        this.modalSvc.close(res);
+    }
+
+    public saveUser() {
+        let isInvalid = false;
+
+        if ([this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {
+            if (this.addUserForm.invalid) {
+                isInvalid = true;
+            }
         } else {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
+            const requiredFields = ['firstname', 'lastname'];
+            if (requiredFields.some((key) => this.addUserForm.get(key)?.invalid)) {
+                requiredFields.forEach((key) => this.addUserForm.get(key)?.markAsTouched());
+                isInvalid = true;
+            }
         }
-        this.loading$$.next(false);
-        this.closeModal(true);
-      },
-      error: (err) => this.loading$$.next(false)
-    });
 
-    // if (
-    //   [UserType.Scheduler, UserType.Secretary].includes(this.formValues.userType) ||
-    //   [UserType.Scheduler, UserType.Secretary].includes(this.modalData?.userDetails?.userType)
-    // ) {
-    //   this.userManagementApiSvc.createUserInvite({
-    //     givenName: this.formValues.firstname,
-    //     surName: this.formValues.lastname,
-    //     email: this.formValues.email,
-    //     roleName: this.formValues.userRole,
-    //     contextTenantId: this.formValues.tenantId,
-    //     redirect: {
-    //       redirectUrl: environment.redirectUrl
-    //     }
-    //   }).pipe(
-    //     switchMap((resp) => {
-    //       const requestBody: AddStaffRequestData = {
-    //         userAzureId: resp.id,
-    //         userRole: this.formValues.userRole,
-    //         userType: this.formValues.userType,
-    //       }
-    //       return this.staffApiSvc.upsertUser$(requestBody);
-    //     }),
-    //     takeUntil(this.destroy$$)
-    //   ).subscribe({
-    //     next: () => {
-    //       if (this.modalData.edit) {
-    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
-    //       } else {
-    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
-    //       }
-    //       this.loading$$.next(false);
-    //       this.closeModal(true);
-    //     },
-    //     error: (err) => {
-    //       console.log(err);
-    //       this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-    //       this.loading$$.next(false);
-    //     }
-    //   });
-    // } else {
-    //   this.staffApiSvc.upsertUser$({
-    //     firstname: this.formValues.firstname,
-    //     lastname: this.formValues.lastname,
-    //     email: this.formValues.email ?? null,
-    //     userType: this.modalData.edit ? this.modalData.userDetails.userType : this.formValues.userType,
-    //     ...(this.modalData.userDetails ? { id: this.modalData.userDetails.id } : {}),
-    //   }).pipe(takeUntil(this.destroy$$)).subscribe({
-    //     next: () => {
-    //       if (this.modalData.edit) {
-    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
-    //       } else {
-    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
-    //       }
-    //       this.loading$$.next(false);
-    //       this.closeModal(true);
-    //     },
-    //     error: (err) => {
-    //       console.log(err);
-    //       this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-    //       this.loading$$.next(false);
-    //     }
-    //   })
-    // }
+        if (isInvalid) {
+            this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}`, NotificationType.WARNING);
+            this.addUserForm.markAllAsTouched();
+            return;
+        }
 
-    // const { gsm, address, status, ...rest } = this.formValues;
-    //
-    // let addUserReqData: AddStaffRequestData = { ...rest, status: +status };
-    //
-    // if (
-    //   [UserType.Scheduler, UserType.Secretary].includes(this.formValues.userType) ||
-    //   [UserType.Scheduler, UserType.Secretary].includes(this.modalData?.userDetails?.userType)
-    // ) {
-    //   addUserReqData = {
-    //     ...addUserReqData,
-    //     gsm,
-    //     address,
-    //   };
-    // }
-    //
-    // if (this.modalData.edit) {
-    //   addUserReqData.userType = this.modalData.userDetails.userType;
-    // }
-    //
-    // if (this.modalData?.userDetails?.id) {
-    //   addUserReqData.id = this.modalData.userDetails.id;
-    // }
-    //
-    // if (!addUserReqData.email) {
-    //   addUserReqData.email = null;
-    // }
-    //
-    // addUserReqData.id = this.modalData?.userDetails?.id ?? 0;
-    //
-    // this.staffApiSvc
-    //   .addNewStaff$(addUserReqData)
-    //   .pipe(takeUntil(this.destroy$$))
-    //   .subscribe(
-    //     () => {
-    //       if (this.modalData.edit) {
-    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
-    //       } else {
-    //         this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
-    //       }
-    //       this.loading$$.next(false);
-    //       this.closeModal(true);
-    //     },
-    //     (err) => {
-    //       this.loading$$.next(false);
-    //       this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-    //     },
-    //   );
-  }
+        this.loading$$.next(true);
 
-  public handleEmailInput(e: Event): void {
-    const inputText = (e.target as HTMLInputElement).value;
+        console.log(this.formValues);
 
-    if (!inputText) {
-      return;
+        let addUserObservable$: Observable<any>;
+
+        if ([this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {
+            addUserObservable$ = this.userManagementApiSvc.createUserInvite({
+                givenName: this.formValues.firstname,
+                surName: this.formValues.lastname,
+                email: this.formValues.email,
+                roleName: this.formValues.userRole,
+                contextTenantId: this.formValues.tenantId,
+                redirect: {
+                    redirectUrl: environment.redirectUrl
+                }
+            });
+        } else {
+            addUserObservable$ = this.userApiSvc.upsertUser$({
+                firstname: this.formValues.firstname,
+                lastname: this.formValues.lastname,
+                email: this.formValues.email ?? null,
+                userType: this.modalData.edit ? this.modalData.userDetails.userType : this.formValues.userType,
+                ...(this.modalData.userDetails ? {id: this.modalData.userDetails.id} : {}),
+            });
+        }
+
+        addUserObservable$.pipe(takeUntil(this.destroy$$)).subscribe({
+            next: () => {
+                if (this.modalData.edit) {
+                    this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
+                } else {
+                    this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
+                }
+                this.loading$$.next(false);
+                this.closeModal(true);
+            },
+            error: (err) => this.loading$$.next(false)
+        });
     }
 
-    if (!inputText.match(EMAIL_REGEX)) {
-      this.addUserForm.get('email')?.setErrors({
-        email: true,
-      });
-    } else {
-      this.addUserForm.get('email')?.setErrors(null);
-    }
-  }
+    public handleEmailInput(e: Event): void {
+        const inputText = (e.target as HTMLInputElement).value;
 
-  protected readonly UserType = UserType;
-  protected readonly UserRoleEnum = UserRoleEnum;
+        if (!inputText) {
+            return;
+        }
+
+        if (!inputText.match(EMAIL_REGEX)) {
+            this.addUserForm.get('email')?.setErrors({
+                email: true,
+            });
+        } else {
+            this.addUserForm.get('email')?.setErrors(null);
+        }
+    }
+
+    protected readonly UserType = UserType;
+    protected readonly UserRoleEnum = UserRoleEnum;
 }

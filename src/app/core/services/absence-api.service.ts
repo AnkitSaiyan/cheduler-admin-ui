@@ -1,682 +1,80 @@
-import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, of, pipe, startWith, Subject, switchMap, tap } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { BaseResponse } from 'src/app/shared/models/base-response.model';
-import { Absence, AddAbsenceRequestDate, PriorityType } from '../../shared/models/absence.model';
-import { Status } from '../../shared/models/status.model';
-import { RoomType } from '../../shared/models/rooms.model';
-import { AvailabilityType, UserType } from '../../shared/models/user.model';
-import { Weekday } from '../../shared/models/calendar.model';
-import { StaffApiService } from './staff-api.service';
-import { DashboardApiService } from './dashboard-api.service';
-import { environment } from '../../../environments/environment';
-import { LoaderService } from './loader.service';
+import {Injectable} from '@angular/core';
+import {combineLatest, map, Observable, startWith, Subject, switchMap, tap} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {BaseResponse} from 'src/app/shared/models/base-response.model';
+import {Absence, AddAbsenceRequestDate} from '../../shared/models/absence.model';
+import {environment} from '../../../environments/environment';
+import {LoaderService} from './loader.service';
 
 @Injectable({
-  providedIn: 'root',
+    providedIn: 'root',
 })
 export class AbsenceApiService {
-  // private absences: Absence[] = [
-  //   {
-  //     id: 1,
-  //     name: 'Wedding',
-  //     isHoliday: false,
-  //     startedAt: new Date(),
-  //     endedAt: new Date(),
-  //     priority: PriorityType.Low,
-  //     info: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores atque, aut consectetur, consequuntur ducimus ea explicabo ipsam laboriosam maxime, necessitatibus quam quisquam repudiandae veritatis vitae voluptatem. Delectus, ipsum.',
-  //     status: Status.Active,
-  //     isRepeat: false,
-  //     repeatType: undefined,
-  //     repeatFrequency: undefined,
-  //     repeatDays: '',
-  //     roomList: [1, 2],
-  //     staffList: [1, 2],
-  //     rooms: [
-  //       {
-  //         id: 1,
-  //         name: 'John Room',
-  //         description: 'Test Room',
-  //         type: RoomType.Public,
-  //         availabilityType: AvailabilityType.Available,
-  //         status: Status.Inactive,
-  //         placeInAgenda: 0,
-  //         roomNo: 1,
-  //         practiceAvailability: [],
-  //         examLists: [1, 2],
-  //       },
-  //     ],
-  //     staff: [
-  //       {
-  //         id: 2,
-  //         firstname: 'Maaike',
-  //         lastname: 'Benooit',
-  //         userType: UserType.General,
-  //         email: 'maaike@deflexmo.be',
-  //         telephone: '9812345678',
-  //         address: '',
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         deletedBy: null,
-  //         gsm: '',
-  //         examList: [1],
-  //         practiceAvailability: [
-  //           {
-  //             id: 60,
-  //             weekday: Weekday.MON,
-  //             dayStart: new Date(),
-  //             dayEnd: new Date(),
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Wedding',
-  //     isHoliday: false,
-  //     startedAt: new Date(),
-  //     endedAt: new Date(),
-  //     priority: PriorityType.Low,
-  //     info: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores atque, aut consectetur, consequuntur ducimus ea explicabo ipsam laboriosam maxime, necessitatibus quam quisquam repudiandae veritatis vitae voluptatem. Delectus, ipsum.',
-  //     status: Status.Active,
-  //     isRepeat: false,
-  //     repeatType: undefined,
-  //     repeatFrequency: undefined,
-  //     repeatDays: '',
-  //     roomList: [1, 2],
-  //     staffList: [1, 2],
-  //     rooms: [
-  //       {
-  //         id: 1,
-  //         name: 'John Room',
-  //         description: 'Test Room',
-  //         type: RoomType.Public,
-  //         availabilityType: AvailabilityType.Available,
-  //         status: Status.Inactive,
-  //         placeInAgenda: 0,
-  //         roomNo: 1,
-  //         practiceAvailability: [],
-  //         examLists: [1, 2],
-  //       },
-  //     ],
-  //     staff: [
-  //       {
-  //         id: 2,
-  //         firstname: 'Maaike',
-  //         lastname: 'Benooit',
-  //         userType: UserType.General,
-  //         email: 'maaike@deflexmo.be',
-  //         telephone: '9812345678',
-  //         address: '',
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         deletedBy: null,
-  //         gsm: '',
-  //         examList: [1],
-  //         practiceAvailability: [
-  //           {
-  //             id: 60,
-  //             weekday: Weekday.MON,
-  //             dayStart: new Date(),
-  //             dayEnd: new Date(),
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 3,
-  //     name: 'Wedding',
-  //     isHoliday: false,
-  //     startedAt: new Date(),
-  //     endedAt: new Date(),
-  //     priority: PriorityType.Low,
-  //     info: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores atque, aut consectetur, consequuntur ducimus ea explicabo ipsam laboriosam maxime, necessitatibus quam quisquam repudiandae veritatis vitae voluptatem. Delectus, ipsum.',
-  //     status: Status.Active,
-  //     isRepeat: false,
-  //     repeatType: undefined,
-  //     repeatFrequency: undefined,
-  //     repeatDays: '',
-  //     roomList: [1, 2],
-  //     staffList: [1, 2],
-  //     rooms: [
-  //       {
-  //         id: 1,
-  //         name: 'John Room',
-  //         description: 'Test Room',
-  //         type: RoomType.Public,
-  //         availabilityType: AvailabilityType.Available,
-  //         status: Status.Inactive,
-  //         placeInAgenda: 0,
-  //         roomNo: 1,
-  //         practiceAvailability: [],
-  //         examLists: [1, 2],
-  //       },
-  //     ],
-  //     staff: [
-  //       {
-  //         id: 2,
-  //         firstname: 'Maaike',
-  //         lastname: 'Benooit',
-  //         userType: UserType.General,
-  //         email: 'maaike@deflexmo.be',
-  //         telephone: '9812345678',
-  //         address: '',
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         deletedBy: null,
-  //         gsm: '',
-  //         examList: [1],
-  //         practiceAvailability: [
-  //           {
-  //             id: 60,
-  //             weekday: Weekday.MON,
-  //             dayStart: new Date(),
-  //             dayEnd: new Date(),
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 4,
-  //     name: 'Wedding',
-  //     isHoliday: false,
-  //     startedAt: new Date(),
-  //     endedAt: new Date(),
-  //     priority: PriorityType.Low,
-  //     info: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores atque, aut consectetur, consequuntur ducimus ea explicabo ipsam laboriosam maxime, necessitatibus quam quisquam repudiandae veritatis vitae voluptatem. Delectus, ipsum.',
-  //     status: Status.Active,
-  //     isRepeat: false,
-  //     repeatType: undefined,
-  //     repeatFrequency: undefined,
-  //     repeatDays: '',
-  //     roomList: [1, 2],
-  //     staffList: [1, 2],
-  //     rooms: [
-  //       {
-  //         id: 1,
-  //         name: 'John Room',
-  //         description: 'Test Room',
-  //         type: RoomType.Public,
-  //         availabilityType: AvailabilityType.Available,
-  //         status: Status.Inactive,
-  //         placeInAgenda: 0,
-  //         roomNo: 1,
-  //         practiceAvailability: [],
-  //         examLists: [1, 2],
-  //       },
-  //     ],
-  //     staff: [
-  //       {
-  //         id: 2,
-  //         firstname: 'Maaike',
-  //         lastname: 'Benooit',
-  //         userType: UserType.General,
-  //         email: 'maaike@deflexmo.be',
-  //         telephone: '9812345678',
-  //         address: '',
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         deletedBy: null,
-  //         gsm: '',
-  //         examList: [1],
-  //         practiceAvailability: [
-  //           {
-  //             id: 60,
-  //             weekday: Weekday.MON,
-  //             dayStart: new Date(),
-  //             dayEnd: new Date(),
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 5,
-  //     name: 'Wedding',
-  //     isHoliday: false,
-  //     startedAt: new Date(),
-  //     endedAt: new Date(),
-  //     priority: PriorityType.Low,
-  //     info: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores atque, aut consectetur, consequuntur ducimus ea explicabo ipsam laboriosam maxime, necessitatibus quam quisquam repudiandae veritatis vitae voluptatem. Delectus, ipsum.',
-  //     status: Status.Active,
-  //     isRepeat: false,
-  //     repeatType: undefined,
-  //     repeatFrequency: undefined,
-  //     repeatDays: '',
-  //     roomList: [1, 2],
-  //     staffList: [1, 2],
-  //     rooms: [
-  //       {
-  //         id: 1,
-  //         name: 'John Room',
-  //         description: 'Test Room',
-  //         type: RoomType.Public,
-  //         availabilityType: AvailabilityType.Available,
-  //         status: Status.Inactive,
-  //         placeInAgenda: 0,
-  //         roomNo: 1,
-  //         practiceAvailability: [],
-  //         examLists: [1, 2],
-  //       },
-  //     ],
-  //     staff: [
-  //       {
-  //         id: 2,
-  //         firstname: 'Maaike',
-  //         lastname: 'Benooit',
-  //         userType: UserType.General,
-  //         email: 'maaike@deflexmo.be',
-  //         telephone: '9812345678',
-  //         address: '',
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         deletedBy: null,
-  //         gsm: '',
-  //         examList: [1],
-  //         practiceAvailability: [
-  //           {
-  //             id: 60,
-  //             weekday: Weekday.MON,
-  //             dayStart: new Date(),
-  //             dayEnd: new Date(),
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 5,
-  //     name: 'Wedding',
-  //     isHoliday: false,
-  //     startedAt: new Date(),
-  //     endedAt: new Date(),
-  //     priority: PriorityType.Low,
-  //     info: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores atque, aut consectetur, consequuntur ducimus ea explicabo ipsam laboriosam maxime, necessitatibus quam quisquam repudiandae veritatis vitae voluptatem. Delectus, ipsum.',
-  //     status: Status.Active,
-  //     isRepeat: false,
-  //     repeatType: undefined,
-  //     repeatFrequency: undefined,
-  //     repeatDays: '',
-  //     roomList: [1, 2],
-  //     staffList: [1, 2],
-  //     rooms: [
-  //       {
-  //         id: 1,
-  //         name: 'John Room',
-  //         description: 'Test Room',
-  //         type: RoomType.Public,
-  //         availabilityType: AvailabilityType.Available,
-  //         status: Status.Inactive,
-  //         placeInAgenda: 0,
-  //         roomNo: 1,
-  //         practiceAvailability: [],
-  //         examLists: [1, 2],
-  //       },
-  //     ],
-  //     staff: [
-  //       {
-  //         id: 2,
-  //         firstname: 'Maaike',
-  //         lastname: 'Benooit',
-  //         userType: UserType.General,
-  //         email: 'maaike@deflexmo.be',
-  //         telephone: '9812345678',
-  //         address: '',
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         deletedBy: null,
-  //         gsm: '',
-  //         examList: [1],
-  //         practiceAvailability: [
-  //           {
-  //             id: 60,
-  //             weekday: Weekday.MON,
-  //             dayStart: new Date(),
-  //             dayEnd: new Date(),
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 6,
-  //     name: 'Wedding',
-  //     isHoliday: false,
-  //     startedAt: new Date(),
-  //     endedAt: new Date(),
-  //     priority: PriorityType.Low,
-  //     info: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores atque, aut consectetur, consequuntur ducimus ea explicabo ipsam laboriosam maxime, necessitatibus quam quisquam repudiandae veritatis vitae voluptatem. Delectus, ipsum.',
-  //     status: Status.Active,
-  //     isRepeat: false,
-  //     repeatType: undefined,
-  //     repeatFrequency: undefined,
-  //     repeatDays: '',
-  //     roomList: [1, 2],
-  //     staffList: [1, 2],
-  //     rooms: [
-  //       {
-  //         id: 1,
-  //         name: 'John Room',
-  //         description: 'Test Room',
-  //         type: RoomType.Public,
-  //         availabilityType: AvailabilityType.Available,
-  //         status: Status.Inactive,
-  //         placeInAgenda: 0,
-  //         roomNo: 1,
-  //         practiceAvailability: [],
-  //         examLists: [1, 2],
-  //       },
-  //     ],
-  //     staff: [
-  //       {
-  //         id: 2,
-  //         firstname: 'Maaike',
-  //         lastname: 'Benooit',
-  //         userType: UserType.General,
-  //         email: 'maaike@deflexmo.be',
-  //         telephone: '9812345678',
-  //         address: '',
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         deletedBy: null,
-  //         gsm: '',
-  //         examList: [1],
-  //         practiceAvailability: [
-  //           {
-  //             id: 60,
-  //             weekday: Weekday.MON,
-  //             dayStart: new Date(),
-  //             dayEnd: new Date(),
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 7,
-  //     name: 'Casual leave',
-  //     isHoliday: false,
-  //     startedAt: new Date(),
-  //     endedAt: new Date(),
-  //     priority: PriorityType.Low,
-  //     info: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores atque, aut consectetur, consequuntur ducimus ea explicabo ipsam laboriosam maxime, necessitatibus quam quisquam repudiandae veritatis vitae voluptatem. Delectus, ipsum.',
-  //     status: Status.Active,
-  //     isRepeat: false,
-  //     repeatType: undefined,
-  //     repeatFrequency: undefined,
-  //     repeatDays: '',
-  //     roomList: [1, 2],
-  //     staffList: [1, 2],
-  //     rooms: [
-  //       {
-  //         id: 1,
-  //         name: 'John Room',
-  //         description: 'Test Room',
-  //         type: RoomType.Public,
-  //         availabilityType: AvailabilityType.Available,
-  //         status: Status.Inactive,
-  //         placeInAgenda: 0,
-  //         roomNo: 1,
-  //         practiceAvailability: [],
-  //         examLists: [1, 2],
-  //       },
-  //     ],
-  //     staff: [
-  //       {
-  //         id: 2,
-  //         firstname: 'Maaike',
-  //         lastname: 'Benooit',
-  //         userType: UserType.General,
-  //         email: 'maaike@deflexmo.be',
-  //         telephone: '9812345678',
-  //         address: '',
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         deletedBy: null,
-  //         gsm: '',
-  //         examList: [1],
-  //         practiceAvailability: [
-  //           {
-  //             id: 60,
-  //             weekday: Weekday.MON,
-  //             dayStart: new Date(),
-  //             dayEnd: new Date(),
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 8,
-  //     name: 'Wedding',
-  //     isHoliday: false,
-  //     startedAt: new Date(),
-  //     endedAt: new Date(),
-  //     priority: PriorityType.Low,
-  //     info: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores atque, aut consectetur, consequuntur ducimus ea explicabo ipsam laboriosam maxime, necessitatibus quam quisquam repudiandae veritatis vitae voluptatem. Delectus, ipsum.',
-  //     status: Status.Active,
-  //     isRepeat: false,
-  //     repeatType: undefined,
-  //     repeatFrequency: undefined,
-  //     repeatDays: '',
-  //     roomList: [1, 2],
-  //     staffList: [1, 2],
-  //     rooms: [
-  //       {
-  //         id: 1,
-  //         name: 'John Room',
-  //         description: 'Test Room',
-  //         type: RoomType.Public,
-  //         availabilityType: AvailabilityType.Available,
-  //         status: Status.Inactive,
-  //         placeInAgenda: 0,
-  //         roomNo: 1,
-  //         practiceAvailability: [],
-  //         examLists: [1, 2],
-  //       },
-  //     ],
-  //     staff: [
-  //       {
-  //         id: 2,
-  //         firstname: 'Maaike',
-  //         lastname: 'Benooit',
-  //         userType: UserType.General,
-  //         email: 'maaike@deflexmo.be',
-  //         telephone: '9812345678',
-  //         address: '',
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         deletedBy: null,
-  //         gsm: '',
-  //         examList: [1],
-  //         practiceAvailability: [
-  //           {
-  //             id: 60,
-  //             weekday: Weekday.MON,
-  //             dayStart: new Date(),
-  //             dayEnd: new Date(),
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 9,
-  //     name: 'Sick',
-  //     isHoliday: false,
-  //     startedAt: new Date(),
-  //     endedAt: new Date(),
-  //     priority: PriorityType.Low,
-  //     info: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores atque, aut consectetur, consequuntur ducimus ea explicabo ipsam laboriosam maxime, necessitatibus quam quisquam repudiandae veritatis vitae voluptatem. Delectus, ipsum.',
-  //     status: Status.Active,
-  //     isRepeat: false,
-  //     repeatType: undefined,
-  //     repeatFrequency: undefined,
-  //     repeatDays: '',
-  //     roomList: [1, 2],
-  //     staffList: [1, 2],
-  //     rooms: [
-  //       {
-  //         id: 1,
-  //         name: 'John Room',
-  //         description: 'Test Room',
-  //         type: RoomType.Public,
-  //         availabilityType: AvailabilityType.Available,
-  //         status: Status.Inactive,
-  //         placeInAgenda: 0,
-  //         roomNo: 1,
-  //         practiceAvailability: [],
-  //         examLists: [1, 2],
-  //       },
-  //     ],
-  //     staff: [
-  //       {
-  //         id: 2,
-  //         firstname: 'Maaike',
-  //         lastname: 'Benooit',
-  //         userType: UserType.General,
-  //         email: 'maaike@deflexmo.be',
-  //         telephone: '9812345678',
-  //         address: '',
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         deletedBy: null,
-  //         gsm: '',
-  //         examList: [1],
-  //         practiceAvailability: [
-  //           {
-  //             id: 60,
-  //             weekday: Weekday.MON,
-  //             dayStart: new Date(),
-  //             dayEnd: new Date(),
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 10,
-  //     name: 'Wedding',
-  //     isHoliday: false,
-  //     startedAt: new Date(),
-  //     endedAt: new Date(),
-  //     priority: PriorityType.Low,
-  //     info: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores atque, aut consectetur, consequuntur ducimus ea explicabo ipsam laboriosam maxime, necessitatibus quam quisquam repudiandae veritatis vitae voluptatem. Delectus, ipsum.',
-  //     status: Status.Active,
-  //     isRepeat: false,
-  //     repeatType: undefined,
-  //     repeatFrequency: undefined,
-  //     repeatDays: '',
-  //     roomList: [1, 2],
-  //     staffList: [1, 2],
-  //     rooms: [
-  //       {
-  //         id: 1,
-  //         name: 'John Room',
-  //         description: 'Test Room',
-  //         type: RoomType.Public,
-  //         availabilityType: AvailabilityType.Available,
-  //         status: Status.Inactive,
-  //         placeInAgenda: 0,
-  //         roomNo: 1,
-  //         practiceAvailability: [],
-  //         examLists: [1, 2],
-  //       },
-  //     ],
-  //     staff: [
-  //       {
-  //         id: 2,
-  //         firstname: 'Maaike',
-  //         lastname: 'Benooit',
-  //         userType: UserType.General,
-  //         email: 'maaike@deflexmo.be',
-  //         telephone: '9812345678',
-  //         address: '',
-  //         status: Status.Active,
-  //         availabilityType: AvailabilityType.Available,
-  //         deletedBy: null,
-  //         gsm: '',
-  //         examList: [1],
-  //         practiceAvailability: [
-  //           {
-  //             id: 60,
-  //             weekday: Weekday.MON,
-  //             dayStart: new Date(),
-  //             dayEnd: new Date(),
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  // ];
+    private refreshAbsences$$ = new Subject<void>();
 
-  private refreshAbsences$$ = new Subject<void>();
+    constructor(private http: HttpClient, private loaderSvc: LoaderService) {
+    }
 
-  constructor(private staffApiSvc: StaffApiService, private http: HttpClient, private loaderSvc: LoaderService) {}
+    public get absences$(): Observable<Absence[]> {
+        return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAbsence()));
+    }
 
-  public get absences$(): Observable<Absence[]> {
-    return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAbsence()));
-  }
+    public getAbsenceByID$(absenceID: number): Observable<Absence> {
+        this.loaderSvc.spinnerActivate();
+        return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(
+            switchMap(() => this.fetchAbsenceById(absenceID)),
+            tap(() => this.loaderSvc.spinnerDeactivate()),
+        );
+    }
 
-  private fetchAllAbsence(): Observable<Absence[]> {
-    this.loaderSvc.activate();
-    return this.http.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences`).pipe(
-      map((response) => response.data),
-      tap(() => this.loaderSvc.deactivate()),
-    );
-  }
+    public deleteAbsence$(absenceID: number): Observable<boolean> {
+        this.loaderSvc.activate();
+        return this.http.delete<BaseResponse<boolean>>(`${environment.schedulerApiUrl}/absences/${absenceID}`).pipe(
+            map((response) => response.data),
+            tap(() => {
+                this.refreshAbsences$$.next();
+                this.loaderSvc.deactivate();
+            }),
+        );
+    }
 
-  public getAbsenceByID$(absenceID: number): Observable<Absence> {
-    this.loaderSvc.spinnerActivate();
-    return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(
-      switchMap(() => this.fetchAbsenceById(absenceID)),
-      tap(() => this.loaderSvc.spinnerDeactivate()),
-    );
-  }
+    public addNewAbsence$(requestData: AddAbsenceRequestDate): Observable<Absence> {
+        this.loaderSvc.activate();
+        const {id, ...restdata} = requestData;
+        return this.http.post<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences`, restdata).pipe(
+            map((response) => response.data),
+            tap(() => {
+                this.refreshAbsences$$.next();
+                this.loaderSvc.deactivate();
+            }),
+        );
+    }
 
-  private fetchAbsenceById(absenceID: number): Observable<Absence> {
-    this.loaderSvc.activate();
-    return this.http.get<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences/${absenceID}`).pipe(
-      map((response) => response.data),
-      tap(() => this.loaderSvc.deactivate()),
-    );
-  }
+    public updateAbsence(requestData: AddAbsenceRequestDate): Observable<Absence> {
+        this.loaderSvc.activate();
+        const {id, ...restData} = requestData;
+        return this.http.put<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences/${id}`, restData).pipe(
+            map((response) => response.data),
+            tap(() => {
+                this.refreshAbsences$$.next();
+                this.loaderSvc.deactivate();
+            }),
+        );
+    }
 
-  public deleteAbsence$(absenceID: number): Observable<boolean> {
-    this.loaderSvc.activate();
-    return this.http.delete<BaseResponse<boolean>>(`${environment.schedulerApiUrl}/absences/${absenceID}`).pipe(
-      map((response) => response.data),
-      tap(() => {
-        this.refreshAbsences$$.next();
-        this.loaderSvc.deactivate();
-      }),
-    );
-  }
+    private fetchAllAbsence(): Observable<Absence[]> {
+        this.loaderSvc.activate();
+        return this.http.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences`).pipe(
+            map((response) => response.data),
+            tap(() => this.loaderSvc.deactivate()),
+        );
+    }
 
-  public addNewAbsence$(requestData: AddAbsenceRequestDate): Observable<Absence> {
-    this.loaderSvc.activate();
-    const { id, ...restdata } = requestData;
-    return this.http.post<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences`, restdata).pipe(
-      map((response) => response.data),
-      tap(() => {
-        this.refreshAbsences$$.next();
-        this.loaderSvc.deactivate();
-      }),
-    );
-  }
-
-  public updateAbsence(requestData: AddAbsenceRequestDate): Observable<Absence> {
-    this.loaderSvc.activate();
-    const { id, ...restData } = requestData;
-    return this.http.put<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences/${id}`, restData).pipe(
-      map((response) => response.data),
-      tap(() => {
-        this.refreshAbsences$$.next();
-        this.loaderSvc.deactivate();
-      }),
-    );
-  }
+    private fetchAbsenceById(absenceID: number): Observable<Absence> {
+        this.loaderSvc.activate();
+        return this.http.get<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences/${absenceID}`).pipe(
+            map((response) => response.data),
+            tap(() => this.loaderSvc.deactivate()),
+        );
+    }
 }

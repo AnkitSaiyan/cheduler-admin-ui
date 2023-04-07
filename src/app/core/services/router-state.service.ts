@@ -46,7 +46,6 @@ export class RouterStateService {
   public listenForParamChange$(paramName: string): Observable<string> {
     return this.routerState$$.pipe(
       map((state) => {
-        console.log(state)
         return state.params[paramName];
       }),
       distinctUntilChanged(),
