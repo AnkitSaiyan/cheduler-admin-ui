@@ -11,7 +11,7 @@ import {
     Subject,
     switchMap,
     takeUntil,
-    tap, throwError
+    tap
 } from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {MsalService} from '@azure/msal-angular';
@@ -27,6 +27,7 @@ import {AddStaffRequestData, StaffType} from "../../shared/models/staff.model";
 import {Translate} from "../../shared/models/translate.model";
 import {ShareDataService} from "./share-data.service";
 import {DestroyableComponent} from "../../shared/components/destroyable.component";
+import {Router} from "@angular/router";
 
 @Injectable({
     providedIn: 'root',
@@ -76,7 +77,8 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         private UserManagementApiService: UserManagementApiService,
         private permissionSvc: PermissionService,
         private loaderSvc: LoaderService,
-        private shareDataSvc: ShareDataService
+        private shareDataSvc: ShareDataService,
+        private router: Router
     ) {
         super();
 
@@ -201,7 +203,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
                     return this.getCurrentUserRole$(userId).pipe(
                         map((role) => {
                             this.permissionSvc.setPermissionType(role as UserRoleEnum);
-                            this.authUser$$.next(new AuthUser(res.email, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
+                            this.authUser$$.next(new AuthUser(res.mail, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
                             return true;
                         }),
                         catchError((err) => of(false))
@@ -210,7 +212,23 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
                     return of(false);
                 }
             }),
-            catchError((err) => of(false))
+            tap((res) => {
+                if (!res) {
+                    return;
+                }
+
+                const user = this.authUser$$.value;
+
+                if (!user) {
+                    return;
+                }
+
+                if (user.properties['extension_ProfileIsIncomplete']) {
+                    this.authUser$$.next(new AuthUser(user.mail, user.givenName, user.id, user.surname, user.displayName, user.email, {}, []))
+                    this.router.navigate(['/complete-profile']);
+                }
+            }),
+            catchError((err) => of(false)),
         );
     }
 

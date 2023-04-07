@@ -33,4 +33,13 @@ export class NotificationDataService {
       sticky: false
     });
   }
+
+  public showWarning(message: string) {
+    this.notificationSvc.addNotification({
+      bodyText: message,
+      type: NotificationType.WARNING,
+      headerText: '',
+      sticky: false
+    });
+  }
 }

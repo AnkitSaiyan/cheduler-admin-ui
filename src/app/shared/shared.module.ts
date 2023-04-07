@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { DesignSystemModule, TableModule } from 'diflexmo-angular-design';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -56,6 +56,8 @@ import { UserRolePipe } from './pipes/user-role.pipe';
 import { UtcToLocalPipe } from './pipes/utc-to-local.pipe';
 import { DefaultDatePipe } from './pipes/default-date.pipe';
 import { ShowSlotPercentagePipe } from './pipes/showSlotPercentage.pipe';
+import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
+import {MatDividerModule} from "@angular/material/divider";
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -98,25 +100,28 @@ export function HttpLoaderFactory(http: HttpClient) {
 		UtcToLocalPipe,
 		DefaultDatePipe,
 		ShowSlotPercentagePipe,
+  CompleteProfileComponent,
 	],
-	imports: [
-		CommonModule,
-		DesignSystemModule,
-		ReactiveFormsModule,
-		NgbDropdownModule,
-		NgbPopoverModule,
-		NgbAccordionModule,
-		MatProgressSpinnerModule,
-		RouterLink,
-		TranslateModule.forChild({
-			loader: {
-				provide: TranslateLoader,
-				// eslint-disable-next-line @typescript-eslint/no-use-before-define
-				useFactory: HttpLoaderFactory,
-				deps: [HttpClient],
-			},
-		}),
-	],
+    imports: [
+        CommonModule,
+        DesignSystemModule,
+        ReactiveFormsModule,
+        NgbDropdownModule,
+        NgbPopoverModule,
+        NgbAccordionModule,
+        MatProgressSpinnerModule,
+        RouterLink,
+        TranslateModule.forChild({
+            loader: {
+                provide: TranslateLoader,
+                // eslint-disable-next-line @typescript-eslint/no-use-before-define
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient],
+            },
+        }),
+        NgOptimizedImage,
+        MatDividerModule,
+    ],
 	exports: [
 		DesignSystemModule,
 		TableModule,

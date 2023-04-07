@@ -1,0 +1,54 @@
+<div class="complete-profile-wrapper">
+    <div class="complete-profile-sections-wrapper dfm-card">
+        <section class="complete-profile-section">
+            <img width="128" ngSrc="assets/images/scheduler-logo.svg" height="17">
+            <h3 class="font-weight-semi-bold">Complete Your Profile</h3>
+        </section>
+
+        <section class="complete-profile-section" [formGroup]="completeProfileForm">
+            <div class="flex-1">
+                <dfm-input
+                        type="text"
+                        size="sm"
+                        label="{{'Telephone' | translate}}*"
+                        placeholder="{{'EnterTelephone' | translate}}"
+                        icon="phone"
+                        formControlName="extension_Telephone"
+                        #phone
+                        [dfmNumberInput]="phone"
+                >
+                </dfm-input>
+            </div>
+
+            <div class="flex-1">
+                <dfm-input
+                        type="text"
+                        size="sm"
+                        label="GSM*"
+                        placeholder="{{'EnterGsm' | translate}}"
+                        icon="file-06"
+                        formControlName="extension_Gsm"
+                >
+                </dfm-input>
+            </div>
+
+            <div class="flex-1">
+                <dfm-text-area
+                        size="sm"
+                        label="{{'Address' | translate}}*"
+                        placeholder="{{'EnterAddress' | translate}}"
+                        formControlName="extension_Address"
+                >
+                </dfm-text-area>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <section class="complete-profile-section">
+            <dfm-button color="primary" size="md" [disabled]="(saving$$ | async) === true" (click)="save()">
+                {{"Confirm" | translate}}
+            </dfm-button>
+        </section>
+    </div>
+</div>

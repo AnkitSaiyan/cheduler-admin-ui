@@ -10,7 +10,6 @@ export class UtcToLocalPipe implements PipeTransform {
             return utcDateString;
         }
 
-        console.log(utcDateString, DateTimeUtils.UTCToLocalDateString(new Date(utcDateString)))
         return DateTimeUtils.UTCToLocalDateString(new Date(utcDateString)).toString();
     }
 }

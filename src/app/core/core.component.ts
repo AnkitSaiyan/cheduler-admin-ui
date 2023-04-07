@@ -4,7 +4,7 @@ import {
   NavigationItemEvent,
   NavigationItemEventType,
   NavigationProfileData,
-  NavigationProfileLink,
+  NavigationProfileLink, NavigationUser,
   SelectItem,
 } from 'diflexmo-angular-design';
 import { TranslateService } from '@ngx-translate/core';
@@ -21,7 +21,7 @@ import { LoaderService } from './services/loader.service';
 import { UserApiService } from './services/user-api.service';
 import { Translate } from '../shared/models/translate.model';
 import { PermissionService } from './services/permission.service';
-import { UserRoleEnum } from '../shared/models/user.model';
+import {AuthUser, UserRoleEnum} from '../shared/models/user.model';
 import { DateTimeUtils } from '../shared/utils/date-time.utils';
 
 @Component({
@@ -111,8 +111,8 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 
   public profileData: NavigationProfileData = {
     user: {
-      name: 'Profile',
-      email: 'test@dfm.com',
+      name: '',
+      email: '',
       avatar: '',
     },
     links: [new NavigationProfileLink('Test Link', './', '', true)],
@@ -121,6 +121,8 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
   public isLoaderActive$$ = new Subject<boolean>();
 
   public navItems: NavigationItem[] = [];
+
+  public user!: AuthUser;
 
   constructor(
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
@@ -137,6 +139,18 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
   }
 
   public ngOnInit(): void {
+    this.userApiSvc.authUser$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (user) => {
+        console.log('Auth user', user);
+        this.user = user as AuthUser;
+
+        this.profileData = new NavigationProfileData(
+            new NavigationUser(this.user.displayName, this.user.email, ''),
+            [new NavigationProfileLink('Test Link', './', '', true)]
+        );
+      }
+    });
+
     // translation changes should go here
     combineLatest([this.currentTenant$$, this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
