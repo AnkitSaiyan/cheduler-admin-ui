@@ -1,9 +1,8 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { Tooltip } from 'bootstrap';
-import { TranslateService } from '@ngx-translate/core';
+import {Component, Inject, OnInit} from '@angular/core';
+import {Tooltip} from 'bootstrap';
+import {TranslateService} from '@ngx-translate/core';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { environment } from 'src/environments/environment';
-import { MsalBroadcastService, MsalGuardConfiguration, MsalService, MSAL_GUARD_CONFIG } from '@azure/msal-angular';
+import {MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService} from '@azure/msal-angular';
 import {
   AuthenticationResult,
   EventMessage,
@@ -14,12 +13,14 @@ import {
   RedirectRequest,
 } from '@azure/msal-browser';
 // eslint-disable-next-line import/no-extraneous-dependencies, @typescript-eslint/no-unused-vars
-import { IdTokenClaims } from '@azure/msal-common';
-import { filter, Subject, takeUntil } from 'rxjs';
+import {IdTokenClaims} from '@azure/msal-common';
+import {filter, Subject, takeUntil} from 'rxjs';
 import defaultLanguage from '../assets/i18n/nl-BE.json';
 import englishLanguage from '../assets/i18n/en-BE.json';
-import { AuthConfig } from './configuration/auth.config';
-import { UserApiService } from './core/services/user-api.service';
+import {AuthConfig} from './configuration/auth.config';
+import {UserApiService} from './core/services/user-api.service';
+import {NotificationDataService} from "./core/services/notification-data.service";
+import {NotificationType} from "diflexmo-angular-design";
 // import dutchLangauge from '../assets/i18n/nl-BE.json';
 
 type IdTokenClaimsWithPolicyId = IdTokenClaims & {
@@ -47,6 +48,7 @@ export class AppComponent implements OnInit {
     private authService: MsalService,
     private msalBroadcastService: MsalBroadcastService,
     public userService: UserApiService,
+    public notificationSvc: NotificationDataService
   ) {
     translate.addLangs(['en-BE', 'nl-BE']);
     const lang = localStorage.getItem('lang');
@@ -134,7 +136,7 @@ export class AppComponent implements OnInit {
       this.authService.instance.setActiveAccount(accounts[0]);
     }
 
-    console.log(this.authService.instance.getActiveAccount());
+    console.log(this.authService.instance.getActiveAccount(), 'active account');
 
     this.userService.authUser$.subscribe({
       next: (x) => (this.user = x)
@@ -143,8 +145,8 @@ export class AppComponent implements OnInit {
     this.userService.initializeUser().subscribe({
       next: (x) => {
         if (!x) {
-          console.log('User login failed. Logging out.');
-          this.logout();
+          this.notificationSvc.showError('User login failed. Logging out.');
+          setTimeout(() => this.logout(), 1500);
         }
       }
     });

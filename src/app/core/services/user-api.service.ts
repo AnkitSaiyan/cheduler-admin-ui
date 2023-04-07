@@ -11,7 +11,7 @@ import {
     Subject,
     switchMap,
     takeUntil,
-    tap
+    tap, throwError
 } from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {MsalService} from '@azure/msal-angular';
@@ -32,12 +32,11 @@ import {DestroyableComponent} from "../../shared/components/destroyable.componen
     providedIn: 'root',
 })
 export class UserApiService extends DestroyableComponent implements OnDestroy {
+    public userIdToRoleMap = new Map<string, UserRoleEnum>();
     private readonly userUrl = `${environment.schedulerApiUrl}/user`;
-
     private authUser$$: BehaviorSubject<AuthUser | undefined> = new BehaviorSubject<AuthUser | undefined>(undefined);
     private selectedLang$$: BehaviorSubject<string> = new BehaviorSubject<string>('');
     private refreshUsers$$: Subject<void> = new Subject<void>();
-
     private readonly userRoles: NameValue[] = [
         {
             name: 'Admin',
@@ -52,7 +51,6 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
             value: UserRoleEnum.Reader
         }
     ];
-
     private readonly staffTypes$$ = new BehaviorSubject<NameValue[]>([
         {
             name: StaffType.Radiologist,
@@ -71,8 +69,6 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
             value: StaffType.Secretary,
         },
     ]);
-
-    public userIdToRoleMap = new Map<string, UserRoleEnum>();
 
     constructor(
         private http: HttpClient,
@@ -195,29 +191,26 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         const userId = user?.localAccountId ?? '';
 
         return this.UserManagementApiService.getUserProperties(userId).pipe(
-            map((res: any) => {
+            switchMap((res: any) => {
                 try {
                     const tenants = ((user?.idTokenClaims as any).extension_Tenants as string).split(',');
                     if (tenants.length === 0) {
-                        return false;
+                        return of(false);
                     }
-                    this.authUser$$.next(new AuthUser(res.email, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
-                    return true;
+
+                    return this.getCurrentUserRole$(userId).pipe(
+                        map((role) => {
+                            this.permissionSvc.setPermissionType(role as UserRoleEnum);
+                            this.authUser$$.next(new AuthUser(res.email, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
+                            return true;
+                        }),
+                        catchError((err) => of(false))
+                    )
                 } catch (error) {
-                    return false;
+                    return of(false);
                 }
             }),
-
-            // get user role
-            map((res) => {
-                if (res) {
-                    this.getCurrentUserRole$(userId).pipe(
-                        map((role) => (this.permissionSvc.setPermissionType(role as UserRoleEnum))),
-                    )
-                    return true;
-                }
-                return false;
-            })
+            catchError((err) => of(false))
         );
     }
 

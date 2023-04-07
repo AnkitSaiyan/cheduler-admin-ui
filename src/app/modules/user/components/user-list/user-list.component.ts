@@ -117,6 +117,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
                 debounceTime(0),
                 distinctUntilChanged(),
                 switchMap((userType) => {
+                    this.users$$.next([]);
+                    this.filteredUsers$$.next([]);
+
                     switch (userType) {
                         case UserType.Scheduler: {
                             this.columns$$.next(this.columnsForScheduler);

@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
-import {DesignSystemCoreModule} from 'diflexmo-angular-design';
+import {DesignSystemCoreModule, NotificationModule} from 'diflexmo-angular-design';
 import {DatePipe, TitleCasePipe} from '@angular/common';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -56,7 +56,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 }
 
 export function loggerCallback(logLevel: LogLevel, message: string) {
-    console.log(logLevel, message);
+    // console.log(logLevel, message);
 }
 
 export function MSALInstanceFactory(): IPublicClientApplication {
@@ -132,6 +132,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
                 deps: [HttpClient],
             },
         }),
+        NotificationModule,
         // HttpClientInMemoryWebApiModule.forRoot(DataService),
     ],
     bootstrap: [AppComponent, MsalRedirectComponent],
