@@ -240,8 +240,11 @@ export class DashboardApiService extends DestroyableComponent {
 
 	private completedBarChart(): Observable<any> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/weeklycompletedappointments`).pipe(
-			map((response) => response.data),
+    return combineLatest([
+			this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/weeklycompletedappointments`),
+			this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/completeappointmentgrowth`),
+		]).pipe(
+			map(([res1, res2]) => ({ ...res1.data, ...res2.data })),
 			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
@@ -252,8 +255,11 @@ export class DashboardApiService extends DestroyableComponent {
 
 	private cancelledBarChart(): Observable<any> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/weeklycancelledappointments`).pipe(
-			map((response) => response.data),
+    return combineLatest([
+			this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/weeklycancelledappointments`),
+			this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/cancelledappointmentgrowth`),
+		]).pipe(
+			map(([res1, res2]) => ({ ...res1.data, ...res2.data })),
 			tap(() => this.loaderSvc.deactivate()),
 		);
 	}

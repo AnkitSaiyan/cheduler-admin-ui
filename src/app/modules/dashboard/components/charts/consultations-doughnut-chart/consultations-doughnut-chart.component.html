@@ -1,17 +1,18 @@
 <div class="cancelled-bar-chart-wrapper d-flex flex-column justify-content-between dfm-gap-16 dfm-p-16">
-  <section class="d-flex justify-content-between dfm-gap-8 align-items-center">
+  <section class="d-flex justify-content-between dfm-gap-8 align-items-start" *ngIf="status$$ | async as status">
     <header>
-      <span class="font-weight-medium">{{"Completed" | translate}}</span>
+      <span class="dfm-text-main-400">{{"Completed" | translate}}</span>
+       <h2 class="card-value-text">{{ status?.count }}</h2>
     </header>
     <div class="d-flex">
-      <div class="chart-arrow-down">
+      <div class="chart-arrow-down" [ngClass]="{ 'chart-arrow-up': status?.isUp, 'chart-arrow-down': !status?.isUp }">
         <dfm-button
           color="link-gray"
           size="sm"
-          trailingIcon="arrow-down"
+          trailingIcon="{{ status?.isUp ? 'arrow-up' : 'arrow-down' }}"
         ></dfm-button>
       </div>
-      <span class="font-weight-medium text-red">—</span>
+      <span [ngStyle]="{ color: status?.isUp ? '#12B76A' : 'red' }" class="font-weight-medium text-red">{{ status?.percentage | number : '1.2-2'}}</span>
     </div>
   </section>
 

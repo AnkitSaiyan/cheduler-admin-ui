@@ -1,20 +1,14 @@
-<div class="d-flex flex-column dfm-gap-16">
-  <div class="dfm-input-dropdown-wrapper-wo-label st-mg-time-duration-type">
-    <dfm-input-dropdown [items]="userRoles" size="sm"
-                        [formControl]="userRoleControl" placeholder="Choose User Role"></dfm-input-dropdown>
-  </div>
-
-  <div class="dfm-dashboard-wrapper">
+<div class="dfm-dashboard-wrapper">
     <div class="dfm-card card-container" id="top">
-      <dfm-appointments-doughnut-chart></dfm-appointments-doughnut-chart>
+        <dfm-appointments-doughnut-chart></dfm-appointments-doughnut-chart>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-dashboard-appointments-list class="h-100"></dfm-dashboard-appointments-list>
+        <dfm-dashboard-appointments-list class="h-100"></dfm-dashboard-appointments-list>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-upcoming-appointments class="h-100"></dfm-upcoming-appointments>
+        <dfm-upcoming-appointments class="h-100"></dfm-upcoming-appointments>
     </div>
 
     <!-- <div class="dfm-card card-container employee-absences-card">
@@ -22,119 +16,117 @@
     </div> -->
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-post-it class="h-100"></dfm-post-it>
+        <dfm-post-it class="h-100"></dfm-post-it>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-employee-absences class="h-100"></dfm-employee-absences>
+        <dfm-employee-absences class="h-100"></dfm-employee-absences>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-top-referring-doctors-list class="h-100"></dfm-top-referring-doctors-list>
+        <dfm-top-referring-doctors-list class="h-100"></dfm-top-referring-doctors-list>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-dashboard-notifications class="h-100"></dfm-dashboard-notifications>
+        <dfm-dashboard-notifications class="h-100"></dfm-dashboard-notifications>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-top-examinations class="h-100"></dfm-top-examinations>
+        <dfm-top-examinations class="h-100"></dfm-top-examinations>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-unavailable-hall-periods class="h-100"></dfm-unavailable-hall-periods>
+        <dfm-unavailable-hall-periods class="h-100"></dfm-unavailable-hall-periods>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-appointments-bar-chart class="h-100"></dfm-appointments-bar-chart>
+        <dfm-appointments-bar-chart class="h-100"></dfm-appointments-bar-chart>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-patients-bar-chart class="h-100"></dfm-patients-bar-chart>
+        <dfm-patients-bar-chart class="h-100"></dfm-patients-bar-chart>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-consultations-doughnut-chart class="h-100"></dfm-consultations-doughnut-chart>
+        <dfm-consultations-doughnut-chart class="h-100"></dfm-consultations-doughnut-chart>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-cancelled-bar-chart class="h-100"></dfm-cancelled-bar-chart>
+        <dfm-cancelled-bar-chart class="h-100"></dfm-cancelled-bar-chart>
     </div>
 
     <div class="dfm-card card-container">
-      <dfm-patient-consultations-line-chart class="h-100"></dfm-patient-consultations-line-chart>
+        <dfm-patient-consultations-line-chart class="h-100"></dfm-patient-consultations-line-chart>
     </div>
 
     <div class="dfm-card card-container contaienr-max-height">
-      <dfm-recent-patients class="h-100"></dfm-recent-patients>
+        <dfm-recent-patients class="h-100"></dfm-recent-patients>
     </div>
 
     <div class="mv-up-arrow-btn" (click)="handleClick()">
-      <dfm-button-icon
-        #moveToTop
-        color="secondary"
-        size="md"
-        icon="arrow-up"
-      ></dfm-button-icon>
+        <dfm-button-icon
+          #moveToTop
+          color="secondary"
+          size="md"
+          icon="arrow-up"
+        ></dfm-button-icon>
     </div>
-  </div>
-
-  <!--<div class="d-flex flex-column dfm-gap-12">-->
-  <!--  <div class="d-flex dfm-gap-12">-->
-  <!--    <div class="d-flex flex-column dfm-gap-12">-->
-  <!--      <div class="dfm-card">-->
-  <!--        <dfm-appointments-doughnut-chart></dfm-appointments-doughnut-chart>-->
-  <!--      </div>-->
-  <!--      <div class="dfm-card">-->
-  <!--        <dfm-upcoming-appointments></dfm-upcoming-appointments>-->
-  <!--      </div>-->
-  <!--    </div>-->
-
-  <!--    <div class="dfm-card h-auto">-->
-  <!--      <dfm-dashboard-appointments-list></dfm-dashboard-appointments-list>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
-  <!--  <div class="d-flex dfm-gap-12">-->
-  <!--    <div class="dfm-card h-auto">-->
-  <!--      <dfm-top-referring-doctors-list></dfm-top-referring-doctors-list>-->
-  <!--    </div>-->
-  <!--    <div class="dfm-card">-->
-  <!--      <dfm-dashboard-notifications></dfm-dashboard-notifications>-->
-  <!--    </div>-->
-  <!--    <div class="dfm-card h-auto">-->
-  <!--      <dfm-top-examinations></dfm-top-examinations>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
-  <!--  <div class="dashboard-container-3">-->
-  <!--    <div class="dfm-card">-->
-  <!--      <dfm-unavailable-hall-periods></dfm-unavailable-hall-periods>-->
-  <!--    </div>-->
-
-  <!--    <div>-->
-  <!--      <div class="dfm-card h-auto">-->
-  <!--        <dfm-appointments-bar-chart></dfm-appointments-bar-chart>-->
-  <!--      </div>-->
-  <!--      <div class="dfm-card h-auto">-->
-  <!--        <dfm-patients-bar-chart></dfm-patients-bar-chart>-->
-  <!--      </div>-->
-  <!--      <div class="dfm-card h-auto">-->
-  <!--        <dfm-consultations-doughnut-chart></dfm-consultations-doughnut-chart>-->
-  <!--      </div>-->
-  <!--      <div class="dfm-card h-auto">-->
-  <!--        <dfm-cancelled-bar-chart></dfm-cancelled-bar-chart>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
-  <!--  <div class="dfm-card">-->
-  <!--    <dfm-patient-consultations-line-chart></dfm-patient-consultations-line-chart>-->
-  <!--  </div>-->
-
-  <!--  <div class="dfm-card">-->
-  <!--    <dfm-recent-patients></dfm-recent-patients>-->
-  <!--  </div>-->
-  <!--</div>-->
-
 </div>
+
+<!--<div class="d-flex flex-column dfm-gap-12">-->
+<!--  <div class="d-flex dfm-gap-12">-->
+<!--    <div class="d-flex flex-column dfm-gap-12">-->
+<!--      <div class="dfm-card">-->
+<!--        <dfm-appointments-doughnut-chart></dfm-appointments-doughnut-chart>-->
+<!--      </div>-->
+<!--      <div class="dfm-card">-->
+<!--        <dfm-upcoming-appointments></dfm-upcoming-appointments>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="dfm-card h-auto">-->
+<!--      <dfm-dashboard-appointments-list></dfm-dashboard-appointments-list>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div class="d-flex dfm-gap-12">-->
+<!--    <div class="dfm-card h-auto">-->
+<!--      <dfm-top-referring-doctors-list></dfm-top-referring-doctors-list>-->
+<!--    </div>-->
+<!--    <div class="dfm-card">-->
+<!--      <dfm-dashboard-notifications></dfm-dashboard-notifications>-->
+<!--    </div>-->
+<!--    <div class="dfm-card h-auto">-->
+<!--      <dfm-top-examinations></dfm-top-examinations>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div class="dashboard-container-3">-->
+<!--    <div class="dfm-card">-->
+<!--      <dfm-unavailable-hall-periods></dfm-unavailable-hall-periods>-->
+<!--    </div>-->
+
+<!--    <div>-->
+<!--      <div class="dfm-card h-auto">-->
+<!--        <dfm-appointments-bar-chart></dfm-appointments-bar-chart>-->
+<!--      </div>-->
+<!--      <div class="dfm-card h-auto">-->
+<!--        <dfm-patients-bar-chart></dfm-patients-bar-chart>-->
+<!--      </div>-->
+<!--      <div class="dfm-card h-auto">-->
+<!--        <dfm-consultations-doughnut-chart></dfm-consultations-doughnut-chart>-->
+<!--      </div>-->
+<!--      <div class="dfm-card h-auto">-->
+<!--        <dfm-cancelled-bar-chart></dfm-cancelled-bar-chart>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div class="dfm-card">-->
+<!--    <dfm-patient-consultations-line-chart></dfm-patient-consultations-line-chart>-->
+<!--  </div>-->
+
+<!--  <div class="dfm-card">-->
+<!--    <dfm-recent-patients></dfm-recent-patients>-->
+<!--  </div>-->
+<!--</div>-->

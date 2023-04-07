@@ -72,6 +72,8 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         },
     ]);
 
+    public userIdToRoleMap = new Map<string, UserRoleEnum>();
+
     constructor(
         private http: HttpClient,
         private msalService: MsalService,
@@ -175,14 +177,17 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         return [...this.userRoles];
     }
 
-    public getCurrentUserRole$(userId: string): Observable<any> {
+    public getCurrentUserRole$(userId: string): Observable<UserRoleEnum> {
         // Api to be integrated
-        this.http.get(`${environment.schedulerApiUrl}/users/${userId}/roles`).subscribe({
-            next: (roles) => {
-                console.log(roles);
-            }
-        });
-        return of(UserRoleEnum.Admin);
+        return this.http.get<UserRoleEnum[]>(`${environment.schedulerApiUrl}/users/${userId}/roles`).pipe(
+            filter((roles) => !!roles.length),
+            map((roles) => roles[0]),
+            tap((role) => this.userIdToRoleMap.set(userId, role as UserRoleEnum)),
+        );
+
+        // this.userIdToRoleMap.set(userId, UserRoleEnum.Admin);
+        //
+        // return of(UserRoleEnum.Admin);
     }
 
     public initializeUser(): Observable<boolean> {
