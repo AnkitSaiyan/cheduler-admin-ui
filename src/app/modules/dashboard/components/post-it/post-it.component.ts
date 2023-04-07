@@ -21,72 +21,6 @@ import {ViewPostComponent} from './view-post/view-post.component';
     styleUrls: ['./post-it.component.scss'],
 })
 export class PostItComponent extends DestroyableComponent implements OnInit, OnDestroy {
-    // public posts: any[] = [];
-    // public posts = [
-    //   {
-    //     message: '',
-    //     author: 'Kate Tanner',
-    //     post: 'Cardiologist',
-    //     postDate: new Date().setDate(new Date().getDate() - 3),
-    //     avatar: '',
-    //   },
-    //   {
-    //     message: '',
-    //     author: 'Kate Tanner',
-    //     post: 'Cardiologist',
-    //     postDate: (new Date()).setDate((new Date).getDate() - 3),
-    //     avatar: ''
-    //   },
-    //   {
-    //     message: '',
-    //     author: 'Kate Tanner',
-    //     post: 'Cardiologist',
-    //     postDate: (new Date()).setDate((new Date).getDate() - 3),
-    //     avatar: ''
-    //   },
-    //   {
-    //     message: '',
-    //     author: 'Kate Tanner',
-    //     post: 'Cardiologist',
-    //     postDate: (new Date()).setDate((new Date).getDate() - 3),
-    //     avatar: ''
-    //   },
-    //   {
-    //     message: '',
-    //     author: 'Kate Tanner',
-    //     post: 'Cardiologist',
-    //     postDate: (new Date()).setDate((new Date).getDate() - 3),
-    //     avatar: ''
-    //   },
-    //   {
-    //     message: '',
-    //     author: 'Kate Tanner',
-    //     post: 'Cardiologist',
-    //     postDate: (new Date()).setDate((new Date).getDate() - 3),
-    //     avatar: ''
-    //   },{
-    //     message: '',
-    //     author: 'Kate Tanner',
-    //     post: 'Cardiologist',
-    //     postDate: (new Date()).setDate((new Date).getDate() - 3),
-    //     avatar: ''
-    //   },
-    //   {
-    //     message: '',
-    //     author: 'Kate Tanner',
-    //     post: 'Cardiologist',
-    //     postDate: (new Date()).setDate((new Date).getDate() - 3),
-    //     avatar: ''
-    //   },
-    //   {
-    //     message: '',
-    //     author: 'Kate Tanner',
-    //     post: 'Cardiologist',
-    //     postDate: (new Date()).setDate((new Date).getDate() - 3),
-    //     avatar: ''
-    //   },
-    // ];
-
     public filteredPosts$$: BehaviorSubject<any[]>;
     private selectedLang: string = ENG_BE;
     public statuses = Statuses;
@@ -192,7 +126,7 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
         dialogRef.closed
             .pipe(
                 filter(Boolean),
-                switchMap((messsage: string) => this.dashboardApiService.addPost(messsage)),
+                switchMap((message: string) => this.dashboardApiService.addPost(message)),
                 take(1),
             )
             .subscribe((response) => {
