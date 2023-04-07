@@ -1,10 +1,10 @@
 <div class="cancelled-bar-chart-wrapper d-flex flex-column justify-content-between dfm-gap-16 dfm-p-16">
-  <section class="d-flex justify-content-between dfm-gap-8 align-items-start" *ngIf="status$$ | async as status">
+  <section class="d-flex justify-content-between dfm-gap-8 align-items-start" >
     <header>
       <span class="dfm-text-main-400">{{"Cancelled" | translate}}</span>
-       <h2 class="card-value-text">{{ status?.count }}</h2>
+       <h2 class="card-value-text" *ngIf="status$$ | async as status">{{ status?.count }}</h2>
     </header>
-    <div class="d-flex">
+    <div class="d-flex" *ngIf="status$$ | async as status">
       <div class="chart-arrow-down" [ngClass]="{ 'chart-arrow-up': status?.isUp, 'chart-arrow-down': !status?.isUp }">
         <dfm-button
           color="link-gray"
