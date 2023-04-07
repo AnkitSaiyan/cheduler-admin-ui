@@ -29,20 +29,31 @@ export class CancelledBarChartComponent extends DestroyableComponent implements 
       const dataset: any = Array(7).fill(0);
 
       appointment.cancelledappointments.forEach((element) => {
-        if (element?.label === 'Sunday') dataset[0] = element.value;
-        else dataset[0] = 0;
-        if (element?.label === 'Monday') dataset[1] = element.value;
-        else dataset[1] = 0;
-        if (element?.label === 'Tuesday') dataset[2] = element.value;
-        else dataset[2] = 0;
-        if (element?.label === 'Wednesday') dataset[3] = element.value;
-        else dataset[3] = 0;
-        if (element?.label === 'Thursday') dataset[4] = element.value;
-        else dataset[4] = 0;
-        if (element?.label === 'Friday') dataset[5] = element.value;
-        else dataset[5] = 0;
-        if (element?.label === 'Saturday') dataset[6] = element.value;
-        else dataset[6] = 0;
+        switch (true) {
+          case element?.label === 'Sunday':
+            dataset[0] = element.value;
+            break;
+          case element?.label === 'Monday':
+            dataset[1] = element.value;
+            break;
+          case element?.label === 'Tuesday':
+            dataset[2] = element.value;
+            break;
+          case element?.label === 'Wednesday':
+            dataset[3] = element.value;
+            break;
+          case element?.label === 'Thursday':
+            dataset[4] = element.value;
+            break;
+          case element?.label === 'Friday':
+            dataset[5] = element.value;
+            break;
+          case element?.label === 'Saturday':
+            dataset[6] = element.value;
+            break;
+          default:
+            break;
+        }
       });
       this.cancelledBarChartConfig = {
         labels: this.cancelledBarChartLabels,
