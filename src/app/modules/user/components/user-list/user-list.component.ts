@@ -42,429 +42,460 @@ import {PermissionService} from 'src/app/core/services/permission.service';
 import {isArray} from "chart.js/helpers";
 
 @Component({
-  selector: 'dfm-user-list',
-  templateUrl: './user-list.component.html',
-  styleUrls: ['./user-list.component.scss'],
+	selector: 'dfm-user-list',
+	templateUrl: './user-list.component.html',
+	styleUrls: ['./user-list.component.scss'],
 })
 export class UserListComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  clipboardData: string = '';
+	clipboardData: string = '';
 
-  @HostListener('document:click', ['$event']) onClick() {
-    this.toggleMenu(true);
-  }
+	@HostListener('document:click', ['$event']) onClick() {
+		this.toggleMenu(true);
+	}
 
-  @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
+	@ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
 
-  @ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
+	@ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
 
-  public searchControl = new FormControl('', []);
+	public searchControl = new FormControl('', []);
 
-  public downloadDropdownControl = new FormControl('', []);
+	public downloadDropdownControl = new FormControl('', []);
 
-  public userTypeDropdownControl = new FormControl('', []);
+	public userTypeDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['FirstName', 'LastName', 'Email', 'Category', 'Role', 'Status', 'Actions'];
+	public columns$$: BehaviorSubject<string[]>;
 
-  public downloadItems: DownloadType[] = [];
+	public columnsForSchedular: string[] = ['FirstName', 'LastName', 'Email', 'Category', 'Role', 'Status', 'Actions'];
 
-  private users$$: BehaviorSubject<any[]>;
+	public columnsForGeneral: string[] = ['FirstName', 'LastName', 'Email', 'Category', 'Status', 'Actions'];
 
-  public filteredUsers$$: BehaviorSubject<any[]>;
+	public downloadItems: DownloadType[] = [];
 
-  public clearSelected$$ = new Subject<void>();
+	private users$$: BehaviorSubject<any[]>;
 
-  public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
+	public filteredUsers$$: BehaviorSubject<any[]>;
 
-  public selectedUserIds: string[] = [];
+	public clearSelected$$ = new Subject<void>();
 
-  public statusTypeEnum = getStatusEnum();
+	public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
 
-  public loading$$ = new BehaviorSubject(true);
+	public selectedUserIds: string[] = [];
 
-  private selectedLang: string = ENG_BE;
+	public statusTypeEnum = getStatusEnum();
 
-  public statuses = Statuses;
+	public loading$$ = new BehaviorSubject(true);
 
-  public userTypeToggle: UserType = UserType.General;
+	private selectedLang: string = ENG_BE;
 
-  public userTypes: NameValue[] = [
-    {
-      value: UserType.General,
-      name: UserType.General + ' User'
-    },
-    {
-      value: UserType.Scheduler,
-      name: UserType.Scheduler + ' User'
-    }
-  ]
+	public statuses = Statuses;
 
-  public readonly Permission = Permission;
+	public userTypeToggle: UserType = UserType.General;
 
-  constructor(
-    private userApiSvc: StaffApiService,
-    private notificationSvc: NotificationDataService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private modalSvc: ModalService,
-    private downloadSvc: DownloadService,
-    private cdr: ChangeDetectorRef,
-    private shareDataSvc: ShareDataService,
-    private translate: TranslateService,
-    private userManagementApiSvc: UserManagementApiService,
-    public permissionSvc: PermissionService,
-  ) {
-    super();
-    this.users$$ = new BehaviorSubject<any[]>([]);
-    this.filteredUsers$$ = new BehaviorSubject<any[]>([]);
-  }
+	public userTypes: NameValue[] = [
+		{
+			value: UserType.General,
+			name: UserType.General + ' User',
+		},
+		{
+			value: UserType.Scheduler,
+			name: UserType.Scheduler + ' User',
+		},
+	];
 
-  public ngOnInit(): void {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (types) => this.downloadItems = types
-    });
+	public readonly Permission = Permission;
 
-    setTimeout(() => this.userTypeDropdownControl.setValue(UserType.General), 0);
+	constructor(
+		private userApiSvc: StaffApiService,
+		private notificationSvc: NotificationDataService,
+		private router: Router,
+		private route: ActivatedRoute,
+		private modalSvc: ModalService,
+		private downloadSvc: DownloadService,
+		private cdr: ChangeDetectorRef,
+		private shareDataSvc: ShareDataService,
+		private translate: TranslateService,
+		private userManagementApiSvc: UserManagementApiService,
+		public permissionSvc: PermissionService,
+	) {
+		super();
+		this.users$$ = new BehaviorSubject<any[]>([]);
+		this.filteredUsers$$ = new BehaviorSubject<any[]>([]);
+		this.columns$$ = new BehaviorSubject<string[]>(this.columnsForSchedular);
+	}
 
-    // this.userApiSvc.userLists$
-    //   .pipe(
-    //     tap(() => this.loading$$.next(true)),
-    //     takeUntil(this.destroy$$),
-    //   )
-    //   .subscribe({
-    //     next: (users) => {
-    //       this.users$$.next(users);
-    //       this.filteredUsers$$.next(users);
-    //       this.loading$$.next(false);
-    //     },
-    //     error: (err) => this.loading$$.next(false)
-    //   });
+	public ngOnInit(): void {
+		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (types) => (this.downloadItems = types),
+		});
 
-    this.userTypeDropdownControl.valueChanges.pipe(
-      debounceTime(0),
-      distinctUntilChanged(),
-      switchMap((userType) => {
+		setTimeout(() => this.userTypeDropdownControl.setValue(UserType.General), 0);
 
-        switch (userType) {
-          case UserType.Scheduler: {
-            return this.userManagementApiSvc.userList$.pipe(
-              map((users) => users.map((user) => {
-                return {
-                  id: user.id,
-                  email: user.email,
-                  firstname: user.givenName,
-                  lastname: user.surname,
-                  fullName: user.displayName,
-                  userType: UserType.Scheduler,
-                  status: +user.accountEnabled,
-                } as unknown as UserBase;
-              })),
-            );
-          }
-          default:
-            return this.userApiSvc.userLists$;
-        }
-      }),
-      takeUntil(this.destroy$$)
-    ).subscribe({
-      next: (users) => {
-        this.users$$.next([...users]);
-        this.filteredUsers$$.next([...users]);
-        this.loading$$.next(false);
-      },
-      error: (err) => this.loading$$.next(false)
-    });
+		// this.userApiSvc.userLists$
+		//   .pipe(
+		//     tap(() => this.loading$$.next(true)),
+		//     takeUntil(this.destroy$$),
+		//   )
+		//   .subscribe({
+		//     next: (users) => {
+		//       this.users$$.next(users);
+		//       this.filteredUsers$$.next(users);
+		//       this.loading$$.next(false);
+		//     },
+		//     error: (err) => this.loading$$.next(false)
+		//   });
 
-    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
-      next: (searchText) => {
-        if (searchText) {
-          this.handleSearch(searchText.toLowerCase());
-        } else {
-          this.filteredUsers$$.next([...this.users$$.value]);
-        }
-      }
-    });
+		this.userTypeDropdownControl.valueChanges
+			.pipe(
+				debounceTime(0),
+				distinctUntilChanged(),
+				switchMap((userType) => {
+					switch (userType) {
+						case UserType.Scheduler: {
+							this.columns$$.next(this.columnsForSchedular);
+							return this.userManagementApiSvc.userList$.pipe(
+								map((users) =>
+									users.map((user) => {
+										return {
+											id: user.id,
+											email: user.email,
+											firstname: user.givenName,
+											lastname: user.surname,
+											fullName: user.displayName,
+											userType: UserType.Scheduler,
+											status: +user.accountEnabled,
+										} as unknown as UserBase;
+									}),
+								),
+							);
+						}
+						default: {
+							this.columns$$.next(this.columnsForGeneral);
+							return this.userApiSvc.userLists$;
+						}
+					}
+				}),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (users) => {
+					this.users$$.next([...users]);
+					this.filteredUsers$$.next([...users]);
+					this.loading$$.next(false);
+				},
+				error: (err) => this.loading$$.next(false),
+			});
 
-    this.downloadDropdownControl.valueChanges
-      .pipe(
-        filter((value) => !!value),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe({
-        next: (value) => {
-          if (!this.filteredUsers$$.value.length) {
-            this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
-            this.clearDownloadDropdown();
-            return;
-          }
+		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+			next: (searchText) => {
+				if (searchText) {
+					this.handleSearch(searchText.toLowerCase());
+				} else {
+					this.filteredUsers$$.next([...this.users$$.value]);
+				}
+			},
+		});
 
-          this.downloadSvc.downloadJsonAs(
-            value as DownloadAsType,
-            this.columns.slice(0, -1),
-            this.filteredUsers$$.value.map((u: User) => [
-              u.firstname,
-              u.lastname,
-              u.email,
-              u.telephone?.toString(),
-              u.userType,
-              Translate[StatusToName[+u.status]][this.selectedLang],
-            ]),
-            'users',
-          );
+		this.downloadDropdownControl.valueChanges
+			.pipe(
+				filter((value) => !!value),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (value) => {
+					if (!this.filteredUsers$$.value.length) {
+						this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+						this.clearDownloadDropdown();
+						return;
+					}
 
-          if (value !== 'PRINT') {
-            this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
-          }
-          this.clearDownloadDropdown();
-        }
-      });
+					this.downloadSvc.downloadJsonAs(
+						value as DownloadAsType,
+						this.columns$$.value.slice(0, -1),
+						this.filteredUsers$$.value.map((u: User) => [
+							u.firstname,
+							u.lastname,
+							u.email,
+							u.telephone?.toString(),
+							u.userType,
+							Translate[StatusToName[+u.status]][this.selectedLang],
+						]),
+						'users',
+					);
 
-    this.afterBannerClosed$$
-      .pipe(
-        map((value) => {
-          if (value?.proceed) {
-            return [...this.selectedUserIds.map((id) => ({ id: +id, status: value.newStatus as number }))];
-          }
+					if (value !== 'PRINT') {
+						this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
+					}
+					this.clearDownloadDropdown();
+				},
+			});
 
-          return [];
-        }),
-        filter((changes) => {
-          if (!changes.length) {
-            this.clearSelected$$.next();
-          }
-          return !!changes.length;
-        }),
-        switchMap((changes) => this.userApiSvc.changeUserStatus$(changes)),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe({
-        next: (value) => {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
-          this.clearSelected$$.next();
-        }
-      });
+		this.afterBannerClosed$$
+			.pipe(
+				map((value) => {
+					if (value?.proceed) {
+						return [...this.selectedUserIds.map((id) => ({ id: +id, status: value.newStatus as number }))];
+					}
 
-    interval(0)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: () => this.closeMenus()
-      });
+					return [];
+				}),
+				filter((changes) => {
+					if (!changes.length) {
+						this.clearSelected$$.next();
+					}
+					return !!changes.length;
+				}),
+				switchMap((changes) => this.userApiSvc.changeUserStatus$(changes)),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (value) => {
+					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
+					this.clearSelected$$.next();
+				},
+			});
 
-    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: ([lang, permissionType]) => {
-          this.selectedLang = lang;
-          this.columns = [
-            Translate.FirstName[lang],
-            Translate.LastName[lang],
-            Translate.Email[lang],
-            Translate.Category[lang],
-            'Role',
-            Translate.Status[lang],
-          ];
+		interval(0)
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: () => this.closeMenus(),
+			});
 
-          if (permissionType !== UserRoleEnum.Reader) {
-            this.columns = [...this.columns, Translate.Actions[lang]];
-          }
+		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: ([lang, permissionType]) => {
+					this.selectedLang = lang;
+					this.columnsForGeneral = [
+						Translate.FirstName[lang],
+						Translate.LastName[lang],
+						Translate.Email[lang],
+						Translate.Category[lang],
+						Translate.Status[lang],
+					];
+					this.columnsForSchedular = [
+						Translate.FirstName[lang],
+						Translate.LastName[lang],
+						Translate.Email[lang],
+						Translate.Category[lang],
+						'Role',
+						Translate.Status[lang],
+					];
 
-          // eslint-disable-next-line default-case
-          switch (lang) {
-            case ENG_BE:
-              this.statuses = Statuses;
-              break;
-            case DUTCH_BE:
-              this.statuses = StatusesNL;
-              break;
-          }
-        }
-      });
-  }
+					if (permissionType !== UserRoleEnum.Reader) {
+						this.columnsForGeneral = [...this.columnsForGeneral, Translate.Actions[lang]];
+						this.columnsForSchedular = [...this.columnsForSchedular, Translate.Actions[lang]];
+					}
 
-  public override ngOnDestroy() {
-    super.ngOnDestroy();
-  }
+					if (this.userTypeDropdownControl.value === UserType.General) {
+						this.columns$$.next(this.columnsForGeneral);
+					} else {
+						this.columns$$.next(this.columnsForSchedular);
+					}
 
-  public handleCheckboxSelection(selected: string[]) {
-    this.toggleMenu(true);
-    this.selectedUserIds = [...selected];
-  }
+					// eslint-disable-next-line default-case
+					switch (lang) {
+						case ENG_BE:
+							this.statuses = Statuses;
+							break;
+						case DUTCH_BE:
+							this.statuses = StatusesNL;
+							break;
+					}
+				},
+			});
+	}
 
-  private handleSearch(searchText: string): void {
-    this.filteredUsers$$.next([
-      ...this.users$$.value.filter((user) => {
-        let userType: any;
-        let status: any;
-        if (user.userType === 'Scheduler') userType = this.translate.instant('SchedulerUser');
-        if (user.userType === 'General') userType = this.translate.instant('GeneralUser');
-        if (user.status === 1) status = this.translate.instant('Active');
-        if (user.status === 0) status = this.translate.instant('Inactive');
-        return (
-          user.firstname?.toLowerCase()?.includes(searchText) ||
-          user.lastname?.toLowerCase()?.includes(searchText) ||
-          user.email?.toLowerCase()?.includes(searchText) ||
-          userType?.toLowerCase()?.includes(searchText) ||
-          user.telephone?.toLowerCase()?.includes(searchText) ||
-          status.toLowerCase()?.startsWith(searchText)
-        );
-      }),
-    ]);
-  }
+	public override ngOnDestroy() {
+		super.ngOnDestroy();
+	}
 
-  public changeStatus(changes: ChangeStatusRequestData[]) {
-    of([1, 2, 3]).subscribe((res) => console.log(res));
+	public handleCheckboxSelection(selected: string[]) {
+		this.toggleMenu(true);
+		this.selectedUserIds = [...selected];
+	}
 
-    let observable$: Observable<any> | Observable<any>[];
+	private handleSearch(searchText: string): void {
+		this.filteredUsers$$.next([
+			...this.users$$.value.filter((user) => {
+				let userType: any;
+				let status: any;
+				if (user.userType === 'Scheduler') userType = this.translate.instant('SchedulerUser');
+				if (user.userType === 'General') userType = this.translate.instant('GeneralUser');
+				if (user.status === 1) status = this.translate.instant('Active');
+				if (user.status === 0) status = this.translate.instant('Inactive');
+				return (
+					user.firstname?.toLowerCase()?.includes(searchText) ||
+					user.lastname?.toLowerCase()?.includes(searchText) ||
+					user.email?.toLowerCase()?.includes(searchText) ||
+					userType?.toLowerCase()?.includes(searchText) ||
+					user.telephone?.toLowerCase()?.includes(searchText) ||
+					status.toLowerCase()?.startsWith(searchText)
+				);
+			}),
+		]);
+	}
 
-    switch (this.userTypeDropdownControl.value) {
-      case UserType.General:
-        this.userApiSvc.changeUserStatus$(changes).pipe(takeUntil(this.destroy$$)).subscribe({
-          next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang])
-        });
-        break;
-      default:
-        changes.map((change) => {
-          this.userManagementApiSvc.patchUserProperties(change.id as string,{
-            accountEnabled: !!change.status
-          }).pipe(take(1)).subscribe({
-            next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang])
-          })
-        });
-    }
-  }
+	public changeStatus(changes: ChangeStatusRequestData[]) {
+		of([1, 2, 3]).subscribe((res) => console.log(res));
 
-  public deleteUser(id: number | string){
-    const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
-      data: {
-        titleText: 'Confirmation',
-        bodyText: 'AreyousureyouwanttodeletethisUser',
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-      } as ConfirmActionModalData,
-    });
+		let observable$: Observable<any> | Observable<any>[];
 
-    dialogRef.closed
-      .pipe(
-        filter((res: boolean) => res),
-        switchMap(() => {
-          if (this.userTypeToggle === UserType.Scheduler) {
-            return this.userManagementApiSvc.deleteUser(id as string);
-          }
-          return this.userApiSvc.deleteStaff(id as number);
-        }),
-        take(1),
-      )
-      .subscribe({
-        next: () => {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.UserDeleted[this.selectedLang]);
-        },
-      });
-  }
+		switch (this.userTypeDropdownControl.value) {
+			case UserType.General:
+				this.userApiSvc
+					.changeUserStatus$(changes)
+					.pipe(takeUntil(this.destroy$$))
+					.subscribe({
+						next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
+					});
+				break;
+			default:
+				changes.map((change) => {
+					this.userManagementApiSvc
+						.patchUserProperties(change.id as string, {
+							accountEnabled: !!change.status,
+						})
+						.pipe(take(1))
+						.subscribe({
+							next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
+						});
+				});
+		}
+	}
 
-  public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
-    this.afterBannerClosed$$.next(e);
-  }
+	public deleteUser(id: number | string) {
+		const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
+			data: {
+				titleText: 'Confirmation',
+				bodyText: 'AreyousureyouwanttodeletethisUser',
+				confirmButtonText: 'Delete',
+				cancelButtonText: 'Cancel',
+			} as ConfirmActionModalData,
+		});
 
-  public copyToClipboard() {
-    try {
-      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+		dialogRef.closed
+			.pipe(
+				filter((res: boolean) => res),
+				switchMap(() => {
+					if (this.userTypeToggle === UserType.Scheduler) {
+						return this.userManagementApiSvc.deleteUser(id as string);
+					}
+					return this.userApiSvc.deleteStaff(id as number);
+				}),
+				take(1),
+			)
+			.subscribe({
+				next: () => {
+					this.notificationSvc.showNotification(Translate.SuccessMessage.UserDeleted[this.selectedLang]);
+				},
+			});
+	}
 
-      this.filteredUsers$$.value.forEach((user: User) => {
-        dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.telephone ?? '—'}\t${user.userType ?? '—'}\t${
-          StatusToName[+user.status]
-        }\n`;
-      });
+	public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
+		this.afterBannerClosed$$.next(e);
+	}
 
-      this.clipboardData = dataString;
+	public copyToClipboard() {
+		try {
+			let dataString = `${this.columns$$.value.slice(0, -1).join('\t')}\n`;
 
-      this.cdr.detectChanges();
-      this.notificationSvc.showNotification(`${Translate.SuccessMessage.CopyToClipboard[this.selectedLang]}!`);
-    } catch (e) {
-      this.notificationSvc.showNotification(`${Translate.ErrorMessage.CopyToClipboard[this.selectedLang]}!`, NotificationType.DANGER);
-      this.clipboardData = '';
-    }
-  }
+			this.filteredUsers$$.value.forEach((user: User) => {
+				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.telephone ?? '—'}\t${user.userType ?? '—'}\t${
+					StatusToName[+user.status]
+				}\n`;
+			});
 
-  public navigateToViewUser(e: TableItem) {
-    if (e?.id) {
-      let route = `./${e.id}`;
-      route += this.userTypeDropdownControl.value === UserType.Scheduler ? '/s/view' : '/g/view';
-      this.router.navigate([route], { relativeTo: this.route });
-    }
-  }
+			this.clipboardData = dataString;
 
-  public toggleMenu(reset = false) {
-    const icon = document.querySelector('.us-li-plus-btn-icon');
-    if (icon) {
-      if (reset) {
-        icon.classList.add('rotate-z-0');
-        icon.classList.remove('rotate-z-45');
-      } else {
-        icon.classList.toggle('rotate-z-45');
-        icon.classList.toggle('rotate-z-0');
-      }
-    }
-  }
+			this.cdr.detectChanges();
+			this.notificationSvc.showNotification(`${Translate.SuccessMessage.CopyToClipboard[this.selectedLang]}!`);
+		} catch (e) {
+			this.notificationSvc.showNotification(`${Translate.ErrorMessage.CopyToClipboard[this.selectedLang]}!`, NotificationType.DANGER);
+			this.clipboardData = '';
+		}
+	}
 
-  public openSearchModal() {
-    this.toggleMenu();
+	public navigateToViewUser(e: TableItem) {
+		if (e?.id) {
+			let route = `./${e.id}`;
+			route += this.userTypeDropdownControl.value === UserType.Scheduler ? '/s/view' : '/g/view';
+			this.router.navigate([route], { relativeTo: this.route });
+		}
+	}
 
-    const modalRef = this.modalSvc.open(SearchModalComponent, {
-      options: { fullscreen: true },
-      data: {
-        items: [
-          ...this.users$$.value.map(({ id, firstname, lastname, userType }) => {
-            return {
-              name: `${firstname} ${lastname}`,
-              description: userType,
-              key: `${firstname} ${lastname}`,
-              value: id,
-            };
-          }),
-        ],
-        placeHolder: 'Search by User Name',
-      } as SearchModalData,
-    });
+	public toggleMenu(reset = false) {
+		const icon = document.querySelector('.us-li-plus-btn-icon');
+		if (icon) {
+			if (reset) {
+				icon.classList.add('rotate-z-0');
+				icon.classList.remove('rotate-z-45');
+			} else {
+				icon.classList.toggle('rotate-z-45');
+				icon.classList.toggle('rotate-z-0');
+			}
+		}
+	}
 
-    modalRef.closed.pipe(take(1)).subscribe({
-      next: (result) => this.filterUserList(result)
-    });
-  }
+	public openSearchModal() {
+		this.toggleMenu();
 
-  private filterUserList(result: { name: string; value: string }[]) {
-    if (!result?.length) {
-      this.filteredUsers$$.next([...this.users$$.value]);
-      return;
-    }
+		const modalRef = this.modalSvc.open(SearchModalComponent, {
+			options: { fullscreen: true },
+			data: {
+				items: [
+					...this.users$$.value.map(({ id, firstname, lastname, userType }) => {
+						return {
+							name: `${firstname} ${lastname}`,
+							description: userType,
+							key: `${firstname} ${lastname}`,
+							value: id,
+						};
+					}),
+				],
+				placeHolder: 'Search by User Name',
+			} as SearchModalData,
+		});
 
-    const ids = new Set<number>();
-    result.forEach((item) => ids.add(+item.value));
-    this.filteredUsers$$.next([...this.users$$.value.filter((user: User) => ids.has(+user.id))]);
-  }
+		modalRef.closed.pipe(take(1)).subscribe({
+			next: (result) => this.filterUserList(result),
+		});
+	}
 
-  public openAddUserModal(userDetails?: User) {
-    this.modalSvc.open(AddUserComponent, {
-      data: { edit: !!userDetails?.id, userDetails },
-      options: {
-        size: 'lg',
-        centered: true,
-        backdropClass: 'modal-backdrop-remove-mv',
-      },
-    });
-  }
+	private filterUserList(result: { name: string; value: string }[]) {
+		if (!result?.length) {
+			this.filteredUsers$$.next([...this.users$$.value]);
+			return;
+		}
 
-  private closeMenus() {
-    if (window.innerWidth >= 680) {
-      if (this.optionMenu && this.optionMenu.isOpen()) {
-        this.optionMenu.close();
-        this.toggleMenu(true);
-      }
-    }
-  }
-  private clearDownloadDropdown() {
-    setTimeout(() => {
-      this.downloadDropdownControl.setValue('');
-    }, 0);
-  }
+		const ids = new Set<number>();
+		result.forEach((item) => ids.add(+item.value));
+		this.filteredUsers$$.next([...this.users$$.value.filter((user: User) => ids.has(+user.id))]);
+	}
 
-  protected readonly UserType = UserType;
+	public openAddUserModal(userDetails?: User) {
+		this.modalSvc.open(AddUserComponent, {
+			data: { edit: !!userDetails?.id, userDetails },
+			options: {
+				size: 'lg',
+				centered: true,
+				backdropClass: 'modal-backdrop-remove-mv',
+			},
+		});
+	}
+
+	private closeMenus() {
+		if (window.innerWidth >= 680) {
+			if (this.optionMenu && this.optionMenu.isOpen()) {
+				this.optionMenu.close();
+				this.toggleMenu(true);
+			}
+		}
+	}
+	private clearDownloadDropdown() {
+		setTimeout(() => {
+			this.downloadDropdownControl.setValue('');
+		}, 0);
+	}
+
+	protected readonly UserType = UserType;
 }

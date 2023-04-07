@@ -82,7 +82,7 @@
       class="dfm-table-wrapper"
     >
       <ng-template #headerRowTemplate>
-        <ng-container *ngFor="let column of columns">
+        <ng-container *ngFor="let column of (columns$$ | async) ?? []">
           <dfm-table-header-cell *ngIf="column !== ('Category' | translate)">{{ column | translate }}</dfm-table-header-cell>
         </ng-container>
       </ng-template>
@@ -98,10 +98,10 @@
 <!--            {{ item.userType === 'General' ? ('GeneralUser' | translate) : ('SchedulerUser' | translate | titlecase) }}-->
 <!--          </span>-->
 <!--        </dfm-table-body-cell>-->
-        <dfm-table-body-cell>
-          <span *ngIf="userTypeDropdownControl.value === UserType.General">
+        <dfm-table-body-cell *ngIf="userTypeDropdownControl.value === UserType.Scheduler">
+          <!-- <span *ngIf="userTypeDropdownControl.value === UserType.General">
             {{ item?.userRole | roleName | dashIfNothing }}
-          </span>
+          </span> -->
           <span *ngIf="userTypeDropdownControl.value === UserType.Scheduler">
             {{ item?.id | dfmUserRole | async | roleName | translate | dashIfNothing }}
           </span>
