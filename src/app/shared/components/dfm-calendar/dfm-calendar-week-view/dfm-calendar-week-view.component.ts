@@ -1,26 +1,27 @@
 import {
-  AfterViewChecked,
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  QueryList,
-  Renderer2,
-  ViewChildren,
-  ViewEncapsulation,
+	AfterViewChecked,
+	AfterViewInit,
+	ChangeDetectorRef,
+	Component,
+	ElementRef,
+	EventEmitter,
+	Input,
+	OnChanges,
+	OnDestroy,
+	OnInit,
+	Output,
+	QueryList,
+	Renderer2,
+	ViewChildren,
+	ViewEncapsulation,
 } from '@angular/core';
-import {BehaviorSubject, filter, takeUntil} from 'rxjs';
-import {DatePipe} from '@angular/common';
-import {getAllDaysOfWeek, getDurationMinutes, Interval} from '../../../models/calendar.model';
-import {DestroyableComponent} from '../../destroyable.component';
-import {ModalService} from '../../../../core/services/modal.service';
-import {DateTimeUtils} from "../../../utils/date-time.utils";
+import { BehaviorSubject, filter, takeUntil } from 'rxjs';
+import { DatePipe } from '@angular/common';
+import { getAllDaysOfWeek, getDurationMinutes, Interval } from '../../../models/calendar.model';
+import { DestroyableComponent } from '../../destroyable.component';
+import { ModalService } from '../../../../core/services/modal.service';
+import { DateTimeUtils } from '../../../utils/date-time.utils';
+import { NextSlotOpenPercentageData } from 'src/app/shared/models/priority-slots.model';
 
 // @Pipe({
 //   name: 'calendarEventHeight',
@@ -43,376 +44,394 @@ import {DateTimeUtils} from "../../../utils/date-time.utils";
 // }
 
 @Component({
-  selector: 'dfm-calendar-week-view',
-  templateUrl: './dfm-calendar-week-view.component.html',
-  styleUrls: ['./dfm-calendar-week-view.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+	selector: 'dfm-calendar-week-view',
+	templateUrl: './dfm-calendar-week-view.component.html',
+	styleUrls: ['./dfm-calendar-week-view.component.scss'],
+	encapsulation: ViewEncapsulation.None,
 })
 export class DfmCalendarWeekViewComponent extends DestroyableComponent implements OnInit, OnChanges, AfterViewInit, AfterViewChecked, OnDestroy {
-  @ViewChildren('eventContainer')
-  private eventContainer!: QueryList<ElementRef>;
+	@ViewChildren('eventContainer')
+	private eventContainer!: QueryList<ElementRef>;
 
-  @Input()
-  public selectedDate!: Date;
+	@Input()
+	public selectedDate!: Date;
 
-  @Input()
-  public changeWeek$$ = new BehaviorSubject<number>(0);
+	@Input()
+	public changeWeek$$ = new BehaviorSubject<number>(0);
 
-  @Input()
-  public newDate$$ = new BehaviorSubject<Date | null>(null);
+	@Input()
+	public newDate$$ = new BehaviorSubject<Date | null>(null);
 
-  @Input()
-  public dataGroupedByDateAndTime!: { [key: string]: any[][] };
+	@Input()
+	public dataGroupedByDateAndTime!: { [key: string]: any[][] };
 
-  @Input()
-  public prioritySlots!: { [key: string]: any[] };
+	@Input()
+	public prioritySlots!: { [key: string]: any[] };
 
-  @Input()
-  public format24Hour = false;
+	@Input()
+	public format24Hour = false;
 
-  @Input()
-  public limit = { min: '00:00:00', max: '24:00:00', grayOutMin: '00:00:00', grayOutMax: '24:00:00' };
+	@Input()
+	public limit = { min: '00:00:00', max: '24:00:00', grayOutMin: '00:00:00', grayOutMax: '24:00:00' };
 
-  @Input()
-  public showGrayOutSlot: boolean = false;
+	@Input()
+	public slotPercentage: any[] = [];
 
-  @Output()
-  public selectedDateEvent = new EventEmitter<Date>();
+	@Input()
+	public showGrayOutSlot: boolean = false;
 
-  @Output()
-  public dayViewEvent = new EventEmitter<number>();
+	@Output()
+	public selectedDateEvent = new EventEmitter<Date>();
 
-  @Output()
-  public addAppointment = new EventEmitter<{ e: MouseEvent; eventsContainer: HTMLDivElement; day: number[]; grayOutSlot: any }>();
+	@Output()
+	public dayViewEvent = new EventEmitter<number>();
 
-  public daysOfWeekArr: number[][] = [];
+	@Output()
+	public addAppointment = new EventEmitter<{ e: MouseEvent; eventsContainer: HTMLDivElement; day: number[]; grayOutSlot: any }>();
 
-  public todayDate = new Date();
+	@Output()
+	public currentWeekDays = new EventEmitter<any>();
 
-  // In minutes
-  public readonly timeInterval: number = 15;
+	public daysOfWeekArr: number[][] = [];
 
-  public readonly pixelsPerMin: number = 4;
+	public todayDate = new Date();
 
-  public rendered = false;
+	// In minutes
+	public readonly timeInterval: number = 15;
 
-  public grayOutSlot$$: BehaviorSubject<any[]> = new BehaviorSubject<Interval[]>([]);
+	public readonly pixelsPerMin: number = 4;
 
-  public getDurationFn = (s, e) => getDurationMinutes(s, e);
+	public rendered = false;
 
-  constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private renderer: Renderer2, private modalSvc: ModalService) {
-    super();
-  }
+	public slotPriorityKey = {
+		High: 'highPriorityPercentage',
+		Medium: 'mediumPriorityPercentage',
+		Low: 'lowPriorityPercentage',
+	};
 
-  public ngOnChanges() {
-    if (!this.selectedDate) {
-      this.selectedDate = new Date();
-    }
-    if (this.showGrayOutSlot) {
-      this.getGrayOutArea();
-    }
-    console.log(this.prioritySlots);
-  }
+	public grayOutSlot$$: BehaviorSubject<any[]> = new BehaviorSubject<Interval[]>([]);
 
-  public ngOnInit(): void {
-    this.updateCalendarDays();
+	public getDurationFn = (s, e) => getDurationMinutes(s, e);
 
-    this.changeWeek$$
-      .pipe(
-        filter((offset) => !!offset),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe({
-        next: (offset) => this.changeWeek(offset)
-      });
+	constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private renderer: Renderer2, private modalSvc: ModalService) {
+		super();
+	}
 
-    this.newDate$$
-      .asObservable()
-      .pipe()
-      .subscribe({
-        next: (date) => {
-          if (date) {
-            this.updateDate(date);
-            this.updateCalendarDays();
-          }
-        }
-      });
-  }
+	public ngOnChanges() {
+		if (!this.selectedDate) {
+			this.selectedDate = new Date();
+		}
+		if (this.showGrayOutSlot) {
+			this.getGrayOutArea();
+		}
+		console.log(this.prioritySlots);
+	}
 
-  public ngAfterViewInit() {
-    // this.renderEvents();
-    this.rendered = true;
-  }
+	public ngOnInit(): void {
+		this.updateCalendarDays();
 
-  public ngAfterViewChecked() {
-    if (!this.rendered) {
-      // this.rendered = true;
-      // this.renderEvents();
-      // this.cdr.markForCheck();
-    }
-  }
+		this.changeWeek$$
+			.pipe(
+				filter((offset) => !!offset),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (offset) => this.changeWeek(offset),
+			});
 
-  public override ngOnDestroy() {
-    super.ngOnDestroy();
-  }
+		this.newDate$$
+			.asObservable()
+			.pipe()
+			.subscribe({
+				next: (date) => {
+					if (date) {
+						this.updateDate(date);
+						this.updateCalendarDays();
+					}
+				},
+			});
+	}
 
-  public changeWeek(offset: number) {
-    console.log(offset);
-    if (offset !== 0) {
-      const date = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + offset * 7));
-      console.log('147', date);
-      this.updateDate(date);
-      this.changeWeek$$.next(0);
-    }
+	public ngAfterViewInit() {
+		// this.renderEvents();
+		this.rendered = true;
+	}
 
-    this.updateCalendarDays();
-  }
+	public ngAfterViewChecked() {
+		if (!this.rendered) {
+			// this.rendered = true;
+			// this.renderEvents();
+			// this.cdr.markForCheck();
+		}
+	}
 
-  private updateCalendarDays() {
-    // debugger;
-    this.daysOfWeekArr = getAllDaysOfWeek(this.selectedDate);
-    console.log(this.daysOfWeekArr);
-    this.rendered = false;
-  }
+	public override ngOnDestroy() {
+		super.ngOnDestroy();
+	}
 
-  private updateDate(date: Date) {
-    date.setMinutes(date.getMinutes() - (date.getMinutes() % 5));
-    this.selectedDate = date;
-    this.emitDate();
-  }
+	public changeWeek(offset: number) {
+		console.log(offset);
+		if (offset !== 0) {
+			const date = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + offset * 7));
+			console.log('147', date);
+			this.updateDate(date);
+			this.changeWeek$$.next(0);
+		}
 
-  private emitDate() {
-    this.selectedDateEvent.emit(this.selectedDate);
-  }
+		this.updateCalendarDays();
+	}
 
-  public getMinute(date: string) {
-    const splittedDate = date.split(':');
-    return +splittedDate[0] * 60 + +splittedDate[1];
-  }
+	private updateCalendarDays() {
+		// debugger;
+		this.daysOfWeekArr = getAllDaysOfWeek(this.selectedDate);
+		this.currentWeekDays.emit(this.daysOfWeekArr);
+		this.rendered = false;
+	}
 
-  public changeToDayView(day: number, weekday: number) {
-    // updating month if selected date is of another month's
-    if (day < this.selectedDate.getDate() && weekday > this.selectedDate.getDay()) {
-      this.updateDate(new Date(this.selectedDate.setMonth(this.selectedDate.getMonth() + 1)));
-    } else if (day > this.selectedDate.getDate() && weekday < this.selectedDate.getDay()) {
-      this.updateDate(new Date(this.selectedDate.setMonth(this.selectedDate.getMonth() - 1)));
-    }
+	private updateDate(date: Date) {
+		date.setMinutes(date.getMinutes() - (date.getMinutes() % 5));
+		this.selectedDate = date;
+		this.emitDate();
+	}
 
-    this.dayViewEvent.emit(day);
-  }
+	private emitDate() {
+		this.selectedDateEvent.emit(this.selectedDate);
+	}
 
-  private renderEvents(): void {
-    //   // debugger;
-    //   if (this.dataGroupedByDateAndTime) {
-    //
-    //     this.eventContainer.forEach((elementRef) => {
-    //       const div = elementRef.nativeElement as HTMLDivElement;
-    //       const dataArray = this.dataGroupedByDateAndTime[div.id] as { group: number; data: any }[];
-    //
-    //       if (dataArray?.length) {
-    //
-    //         const pixelsPerMin = 4;
-    //         const barHeight = 1;
-    //         const title = 'Appointments';
-    //         let groupNo = 1;
-    //         let count = 0;
-    //         let startedAt: Date;
-    //         let endDate: Date | null;
-    //
-    //         dataArray.forEach(({ group, data }, index) => {
-    //           if (group === groupNo) {
-    //             count++;
-    //             if (!endDate || new Date(data.endedAt) > endDate) {
-    //               endDate = new Date(data.endedAt);
-    //             }
-    //           }
-    //
-    //           if (
-    //             dataArray.length === 1 ||
-    //             index === dataArray.length - 1 ||
-    //             (index + 1 < dataArray.length - 1 && dataArray[index + 1].group !== groupNo)
-    //           ) {
-    //             // Calculating height for event card
-    //             const totalMinutes = getDurationMinutes(startedAt ?? data.startedAt, data.endedAt);
-    //             const height = totalMinutes * pixelsPerMin;
-    //
-    //             //  Calculating top for event card
-    //             const startHour = new Date(startedAt ?? data.startedAt).getHours();
-    //             const startMinute = new Date(startedAt ?? data.startedAt).getMinutes();
-    //             // Number of horizontal bars in between
-    //             const horizontalBarHeight = (height / (pixelsPerMin * this.timeInterval)) * barHeight;
-    //             const top = (startMinute + startHour * 60) * pixelsPerMin - horizontalBarHeight;
-    //
-    //             // Event elements
-    //             const eventTitle = document.createElement('span');
-    //             const titleTextNode = document.createTextNode(title);
-    //             eventTitle.classList.add('calender-week-view-event-title');
-    //             eventTitle.appendChild(titleTextNode);
-    //
-    //             const eventTime = document.createElement('span');
-    //             const timeText = `${this.datePipe.transform(startedAt ?? data.startedAt, 'hh:mm')} - ${this.datePipe.transform(endDate, 'hh:mm')}`;
-    //             const timeTextNode = document.createTextNode(timeText);
-    //             eventTime.classList.add('calender-week-view-event-time');
-    //             eventTime.appendChild(timeTextNode);
-    //
-    //             const eventDetailsContainer = document.createElement('div');
-    //             eventDetailsContainer.classList.add('calender-week-view-event-details-container');
-    //             eventDetailsContainer.append(eventTitle, eventTime);
-    //
-    //             const circleIcon = document.createElement('div');
-    //             const countTextNode = document.createTextNode(count.toString());
-    //             circleIcon.classList.add('calender-week-view-event-circle-icon');
-    //             circleIcon.appendChild(countTextNode);
-    //
-    //             const eventContainer = document.createElement('div');
-    //             eventContainer.classList.add('calender-week-view-event-container');
-    //             eventContainer.style.top = `${top}px`;
-    //             eventContainer.style.height = `${height}px`;
-    //             eventContainer.append(circleIcon, eventDetailsContainer);
-    //
-    //             div.appendChild(eventContainer);
-    //
-    //             count = 0;
-    //
-    //             if (index + 1 < dataArray.length - 1 && dataArray[index + 1].group !== groupNo) {
-    //               groupNo = dataArray[index + 1].group;
-    //               startedAt = new Date(dataArray[index + 1].data.startedAt);
-    //             } else {
-    //               groupNo = 1;
-    //             }
-    //
-    //             endDate = null;
-    //           }
-    //         });
-    //       }
-    //     });
-    //   }
-  }
+	public getMinute(date: string) {
+		const splittedDate = date.split(':');
+		return +splittedDate[0] * 60 + +splittedDate[1];
+	}
 
-  public getHeight(groupedData: any[]): number {
-    let endDate: Date = groupedData[0].endedAt;
-    groupedData.forEach((data) => {
-      if (data.endedAt > endDate) {
-        endDate = data.endedAt;
-      }
-    });
+	public changeToDayView(day: number, weekday: number) {
+		// updating month if selected date is of another month's
+		if (day < this.selectedDate.getDate() && weekday > this.selectedDate.getDay()) {
+			this.updateDate(new Date(this.selectedDate.setMonth(this.selectedDate.getMonth() + 1)));
+		} else if (day > this.selectedDate.getDate() && weekday < this.selectedDate.getDay()) {
+			this.updateDate(new Date(this.selectedDate.setMonth(this.selectedDate.getMonth() - 1)));
+		}
 
-    const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+		this.dayViewEvent.emit(day);
+	}
 
-    const startDate =
-      this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
-        ? this.myDate(this.limit.min)
-        : new Date(groupedData[0].startedAt);
+	private renderEvents(): void {
+		//   // debugger;
+		//   if (this.dataGroupedByDateAndTime) {
+		//
+		//     this.eventContainer.forEach((elementRef) => {
+		//       const div = elementRef.nativeElement as HTMLDivElement;
+		//       const dataArray = this.dataGroupedByDateAndTime[div.id] as { group: number; data: any }[];
+		//
+		//       if (dataArray?.length) {
+		//
+		//         const pixelsPerMin = 4;
+		//         const barHeight = 1;
+		//         const title = 'Appointments';
+		//         let groupNo = 1;
+		//         let count = 0;
+		//         let startedAt: Date;
+		//         let endDate: Date | null;
+		//
+		//         dataArray.forEach(({ group, data }, index) => {
+		//           if (group === groupNo) {
+		//             count++;
+		//             if (!endDate || new Date(data.endedAt) > endDate) {
+		//               endDate = new Date(data.endedAt);
+		//             }
+		//           }
+		//
+		//           if (
+		//             dataArray.length === 1 ||
+		//             index === dataArray.length - 1 ||
+		//             (index + 1 < dataArray.length - 1 && dataArray[index + 1].group !== groupNo)
+		//           ) {
+		//             // Calculating height for event card
+		//             const totalMinutes = getDurationMinutes(startedAt ?? data.startedAt, data.endedAt);
+		//             const height = totalMinutes * pixelsPerMin;
+		//
+		//             //  Calculating top for event card
+		//             const startHour = new Date(startedAt ?? data.startedAt).getHours();
+		//             const startMinute = new Date(startedAt ?? data.startedAt).getMinutes();
+		//             // Number of horizontal bars in between
+		//             const horizontalBarHeight = (height / (pixelsPerMin * this.timeInterval)) * barHeight;
+		//             const top = (startMinute + startHour * 60) * pixelsPerMin - horizontalBarHeight;
+		//
+		//             // Event elements
+		//             const eventTitle = document.createElement('span');
+		//             const titleTextNode = document.createTextNode(title);
+		//             eventTitle.classList.add('calender-week-view-event-title');
+		//             eventTitle.appendChild(titleTextNode);
+		//
+		//             const eventTime = document.createElement('span');
+		//             const timeText = `${this.datePipe.transform(startedAt ?? data.startedAt, 'hh:mm')} - ${this.datePipe.transform(endDate, 'hh:mm')}`;
+		//             const timeTextNode = document.createTextNode(timeText);
+		//             eventTime.classList.add('calender-week-view-event-time');
+		//             eventTime.appendChild(timeTextNode);
+		//
+		//             const eventDetailsContainer = document.createElement('div');
+		//             eventDetailsContainer.classList.add('calender-week-view-event-details-container');
+		//             eventDetailsContainer.append(eventTitle, eventTime);
+		//
+		//             const circleIcon = document.createElement('div');
+		//             const countTextNode = document.createTextNode(count.toString());
+		//             circleIcon.classList.add('calender-week-view-event-circle-icon');
+		//             circleIcon.appendChild(countTextNode);
+		//
+		//             const eventContainer = document.createElement('div');
+		//             eventContainer.classList.add('calender-week-view-event-container');
+		//             eventContainer.style.top = `${top}px`;
+		//             eventContainer.style.height = `${height}px`;
+		//             eventContainer.append(circleIcon, eventDetailsContainer);
+		//
+		//             div.appendChild(eventContainer);
+		//
+		//             count = 0;
+		//
+		//             if (index + 1 < dataArray.length - 1 && dataArray[index + 1].group !== groupNo) {
+		//               groupNo = dataArray[index + 1].group;
+		//               startedAt = new Date(dataArray[index + 1].data.startedAt);
+		//             } else {
+		//               groupNo = 1;
+		//             }
+		//
+		//             endDate = null;
+		//           }
+		//         });
+		//       }
+		//     });
+		//   }
+	}
 
-    const groupEndDate = this.datePipe.transform(new Date(endDate), 'HH:mm:ss') ?? '';
-    if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
-      return 0;
-    }
+	public getHeight(groupedData: any[]): number {
+		let endDate: Date = groupedData[0].endedAt;
+		groupedData.forEach((data) => {
+			if (data.endedAt > endDate) {
+				endDate = data.endedAt;
+			}
+		});
 
-    if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
-      return 0;
-    }
-    const finalEndDate =
-      this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
+		const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
 
-    const durationMinutes = getDurationMinutes(startDate, finalEndDate);
-    return durationMinutes * this.pixelsPerMin;
-  }
+		const startDate =
+			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
+				? this.myDate(this.limit.min)
+				: new Date(groupedData[0].startedAt);
 
-  public getPrioritySlotHeight(prioritySlot: any): number {
-    const startDate: Date = this.myDate(DateTimeUtils.TimeToNumber(prioritySlot.start) < DateTimeUtils.TimeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start);
-    if (this.myDate(prioritySlot.end).getTime() <= this.myDate(this.limit.min).getTime()) {
-      return 0;
-    }
+		const groupEndDate = this.datePipe.transform(new Date(endDate), 'HH:mm:ss') ?? '';
+		if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
+			return 0;
+		}
 
-    if (this.myDate(prioritySlot.start).getTime() >= this.myDate(this.limit.max).getTime()) {
-      return 0;
-    }
-    const endDate: Date = this.myDate(DateTimeUtils.TimeToNumber(prioritySlot.end) > DateTimeUtils.TimeToNumber(this.limit.max) ? this.limit.max : prioritySlot.end);
-    const durationMinutes = getDurationMinutes(startDate, endDate);
-    return durationMinutes * this.pixelsPerMin;
-  }
+		if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
+			return 0;
+		}
+		const finalEndDate =
+			this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
 
-  public getTop(groupedData: any[]): number {
-    const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
-    const startDate =
-      this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
-        ? this.myDate(this.limit.min)
-        : new Date(groupedData[0].startedAt);
-    const startHour = startDate.getHours();
-    const startMinute = startDate.getMinutes();
-    const startCalendarDate = this.myDate(this.limit.min);
-    const startCalendarHour = startCalendarDate.getHours();
-    const startCalendarMinute = startCalendarDate.getMinutes();
-    const barHeight = 1;
-    const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-    const top =
-      (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
-    if (top % 20) {
-      return Math.floor(top / 20) * 20 + 20;
-    }
-    return top;
-  }
+		const durationMinutes = getDurationMinutes(startDate, finalEndDate);
+		return durationMinutes * this.pixelsPerMin;
+	}
 
-  public getPrioritySlotTop(prioritySlot: any): number {
-    const startDate = this.myDate(DateTimeUtils.TimeToNumber(prioritySlot.start) < DateTimeUtils.TimeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start);
-    const startHour = startDate.getHours();
-    const startMinute = startDate.getMinutes();
-    const startCalendarDate = this.myDate(this.limit.min);
-    const startCalendarHour = startCalendarDate.getHours();
-    const startCalendarMinute = startCalendarDate.getMinutes();
-    const barHeight = 1;
-    const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-    const top =
-      (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
+	public getPrioritySlotHeight(prioritySlot: any): number {
+		const startDate: Date = this.myDate(
+			DateTimeUtils.TimeToNumber(prioritySlot.start) < DateTimeUtils.TimeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start,
+		);
+		if (this.myDate(prioritySlot.end).getTime() <= this.myDate(this.limit.min).getTime()) {
+			return 0;
+		}
 
-    if (top % 20) {
-      return Math.floor(top / 20) * 20 + 20;
-    }
-    return top;
-  }
+		if (this.myDate(prioritySlot.start).getTime() >= this.myDate(this.limit.max).getTime()) {
+			return 0;
+		}
+		const endDate: Date = this.myDate(
+			DateTimeUtils.TimeToNumber(prioritySlot.end) > DateTimeUtils.TimeToNumber(this.limit.max) ? this.limit.max : prioritySlot.end,
+		);
+		const durationMinutes = getDurationMinutes(startDate, endDate);
+		return durationMinutes * this.pixelsPerMin;
+	}
 
-  public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[]) {
-    this.addAppointment.emit({ e, eventsContainer, day, grayOutSlot: this.grayOutSlot$$.value });
-  }
+	public getTop(groupedData: any[]): number {
+		const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+		const startDate =
+			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
+				? this.myDate(this.limit.min)
+				: new Date(groupedData[0].startedAt);
+		const startHour = startDate.getHours();
+		const startMinute = startDate.getMinutes();
+		const startCalendarDate = this.myDate(this.limit.min);
+		const startCalendarHour = startCalendarDate.getHours();
+		const startCalendarMinute = startCalendarDate.getMinutes();
+		const barHeight = 1;
+		const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
+		const top =
+			(startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
+		if (top % 20) {
+			return Math.floor(top / 20) * 20 + 20;
+		}
+		return top;
+	}
 
-  private myDate(date: string): Date {
-    const formattedDate = new Date();
-    const splitDate = date.split(':');
-    formattedDate.setHours(+splitDate[0]);
-    formattedDate.setMinutes(+splitDate[1]);
-    formattedDate.setSeconds(0);
-    return formattedDate;
-  }
+	public getPrioritySlotTop(prioritySlot: any): number {
+		const startDate = this.myDate(
+			DateTimeUtils.TimeToNumber(prioritySlot.start) < DateTimeUtils.TimeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start,
+		);
+		const startHour = startDate.getHours();
+		const startMinute = startDate.getMinutes();
+		const startCalendarDate = this.myDate(this.limit.min);
+		const startCalendarHour = startCalendarDate.getHours();
+		const startCalendarMinute = startCalendarDate.getMinutes();
+		const barHeight = 1;
+		const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
+		const top =
+			(startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
 
-  private getGrayOutArea() {
-    const grayOutSlot: any = [];
-    grayOutSlot.push({
-      dayStart: this.limit.min,
-      dayEnd: this.limit.grayOutMin,
-      top: 0,
-      height: getDurationMinutes(this.myDate(this.limit.min), this.myDate(this.limit.grayOutMin)) * this.pixelsPerMin,
-    });
-    const lastMinutes = getDurationMinutes(
-      this.myDate(this.limit.min),
-      this.myDate(this.calculate(getDurationMinutes(this.myDate(this.limit.grayOutMax), this.myDate(this.limit.max)), this.limit.max, 'minus')),
-    );
-    grayOutSlot.push({
-      dayStart: this.limit.grayOutMax,
-      dayEnd: this.limit.max,
-      top: lastMinutes * this.pixelsPerMin,
-      height: getDurationMinutes(this.myDate(this.limit.grayOutMax), this.myDate(this.limit.max)) * this.pixelsPerMin,
-    });
-    this.grayOutSlot$$.next([...grayOutSlot]);
-  }
+		if (top % 20) {
+			return Math.floor(top / 20) * 20 + 20;
+		}
+		return top;
+	}
 
-  private calculate(minutes: number, time: string, type: 'plus' | 'minus'): string {
-    const date = new Date();
-    const [hour, minute] = time.split(':');
-    date.setHours(+hour);
-    date.setMinutes(+minute);
-    date.setSeconds(0);
-    const finalDate = type === 'minus' ? new Date(date.getTime() - minutes * 60 * 1000) : new Date(date.getTime() + minutes * 60 * 1000);
-    return this.datePipe.transform(finalDate, 'HH:mm') ?? '';
-  }
+	public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[]) {
+		this.addAppointment.emit({ e, eventsContainer, day, grayOutSlot: this.grayOutSlot$$.value });
+	}
+
+	private myDate(date: string): Date {
+		const formattedDate = new Date();
+		const splitDate = date.split(':');
+		formattedDate.setHours(+splitDate[0]);
+		formattedDate.setMinutes(+splitDate[1]);
+		formattedDate.setSeconds(0);
+		return formattedDate;
+	}
+
+	private getGrayOutArea() {
+		const grayOutSlot: any = [];
+		grayOutSlot.push({
+			dayStart: this.limit.min,
+			dayEnd: this.limit.grayOutMin,
+			top: 0,
+			height: getDurationMinutes(this.myDate(this.limit.min), this.myDate(this.limit.grayOutMin)) * this.pixelsPerMin,
+		});
+		const lastMinutes = getDurationMinutes(
+			this.myDate(this.limit.min),
+			this.myDate(this.calculate(getDurationMinutes(this.myDate(this.limit.grayOutMax), this.myDate(this.limit.max)), this.limit.max, 'minus')),
+		);
+		grayOutSlot.push({
+			dayStart: this.limit.grayOutMax,
+			dayEnd: this.limit.max,
+			top: lastMinutes * this.pixelsPerMin,
+			height: getDurationMinutes(this.myDate(this.limit.grayOutMax), this.myDate(this.limit.max)) * this.pixelsPerMin,
+		});
+		this.grayOutSlot$$.next([...grayOutSlot]);
+	}
+
+	private calculate(minutes: number, time: string, type: 'plus' | 'minus'): string {
+		const date = new Date();
+		const [hour, minute] = time.split(':');
+		date.setHours(+hour);
+		date.setMinutes(+minute);
+		date.setSeconds(0);
+		const finalDate = type === 'minus' ? new Date(date.getTime() - minutes * 60 * 1000) : new Date(date.getTime() + minutes * 60 * 1000);
+		return this.datePipe.transform(finalDate, 'HH:mm') ?? '';
+	}
 }

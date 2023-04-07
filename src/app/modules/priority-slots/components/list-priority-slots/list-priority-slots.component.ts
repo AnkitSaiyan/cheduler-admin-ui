@@ -62,117 +62,84 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
     }
 
     ngOnInit(): void {
-        this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
+			this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
-        this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe((params) => {
-            if (params['v']) {
-                this.calendarView$$.next(params['v'] !== 't');
-            } else {
-                this.router.navigate([], {
-                    replaceUrl: true,
-                    queryParams: {
-                        v: 'w',
-                    },
-                });
-                this.calendarView$$.next(true);
-            }
-        });
+			this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe((params) => {
+				if (params['v']) {
+					this.calendarView$$.next(params['v'] !== 't');
+				} else {
+					this.router.navigate([], {
+						replaceUrl: true,
+						queryParams: {
+							v: 'w',
+						},
+					});
+					this.calendarView$$.next(true);
+				}
+			});
 
-        this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
-            this.prioritySlots$$.next(prioritySlots);
-            this.filteredPrioritySlots$$.next(prioritySlots);
-        });
+			this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
+				this.prioritySlots$$.next(prioritySlots);
+				this.filteredPrioritySlots$$.next(prioritySlots);
+			});
 
-        this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-            if (searchText) {
-                this.handleSearch(searchText.toLowerCase());
-            } else {
-                this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value]);
-            }
-        });
+			this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
+				if (searchText) {
+					this.handleSearch(searchText.toLowerCase());
+				} else {
+					this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value]);
+				}
+			});
 
-        this.downloadDropdownControl.valueChanges
-            .pipe(
-                filter((value) => !!value),
-                takeUntil(this.destroy$$),
-            )
-            .subscribe((downloadAs) => {
-                if (!this.filteredPrioritySlots$$.value.length) {
-                    this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
-                    this.clearDownloadDropdown();
-                    return;
-                }
+			this.downloadDropdownControl.valueChanges
+				.pipe(
+					filter((value) => !!value),
+					takeUntil(this.destroy$$),
+				)
+				.subscribe((downloadAs) => {
+					if (!this.filteredPrioritySlots$$.value.length) {
+						this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+						this.clearDownloadDropdown();
+						return;
+					}
 
-                this.downloadSvc.downloadJsonAs(
-                    downloadAs as DownloadAsType,
-                    this.columns.slice(0, -1),
-                    this.filteredPrioritySlots$$.value.map((pr: PrioritySlot) => [
-                        pr.startedAt,
-                        pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`,
-                        pr.priority,
-                    ]),
-                    'priority slot details',
-                );
+					this.downloadSvc.downloadJsonAs(
+						downloadAs as DownloadAsType,
+						this.columns.slice(0, -1),
+						this.filteredPrioritySlots$$.value.map((pr: PrioritySlot) => [
+							pr.startedAt,
+							pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`,
+							pr.priority,
+						]),
+						'priority slot details',
+					);
 
-                if (downloadAs !== 'PRINT') {
-                    this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
-                }
-                this.clearDownloadDropdown();
-            });
+					if (downloadAs !== 'PRINT') {
+						this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
+					}
+					this.clearDownloadDropdown();
+				});
 
-        combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
-            .pipe(takeUntil(this.destroy$$))
-            .subscribe(([lang, permissionType]) => {
-                this.selectedLang = lang;
-                this.columns = [Translate.Start[lang], Translate.End[lang], Translate.Priority[lang]];
-                if (permissionType !== UserRoleEnum.Reader) {
-                    this.columns = [...this.columns, Translate.Actions[lang]];
-                }
+			combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+				.pipe(takeUntil(this.destroy$$))
+				.subscribe(([lang, permissionType]) => {
+					this.selectedLang = lang;
+					this.columns = [Translate.Start[lang], Translate.End[lang], Translate.Priority[lang]];
+					if (permissionType !== UserRoleEnum.Reader) {
+						this.columns = [...this.columns, Translate.Actions[lang]];
+					}
 
-                // eslint-disable-next-line default-case
-                switch (lang) {
-                    case ENG_BE:
-                        this.statuses = Statuses;
-                        break;
-                    case DUTCH_BE:
-                        this.statuses = StatusesNL;
-                        break;
-                }
-            });
-
-        this.priorityApiSvc.getPriorityPercentage$(['2023-04-04']).pipe(takeUntil(this.destroy$$)).subscribe((slotPercentage) => {
-          console.log(slotPercentage);
-
-          // Sample HTML for percentage
-            `
-            <div style="
-                width: 100%;
-                position: absolute;
-                top: 24px;
-                display: flex;
-                flex-direction: column;
-                padding: 8px;
-                /* background: white; */
-                opacity: 1;
-                align-items: center;
-                z-index: 123345464593243294832;
-            ">
-                <span style="
-                    font-size: 14px;
-                    /* font-weight: inherit; */
-                    font-weight: 500;
-                    color: black;
-                ">Slot Filled %:
-                </span>
-                <span style="
-                    font-size: 24px;
-                    font-weight: 300;
-                ">5.08%
-                </span>
-            </div>
-           `
-        })
-    }
+					// eslint-disable-next-line default-case
+					switch (lang) {
+						case ENG_BE:
+							this.statuses = Statuses;
+							break;
+						case DUTCH_BE:
+							this.statuses = StatusesNL;
+							break;
+					}
+				});
+		}
 
     public override ngOnDestroy() {
         super.ngOnDestroy();
@@ -315,6 +282,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
         }, 0);
     }
 }
+
 
 
 
