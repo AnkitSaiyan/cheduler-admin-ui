@@ -115,7 +115,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
       email: '',
       avatar: '',
     },
-    links: [new NavigationProfileLink('Test Link', './', '', true)],
+    links: [],
   };
 
   public isLoaderActive$$ = new Subject<boolean>();
@@ -145,8 +145,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
         this.user = user as AuthUser;
 
         this.profileData = new NavigationProfileData(
-            new NavigationUser(this.user.displayName, this.user.email, ''),
-            [new NavigationProfileLink('Test Link', './', '', true)]
+            new NavigationUser(this.user.displayName, this.user.email, ''), []
         );
       }
     });

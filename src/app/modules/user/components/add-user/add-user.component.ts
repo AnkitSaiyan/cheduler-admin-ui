@@ -114,7 +114,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
             }
         });
 
-        this.userRoles = this.userApiSvc.getUserRoles();
+        this.userRoles = this.userApiSvc.getRoleTypes();
     }
 
     public override ngOnDestroy() {

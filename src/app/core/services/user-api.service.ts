@@ -171,21 +171,22 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         this.permissionSvc.removePermissionType();
     }
 
-    public getUserRoles(): NameValue[] {
+    public getRoleTypes(): NameValue[] {
         return [...this.userRoles];
     }
 
     public getCurrentUserRole$(userId: string): Observable<UserRoleEnum> {
-        // Api to be integrated
-        return this.http.get<UserRoleEnum[]>(`${environment.schedulerApiUrl}/users/${userId}/roles`).pipe(
-            filter((roles) => !!roles.length),
-            map((roles) => roles[0]),
+        if (this.userIdToRoleMap.has(userId)) {
+            return of(this.userIdToRoleMap.get(userId) as UserRoleEnum);
+        }
+
+        return this.http.get<UserRoleEnum[]>(`${environment.schedulerApiUrl}/userroles?userId=${userId}`).pipe(
+            map((roles) => {
+                console.log('roles', roles);
+                return roles[0] ?? '';
+            }),
             tap((role) => this.userIdToRoleMap.set(userId, role as UserRoleEnum)),
         );
-
-        // this.userIdToRoleMap.set(userId, UserRoleEnum.Admin);
-        //
-        // return of(UserRoleEnum.Admin);
     }
 
     public initializeUser(): Observable<boolean> {
@@ -202,6 +203,10 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 
                     return this.getCurrentUserRole$(userId).pipe(
                         map((role) => {
+                            console.log(role, 'role')
+                            if (!role) {
+                                return false;
+                            }
                             this.permissionSvc.setPermissionType(role as UserRoleEnum);
                             this.authUser$$.next(new AuthUser(res.mail, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
                             return true;
@@ -213,12 +218,13 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
                 }
             }),
             tap((res) => {
+                // Complete Profile if not completed
+
                 if (!res) {
                     return;
                 }
 
                 const user = this.authUser$$.value;
-
                 if (!user) {
                     return;
                 }
