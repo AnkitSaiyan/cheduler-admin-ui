@@ -6,16 +6,18 @@ export enum RouteType {
 export enum RouteName {
   Absence = 'absence',
   Appointment = 'appointment',
-  Exams = 'exams',
-  Rooms = 'rooms',
-  PrioritySlot = 'prioritySlot',
-  SiteSetting = 'siteSetting',
-  Practice = 'Practice',
+  Exam = 'exam',
+  Room = 'room',
+  PrioritySlot = 'priority-slots',
+  SiteSetting = 'site-management',
+  Practice = 'practice-hours',
   Physicians = 'physicians',
   Roles = 'roles',
-  EmailTemplate = 'emailTemplate',
-  Staffs = 'staffs',
+  EmailTemplate = 'email-template',
+  Staffs = 'staff',
   User = 'user',
+  CompleteProfile = 'complete-profile',
+  LoginFailed = 'login-failed'
 }
 
 export enum Permission {

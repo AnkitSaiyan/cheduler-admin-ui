@@ -81,6 +81,7 @@ export interface SchedulerUser {
   displayName: string;
   isExternal: boolean;
   accountEnabled: boolean;
+  userRole: UserRoleEnum;
 }
 
 export class AuthUser {

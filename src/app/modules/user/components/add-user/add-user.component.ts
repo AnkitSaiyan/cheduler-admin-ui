@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NotificationType} from 'diflexmo-angular-design';
-import {BehaviorSubject, Observable, take, takeUntil} from 'rxjs';
+import {BehaviorSubject, catchError, Observable, switchMap, take, takeUntil} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
@@ -174,16 +174,28 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
         let addUserObservable$: Observable<any>;
 
         if ([this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {
+            let roleName: UserRoleEnum;
+            switch (this.formValues.userRole) {
+                case UserRoleEnum.Admin:
+                case UserRoleEnum.GeneralUser:
+                    roleName = UserRoleEnum.Admin
+                    break;
+                case UserRoleEnum.Reader:
+                    roleName = UserRoleEnum.Reader;
+            }
+
             addUserObservable$ = this.userManagementApiSvc.createUserInvite({
                 givenName: this.formValues.firstname,
                 surName: this.formValues.lastname,
                 email: this.formValues.email,
-                roleName: this.formValues.userRole,
+                roleName,
                 contextTenantId: this.formValues.tenantId,
                 redirect: {
                     redirectUrl: environment.redirectUrl
                 }
-            });
+            }).pipe(
+                switchMap((user) => this.userApiSvc.assignUserRole(user.id, this.formValues.userRole))
+            );
         } else {
             addUserObservable$ = this.userApiSvc.upsertUser$({
                 firstname: this.formValues.firstname,

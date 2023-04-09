@@ -46,9 +46,10 @@
         <div class="section-divider"></div>
 
         <section class="complete-profile-section">
-            <dfm-button color="primary" size="md" [disabled]="(saving$$ | async) === true" (click)="save()">
+            <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="save()">
                 {{"Confirm" | translate}}
             </dfm-button>
+            <dfm-button color="link" size="md" (click)="logout()">Logout</dfm-button>
         </section>
     </div>
 </div>

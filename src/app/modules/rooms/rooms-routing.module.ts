@@ -14,12 +14,12 @@ const roomRoutes: Routes = [
       {
         path: '',
         component: RoomListComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.Rooms },
+        data: { routeType: RouteType.View, routeName: RouteName.Room },
       },
       {
         path: `:${ROOM_ID}/view`,
         component: ViewRoomComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.Rooms },
+        data: { routeType: RouteType.View, routeName: RouteName.Room },
       },
     ],
   },

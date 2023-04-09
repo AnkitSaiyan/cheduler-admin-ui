@@ -39,7 +39,6 @@ import {UserManagementApiService} from "../../../../core/services/user-managemen
 import {Permission} from 'src/app/shared/models/permission.model';
 import {PermissionService} from 'src/app/core/services/permission.service';
 import {UserApiService} from "../../../../core/services/user-api.service";
-import {AsyncPipe} from "@angular/common";
 import {RoleNamePipe} from "../../../../shared/pipes/role-name.pipe";
 
 @Component({
@@ -48,22 +47,29 @@ import {RoleNamePipe} from "../../../../shared/pipes/role-name.pipe";
     styleUrls: ['./user-list.component.scss'],
 })
 export class UserListComponent extends DestroyableComponent implements OnInit, OnDestroy {
-    clipboardData: string = '';
+    @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
+    @ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
+
+    @HostListener('document:click', ['$event']) onClick() {
+        this.toggleMenu(true);
+    }
+
     public searchControl = new FormControl('', []);
     public downloadDropdownControl = new FormControl('', []);
     public userTypeDropdownControl = new FormControl('', []);
+
     public columns$$: BehaviorSubject<string[]>;
-    public columnsForScheduler: string[] = ['FirstName', 'LastName', 'Email', 'Category', 'Role', 'Status', 'Actions'];
-    public columnsForGeneral: string[] = ['FirstName', 'LastName', 'Email', 'Category', 'Status', 'Actions'];
-    public downloadItems: DownloadType[] = [];
     public filteredUsers$$: BehaviorSubject<any[]>;
     public clearSelected$$ = new Subject<void>();
     public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
+    public loading$$ = new BehaviorSubject(true);
+
+    public columnsForScheduler: string[] = ['FirstName', 'LastName', 'Email', 'Category', 'Role', 'Status', 'Actions'];
+    public columnsForGeneral: string[] = ['FirstName', 'LastName', 'Email', 'Category', 'Status', 'Actions'];
+    public downloadItems: DownloadType[] = [];
     public selectedUserIds: string[] = [];
     public statusTypeEnum = getStatusEnum();
-    public loading$$ = new BehaviorSubject(true);
     public statuses = Statuses;
-    public userTypeToggle: UserType = UserType.General;
     public userTypes: NameValue[] = [
         {
             value: UserType.General,
@@ -76,10 +82,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     ];
     public readonly Permission = Permission;
     protected readonly UserType = UserType;
-    @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
-    @ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
     private users$$: BehaviorSubject<any[]>;
     private selectedLang: string = ENG_BE;
+    public clipboardData: string = '';
 
     constructor(
         private userApiSvc: UserApiService,
@@ -99,10 +104,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
         this.users$$ = new BehaviorSubject<any[]>([]);
         this.filteredUsers$$ = new BehaviorSubject<any[]>([]);
         this.columns$$ = new BehaviorSubject<string[]>(this.columnsForScheduler);
-    }
-
-    @HostListener('document:click', ['$event']) onClick() {
-        this.toggleMenu(true);
     }
 
     public ngOnInit(): void {
@@ -134,6 +135,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
                                             fullName: user.displayName,
                                             userType: UserType.Scheduler,
                                             status: +user.accountEnabled,
+                                            userRole: user?.userRole,
                                         } as unknown as UserBase;
                                     }),
                                 ),
@@ -153,7 +155,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
                     this.filteredUsers$$.next([...users]);
                     this.loading$$.next(false);
                 },
-                error: (err) => this.loading$$.next(false),
+                error: () => this.loading$$.next(false),
             });
 
         this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
@@ -187,8 +189,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
                             u.lastname,
                             u.email,
                             u.userType,
-							...( this.userTypeDropdownControl.value === UserType.Scheduler ? [this.roleNamePipe.transform(this.userApiSvc.userIdToRoleMap.get(u.id.toString()))] : []),
-							Translate[StatusToName[+u.status]][this.selectedLang],
+                            ...(this.userTypeDropdownControl.value === UserType.Scheduler ? [this.roleNamePipe.transform(this.userApiSvc.userIdToRoleMap.get(u.id.toString()))] : []),
+                            Translate[StatusToName[+u.status]][this.selectedLang],
                         ]),
                         'users',
                     );
@@ -288,8 +290,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     public changeStatus(changes: ChangeStatusRequestData[]) {
         of([1, 2, 3]).subscribe((res) => console.log(res));
 
-        let observable$: Observable<any> | Observable<any>[];
-
         switch (this.userTypeDropdownControl.value) {
             case UserType.General:
                 this.userApiSvc
@@ -327,7 +327,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
             .pipe(
                 filter((res: boolean) => res),
                 switchMap(() => {
-                    if (this.userTypeToggle === UserType.Scheduler) {
+                    console.log()
+                    if (this.userTypeDropdownControl.value === UserType.Scheduler) {
                         return this.userManagementApiSvc.deleteUser(id as string);
                     }
                     return this.userApiSvc.deleteUser(id as number);

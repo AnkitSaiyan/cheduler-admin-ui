@@ -1,4 +1,4 @@
-<div class="dfm-layout">
+<div class="dfm-layout" *ngIf="user; else loader">
   <dfm-navigation-bar
     [navigationItems]="navItems"
     [isNotificationsCounterShown]="true"
@@ -23,3 +23,7 @@
     </div>
   </dfm-navigation-bar>
 </div>
+
+<ng-template #loader>
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</ng-template>

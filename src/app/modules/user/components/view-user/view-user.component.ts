@@ -63,7 +63,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
                             status: +user.accountEnabled,
                         } as unknown as User)));
                     }
-                    return this.userApiSvc.userByID$(+userID) as Observable<User>;
+                    return this.userApiSvc.getUserByID$(+userID) as Observable<User>;
                 }),
                 takeUntil(this.destroy$$),
             )

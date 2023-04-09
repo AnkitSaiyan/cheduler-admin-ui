@@ -103,7 +103,7 @@
             {{ item?.userRole | roleName | dashIfNothing }}
           </span> -->
           <span *ngIf="userTypeDropdownControl.value === UserType.Scheduler">
-            {{ item?.id | dfmUserRole | async | roleName | translate | dashIfNothing }}
+            {{ item?.userRole | roleName | translate | dashIfNothing }}
           </span>
         </dfm-table-body-cell>
         <dfm-table-body-cell>

@@ -127,7 +127,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
                 tap((staffID) => (this.staffID = +staffID)),
                 switchMap((staffID) => {
                     if (staffID) {
-                        return this.userApiSvc.userByID$(+staffID);
+                        return this.userApiSvc.getUserByID$(+staffID);
                     }
                     return of({} as User);
                 }),

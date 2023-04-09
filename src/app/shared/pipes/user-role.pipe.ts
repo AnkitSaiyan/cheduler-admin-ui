@@ -12,7 +12,7 @@ export class UserRolePipe implements PipeTransform {
 
   public transform(userId: string): Observable<UserRoleEnum> {
     if (userId) {
-      return this.userApiSvc.getCurrentUserRole$(userId);
+      return this.userApiSvc.getUserRole(userId);
     }
     return EMPTY;
   }

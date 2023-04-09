@@ -1,12 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, takeUntil} from "rxjs";
+import {BehaviorSubject, filter, switchMap, take, takeUntil} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserManagementApiService} from "../../../core/services/user-management-api.service";
-import {UserApiService} from "../../../core/services/user-api.service";
 import {DestroyableComponent} from "../destroyable.component";
 import {AuthUser} from "../../models/user.model";
 import {NotificationDataService} from "../../../core/services/notification-data.service";
 import {Router} from "@angular/router";
+import {ModalService} from "../../../core/services/modal.service";
+import {ConfirmActionModalComponent, ConfirmActionModalData} from "../confirm-action-modal.component";
+import {UserService} from "../../../core/services/user.service";
 
 @Component({
     selector: 'dfm-complete-profile',
@@ -14,7 +16,7 @@ import {Router} from "@angular/router";
     styleUrls: ['./complete-profile.component.scss'],
 })
 export class CompleteProfileComponent extends DestroyableComponent implements OnInit, OnDestroy {
-    public saving$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    public submitting$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     public user!: AuthUser;
 
     public completeProfileForm = new FormGroup({
@@ -23,12 +25,18 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
         extension_Address: new FormControl('', Validators.required),
     });
 
-    constructor(private userManagementApiSvc: UserManagementApiService, private userApiSvc: UserApiService, private notificationSvc: NotificationDataService, private router: Router) {
+    constructor(
+        private userManagementApiSvc: UserManagementApiService,
+        private userSvc: UserService,
+        private modalSvc: ModalService,
+        private notificationSvc: NotificationDataService,
+        private router: Router,
+    ) {
         super()
     }
 
     public ngOnInit(): void {
-        this.userApiSvc.authUser$.pipe(takeUntil(this.destroy$$)).subscribe((user) => {
+        this.userSvc.authUser$.pipe(takeUntil(this.destroy$$)).subscribe((user) => {
             console.log(user, 'auth user');
             this.user = user as AuthUser;
         });
@@ -45,23 +53,45 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
             return
         }
 
-        this.saving$$.next(true);
+        this.submitting$$.next(true);
 
         this.userManagementApiSvc.patchUserProperties(this.user.id, {
             extension_ProfileIsIncomplete: false,
-            ...this.completeProfileForm.value
+            // ...this.completeProfileForm.value
         })
-            .pipe(takeUntil(this.destroy$$))
+            .pipe(
+                switchMap(() => this.userSvc.initializeUser()),
+                takeUntil(this.destroy$$)
+            )
             .subscribe({
-                next: (res) => {
+                next: (success) => {
+                    if (!success) {
+                        this.notificationSvc.showError('Failed to Login. Logging out.');
+                        this.userSvc.logout();
+                    }
+
                     this.notificationSvc.showSuccess('Profile saved successfully.');
-                    this.saving$$.next(false);
                     this.router.navigate(['/']);
                 },
-                error: (err) => {
+                error: () => {
                     this.notificationSvc.showError('Failed to save profile.');
-                    this.saving$$.next(false);
+                    this.submitting$$.next(false);
                 }
             });
+    }
+
+    public logout() {
+        const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
+            data: {
+                titleText: 'Logout Confirmation',
+                bodyText: 'Are you sure you want to logout?',
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
+            } as ConfirmActionModalData,
+        });
+
+        modalRef.closed.pipe(take(1), filter((res) => !!res)).subscribe({
+            next: () => this.userSvc.logout()
+        })
     }
 }

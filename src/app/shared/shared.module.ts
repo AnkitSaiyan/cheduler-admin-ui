@@ -58,6 +58,7 @@ import { DefaultDatePipe } from './pipes/default-date.pipe';
 import { ShowSlotPercentagePipe } from './pipes/showSlotPercentage.pipe';
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
 import {MatDividerModule} from "@angular/material/divider";
+import { LoginFailedComponent } from './components/login-failed/login-failed.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -101,6 +102,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DefaultDatePipe,
 		ShowSlotPercentagePipe,
   CompleteProfileComponent,
+  LoginFailedComponent,
 	],
     imports: [
         CommonModule,

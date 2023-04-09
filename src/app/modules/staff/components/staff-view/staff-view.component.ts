@@ -66,7 +66,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
         this.routerStateSvc
             .listenForParamChange$(STAFF_ID)
             .pipe(
-                switchMap((staffID) => this.userApiService.userByID$(+staffID)),
+                switchMap((staffID) => this.userApiService.getUserByID$(+staffID)),
                 takeUntil(this.destroy$$),
             )
             .subscribe((staffDetails) => {
