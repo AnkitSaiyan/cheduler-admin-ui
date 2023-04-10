@@ -13,82 +13,83 @@ import { AddAbsenceComponent } from '../add-absence/add-absence.component';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
-  selector: 'dfm-view-absence',
-  templateUrl: './view-absence.component.html',
-  styleUrls: ['./view-absence.component.scss'],
+	selector: 'dfm-view-absence',
+	templateUrl: './view-absence.component.html',
+	styleUrls: ['./view-absence.component.scss'],
 })
 export class ViewAbsenceComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public absenceDetails$$ = new BehaviorSubject<Absence | undefined>(undefined);
+	public absenceDetails$$ = new BehaviorSubject<Absence | undefined>(undefined);
 
-  public repeatType = RepeatType;
+	public repeatType = RepeatType;
 
-  private selectedLang: string = ENG_BE;
+	private selectedLang: string = ENG_BE;
 
+	public readonly Permission = Permission;
 
-  constructor(
-    private absenceApiSvc: AbsenceApiService,
-    private routerStateSvc: RouterStateService,
-    private notificationSvc: NotificationDataService,
-    private router: Router,
-    private modalSvc: ModalService,
-    private shareDataService: ShareDataService,
-  ) {
-    super();
-  }
+	constructor(
+		private absenceApiSvc: AbsenceApiService,
+		private routerStateSvc: RouterStateService,
+		private notificationSvc: NotificationDataService,
+		private router: Router,
+		private modalSvc: ModalService,
+		private shareDataService: ShareDataService,
+	) {
+		super();
+	}
 
-  public ngOnInit(): void {
-    this.routerStateSvc
-      .listenForParamChange$(ABSENCE_ID)
-      .pipe(
-        switchMap((absenceID) => this.absenceApiSvc.getAbsenceByID$(+absenceID)),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((absenceDetails) => {
-        this.absenceDetails$$.next(absenceDetails);
-      });
+	public ngOnInit(): void {
+		this.routerStateSvc
+			.listenForParamChange$(ABSENCE_ID)
+			.pipe(
+				switchMap((absenceID) => this.absenceApiSvc.getAbsenceByID$(+absenceID)),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((absenceDetails) => {
+				this.absenceDetails$$.next(absenceDetails);
+			});
 
-      this.shareDataService
-      .getLanguage$()
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => (this.selectedLang = lang));
-  }
+		this.shareDataService
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe((lang) => (this.selectedLang = lang));
+	}
 
-  public deleteAbsence(id: number) {
+	public deleteAbsence(id: number) {
+		const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
+			data: {
+				titleText: 'Confirmation',
+				bodyText: 'AreyousureyouwanttodeletethisAbsence',
+				confirmButtonText: 'Delete',
+				cancelButtonText: 'Cancel',
+			} as ConfirmActionModalData,
+		});
 
-    const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
-      data: {
-        titleText: 'Confirmation',
-        bodyText: 'AreyousureyouwanttodeletethisAbsence',
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-      } as ConfirmActionModalData,
-    });
+		modalRef.closed
+			.pipe(
+				filter((res: boolean) => {
+					return res;
+				}),
+				switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),
+				take(1),
+			)
+			.subscribe(() => {
+				this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang]);
+				this.router.navigate(['/', 'absence']);
+			});
+	}
 
-    modalRef.closed
-      .pipe(
-        filter((res: boolean) => {
-          return res;
-        }),
-        switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),
-        take(1),
-      )
-      .subscribe(() => {
-        this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang]);
-        this.router.navigate(['/', 'absence']);
-      });
-  }
-
-  public openEditAbsenceModal() {
-    this.modalSvc.open(AddAbsenceComponent, {
-      data: { edit: !!this.absenceDetails$$.value?.id, absenceID: this.absenceDetails$$.value?.id },
-      options: {
-        size: 'xl',
-        centered: true,
-        backdropClass: 'modal-backdrop-remove-mv',
-        keyboard: false,
-      },
-    });
-  }
+	public openEditAbsenceModal() {
+		this.modalSvc.open(AddAbsenceComponent, {
+			data: { edit: !!this.absenceDetails$$.value?.id, absenceID: this.absenceDetails$$.value?.id },
+			options: {
+				size: 'xl',
+				centered: true,
+				backdropClass: 'modal-backdrop-remove-mv',
+				keyboard: false,
+			},
+		});
+	}
 }

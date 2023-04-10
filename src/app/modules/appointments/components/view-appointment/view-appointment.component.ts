@@ -11,105 +11,108 @@ import { Appointment } from '../../../../shared/models/appointment.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
-  selector: 'dfm-view-appointment',
-  templateUrl: './view-appointment.component.html',
-  styleUrls: ['./view-appointment.component.scss'],
+	selector: 'dfm-view-appointment',
+	templateUrl: './view-appointment.component.html',
+	styleUrls: ['./view-appointment.component.scss'],
 })
 export class ViewAppointmentComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public appointment$$ = new BehaviorSubject<Appointment | undefined>(undefined);
+	public appointment$$ = new BehaviorSubject<Appointment | undefined>(undefined);
 
-  public rooms: string[] = [];
+	public rooms: string[] = [];
 
-  public examDetails$$ = new BehaviorSubject<any[]>([]);
+	public examDetails$$ = new BehaviorSubject<any[]>([]);
 
-  public columns = ['Name', 'Expensive', 'Room', 'StartDate', 'EndDate'];
-  private selectedLang: string = ENG_BE;
+	public columns = ['Name', 'Expensive', 'Room', 'StartDate', 'EndDate'];
 
-  public statuses = Statuses;
+	private selectedLang: string = ENG_BE;
 
-  constructor(
-    private appointmentApiSvc: AppointmentApiService,
-    private routerStateSvc: RouterStateService,
-    private notificationSvc: NotificationDataService,
-    private router: Router,
-    private modalSvc: ModalService,
-    private shareDataSvc: ShareDataService,
-  ) {
-    super();
-  }
+	public readonly Permission = Permission;
 
-  public ngOnInit(): void {
-    this.routerStateSvc
-      .listenForParamChange$(APPOINTMENT_ID)
-      .pipe(
-        // filter((appointmentID) => !!appointmentID),
-        switchMap((appointmentID) => this.appointmentApiSvc.getAppointmentByID$(+appointmentID)),
-        tap((appointment) => {
-          this.appointment$$.next(appointment);
-          this.examDetails$$.next(appointment?.exams ?? []);
+	public statuses = Statuses;
 
-          if (appointment?.exams?.length) {
-            const roomIdToName: { [key: string]: string } = {};
+	constructor(
+		private appointmentApiSvc: AppointmentApiService,
+		private routerStateSvc: RouterStateService,
+		private notificationSvc: NotificationDataService,
+		private router: Router,
+		private modalSvc: ModalService,
+		private shareDataSvc: ShareDataService,
+	) {
+		super();
+	}
 
-            appointment.exams.forEach((exam) => {
-              if (exam.rooms?.length) {
-                exam?.rooms.forEach((room) => {
-                  if (!roomIdToName[room.id]) {
-                    roomIdToName[room.id] = room.name;
-                    this.rooms.push(room.name);
-                  }
-                });
-              }
-            });
-          }
-        }),
-        // switchMap((appointment) => {
-        //   if (appointment && appointment.id) {
-        //
-        //   }
-        // }),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((appointment) => {
-      });
-      this.shareDataSvc
-      .getLanguage$()
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
-        this.selectedLang = lang;
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
-        }
-      });
-  }
+	public ngOnInit(): void {
+		this.routerStateSvc
+			.listenForParamChange$(APPOINTMENT_ID)
+			.pipe(
+				// filter((appointmentID) => !!appointmentID),
+				switchMap((appointmentID) => this.appointmentApiSvc.getAppointmentByID$(+appointmentID)),
+				tap((appointment) => {
+					this.appointment$$.next(appointment);
+					this.examDetails$$.next(appointment?.exams ?? []);
 
-  public deleteAppointment(id: number) {
-    const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
-      data: {
-        titleText: 'Confirmation',
-        bodyText: 'AreYouSureYouWantToDeleteAppointment',
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-      } as ConfirmActionModalData,
-    });
+					if (appointment?.exams?.length) {
+						const roomIdToName: { [key: string]: string } = {};
 
-    dialogRef.closed
-      .pipe(
-        filter((res: boolean) => res),
-        take(1),
-      )
-      .subscribe(() => {
-        this.appointmentApiSvc.deleteAppointment$(id);
-        this.notificationSvc.showNotification(Translate.DeleteAppointment[this.selectedLang]);
-        this.router.navigate(['/', 'appointment']);
-      });
-  }
+						appointment.exams.forEach((exam) => {
+							if (exam.rooms?.length) {
+								exam?.rooms.forEach((room) => {
+									if (!roomIdToName[room.id]) {
+										roomIdToName[room.id] = room.name;
+										this.rooms.push(room.name);
+									}
+								});
+							}
+						});
+					}
+				}),
+				// switchMap((appointment) => {
+				//   if (appointment && appointment.id) {
+				//
+				//   }
+				// }),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((appointment) => {});
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe((lang) => {
+				this.selectedLang = lang;
+				// eslint-disable-next-line default-case
+				switch (lang) {
+					case ENG_BE:
+						this.statuses = Statuses;
+						break;
+					case DUTCH_BE:
+						this.statuses = StatusesNL;
+						break;
+				}
+			});
+	}
+
+	public deleteAppointment(id: number) {
+		const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
+			data: {
+				titleText: 'Confirmation',
+				bodyText: 'AreYouSureYouWantToDeleteAppointment',
+				confirmButtonText: 'Delete',
+				cancelButtonText: 'Cancel',
+			} as ConfirmActionModalData,
+		});
+
+		dialogRef.closed
+			.pipe(
+				filter((res: boolean) => res),
+				take(1),
+			)
+			.subscribe(() => {
+				this.appointmentApiSvc.deleteAppointment$(id);
+				this.notificationSvc.showNotification(Translate.DeleteAppointment[this.selectedLang]);
+				this.router.navigate(['/', 'appointment']);
+			});
+	}
 }

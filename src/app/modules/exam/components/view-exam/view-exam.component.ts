@@ -1,215 +1,218 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, filter, switchMap, take, takeUntil} from 'rxjs';
-import {Router} from '@angular/router';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {User, UserType} from '../../../../shared/models/user.model';
-import {TimeSlot, Weekday, WeekWisePracticeAvailability} from '../../../../shared/models/calendar.model';
-import {RouterStateService} from '../../../../core/services/router-state.service';
-import {ExamApiService} from '../../../../core/services/exam-api.service';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {ModalService} from '../../../../core/services/modal.service';
-import {ENG_BE, EXAM_ID} from '../../../../shared/utils/const';
-import {PracticeAvailability} from '../../../../shared/models/practice.model';
-import {
-    ConfirmActionModalComponent,
-    ConfirmActionModalData
-} from '../../../../shared/components/confirm-action-modal.component';
-import {Exam, Uncombinables} from '../../../../shared/models/exam.model';
-import {RoomsApiService} from '../../../../core/services/rooms-api.service';
-import {NameValue} from '../../../../shared/components/search-modal.component';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { User, UserType } from '../../../../shared/models/user.model';
+import { TimeSlot, Weekday, WeekWisePracticeAvailability } from '../../../../shared/models/calendar.model';
+import { RouterStateService } from '../../../../core/services/router-state.service';
+import { ExamApiService } from '../../../../core/services/exam-api.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { ENG_BE, EXAM_ID } from '../../../../shared/utils/const';
+import { PracticeAvailability } from '../../../../shared/models/practice.model';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { Exam, Uncombinables } from '../../../../shared/models/exam.model';
+import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { NameValue } from '../../../../shared/components/search-modal.component';
 
-import {Translate} from '../../../../shared/models/translate.model';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
-    selector: 'dfm-view-exam',
-    templateUrl: './view-exam.component.html',
-    styleUrls: ['./view-exam.component.scss'],
+	selector: 'dfm-view-exam',
+	templateUrl: './view-exam.component.html',
+	styleUrls: ['./view-exam.component.scss'],
 })
 export class ViewExamComponent extends DestroyableComponent implements OnInit, OnDestroy {
-    public examDetails$$ = new BehaviorSubject<Exam | undefined>(undefined);
+	public examDetails$$ = new BehaviorSubject<Exam | undefined>(undefined);
 
-    public uncombinablesExam$$ = new BehaviorSubject<Uncombinables[]>([]);
+	public uncombinablesExam$$ = new BehaviorSubject<Uncombinables[]>([]);
 
-    public staffsGroupedByTypes: {
-        mandatory: NameValue[];
-        radiologists: NameValue[];
-        assistants: NameValue[];
-        nursing: NameValue[];
-        secretaries: NameValue[];
-    } = {
-        mandatory: [],
-        radiologists: [],
-        assistants: [],
-        nursing: [],
-        secretaries: [],
-    };
-    public practiceAvailability$$ = new BehaviorSubject<any[]>([]);
-    public columns: Weekday[] = [Weekday.MON, Weekday.TUE, Weekday.WED, Weekday.THU, Weekday.FRI, Weekday.SAT, Weekday.SUN];
-    private selectedLang: string = ENG_BE;
+	public staffsGroupedByTypes: {
+		mandatory: NameValue[];
+		radiologists: NameValue[];
+		assistants: NameValue[];
+		nursing: NameValue[];
+		secretaries: NameValue[];
+	} = {
+		mandatory: [],
+		radiologists: [],
+		assistants: [],
+		nursing: [],
+		secretaries: [],
+	};
 
-    constructor(
-        private examApiService: ExamApiService,
-        private roomApiService: RoomsApiService,
-        private routerStateSvc: RouterStateService,
-        private examApiSvc: ExamApiService,
-        private notificationSvc: NotificationDataService,
-        private router: Router,
-        private modalSvc: ModalService,
-        private shareDataService: ShareDataService,
-    ) {
-        super();
-    }
+	public practiceAvailability$$ = new BehaviorSubject<any[]>([]);
 
-    public ngOnInit(): void {
-        this.routerStateSvc
-            .listenForParamChange$(EXAM_ID)
-            .pipe(
-                switchMap((examID) => this.examApiService.getExamByID(+examID)),
-                takeUntil(this.destroy$$),
-            )
-            .subscribe({
-                next: (exam) => {
-                    this.examDetails$$.next(exam);
-                    this.uncombinablesExam$$.next(exam?.uncombinablesExam ?? []);
-                    if (exam?.practiceAvailability?.length) {
-                        this.practiceAvailability$$.next([...this.getPracticeAvailability(exam.practiceAvailability)]);
-                    }
+	public columns: Weekday[] = [Weekday.MON, Weekday.TUE, Weekday.WED, Weekday.THU, Weekday.FRI, Weekday.SAT, Weekday.SUN];
 
-                    if (exam?.users?.length) {
-                        this.saveStaffDetails(exam.users);
-                    }
-                }
-            });
+	private selectedLang: string = ENG_BE;
 
-        this.shareDataService
-            .getLanguage$()
-            .pipe(takeUntil(this.destroy$$))
-            .subscribe({
-                next: (lang) => (this.selectedLang = lang)
-            });
-    }
+	public readonly Permission = Permission;
 
-    public deleteExam(id: number) {
-        const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
-            data: {
-                titleText: 'Confirmation',
-                bodyText: 'Are you sure you want to delete this Exam?',
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Cancel',
-            } as ConfirmActionModalData,
-        });
+	constructor(
+		private examApiService: ExamApiService,
+		private roomApiService: RoomsApiService,
+		private routerStateSvc: RouterStateService,
+		private examApiSvc: ExamApiService,
+		private notificationSvc: NotificationDataService,
+		private router: Router,
+		private modalSvc: ModalService,
+		private shareDataService: ShareDataService,
+	) {
+		super();
+	}
 
-        dialogRef.closed
-            .pipe(
-                filter((res: boolean) => res),
-                switchMap(() => this.examApiService.deleteExam(id)),
-                take(1),
-            )
-            .subscribe({
-                next: () => {
-                    this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang]);
-                    this.router.navigate(['/', 'exam']);
-                }
-            });
-    }
+	public ngOnInit(): void {
+		this.routerStateSvc
+			.listenForParamChange$(EXAM_ID)
+			.pipe(
+				switchMap((examID) => this.examApiService.getExamByID(+examID)),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (exam) => {
+					this.examDetails$$.next(exam);
+					this.uncombinablesExam$$.next(exam?.uncombinablesExam ?? []);
+					if (exam?.practiceAvailability?.length) {
+						this.practiceAvailability$$.next([...this.getPracticeAvailability(exam.practiceAvailability)]);
+					}
 
-    private saveStaffDetails(users: User[]) {
-        users.forEach((user) => {
-            const nameValue: NameValue = {
-                name: `${user.firstname} ${user.lastname}`,
-                value: user.id,
-            };
-            if (user.isMandate) {
-                this.staffsGroupedByTypes.mandatory.push(nameValue);
-            } else {
-                switch (user.userType) {
-                    case UserType.Assistant:
-                        this.staffsGroupedByTypes.assistants.push(nameValue);
-                        break;
-                    case UserType.Radiologist:
-                        this.staffsGroupedByTypes.radiologists.push(nameValue);
-                        break;
-                    case UserType.Nursing:
-                        this.staffsGroupedByTypes.nursing.push(nameValue);
-                        break;
-                    case UserType.Secretary:
-                    case UserType.Scheduler:
-                        this.staffsGroupedByTypes.secretaries.push(nameValue);
-                        break;
-                    default:
-                    // this.staffsGroupedByTypes.mandatory.push(nameValue);
-                }
-            }
-        });
-    }
+					if (exam?.users?.length) {
+						this.saveStaffDetails(exam.users);
+					}
+				},
+			});
 
-    private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): WeekWisePracticeAvailability[] {
-        const weekdayToSlotsObj: { [key: string]: TimeSlot[] } = {};
+		this.shareDataService
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: (lang) => (this.selectedLang = lang),
+			});
+	}
 
-        const practiceAvailability: WeekWisePracticeAvailability[] = [];
+	public deleteExam(id: number) {
+		const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
+			data: {
+				titleText: 'Confirmation',
+				bodyText: 'Are you sure you want to delete this Exam?',
+				confirmButtonText: 'Delete',
+				cancelButtonText: 'Cancel',
+			} as ConfirmActionModalData,
+		});
 
-        // creating week-wise slots
-        practiceAvailabilities.forEach((practice) => {
-            const timeSlot: TimeSlot = {
-                dayStart: DateTimeUtils.TimeStringIn24Hour(practice.dayStart),
-                dayEnd: DateTimeUtils.TimeStringIn24Hour(practice.dayEnd),
-                id: practice.id,
-            };
+		dialogRef.closed
+			.pipe(
+				filter((res: boolean) => res),
+				switchMap(() => this.examApiService.deleteExam(id)),
+				take(1),
+			)
+			.subscribe({
+				next: () => {
+					this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang]);
+					this.router.navigate(['/', 'exam']);
+				},
+			});
+	}
 
-            const key = practice.weekday.toString();
+	private saveStaffDetails(users: User[]) {
+		users.forEach((user) => {
+			const nameValue: NameValue = {
+				name: `${user.firstname} ${user.lastname}`,
+				value: user.id,
+			};
+			if (user.isMandate) {
+				this.staffsGroupedByTypes.mandatory.push(nameValue);
+			} else {
+				switch (user.userType) {
+					case UserType.Assistant:
+						this.staffsGroupedByTypes.assistants.push(nameValue);
+						break;
+					case UserType.Radiologist:
+						this.staffsGroupedByTypes.radiologists.push(nameValue);
+						break;
+					case UserType.Nursing:
+						this.staffsGroupedByTypes.nursing.push(nameValue);
+						break;
+					case UserType.Secretary:
+					case UserType.Scheduler:
+						this.staffsGroupedByTypes.secretaries.push(nameValue);
+						break;
+					default:
+					// this.staffsGroupedByTypes.mandatory.push(nameValue);
+				}
+			}
+		});
+	}
 
-            if (!weekdayToSlotsObj[key] && !weekdayToSlotsObj[key]?.length) {
-                weekdayToSlotsObj[key] = [];
-            }
+	private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): WeekWisePracticeAvailability[] {
+		const weekdayToSlotsObj: { [key: string]: TimeSlot[] } = {};
 
-            weekdayToSlotsObj[key].push(timeSlot);
-        });
+		const practiceAvailability: WeekWisePracticeAvailability[] = [];
 
-        // sorting slots by start time
-        for (let weekday = 0; weekday < 7; weekday++) {
-            if (weekdayToSlotsObj[weekday.toString()]?.length) {
-                weekdayToSlotsObj[weekday.toString()].sort((a, b) => DateTimeUtils.TimeToNumber(a.dayStart) - DateTimeUtils.TimeToNumber(b.dayStart));
-            }
-        }
+		// creating week-wise slots
+		practiceAvailabilities.forEach((practice) => {
+			const timeSlot: TimeSlot = {
+				dayStart: DateTimeUtils.TimeStringIn24Hour(practice.dayStart),
+				dayEnd: DateTimeUtils.TimeStringIn24Hour(practice.dayEnd),
+				id: practice.id,
+			};
 
-        let slotNo = 0;
+			const key = practice.weekday.toString();
 
-        while (true) {
-            const allWeekTimeSlots: { [key: string]: TimeSlot } = {};
+			if (!weekdayToSlotsObj[key] && !weekdayToSlotsObj[key]?.length) {
+				weekdayToSlotsObj[key] = [];
+			}
 
-            let done = true;
+			weekdayToSlotsObj[key].push(timeSlot);
+		});
 
-            for (let weekday = 0; weekday < 7; weekday++) {
-                const key = weekday.toString();
+		// sorting slots by start time
+		for (let weekday = 0; weekday < 7; weekday++) {
+			if (weekdayToSlotsObj[weekday.toString()]?.length) {
+				weekdayToSlotsObj[weekday.toString()].sort((a, b) => DateTimeUtils.TimeToNumber(a.dayStart) - DateTimeUtils.TimeToNumber(b.dayStart));
+			}
+		}
 
-                if (weekdayToSlotsObj[key]?.length > slotNo) {
-                    allWeekTimeSlots[key] = {...allWeekTimeSlots, ...weekdayToSlotsObj[key][slotNo]};
-                    if (done) {
-                        done = false;
-                    }
-                }
-            }
+		let slotNo = 0;
 
-            if (done) {
-                break;
-            }
+		while (true) {
+			const allWeekTimeSlots: { [key: string]: TimeSlot } = {};
 
-            slotNo++;
+			let done = true;
 
-            practiceAvailability.push({
-                slotNo,
-                monday: {...allWeekTimeSlots['1']},
-                tuesday: {...allWeekTimeSlots['2']},
-                wednesday: {...allWeekTimeSlots['3']},
-                thursday: {...allWeekTimeSlots['4']},
-                friday: {...allWeekTimeSlots['5']},
-                saturday: {...allWeekTimeSlots['6']},
-                sunday: {...allWeekTimeSlots['0']},
-            });
-        }
+			for (let weekday = 0; weekday < 7; weekday++) {
+				const key = weekday.toString();
 
-        return practiceAvailability;
-    }
+				if (weekdayToSlotsObj[key]?.length > slotNo) {
+					allWeekTimeSlots[key] = { ...allWeekTimeSlots, ...weekdayToSlotsObj[key][slotNo] };
+					if (done) {
+						done = false;
+					}
+				}
+			}
+
+			if (done) {
+				break;
+			}
+
+			slotNo++;
+
+			practiceAvailability.push({
+				slotNo,
+				monday: { ...allWeekTimeSlots['1'] },
+				tuesday: { ...allWeekTimeSlots['2'] },
+				wednesday: { ...allWeekTimeSlots['3'] },
+				thursday: { ...allWeekTimeSlots['4'] },
+				friday: { ...allWeekTimeSlots['5'] },
+				saturday: { ...allWeekTimeSlots['6'] },
+				sunday: { ...allWeekTimeSlots['0'] },
+			});
+		}
+
+		return practiceAvailability;
+	}
 }
