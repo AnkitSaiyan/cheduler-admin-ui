@@ -6,11 +6,11 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
 import { BehaviorSubject, takeUntil } from 'rxjs';
 
 @Component({
-	selector: 'dfm-consultations-doughnut-chart',
-	templateUrl: './consultations-doughnut-chart.component.html',
-	styleUrls: ['./consultations-doughnut-chart.component.scss'],
+	selector: 'dfm-completed-bar-chart',
+	templateUrl: './completed-bar-chart.component.html',
+	styleUrls: ['./completed-bar-chart.component.scss'],
 })
-export class ConsultationsDoughnutChartComponent extends DestroyableComponent implements OnInit {
+export class CompletedBarChartComponent extends DestroyableComponent implements OnInit {
 	public completedBarChartLabels = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 	public cancelledBarChartOptions!: ChartOptions<'bar'>;

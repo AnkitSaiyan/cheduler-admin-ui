@@ -16,7 +16,7 @@ import { UnavailableHallPeriodsComponent } from './components/unavailable-hall-p
 import { AppointmentsBarChartComponent } from './components/charts/appointments-bar-chart/appointments-bar-chart.component';
 import { PatientsBarChartComponent } from './components/charts/patients-bar-chart/patients-bar-chart.component';
 import { CancelledBarChartComponent } from './components/charts/cancelled-bar-chart/cancelled-bar-chart.component';
-import { ConsultationsDoughnutChartComponent } from './components/charts/consultations-doughnut-chart/consultations-doughnut-chart.component';
+import { CompletedBarChartComponent } from './components/charts/completed-bar-chart/completed-bar-chart.component';
 import { EmployeeAbsencesComponent } from './components/employee-absences/employee-absences.component';
 import { PostItComponent } from './components/post-it/post-it.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -39,7 +39,7 @@ import { AppointmentAdvanceSearchComponent } from './components/dashboard-appoin
     AppointmentsBarChartComponent,
     PatientsBarChartComponent,
     CancelledBarChartComponent,
-    ConsultationsDoughnutChartComponent,
+    CompletedBarChartComponent,
     EmployeeAbsencesComponent,
     PostItComponent,
     AddPostComponent,
