@@ -73,15 +73,12 @@ export class PostItComponent extends DestroyableComponent implements OnInit, OnD
 
         dialogRef.closed
             .pipe(
+                filter((message) => !!message),
                 switchMap((message: string) => this.dashboardApiService.addPost(message)),
                 take(1),
             )
-            .subscribe((response) => {
-                if (response) {
-                    this.notificationSvc.showNotification(Translate.SuccessMessage.PostAddedSuccessfully[this.selectedLang]);
-                    // this.filteredPosts$$.next([]);
-                    // this.ngOnInit();
-                }
+            .subscribe({
+                next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.PostAddedSuccessfully[this.selectedLang])
             });
     }
 
