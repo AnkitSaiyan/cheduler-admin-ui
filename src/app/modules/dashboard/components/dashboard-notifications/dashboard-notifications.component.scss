@@ -21,6 +21,10 @@
 
 // ======================Media Query for Mobile view=================
 @media (min-width:180px) and (max-width:680px) {
+  .notification-wrapper{
+    max-height: 300px;
+    height: 300px;
+  }
   .notification-mobile-view{
     display: flex;
     flex-direction: column;
