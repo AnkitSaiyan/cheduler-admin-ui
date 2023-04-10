@@ -1,168 +1,154 @@
 <div *ngIf="absenceDetails$$ | async as absenceDetails" class="d-flex flex-column dfm-gap-24">
-  <section class="content-section-1 ab-vw-section1">
-    <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ab-vw-title-buttons">
-      <dfm-button
-        color="link"
-        size="lg"
-        routerLink="/absence"
-      >{{'Absence' | translate}}
-      </dfm-button>
-      <div style="width: 16px; height: 16px" class="h-fit">
-        <dfm-icon name="chevron-right"></dfm-icon>
-      </div>
-      <dfm-button
-        color="link-gray"
-        size="lg"
-      >{{'View' | translate}}
-      </dfm-button>
-    </div>
+	<section class="content-section-1 ab-vw-section1">
+		<div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ab-vw-title-buttons">
+			<dfm-button color="link" size="lg" routerLink="/absence">{{ 'Absence' | translate }} </dfm-button>
+			<div style="width: 16px; height: 16px" class="h-fit">
+				<dfm-icon name="chevron-right"></dfm-icon>
+			</div>
+			<dfm-button color="link-gray" size="lg">{{ 'View' | translate }} </dfm-button>
+		</div>
 
-    <div class="d-flex dfm-gap-16 ab-vw-action-buttons">
-      <dfm-button
-        color="link"
-        size="md"
-        leadingIcon="pencil-02"
-        (click)="openEditAbsenceModal()"
-      >{{'EditAbsence' | translate}}
-      </dfm-button>
+		<div class="d-flex dfm-gap-16 ab-vw-action-buttons">
+			<dfm-button color="link" size="md" leadingIcon="pencil-02" (click)="openEditAbsenceModal()" *dfmPermitted="Permission.UpdateAbsences"
+				>{{ 'EditAbsence' | translate }}
+			</dfm-button>
 
-      <dfm-button
-        color="link"
-        size="md"
-        class="text-nowrap"
-        leadingIcon="trash-01"
-        (click)="deleteAbsence(absenceDetails.id)"
-      >
-        {{'DeleteAbsence' | translate}}
-      </dfm-button>
-    </div>
+			<dfm-button
+				color="link"
+				size="md"
+				class="text-nowrap"
+				leadingIcon="trash-01"
+				(click)="deleteAbsence(absenceDetails.id)"
+				*dfmPermitted="Permission.DeleteAbsences"
+			>
+				{{ 'DeleteAbsence' | translate }}
+			</dfm-button>
+		</div>
 
-    <!-- Mobile View -->
-    <div class="hidden dfm-gap-8 align-items-center ab-vw-title-buttons-mv">
-      <div class="rounded-circle overflow-hidden">
-        <dfm-button-icon
-          color="tertiary-gray"
-          size="sm"
-          icon="chevron-left"
-          routerLink="/absence"
-        >
-        </dfm-button-icon>
-      </div>
+		<!-- Mobile View -->
+		<div class="hidden dfm-gap-8 align-items-center ab-vw-title-buttons-mv">
+			<div class="rounded-circle overflow-hidden">
+				<dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" routerLink="/absence"> </dfm-button-icon>
+			</div>
 
-      <dfm-button
-        color="link"
-        size="lg"
-        routerLink="./"
-      >{{'AbsenceView' | translate}}
-      </dfm-button>
-    </div>
-    <!-- ** -->
-  </section>
+			<dfm-button color="link" size="lg" routerLink="./">{{ 'AbsenceView' | translate }} </dfm-button>
+		</div>
+		<!-- ** -->
+	</section>
 
-  <section class="d-flex dfm-gap-24 view-page-content-height ab-vw-section2">
-    <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
-      <header class="d-flex align-items-center dfm-gap-8">
-        <div class="dfm-button-gray-400">
-          <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
-        </div>
-        <span class="font-weight-medium">{{'AbsenceDetails' | translate}}</span>
-      </header>
+	<section class="d-flex dfm-gap-24 view-page-content-height ab-vw-section2">
+		<div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
+			<header class="d-flex align-items-center dfm-gap-8">
+				<div class="dfm-button-gray-400">
+					<dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+				</div>
+				<span class="font-weight-medium">{{ 'AbsenceDetails' | translate }}</span>
+			</header>
 
-      <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-        <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">{{'Title' | translate}}</span>
-          <span class="flex-1">{{ absenceDetails.name | titlecase }}</span>
-        </div>
+			<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
+				<div class="d-flex dfm-gap-8 justify-content-between">
+					<span class="flex-1">{{ 'Title' | translate }}</span>
+					<span class="flex-1">{{ absenceDetails.name | titlecase }}</span>
+				</div>
 
-        <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">{{absenceDetails.isRepeat ? ('StartDate' | translate) : ('Date' | translate)}}</span>
-          <span class="flex-1" *ngIf="!absenceDetails.isRepeat">{{ absenceDetails.startedAt | dfmDefaultDate }} - {{absenceDetails.endedAt | dfmDefaultDate : 'time'}}</span>
-          <span class="flex-1" *ngIf="absenceDetails.isRepeat">{{ absenceDetails.startedAt | dfmDefaultDate }},</span>
-        </div>
+				<div class="d-flex dfm-gap-8 justify-content-between">
+					<span class="flex-1">{{ absenceDetails.isRepeat ? ('StartDate' | translate) : ('Date' | translate) }}</span>
+					<span class="flex-1" *ngIf="!absenceDetails.isRepeat"
+						>{{ absenceDetails.startedAt | dfmDefaultDate }} - {{ absenceDetails.endedAt | dfmDefaultDate : 'time' }}</span
+					>
+					<span class="flex-1" *ngIf="absenceDetails.isRepeat">{{ absenceDetails.startedAt | dfmDefaultDate }},</span>
+				</div>
 
-        <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="absenceDetails.isRepeat">
-          <span class="flex-1">{{'EndDate' | translate}}</span>
-          <span class="flex-1 text-truncate">{{ absenceDetails.endedAt | dfmDefaultDate | dashIfNothing }}</span>
-        </div>
+				<div class="d-flex dfm-gap-8 justify-content-between" *ngIf="absenceDetails.isRepeat">
+					<span class="flex-1">{{ 'EndDate' | translate }}</span>
+					<span class="flex-1 text-truncate">{{ absenceDetails.endedAt | dfmDefaultDate | dashIfNothing }}</span>
+				</div>
 
-        <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">{{'Staff' | translate}}</span>
-          <span class="flex-1 text-break"> {{ absenceDetails.user | joinWithAnd : 'firstname' | dashIfNothing }}</span>
-        </div>
+				<div class="d-flex dfm-gap-8 justify-content-between">
+					<span class="flex-1">{{ 'Staff' | translate }}</span>
+					<span class="flex-1 text-break"> {{ absenceDetails.user | joinWithAnd : 'firstname' | dashIfNothing }}</span>
+				</div>
 
-        <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">{{'Room' | translate}}</span>
-          <span class="flex-1 text-break">{{ absenceDetails.rooms | joinWithAnd : 'name' | titlecase | dashIfNothing }}</span>
-        </div>
-      </div>
-    </div>
+				<div class="d-flex dfm-gap-8 justify-content-between">
+					<span class="flex-1">{{ 'Room' | translate }}</span>
+					<span class="flex-1 text-break">{{ absenceDetails.rooms | joinWithAnd : 'name' | titlecase | dashIfNothing }}</span>
+				</div>
+			</div>
+		</div>
 
-    <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
-      <header class="d-flex align-items-center dfm-gap-8">
-        <div class="dfm-button-gray-400">
-          <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
-        </div>
-        <span class="font-weight-medium">{{'AbsenceInformation' | translate}}</span>
-      </header>
+		<div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
+			<header class="d-flex align-items-center dfm-gap-8">
+				<div class="dfm-button-gray-400">
+					<dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+				</div>
+				<span class="font-weight-medium">{{ 'AbsenceInformation' | translate }}</span>
+			</header>
 
-      <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-        <span class="text-break" style="white-space: pre-wrap">{{ absenceDetails.info }}</span>
-      </div>
-    </div>
+			<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
+				<span class="text-break" style="white-space: pre-wrap">{{ absenceDetails.info }}</span>
+			</div>
+		</div>
 
-    <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
-      <header class="d-flex align-items-center dfm-gap-8">
-        <div class="dfm-button-gray-400">
-          <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
-        </div>
-        <span class="font-weight-medium">{{'AbsenceRepeatDetails' | translate}}</span>
-      </header>
+		<div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
+			<header class="d-flex align-items-center dfm-gap-8">
+				<div class="dfm-button-gray-400">
+					<dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+				</div>
+				<span class="font-weight-medium">{{ 'AbsenceRepeatDetails' | translate }}</span>
+			</header>
 
-      <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-        <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">{{'PublicHoliday' | translate}}</span>
-          <span class="flex-1">{{ absenceDetails.isHoliday ? 'Yes' : 'No' | dashIfNothing | translate}}</span>
-        </div>
+			<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
+				<div class="d-flex dfm-gap-8 justify-content-between">
+					<span class="flex-1">{{ 'PublicHoliday' | translate }}</span>
+					<span class="flex-1">{{ absenceDetails.isHoliday ? 'Yes' : ('No' | dashIfNothing | translate) }}</span>
+				</div>
 
-        <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">{{'Repeat' | translate}}</span>
-          <span class="flex-1">{{ absenceDetails.isRepeat ? 'Yes' : 'AllDay' | dashIfNothing | translate}}</span>
-        </div>
+				<div class="d-flex dfm-gap-8 justify-content-between">
+					<span class="flex-1">{{ 'Repeat' | translate }}</span>
+					<span class="flex-1">{{ absenceDetails.isRepeat ? 'Yes' : ('AllDay' | dashIfNothing | translate) }}</span>
+				</div>
 
-        <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">{{"RepeatType" | translate}}</span>
-          <span class="flex-1"
-            ><span >{{ absenceDetails.repeatType | titlecase | dashIfNothing }}</span>
-          </span>
-        </div>
+				<div class="d-flex dfm-gap-8 justify-content-between">
+					<span class="flex-1">{{ 'RepeatType' | translate }}</span>
+					<span class="flex-1"
+						><span>{{ absenceDetails.repeatType | titlecase | dashIfNothing }}</span>
+					</span>
+				</div>
 
-        <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">{{"RepeatEvery" | translate}}</span>
-          <span class="flex-1">{{ absenceDetails.repeatFrequency === 0 ? ('' | dashIfNothing) :  absenceDetails.repeatFrequency}}
-            <span *ngIf="absenceDetails.repeatFrequency">{{ absenceDetails.repeatType | repeatTypeToName }}</span>
-          </span>
-        </div>
+				<div class="d-flex dfm-gap-8 justify-content-between">
+					<span class="flex-1">{{ 'RepeatEvery' | translate }}</span>
+					<span class="flex-1"
+						>{{ absenceDetails.repeatFrequency === 0 ? ('' | dashIfNothing) : absenceDetails.repeatFrequency }}
+						<span *ngIf="absenceDetails.repeatFrequency">{{ absenceDetails.repeatType | repeatTypeToName }}</span>
+					</span>
+				</div>
 
-        <div class="d-flex dfm-gap-8 justify-content-between">
-          <span class="flex-1">{{'RepeatOn' | translate}}</span>
-          <span class="flex-1"
-                *ngIf="absenceDetails.repeatDays && absenceDetails.repeatType === repeatType.Monthly">{{ absenceDetails.repeatDays.split(',') | joinWithAnd | dashIfNothing }}</span>
-          <span class="flex-1"
-                *ngIf="absenceDetails.repeatDays && absenceDetails.repeatType === repeatType.Weekly">{{ absenceDetails.repeatDays.split(',') | weekdayToName : true | joinWithAnd | dashIfNothing }}</span>
-          <span class="flex-1"
-                *ngIf="absenceDetails.repeatDays && absenceDetails.repeatType === repeatType.Daily">{{ '' | dashIfNothing }}</span>
-          <span *ngIf="!absenceDetails.repeatDays" class="flex-1">{{ '' | dashIfNothing }}</span>
-        </div>
-      </div>
-    </div>
-  </section>
+				<div class="d-flex dfm-gap-8 justify-content-between">
+					<span class="flex-1">{{ 'RepeatOn' | translate }}</span>
+					<span class="flex-1" *ngIf="absenceDetails.repeatDays && absenceDetails.repeatType === repeatType.Monthly">{{
+						absenceDetails.repeatDays.split(',') | joinWithAnd | dashIfNothing
+					}}</span>
+					<span class="flex-1" *ngIf="absenceDetails.repeatDays && absenceDetails.repeatType === repeatType.Weekly">{{
+						absenceDetails.repeatDays.split(',') | weekdayToName : true | joinWithAnd | dashIfNothing
+					}}</span>
+					<span class="flex-1" *ngIf="absenceDetails.repeatDays && absenceDetails.repeatType === repeatType.Daily">{{ '' | dashIfNothing }}</span>
+					<span *ngIf="!absenceDetails.repeatDays" class="flex-1">{{ '' | dashIfNothing }}</span>
+				</div>
+			</div>
+		</div>
+	</section>
 
-  <div class="hidden bg-white ab-vw-action-buttons-mv">
-    <dfm-button color="secondary" size="sm" (click)="deleteAbsence(absenceDetails.id)">{{'Delete' | translate}}</dfm-button>
-    <dfm-button color="primary" size="sm" (click)="openEditAbsenceModal()">{{'EditAbsence' | translate}}</dfm-button>
-  </div>
+	<div class="hidden bg-white ab-vw-action-buttons-mv" *dfmPermitted="[Permission.UpdateAbsences, Permission.DeleteAbsences]">
+		<dfm-button color="secondary" size="sm" (click)="deleteAbsence(absenceDetails.id)" *dfmPermitted="Permission.DeleteAbsences">{{
+			'Delete' | translate
+		}}</dfm-button>
+		<dfm-button color="primary" size="sm" (click)="openEditAbsenceModal()" *dfmPermitted="Permission.UpdateAbsences">{{
+			'EditAbsence' | translate
+		}}</dfm-button>
+	</div>
 </div>
 
 <ng-template #dash>
-  <span> {{ '' | dashIfNothing }} </span>
+	<span> {{ '' | dashIfNothing }} </span>
 </ng-template>
+
