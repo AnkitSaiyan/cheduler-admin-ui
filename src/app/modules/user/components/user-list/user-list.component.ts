@@ -5,15 +5,15 @@ import {
     combineLatest,
     debounceTime,
     distinctUntilChanged,
-    filter,
+    filter, from,
     interval,
-    map,
+    map, observable,
     Observable,
     of,
     Subject,
     switchMap,
     take,
-    takeUntil
+    takeUntil, tap
 } from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NotificationType, TableItem} from 'diflexmo-angular-design';
@@ -206,7 +206,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
             .pipe(
                 map((value) => {
                     if (value?.proceed) {
-                        return [...this.selectedUserIds.map((id) => ({id: +id, status: value.newStatus as number}))];
+                        return [...this.selectedUserIds.map((id) => ({id: id, status: value.newStatus as number}))];
                     }
 
                     return [];
@@ -217,7 +217,24 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
                     }
                     return !!changes.length;
                 }),
-                switchMap((changes) => this.userApiSvc.changeUserStatus$(changes)),
+                switchMap((changes) => {
+                    switch (this.userTypeDropdownControl.value) {
+                        case UserType.General:
+                            return  this.userApiSvc.changeUserStatus$(changes);
+                        case UserType.Scheduler:
+                            return this.userManagementApiSvc.changeUsersStates(changes.map(({id, status}) => {
+                                return { id: id.toString(), accountEnabled: !!status };
+                            }));
+                        default:
+                            return from([null]).pipe(
+                                tap(() => {
+                                    this.notificationSvc.showError('Something wen wrong');
+                                    this.clearSelected$$.next();
+                                }),
+                                filter((res) => !!res)
+                            )
+                    }
+                }),
                 takeUntil(this.destroy$$),
             )
             .subscribe({
@@ -288,29 +305,18 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
     }
 
     public changeStatus(changes: ChangeStatusRequestData[]) {
-        of([1, 2, 3]).subscribe((res) => console.log(res));
-
+        let observable: Observable<any>;
         switch (this.userTypeDropdownControl.value) {
             case UserType.General:
-                this.userApiSvc
-                    .changeUserStatus$(changes)
-                    .pipe(takeUntil(this.destroy$$))
-                    .subscribe({
-                        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
-                    });
+                observable = this.userApiSvc.changeUserStatus$(changes);
                 break;
             default:
-                changes.map((change) => {
-                    this.userManagementApiSvc
-                        .patchUserProperties(change.id as string, {
-                            accountEnabled: !!change.status,
-                        })
-                        .pipe(take(1))
-                        .subscribe({
-                            next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
-                        });
-                });
+                observable = this.userManagementApiSvc.changeUserState(changes[0].id as string, !!changes[0].status);
         }
+
+        observable.pipe(take(1)).subscribe({
+            next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
+        });
     }
 
     public deleteUser(id: number | string) {

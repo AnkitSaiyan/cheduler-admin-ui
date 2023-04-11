@@ -11,7 +11,10 @@
     flex-direction: column;
     gap: 24px;
     padding: 40px 24px;
+    margin: 24px;
     height: fit-content;
+    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
 
     .complete-profile-section {
       display: flex;

@@ -20,9 +20,12 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
     public user!: AuthUser;
 
     public completeProfileForm = new FormGroup({
-        extension_Telephone: new FormControl('', Validators.required),
-        extension_Gsm: new FormControl('', Validators.required),
-        extension_Address: new FormControl('', Validators.required),
+        extension_PhoneNumber: new FormControl('', Validators.required),
+        MobilePhone: new FormControl('', Validators.required),
+        StreetAddress: new FormControl('', Validators.required),
+        City: new FormControl('', Validators.required),
+        Country: new FormControl('', Validators.required),
+        PostalCode: new FormControl('', Validators.required),
     });
 
     constructor(
@@ -57,7 +60,7 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 
         this.userManagementApiSvc.patchUserProperties(this.user.id, {
             extension_ProfileIsIncomplete: false,
-            // ...this.completeProfileForm.value
+            ...this.completeProfileForm.value
         })
             .pipe(
                 switchMap(() => this.userSvc.initializeUser()),

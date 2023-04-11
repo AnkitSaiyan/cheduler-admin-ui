@@ -26,11 +26,11 @@ export class UserManagementApiService {
     }
 
     public get userList$(): Observable<SchedulerUser[]> {
-        this.loaderSvc.spinnerDeactivate();
-        this.loaderSvc.activate();
-
         return combineLatest([this.refreshUserList$$.pipe(startWith(''))]).pipe(
             switchMap(() => {
+                this.loaderSvc.spinnerDeactivate();
+                this.loaderSvc.activate();
+
                 return this.httpClient.get<SchedulerUser[]>(`${this.baseUrl}/users`).pipe(
                     switchMap((users) => {
                         return forkJoin([
@@ -112,6 +112,22 @@ export class UserManagementApiService {
                 this.userIdToRoleMap.delete(userId);
             }
         }));
+    }
+
+    public changeUserState(userId: string, state: boolean): Observable<any> {
+        this.loaderSvc.activate();
+
+        return this.httpClient.put<any>(`${this.baseUrl}/users/${userId}/state`, { accountEnabled: state }).pipe(
+            tap(() => this.refreshUserList$$.next())
+        );
+    }
+
+    public changeUsersStates(stateRequest: Array<{ id: string, accountEnabled: boolean }>): Observable<any> {
+        this.loaderSvc.activate();
+
+        return this.httpClient.put<any>(`${this.baseUrl}/users/state`, { users: stateRequest }).pipe(
+            tap(() => this.refreshUserList$$.next())
+        );
     }
 }
 
