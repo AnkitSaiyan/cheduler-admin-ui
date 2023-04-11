@@ -214,7 +214,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
     }
 
     public assignUserRole(userId: string, roleName: string): Observable<any> {
-        const headers = HttpUtils.GetHeader(['Content-Type', 'Application/son']);
+        const headers = HttpUtils.GetHeader(['Content-Type', 'Application/json']);
         return this.http.post<any>(`${environment.schedulerApiUrl}/userroles?userId=${userId}`, JSON.stringify(roleName), {headers});
     }
 
