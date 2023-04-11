@@ -64,7 +64,7 @@
         (click)="toggleView()"
       ></dfm-button-icon>
       <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreatePrioritySlots" class="text-nowrap" [disabled]="false" (click)="openAddPriorityModal()"
-        >{{ 'AddPrioritySlots' | translate }}
+        ><span class="add-slot-btn"> {{ 'AddPrioritySlots' | translate }} </span><span class="add-slot-btn-mv">{{ 'Add' | translate }}</span>
       </dfm-button>
     </div>
     </div>
@@ -73,7 +73,7 @@
     <dfm-input
       class="flex-1 pr-li-searchbar-mv"
       size="md"
-      placeholder="Search by Priority Slots"
+      placeholder="{{'SearchByPrioritySlots' | translate}}"
       icon="search-sm"
       [formControl]="searchControl"
     ></dfm-input>
