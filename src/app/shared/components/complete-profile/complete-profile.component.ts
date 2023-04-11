@@ -21,10 +21,10 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 
     public completeProfileForm = new FormGroup({
         extension_PhoneNumber: new FormControl('', Validators.required),
-        extension_MobileNumber: new FormControl('', Validators.required),
+        MobilePhone: new FormControl('', Validators.required),
         StreetAddress: new FormControl('', Validators.required),
         City: new FormControl('', Validators.required),
-        CountryRegion: new FormControl('', Validators.required),
+        Country: new FormControl('', Validators.required),
         PostalCode: new FormControl('', Validators.required),
     });
 
