@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap} from "rxjs";
+import {BehaviorSubject, catchError, map, Observable, of, tap} from "rxjs";
 import {AuthUser} from "../../shared/models/user.model";
 import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
 import {UserManagementApiService} from "./user-management-api.service";
@@ -8,77 +8,79 @@ import {InteractionType} from "@azure/msal-browser";
 import {PermissionService} from "./permission.service";
 
 @Injectable({
-	providedIn: 'root',
+    providedIn: 'root',
 })
 export class UserService {
-	private authUser$$: BehaviorSubject<AuthUser | undefined> = new BehaviorSubject<AuthUser | undefined>(undefined);
-	constructor(
-		@Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
-		private msalService: MsalService,
-		private userManagementApiService: UserManagementApiService,
-		private permissionSvc: PermissionService,
-		private router: Router,
-	) {}
+    private authUser$$: BehaviorSubject<AuthUser | undefined> = new BehaviorSubject<AuthUser | undefined>(undefined);
 
-	public initializeUser(): Observable<boolean> {
-		const user = this.msalService.instance.getActiveAccount();
-		const userId = user?.localAccountId ?? '';
+    constructor(
+        @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
+        private msalService: MsalService,
+        private userManagementApiService: UserManagementApiService,
+        private permissionSvc: PermissionService,
+        private router: Router,
+    ) {
+    }
 
-    return this.userManagementApiService.getUserProperties(userId).pipe(
-        map((res: any) => {
-          try {
-            const tenants = ((user?.idTokenClaims as any).extension_Tenants as string).split(',');
-            if (tenants.length === 0) {
-              return false;
-            }
+    public get authUser$(): Observable<AuthUser | undefined> {
+        return this.authUser$$.asObservable();
+    }
 
-            this.authUser$$.next(new AuthUser(res.mail, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
+    public initializeUser(): Observable<boolean> {
+        const user = this.msalService.instance.getActiveAccount();
+        const userId = user?.localAccountId ?? '';
 
-            return true;
-          } catch (error) {
-            return false;
-          }
-        }),
-        tap((res) => {
-          // Complete Profile if not completed
+        return this.userManagementApiService.getUserProperties(userId).pipe(
+            map((res: any) => {
+                try {
+                    const tenants = ((user?.idTokenClaims as any).extension_Tenants as string).split(',');
+                    if (tenants.length === 0) {
+                        return false;
+                    }
 
-				if (!res) {
-					return;
-				}
+                    this.authUser$$.next(new AuthUser(res.mail, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
 
-				const user = this.authUser$$.value;
-				if (!user) {
-					return;
-				}
+                    return true;
+                } catch (error) {
+                    return false;
+                }
+            }),
+            tap((res) => {
+                // Complete Profile if not completed
 
-          if (user.properties['extension_ProfileIsIncomplete']) {
-            // this.authUser$$.next(new AuthUser(user.mail, user.givenName, user.id, user.surname, user.displayName, user.email, {}, []))
-            this.router.navigate(['/complete-profile']);
-          }
-        }),
-        catchError((err) => of(false)),
-    );
-  }
+                if (!res) {
+                    return;
+                }
 
-	public get authUser$(): Observable<AuthUser | undefined> {
-		return this.authUser$$.asObservable();
-	}
+                const user = this.authUser$$.value;
+                if (!user) {
+                    return;
+                }
 
-	public logout() {
-		if (this.msalGuardConfig.interactionType === InteractionType.Popup) {
-			this.msalService.logoutPopup({
-				mainWindowRedirectUri: '/',
-			});
-		} else {
-			this.msalService.logoutRedirect();
-		}
+                if (user.properties['extension_ProfileIsIncomplete']) {
+                    // this.authUser$$.next(new AuthUser(user.mail, user.givenName, user.id, user.surname, user.displayName, user.email, {}, []))
+                    this.router.navigate(['/complete-profile']);
+                }
+            }),
+            catchError((err) => of(false)),
+        );
+    }
 
-		setTimeout(() => this.removeUser(), 500);
-	}
+    public logout() {
+        if (this.msalGuardConfig.interactionType === InteractionType.Popup) {
+            this.msalService.logoutPopup({
+                mainWindowRedirectUri: '/',
+            });
+        } else {
+            this.msalService.logoutRedirect();
+        }
 
-	public removeUser() {
-		this.authUser$$.next(undefined);
-		this.permissionSvc.removePermissionType();
-	}
+        setTimeout(() => this.removeUser(), 500);
+    }
+
+    public removeUser() {
+        this.authUser$$.next(undefined);
+        this.permissionSvc.removePermissionType();
+    }
 }
 

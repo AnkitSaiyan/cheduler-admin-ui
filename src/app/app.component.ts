@@ -170,8 +170,10 @@ export class AppComponent implements OnInit, OnDestroy {
         this.userService.initializeUser().subscribe({
             next: (x) => {
                 if (!x) {
-                    this.notificationSvc.showError('User login failed. Logging out.');
-                    setTimeout(() => this.userService.logout(), 1500);
+                    // not showing error for now
+                    this.userService.logout();
+                    // this.notificationSvc.showError('User login failed. Logging out.');
+                    // setTimeout(() => this.userService.logout(), 1500);
                 }
             }
         });
