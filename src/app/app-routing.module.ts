@@ -11,14 +11,12 @@ const rootRoutes: Routes = [
         path: 'complete-profile',
         title: 'Cheduler - Complete Profile',
         component: CompleteProfileComponent,
-        canActivate: [MsalGuard],
-        canActivateChild: [RouteGuard]
+        canActivate: [RouteGuard, MsalGuard],
     },
     {
         path: '',
         loadChildren: async () => (await import('./core/core.module')).CoreModule,
-        canActivate: [MsalGuard],
-        canActivateChild: [RouteGuard]
+        canActivate: [RouteGuard, MsalGuard],
     },
     {
         path: '',

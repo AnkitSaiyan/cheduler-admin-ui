@@ -40,19 +40,21 @@ export class RouteGuard implements CanActivate, CanActivateChild {
 
                     const splitUrl = url.split('/')[1];
 
+                    console.log('URL Name', splitUrl);
+
                     switch (splitUrl) {
                         case RouteName.LoginFailed: {
                             if (AuthUser) {
                                 return this.router.parseUrl('/');
                             }
-                        }
                             break;
+                        }
                         case RouteName.CompleteProfile: {
                             if (!isIncomplete) {
-                                return this.router.parseUrl(`/${RouteName.CompleteProfile}`);
+                                return this.router.parseUrl(`/`);
                             }
-                        }
                             break;
+                        }
                         default: {
                             if (isIncomplete) {
                                 return this.router.parseUrl(`/${RouteName.CompleteProfile}`);
@@ -61,14 +63,6 @@ export class RouteGuard implements CanActivate, CanActivateChild {
                     }
 
                     return true;
-                    // if (url.includes('complete-profile')) {
-                    //     if (!isIncomplete) {
-                    //         return this.router.parseUrl('/dashboard');
-                    //     }
-                    // } else if (isIncomplete) {
-                    //     this.router.navigate(['/', 'complete-profile']);
-                    //     return false;
-                    // }
                 } catch (e) {
                     return false;
                 }
