@@ -206,7 +206,6 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 
         return this.http.get<UserRoleEnum[]>(`${environment.schedulerApiUrl}/userroles?userId=${userId}`).pipe(
             map((roles) => {
-                console.log('roles', roles);
                 return roles[0] ?? '';
             }),
             tap((role) => this.userIdToRoleMap.set(userId, role as UserRoleEnum)),

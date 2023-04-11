@@ -138,10 +138,11 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
         private notificationSvc: NotificationDataService
     ) {
         super();
+
+        this.fetchUserAndUserRoles();
     }
 
     public ngOnInit(): void {
-        this.fetchUserAndUserRoles();
         this.translateData();
 
         this.dataShareService
@@ -242,6 +243,9 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
                         if (!userRole) {
                             throw Error();
                         }
+
+                        // Set user permission
+                        this.permissionSvc.setPermissionType(userRole);
 
                         this.user = user as AuthUser;
                     }),

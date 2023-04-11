@@ -7,7 +7,7 @@ import {
     RouterStateSnapshot,
     UrlTree
 } from "@angular/router";
-import {debounceTime, map, Observable} from "rxjs";
+import {debounceTime, filter, map, Observable} from "rxjs";
 import {RouteName} from "../../shared/models/permission.model";
 import {AuthUser} from "../../shared/models/user.model";
 import {UserService} from "../services/user.service";
@@ -31,16 +31,12 @@ export class RouteGuard implements CanActivate, CanActivateChild {
 
     private isProfileIncomplete(url: string) {
         return this.userService.authUser$.pipe(
+            filter((user) => !!user),
             debounceTime(0),
             map((user) => {
                 try {
                     const isIncomplete = !!user?.properties['extension_ProfileIsIncomplete'];
-
-                    console.log('Profile is incomplete', isIncomplete);
-
                     const splitUrl = url.split('/')[1];
-
-                    console.log('URL Name', splitUrl);
 
                     switch (splitUrl) {
                         case RouteName.LoginFailed: {

@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, filter, map, Observable, switchMap, take, takeUntil} from 'rxjs';
-import {Router} from '@angular/router';
+import {BehaviorSubject, combineLatest, filter, map, Observable, switchMap, take, takeUntil} from 'rxjs';
+import {ActivatedRoute, Router} from '@angular/router';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {RouterStateService} from '../../../../core/services/router-state.service';
 import {NotificationDataService} from '../../../../core/services/notification-data.service';
@@ -18,6 +18,7 @@ import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {UserManagementApiService} from "../../../../core/services/user-management-api.service";
 import {Permission} from "../../../../shared/models/permission.model";
 import {UserApiService} from "../../../../core/services/user-api.service";
+import {UserService} from "../../../../core/services/user.service";
 
 @Component({
     selector: 'dfm-view-user',
@@ -29,6 +30,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
 
     public userTypeEnum = getUserTypeEnum();
     public currentUserType!: UserType;
+    public userProperties: Record<string, string> = {};
     protected readonly UserType = UserType;
     protected readonly Permission = Permission;
     private selectedLang: string = ENG_BE;
@@ -40,17 +42,18 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
         private router: Router,
         private modalSvc: ModalService,
         private shareDataService: ShareDataService,
-        private userManagementApiSvc: UserManagementApiService
+        private userManagementApiSvc: UserManagementApiService,
+        private userSvc: UserService,
+        private route: ActivatedRoute
     ) {
         super();
     }
 
     public ngOnInit(): void {
-        console.log(this.router.url);
-
-        this.routerStateSvc
-            .listenForParamChange$(STAFF_ID)
-            .pipe(
+        combineLatest([
+            this.userSvc.authUser$,
+            this.route.params.pipe(
+                map((params) => params[STAFF_ID]),
                 switchMap((userID) => {
                     if (this.router.url.split('/')[3] === 's') {
                         return this.userManagementApiSvc.getUserById(userID).pipe(map((user) => ({
@@ -65,13 +68,18 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
                     }
                     return this.userApiSvc.getUserByID$(+userID) as Observable<User>;
                 }),
-                takeUntil(this.destroy$$),
             )
-            .subscribe({
-                next: (userDetails) => {
-                    this.userDetails$$.next(userDetails)
+        ]).pipe(
+            take(1)
+        ).subscribe({
+            next: ([authUser, userDetails]) => {
+                this.userDetails$$.next(userDetails);
+                this.userProperties = {};
+                if (authUser && authUser.id === userDetails.id.toString() && authUser?.properties) {
+                    this.userProperties = authUser.properties;
                 }
-            });
+            }
+        });
 
         this.shareDataService
             .getLanguage$()

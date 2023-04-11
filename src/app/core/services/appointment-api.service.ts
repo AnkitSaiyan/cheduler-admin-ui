@@ -90,7 +90,6 @@ export class AppointmentApiService extends DestroyableComponent {
                                 };
                             });
                         }
-                        console.log(downloadTypeItems);
                         return downloadTypeItems;
                     }),
                 );
@@ -213,7 +212,6 @@ export class AppointmentApiService extends DestroyableComponent {
     }
 
     public getSlots$(requestData: AppointmentSlotsRequestData): Observable<AppointmentSlot[]> {
-        console.log(requestData);
         const customRequestData = {...requestData, date: requestData.fromDate};
         delete customRequestData?.fromDate;
         delete customRequestData?.toDate;

@@ -15,7 +15,6 @@ import {filter, Subject, takeUntil} from 'rxjs';
 import defaultLanguage from '../assets/i18n/nl-BE.json';
 import englishLanguage from '../assets/i18n/en-BE.json';
 import {AuthConfig} from './configuration/auth.config';
-import {UserApiService} from './core/services/user-api.service';
 import {NotificationDataService} from "./core/services/notification-data.service";
 import {DUTCH_BE, ENG_BE} from "./shared/utils/const";
 import {UserService} from "./core/services/user.service";
@@ -68,6 +67,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         window.location.pathname = '/';
                     } else {
                         this.setLoginDisplay();
+                        this.checkAndSetActiveAccount();
                     }
                 }
             });
@@ -78,7 +78,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 takeUntil(this._destroying$),
             )
             .subscribe({
-                next: () => {
+                next: (status) => {
                     this.setLoginDisplay();
                     this.checkAndSetActiveAccount();
                 }
@@ -104,7 +104,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.authService.instance.setActiveAccount(payload.account);
                     }
 
-                    return result;
+                    // return result;
                 }
             });
     }
@@ -162,8 +162,6 @@ export class AppComponent implements OnInit, OnDestroy {
             const accounts = this.authService.instance.getAllAccounts();
             this.authService.instance.setActiveAccount(accounts[0]);
         }
-
-        console.log(this.authService.instance.getActiveAccount(), 'active account');
 
         this.userService.authUser$.pipe(takeUntil(this._destroying$)).subscribe({
             next: (x) => (this.user = x)

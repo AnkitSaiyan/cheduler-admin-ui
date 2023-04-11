@@ -5,8 +5,6 @@ import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/h
 import {DesignSystemCoreModule, NotificationModule} from 'diflexmo-angular-design';
 import {DatePipe, TitleCasePipe} from '@angular/common';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-// eslint-disable-next-line import/no-extraneous-dependencies
-// import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import {environment} from 'src/environments/environment';
 import {
     MSAL_GUARD_CONFIG,
@@ -35,51 +33,16 @@ import {MonthToNamePipe} from './shared/pipes/month-to-name.pipe';
 import {TimeInIntervalPipe} from './shared/pipes/time-in-interval.pipe';
 import {NameValuePairPipe} from './shared/pipes/name-value-pair.pipe';
 import {HeaderInterceptor} from './core/http/header.interceptor';
-// eslint-disable-next-line import/order
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
-// eslint-disable-next-line import/order
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-// @ts-ignore
-import {AuthConfig} from './configuration/auth.config';
+import {AuthConfig, MSALConfig} from './configuration/auth.config';
 import {ErrorInterceptor} from "./core/http/error.interceptor";
 import {RoleNamePipe} from "./shared/pipes/role-name.pipe";
-// eslint-disable-next-line import/no-extraneous-dependencies
-// import { DataService } from './core/services/data.service';
-
-// export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
-//   return new TranslateHttpLoader(http);
-// }
-const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigator.userAgent.indexOf('Trident/') > -1; // Remove this line to use Angular Universal
+import {RouteGuard} from "./core/guard/route.guard";
+import {PermissionGuard} from "./core/guard/permission.guard";
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http);
-}
-
-export function loggerCallback(logLevel: LogLevel, message: string) {
-    // console.log(logLevel, message);
-}
-
-export function MSALInstanceFactory(): IPublicClientApplication {
-    return new PublicClientApplication({
-        auth: {
-            clientId: environment.authClientId,
-            authority: `${AuthConfig.fullAuthority}/${AuthConfig.authFlow}`,
-            redirectUri: '/',
-            postLogoutRedirectUri: '/',
-            knownAuthorities: [AuthConfig.authority],
-        },
-        cache: {
-            cacheLocation: BrowserCacheLocation.LocalStorage,
-            storeAuthStateInCookie: isIE,
-        },
-        system: {
-            loggerOptions: {
-                loggerCallback,
-                logLevel: LogLevel.Trace,
-                piiLoggingEnabled: true,
-            },
-        },
-    });
 }
 
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
@@ -100,7 +63,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
         authRequest: {
             scopes: [environment.schedulerApiAuthScope],
         },
-        loginFailedRoute: '/',
+        loginFailedRoute: '/login-failed',
     };
 }
 
@@ -116,18 +79,9 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
         BrowserAnimationsModule,
         MsalModule,
         FormsModule,
-        // TranslateModule.forRoot({
-        //   defaultLanguage: 'en-BE',
-        //   loader: {
-        //     provide: TranslateLoader,
-        //     useFactory: HttpLoaderFactory,
-        //     deps: [HttpClient],
-        //   },
-        // }),
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
-                // eslint-disable-next-line @typescript-eslint/no-use-before-define
                 useFactory: HttpLoaderFactory,
                 deps: [HttpClient],
             },
@@ -144,6 +98,25 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
         NameValuePairPipe,
         TitleCasePipe,
         RoleNamePipe,
+        RouteGuard,
+        PermissionGuard,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: MsalInterceptor,
+            multi: true,
+        },
+        {
+            provide: MSAL_INSTANCE,
+            useValue: new PublicClientApplication({ ...MSALConfig })
+        },
+        {
+            provide: MSAL_GUARD_CONFIG,
+            useFactory: MSALGuardConfigFactory,
+        },
+        {
+            provide: MSAL_INTERCEPTOR_CONFIG,
+            useFactory: MSALInterceptorConfigFactory,
+        },
         {
             provide: HTTP_INTERCEPTORS,
             useClass: HeaderInterceptor,
@@ -153,23 +126,6 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
             provide: HTTP_INTERCEPTORS,
             useClass: ErrorInterceptor,
             multi: true,
-        },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: MsalInterceptor,
-            multi: true,
-        },
-        {
-            provide: MSAL_INSTANCE,
-            useFactory: MSALInstanceFactory,
-        },
-        {
-            provide: MSAL_GUARD_CONFIG,
-            useFactory: MSALGuardConfigFactory,
-        },
-        {
-            provide: MSAL_INTERCEPTOR_CONFIG,
-            useFactory: MSALInterceptorConfigFactory,
         },
         MsalService,
         MsalGuard,

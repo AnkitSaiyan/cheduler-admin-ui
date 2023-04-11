@@ -39,9 +39,8 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
     }
 
     public ngOnInit(): void {
-        this.userSvc.authUser$.pipe(takeUntil(this.destroy$$)).subscribe((user) => {
-            console.log(user, 'auth user');
-            this.user = user as AuthUser;
+        this.userSvc.authUser$.pipe(takeUntil(this.destroy$$)).subscribe({
+            next: (user) => this.user = user as AuthUser
         });
     }
 

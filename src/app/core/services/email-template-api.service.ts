@@ -30,7 +30,7 @@ export class EmailTemplateApiService {
 
   public updateEmailTemplate(requestData: EmailTemplateRequestData): Observable<EmailTemplateRequestData> {
     this.loaderSvc.activate();
-    console.log('requestData: ', requestData);
+
     const { id, ...restData } = requestData;
     return this.http.put<BaseResponse<EmailTemplateRequestData>>(`${environment.schedulerApiUrl}/email/${id}`, requestData).pipe(
       map((response) => response.data),

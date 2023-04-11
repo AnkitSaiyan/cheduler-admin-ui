@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, Observable, of, switchMap, tap} from "rxjs";
+import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap} from "rxjs";
 import {AuthUser} from "../../shared/models/user.model";
 import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
 import {UserManagementApiService} from "./user-management-api.service";
@@ -25,30 +25,18 @@ export class UserService {
     const userId = user?.localAccountId ?? '';
 
     return this.userManagementApiService.getUserProperties(userId).pipe(
-        switchMap((res: any) => {
+        map((res: any) => {
           try {
             const tenants = ((user?.idTokenClaims as any).extension_Tenants as string).split(',');
             if (tenants.length === 0) {
-              return of(false);
+              return false;
             }
 
             this.authUser$$.next(new AuthUser(res.mail, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
-            return of(true);
 
-            // return this.getCurrentUserRole$(userId).pipe(
-            //     map((role) => {
-            //         console.log(role, 'role')
-            //         if (!role) {
-            //             return false;
-            //         }
-            //         this.permissionSvc.setPermissionType(role as UserRoleEnum);
-            //         this.authUser$$.next(new AuthUser(res.mail, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
-            //         return true;
-            //     }),
-            //     catchError((err) => of(false))
-            // )
+            return true;
           } catch (error) {
-            return of(false);
+            return false;
           }
         }),
         tap((res) => {
@@ -64,7 +52,7 @@ export class UserService {
           }
 
           if (user.properties['extension_ProfileIsIncomplete']) {
-            this.authUser$$.next(new AuthUser(user.mail, user.givenName, user.id, user.surname, user.displayName, user.email, {}, []))
+            // this.authUser$$.next(new AuthUser(user.mail, user.givenName, user.id, user.surname, user.displayName, user.email, {}, []))
             this.router.navigate(['/complete-profile']);
           }
         }),
