@@ -121,9 +121,9 @@ section.ad-ex-section2 {
     }
   }
 
-  .ad-ex-room-list {
-    display: grid !important;
-    grid-template-columns: 2fr 3fr 2fr;
+  .ad-ex-room-list{
+    display: grid!important;
+    grid-template-columns: 8fr 5fr 1fr;
 
     dfm-checkbox {
       text-overflow: ellipsis;
@@ -133,6 +133,10 @@ section.ad-ex-section2 {
   }
   .add-exam-dropdown{
     width: 50vw;
+  }
+  .public-rooms-dropdown-mv{
+    font-size: 14px!important;
+    white-space: normal!important;
   }
 }
 

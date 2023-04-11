@@ -103,7 +103,7 @@
               *ngFor="let roomForExamControl of roomsForExamControls; let rowIndex = index"
               class="d-flex flex-row dfm-gap-8 align-items-baseline ad-ex-room-list"
             >
-              <dfm-checkbox formControlName="selectRoom" size="md" [label]="roomForExamControl.value?.roomName"></dfm-checkbox>
+              <dfm-checkbox formControlName="selectRoom" size="md" [label]="roomForExamControl.value?.roomName" class="public-rooms-dropdown-mv"></dfm-checkbox>
 
               <div class="ad-ex-duration">
                 <dfm-input
