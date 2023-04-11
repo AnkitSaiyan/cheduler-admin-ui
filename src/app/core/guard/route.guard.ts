@@ -13,21 +13,23 @@ import {AuthUser} from "../../shared/models/user.model";
 import {UserService} from "../services/user.service";
 
 @Injectable({
-    providedIn: 'root'
+	providedIn: 'root',
 })
 export class RouteGuard implements CanActivate, CanActivateChild {
-    constructor(private userService: UserService, private router: Router) {
-    }
+	constructor(private userService: UserService, private router: Router) {}
 
-    public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
-        const {url} = state;
-        return this.isProfileIncomplete(url);
-    }
+	public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
+		const { url } = state;
+		return this.isProfileIncomplete(url);
+	}
 
-    public canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        const {url} = state;
-        return this.isProfileIncomplete(url);
-    }
+	public canActivateChild(
+		childRoute: ActivatedRouteSnapshot,
+		state: RouterStateSnapshot,
+	): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+		const { url } = state;
+		return this.isProfileIncomplete(url);
+	}
 
     private isProfileIncomplete(url: string) {
         return this.userService.authUser$.pipe(
@@ -58,11 +60,3 @@ export class RouteGuard implements CanActivate, CanActivateChild {
                         }
                     }
 
-                    return true;
-                } catch (e) {
-                    return false;
-                }
-            })
-        )
-    }
-}

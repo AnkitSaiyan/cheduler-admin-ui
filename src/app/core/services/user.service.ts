@@ -8,21 +8,21 @@ import {InteractionType} from "@azure/msal-browser";
 import {PermissionService} from "./permission.service";
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root',
 })
 export class UserService {
-  private authUser$$: BehaviorSubject<AuthUser | undefined> = new BehaviorSubject<AuthUser | undefined>(undefined);
-  constructor(
-      @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
-      private msalService: MsalService,
-      private userManagementApiService: UserManagementApiService,
-      private permissionSvc: PermissionService,
-      private router: Router,
-  ) { }
+	private authUser$$: BehaviorSubject<AuthUser | undefined> = new BehaviorSubject<AuthUser | undefined>(undefined);
+	constructor(
+		@Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
+		private msalService: MsalService,
+		private userManagementApiService: UserManagementApiService,
+		private permissionSvc: PermissionService,
+		private router: Router,
+	) {}
 
-  public initializeUser(): Observable<boolean> {
-    const user = this.msalService.instance.getActiveAccount();
-    const userId = user?.localAccountId ?? '';
+	public initializeUser(): Observable<boolean> {
+		const user = this.msalService.instance.getActiveAccount();
+		const userId = user?.localAccountId ?? '';
 
     return this.userManagementApiService.getUserProperties(userId).pipe(
         map((res: any) => {
@@ -42,14 +42,14 @@ export class UserService {
         tap((res) => {
           // Complete Profile if not completed
 
-          if (!res) {
-            return;
-          }
+				if (!res) {
+					return;
+				}
 
-          const user = this.authUser$$.value;
-          if (!user) {
-            return;
-          }
+				const user = this.authUser$$.value;
+				if (!user) {
+					return;
+				}
 
           if (user.properties['extension_ProfileIsIncomplete']) {
             // this.authUser$$.next(new AuthUser(user.mail, user.givenName, user.id, user.surname, user.displayName, user.email, {}, []))
@@ -60,24 +60,25 @@ export class UserService {
     );
   }
 
-  public get authUser$(): Observable<AuthUser | undefined> {
-    return this.authUser$$.asObservable();
-  }
+	public get authUser$(): Observable<AuthUser | undefined> {
+		return this.authUser$$.asObservable();
+	}
 
-  public logout() {
-    if (this.msalGuardConfig.interactionType === InteractionType.Popup) {
-      this.msalService.logoutPopup({
-        mainWindowRedirectUri: '/',
-      });
-    } else {
-      this.msalService.logoutRedirect();
-    }
+	public logout() {
+		if (this.msalGuardConfig.interactionType === InteractionType.Popup) {
+			this.msalService.logoutPopup({
+				mainWindowRedirectUri: '/',
+			});
+		} else {
+			this.msalService.logoutRedirect();
+		}
 
-    setTimeout(() => this.removeUser(), 500);
-  }
+		setTimeout(() => this.removeUser(), 500);
+	}
 
-  public removeUser() {
-    this.authUser$$.next(undefined);
-    this.permissionSvc.removePermissionType();
-  }
+	public removeUser() {
+		this.authUser$$.next(undefined);
+		this.permissionSvc.removePermissionType();
+	}
 }
+
