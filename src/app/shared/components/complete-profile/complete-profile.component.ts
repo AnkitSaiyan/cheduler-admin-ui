@@ -57,7 +57,7 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 
         this.userManagementApiSvc.patchUserProperties(this.user.id, {
             extension_ProfileIsIncomplete: false,
-            // ...this.completeProfileForm.value
+            ...this.completeProfileForm.value
         })
             .pipe(
                 switchMap(() => this.userSvc.initializeUser()),
