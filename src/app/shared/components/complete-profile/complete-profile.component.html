@@ -5,7 +5,7 @@
             <h3 class="font-weight-semi-bold">Complete Your Profile</h3>
         </section>
 
-        <section class="complete-profile-section" [formGroup]="completeProfileForm">
+        <section class="complete-profile-section overflow-y-auto hide-scrollbar" [formGroup]="completeProfileForm">
             <div class="flex-1">
                 <dfm-input
                         type="text"
@@ -13,7 +13,7 @@
                         label="{{'Telephone' | translate}}*"
                         placeholder="{{'EnterTelephone' | translate}}"
                         icon="phone"
-                        formControlName="extension_Telephone"
+                        formControlName="extension_PhoneNumber"
                         #phone
                         [dfmNumberInput]="phone"
                 >
@@ -27,19 +27,61 @@
                         label="GSM*"
                         placeholder="{{'EnterGsm' | translate}}"
                         icon="file-06"
-                        formControlName="extension_Gsm"
+                        formControlName="extension_MobileNumber"
                 >
                 </dfm-input>
             </div>
 
             <div class="flex-1">
-                <dfm-text-area
+                <dfm-input
+                        type="text"
                         size="sm"
-                        label="{{'Address' | translate}}*"
-                        placeholder="{{'EnterAddress' | translate}}"
-                        formControlName="extension_Address"
+                        label="Street*"
+                        placeholder="{{'EnterStreet' | translate}}"
+                        icon="file-06"
+                        formControlName="StreetAddress"
                 >
-                </dfm-text-area>
+                </dfm-input>
+            </div>
+
+            <div class="flex-1">
+                <dfm-input
+                        type="text"
+                        size="sm"
+                        label="City*"
+                        placeholder="{{'EnterCity' | translate}}"
+                        icon="file-06"
+                        formControlName="City"
+                >
+                </dfm-input>
+            </div>
+
+            <div class="flex-1">
+                <dfm-input
+                        type="text"
+                        size="sm"
+                        label="Country*"
+                        placeholder="{{'EnterCountry' | translate}}"
+                        icon="file-06"
+                        formControlName="CountryRegion"
+                        #country
+                        [dfmNumberInput]="country"
+                >
+                </dfm-input>
+            </div>
+
+            <div class="flex-1">
+                <dfm-input
+                        type="text"
+                        size="sm"
+                        label="Postal Code*"
+                        placeholder="{{'EnterPostalCode' | translate}}"
+                        icon="file-06"
+                        formControlName="PostalCode"
+                        #postal
+                        [dfmNumberInput]="postal"
+                >
+                </dfm-input>
             </div>
         </section>
 
