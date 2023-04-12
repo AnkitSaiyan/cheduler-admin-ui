@@ -375,6 +375,12 @@
   "SelectPhysician" : "Selecteer dokter",
   "Heading" : "Hoofding",
   "SubHeading" : "Sub-Hoofding",
-  "BodyText" : "Kerntekst"
+  "BodyText" : "Kerntekst",
+  "CompleteYourProfile" : "Voltooi uw profiel",
+  "Logout": "Uitloggen",
+  "EnterStreet" : "Voer Straat in",
+  "EnterCity" : "Voer Stad in",
+  "EnterCountry" : "Voer Land in",
+  "EnterPostalCode" : "Voer postcode in"
 }
 

@@ -18,7 +18,7 @@
 
     .complete-profile-section {
       display: flex;
-      flex-direction: column;
+      flex-direction:column;
       gap: 16px;
     }
 
@@ -29,4 +29,12 @@
       margin: 8px auto;
     }
   }
+}
+.header-section{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dfm-color-primary {
+  color: var(--dfm-primary);
 }
