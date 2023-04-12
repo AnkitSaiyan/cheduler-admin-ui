@@ -306,7 +306,7 @@
   "New": "New",
   "Confirm": "Confirm",
   "Confirmed": "Confirmed",
-  "UpcomingAppointmentsInFourHours": " Upcoming Appointments in 4 hours",
+  "UpcomingAppointmentsInFourHours": " Upcoming Appointments in 4 Hours",
   "PostIt": "Post It",
   "SearchPostIt": "Search post it",
   "EmployeeAbsences": "Staff Absences",
@@ -315,7 +315,7 @@
   "Notifications": "Notifications",
   "NewAppointmentCreated": "New appointment created",
   "TopTenExaminations": "Top 10 Examinations",
-  "UnavailablePeriodsOfTheHalls": "Unavailable periods of the rooms within 31 days",
+  "UnavailablePeriodsOfTheHalls": "Unavailable Periods Of The Rooms Within 31 days",
   "SearchRoomName": "Search Room Name",
   "Patients": "Patients",
   "Completed": "Completed",
@@ -382,6 +382,7 @@
   "Street" : "Street",
   "City" : "City",
   "Country" : "Country",
-  "PostalCode" : "Postal Code"
+  "PostalCode" : "Postal Code",
+  "CreatedOn" : "Created on"
   
 }

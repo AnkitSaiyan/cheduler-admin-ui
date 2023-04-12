@@ -193,7 +193,7 @@ export const Translate = Object.freeze({
   },
   Month: {
     [ENG_BE]: 'Month',
-    [DUTCH_BE]: 'maand',
+    [DUTCH_BE]: 'Maand',
   },
   Jan: {
     [ENG_BE]: 'Jan',

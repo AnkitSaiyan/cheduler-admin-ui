@@ -317,9 +317,9 @@
   "Notifications": "Notificaties",
   "NewAppointmentCreated" : "New appointment created NL",
   "TopTenExaminations": "Top 10 onderzoeken",
-  "UnavailablePeriodsOfTheHalls" : "Onbeschikbare periodes voor kamers de volgende 31 dagen",
+  "UnavailablePeriodsOfTheHalls" : "Onbeschikbare periodes voor Zaal de volgende 31 dagen",
   "SearchRoomName" : "Zoek op zaal naam",
-  "Patients" : "patiënten",
+  "Patients" : "Patiënten",
   "Completed" : "Voltooid",
   "Cancelled" : "Geannuleerd",
   "OverallStatus": "Algemene status",
@@ -385,7 +385,8 @@
   "Street" : "Straat",
   "City" : "Stad",
   "Country" :"Land",
-  "PostalCode":"Postcode"
+  "PostalCode":"Postcode",
+  "CreatedOn" : "Gemaakt op"
   
 }
 
