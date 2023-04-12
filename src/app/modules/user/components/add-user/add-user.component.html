@@ -38,19 +38,19 @@
 
       <div class="d-flex flex-column dfm-gap-16 flex-1" *ngIf="modalData?.userDetails?.userType ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler">
         <div class="d-flex flex-column flex-1">
-          <div class="dfm-input-dropdown-wrapper" [ngClass]="{'dfm-input-dropdown-error': addUserForm.get('userRole')?.hasError('required') && addUserForm.get('userRole')?.touched}">
-            <dfm-input-dropdown
-              [required]="
-                modalData?.userDetails?.userType ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler
-              "
-              size="md"
-              placeholder="Select Tenant"
-              label="User Tenant *"
-              [items]="userTenants"
-              formControlName="tenantId"
-            >
-            </dfm-input-dropdown>
-          </div>
+<!--          <div class="dfm-input-dropdown-wrapper" [ngClass]="{'dfm-input-dropdown-error': addUserForm.get('userRole')?.hasError('required') && addUserForm.get('userRole')?.touched}">-->
+<!--            <dfm-input-dropdown-->
+<!--              [required]="-->
+<!--                modalData?.userDetails?.userType ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler-->
+<!--              "-->
+<!--              size="md"-->
+<!--              placeholder="Select Tenant"-->
+<!--              label="User Tenant *"-->
+<!--              [items]="userTenants"-->
+<!--              formControlName="tenantId"-->
+<!--            >-->
+<!--            </dfm-input-dropdown>-->
+<!--          </div>-->
 
           <div class="validation-error" *ngIf="addUserForm.get('tenantId')?.hasError('tenantId') && addUserForm.get('tenantId')?.touched">
             {{ 'RequiredField' | translate }}

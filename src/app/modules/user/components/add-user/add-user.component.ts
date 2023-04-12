@@ -19,6 +19,7 @@ import {AuthService} from "../../../../core/services/auth.service";
 import {MsalService} from "@azure/msal-angular";
 import {Permission} from "../../../../shared/models/permission.model";
 import {PermissionService} from "../../../../core/services/permission.service";
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
 
 interface FormValues {
     userType: UserType;
@@ -138,7 +139,6 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
             lastname: [userDetails?.lastname ?? '', [Validators.required]],
             email: [userDetails?.email ?? '', []],
             userRole: [null, []],
-            tenantId: [null, []]
         });
     }
 
@@ -189,7 +189,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
                 surName: this.formValues.lastname,
                 email: this.formValues.email,
                 roleName,
-                contextTenantId: this.formValues.tenantId,
+                contextTenantId: GeneralUtils.TenantID,
                 redirect: {
                     redirectUrl: environment.redirectUrl,
                     clientId: environment.authClientId
