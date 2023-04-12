@@ -1,14 +1,20 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, filter, switchMap, take, takeUntil} from "rxjs";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {UserManagementApiService} from "../../../core/services/user-management-api.service";
-import {DestroyableComponent} from "../destroyable.component";
-import {AuthUser} from "../../models/user.model";
-import {NotificationDataService} from "../../../core/services/notification-data.service";
-import {Router} from "@angular/router";
-import {ModalService} from "../../../core/services/modal.service";
-import {ConfirmActionModalComponent, ConfirmActionModalData} from "../confirm-action-modal.component";
-import {UserService} from "../../../core/services/user.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, filter, switchMap, take, takeUntil } from "rxjs";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { UserManagementApiService } from "../../../core/services/user-management-api.service";
+import { DestroyableComponent } from "../destroyable.component";
+import { AuthUser } from "../../models/user.model";
+import { NotificationDataService } from "../../../core/services/notification-data.service";
+import { Router } from "@angular/router";
+import { ModalService } from "../../../core/services/modal.service";
+import { ConfirmActionModalComponent, ConfirmActionModalData } from "../confirm-action-modal.component";
+import { UserService } from "../../../core/services/user.service";
+import { RouterStateService } from 'src/app/core/services/router-state.service';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { TranslateService } from '@ngx-translate/core';
+import defaultLanguage from '../../../../../src/assets/i18n/en-BE.json';
+import dutchLangauge from '../../../../../src/assets/i18n/nl-BE.json';
+
 
 @Component({
     selector: 'dfm-complete-profile',
@@ -27,6 +33,9 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
         Country: new FormControl('', Validators.required),
         PostalCode: new FormControl('', Validators.required),
     });
+    public selectedLang: string = 'en-BE'
+
+    siteDetails$$: BehaviorSubject<any>;
 
     constructor(
         private userManagementApiSvc: UserManagementApiService,
@@ -34,8 +43,16 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
         private modalSvc: ModalService,
         private notificationSvc: NotificationDataService,
         private router: Router,
+        private routerStateSvc: RouterStateService,
+        private authSvc: AuthService,
+        private translateService: TranslateService,
+        // private landingService: LandingService,
     ) {
         super()
+        this.siteDetails$$ = new BehaviorSubject<any[]>([]);
+    // this.landingService.siteFooterDetails$$.pipe(takeUntil(this.destroy$$)).subscribe((res) => {
+    //   this.ngOnInit();
+    // });
     }
 
     public ngOnInit(): void {
@@ -43,6 +60,18 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
             next: (user) => this.user = user as AuthUser
         });
     }
+    changeLanguage(value) {
+        if (value === 'en-BE') {
+          this.translateService.setTranslation(value, defaultLanguage);
+          this.translateService.setDefaultLang(value);
+          // eslint-disable-next-line eqeqeq
+        } else if (value === 'nl-BE') {
+          this.translateService.setTranslation(value, dutchLangauge);
+          this.translateService.setDefaultLang(value);
+        }
+    
+        this.selectedLang = value;
+      }
 
     public override ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -96,4 +125,14 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
             next: () => this.userSvc.logout()
         })
     }
+    public items: any = [
+        {
+            name: 'EN',
+            value: 'EN',
+        },
+        {
+            name: 'NL',
+            value: 'NL',
+        },
+    ];
 }
