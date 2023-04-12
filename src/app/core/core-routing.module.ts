@@ -10,7 +10,7 @@ const routes: Routes = [
         children: [
             {
                 path: 'dashboard',
-                title: 'Cheduler - Dashboard',
+                title: 'Cheduler',
                 loadChildren: async () => (await import('../modules/dashboard/dashboard.module')).DashboardModule,
             },
             {
