@@ -91,7 +91,6 @@ export enum Permission {
 
 export enum GeneralUserPermission {
 	// Absence
-	CreateAbsences = 'can_create_absences',
 	ReadAbsences = 'can_read_absences',
 
 	// Appointment
@@ -134,32 +133,48 @@ export enum GeneralUserPermission {
 	ReadRoles = 'can_read_roles',
 
 	// Staffs
-	CreateStaffs = 'can_create_staffs',
 	ReadStaffs = 'can_read_staffs',
-	UpdateStaffs = 'can_update_staffs',
 
 	// Email template
-	ReadEmailTemplate = 'can_read_email_template',
-	UpdateEmailTemplate = 'can_update_email_template',
 
 	// User
-	CreateUser = 'can_create_user',
 	ReadUser = 'can_read_user',
-	UpdateUser = 'can_update_user',
 }
 
 export enum ReaderPermission {
-  ReadAbsences = 'can_read_absences',
-  ReadAppointments = 'can_read_appointments',
-  ReadExams = 'can_read_exams',
-  ReadRooms = 'can_read_rooms',
-  ReadPrioritySlots = 'can_read_priority_slot',
-  ReadPhysicians = 'can_read_physicians',
-  ReadRoles = 'can_read_roles',
-  ReadStaffs = 'can_read_staffs',
-  ReadUser = 'can_read_user',
-  ReadEmailTemplate = 'can_read_email_template',
+	// Absence
+	ReadAbsences = 'can_read_absences',
+
+	// Appointment
+	ReadAppointments = 'can_read_appointments',
+
+	// Exams
+	ReadExams = 'can_read_exams',
+
+	// Rooms
+	ReadRooms = 'can_read_rooms',
+
+	// Priority Slot
+	ReadPrioritySlots = 'can_read_priority_slot',
+
+	// Physician
+	ReadPhysicians = 'can_read_physicians',
+
+	// Role
+	ReadRoles = 'can_read_roles',
+
+	// Staff
+	ReadStaffs = 'can_read_staffs',
+
+	// User
+	ReadUser = 'can_read_user',
+
+	// Email template
 }
+
+
+
+
 
 
 

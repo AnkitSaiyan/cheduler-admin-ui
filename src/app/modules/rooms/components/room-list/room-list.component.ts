@@ -186,7 +186,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
 		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe(([lang, permissionType]) => {
+			.subscribe(([lang]) => {
 				this.selectedLang = lang;
 				this.columns = [
 					Translate.Name[lang],
@@ -196,7 +196,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 					Translate.Status[lang],
 				];
 
-				if (permissionType !== UserRoleEnum.Reader) {
+				if (this.permissionSvc.isPermitted([Permission.UpdateRooms, Permission.DeleteRooms])) {
 					this.columns = [...this.columns, Translate.Actions[lang]];
 				}
 

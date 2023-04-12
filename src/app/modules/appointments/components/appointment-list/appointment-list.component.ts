@@ -210,34 +210,34 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     });
 
     combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(([lang, permissionType]) => {
-        this.selectedLang = lang;
-        this.columns = [
-          Translate.StartedAt[lang],
-          Translate.EndedAt[lang],
-          Translate.PatientName[lang],
-          Translate.Physician[lang],
-          Translate.AppointmentNo[lang],
-          Translate.AppliedOn[lang],
-          // Translate.Read[lang],
-          Translate.Status[lang],
-        ];
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe(([lang]) => {
+				this.selectedLang = lang;
+				this.columns = [
+					Translate.StartedAt[lang],
+					Translate.EndedAt[lang],
+					Translate.PatientName[lang],
+					Translate.Physician[lang],
+					Translate.AppointmentNo[lang],
+					Translate.AppliedOn[lang],
+					// Translate.Read[lang],
+					Translate.Status[lang],
+				];
 
-        if (permissionType !== UserRoleEnum.Reader) {
-          this.columns = [...this.columns, Translate.Actions[lang]];
-        }
+				if (this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments])) {
+					this.columns = [...this.columns, Translate.Actions[lang]];
+				}
 
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
-        }
-      });
+				// eslint-disable-next-line default-case
+				switch (lang) {
+					case ENG_BE:
+						this.statuses = Statuses;
+						break;
+					case DUTCH_BE:
+						this.statuses = StatusesNL;
+						break;
+				}
+			});
   }
 
   public override ngOnDestroy() {

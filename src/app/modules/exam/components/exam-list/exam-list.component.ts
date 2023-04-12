@@ -158,26 +158,26 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
       });
 
     combineLatest([this.shareDataService.getLanguage$(), this.permissionSvc.permissionType$])
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: ([lang, permissionType]) => {
-          this.selectedLang = lang;
-          this.columns = [Translate.Name[lang], Translate.Expensive[lang], Translate.Status[lang]];
-          if (permissionType !== UserRoleEnum.Reader) {
-            this.columns = [...this.columns, Translate.Actions[lang]];
-          }
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: ([lang]) => {
+					this.selectedLang = lang;
+					this.columns = [Translate.Name[lang], Translate.Expensive[lang], Translate.Status[lang]];
+					if (this.permissionSvc.isPermitted([Permission.UpdateExams, Permission.DeleteExams])) {
+						this.columns = [...this.columns, Translate.Actions[lang]];
+					}
 
-          // eslint-disable-next-line default-case
-          switch (lang) {
-            case ENG_BE:
-              this.statuses = Statuses;
-              break;
-            case DUTCH_BE:
-              this.statuses = StatusesNL;
-              break;
-          }
-        }
-      });
+					// eslint-disable-next-line default-case
+					switch (lang) {
+						case ENG_BE:
+							this.statuses = Statuses;
+							break;
+						case DUTCH_BE:
+							this.statuses = StatusesNL;
+							break;
+					}
+				},
+			});
   }
 
   public override ngOnDestroy() {
