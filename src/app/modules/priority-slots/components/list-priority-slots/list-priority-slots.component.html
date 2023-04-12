@@ -63,8 +63,8 @@
         [openDelay]="200"
         (click)="toggleView()"
       ></dfm-button-icon>
-      <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false" (click)="openAddPriorityModal()"
-        >{{ 'AddPrioritySlots' | translate }}
+      <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreatePrioritySlots" class="text-nowrap" [disabled]="false" (click)="openAddPriorityModal()"
+        ><span class="add-slot-btn"> {{ 'AddPrioritySlots' | translate }} </span><span class="add-slot-btn-mv">{{ 'Add' | translate }}</span>
       </dfm-button>
     </div>
     </div>
@@ -73,7 +73,7 @@
     <dfm-input
       class="flex-1 pr-li-searchbar-mv"
       size="md"
-      placeholder="Search by Priority Slots"
+      placeholder="{{'SearchByPrioritySlots' | translate}}"
       icon="search-sm"
       [formControl]="searchControl"
     ></dfm-input>
@@ -95,7 +95,7 @@
             </div>
           </dfm-table-body-cell>
 
-          <dfm-table-body-cell>
+          <dfm-table-body-cell *dfmPermitted="[Permission.UpdatePrioritySlots, Permission.DeletePrioritySlots]">
             <div class="d-flex dfm-gap-16 align-items-center pr-li-action-buttons">
               <dfm-button
                 color="link-gray"
@@ -107,6 +107,7 @@
                 popoverClass="popover-p-8"
                 [openDelay]="200"
                 (click)="$event.stopPropagation(); openAddPriorityModal(item)"
+                *dfmPermitted="Permission.UpdatePrioritySlots"
               ></dfm-button>
 
               <dfm-button
@@ -119,6 +120,7 @@
                 popoverClass="popover-p-8"
                 [openDelay]="200"
                 (click)="$event.stopPropagation(); deletePrioritySlot(item.id)"
+                *dfmPermitted="Permission.DeletePrioritySlots"
               ></dfm-button>
             </div>
 
@@ -145,6 +147,7 @@
                   triggers="mouseenter:mouseleave"
                   popoverClass="popover-p-8"
                   [openDelay]="200"
+                  *dfmPermitted="Permission.UpdatePrioritySlots"
                 >
                   <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
                 </div>
@@ -155,6 +158,7 @@
                   triggers="mouseenter:mouseleave"
                   popoverClass="popover-p-8"
                   [openDelay]="200"
+                  *dfmPermitted="Permission.DeletePrioritySlots"
                 >
                   <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
                 </div>

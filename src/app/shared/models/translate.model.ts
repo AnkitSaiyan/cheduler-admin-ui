@@ -477,6 +477,7 @@ export const Translate = Object.freeze({
       [DUTCH_BE]: 'Monthly NL',
     },
   },
+
   DeleteAppointment: {
     [ENG_BE]: 'Appointment Deleted Successfully',
     [DUTCH_BE]: 'Afspraak succesvol Verwijderd!',
@@ -485,5 +486,25 @@ export const Translate = Object.freeze({
   NoDataToDownlaod: {
     [ENG_BE]: 'No data to download',
     [DUTCH_BE]: 'Geen gegevens om te downloaden',
+  },
+  
+  Profile: {
+    [ENG_BE]: 'Profile',
+    [DUTCH_BE]: 'Profiel',
+  },
+  Error:{
+    Forbidden:{
+      [ENG_BE]: 'Forbidden! You are not permitted to perform this action',
+    [DUTCH_BE]: 'Verboden! U mag deze actie niet uitvoeren',
+
+    },
+    Unauthorized:{
+      [ENG_BE]: 'Unauthorized! You are not authorized',
+      [DUTCH_BE]: 'Ongeoorloofd! Jij bent niet geautoriseerd',
+    },
+    SomethingWrong:{
+      [ENG_BE]: 'Something Went Wrong',
+      [DUTCH_BE]: 'Er is iets fout gegaan',
+    }
   }
 });

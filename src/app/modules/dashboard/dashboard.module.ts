@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './pages/dashboard.component';
-import { AppointmentsListComponent } from './components/appointments-list/appointments-list.component';
+import { DashboardAppointmentsListComponent } from './components/dashboard-appointments-list/dashboard-appointments-list.component';
 import { AppointmentsDoughnutChartComponent } from './components/charts/appointments-doughnut-chart/appointments-doughnut-chart.component';
 import { UpcomingAppointmentsComponent } from './components/upcoming-appointments/upcoming-appointments.component';
 import { SharedModule } from '../../shared/shared.module';
@@ -16,18 +16,18 @@ import { UnavailableHallPeriodsComponent } from './components/unavailable-hall-p
 import { AppointmentsBarChartComponent } from './components/charts/appointments-bar-chart/appointments-bar-chart.component';
 import { PatientsBarChartComponent } from './components/charts/patients-bar-chart/patients-bar-chart.component';
 import { CancelledBarChartComponent } from './components/charts/cancelled-bar-chart/cancelled-bar-chart.component';
-import { ConsultationsDoughnutChartComponent } from './components/charts/consultations-doughnut-chart/consultations-doughnut-chart.component';
+import { CompletedBarChartComponent } from './components/charts/completed-bar-chart/completed-bar-chart.component';
 import { EmployeeAbsencesComponent } from './components/employee-absences/employee-absences.component';
 import { PostItComponent } from './components/post-it/post-it.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddPostComponent } from './components/post-it/add-post/add-post.component';
 import { ViewPostComponent } from './components/post-it/view-post/view-post.component';
-import { AppointmentAdvanceSearchComponent } from './components/appointments-list/appointment-advance-search/appointment-advance-search.component';
+import { AppointmentAdvanceSearchComponent } from './components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
 
 @NgModule({
   declarations: [
     DashboardComponent,
-    AppointmentsListComponent,
+    DashboardAppointmentsListComponent,
     AppointmentsDoughnutChartComponent,
     UpcomingAppointmentsComponent,
     RecentPatientsComponent,
@@ -39,7 +39,7 @@ import { AppointmentAdvanceSearchComponent } from './components/appointments-lis
     AppointmentsBarChartComponent,
     PatientsBarChartComponent,
     CancelledBarChartComponent,
-    ConsultationsDoughnutChartComponent,
+    CompletedBarChartComponent,
     EmployeeAbsencesComponent,
     PostItComponent,
     AddPostComponent,

@@ -11,7 +11,7 @@ import { LoaderService } from './loader.service';
   providedIn: 'root',
 })
 export class PhysicianApiService {
-  private readonly doctorUrl = `${environment.serverBaseUrl}/doctor`;
+  private readonly doctorUrl = `${environment.schedulerApiUrl}/doctor`;
 
   private refreshPhysicians$$ = new Subject<void>();
 
@@ -24,7 +24,7 @@ export class PhysicianApiService {
   private fetchAllPhysicians(): Observable<Physician[]> {
     this.loaderSvc.spinnerActivate();
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<Physician[]>>(`${environment.serverBaseUrl}/doctor`).pipe(
+    return this.http.get<BaseResponse<Physician[]>>(`${environment.schedulerApiUrl}/doctor`).pipe(
       map((response) => response.data?.map((p) => ({ ...p, fullName: `${p.firstname} ${p.lastname}` })).sort((p1, p2) => p2.id - p1.id)),
       tap(() => {
         this.loaderSvc.deactivate();
@@ -37,7 +37,7 @@ export class PhysicianApiService {
     this.loaderSvc.activate();
     return combineLatest([this.refreshPhysicians$$.pipe(startWith(''))]).pipe(
       switchMap(() =>
-        this.http.get<BaseResponse<Physician>>(`${environment.serverBaseUrl}/doctor/${physicianID}`).pipe(
+        this.http.get<BaseResponse<Physician>>(`${environment.schedulerApiUrl}/doctor/${physicianID}`).pipe(
           map((response) => response.data),
           tap(() => this.loaderSvc.deactivate()),
           catchError((e) => {
@@ -61,7 +61,7 @@ export class PhysicianApiService {
 
   public addPhysician$(requestData: AddPhysicianRequestData): Observable<Physician> {
     this.loaderSvc.activate();
-    return this.http.post<BaseResponse<Physician>>(`${environment.serverBaseUrl}/doctor`, requestData).pipe(
+    return this.http.post<BaseResponse<Physician>>(`${environment.schedulerApiUrl}/doctor`, requestData).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshPhysicians$$.next();
@@ -73,7 +73,7 @@ export class PhysicianApiService {
   public updatePhysician$(requestData: AddPhysicianRequestData): Observable<Physician> {
     this.loaderSvc.activate();
     const { id, ...restData } = requestData;
-    return this.http.put<BaseResponse<Physician>>(`${environment.serverBaseUrl}/doctor/${id}`, restData).pipe(
+    return this.http.put<BaseResponse<Physician>>(`${environment.schedulerApiUrl}/doctor/${id}`, restData).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshPhysicians$$.next();
@@ -84,7 +84,7 @@ export class PhysicianApiService {
 
   public deletePhysician(physicianID: number) {
     this.loaderSvc.activate();
-    return this.http.delete<BaseResponse<Boolean>>(`${environment.serverBaseUrl}/doctor/${physicianID}`).pipe(
+    return this.http.delete<BaseResponse<Boolean>>(`${environment.schedulerApiUrl}/doctor/${physicianID}`).pipe(
       map((response) => response.data),
       tap(() => {
         this.refreshPhysicians$$.next();

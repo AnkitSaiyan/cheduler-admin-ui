@@ -1,7 +1,18 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  filter,
+  lastValueFrom,
+  switchMap,
+  take,
+  takeUntil,
+  tap,
+  throttleTime
+} from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -11,17 +22,17 @@ import { Appointment } from '../../../../shared/models/appointment.model';
 import { Exam } from '../../../../shared/models/exam.model';
 import { Router } from '@angular/router';
 import { RouterStateService } from '../../../../core/services/router-state.service';
-import { AppointmentStatus } from '../../../../shared/models/status.model';
 import { PracticeHoursApiService } from '../../../../core/services/practice-hours-api.service';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { CalendarUtils } from '../../../../shared/utils/calendar.utils';
-import { get24HourTimeString, timeToNumber } from '../../../../shared/utils/time';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'dfm-appointment-calendar',
@@ -86,15 +97,18 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     private timeIntervalPipe: TimeInIntervalPipe,
     private modalSvc: ModalService,
     private loaderSvc: LoaderService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
     this.selectedSlot$$ = new BehaviorSubject<any>(null);
-    this.appointmentApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => {
-      // console.log(items);
-      this.calendarViewType = items;
-      this.ngOnInit();
+    this.appointmentApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (items) => {
+        // console.log(items);
+        this.calendarViewType = items;
+        this.ngOnInit();
+      }
     });
   }
 
@@ -128,22 +142,22 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
           finalValue = { min: curr.dayStart, max: curr.dayEnd };
           return finalValue;
         }
-        if (timeToNumber(curr.dayStart) <= timeToNumber(pre?.min)) {
+        if (DateTimeUtils.TimeToNumber(curr.dayStart) <= DateTimeUtils.TimeToNumber(pre?.min)) {
           finalValue = { ...finalValue, min: curr.dayStart };
         }
-        if (timeToNumber(curr.dayEnd) >= timeToNumber(pre?.max)) {
+        if (DateTimeUtils.TimeToNumber(curr.dayEnd) >= DateTimeUtils.TimeToNumber(pre?.max)) {
           finalValue = { ...finalValue, max: curr.dayEnd };
         }
         return finalValue;
       }, {});
 
       const { min, max } = minMaxValue;
-      if (timeToNumber('02:00:00') >= timeToNumber(min)) {
+      if (DateTimeUtils.TimeToNumber('02:00:00') >= DateTimeUtils.TimeToNumber(min)) {
         minMaxValue = { ...minMaxValue, min: '00:00:00' };
       } else {
         minMaxValue = { ...minMaxValue, min: this.calculate(120, min, 'minus') };
       }
-      if (timeToNumber('22:00:00') <= timeToNumber(max)) {
+      if (DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)) {
         minMaxValue = { ...minMaxValue, max: '23:59:00' };
       } else {
         minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
@@ -369,7 +383,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
   }
 
   private createTimeInterval(practiceHours: PracticeAvailabilityServer[]) {
-    practiceHours.sort((p1, p2) => timeToNumber(get24HourTimeString(p1.dayStart)) - timeToNumber(get24HourTimeString(p2.dayStart)));
+    practiceHours.sort((p1, p2) => DateTimeUtils.TimeToNumber(DateTimeUtils.TimeStringIn24Hour(p1.dayStart)) - DateTimeUtils.TimeToNumber(DateTimeUtils.TimeStringIn24Hour(p2.dayStart)));
 
     const weekdayToPractice = {};
 
@@ -379,8 +393,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
       }
 
       weekdayToPractice[p.weekday].intervals.push({
-        dayStart: get24HourTimeString(p.dayStart),
-        dayEnd: get24HourTimeString(p.dayEnd),
+        dayStart: DateTimeUtils.TimeStringIn24Hour(p.dayStart),
+        dayEnd: DateTimeUtils.TimeStringIn24Hour(p.dayEnd),
       });
     });
 
@@ -391,8 +405,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
         const startTime = practiceData.intervals[0].dayStart;
         const endTime = practiceData.intervals[practiceData.intervals.length - 1].dayEnd;
 
-        let startMinutes = CalendarUtils.DurationInMinFromHour(+startTime.split(':')[0], +startTime.split(':')[1]);
-        let endMinutes = CalendarUtils.DurationInMinFromHour(+endTime.split(':')[0], +endTime.split(':')[1]);
+        let startMinutes = DateTimeUtils.DurationInMinFromHour(+startTime.split(':')[0], +startTime.split(':')[1]);
+        let endMinutes = DateTimeUtils.DurationInMinFromHour(+endTime.split(':')[0], +endTime.split(':')[1]);
 
         if (startMinutes - 120 > 0) {
           startMinutes -= 120;
@@ -415,7 +429,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
     this.weekdayToPractice$$.next(weekdayToPractice);
   }
 
-  public addAppointment(event: any) {
+  public async addAppointment(event: any) {
+    const permissionType = await lastValueFrom(this.permissionSvc.permissionType$);
+    if (permissionType === UserRoleEnum.Reader) return;
+
     const { e, eventsContainer, day, grayOutSlot } = event;
     const eventCard = this.createAppointmentCard(e, eventsContainer);
 

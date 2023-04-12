@@ -55,6 +55,7 @@
         class="text-nowrap"
         [disabled]="(loading$$ | async) === true"
         (click)="openAddRoomModal()"
+        *dfmPermitted="Permission.CreateRooms"
       >{{'AddRoom' | translate}}
       </dfm-button>
     </div>
@@ -72,8 +73,8 @@
     <div class="room-table-wrapper">
       <table class="room-table">
         <thead class="room-table-header">
-        <tr class="room-table-header-row">
-          <th class="room-table-th">
+        <tr class="room-table-header-row" >
+          <th class="room-table-th checkbox" *ngIf="permissionSvc.isNotReader">
             <dfm-checkbox class="w-fit d-flex dfm-me-0" #headerCheckBox
                           (click)="$event.stopPropagation(); handleCheckboxSelection(-1)"></dfm-checkbox>
           </th>
@@ -86,7 +87,7 @@
             [ngClass]="{ 'room-table-row-disabled': (loading$$ | async) === true }"
             [routerLink]="['./', room.id, 'view']"
             cdkDrag [cdkDragDisabled]="(loading$$ | async) === true " [cdkDragStartDelay]="100">
-          <td class="room-table-td">
+          <td class="room-table-td checkbox" *ngIf="permissionSvc.isNotReader">
             <dfm-checkbox class="w-fit d-flex dfm-me-0" #rowCheckbox
                           (click)="$event.stopPropagation(); handleCheckboxSelection(+room.id)"></dfm-checkbox>
           </td>
@@ -110,31 +111,34 @@
             </dfm-badge>
           </td>
 
-          <td class="room-table-td">
+          <td class="room-table-td" *dfmPermitted="[Permission.UpdateRooms, Permission.DeleteRooms]">
             <div class="d-flex dfm-gap-16 align-items-center rm-li-action-buttons">
-              <dfm-button
-                *ngIf="room.status === statusType.Inactive"
-                color="link-gray"
-                size="sm"
-                trailingIcon="check-circle"
-                ngbPopover="{{'ChangeStatus' | translate}}"
-                popoverClass="popover-p-8"
-                triggers="mouseenter:mouseleave"
-                [openDelay]="200"
-                (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Active }])"
-              ></dfm-button>
+              <ng-container *dfmPermitted="Permission.UpdateRooms">
 
-              <dfm-button
-                *ngIf="room.status === statusType.Active"
-                color="link-gray"
-                size="sm"
-                trailingIcon="x-circle"
-                ngbPopover="{{'ChangeStatus' | translate}}"
-                popoverClass="popover-p-8"
-                triggers="mouseenter:mouseleave"
-                [openDelay]="200"
-                (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Inactive }])"
-              ></dfm-button>
+                <dfm-button
+                  *ngIf="room.status === statusType.Inactive"
+                  color="link-gray"
+                  size="sm"
+                  trailingIcon="check-circle"
+                  ngbPopover="{{'ChangeStatus' | translate}}"
+                  popoverClass="popover-p-8"
+                  triggers="mouseenter:mouseleave"
+                  [openDelay]="200"
+                  (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Active }])"
+                ></dfm-button>
+
+                <dfm-button
+                  *ngIf="room.status === statusType.Active"
+                  color="link-gray"
+                  size="sm"
+                  trailingIcon="x-circle"
+                  ngbPopover="{{'ChangeStatus' | translate}}"
+                  popoverClass="popover-p-8"
+                  triggers="mouseenter:mouseleave"
+                  [openDelay]="200"
+                  (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Inactive }])"
+                ></dfm-button>
+              </ng-container>
 
               <dfm-button
                 color="link-gray"
@@ -145,6 +149,7 @@
                 popoverClass="popover-p-8"
                 [openDelay]="200"
                 (click)="$event.stopPropagation(); openAddRoomModal(room);"
+                *dfmPermitted="Permission.UpdateRooms"
               ></dfm-button>
 
               <dfm-button
@@ -156,6 +161,7 @@
                 popoverClass="popover-p-8"
                 [openDelay]="200"
                 (click)="$event.stopPropagation(); deleteRoom(room.id)"
+                *dfmPermitted="Permission.DeleteRooms"
               ></dfm-button>
             </div>
 
@@ -177,21 +183,23 @@
             <ng-template #actionMenu>
               <div class="rm-li-menus"
                    aria-labelledby="dropdownManual">
-                <div *ngIf="!room.status"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Active }])">
-                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-                </div>
+                <ng-container *dfmPermitted="Permission.UpdateRooms">
+                  <div *ngIf="!room.status"
+                       (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Active }])">
+                    <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+                  </div>
 
-                <div *ngIf="room.status"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Inactive }])">
-                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-                </div>
+                  <div *ngIf="room.status"
+                       (click)="$event.stopPropagation(); changeStatus([ { id: room.id, status: statusType.Inactive }])">
+                    <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+                  </div>
+                </ng-container>
 
-                <div (click)="$event.stopPropagation(); openAddRoomModal(room)">
+                <div (click)="$event.stopPropagation(); openAddRoomModal(room)" *dfmPermitted="Permission.UpdateRooms">
                   <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
                 </div>
 
-                <div (click)="$event.stopPropagation(); deleteRoom(room.id)">
+                <div (click)="$event.stopPropagation(); deleteRoom(room.id)" *dfmPermitted="Permission.DeleteRooms">
                   <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
                 </div>
               </div>
@@ -235,7 +243,7 @@
     <!--      </tbody>-->
     <!--    </table>-->
 
-    <!--    <dfm-table [items]="rooms" [selectable]="true"-->
+    <!--    <dfm-table [items]="rooms" [selectable]="permissionSvc.isNotReader"-->
     <!--               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewRoom($event)"-->
     <!--               class="dfm-table-wrapper">-->
     <!--      <ng-template #headerRowTemplate>-->

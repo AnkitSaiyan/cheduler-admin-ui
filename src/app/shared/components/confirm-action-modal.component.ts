@@ -60,11 +60,13 @@ export class ConfirmActionModalComponent extends DestroyableComponent implements
   }
 
   public ngOnInit() {
-    this.dialogSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data: ConfirmActionModalData) => {
-      if (data.bodyText) this.modalData.bodyText = data.bodyText;
-      if (data.titleText) this.modalData.titleText = data.titleText;
-      if (data.confirmButtonText) this.modalData.confirmButtonText = data.confirmButtonText;
-      if (data.cancelButtonText) this.modalData.cancelButtonText = data.cancelButtonText;
+    this.dialogSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (data: ConfirmActionModalData) => {
+        if (data.bodyText) this.modalData.bodyText = data.bodyText;
+        if (data.titleText) this.modalData.titleText = data.titleText;
+        if (data.confirmButtonText) this.modalData.confirmButtonText = data.confirmButtonText;
+        if (data.cancelButtonText) this.modalData.cancelButtonText = data.cancelButtonText;
+      }
     });
   }
 

@@ -157,38 +157,40 @@ export class ConfirmStatusChangeBannerComponent implements OnInit {
         this.statuses = [];
     }
 
-    this.dataShareService.getLanguage$().subscribe((language: string) => {
-      switch (this.statusType) {
-        case 'appointment':
-          this.statuses = [
-            {
-              name: language === ENG_BE ? 'Pending' : 'In afwachting',
-              value: AppointmentStatus.Pending,
-            },
-            {
-              name: language === ENG_BE ? 'Approved' : 'Goedgekeurd',
-              value: AppointmentStatus.Approved,
-            },
-            {
-              name: language === ENG_BE ? 'Cancelled' : 'Geannuleerd',
-              value: AppointmentStatus.Cancelled,
-            },
-          ] as any[];
-          break;
-        case 'status':
-          this.statuses = [
-            {
-              name: language === ENG_BE ? 'Active' : 'Actief',
-              value: Status.Active,
-            },
-            {
-              name: language === ENG_BE ? 'Inactive' : 'Inactief',
-              value: Status.Inactive,
-            },
-          ] as any[];
-          break;
-        default:
-          this.statuses = [];
+    this.dataShareService.getLanguage$().subscribe({
+      next: (language: string) => {
+        switch (this.statusType) {
+          case 'appointment':
+            this.statuses = [
+              {
+                name: language === ENG_BE ? 'Pending' : 'In afwachting',
+                value: AppointmentStatus.Pending,
+              },
+              {
+                name: language === ENG_BE ? 'Approved' : 'Goedgekeurd',
+                value: AppointmentStatus.Approved,
+              },
+              {
+                name: language === ENG_BE ? 'Cancelled' : 'Geannuleerd',
+                value: AppointmentStatus.Cancelled,
+              },
+            ] as any[];
+            break;
+          case 'status':
+            this.statuses = [
+              {
+                name: language === ENG_BE ? 'Active' : 'Actief',
+                value: Status.Active,
+              },
+              {
+                name: language === ENG_BE ? 'Inactive' : 'Inactief',
+                value: Status.Inactive,
+              },
+            ] as any[];
+            break;
+          default:
+            this.statuses = [];
+        }
       }
     });
   }

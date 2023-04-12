@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,10 +16,12 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
-import { User } from '../../../../shared/models/user.model';
+import { User, UserRoleEnum } from '../../../../shared/models/user.model';
 import { ShareDataService } from '../../../../core/services/share-data.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Translate } from '../../../../shared/models/translate.model';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
 
 @Component({
   selector: 'dfm-physician-list',
@@ -63,6 +65,8 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public statuses = Statuses;
 
+  public readonly Permission = Permission;
+
   private selectedLang: string = ENG_BE;
 
   constructor(
@@ -76,6 +80,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     private shareDataSvc: ShareDataService,
     private translatePipe: TranslatePipe,
     private translate: TranslateService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.physicians$$ = new BehaviorSubject<any[]>([]);
@@ -158,12 +163,14 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         this.closeMenus();
       });
 
-    this.shareDataSvc
-      .getLanguage$()
+    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
+      .subscribe(([lang, permissionType]) => {
         this.selectedLang = lang;
-        this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang], Translate.Actions[lang]];
+        this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang]];
+        if (permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
         // eslint-disable-next-line default-case
         switch (lang) {
           case ENG_BE:

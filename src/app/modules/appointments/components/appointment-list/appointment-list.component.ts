@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DatePipe, TitleCasePipe } from '@angular/common';
@@ -23,6 +23,9 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'dfm-appointment-list',
@@ -53,6 +56,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
   private selectedLang: string = ENG_BE;
 
   public statuses = Statuses;
+
+  public readonly Permission = Permission;
 
   public appointmentGroupedByDateAndRoom: {
     [key: string]: {
@@ -93,6 +98,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
     private routerStateSvc: RouterStateService,
     private shareDataSvc: ShareDataService,
     private translate: TranslateService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -147,6 +153,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         takeUntil(this.destroy$$),
       )
       .subscribe((value) => {
+        console.log('in download')
         if (!this.filteredAppointments$$.value.length) {
           this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
           this.clearDownloadDropdown();
@@ -156,15 +163,15 @@ export class AppointmentListComponent extends DestroyableComponent implements On
         this.downloadSvc.downloadJsonAs(
           value as DownloadAsType,
           this.columns.slice(0, -1),
-          this.filteredAppointments$$.value.map((ap: Appointment) => [
-            ap.startedAt.toString(),
-            ap.endedAt.toString(),
-            `${this.titleCasePipe.transform(ap.patientFname)} ${this.titleCasePipe.transform(ap.patientLname)}`,
-            this.titleCasePipe.transform(ap.doctor),
-            ap.id.toString(),
-            ap.createdAt.toString(),
+          this.filteredAppointments$$.value?.map((ap: Appointment) => [
+            ap?.startedAt?.toString() ?? '',
+            ap?.endedAt?.toString() ?? '',
+            `${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
+            this.titleCasePipe.transform(ap?.doctor),
+            ap?.id?.toString(),
+            ap?.createdAt?.toString(),
             // ap.readStatus ? 'Yes' : 'No',
-            AppointmentStatusToName[+ap.approval],
+            AppointmentStatusToName[+ap?.approval],
           ]),
           'appointment',
         );
@@ -173,7 +180,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
           this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
         }
         this.clearDownloadDropdown();
-
       });
 
     this.afterBannerClosed$$
@@ -201,13 +207,12 @@ export class AppointmentListComponent extends DestroyableComponent implements On
       });
 
     this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-      this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
+      this.roomList = rooms?.map(({ name, id }) => ({ name, value: id }));
     });
 
-    this.shareDataSvc
-      .getLanguage$()
+    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
+      .subscribe(([lang, permissionType]) => {
         this.selectedLang = lang;
         this.columns = [
           Translate.StartedAt[lang],
@@ -218,8 +223,11 @@ export class AppointmentListComponent extends DestroyableComponent implements On
           Translate.AppliedOn[lang],
           // Translate.Read[lang],
           Translate.Status[lang],
-          Translate.Actions[lang],
         ];
+
+        if (permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
 
         // eslint-disable-next-line default-case
         switch (lang) {

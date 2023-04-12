@@ -1,286 +1,293 @@
-import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { AbsenceApiService } from '../../../../core/services/absence-api.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { Absence } from '../../../../shared/models/absence.model';
-import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-slots.component';
-import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
-import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { TranslateService } from '@ngx-translate/core';
+import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil} from 'rxjs';
+import {ActivatedRoute, Router} from '@angular/router';
+import {NotificationType, TableItem} from 'diflexmo-angular-design';
+import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
+import {NotificationDataService} from '../../../../core/services/notification-data.service';
+import {ModalService} from '../../../../core/services/modal.service';
+import {DownloadAsType, DownloadService, DownloadType} from '../../../../core/services/download.service';
+import {
+    ConfirmActionModalComponent,
+    ConfirmActionModalData
+} from '../../../../shared/components/confirm-action-modal.component';
+import {AddPrioritySlotsComponent} from '../add-priority-slots/add-priority-slots.component';
+import {PrioritySlotApiService} from 'src/app/core/services/priority-slot-api.service';
+import {PrioritySlot} from 'src/app/shared/models/priority-slots.model';
+import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
+import {Translate} from '../../../../shared/models/translate.model';
+import {ShareDataService} from 'src/app/core/services/share-data.service';
+import {TranslateService} from '@ngx-translate/core';
+import {Permission} from 'src/app/shared/models/permission.model';
+import {PermissionService} from 'src/app/core/services/permission.service';
+import {UserRoleEnum} from 'src/app/shared/models/user.model';
+
 @Component({
-  selector: 'dfm-list-priority-slots',
-  templateUrl: './list-priority-slots.component.html',
-  styleUrls: ['./list-priority-slots.component.scss'],
+    selector: 'dfm-list-priority-slots',
+    templateUrl: './list-priority-slots.component.html',
+    styleUrls: ['./list-priority-slots.component.scss'],
 })
 export class ListPrioritySlotsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  clipboardData: string = '';
-  @HostListener('document:click', ['$event']) onClick() {
-    this.toggleMenu(true);
-  }
+    clipboardData: string = '';
+    public searchControl = new FormControl('', []);
+    public downloadDropdownControl = new FormControl('', []);
+    public columns: string[] = ['Start', 'End', 'Priority', 'Actions'];
+    public downloadItems: DownloadType[] = [];
+    public filteredPrioritySlots$$: BehaviorSubject<any[]>;
+    public statuses = Statuses;
+    public calendarView$$ = new BehaviorSubject<boolean>(false);
+    public readonly Permission = Permission;
+    private prioritySlots$$: BehaviorSubject<any[]>;
+    private selectedLang: string = ENG_BE;
 
-  public searchControl = new FormControl('', []);
+    constructor(
+        private priorityApiSvc: PrioritySlotApiService,
+        private notificationSvc: NotificationDataService,
+        private router: Router,
+        private route: ActivatedRoute,
+        private modalSvc: ModalService,
+        private downloadSvc: DownloadService,
+        private cdr: ChangeDetectorRef,
+        private shareDataSvc: ShareDataService,
+        private translate: TranslateService,
+        public permissionSvc: PermissionService,
+    ) {
+        super();
+        this.prioritySlots$$ = new BehaviorSubject<any[]>([]);
+        this.filteredPrioritySlots$$ = new BehaviorSubject<any[]>([]);
+    }
 
-  public downloadDropdownControl = new FormControl('', []);
+    @HostListener('document:click', ['$event']) onClick() {
+        this.toggleMenu(true);
+    }
 
-  public columns: string[] = ['Start', 'End', 'Priority', 'Actions'];
+    ngOnInit(): void {
+			this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
-  public downloadItems: DownloadType[] = [];
+			this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe((params) => {
+				if (params['v']) {
+					this.calendarView$$.next(params['v'] !== 't');
+				} else {
+					this.router.navigate([], {
+						replaceUrl: true,
+						queryParams: {
+							v: 'w',
+						},
+					});
+					this.calendarView$$.next(true);
+				}
+			});
 
-  private prioritySlots$$: BehaviorSubject<any[]>;
+			this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
+				this.prioritySlots$$.next(prioritySlots);
+				this.filteredPrioritySlots$$.next(prioritySlots);
+			});
 
-  public filteredPrioritySlots$$: BehaviorSubject<any[]>;
+			this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
+				if (searchText) {
+					this.handleSearch(searchText.toLowerCase());
+				} else {
+					this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value]);
+				}
+			});
 
-  private selectedLang: string = ENG_BE;
+			this.downloadDropdownControl.valueChanges
+				.pipe(
+					filter((value) => !!value),
+					takeUntil(this.destroy$$),
+				)
+				.subscribe((downloadAs) => {
+					if (!this.filteredPrioritySlots$$.value.length) {
+						this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+						this.clearDownloadDropdown();
+						return;
+					}
 
-  public statuses = Statuses;
+					this.downloadSvc.downloadJsonAs(
+						downloadAs as DownloadAsType,
+						this.columns.slice(0, -1),
+						this.filteredPrioritySlots$$.value.map((pr: PrioritySlot) => [
+							pr.startedAt,
+							pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`,
+							pr.priority,
+						]),
+						'priority slot details',
+					);
 
-  public calendarView$$ = new BehaviorSubject<boolean>(false);
+					if (downloadAs !== 'PRINT') {
+						this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
+					}
+					this.clearDownloadDropdown();
+				});
 
-  constructor(
-    private priorityApiSvc: PrioritySlotApiService,
-    private notificationSvc: NotificationDataService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private modalSvc: ModalService,
-    private downloadSvc: DownloadService,
-    private cdr: ChangeDetectorRef,
-    private shareDataSvc: ShareDataService,
-    private translate: TranslateService,
-  ) {
-    super();
-    this.prioritySlots$$ = new BehaviorSubject<any[]>([]);
-    this.filteredPrioritySlots$$ = new BehaviorSubject<any[]>([]);
-  }
+			combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+				.pipe(takeUntil(this.destroy$$))
+				.subscribe(([lang, permissionType]) => {
+					this.selectedLang = lang;
+					this.columns = [Translate.Start[lang], Translate.End[lang], Translate.Priority[lang]];
+					if (permissionType !== UserRoleEnum.Reader) {
+						this.columns = [...this.columns, Translate.Actions[lang]];
+					}
 
-  ngOnInit(): void {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
+					// eslint-disable-next-line default-case
+					switch (lang) {
+						case ENG_BE:
+							this.statuses = Statuses;
+							break;
+						case DUTCH_BE:
+							this.statuses = StatusesNL;
+							break;
+					}
+				});
+		}
 
-    this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe((params) => {
-      if (params['v']) {
-        this.calendarView$$.next(params['v'] !== 't');
-      } else {
-        this.router.navigate([], {
-          replaceUrl: true,
-          queryParams: {
-            v: 'w',
-          },
+    public override ngOnDestroy() {
+        super.ngOnDestroy();
+    }
+
+    public deletePrioritySlot(id: number) {
+        const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
+            data: {
+                titleText: 'Confirmation',
+                bodyText: 'Are you sure you want to delete this Priority Slot?',
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel',
+            } as ConfirmActionModalData,
         });
-        this.calendarView$$.next(true);
-      }
-    });
 
-    this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
-      this.prioritySlots$$.next(prioritySlots);
-      this.filteredPrioritySlots$$.next(prioritySlots);
-    });
-
-    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-      if (searchText) {
-        this.handleSearch(searchText.toLowerCase());
-      } else {
-        this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value]);
-      }
-    });
-
-    this.downloadDropdownControl.valueChanges
-      .pipe(
-        filter((value) => !!value),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((downloadAs) => {
-        if (!this.filteredPrioritySlots$$.value.length) {
-          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
-          this.clearDownloadDropdown();
-          return;
-        }
-
-        this.downloadSvc.downloadJsonAs(
-          downloadAs as DownloadAsType,
-          this.columns.slice(0, -1),
-          this.filteredPrioritySlots$$.value.map((pr: PrioritySlot) => [
-            pr.startedAt,
-            pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`,
-            pr.priority,
-          ]),
-          'priority slot details',
-        );
-
-        if (downloadAs !== 'PRINT') {
-          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
-        }
-        this.clearDownloadDropdown();
-      });
-
-    this.shareDataSvc
-      .getLanguage$()
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
-        this.selectedLang = lang;
-        this.columns = [Translate.Start[lang], Translate.End[lang], Translate.Priority[lang], Translate.Actions[lang]];
-
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
-        }
-      });
-  }
-
-  public override ngOnDestroy() {
-    super.ngOnDestroy();
-  }
-
-  private handleSearch(searchText: string): void {
-    this.filteredPrioritySlots$$.next([
-      ...this.prioritySlots$$.value.filter((priority) => {
-        let status: any;
-        if (priority.priority === 'High') status = this.translate.instant('High');
-        if (priority.priority === 'Medium') status = this.translate.instant('Medium');
-        if (priority.priority === 'Low') status = this.translate.instant('Low');
-
-        return (
-          priority.startedAt?.toLowerCase()?.includes(searchText) ||
-          priority.endedAt?.toLowerCase()?.includes(searchText) ||
-          status?.toLowerCase()?.startsWith(searchText)
-        );
-      }),
-    ]);
-  }
-
-  public deletePrioritySlot(id: number) {
-    const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
-      data: {
-        titleText: 'Confirmation',
-        bodyText: 'Are you sure you want to delete this Priority Slot?',
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-      } as ConfirmActionModalData,
-    });
-
-    modalRef.closed
-      .pipe(
-        filter((res: boolean) => res),
-        switchMap(() => this.priorityApiSvc.deletePrioritySlot$(id)),
-        take(1),
-      )
-      .subscribe((response) => {
-        if (response) {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.PrioritySlotsDeleted[this.selectedLang]);
-        }
-      });
-  }
-
-  public copyToClipboard() {
-    try {
-      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
-
-      this.filteredPrioritySlots$$.value.forEach((prioritySlot: PrioritySlot) => {
-        dataString += `${prioritySlot.startedAt}\t${prioritySlot.endedAt ? prioritySlot.endedAt : prioritySlot.startedAt.slice(0, -9)}\t${
-          prioritySlot.priority
-        }\n`;
-      });
-
-      this.clipboardData = dataString;
-
-      this.cdr.detectChanges();
-      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
-    } catch (e) {
-      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
-      this.clipboardData = '';
+        modalRef.closed
+            .pipe(
+                filter((res: boolean) => res),
+                switchMap(() => this.priorityApiSvc.deletePrioritySlot$(id)),
+                take(1),
+            )
+            .subscribe((response) => {
+                if (response) {
+                    this.notificationSvc.showNotification(Translate.SuccessMessage.PrioritySlotsDeleted[this.selectedLang]);
+                }
+            });
     }
-  }
 
-  public navigateToViewAbsence(e: TableItem) {
-    if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+    public copyToClipboard() {
+        try {
+            let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+
+            this.filteredPrioritySlots$$.value.forEach((prioritySlot: PrioritySlot) => {
+                dataString += `${prioritySlot.startedAt}\t${prioritySlot.endedAt ? prioritySlot.endedAt : prioritySlot.startedAt.slice(0, -9)}\t${
+                    prioritySlot.priority
+                }\n`;
+            });
+
+            this.clipboardData = dataString;
+
+            this.cdr.detectChanges();
+            this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
+        } catch (e) {
+            this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
+            this.clipboardData = '';
+        }
     }
-  }
 
-  public toggleMenu(reset = false) {
-    const icon = document.querySelector('.ph-li-plus-btn-icon');
-    if (icon) {
-      if (reset) {
-        icon.classList.add('rotate-z-0');
-        icon.classList.remove('rotate-z-45');
-      } else {
-        icon.classList.toggle('rotate-z-45');
-        icon.classList.toggle('rotate-z-0');
-      }
+    public navigateToViewAbsence(e: TableItem) {
+        if (e?.id) {
+            this.router.navigate([`./${e.id}/view`], {relativeTo: this.route});
+        }
     }
-  }
 
-  // public openSearchModal() {
-  //   this.toggleMenu();
+    public toggleMenu(reset = false) {
+        const icon = document.querySelector('.ph-li-plus-btn-icon');
+        if (icon) {
+            if (reset) {
+                icon.classList.add('rotate-z-0');
+                icon.classList.remove('rotate-z-45');
+            } else {
+                icon.classList.toggle('rotate-z-45');
+                icon.classList.toggle('rotate-z-0');
+            }
+        }
+    }
 
-  //   const modalRef = this.modalSvc.open(SearchModalComponent, {
-  //     options: { fullscreen: true },
-  //     data: {
-  //       items: [
-  //         ...this.prioritySlots$$.value.map(({ id, name }) => ({
-  //           name: `${name}`,
-  //           key: `${name}`,
-  //           value: id,
-  //         })),
-  //       ],
-  //       placeHolder: 'Search by Absence Name',
-  //     } as SearchModalData,
-  //   });
+    public openAddPriorityModal(prioritySlotDetails?: PrioritySlot) {
+        this.modalSvc.open(AddPrioritySlotsComponent, {
+            data: {edit: !!prioritySlotDetails?.id, prioritySlotDetails},
+            options: {
+                size: 'xl',
+                centered: true,
+                backdropClass: 'modal-backdrop-remove-mv',
+                keyboard: false,
+            },
+        });
+    }
 
-  //   modalRef.closed.pipe(take(1)).subscribe((result) => this.filterAbsence(result));
-  // }
+    // public openSearchModal() {
+    //   this.toggleMenu();
 
-  // private filterAbsence(result: { name: string; value: string }[]) {
-  //   if (!result?.length) {
-  //     this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value]);
-  //     return;
-  //   }
+    //   const modalRef = this.modalSvc.open(SearchModalComponent, {
+    //     options: { fullscreen: true },
+    //     data: {
+    //       items: [
+    //         ...this.prioritySlots$$.value.map(({ id, name }) => ({
+    //           name: `${name}`,
+    //           key: `${name}`,
+    //           value: id,
+    //         })),
+    //       ],
+    //       placeHolder: 'Search by Absence Name',
+    //     } as SearchModalData,
+    //   });
 
-  //   const ids = new Set<number>();
-  //   result.forEach((item) => ids.add(+item.value));
-  //   this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value.filter((absence: Absence) => ids.has(+absence.id))]);
-  // }
+    //   modalRef.closed.pipe(take(1)).subscribe((result) => this.filterAbsence(result));
+    // }
 
-  public openAddPriorityModal(prioritySlotDetails?: PrioritySlot) {
-    this.modalSvc.open(AddPrioritySlotsComponent, {
-      data: { edit: !!prioritySlotDetails?.id, prioritySlotDetails },
-      options: {
-        size: 'xl',
-        centered: true,
-        backdropClass: 'modal-backdrop-remove-mv',
-        keyboard: false,
-      },
-    });
-  }
+    // private filterAbsence(result: { name: string; value: string }[]) {
+    //   if (!result?.length) {
+    //     this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value]);
+    //     return;
+    //   }
 
-  public toggleView(): void {
-    this.router.navigate([], {
-      replaceUrl: true,
-      queryParams: {
-        v: !this.calendarView$$.value ? 'w' : 't',
-      },
-    });
-  }
-  private clearDownloadDropdown() {
-    setTimeout(() => {
-      this.downloadDropdownControl.setValue('');
-    }, 0);
-  }
+    //   const ids = new Set<number>();
+    //   result.forEach((item) => ids.add(+item.value));
+    //   this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value.filter((absence: Absence) => ids.has(+absence.id))]);
+    // }
+
+    public toggleView(): void {
+        this.router.navigate([], {
+            replaceUrl: true,
+            queryParams: {
+                v: !this.calendarView$$.value ? 'w' : 't',
+            },
+        });
+    }
+
+    private handleSearch(searchText: string): void {
+        this.filteredPrioritySlots$$.next([
+            ...this.prioritySlots$$.value.filter((priority) => {
+                let status: any;
+                if (priority.priority === 'High') status = this.translate.instant('High');
+                if (priority.priority === 'Medium') status = this.translate.instant('Medium');
+                if (priority.priority === 'Low') status = this.translate.instant('Low');
+
+                return (
+                    priority.startedAt?.toLowerCase()?.includes(searchText) ||
+                    priority.endedAt?.toLowerCase()?.includes(searchText) ||
+                    status?.toLowerCase()?.startsWith(searchText)
+                );
+            }),
+        ]);
+    }
+
+    private clearDownloadDropdown() {
+        setTimeout(() => {
+            this.downloadDropdownControl.setValue('');
+        }, 0);
+    }
 }
+
+
+
+
+
+
 
 
 

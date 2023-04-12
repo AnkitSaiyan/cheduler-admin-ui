@@ -10,6 +10,16 @@
       [formControl]="searchControl"
     ></dfm-input>
 
+    <div class="dfm-input-dropdown-wrapper-wo-label dfm-dropdown-bg-transparent max-w-192 user-type-dropdown">
+      <dfm-input-dropdown
+        [items]="userTypes"
+        [showDescription]="false"
+        [formControl]="userTypeDropdownControl"
+        placeholder="{{ 'UserType' | translate }}"
+        size="md"
+      ></dfm-input-dropdown>
+    </div>
+
     <div class="d-flex align-items-center dfm-button-group-wrapper us-li-button-dropdown-group">
       <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
         <dfm-button-icon
@@ -36,22 +46,35 @@
     </div>
 
     <div class="d-flex dfm-gap-8 align-items-center">
-      <dfm-button color="primary" size="md" class="text-nowrap" (click)="openAddUserModal()">{{ 'AddUser' | translate }} </dfm-button>
+      <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateUser" class="text-nowrap" (click)="openAddUserModal()">{{ 'AddUser' | translate }} </dfm-button>
     </div>
+
   </section>
 
-  <dfm-input
-    size="md"
-    placeholder="{{ 'SearchByNameEmailCategory' | translate }}"
-    icon="search-sm"
-    class="w-full hidden us-li-search-mv"
-    [formControl]="searchControl"
-  ></dfm-input>
+  <section class="hidden flex-1 dfm-gap-16 user-type-dropdown-mv">
+    <dfm-input
+      size="md"
+      placeholder="{{ 'SearchByNameEmailCategory' | translate }}"
+      icon="search-sm"
+      class="w-full hidden us-li-search-mv"
+      [formControl]="searchControl"
+    ></dfm-input>
+
+    <div class="hidden dfm-input-dropdown-wrapper-wo-label max-w-128 user-type-dropdown-mv">
+      <dfm-input-dropdown
+        [items]="userTypes"
+        [showDescription]="false"
+        [formControl]="userTypeDropdownControl"
+        placeholder="{{ 'UserType' | translate }}"
+        size="sm"
+      ></dfm-input-dropdown>
+    </div>
+  </section>
 
   <section class="list-page-content-height" *ngIf="filteredUsers$$ | async as users">
     <dfm-table
       [items]="users"
-      [selectable]="true"
+      [selectable]="permissionSvc.isNotReader"
       (selected)="handleCheckboxSelection($event)"
       [clearSelected$]="clearSelected$$"
       [rowClickable]="true"
@@ -59,7 +82,9 @@
       class="dfm-table-wrapper"
     >
       <ng-template #headerRowTemplate>
-        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
+        <ng-container *ngFor="let column of (columns$$ | async) ?? []">
+          <dfm-table-header-cell *ngIf="column !== ('Category' | translate)">{{ column | translate }}</dfm-table-header-cell>
+        </ng-container>
       </ng-template>
 
       <ng-template #bodyRowTemplate let-item>
@@ -68,50 +93,56 @@
         <dfm-table-body-cell>
           <span class="text-truncate">{{ item.email | dashIfNothing }}</span>
         </dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.telephone | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>
-          <span *ngIf="[userType.Scheduler, userType.General, userType.Secretary].includes(item.userType)">
-            {{ item.userType === 'General' ? ('GeneralUser' | translate) : ('SchedulerUser' | translate | titlecase) }}
+<!--        <dfm-table-body-cell>-->
+<!--          <span *ngIf="[userTypeEnum.Scheduler, userTypeEnum.General, userTypeEnum.Secretary].includes(item.userType)">-->
+<!--            {{ item.userType === 'General' ? ('GeneralUser' | translate) : ('SchedulerUser' | translate | titlecase) }}-->
+<!--          </span>-->
+<!--        </dfm-table-body-cell>-->
+        <dfm-table-body-cell *ngIf="userTypeDropdownControl.value === UserType.Scheduler">
+          <!-- <span *ngIf="userTypeDropdownControl.value === UserType.General">
+            {{ item?.userRole | roleName | dashIfNothing }}
+          </span> -->
+          <span *ngIf="userTypeDropdownControl.value === UserType.Scheduler">
+            {{ item?.userRole | roleName | translate | dashIfNothing }}
           </span>
         </dfm-table-body-cell>
-
         <dfm-table-body-cell>
-          <dfm-badge *ngIf="item.status === statusType.Active" color="success" size="sm" fontWeight="medium">
+          <dfm-badge *ngIf="item.status === statusTypeEnum.Active" color="success" size="sm" fontWeight="medium">
             {{ item.status | statusName | translate | dashIfNothing }}
           </dfm-badge>
 
-          <dfm-badge *ngIf="item.status === statusType.Inactive" color="primary" size="sm">
+          <dfm-badge *ngIf="item.status === statusTypeEnum.Inactive" color="primary" size="sm">
             {{ item.status | statusName | translate | dashIfNothing }}
           </dfm-badge>
         </dfm-table-body-cell>
 
-        <dfm-table-body-cell>
+        <dfm-table-body-cell *dfmPermitted="[Permission.UpdateUser, Permission.DeleteUser]">
           <div class="d-flex dfm-gap-16 align-items-center us-li-action-buttons">
-            <dfm-button
-              *ngIf="item.status === statusType.Inactive"
-              color="link-gray"
-              size="sm"
-              trailingIcon="check-circle"
-              ngbPopover="{{ 'ChangeStatus' | translate }}"
-              triggers="mouseenter:mouseleave"
-              triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }])"
-            ></dfm-button>
+            <ng-container *dfmPermitted="Permission.UpdateUser">
+              <dfm-button
+                *ngIf="item.status === statusTypeEnum.Inactive"
+                color="link-gray"
+                size="sm"
+                trailingIcon="check-circle"
+                ngbPopover="{{ 'ChangeStatus' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
+                (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Active }])"
+              ></dfm-button>
 
-            <dfm-button
-              *ngIf="item.status === statusType.Active"
-              color="link-gray"
-              size="sm"
-              trailingIcon="x-circle"
-              ngbPopover="{{ 'ChangeStatus' | translate }}"
-              triggers="mouseenter:mouseleave"
-              triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }])"
-            ></dfm-button>
+              <dfm-button
+                *ngIf="item.status === statusTypeEnum.Active"
+                color="link-gray"
+                size="sm"
+                trailingIcon="x-circle"
+                ngbPopover="{{ 'ChangeStatus' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
+                (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Inactive }])"
+              ></dfm-button>
+            </ng-container>
 
             <dfm-button
               color="link-gray"
@@ -119,10 +150,10 @@
               trailingIcon="pencil-02"
               ngbPopover="{{ 'Edit' | translate }}"
               triggers="mouseenter:mouseleave"
-              triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); openAddUserModal(item)"
+              *ngIf="item.userType === UserType.General"
             ></dfm-button>
 
             <dfm-button color="link-gray"
@@ -133,6 +164,7 @@
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); deleteUser(item.id)"
+              *dfmPermitted="Permission.DeleteUser"
             ></dfm-button>
           </div>
 
@@ -153,27 +185,29 @@
 
           <ng-template #actionMenu>
             <div class="us-li-menus" aria-labelledby="dropdownManual">
-              <div
-                *ngIf="!item.status"
-                (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }])"
-                ngbPopover="{{ 'Status' | translate }}"
-                triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8"
-                [openDelay]="200"
-              >
-                <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-              </div>
+              <ng-container *dfmPermitted="Permission.UpdateUser">
+                <div
+                  *ngIf="!item.status"
+                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Active }])"
+                  ngbPopover="{{ 'Status' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                >
+                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+                </div>
 
-              <div
-                *ngIf="item.status"
-                (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }])"
-                ngbPopover="{{ 'Status' | translate }}"
-                triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8"
-                [openDelay]="200"
-              >
-                <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-              </div>
+                <div
+                  *ngIf="item.status"
+                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Inactive }])"
+                  ngbPopover="{{ 'Status' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                >
+                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+                </div>
+              </ng-container>
 
               <div
                 (click)="$event.stopPropagation(); openAddUserModal(item)"
@@ -181,6 +215,7 @@
                 triggers="mouseenter:mouseleave"
                 popoverClass="popover-p-8"
                 [openDelay]="200"
+                *ngIf="item?.userType === UserType.General"
               >
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
@@ -191,6 +226,7 @@
                 triggers="mouseenter:mouseleave"
                 popoverClass="popover-p-8"
                 [openDelay]="200"
+                *dfmPermitted="Permission.DeleteUser"
               >
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
@@ -200,30 +236,11 @@
         </dfm-table-body-cell>
       </ng-template>
     </dfm-table>
+
     <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!users.length && (loading$$ | async) === false">
       {{ 'NoUserFound' | translate }}
     </div>
   </section>
-  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
-  <!--    <div class="shadow-lg us-li-plus-btn-menu us-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
-  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
-  <!--  <div class="hidden us-li-plus-btn shadow-lg rounded-2"-->
-  <!--       (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">-->
-  <!--    <dfm-button color="secondary" size="md" class="h-full">-->
-  <!--      <dfm-icon #showMoreButtonIcon name="plus" class="us-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
-  <!--    </dfm-button>-->
-  <!--  </div>-->
 </div>
 
 <dfm-confirm-status-change-banner

@@ -1,0 +1,104 @@
+<div class="complete-profile-wrapper">
+    <div class="complete-profile-sections-wrapper dfm-card">
+        <section class="header-section">
+            <img width="128" ngSrc="assets/images/scheduler-logo.svg" height="17">
+            <div class="d-flex dfm-gap-4 align-items-center font-weight-semi-bold">
+                <span class="dfm-text-main-500 pointer" [ngClass]="{'dfm-color-primary': selectedLang === 'nl-BE'}" (click)="changeLanguage('nl-BE')">NL</span>
+                <span>|</span>
+                <span class="dfm-text-main-500 pointer" [ngClass]="{'dfm-color-primary': selectedLang === 'en-BE'}" (click)="changeLanguage('en-BE')">EN</span>
+              </div>
+        </section>
+        <h3 class="font-weight-semi-bold">{{"CompleteYourProfile" | translate}}</h3>
+
+        <section class="complete-profile-section overflow-y-auto hide-scrollbar" [formGroup]="completeProfileForm">
+            <div class="flex-1">
+                <dfm-input
+                        type="text"
+                        size="sm"
+                        label="{{'Telephone' | translate}}*"
+                        placeholder="{{'EnterTelephone' | translate}}"
+                        icon="phone"
+                        formControlName="extension_PhoneNumber"
+                        #phone
+                        [dfmNumberInput]="phone"
+                >
+                </dfm-input>
+            </div>
+
+            <div class="flex-1">
+                <dfm-input
+                        type="text"
+                        size="sm"
+                        label="{{'GSM' | translate}}*"
+                        placeholder="{{'EnterGsm' | translate}}"
+                        icon="file-06"
+                        formControlName="MobilePhone"
+                        #gsm
+                        [dfmNumberInput]="gsm"
+                >
+                </dfm-input>
+            </div>
+
+            <div class="flex-1">
+                <dfm-input
+                        type="text"
+                        size="sm"
+                        label="{{'Street' | translate}}*"
+                        placeholder="{{'EnterStreet' | translate}}"
+                        icon="file-06"
+                        formControlName="StreetAddress"
+                >
+                </dfm-input>
+            </div>
+
+            <div class="flex-1">
+                <dfm-input
+                        type="text"
+                        size="sm"
+                        label="{{'City' | translate}}*"
+                        placeholder="{{'EnterCity' | translate}}"
+                        icon="file-06"
+                        formControlName="City"
+                >
+                </dfm-input>
+            </div>
+
+            <div class="flex-1">
+                <dfm-input
+                        type="text"
+                        size="sm"
+                        label="{{'Country' | translate}}*"
+                        placeholder="{{'EnterCountry' | translate}}"
+                        icon="file-06"
+                        formControlName="Country"
+                        #country
+                        [dfmNameInput]="country"
+                >
+                </dfm-input>
+            </div>
+
+            <div class="flex-1">
+                <dfm-input
+                        type="text"
+                        size="sm"
+                        label="{{'PostalCode' | translate}}*"
+                        placeholder="{{'EnterPostalCode' | translate}}"
+                        icon="file-06"
+                        formControlName="PostalCode"
+                        #postal
+                        [dfmNumberInput]="postal"
+                >
+                </dfm-input>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <section class="complete-profile-section">
+            <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="save()">
+                {{"Confirm" | translate}}
+            </dfm-button>
+            <dfm-button color="link" size="md" (click)="logout()">{{"Logout" | translate}}</dfm-button>
+        </section>
+    </div>
+</div>

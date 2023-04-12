@@ -6,8 +6,7 @@ import {
   SlotModified
 } from "../models/appointment.model";
 import {DateDistributed} from "../models/calendar.model";
-import {CalendarUtils} from "./calendar.utils";
-import {checkTimeRangeOverlapping} from "./time";
+import {DateTimeUtils} from "./date-time.utils";
 
 export class AppointmentUtils {
   constructor() {}
@@ -71,7 +70,7 @@ export class AppointmentUtils {
   public static IsSlotAvailable(slot: SlotModified, selectedTimeSlot: SelectedSlots) {
     return !Object.values(selectedTimeSlot)?.some((value) => {
       const firstSlot = value?.slot?.split('-');
-      return firstSlot?.length && slot.examId !== value.examId && checkTimeRangeOverlapping(firstSlot[0], firstSlot[1], slot.start, slot.end);
+      return firstSlot?.length && slot.examId !== value.examId && DateTimeUtils.CheckTimeRangeOverlapping(firstSlot[0], firstSlot[1], slot.start, slot.end);
     });
   }
 
@@ -95,7 +94,7 @@ export class AppointmentUtils {
   }
 
   public static GenerateSlotRequestData(date: DateDistributed, examList: number[]): AppointmentSlotsRequestData {
-    const dateString = CalendarUtils.DateDistributedToString(date, '-');
+    const dateString = DateTimeUtils.DateDistributedToString(date, '-');
 
     return {
       exams: examList,
@@ -121,7 +120,7 @@ export class AppointmentUtils {
     }
     const requestData: any = {
       ...rest,
-      date: CalendarUtils.DateDistributedToString(startedAt, '-'),
+      date: DateTimeUtils.DateDistributedToString(startedAt, '-'),
       slot:
         !isCombinable || !exams?.length
           ? {

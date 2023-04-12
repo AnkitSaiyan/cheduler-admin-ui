@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CheckboxComponent, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
@@ -20,6 +20,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'dfm-room-list',
@@ -69,6 +72,8 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
   public statuses = Statuses;
 
+  public readonly Permission = Permission;
+
   constructor(
     private roomApiSvc: RoomsApiService,
     private notificationSvc: NotificationDataService,
@@ -79,6 +84,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
     private shareDataSvc: ShareDataService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.rooms$$ = new BehaviorSubject<any[]>([]);
@@ -176,10 +182,12 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
         this.closeMenus();
       });
 
-    this.shareDataSvc
-      .getLanguage$()
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
+    combineLatest([
+      this.shareDataSvc.getLanguage$(),
+      this.permissionSvc.permissionType$
+    ]).pipe(
+      takeUntil(this.destroy$$)
+    ).subscribe(([lang, permissionType]) => {
         this.selectedLang = lang;
         this.columns = [
           Translate.Name[lang],
@@ -187,8 +195,11 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
           Translate.PlaceInAgenda[lang],
           Translate.Type[lang],
           Translate.Status[lang],
-          Translate.Actions[lang],
         ];
+
+        if (permissionType !== UserRoleEnum.Reader) {
+          this.columns = [...this.columns, Translate.Actions[lang]];
+        }
 
         // eslint-disable-next-line default-case
         switch (lang) {

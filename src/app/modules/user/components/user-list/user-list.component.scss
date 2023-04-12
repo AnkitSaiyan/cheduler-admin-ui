@@ -14,20 +14,19 @@
     justify-content: space-between;
   }
 
-  .us-li-search, .us-li-button-dropdown-group {
+  .us-li-search, .us-li-button-dropdown-group, .user-type-dropdown {
     display: none !important;
   }
 
-  .us-li-search-mv {
+  .us-li-search-mv, .us-li-title-buttons, .us-li-plus-btn {
     display: block;
   }
 
-  .us-li-title-buttons {
-    display: block;
+  .user-type-dropdown-mv {
+    display: flex;
   }
 
   .us-li-plus-btn {
-    display: block;
     position: absolute;
     bottom: 0;
     right: 0;

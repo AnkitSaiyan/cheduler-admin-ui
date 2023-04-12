@@ -27,7 +27,7 @@ export class RoomsApiService extends DestroyableComponent {
 
   private refreshRooms$$ = new Subject<void>();
 
-  private readonly roomUrl = `${environment.serverBaseUrl}/room`;
+  private readonly roomUrl = `${environment.schedulerApiUrl}/room`;
 
   private selectedLang$$ = new BehaviorSubject<string>('');
 
@@ -37,8 +37,8 @@ export class RoomsApiService extends DestroyableComponent {
     this.shareDataSvc
       .getLanguage$()
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
-        this.selectedLang$$.next(lang);
+      .subscribe({
+        next: (lang) => this.selectedLang$$.next(lang)
       });
   }
 
@@ -71,7 +71,7 @@ export class RoomsApiService extends DestroyableComponent {
     this.loaderSvc.spinnerActivate();
     return this.http.get<BaseResponse<Room[]>>(`${this.roomUrl}`).pipe(
       map((response) =>
-        response.data.sort((r1, r2) => {
+        response?.data?.sort((r1, r2) => {
           return r1.placeInAgenda - r2.placeInAgenda;
         }),
       ),
@@ -90,7 +90,7 @@ export class RoomsApiService extends DestroyableComponent {
     this.loaderSvc.activate();
     this.loaderSvc.spinnerActivate();
 
-    return this.http.get<BaseResponse<Room[]>>(`${environment.serverBaseUrl}/common/getrooms`).pipe(
+    return this.http.get<BaseResponse<Room[]>>(`${environment.schedulerApiUrl}/common/getrooms`).pipe(
       map((response) =>
         response.data.sort((r1, r2) => {
           return r1.placeInAgenda - r2.placeInAgenda;

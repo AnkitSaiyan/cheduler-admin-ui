@@ -55,6 +55,7 @@
         class="text-nowrap"
         [disabled]="false"
         routerLink="./add"
+        *dfmPermitted="Permission.CreateStaffs"
       >{{'AddStaff' | translate}}
       </dfm-button>
     </div>
@@ -69,7 +70,7 @@
   ></dfm-input>
 
   <section class="list-page-content-height" *ngIf="filteredStaffs$$ | async as staffs">
-    <dfm-table [items]="staffs" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+    <dfm-table [items]="staffs" [selectable]="permissionSvc.isNotReader" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewStaff($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
@@ -99,29 +100,31 @@
           </dfm-badge>
         </dfm-table-body-cell>
 
-        <dfm-table-body-cell>
+        <dfm-table-body-cell *dfmPermitted="[Permission.UpdateStaffs, Permission.DeleteStaffs]">
           <div class="d-flex dfm-gap-16 align-items-center sf-li-action-buttons">
-            <dfm-button
-              *ngIf="item.status === statusType.Inactive"
-              color="link-gray"
-              size="sm"
-              trailingIcon="check-circle"
-              ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-            ></dfm-button>
+            <ng-container *dfmPermitted="Permission.UpdateStaffs">
+              <dfm-button
+                *ngIf="item.status === statusType.Inactive"
+                color="link-gray"
+                size="sm"
+                trailingIcon="check-circle"
+                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
+                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
+              ></dfm-button>
 
-            <dfm-button
-              *ngIf="item.status === statusType.Active"
-              color="link-gray"
-              size="sm"
-              trailingIcon="x-circle"
-              ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-            ></dfm-button>
+              <dfm-button
+                *ngIf="item.status === statusType.Active"
+                color="link-gray"
+                size="sm"
+                trailingIcon="x-circle"
+                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
+                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
+              ></dfm-button>
+            </ng-container>
 
             <dfm-button
               color="link-gray"
@@ -133,6 +136,7 @@
               (click)="$event.stopPropagation()"
               [routerLink]="['./', item.id, 'edit']"
               [state]="{ comingFromRoute: 'staff', edit: true }"
+              *dfmPermitted="Permission.UpdateStaffs"
             ></dfm-button>
 
             <dfm-button
@@ -143,6 +147,7 @@
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); deleteStaff(item.id)"
+              *dfmPermitted="Permission.DeleteStaffs"
             ></dfm-button>
           </div>
 
@@ -164,28 +169,30 @@
           <ng-template #actionMenu>
             <div class="sf-li-menus"
                  aria-labelledby="dropdownManual">
-              <div *ngIf="!item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
-                   [openDelay]="200">
-                <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-              </div>
+              <ng-container *dfmPermitted="Permission.UpdateStaffs">
+                <div *ngIf="!item.status"
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
+                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
+                     [openDelay]="200">
+                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+                </div>
 
-              <div *ngIf="item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
-                   [openDelay]="200">
-                <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-              </div>
+                <div *ngIf="item.status"
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
+                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
+                     [openDelay]="200">
+                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+                </div>
+              </ng-container>
 
               <div (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"
                    [state]="{ comingFromRoute: 'staff', edit: true }" ngbPopover="{{'Edit' | translate}}"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.UpdateStaffs">
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
 
               <div (click)="$event.stopPropagation(); deleteStaff(item.id)" ngbPopover="{{'Delete' | translate}}"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.DeleteStaffs">
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>

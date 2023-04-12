@@ -76,10 +76,12 @@ export class SearchModalComponent extends DestroyableComponent implements OnInit
   }
 
   public ngOnInit() {
-    this.dialogSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data: SearchModalData) => {
-      this.items$$.next([...data.items]);
-      this.filteredItems$$.next([...data.items]);
-      this.placeholder = data?.placeHolder ?? this.placeholder;
+    this.dialogSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (data: SearchModalData) => {
+        this.items$$.next([...data.items]);
+        this.filteredItems$$.next([...data.items]);
+        this.placeholder = data?.placeHolder ?? this.placeholder;
+      }
     });
     //
     // this.searchControl.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe((searchText) => {

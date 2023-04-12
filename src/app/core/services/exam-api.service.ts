@@ -14,7 +14,7 @@ import { LoaderService } from './loader.service';
 export class ExamApiService {
   private refreshExams$$ = new Subject<void>();
 
-  private examUrl = `${environment.serverBaseUrl}/exam`;
+  private examUrl = `${environment.schedulerApiUrl}/exam`;
 
   constructor(private http: HttpClient, private loaderSvc: LoaderService) {}
 
@@ -100,7 +100,7 @@ export class ExamApiService {
     this.loaderSvc.activate();
     this.loaderSvc.spinnerActivate();
 
-    return this.http.get<BaseResponse<Exam[]>>(`${environment.serverBaseUrl}/common/getexams`).pipe(
+    return this.http.get<BaseResponse<Exam[]>>(`${environment.schedulerApiUrl}/common/getexams`).pipe(
       map((response) => response.data),
       tap(() => {
         this.loaderSvc.deactivate();

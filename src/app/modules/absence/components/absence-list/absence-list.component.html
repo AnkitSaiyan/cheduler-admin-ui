@@ -50,6 +50,7 @@
         class="text-nowrap"
         [disabled]="false"
         (click)="openAddAbsenceModal()"
+        *dfmPermitted="Permission.CreateAbsences"
       >{{'AddAbsence' | translate}}
       </dfm-button>
     </div>
@@ -60,6 +61,7 @@
         class="text-nowrap"
         [disabled]="false"
         (click)="openAddAbsenceModal()"
+        *dfmPermitted="Permission.CreateAbsences"
       >{{'Add' | translate}}
       </dfm-button>
     </div>
@@ -84,13 +86,13 @@
         <dfm-table-body-cell>
           <div class="text-truncate">{{ item.name | titlecase | dashIfNothing }}</div>
         </dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item?.startedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item?.endedAt | date: 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item?.startedAt | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item?.endedAt | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <div class="text-truncate ab-li-info-cell"> {{ item.info | dashIfNothing }} </div>
         </dfm-table-body-cell>
 
-        <dfm-table-body-cell>
+        <dfm-table-body-cell *dfmPermitted="[Permission.UpdateAbsences, Permission.DeleteAbsences]">
           <div class="d-flex dfm-gap-16 align-items-center ab-li-action-buttons">
             <dfm-button
               color="link-gray"
@@ -101,6 +103,7 @@
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); openAddAbsenceModal(item);"
+              *dfmPermitted="Permission.UpdateAbsences"
             ></dfm-button>
 
             <dfm-button
@@ -110,6 +113,7 @@
               ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave"
               popoverClass="popover-p-8" [openDelay]="200"
               (click)="$event.stopPropagation(); deleteAbsence(item.id)"
+              *dfmPermitted="Permission.DeleteAbsences"
             ></dfm-button>
           </div>
 
@@ -131,12 +135,12 @@
           <ng-template #actionMenu>
             <div class="ab-li-menus"
                  aria-labelledby="dropdownManual">
-              <div (click)="$event.stopPropagation(); openAddAbsenceModal(item)" ngbPopover="{{'Edit' | translate}}"
+              <div (click)="$event.stopPropagation(); openAddAbsenceModal(item)" *dfmPermitted="Permission.UpdateAbsences" ngbPopover="{{'Edit' | translate}}"
                    triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
 
-              <div (click)="$event.stopPropagation(); deleteAbsence(item.id)" ngbPopover="{{'Delete' | translate}}"
+              <div (click)="$event.stopPropagation(); deleteAbsence(item.id)" *dfmPermitted="Permission.DeleteAbsences" ngbPopover="{{'Delete' | translate}}"
                    triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>

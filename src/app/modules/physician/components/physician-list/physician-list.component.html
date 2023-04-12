@@ -55,6 +55,7 @@
         class="text-nowrap"
         [disabled]="false"
         (click)="openAddPhysicianModal()"
+        *dfmPermitted="Permission.CreatePhysicians"
       >{{'AddPhysician' | translate}}
       </dfm-button>
     </div>
@@ -70,7 +71,7 @@
 
   <section class="list-page-content-height"
            *ngIf="filteredPhysicians$$ | async as physicians">
-    <dfm-table [items]="physicians" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+    <dfm-table [items]="physicians" [selectable]="permissionSvc.isNotReader" (selected)="handleCheckboxSelection($event)"
                [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewPhysician($event)"
                class="dfm-table-wrapper">
       <ng-template #headerRowTemplate>
@@ -97,27 +98,29 @@
           </dfm-badge>
         </dfm-table-body-cell>
 
-        <dfm-table-body-cell class="">
+        <dfm-table-body-cell class="" *dfmPermitted="[Permission.UpdatePhysicians, Permission.DeletePhysicians]">
           <div class="d-flex dfm-gap-16 align-items-center ph-li-action-buttons">
-            <dfm-button
-              *ngIf="!item.status"
-              color="link-gray"
-              size="sm"
-              trailingIcon="check-circle"
-              ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-            ></dfm-button>
+            <ng-container *dfmPermitted="Permission.UpdatePhysicians">
+              <dfm-button
+                *ngIf="!item.status"
+                color="link-gray"
+                size="sm"
+                trailingIcon="check-circle"
+                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
+                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
+              ></dfm-button>
 
-            <dfm-button
-              *ngIf="item.status"
-              color="link-gray"
-              size="sm"
-              trailingIcon="x-circle"
-              ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
-              [openDelay]="200"
-              popoverClass="popover-p-8"
-              (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-            ></dfm-button>
+              <dfm-button
+                *ngIf="item.status"
+                color="link-gray"
+                size="sm"
+                trailingIcon="x-circle"
+                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
+                [openDelay]="200"
+                popoverClass="popover-p-8"
+                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
+              ></dfm-button>
+            </ng-container>
 
             <dfm-button
               color="link-gray"
@@ -127,6 +130,7 @@
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); openAddPhysicianModal(item);"
+              *dfmPermitted="Permission.UpdatePhysicians"
             ></dfm-button>
 
             <dfm-button
@@ -137,6 +141,7 @@
               popoverClass="popover-p-8"
               [openDelay]="200"
               (click)="$event.stopPropagation(); deletePhysician(item.id)"
+              *dfmPermitted="Permission.DeletePhysicians"
             ></dfm-button>
           </div>
 
@@ -158,27 +163,29 @@
           <ng-template #actionMenu>
             <div class="ph-li-menus"
                  aria-labelledby="dropdownManual">
-              <div *ngIf="!item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
-                   [openDelay]="200">
-                <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-              </div>
+              <ng-container *dfmPermitted="Permission.UpdatePhysicians">
+                <div *ngIf="!item.status"
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
+                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
+                     [openDelay]="200" >
+                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+                </div>
 
-              <div *ngIf="item.status"
-                   (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-                   ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
-                   [openDelay]="200">
-                <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-              </div>
+                <div *ngIf="item.status"
+                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
+                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
+                     [openDelay]="200">
+                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+                </div>
+              </ng-container>
 
               <div (click)="$event.stopPropagation(); openAddPhysicianModal(item)" ngbPopover="{{'Edit' | translate}}"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.UpdatePhysicians">
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
 
               <div (click)="$event.stopPropagation(); deletePhysician(item.id)" ngbPopover="{{'Delete' | translate}}"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200">
+                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.DeletePhysicians">
                 <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
               </div>
             </div>

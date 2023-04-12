@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
@@ -17,6 +17,9 @@ import { Exam } from '../../../../shared/models/exam.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
 // import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
@@ -61,6 +64,8 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
   public statuses = Statuses;
 
+  public readonly Permission = Permission;
+
   constructor(
     private examApiSvc: ExamApiService,
     private notificationSvc: NotificationDataService,
@@ -71,6 +76,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     private cdr: ChangeDetectorRef,
     private shareDataService: ShareDataService,
     private translate: TranslateService,
+    public permissionSvc: PermissionService,
   ) {
     super();
     this.exams$$ = new BehaviorSubject<any[]>([]);
@@ -78,18 +84,24 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public ngOnInit(): void {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
-
-    this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
-      this.exams$$.next(exams);
-      this.filteredExams$$.next(exams);
+    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (items) => (this.downloadItems = items)
     });
 
-    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-      if (searchText) {
-        this.handleSearch(searchText.toLowerCase());
-      } else {
-        this.filteredExams$$.next([...this.exams$$.value]);
+    this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (exams) => {
+        this.exams$$.next(exams);
+        this.filteredExams$$.next(exams);
+      }
+    });
+
+    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+      next: (searchText) => {
+        if (searchText) {
+          this.handleSearch(searchText.toLowerCase());
+        } else {
+          this.filteredExams$$.next([...this.exams$$.value]);
+        }
       }
     });
 
@@ -98,24 +110,26 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         filter((value) => !!value),
         takeUntil(this.destroy$$),
       )
-      .subscribe((downloadAs) => {
-        if (!this.filteredExams$$.value.length) {
-          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+      .subscribe({
+        next: (downloadAs) => {
+          if (!this.filteredExams$$.value.length) {
+            this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+            this.clearDownloadDropdown();
+            return;
+          }
+
+          this.downloadSvc.downloadJsonAs(
+            downloadAs as DownloadAsType,
+            this.columns.slice(0, -1),
+            this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), Translate[StatusToName[+ex.status]][this.selectedLang]]),
+            'exams',
+          );
+
+          if (downloadAs !== 'PRINT') {
+            this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
+          }
           this.clearDownloadDropdown();
-          return;
         }
-
-        this.downloadSvc.downloadJsonAs(
-          downloadAs as DownloadAsType,
-          this.columns.slice(0, -1),
-          this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), Translate[StatusToName[+ex.status]][this.selectedLang]]),
-          'exams',
-        );
-
-        if (downloadAs !== 'PRINT') {
-          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
-        }
-        this.clearDownloadDropdown();
       });
 
     this.afterBannerClosed$$
@@ -136,26 +150,32 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         switchMap((changes) => this.examApiSvc.changeExamStatus$(changes)),
         takeUntil(this.destroy$$),
       )
-      .subscribe(() => {
-        this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
-        this.clearSelected$$.next();
+      .subscribe({
+        next: () => {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
+          this.clearSelected$$.next();
+        }
       });
 
-    this.shareDataService
-      .getLanguage$()
+    combineLatest([this.shareDataService.getLanguage$(), this.permissionSvc.permissionType$])
       .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
-        this.selectedLang = lang;
-        this.columns = [Translate.Name[lang], Translate.Expensive[lang], Translate.Status[lang], Translate.Actions[lang]];
+      .subscribe({
+        next: ([lang, permissionType]) => {
+          this.selectedLang = lang;
+          this.columns = [Translate.Name[lang], Translate.Expensive[lang], Translate.Status[lang]];
+          if (permissionType !== UserRoleEnum.Reader) {
+            this.columns = [...this.columns, Translate.Actions[lang]];
+          }
 
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
+          // eslint-disable-next-line default-case
+          switch (lang) {
+            case ENG_BE:
+              this.statuses = Statuses;
+              break;
+            case DUTCH_BE:
+              this.statuses = StatusesNL;
+              break;
+          }
         }
       });
   }
@@ -189,7 +209,9 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     this.examApiSvc
       .changeExamStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]));
+      .subscribe({
+        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang])
+      });
   }
 
   public deleteExam(id: number) {
@@ -208,8 +230,8 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         switchMap(() => this.examApiSvc.deleteExam(id)),
         take(1),
       )
-      .subscribe(() => {
-        this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang]);
+      .subscribe({
+        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang])
       });
   }
 

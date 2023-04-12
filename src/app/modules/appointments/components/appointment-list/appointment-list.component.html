@@ -54,7 +54,7 @@
           ></dfm-button-icon>
         </div>
 
-        <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="false" routerLink="./add"
+        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap" [disabled]="false" routerLink="./add"
           >{{ 'AddAppointment' | translate }}
         </dfm-button>
       </div>
@@ -76,14 +76,14 @@
             [openDelay]="200"
             (click)="toggleView()"
           ></dfm-button-icon>
-        
 
-        <dfm-button color="primary" size="md" class="text-nowrap header-buttons" [disabled]="false" routerLink="./add"
+
+        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap header-buttons" [disabled]="false" routerLink="./add"
           >{{ 'AddAppointment' | translate }}
         </dfm-button>
-      
 
-        <dfm-button color="primary" size="md" class="add-app-btn-mv hidden" [disabled]="false" routerLink="./add"
+
+        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="add-app-btn-mv hidden" [disabled]="false" routerLink="./add"
           >{{ 'Add' | translate }}
         </dfm-button>
       </div>
@@ -108,7 +108,7 @@
     <ng-container *ngIf="(calendarView$$ | async) === false">
       <dfm-table
         [items]="appointments"
-        [selectable]="true"
+        [selectable]="permissionSvc.isNotReader"
         (selected)="handleCheckboxSelection($event)"
         [clearSelected$]="clearSelected$$"
         [rowClickable]="true"
@@ -120,8 +120,8 @@
         </ng-template>
 
         <ng-template #bodyRowTemplate let-item>
-          <dfm-table-body-cell>{{ (item?.exams.length ? (item.startedAt | date : 'dd/MM/yyyy, HH:mm') : '') | dashIfNothing }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ (item?.exams.length ? (item.endedAt | date : 'dd/MM/yyyy, HH:mm') : '') | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item?.exams.length ? (item.startedAt | dfmDefaultDate | dashIfNothing) : '' | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item?.exams.length ? (item.endedAt | dfmDefaultDate | dashIfNothing) : '' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>
             <div class="text-truncate">{{ item?.patientFname | titlecase }} {{ item?.patientLname | titlecase }}</div>
           </dfm-table-body-cell>
@@ -136,7 +136,7 @@
             </div>
           </dfm-table-body-cell> -->
           <dfm-table-body-cell>{{ item.id | dashIfNothing }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ item?.createdAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
 
           <!-- <dfm-table-body-cell>
             <span>{{ item.readStatus === readStatus.Read ? 'Yes' : 'No' }}</span>
@@ -156,7 +156,7 @@
             </dfm-badge>
           </dfm-table-body-cell>
 
-          <dfm-table-body-cell>
+          <dfm-table-body-cell *dfmPermitted="[Permission.DeleteAppointments, Permission.UpdateAppointments]">
             <div class="d-flex dfm-gap-16 align-items-center ap-li-action-buttons">
               <dfm-button
                 color="link-gray"
@@ -169,6 +169,7 @@
                 (click)="$event.stopPropagation()"
                 [routerLink]="['./', item.id, 'edit']"
                 [state]="{ comingFromRoute: 'appointment', edit: true }"
+                *dfmPermitted="Permission.UpdateAppointments"
               ></dfm-button>
 
               <dfm-button
@@ -180,6 +181,7 @@
                 popoverClass="popover-p-8"
                 [openDelay]="200"
                 (click)="$event.stopPropagation(); deleteAppointment(item.id)"
+                *dfmPermitted="Permission.DeleteAppointments"
               ></dfm-button>
             </div>
 
@@ -208,6 +210,7 @@
                   triggers="mouseenter:mouseleave"
                   popoverClass="popover-p-8"
                   [openDelay]="200"
+                  *dfmPermitted="Permission.UpdateAppointments"
                 >
                   <dfm-button
                     trailingIcon="pencil-02"
@@ -225,6 +228,7 @@
                   triggers="mouseenter:mouseleave"
                   popoverClass="popover-p-8"
                   [openDelay]="200"
+                  *dfmPermitted="Permission.DeleteAppointments"
                 >
                   <dfm-button
                     trailingIcon="trash-01"

@@ -5,10 +5,10 @@ import { Status } from './status.model';
 import {TimeSlot} from "./calendar.model";
 
 export interface AddStaffRequestData {
-  firstname: string;
-  lastname: string;
-  email: string | null;
-  telephone: string | number;
+  firstname?: string;
+  lastname?: string;
+  email?: string | null;
+  telephone?: string | number;
   address?: string;
   userType: UserType;
   availabilityType?: number;
@@ -18,6 +18,8 @@ export interface AddStaffRequestData {
   info?: string;
   status?: Status;
   id?: number;
+  userAzureId?: string;
+  userRole?: string;
 }
 
 export interface StaffsGroupedByType {
