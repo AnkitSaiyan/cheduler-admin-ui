@@ -128,9 +128,9 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
           this.selectedLang = lang;
 
           this.columns = [Translate.Title[lang], Translate.StartDate[lang], Translate.EndDate[lang], Translate.AbsenceInfo[lang]];
-          if (permissionType !== UserRoleEnum.Reader) {
-            this.columns = [...this.columns, Translate.Actions[lang]];
-          }
+          if (permissionType === UserRoleEnum.Admin) {
+						this.columns = [...this.columns, Translate.Actions[lang]];
+					}
 
           // eslint-disable-next-line default-case
           switch (lang) {
