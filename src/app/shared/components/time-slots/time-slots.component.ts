@@ -86,10 +86,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
     this.createForm();
 
     this.timeSlotData$$.pipe(takeUntil(this.destroy$$), filter((d) => !!d?.length)).subscribe({
-      next: (timeSlots) => {
-        console.log(timeSlots);
-        this.updateForm(timeSlots);
-      }
+      next: (timeSlots) => this.updateForm(timeSlots)
     });
 
     this.emitEvents$$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -249,8 +246,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
   }
 
   private patchUpdatedValues(control: AbstractControl<any>, timeSlot: TimeSlot) {
-    console.log(timeSlot.dayStart, timeSlot.dayEnd)
-    console.log(DateTimeUtils.TimeStringIn24Hour(timeSlot.dayStart), DateTimeUtils.TimeStringIn24Hour(timeSlot.dayEnd));
     control.patchValue({
       id: timeSlot.id,
       dayStart: DateTimeUtils.TimeStringIn24Hour(timeSlot.dayStart),

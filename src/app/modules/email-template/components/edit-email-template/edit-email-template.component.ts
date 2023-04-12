@@ -119,7 +119,6 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
         takeUntil(this.destroy$$),
       )
       .subscribe((emailTemplate) => {
-        console.log('emailTemplate: ', emailTemplate);
         this.email$$.next(emailTemplate);
         this.updateForm(emailTemplate);
       });
@@ -171,8 +170,6 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
     if (this.email$$.value?.id) {
       requestData.id = this.email$$.value.id;
     }
-
-    console.log('requestData: ', requestData);
 
     this.emailTemplateApiSvc
       .updateEmailTemplate(requestData)

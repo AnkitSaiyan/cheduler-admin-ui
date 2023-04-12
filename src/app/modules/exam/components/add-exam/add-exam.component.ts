@@ -168,7 +168,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
         this.userApiSvc.allStaffs$.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe({
             next: (staffs) => {
-                console.log(staffs)
                 const radiologists: NameValue[] = [];
                 const assistants: NameValue[] = [];
                 const nursing: NameValue[] = [];
@@ -645,8 +644,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
         //     mandatoryStaffs: mandatory,
         //     uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
         //   });
-
-        //   console.log(this.formValues);
 
         //   this.cdr.detectChanges();
         // }, 500);

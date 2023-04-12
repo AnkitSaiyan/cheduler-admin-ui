@@ -169,8 +169,6 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
         this.loading$$.next(true);
 
-        console.log(this.formValues);
-
         let addUserObservable$: Observable<any>;
 
         if ([this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {

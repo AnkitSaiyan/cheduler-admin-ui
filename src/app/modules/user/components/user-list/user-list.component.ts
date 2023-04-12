@@ -333,7 +333,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
             .pipe(
                 filter((res: boolean) => res),
                 switchMap(() => {
-                    console.log()
                     if (this.userTypeDropdownControl.value === UserType.Scheduler) {
                         return this.userManagementApiSvc.deleteUser(id as string);
                     }

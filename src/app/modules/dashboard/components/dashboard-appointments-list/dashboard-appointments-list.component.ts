@@ -432,18 +432,13 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
       take(1)
     ).subscribe({
       next: (appointments) => {
-        // console.log('appointments filtered: ', appointments);
         this.appointments$$.next(appointments);
         this.filteredAppointments$$.next(appointments);
 
         // appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
         //
-        // console.log(appointments);
-        //
         // this.groupAppointmentsForCalendar(...appointments);
         // this.groupAppointmentByDateAndRoom(...appointments);
-        //
-        // console.log(this.appointmentsGroupedByDate);
       }
         });
   }

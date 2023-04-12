@@ -557,7 +557,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
     }
 
     private handleTimeChange() {
-        console.log('in');
         if (this.formValues.slotStartTime !== '' && DateTimeUtils.TimeToNumber(this.formValues.slotStartTime) < DateTimeUtils.TimeToNumber(this.formValues.slotEndTime)) {
             toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', false);
             toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);

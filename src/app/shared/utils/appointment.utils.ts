@@ -89,7 +89,6 @@ export class AppointmentUtils {
         roomList: slot?.roomList ?? [],
         userList: slot?.userList ?? [],
       };
-      console.log(selectedTimeSlot);
     }
   }
 
