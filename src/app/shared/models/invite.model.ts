@@ -4,11 +4,12 @@ export class UserInvite {
   surName: string = '';
   contextTenantId: string = '';
   roleName: string = '';
-  redirect: UserInviteRedirect = { redirectUrl: '' }
+  redirect: UserInviteRedirect = { redirectUrl: '', clientId: '' }
 }
 
 export class UserInviteRedirect {
   redirectUrl: string = '';
+  clientId: string = '';
 }
 
 

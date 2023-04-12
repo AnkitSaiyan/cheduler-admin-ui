@@ -191,7 +191,8 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
                 roleName,
                 contextTenantId: this.formValues.tenantId,
                 redirect: {
-                    redirectUrl: environment.redirectUrl
+                    redirectUrl: environment.redirectUrl,
+                    clientId: environment.authClientId
                 }
             }).pipe(
                 switchMap((user) => this.userApiSvc.assignUserRole(user.id, this.formValues.userRole))
