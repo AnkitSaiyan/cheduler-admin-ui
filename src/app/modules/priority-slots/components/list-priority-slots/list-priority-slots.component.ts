@@ -122,10 +122,10 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
 			combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
 				.pipe(takeUntil(this.destroy$$))
-				.subscribe(([lang, permissionType]) => {
+				.subscribe(([lang]) => {
 					this.selectedLang = lang;
 					this.columns = [Translate.Start[lang], Translate.End[lang], Translate.Priority[lang]];
-					if (permissionType !== UserRoleEnum.Reader) {
+					if (this.permissionSvc.isPermitted([Permission.UpdatePrioritySlots, Permission.DeletePrioritySlots])) {
 						this.columns = [...this.columns, Translate.Actions[lang]];
 					}
 
@@ -282,6 +282,8 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
         }, 0);
     }
 }
+
+
 
 
 

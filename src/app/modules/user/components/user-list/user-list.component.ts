@@ -271,10 +271,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
                         Translate.Status[lang],
                     ];
 
-                    if (permissionType !== UserRoleEnum.Reader) {
-                        this.columnsForGeneral = [...this.columnsForGeneral, Translate.Actions[lang]];
-                        this.columnsForScheduler = [...this.columnsForScheduler, Translate.Actions[lang]];
-                    }
+                    if (this.permissionSvc.isPermitted([Permission.UpdateUser, Permission.DeleteUser])) {
+											this.columnsForGeneral = [...this.columnsForGeneral, Translate.Actions[lang]];
+											this.columnsForScheduler = [...this.columnsForScheduler, Translate.Actions[lang]];
+										}
 
                     if (this.userTypeDropdownControl.value === UserType.General) {
                         this.columns$$.next(this.columnsForGeneral);

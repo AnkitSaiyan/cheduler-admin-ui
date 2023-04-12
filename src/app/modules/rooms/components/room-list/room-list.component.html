@@ -86,7 +86,7 @@
         <tr *ngFor="let room of (filteredRooms$$ | async)" class="room-table-row"
             [ngClass]="{ 'room-table-row-disabled': (loading$$ | async) === true }"
             [routerLink]="['./', room.id, 'view']"
-            cdkDrag [cdkDragDisabled]="(loading$$ | async) === true " [cdkDragStartDelay]="100">
+            cdkDrag [cdkDragDisabled]="(loading$$ | async) === true || (permissionSvc.permissionType$ | async) === UserRole.Reader " [cdkDragStartDelay]="100">
           <td class="room-table-td checkbox" *ngIf="permissionSvc.isNotReader">
             <dfm-checkbox class="w-fit d-flex dfm-me-0" #rowCheckbox
                           (click)="$event.stopPropagation(); handleCheckboxSelection(+room.id)"></dfm-checkbox>

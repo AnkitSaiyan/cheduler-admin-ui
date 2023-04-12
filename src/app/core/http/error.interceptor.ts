@@ -59,16 +59,31 @@ export class ErrorInterceptor implements HttpInterceptor {
         }
         break;
         default: {
-          if (err?.message && typeof err?.message === 'string') {
-            errorMessage = err.message;
+          if (err?.error?.errors) {
+            const errObj = err.error.errors;
+            if (errObj?.GeneralErrors) {
+              if (Array.isArray(errObj.GeneralErrors)) {
+                errorMessage = '';
+                errObj.GeneralErrors.forEach((msg) => {
+                  errorMessage += `${msg} `;
+                });
+              } else if (typeof errObj?.GeneralErrors === 'string') {
+                errorMessage = errObj.GeneralErrors
+              }
+            } else if (typeof errObj === 'string') {
+              errorMessage = errObj;
+            }
+            console.log(err)
           } else if (err?.error?.message && typeof err.error.message === 'string') {
             errorMessage = err.error.message;
+          } else if (err?.message && typeof err?.message === 'string') {
+            errorMessage = err.message;
           }
         }
       }
     }
 
-    this.notificationSvc.showNotification(errorMessage, NotificationType.DANGER);
+    this.notificationSvc.showError(errorMessage);
   }
 
   private stopLoaders() {

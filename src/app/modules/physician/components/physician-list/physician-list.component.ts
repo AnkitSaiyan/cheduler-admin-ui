@@ -164,23 +164,23 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       });
 
     combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(([lang, permissionType]) => {
-        this.selectedLang = lang;
-        this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang]];
-        if (permissionType !== UserRoleEnum.Reader) {
-          this.columns = [...this.columns, Translate.Actions[lang]];
-        }
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
-        }
-      });
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe(([lang]) => {
+				this.selectedLang = lang;
+				this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang]];
+				if (this.permissionSvc.isPermitted([Permission.UpdatePhysicians, Permission.DeletePhysicians])) {
+					this.columns = [...this.columns, Translate.Actions[lang]];
+				}
+				// eslint-disable-next-line default-case
+				switch (lang) {
+					case ENG_BE:
+						this.statuses = Statuses;
+						break;
+					case DUTCH_BE:
+						this.statuses = StatusesNL;
+						break;
+				}
+			});
   }
 
   public override ngOnDestroy() {
