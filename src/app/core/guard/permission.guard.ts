@@ -21,7 +21,7 @@ export class PermissionGuard implements CanActivateChild {
 					case UserRoleEnum.Reader:
 						return this.isReaderPermitted(route);
 					case UserRoleEnum.GeneralUser:
-						return this.isReaderPermitted(route);
+						return this.isGeneralUserPermitted(route);
 					default:
 						/*  General user can not perform delete actions,
                             since there is not page for delete we dont need to check for general users
@@ -57,6 +57,7 @@ export class PermissionGuard implements CanActivateChild {
 		return true;
 	}
 }
+
 
 
 
