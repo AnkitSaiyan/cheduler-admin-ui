@@ -275,18 +275,18 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
                     // eslint-disable-next-line default-case
                     switch (lang) {
                         case ENG_BE: {
-                            if (permissionType === UserRoleEnum.Reader) {
-                                this.navItems = [...this.readerNavigationItems];
-                                break;
-                            }
+                            if (permissionType !== UserRoleEnum.Admin) {
+															this.navItems = [...this.readerNavigationItems];
+															break;
+														}
                             this.navItems = [...this.navigationItems];
                             break;
                         }
                         case DUTCH_BE: {
-                            if (permissionType === UserRoleEnum.Reader) {
-                                this.navItems = [...this.readerNavigationItemsNL];
-                                break;
-                            }
+                            if (permissionType !== UserRoleEnum.Admin) {
+															this.navItems = [...this.readerNavigationItemsNL];
+															break;
+														}
                             this.navItems = [...this.navigationItemsNL];
                             break;
                         }
