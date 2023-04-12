@@ -372,5 +372,12 @@
   "SelectPhysician" : "Select Physician",
   "Heading" : "Heading",
   "SubHeading" : "Sub Heading",
-  "BodyText" : "Body Text"
+  "BodyText" : "Body Text",
+  "CompleteYourProfile" : "Complete Your Profile",
+  "Logout": "Logout",
+  "EnterStreet" : "Enter Street",
+  "EnterCity" : "Enter City",
+  "EnterCountry" : "Enter Country",
+  "EnterPostalCode" : "Enter Postal Code"
+  
 }
