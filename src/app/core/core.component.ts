@@ -260,7 +260,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
         ).subscribe({
             error: (err) => {
                 this.notificationSvc.showError(err);
-                setTimeout(() => this.userSvc.logout(), 1500);
+                // setTimeout(() => this.userSvc.logout(), 1500);
             }
         });
     }
