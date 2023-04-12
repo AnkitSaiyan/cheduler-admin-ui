@@ -381,6 +381,11 @@
   "EnterStreet" : "Voer Straat in",
   "EnterCity" : "Voer Stad in",
   "EnterCountry" : "Voer Land in",
-  "EnterPostalCode" : "Voer postcode in"
+  "EnterPostalCode" : "Voer postcode in",
+  "Street" : "Straat",
+  "City" : "Stad",
+  "Country" :"Land",
+  "PostalCode":"Postcode"
+  
 }
 
