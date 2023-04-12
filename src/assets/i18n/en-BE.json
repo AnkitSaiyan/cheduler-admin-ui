@@ -378,6 +378,10 @@
   "EnterStreet" : "Enter Street",
   "EnterCity" : "Enter City",
   "EnterCountry" : "Enter Country",
-  "EnterPostalCode" : "Enter Postal Code"
+  "EnterPostalCode" : "Enter Postal Code",
+  "Street" : "Street",
+  "City" : "City",
+  "Country" : "Country",
+  "PostalCode" : "Postal Code"
   
 }
