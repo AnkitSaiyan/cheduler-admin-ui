@@ -49,7 +49,8 @@ export class PermissionGuard implements CanActivateChild {
 		if (
 			route.data['routeName'] === RouteName.Practice ||
 			route.data['routeName'] === RouteName.SiteSetting ||
-			route.data['routeName'] === RouteName.EmailTemplate
+			route.data['routeName'] === RouteName.EmailTemplate ||
+			(route.data['routeName'] === RouteName.Staffs && route.data['routeType'] === RouteType.Add)
 		) {
 			this.notificationSvc.showError(Translate.Error.Unauthorized[ENG_BE]);
 			return this.router.parseUrl('/dashboard');
@@ -57,6 +58,7 @@ export class PermissionGuard implements CanActivateChild {
 		return true;
 	}
 }
+
 
 
 
