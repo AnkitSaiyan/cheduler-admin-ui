@@ -383,6 +383,8 @@
   "City" : "City",
   "Country" : "Country",
   "PostalCode" : "Postal Code",
-  "CreatedOn" : "Created on"
+  "CreatedOn" : "Created on",
+  "UserRole" : "User Role",
+  "SelectRole": "Select Role"
   
 }

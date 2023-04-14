@@ -64,8 +64,8 @@
                 modalData?.userDetails?.userType ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler
               "
               size="md"
-              placeholder="Select Role"
-              label="User Role *"
+              placeholder="{{'SelectRole' | translate}}"
+              label="{{'UserRole' | translate}} *"
               [items]="userRoles"
               formControlName="userRole"
             >
