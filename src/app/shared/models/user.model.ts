@@ -74,14 +74,15 @@ export interface UserBase {
 */
 
 export interface SchedulerUser {
-  id: string;
-  email: string;
-  givenName: string;
-  surname: string;
-  displayName: string;
-  isExternal: boolean;
-  accountEnabled: boolean;
-  userRole: UserRoleEnum;
+	id: string;
+	email: string;
+	givenName: string;
+	surname: string;
+	displayName: string;
+	isExternal: boolean;
+	accountEnabled: boolean;
+	userRole: UserRoleEnum;
+	properties?: any;
 }
 
 export class AuthUser {
