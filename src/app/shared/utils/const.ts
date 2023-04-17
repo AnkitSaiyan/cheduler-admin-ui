@@ -11,7 +11,6 @@ export const PRIORITY_ID = 'priorityID';
 export const DEV_TENANT_ID = 'NBK0';
 export const UAT_TENANT_ID = 'N5v0';
 
-
 // Language Constants
 
 export const ENG_BE = 'en-BE';
