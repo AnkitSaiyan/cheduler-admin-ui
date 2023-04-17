@@ -177,18 +177,23 @@ export class AppointmentApiService extends DestroyableComponent {
 
 		return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
 			switchMap(() => this.http.get<BaseResponse<Appointment>>(`${this.appointmentUrl}/${appointmentID}`)),
-			switchMap((response) => combineLatest([of(response), this.userManagementSvc.getUserById(response?.data?.patientAzureId!)])),
+			switchMap((response) =>
+				combineLatest([of(response), response?.data?.patientAzureId ? this.userManagementSvc.getUserById(response?.data?.patientAzureId) : of(null)]),
+			),
 			map(([response, userDetail]) => {
 				if (!response?.data) {
 					return {} as Appointment;
 				}
-				return {
-					...this.getAppointmentModified(response.data),
-					patientFname: userDetail?.givenName,
-					patientLname: userDetail?.surname,
-					patientTel: userDetail.properties?.['extension_PhoneNumber'],
-					patientEmail: userDetail.email,
-				};
+				if (userDetail) {
+					return {
+						...this.getAppointmentModified(response.data),
+						patientFname: userDetail?.givenName,
+						patientLname: userDetail?.surname,
+						patientTel: userDetail.properties?.['extension_PhoneNumber'],
+						patientEmail: userDetail.email,
+					};
+				}
+				return this.getAppointmentModified(response.data);
 			}),
 			tap(() => {
 				this.loaderSvc.deactivate();

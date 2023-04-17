@@ -17,13 +17,18 @@
   </section>
 
   <section class="d-flex justify-content-end bar-chart-tab-view">
-    <canvas baseChart
-            [type]="'bar'" r
-            [data]="cancelledBarChartConfig"
-            [labels]="completedBarChartLabels"
-            [options]="cancelledBarChartOptions"
-            [plugins]="cancelledBarChartPlugins"
-            [legend]="cancelledBarChartLegend">
-    </canvas>
+    <ng-container *ngIf="(isNoData$$ | async) === true; else graph">
+      {{'NoDataFound' | translate}}
+    </ng-container>
+    <ng-template #graph>
+      <canvas baseChart
+              [type]="'bar'" r
+              [data]="cancelledBarChartConfig"
+              [labels]="completedBarChartLabels"
+              [options]="cancelledBarChartOptions"
+              [plugins]="cancelledBarChartPlugins"
+              [legend]="cancelledBarChartLegend">
+      </canvas>
+    </ng-template>
   </section>
 </div>
