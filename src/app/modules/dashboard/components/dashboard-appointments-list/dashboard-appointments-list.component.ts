@@ -47,7 +47,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status'];
+  public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
 
   public downloadItems: NameValue[] = [];
 
@@ -238,9 +238,10 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 					this.selectedLang = lang;
 					if (this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments])) {
 						if (!this.columns.includes(Translate.Actions[lang])) {
-							this.columns.push(Translate.Actions[lang]);
+							this.columns.push();
 						}
-					} else if (this.columns.includes(Translate.Actions[lang])) {
+					}
+           else if (this.columns.includes(Translate.Actions[lang])) {
 						this.columns.pop();
 					}
 					// eslint-disable-next-line default-case
