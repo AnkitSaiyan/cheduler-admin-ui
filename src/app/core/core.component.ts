@@ -277,7 +277,6 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
 				next: ([lang, permissionType]) => {
-					this.profileData.user.name = Translate.Profile[lang];
 					// eslint-disable-next-line default-case
 					switch (lang) {
 						case ENG_BE: {
