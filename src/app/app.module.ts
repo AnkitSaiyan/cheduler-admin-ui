@@ -1,70 +1,66 @@
-import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
+import { ChangeDetectorRef, NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { DesignSystemCoreModule, NgDfmNotificationModule } from 'diflexmo-angular-design';
-import {DatePipe, TitleCasePipe} from '@angular/common';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {environment} from 'src/environments/environment';
+import { DatePipe, TitleCasePipe } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { environment } from 'src/environments/environment';
 import {
-    MSAL_GUARD_CONFIG,
-    MSAL_INSTANCE,
-    MSAL_INTERCEPTOR_CONFIG,
-    MsalBroadcastService,
-    MsalGuard,
-    MsalGuardConfiguration,
-    MsalInterceptor,
-    MsalInterceptorConfiguration,
-    MsalModule,
-    MsalRedirectComponent,
-    MsalService,
+	MSAL_GUARD_CONFIG,
+	MSAL_INSTANCE,
+	MSAL_INTERCEPTOR_CONFIG,
+	MsalBroadcastService,
+	MsalGuard,
+	MsalGuardConfiguration,
+	MsalInterceptor,
+	MsalInterceptorConfiguration,
+	MsalModule,
+	MsalRedirectComponent,
+	MsalService,
 } from '@azure/msal-angular';
-import {
-    BrowserCacheLocation,
-    InteractionType,
-    IPublicClientApplication,
-    LogLevel,
-    PublicClientApplication
-} from '@azure/msal-browser';
-import {AppComponent} from './app.component';
-import {AppRoutingModule} from './app-routing.module';
-import {WeekdayToNamePipe} from './shared/pipes/weekday-to-name.pipe';
-import {MonthToNamePipe} from './shared/pipes/month-to-name.pipe';
-import {TimeInIntervalPipe} from './shared/pipes/time-in-interval.pipe';
-import {NameValuePairPipe} from './shared/pipes/name-value-pair.pipe';
-import {HeaderInterceptor} from './core/http/header.interceptor';
-import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {AuthConfig, MSALConfig} from './configuration/auth.config';
-import {ErrorInterceptor} from "./core/http/error.interceptor";
-import {RoleNamePipe} from "./shared/pipes/role-name.pipe";
-import {RouteGuard} from "./core/guard/route.guard";
-import {PermissionGuard} from "./core/guard/permission.guard";
+import { BrowserCacheLocation, InteractionType, IPublicClientApplication, LogLevel, PublicClientApplication } from '@azure/msal-browser';
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+import { WeekdayToNamePipe } from './shared/pipes/weekday-to-name.pipe';
+import { MonthToNamePipe } from './shared/pipes/month-to-name.pipe';
+import { TimeInIntervalPipe } from './shared/pipes/time-in-interval.pipe';
+import { NameValuePairPipe } from './shared/pipes/name-value-pair.pipe';
+import { HeaderInterceptor } from './core/http/header.interceptor';
+import { TranslateLoader, TranslateModule, TranslatePipe } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { AuthConfig, MSALConfig } from './configuration/auth.config';
+import { ErrorInterceptor } from './core/http/error.interceptor';
+import { RoleNamePipe } from './shared/pipes/role-name.pipe';
+import { RouteGuard } from './core/guard/route.guard';
+import { PermissionGuard } from './core/guard/permission.guard';
+import { TitleStrategy } from '@angular/router';
+import { AppTitlePrefix } from './core/services/title.service';
 
 export function HttpLoaderFactory(http: HttpClient) {
-    return new TranslateHttpLoader(http);
+	return new TranslateHttpLoader(http);
 }
 
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
-    const protectedResourceMap = new Map<string, Array<string>>();
-    AuthConfig.protectedApis.forEach((protectedApi) => {
-        protectedResourceMap.set(protectedApi.url, [protectedApi.scope]);
-    });
+	const protectedResourceMap = new Map<string, Array<string>>();
+	AuthConfig.protectedApis.forEach((protectedApi) => {
+		protectedResourceMap.set(protectedApi.url, [protectedApi.scope]);
+	});
 
-    return {
-        interactionType: InteractionType.Redirect,
-        protectedResourceMap,
-    };
+	return {
+		interactionType: InteractionType.Redirect,
+		protectedResourceMap,
+	};
 }
 
 export function MSALGuardConfigFactory(): MsalGuardConfiguration {
-    return {
-        interactionType: InteractionType.Redirect,
-        authRequest: {
-            scopes: [environment.schedulerApiAuthScope],
-        },
-        loginFailedRoute: '/login-failed',
-    };
+	return {
+		interactionType: InteractionType.Redirect,
+		authRequest: {
+			scopes: [environment.schedulerApiAuthScope],
+		},
+		loginFailedRoute: '/login-failed',
+	};
 }
 
 @NgModule({
@@ -100,6 +96,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 		RoleNamePipe,
 		RouteGuard,
 		PermissionGuard,
+		TranslatePipe,
+		{ provide: TitleStrategy, useClass: AppTitlePrefix },
 		{
 			provide: HTTP_INTERCEPTORS,
 			useClass: MsalInterceptor,

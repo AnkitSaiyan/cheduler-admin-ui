@@ -6,7 +6,7 @@ const routes: Routes = [
 	{
 		path: '',
 		component: DashboardComponent,
-		title: 'Cheduler - Dashboard',
+		title: 'Dashboard',
 	},
 ];
 
@@ -15,4 +15,5 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class DashboardRoutingModule { }
+
 
