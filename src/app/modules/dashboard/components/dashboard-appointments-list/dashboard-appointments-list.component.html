@@ -117,7 +117,7 @@
         <ng-template #bodyRowTemplate let-item>
           <dfm-table-body-cell>{{ item?.exams.length ? (item.startedAt | dfmDefaultDate | dashIfNothing ) : ('' | dashIfNothing) }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.exams.length ? (item.endedAt | dfmDefaultDate | dashIfNothing) : ('' | dashIfNothing) }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ item?.patientFname | titlecase }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item?.patientFname | titlecase }} {{ item?.patientLname  }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.doctor | titlecase }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.id }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
