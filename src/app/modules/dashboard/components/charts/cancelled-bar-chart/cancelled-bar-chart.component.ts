@@ -22,6 +22,8 @@ export class CancelledBarChartComponent extends DestroyableComponent implements 
 
 	public status$$ = new BehaviorSubject<any>(null);
 
+	public isNoData$$ = new BehaviorSubject<boolean>(false);
+
 	constructor(private dashboardApiService: DashboardApiService) {
 		super();
 	}
@@ -29,6 +31,9 @@ export class CancelledBarChartComponent extends DestroyableComponent implements 
 	public ngOnInit(): void {
 		this.dashboardApiService.cancelledBarChart$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
 			this.status$$.next(appointment?.status);
+			if (!appointment?.completedappointments || appointment?.completedappointments === null) {
+				this.isNoData$$.next(true);
+			}
 			const dataset: any = Array(7).fill(0);
 
 			appointment.cancelledappointments.forEach((element) => {
