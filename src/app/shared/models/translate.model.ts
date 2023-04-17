@@ -528,6 +528,15 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'User',
 		[DUTCH_BE]: 'Gebruiker',
 	},
+	General: {
+		[ENG_BE]: 'General',
+		[DUTCH_BE]: 'Algemene',
+	},
+
+	Scheduler: {
+		[ENG_BE]: 'Scheduler',
+		[DUTCH_BE]: 'Afspraak',
+	},
 
 	Staff: {
 		[ENG_BE]: 'Staff',
@@ -562,6 +571,8 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Complete Profile',
 	},
 });
+
+
 
 
 

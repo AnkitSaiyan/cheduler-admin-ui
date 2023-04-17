@@ -12,7 +12,7 @@
 
     <div class="dfm-input-dropdown-wrapper-wo-label dfm-dropdown-bg-transparent max-w-192 user-type-dropdown">
       <dfm-input-dropdown
-        [items]="userTypes"
+        [items]="(userTypes$$ | async) ?? []"
         [showDescription]="false"
         [formControl]="userTypeDropdownControl"
         placeholder="{{ 'UserType' | translate }}"
@@ -62,7 +62,7 @@
 
     <div class="hidden dfm-input-dropdown-wrapper-wo-label max-w-128 user-type-dropdown-mv">
       <dfm-input-dropdown
-        [items]="userTypes"
+        [items]="(userTypes$$ | async) ?? []"
         [showDescription]="false"
         [formControl]="userTypeDropdownControl"
         placeholder="{{ 'UserType' | translate }}"
