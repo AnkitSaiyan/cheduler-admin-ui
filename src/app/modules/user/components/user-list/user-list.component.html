@@ -155,17 +155,18 @@
               (click)="$event.stopPropagation(); openAddUserModal(item)"
               *ngIf="item.userType === UserType.General"
             ></dfm-button>
-
-            <dfm-button color="link-gray"
-              size="sm"
-              trailingIcon="trash-01"
-              ngbPopover="{{ 'Delete' | translate }}"
-              triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="$event.stopPropagation(); deleteUser(item.id)"
-              *dfmPermitted="Permission.DeleteUser"
-            ></dfm-button>
+            <ng-container *ngIf="(userSvc.authUser$ | async)?.id !== item.id">
+              <dfm-button color="link-gray"
+                size="sm"
+                trailingIcon="trash-01"
+                ngbPopover="{{ 'Delete' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
+                (click)="$event.stopPropagation(); deleteUser(item.id)"
+                *dfmPermitted="Permission.DeleteUser"
+              ></dfm-button>
+            </ng-container>
           </div>
 
           <!-- Action Menu -->
@@ -219,17 +220,19 @@
               >
                 <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
               </div>
+              <ng-container *ngIf="(userSvc.authUser$ | async)?.id !== item.id">
+                <div
+                  (click)="$event.stopPropagation(); deleteUser(item.id)"
+                  ngbPopover="{{ 'Delete' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                  *dfmPermitted="Permission.DeleteUser"
+                >
+                  <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
+                </div>
+              </ng-container>
 
-              <div
-                (click)="$event.stopPropagation(); deleteUser(item.id)"
-                ngbPopover="{{ 'Delete' | translate }}"
-                triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8"
-                [openDelay]="200"
-                *dfmPermitted="Permission.DeleteUser"
-              >
-                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
-              </div>
             </div>
           </ng-template>
           <!-- Action Menu ends -->
