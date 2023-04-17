@@ -18,7 +18,7 @@
 
   <section class="d-flex justify-content-end bar-chart-tab-view">
     <ng-container *ngIf="(isNoData$$ | async) === true; else graph">
-      {{'NoDataFound' | translate}}
+      <div class="d-flex justify-content-center align-items-center w-100">{{'NoDataFound' | translate}}</div>
     </ng-container>
     <ng-template #graph>
       <canvas baseChart
