@@ -23,7 +23,7 @@
   </section> -->
 
   <section id="here"  class="h-100" *ngIf="filteredPosts$$ | async as posts">
-      <mdb-carousel *ngIf="posts[0]" [controls]="posts.length > 1" [indicators]="posts.length > 1" [dark]="true" [pause]="posts.length === 1" >
+      <mdb-carousel *ngIf="posts[0]" [controls]="posts.length > 1" [indicators]="posts.length > 1" [dark]="true" [wrap]="posts.length > 1">
         <mdb-carousel-item *ngFor="let post of posts; let i = index" class="h-100">
           <div
             class="d-flex flex-column dfm-gap-16 dfm-px-24 dfm-pt-16 dfm-pb-24 justify-content-between rounded-3 shadow-sm post-it-card"
