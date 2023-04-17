@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
-import {DesignSystemCoreModule, NotificationModule} from 'diflexmo-angular-design';
+import { DesignSystemCoreModule, NgDfmNotificationModule } from 'diflexmo-angular-design';
 import {DatePipe, TitleCasePipe} from '@angular/common';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {environment} from 'src/environments/environment';
@@ -68,69 +68,68 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 }
 
 @NgModule({
-    declarations: [AppComponent],
-    imports: [
-        BrowserModule,
-        ReactiveFormsModule,
-        FormsModule,
-        AppRoutingModule,
-        HttpClientModule,
-        DesignSystemCoreModule,
-        BrowserAnimationsModule,
-        MsalModule,
-        FormsModule,
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: HttpLoaderFactory,
-                deps: [HttpClient],
-            },
-        }),
-        NotificationModule,
-        // HttpClientInMemoryWebApiModule.forRoot(DataService),
-    ],
-    bootstrap: [AppComponent, MsalRedirectComponent],
-    providers: [
-        WeekdayToNamePipe,
-        MonthToNamePipe,
-        DatePipe,
-        TimeInIntervalPipe,
-        NameValuePairPipe,
-        TitleCasePipe,
-        RoleNamePipe,
-        RouteGuard,
-        PermissionGuard,
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: MsalInterceptor,
-            multi: true,
-        },
-        {
-            provide: MSAL_INSTANCE,
-            useValue: new PublicClientApplication({ ...MSALConfig })
-        },
-        {
-            provide: MSAL_GUARD_CONFIG,
-            useFactory: MSALGuardConfigFactory,
-        },
-        {
-            provide: MSAL_INTERCEPTOR_CONFIG,
-            useFactory: MSALInterceptorConfigFactory,
-        },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: HeaderInterceptor,
-            multi: true,
-        },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: ErrorInterceptor,
-            multi: true,
-        },
-        MsalService,
-        MsalGuard,
-        MsalBroadcastService,
-    ],
+	declarations: [AppComponent],
+	imports: [
+		BrowserModule,
+		ReactiveFormsModule,
+		FormsModule,
+		AppRoutingModule,
+		HttpClientModule,
+		DesignSystemCoreModule,
+		BrowserAnimationsModule,
+		MsalModule,
+		FormsModule,
+		TranslateModule.forRoot({
+			loader: {
+				provide: TranslateLoader,
+				useFactory: HttpLoaderFactory,
+				deps: [HttpClient],
+			},
+		}),
+		NgDfmNotificationModule,
+		// HttpClientInMemoryWebApiModule.forRoot(DataService),
+	],
+	bootstrap: [AppComponent, MsalRedirectComponent],
+	providers: [
+		WeekdayToNamePipe,
+		MonthToNamePipe,
+		DatePipe,
+		TimeInIntervalPipe,
+		NameValuePairPipe,
+		TitleCasePipe,
+		RoleNamePipe,
+		RouteGuard,
+		PermissionGuard,
+		{
+			provide: HTTP_INTERCEPTORS,
+			useClass: MsalInterceptor,
+			multi: true,
+		},
+		{
+			provide: MSAL_INSTANCE,
+			useValue: new PublicClientApplication({ ...MSALConfig }),
+		},
+		{
+			provide: MSAL_GUARD_CONFIG,
+			useFactory: MSALGuardConfigFactory,
+		},
+		{
+			provide: MSAL_INTERCEPTOR_CONFIG,
+			useFactory: MSALInterceptorConfigFactory,
+		},
+		{
+			provide: HTTP_INTERCEPTORS,
+			useClass: HeaderInterceptor,
+			multi: true,
+		},
+		{
+			provide: HTTP_INTERCEPTORS,
+			useClass: ErrorInterceptor,
+			multi: true,
+		},
+		MsalService,
+		MsalGuard,
+		MsalBroadcastService,
+	],
 })
-export class AppModule {
-}
+export class AppModule {}

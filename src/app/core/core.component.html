@@ -16,6 +16,7 @@
     (logout)="logout()"
     (notificationsDismissed)="onDismissed($event, 'appointment')"
     (messagesDismissed)="onDismissed($event, 'post-its')"
+    [isSettingsButtonShown]="false"
   >
     <mat-progress-bar *ngIf="isLoaderActive$$ | async" mode="indeterminate"></mat-progress-bar>
     <div class="dfm-content content-height" #content>
