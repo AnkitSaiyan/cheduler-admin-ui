@@ -385,6 +385,5 @@
   "PostalCode" : "Postal Code",
   "CreatedOn" : "Created on",
   "UserRole" : "User Role",
-  "SelectRole": "Select Role"
-  
+  "SelectRole": "Select Role"  
 }

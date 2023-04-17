@@ -296,7 +296,7 @@ export const Translate = Object.freeze({
     },
     CopyToClipboard: {
       [ENG_BE]: 'Data copied to clipboard successfully',
-      [DUTCH_BE]: 'Gegevens succesvol naar clipboard gecopieerd',
+      [DUTCH_BE]: 'Gegevens succesvol naar klembord Gekopieerd',
     },
     PostAddedSuccessfully: {
       [ENG_BE]: 'Post it added successfully',
@@ -411,7 +411,7 @@ export const Translate = Object.freeze({
   ErrorMessage: {
     CopyToClipboard: {
       [ENG_BE]: 'Failed to copy Data',
-      [DUTCH_BE]: 'Gegevens succesvol naar clipboard gecopieerd',
+      [DUTCH_BE]: 'Gegevens succesvol naar klembord Gekopieerd',
     },
     FailedToCopyData: {
       [ENG_BE]: 'Failed to copy Data',
