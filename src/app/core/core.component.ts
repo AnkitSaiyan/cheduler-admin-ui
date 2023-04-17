@@ -43,20 +43,28 @@ import {UserService} from "./services/user.service";
 })
 export class CoreComponent extends DestroyableComponent implements OnInit, OnDestroy, AfterViewInit {
 	public notifications: NavigationItemEvent[] = [];
+
 	public notifications$$ = new BehaviorSubject<NavigationItemEvent[]>([]);
+
 	public messages: NavigationItemEvent[] = [];
+
 	public messages$$ = new BehaviorSubject<NavigationItemEvent[]>([]);
+
 	public currentTenant$$ = new BehaviorSubject<string>('nl-BE');
+
 	public loggingOut$$ = new BehaviorSubject(false);
+
 	public languages: SelectItem[] = [
 		{ name: 'EN', value: ENG_BE },
 		{ name: 'NL', value: DUTCH_BE },
 	];
+
 	public profileData: NavigationProfileData = {
 		user: {
 			name: '',
 			email: '',
 			avatar: '',
+			isLinkExternal: false,
 		},
 		links: [],
 	};
@@ -233,7 +241,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 						throw Error('Failed to fetch user details. Logging out.');
 					}
 
-					this.profileData = new NavigationProfileData(new NavigationUser(user.displayName, user.email, ''), []);
+					this.profileData = new NavigationProfileData(new NavigationUser(user.displayName, user.email, '', '', false), []);
 
 					return this.userApiSvc.getUserRole(user.id).pipe(
 						map((userRole) => {
@@ -269,7 +277,6 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
 				next: ([lang, permissionType]) => {
-					this.profileData.user.name = Translate.Profile[lang];
 					// eslint-disable-next-line default-case
 					switch (lang) {
 						case ENG_BE: {

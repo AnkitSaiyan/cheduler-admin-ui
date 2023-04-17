@@ -14,17 +14,19 @@
 					>{{ 'EditUser' | translate }}
 				</dfm-button>
 			</ng-container>
+      <ng-container *ngIf="(userSvc.authUser$ | async)?.id !== userDetails.id.toString()">
+        <dfm-button
+          color="link"
+          size="md"
+          class="text-nowrap"
+          leadingIcon="trash-01"
+          (click)="deleteUser(userDetails.id)"
+          *dfmPermitted="Permission.DeleteUser"
+        >
+          {{ 'DeleteUser' | translate }}
+        </dfm-button>
+      </ng-container>
 
-			<dfm-button
-				color="link"
-				size="md"
-				class="text-nowrap"
-				leadingIcon="trash-01"
-				(click)="deleteUser(userDetails.id)"
-				*dfmPermitted="Permission.DeleteUser"
-			>
-				{{ 'DeleteUser' | translate }}
-			</dfm-button>
 		</div>
 
 		<!-- Mobile View -->
@@ -123,9 +125,11 @@
 	</section>
 
 	<div class="hidden bg-white us-vw-action-buttons-mv" *dfmPermitted="[Permission.UpdateUser, Permission.DeleteUser]">
-		<dfm-button color="secondary" size="sm" *dfmPermitted="Permission.DeleteUser" (click)="deleteUser(userDetails.id)">{{
-			'Delete' | translate
-		}}</dfm-button>
+    <ng-container *ngIf="(userSvc.authUser$ | async)?.id !== userDetails.id.toString()">
+      <dfm-button color="secondary" size="sm" *dfmPermitted="Permission.DeleteUser" (click)="deleteUser(userDetails.id)">{{
+        'Delete' | translate
+      }}</dfm-button>
+    </ng-container>
 		<ng-container *ngIf="currentUserType === UserType.General">
 			<dfm-button color="primary" size="sm" (click)="openEditUserModal()" *dfmPermitted="Permission.UpdateUser">{{
 				'EditUser' | translate

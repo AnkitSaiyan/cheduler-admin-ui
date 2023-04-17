@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
-import { DesignSystemModule, TableModule } from 'diflexmo-angular-design';
+import { DesignSystemModule, NgDfmDropdownModule, TableModule } from 'diflexmo-angular-design';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
@@ -101,29 +101,30 @@ export function HttpLoaderFactory(http: HttpClient) {
 		UtcToLocalPipe,
 		DefaultDatePipe,
 		ShowSlotPercentagePipe,
-  CompleteProfileComponent,
-  LoginFailedComponent,
+		CompleteProfileComponent,
+		LoginFailedComponent,
 	],
-    imports: [
-        CommonModule,
-        DesignSystemModule,
-        ReactiveFormsModule,
-        NgbDropdownModule,
-        NgbPopoverModule,
-        NgbAccordionModule,
-        MatProgressSpinnerModule,
-        RouterLink,
-        TranslateModule.forChild({
-            loader: {
-                provide: TranslateLoader,
-                // eslint-disable-next-line @typescript-eslint/no-use-before-define
-                useFactory: HttpLoaderFactory,
-                deps: [HttpClient],
-            },
-        }),
-        NgOptimizedImage,
-        MatDividerModule,
-    ],
+	imports: [
+		CommonModule,
+		DesignSystemModule,
+		ReactiveFormsModule,
+		NgbDropdownModule,
+		NgDfmDropdownModule,
+		NgbPopoverModule,
+		NgbAccordionModule,
+		MatProgressSpinnerModule,
+		RouterLink,
+		TranslateModule.forChild({
+			loader: {
+				provide: TranslateLoader,
+				// eslint-disable-next-line @typescript-eslint/no-use-before-define
+				useFactory: HttpLoaderFactory,
+				deps: [HttpClient],
+			},
+		}),
+		NgOptimizedImage,
+		MatDividerModule,
+	],
 	exports: [
 		DesignSystemModule,
 		TableModule,
