@@ -3,6 +3,7 @@ import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/com
 import {Observable} from 'rxjs';
 import {environment} from "../../../environments/environment";
 import {UserService} from "../services/user.service";
+import {GeneralUtils} from "../../shared/utils/general.utils";
 
 @Injectable()
 export class HeaderInterceptor implements HttpInterceptor {
@@ -13,11 +14,17 @@ export class HeaderInterceptor implements HttpInterceptor {
         const SubDomain: string = window.location.host.split('.')[0];
         const usersUrl = environment.userManagementApiUrl + '/users';
 
+        let currentTenantId = GeneralUtils.TenantID;
+        const tenantIds = this.userSvc.getCurrentUser()?.tenantIds ?? [];
+        if (!tenantIds.find((tenantId) => currentTenantId)) {
+            currentTenantId = this.userSvc.getCurrentUser()?.tenantIds[0] as string;
+        }
+
         const newRequest = request.clone({
             setHeaders: {
                 SubDomain,
                 ...(usersUrl === request.url ? {
-                    'Context-Tenant-Id': this.userSvc.getCurrentUser()?.tenantIds[0] as string
+                    'Context-Tenant-Id': currentTenantId
                 } : {})
             },
         });
