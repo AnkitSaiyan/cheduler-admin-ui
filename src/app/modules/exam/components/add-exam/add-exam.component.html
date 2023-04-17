@@ -45,7 +45,7 @@
     <form [formGroup]="examForm" class="dfm-p-16 d-flex flex-column dfm-gap-32">
       <div class="d-flex flex-column dfm-gap-16 ad-ex-form-exam-info">
         <div class="d-flex dfm-gap-24 flex-wrap ad-ex-name-expense-room">
-          <div>
+          <div class="flex-1 exam-form-exam-mv">
             <dfm-input
               class="ad-ex-name"
               size="md"
@@ -59,7 +59,7 @@
             </div>
           </div>
 
-          <div>
+          <div class="exam-form-mv">
             <dfm-input
               #expensive
               [dfmNumberInput]="expensive"
@@ -77,7 +77,7 @@
             </div>
             <small class="validation-error" *ngIf="expensive.control.hasError('min')">{{"PleaseEnterAtLeastFiveMin" | translate}}</small>
           </div>
-          <div>
+          <div class="exam-form-mv">
             <div class="dfm-input-dropdown-wrapper">
               <dfm-input-dropdown
                 class="flex-1"

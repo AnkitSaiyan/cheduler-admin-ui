@@ -45,6 +45,14 @@ section.ad-ex-section2 {
     max-height: 100% !important;
   }
 }
+@media (min-width: 680px)and (max-width: 920px){
+  .exam-form-mv{
+    flex: 1;
+  }
+  .exam-form-exam-mv{
+    flex-grow: 2;
+  }
+}
 
 @media (max-width: 680px) {
   .ad-ex-title-buttons {
@@ -138,6 +146,7 @@ section.ad-ex-section2 {
     font-size: 14px!important;
     white-space: normal!important;
   }
+ 
 }
 
 .order {
