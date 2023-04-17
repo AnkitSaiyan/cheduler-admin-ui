@@ -26,6 +26,10 @@ export class UserService {
         return this.authUser$$.asObservable();
     }
 
+    public getCurrentUser(): AuthUser | undefined {
+        return this.authUser$$.value;
+    }
+
     public initializeUser(): Observable<boolean> {
         const user = this.msalService.instance.getActiveAccount();
         const userId = user?.localAccountId ?? '';
