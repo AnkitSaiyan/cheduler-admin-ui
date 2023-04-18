@@ -122,20 +122,26 @@
                               <!-- POP OVER ENDS -->
 
                               <div class="calender-day-view-event-details-container" (click)="$event.stopPropagation()"
-                                   [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto': +eventHeight <= 40 }"
+                                   [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto center': +eventHeight <= 40 }"
                                    [routerLink]="['/', 'appointment', data.appointment.id, 'view']">
                                 <div class="d-flex dfm-gap-4" triggers="hover" [ngbPopover]="eventDetails"
                                      [autoClose]="'outside'" container="body">
-                                  <div class="circle-gray-200-24" *ngIf="+eventHeight > 40">
-                                    {{ data.appointment.patientFname[0] | uppercase }}
+                                  <div class="circle-gray-200-24" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname?.length">
+                                    {{ (data.appointment.patientFname[0] | uppercase)}}
                                   </div>
 
-                                  <div class="d-flex flex-column">
-                                    <span class="calender-day-view-event-title">
+                                  <div class="d-flex flex-column ">
+                                    <span class="calender-day-view-event-title" *ngIf="data?.appointment?.patientFname; else date">
                                       {{ data.appointment.patientFname + ' ' + data.appointment.patientLname }}
                                     </span>
+                                    <ng-template #date>
+                                      <span class="calender-day-view-event-time">
+                                        {{ data.appointment.startedAt | date : 'hh:mm' }} -
+                                        {{ data.appointment.endedAt | date : 'hh:mm' }}
+                                      </span>
+                                    </ng-template>
 
-                                    <span class="calender-day-view-event-time" *ngIf="+eventHeight > 40">
+                                    <span class="calender-day-view-event-time" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname">
                                       {{ data.appointment.startedAt | date : 'hh:mm' }} -
                                       {{ data.appointment.endedAt | date : 'hh:mm' }}
                                     </span>

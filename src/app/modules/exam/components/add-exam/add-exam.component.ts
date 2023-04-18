@@ -144,143 +144,145 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
     }
 
     public ngOnInit(): void {
-        this.roomApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
-            next: (items) => (this.roomTypes = items)
-        });
+			this.roomApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+				next: (items) => (this.roomTypes = items),
+			});
 
-        this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
-        this.filteredTimings = [...this.timings];
+			this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
+			this.filteredTimings = [...this.timings];
 
-        this.createForm();
+			this.createForm();
 
-        this.examApiSvc.exams$
-            .pipe(
-                map((exams) => exams.filter((exam) => exam?.status && +exam.id !== (+this.examID ?? 0))),
-                takeUntil(this.destroy$$),
-            )
-            .subscribe({
-                next: (exams) => {
-                    this.filteredExams$$.next([...exams.map(({id, name}) => ({name, value: id?.toString()}))]);
-                    this.exams = [...this.filteredExams$$.value];
-                    this.cdr.detectChanges();
-                }
-            });
+			// this.examForm.valueChanges.subscribe(console.log);
 
-        this.userApiSvc.allStaffs$.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe({
-            next: (staffs) => {
-                console.log(staffs)
-                const radiologists: NameValue[] = [];
-                const assistants: NameValue[] = [];
-                const nursing: NameValue[] = [];
-                const secretaries: NameValue[] = [];
-                const mandatory: NameValue[] = [];
+			this.examApiSvc.exams$
+				.pipe(
+					map((exams) => exams.filter((exam) => exam?.status && +exam.id !== (+this.examID ?? 0))),
+					takeUntil(this.destroy$$),
+				)
+				.subscribe({
+					next: (exams) => {
+						this.filteredExams$$.next([...exams.map(({ id, name }) => ({ name, value: id?.toString() }))]);
+						this.exams = [...this.filteredExams$$.value];
+						this.cdr.detectChanges();
+					},
+				});
 
-                staffs.forEach((staff) => {
-                    const nameValue = {name: `${staff.firstname} ${staff.lastname}`, value: staff?.id?.toString()};
+			this.userApiSvc.allStaffs$.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe({
+				next: (staffs) => {
+					const radiologists: NameValue[] = [];
+					const assistants: NameValue[] = [];
+					const nursing: NameValue[] = [];
+					const secretaries: NameValue[] = [];
+					const mandatory: NameValue[] = [];
 
-                    switch (staff.userType) {
-                        case UserType.Assistant:
-                            mandatory.push({...nameValue});
-                            assistants.push({...nameValue});
-                            break;
-                        case UserType.Radiologist:
-                            mandatory.push({...nameValue});
-                            radiologists.push({...nameValue});
-                            break;
-                        // case UserType.Scheduler:
-                        case UserType.Secretary:
-                            mandatory.push({...nameValue});
-                            secretaries.push({...nameValue});
-                            break;
-                        case UserType.Nursing:
-                            mandatory.push({...nameValue});
-                            nursing.push({...nameValue});
-                            break;
-                        default:
-                    }
-                });
+					staffs.forEach((staff) => {
+						const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff?.id?.toString() };
 
-                this.filteredRadiologists$$.next([...radiologists]);
-                this.filteredAssistants$$.next([...assistants]);
-                this.filteredNursing$$.next([...nursing]);
-                this.filteredSecretaries$$.next([...secretaries]);
-                this.filteredMandatoryStaffs$$.next([...mandatory]);
+						switch (staff.userType) {
+							case UserType.Assistant:
+								mandatory.push({ ...nameValue });
+								assistants.push({ ...nameValue });
+								break;
+							case UserType.Radiologist:
+								mandatory.push({ ...nameValue });
+								radiologists.push({ ...nameValue });
+								break;
+							// case UserType.Scheduler:
+							case UserType.Secretary:
+								mandatory.push({ ...nameValue });
+								secretaries.push({ ...nameValue });
+								break;
+							case UserType.Nursing:
+								mandatory.push({ ...nameValue });
+								nursing.push({ ...nameValue });
+								break;
+							default:
+						}
+					});
 
-                this.mandatoryStaffs = [...mandatory];
-                this.assistants = [...assistants];
-                this.nursing = [...nursing];
-                this.secretaries = [...secretaries];
-                this.radiologists = [...radiologists];
+					this.filteredRadiologists$$.next([...radiologists]);
+					this.filteredAssistants$$.next([...assistants]);
+					this.filteredNursing$$.next([...nursing]);
+					this.filteredSecretaries$$.next([...secretaries]);
+					this.filteredMandatoryStaffs$$.next([...mandatory]);
 
-                this.cdr.detectChanges();
-            }
-        });
+					this.mandatoryStaffs = [...mandatory];
+					this.assistants = [...assistants];
+					this.nursing = [...nursing];
+					this.secretaries = [...secretaries];
+					this.radiologists = [...radiologists];
 
-        this.roomApiSvc
-            .getRoomTypes()
-            .pipe(takeUntil(this.destroy$$))
-            .subscribe({
-                next: (roomTypes) => (this.roomTypes = [...roomTypes])
-            });
+					this.cdr.detectChanges();
+				},
+			});
 
-        this.roomApiSvc.roomsGroupedByType$.pipe(takeUntil(this.destroy$$)).subscribe({
-            next: (rooms) => this.availableRooms$$.next(rooms)
-        });
+			this.roomApiSvc
+				.getRoomTypes()
+				.pipe(takeUntil(this.destroy$$))
+				.subscribe({
+					next: (roomTypes) => (this.roomTypes = [...roomTypes]),
+				});
 
-        this.shareDataSvc
-            .getLanguage$()
-            .pipe(takeUntil(this.destroy$$))
-            .subscribe({
-                next: (lang) => {
-                    this.selectedLang = lang;
-                    // this.columns = [
-                    //   Translate.FirstName[lang],
-                    //   Translate.LastName[lang],
-                    //   Translate.Email[lang],
-                    //   Translate.Telephone[lang],
-                    //   Translate.Category[lang],
-                    //   Translate.Status[lang],
-                    //   Translate.Actions[lang],
-                    // ];
+			this.roomApiSvc.roomsGroupedByType$.pipe(takeUntil(this.destroy$$)).subscribe({
+				next: (rooms) => this.availableRooms$$.next(rooms),
+			});
 
-                    // eslint-disable-next-line default-case
-                    switch (lang) {
-                        case ENG_BE:
-                            this.statuses = Statuses;
-                            break;
-                        case DUTCH_BE:
-                            this.statuses = StatusesNL;
-                            break;
-                    }
-                }
-            });
+			this.shareDataSvc
+				.getLanguage$()
+				.pipe(takeUntil(this.destroy$$))
+				.subscribe({
+					next: (lang) => {
+						this.selectedLang = lang;
+						// this.columns = [
+						//   Translate.FirstName[lang],
+						//   Translate.LastName[lang],
+						//   Translate.Email[lang],
+						//   Translate.Telephone[lang],
+						//   Translate.Category[lang],
+						//   Translate.Status[lang],
+						//   Translate.Actions[lang],
+						// ];
 
-        this.route.params.pipe(
-            filter((params) => params[EXAM_ID]),
-            map((params) => params[EXAM_ID]),
-            switchMap((examID) => {
-                if (examID) {
-                    this.examID = examID;
-                    return this.examApiSvc.getExamByID(+examID);
-                }
-                return of({} as Exam);
-            }),
-            debounceTime(500),
-            take(1),
-        )
-            .subscribe({
-                next: (examDetails) => {
-                    if (examDetails) {
-                        this.updateForm(examDetails);
-                        if (examDetails?.practiceAvailability?.length) {
-                            this.examAvailabilityData$$.next(examDetails.practiceAvailability);
-                        }
-                    }
-                    this.loading$$.next(false);
-                    this.examDetails$$.next(examDetails);
-                }
-            });
-    }
+						// eslint-disable-next-line default-case
+						switch (lang) {
+							case ENG_BE:
+								this.statuses = Statuses;
+								break;
+							case DUTCH_BE:
+								this.statuses = StatusesNL;
+								break;
+						}
+					},
+				});
+
+			this.route.params
+				.pipe(
+					filter((params) => params[EXAM_ID]),
+					map((params) => params[EXAM_ID]),
+					switchMap((examID) => {
+						if (examID) {
+							this.examID = examID;
+							return this.examApiSvc.getExamByID(+examID);
+						}
+						return of({} as Exam);
+					}),
+					debounceTime(500),
+					take(1),
+				)
+				.subscribe({
+					next: (examDetails) => {
+						if (examDetails) {
+							this.updateForm(examDetails);
+							if (examDetails?.practiceAvailability?.length) {
+								this.examAvailabilityData$$.next(examDetails.practiceAvailability);
+							}
+						}
+						this.loading$$.next(false);
+						this.examDetails$$.next(examDetails);
+					},
+				});
+		}
 
     public override ngOnDestroy() {
         super.ngOnDestroy();
@@ -703,7 +705,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
     private createRoomsForExamFormArray(roomType: RoomType) {
         const fa = this.examForm.get('roomsForExam') as FormArray;
-
+        console.log(this.examDetails$$.value);
         fa.clear();
 
         if (this.availableRooms$$.value[roomType]?.length) {
@@ -712,10 +714,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
             setTimeout(() => {
                 fa.controls.forEach((control) => {
-                    const roomIndex = this.availableRooms$$.value[roomType].findIndex((room) => +room.id === +control.value.roomId);
-                    if (control.get('selectRoom')?.value && roomIndex > -1) {
-                        control.get('sortOrder')?.setValue((roomIndex + 1).toString());
-                    }
+                    const room: any = this.availableRooms$$.value[roomType].find((room) => +room.id === +control.value.roomId);
+										if (control.get('selectRoom')?.value && room) {
+											control.get('sortOrder')?.setValue(control.value.sortOrder.toString());
+										}
                 });
             }, 0);
         }
