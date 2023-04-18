@@ -72,16 +72,17 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 	public selectedUserIds: string[] = [];
 	public statusTypeEnum = getStatusEnum();
 	public statuses = Statuses;
-	public userTypes: NameValue[] = [
+
+	public userTypes$$: BehaviorSubject<NameValue[]> = new BehaviorSubject<NameValue[]>([
 		{
 			value: UserType.General,
-			name: UserType.General + ' User',
+			name: `${UserType.General} User`,
 		},
 		{
 			value: UserType.Scheduler,
-			name: UserType.Scheduler + ' User',
+			name: `${UserType.Scheduler} User`,
 		},
-	];
+	]);
 	public readonly Permission = Permission;
 	protected readonly UserType = UserType;
 	private users$$: BehaviorSubject<any[]>;
@@ -277,6 +278,17 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						'Role',
 						Translate.Status[lang],
 					];
+
+					this.userTypes$$.next([
+						{
+							value: UserType.General,
+							name: `${Translate[UserType.General][lang]} ${Translate.User[lang]}`,
+						},
+						{
+							value: UserType.Scheduler,
+							name: `${Translate[UserType.Scheduler][lang]} ${Translate.User[lang]}`,
+						},
+					]);
 
 					if (this.permissionSvc.isPermitted([Permission.UpdateUser, Permission.DeleteUser])) {
 						this.columnsForGeneral = [...this.columnsForGeneral, Translate.Actions[lang]];
