@@ -99,7 +99,7 @@
 															<ng-template ngbPanelTitle>
 																<div class="calendar-week-view-event-patients-container">
 																	<div class="d-flex flex-column dfm-p-8">
-																		<span class="font-weight-medium">{{ data.patientFname + ' ' + data.patientLname }}</span>
+																		<span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{ data.patientFname + ' ' + data.patientLname }}</span>
 																		<span class="text-sm dfm-text-main-500">
 																			{{ data.startedAt | date : 'HH:mm' }}
 																			-
