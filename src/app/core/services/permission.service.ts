@@ -18,6 +18,10 @@ export class PermissionService {
 		return this.permissionType$$.asObservable() as Observable<UserRoleEnum>;
 	}
 
+	public get permissionType(): UserRoleEnum {
+		return this.permissionType$$.value as UserRoleEnum;
+	}
+
 	public setPermissionType(value: UserRoleEnum) {
 		this.permissionType$$.next(value);
 		// localStorage.setItem('userRole', value);
@@ -44,6 +48,8 @@ export class PermissionService {
 		}
 	}
 }
+
+
 
 
 

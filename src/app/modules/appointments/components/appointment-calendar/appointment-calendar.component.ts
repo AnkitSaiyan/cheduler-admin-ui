@@ -430,8 +430,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
   }
 
   public async addAppointment(event: any) {
-    const permissionType = await lastValueFrom(this.permissionSvc.permissionType$);
-    if (permissionType === UserRoleEnum.Reader) return;
+    if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
 
     const { e, eventsContainer, day, grayOutSlot } = event;
     const eventCard = this.createAppointmentCard(e, eventsContainer);
