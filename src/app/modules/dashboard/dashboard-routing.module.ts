@@ -3,11 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 import {DashboardComponent} from "./pages/dashboard.component";
 
 const routes: Routes = [
-  {
-    path: '',
-    component: DashboardComponent,
-    title: 'Dashboard'
-  }
+	{
+		path: '',
+		component: DashboardComponent,
+		title: 'Dashboard',
+	},
 ];
 
 @NgModule({
@@ -15,3 +15,5 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class DashboardRoutingModule { }
+
+

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
-import { Router } from '@angular/router';
+import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../../../../shared/models/user.model';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { ENG_BE, STAFF_ID } from '../../../../shared/utils/const';
@@ -60,14 +60,16 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 		private router: Router,
 		private modalSvc: ModalService,
 		private shareDataService: ShareDataService,
+		private route: ActivatedRoute,
 	) {
 		super();
 	}
 
 	public ngOnInit(): void {
-		this.routerStateSvc
-			.listenForParamChange$(STAFF_ID)
+		this.route.params
 			.pipe(
+				filter((params) => params[STAFF_ID]),
+				map((params) => params[STAFF_ID]),
 				switchMap((staffID) => this.userApiService.getUserByID$(+staffID)),
 				takeUntil(this.destroy$$),
 			)

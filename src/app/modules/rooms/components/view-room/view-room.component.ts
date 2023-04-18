@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil, tap } from 'rxjs';
-import { Router } from '@angular/router';
+import { BehaviorSubject, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TimeSlot, Weekday, WeekWisePracticeAvailability } from '../../../../shared/models/calendar.model';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
@@ -49,14 +49,16 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
 		private router: Router,
 		private modalSvc: ModalService,
 		private shareDataService: ShareDataService,
+		private route: ActivatedRoute,
 	) {
 		super();
 	}
 
 	public ngOnInit(): void {
-		this.routerStateSvc
-			.listenForParamChange$(ROOM_ID)
+		this.route.params
 			.pipe(
+				filter((params) => params[ROOM_ID]),
+				map((params) => params[ROOM_ID]),
 				switchMap((roomID) => this.roomApiSvc.getRoomByID(+roomID)),
 				takeUntil(this.destroy$$),
 			)

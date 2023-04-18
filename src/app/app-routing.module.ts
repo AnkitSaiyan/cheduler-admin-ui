@@ -9,7 +9,7 @@ import { LoginFailedComponent } from './shared/components/login-failed/login-fai
 const rootRoutes: Routes = [
 	{
 		path: 'complete-profile',
-		title: 'Cheduler - Complete Profile',
+		title: 'CompleteProfile',
 		component: CompleteProfileComponent,
 		canActivate: [MsalGuard, RouteGuard],
 	},
@@ -20,7 +20,7 @@ const rootRoutes: Routes = [
 	},
 	{
 		path: '',
-		title: 'Login Failed',
+		title: 'LoginFailed',
 		component: LoginFailedComponent,
 	},
 ];

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
-import { Router } from '@angular/router';
+import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { User, UserType } from '../../../../shared/models/user.model';
 import { TimeSlot, Weekday, WeekWisePracticeAvailability } from '../../../../shared/models/calendar.model';
@@ -61,14 +61,16 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 		private router: Router,
 		private modalSvc: ModalService,
 		private shareDataService: ShareDataService,
+		private route: ActivatedRoute,
 	) {
 		super();
 	}
 
 	public ngOnInit(): void {
-		this.routerStateSvc
-			.listenForParamChange$(EXAM_ID)
+		this.route.params
 			.pipe(
+				filter((params) => params[EXAM_ID]),
+				map((params) => params[EXAM_ID]),
 				switchMap((examID) => this.examApiService.getExamByID(+examID)),
 				takeUntil(this.destroy$$),
 			)
