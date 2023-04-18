@@ -114,25 +114,22 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	public ngOnInit(): void {
-		this.routerStateSvc
-			.listenForQueryParamsChanges$()
-			.pipe(debounceTime(100), take(1))
-			.subscribe((params) => {
-				if (params['v'] !== 't') {
-					this.calendarViewFormControl.setValue(this.paramsToCalendarView[params['v']]);
-				}
+    this.route.queryParams.pipe(debounceTime(100), take(1)).subscribe((params) => {
+			if (params['v'] !== 't') {
+				this.calendarViewFormControl.setValue(this.paramsToCalendarView[params['v']]);
+			}
 
-				if (!params['d']) {
-					this.updateQuery('', this.selectedDate$$.value);
-				} else {
-					const dateSplit = params['d'].split('-');
-					if (dateSplit.length === 3) {
-						const date = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2]);
-						this.newDate$$.next(date);
-						this.selectedDate$$.next(date);
-					}
+			if (!params['d']) {
+				this.updateQuery('', this.selectedDate$$.value);
+			} else {
+				const dateSplit = params['d'].split('-');
+				if (dateSplit.length === 3) {
+					const date = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2]);
+					this.newDate$$.next(date);
+					this.selectedDate$$.next(date);
 				}
-			});
+			}
+		});
 
 		this.practiceHoursApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
 			this.createTimeInterval(practiceHours);
