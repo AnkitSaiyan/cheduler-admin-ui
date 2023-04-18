@@ -211,7 +211,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
         takeUntil(this.destroy$$),
       )
       .subscribe(([value]) => {
-        this.selectedSlot$$.next(this.weekdayToPractice$$.value[value.getDay()]);
+        this.selectedSlot$$.next(this.weekdayToPractice$$.value[value.getDay() + 1]);
       });
   }
 
