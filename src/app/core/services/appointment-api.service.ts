@@ -178,7 +178,10 @@ export class AppointmentApiService extends DestroyableComponent {
 		return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
 			switchMap(() => this.http.get<BaseResponse<Appointment>>(`${this.appointmentUrl}/${appointmentID}`)),
 			switchMap((response) =>
-				combineLatest([of(response), response?.data?.patientAzureId ? this.userManagementSvc.getUserById(response?.data?.patientAzureId) : of(null)]),
+				combineLatest([
+					of(response),
+					response?.data?.patientAzureId ? (this.userManagementSvc.getUserProperties(response?.data?.patientAzureId) as Observable<any>) : of(null),
+				]),
 			),
 			map(([response, userDetail]) => {
 				if (!response?.data) {
