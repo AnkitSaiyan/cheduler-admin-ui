@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
-import { Router } from '@angular/router';
+import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -39,14 +39,16 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
 		private modalSvc: ModalService,
 		private priorityApiSvc: PrioritySlotApiService,
 		private shareDataService: ShareDataService,
+		private route: ActivatedRoute,
 	) {
 		super();
 	}
 
 	public ngOnInit(): void {
-		this.routerStateSvc
-			.listenForParamChange$(PRIORITY_ID)
+		this.route.params
 			.pipe(
+				filter((params) => params[PRIORITY_ID]),
+				map((params) => params[PRIORITY_ID]),
 				switchMap((prioritySlotID) => this.priorityApiSvc.getPrioritySlotsByID(+prioritySlotID)),
 				takeUntil(this.destroy$$),
 			)
@@ -101,4 +103,6 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
 		}).result;
 	}
 }
+
+
 

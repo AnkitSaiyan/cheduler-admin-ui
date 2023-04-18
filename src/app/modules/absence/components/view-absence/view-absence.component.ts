@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -36,14 +36,16 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 		private router: Router,
 		private modalSvc: ModalService,
 		private shareDataService: ShareDataService,
+		private route: ActivatedRoute,
 	) {
 		super();
 	}
 
 	public ngOnInit(): void {
-		this.routerStateSvc
-			.listenForParamChange$(ABSENCE_ID)
+		this.route.params
 			.pipe(
+				filter((params) => params[ABSENCE_ID]),
+				map((params) => params[ABSENCE_ID]),
 				switchMap((absenceID) => this.absenceApiSvc.getAbsenceByID$(+absenceID)),
 				takeUntil(this.destroy$$),
 			)

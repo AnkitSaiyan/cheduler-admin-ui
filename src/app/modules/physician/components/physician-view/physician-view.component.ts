@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
-import { Router } from '@angular/router';
+import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -36,14 +36,16 @@ export class PhysicianViewComponent extends DestroyableComponent implements OnIn
 		private router: Router,
 		private modalSvc: ModalService,
 		private shareDataSvc: ShareDataService,
+		private route: ActivatedRoute,
 	) {
 		super();
 	}
 
 	public ngOnInit(): void {
-		this.routerStateSvc
-			.listenForParamChange$(PHYSICIAN_ID)
+		this.route.params
 			.pipe(
+				filter((params) => params[PHYSICIAN_ID]),
+				map((params) => params[PHYSICIAN_ID]),
 				switchMap((physicianID) => this.physicianApiSvc.getPhysicianByID(+physicianID)),
 				takeUntil(this.destroy$$),
 			)

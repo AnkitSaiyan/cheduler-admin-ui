@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { RouterStateService } from '../../../../core/services/router-state.service';
@@ -40,15 +40,16 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 		private router: Router,
 		private modalSvc: ModalService,
 		private shareDataSvc: ShareDataService,
+		private route: ActivatedRoute,
 	) {
 		super();
 	}
 
 	public ngOnInit(): void {
-		this.routerStateSvc
-			.listenForParamChange$(APPOINTMENT_ID)
+		this.route.params
 			.pipe(
-				// filter((appointmentID) => !!appointmentID),
+				filter((params) => params[APPOINTMENT_ID]),
+				map((params) => params[APPOINTMENT_ID]),
 				switchMap((appointmentID) => this.appointmentApiSvc.getAppointmentByID$(+appointmentID)),
 				tap((appointment) => {
 					this.appointment$$.next(appointment);
