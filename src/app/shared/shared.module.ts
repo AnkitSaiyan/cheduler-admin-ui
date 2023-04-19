@@ -16,7 +16,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { HttpClient } from '@angular/common/http';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressSpinner, MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DestroyableComponent } from './components/destroyable.component';
 import { StatusNamePipe } from './pipes/status-name.pipe';
 import { DashIfNothingPipe } from './pipes/dash-if-nothing.pipe';
@@ -124,6 +124,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		}),
 		NgOptimizedImage,
 		MatDividerModule,
+		MatProgressSpinnerModule,
 	],
 	exports: [
 		DesignSystemModule,
@@ -173,6 +174,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		UtcToLocalPipe,
 		DefaultDatePipe,
 		ShowSlotPercentagePipe,
+		MatProgressSpinner,
 	],
 	providers: [TranslatePipe],
 })
