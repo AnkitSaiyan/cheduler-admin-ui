@@ -63,7 +63,7 @@ export function getDateOfMonth(year: number, month: number, day = 0): number {
   return new Date(year, month, day).getDate();
 }
 
-export function getWeekdayWiseDays(date: Date): number[][] {
+export function getWeekdayWiseDays(date: Date, startFromSunday = false): number[][] {
   const year: number = date.getFullYear();
   const month: number = date.getMonth();
   const days: number = getDaysOfMonth(year, month);
@@ -73,8 +73,17 @@ export function getWeekdayWiseDays(date: Date): number[][] {
 
   let daysRow: number[] = [];
 
-  for (let weekday = 1; weekday < currentWeekday; weekday++) {
+  for (let weekday = startFromSunday ? 0 : 1; weekday < currentWeekday; weekday++) {
     daysRow.push(getDateOfMonth(year, month, weekday - currentWeekday + 1) + 31);
+  }
+
+  if (currentWeekday === 0) {
+    if (!startFromSunday) {
+      // get previous month dates
+      for (let weekday = 1; weekday < 7; weekday++) {
+        daysRow.push(getDateOfMonth(year, month, (weekday + 1) - 7) + 31);
+      }
+    }
   }
 
   for (let day = 1; day <= days; day++) {
@@ -86,6 +95,7 @@ export function getWeekdayWiseDays(date: Date): number[][] {
     daysRow.push(day);
   }
 
+  // if days end before the last week then adding days of next month
   let day = 1 + 31;
   while (daysRow.length < 7) {
     daysRow.push(day++);
