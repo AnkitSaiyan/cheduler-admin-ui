@@ -6,7 +6,6 @@
 			</div>
 			<span class="font-weight-medium">{{ 'UpcomingAppointmentsInFourHours' | translate }} ({{ upcomingAppointments.length }})</span>
 		</header>
-
 		<dfm-button-icon
 			color="secondary"
 			size="sm"
@@ -18,9 +17,15 @@
 			(click)="redirectToCalender()"
 		></dfm-button-icon>
 	</section>
-
 	<section *ngIf="filteredUpcommingAppointments$$ | async as upcomingAppointments" class="h-92">
 		<div *ngIf="!noDataFound" class="d-flex flex-column dfm-gap-16 upcoming-events-container">
+			<div class="upcoming-appointments-title d-flex gap-2 text-center border border-danger">
+				<div class="flex-1"><small class="text-sm"></small></div>
+				<!-- <div class="flex-1 border border-success"><small class="text-sm">Avatar</small></div> -->
+				<div class="flex-1 border border-success patient-title"><small class="text-sm font-weight-medium">Patient</small></div>
+				<div class="flex-1 border border-success exam-title"><small class="text-sm font-weight-medium">Exam</small></div>
+				<div class="flex-1 border border-success room-title"><small class="text-sm font-weight-medium">Room</small></div>
+			</div>
 			<div *ngFor="let appointment of upcomingAppointments" class="d-flex flex-row dfm-gap-8 position-relative">
 				<div class="circle-icon"></div>
 				<div class="d-flex flex-column justify-content-center dfm-bg-main-50 dfm-px-10 dfm-py-4 text-xs text-center rounded">
@@ -28,35 +33,28 @@
 						<span>{{ appointment?.exam?.startedAt | dfmDefaultDate : 'time' }}</span>
 					</ng-container>
 				</div>
-				<!-- <div class="d-flex flex-column">
-          <div class="d-flex flex-row align-items-center justify-content-between gap-2 font-weight-medium">
-					<div class="w-100 d-flex flex-3 text-center px-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-					<div class="w-100 d-flex flex-1 justify-content-center align-items-center px-2"><small>Patient</small></div>
-					<div class="w-100 d-flex flex-1 justify-content-center align-items-center px-2"><small>Exam</small></div>
-					<div class="w-100 d-flex flex-1 justify-content-center align-items-center px-2"><small>Room</small></div>
-        </div> -->
-
-					<div class="d-flex flex-row align-items-center">
-						<div class="rounded-circle avatar-container">
-							<div class="circle-gray-200-40 d-flex justify-content-center align-items-center">
-								{{ appointment?.patientFname?.toString()[0].toUpperCase() }}
-							</div>
+				<div class="d-flex flex-row align-items-center gap-3 w-100">
+					<div class="rounded-circle avatar-container">
+						<div class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+							{{ appointment?.patientFname?.toString()[0].toUpperCase() }}
 						</div>
-						<div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs name">
-							<span class="font-weight-medium"> {{ appointment?.patientFname | titlecase }} {{ appointment?.patientLname | titlecase }} </span>
-						</div>
-						<div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs">
-							<span class="font-weight-medium"> {{ appointment?.exam?.name | titlecase }}</span>
-						</div>
-						<div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs">
-							<span class="font-weight-medium" *ngFor="let room of appointment.rooms; let i = index">
-								{{ room?.name | titlecase }}{{ i < appointment.rooms.length ? ',' : '' }}
-							</span>
-						</div>
+					</div>
+					<div class="d-flex flex-column flex-1  dfm-py-4 text-xs name">
+						<span class="font-weight-medium text-center">
+							{{ appointment?.patientFname | titlecase }} {{ appointment?.patientLname | titlecase }}
+						</span>
+					</div>
+					<div class="d-flex flex-column flex-1  dfm-py-4 text-xs">
+						<span class="font-weight-medium text-center"> {{ appointment?.exam?.name | titlecase }}</span>
+					</div>
+					<div class="d-flex flex-column flex-1  dfm-py-4 text-xs">
+						<span class="font-weight-medium text-center" *ngFor="let room of appointment.rooms; let i = index">
+							{{ room?.name | titlecase }}{{ i < appointment.rooms.length ? ',' : '' }}
+						</span>
 					</div>
 				</div>
 			</div>
-
+		</div>
 		<div class="chart-wrapper align-self-center dfm-mb-16 no-data-found" *ngIf="noDataFound">
 			<span class="dfm-text-main-400">{{ 'NoDataFound' | translate }}</span>
 		</div>

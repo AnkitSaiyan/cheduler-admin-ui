@@ -1,5 +1,5 @@
 .rounded{
-    width :24%!important;
+    // width :24%!important;
 }
 
 .no-data-found {
@@ -37,12 +37,21 @@ div section:last-child {
       margin: auto;
     }
     .name {
-      white-space: nowrap;
+      white-space:normal;
+      max-width: 100px;
+      width: 80px;
+      word-wrap: break-word;
     }
 
     .avatar-container {
       object-fit: contain;
       border: 1px solid var(--bs-gray-200)
+    }
+    .patient-title{
+      margin: 0px 20px 0px 0px;
+    }
+    .exam-title{
+      margin: 0px 15px 0px 0px;
     }
     @media only screen and (min-width: 1060px) and (max-width: 1300px) {
       .avatar-container {
@@ -52,3 +61,17 @@ div section:last-child {
   }
 }
 
+@media(min-width:425px)and (max-width: 534px) {
+  .patient-title{
+  margin: 0px 0px 0px 60px!important;
+  }
+  .exam-title{
+    margin: 0px 0px 0px 50px!important;
+  }
+  
+}
+@media(min-width:1301px) and (max-width:1920px){
+  .patient-title{
+  margin-left:51px!important;
+  }
+}

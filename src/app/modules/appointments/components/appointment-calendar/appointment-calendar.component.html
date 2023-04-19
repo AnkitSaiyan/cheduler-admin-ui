@@ -1,6 +1,10 @@
 <div class="bg-white d-flex flex-column dfm-gap-16 dfm-p-24 calendar-main-wrapper" *ngIf="selectedDate$$ | async as selectedDate">
   <section class="calendar-header">
-    <h4 *ngIf="selectedDate" class="">{{ selectedDate | date : calendarViewFormControl.value === 'day' ? 'EEE MMM dd, yyyy' : 'MMM dd, yyyy' }}</h4>
+    <h4 *ngIf="selectedDate" class="">
+      <ng-container *ngIf="calendarViewFormControl.value === 'day'; else notDayView">
+        {{ (selectedDate | date : 'EEE')! | uppercase | translate | titlecase }} {{ (selectedDate | date : 'MMM')! |translate  }} {{ selectedDate | date : 'dd, yyyy'  }}
+      </ng-container>
+      <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : 'dd, yyyy' }}</ng-template></h4>
 
     <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper">
       <div>
