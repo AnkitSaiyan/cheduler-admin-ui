@@ -32,7 +32,7 @@
                         <div class="dfm-p-8 d-flex flex-column">
                           <span class="font-weight-medium">{{ ap.patientFname + ' ' + ap.patientLname }}</span>
                           <span class="text-sm dfm-text-main-500">
-                            {{ (ap.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal: true) + ' - ' + (ap.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true) }} ({{getDurationFn(ap.startedAt, ap.endedAt)}} min)
+                            {{ (ap.startedAt | dfmDefaultDate : 'time') + ' - ' + (ap.endedAt | dfmDefaultDate : 'time') }} ({{getDurationFn(ap.startedAt, ap.endedAt)}} min)
                           </span>
                         </div>
                         <div class="calender-month-view-day-exam-details-expanded-patient-details-divider"
