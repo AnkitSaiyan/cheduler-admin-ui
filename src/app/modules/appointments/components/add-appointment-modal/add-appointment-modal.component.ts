@@ -174,38 +174,41 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
             });
 
         this.appointmentForm
-            .get('examList')
-            ?.valueChanges.pipe(
-            debounceTime(0),
-            tap(() => this.updateEventCard()),
-            filter((examList) => examList?.length && this.formValues.startedAt?.day),
-            tap(() => this.loadingSlots$$.next(true)),
-            map((examList) => {
-                this.clearSlotDetails();
-                return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
-            }),
-            switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
-        )
-            .subscribe((data) => {
-                const {slots}: any = data[0];
-                // this.currentSlot$$.next(
-                //   slots
-                //     .map((slot) => slot.exams)
-                //     .flatMap((flatData) => flatData)
-                //     .map((exam: any) => exam.rooms)
-                //     .flatMap((flatData) => flatData)
-                //     .filter((item, index, items) => items.findIndex((room) => room.roomId === item.roomId) === index),
-                // );
-                const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTime);
-                if (matchedSlot) {
-                    const modifiedSlot = AppointmentUtils.GetModifiedSlotData([matchedSlot], slots.isCombined);
-                    this.handleSlotSelectionToggle(modifiedSlot.newSlots[0]);
-                    this.setSlots([matchedSlot], slots.isCombined);
-                } else {
-                    this.setSlots(slots, slots?.isCombined);
-                }
-                this.loadingSlots$$.next(false);
-            });
+					.get('examList')
+					?.valueChanges.pipe(
+						debounceTime(0),
+						tap(() => this.updateEventCard()),
+						filter((examList) => examList?.length && this.formValues.startedAt?.day),
+						tap(() => this.loadingSlots$$.next(true)),
+						map((examList) => {
+							this.clearSlotDetails();
+							return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
+						}),
+						switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
+					)
+					.subscribe((data) => {
+						const { slots }: any = data[0];
+						// this.currentSlot$$.next(
+						//   slots
+						//     .map((slot) => slot.exams)
+						//     .flatMap((flatData) => flatData)
+						//     .map((exam: any) => exam.rooms)
+						//     .flatMap((flatData) => flatData)
+						//     .filter((item, index, items) => items.findIndex((room) => room.roomId === item.roomId) === index),
+						// );
+						// debugger;
+						const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTime);
+						if (matchedSlot) {
+							const modifiedSlot = AppointmentUtils.GetModifiedSlotData([matchedSlot], slots.isCombined);
+							modifiedSlot.newSlots.forEach((value) => {
+								this.handleSlotSelectionToggle(value);
+							});
+							this.setSlots([matchedSlot], slots.isCombined);
+						} else {
+							this.setSlots(slots, slots?.isCombined);
+						}
+						this.loadingSlots$$.next(false);
+					});
 
         this.shareDataSvc
             .getLanguage$()
@@ -226,9 +229,10 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     }
 
     public handleSlotSelectionToggle(slots: SlotModified) {
-        AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot);
-        this.selectedTime = slots.start;
-    }
+			// debugger;
+			AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot);
+			this.selectedTime = slots.start;
+		}
 
     public saveAppointment(): void {
         if (this.appointmentForm.invalid) {
