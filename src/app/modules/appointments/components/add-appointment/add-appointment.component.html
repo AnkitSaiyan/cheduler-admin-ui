@@ -142,7 +142,7 @@
         </div>
         <span class="validation-error" *ngIf="appointmentForm.controls['userId'].hasError('required') && appointmentForm.controls['userId'].touched">
           {{ 'RequiredField' | translate }}</span>
-        
+
         </div>
       </div>
 
@@ -180,7 +180,7 @@
                       required
                       ngbDatepicker
                       #date="ngbDatepicker"
-                      
+
                     />
                   </div>
                   <div>
@@ -246,7 +246,7 @@
                   'time-slot-selected-text': selectedTimeSlot[examID]?.slot === slot.start + '-' + slot.end
                 }"
               >
-                {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
+                {{ (slot.start?.slice(0, -3))! | dfmUtcToLocal : true }} - {{ (slot.end?.slice(0, -3))! | dfmUtcToLocal : true }}
               </div>
             </div>
           </div>
