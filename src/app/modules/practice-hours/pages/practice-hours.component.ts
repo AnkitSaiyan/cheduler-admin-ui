@@ -74,9 +74,9 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
   }
 
   public ngOnInit(): void {
-    this.practiceHourApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
-      this.practiceHoursData$$.next(practiceHours);
-    });
+    this.practiceHourApiSvc.practiceHoursWithTimeConversion$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
+			this.practiceHoursData$$.next(practiceHours);
+		});
   }
 
   public override ngOnDestroy() {
