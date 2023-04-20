@@ -161,8 +161,31 @@ export class DateTimeUtils {
     const offsetMinutes = localDate.getTimezoneOffset();
     localDate.setTime(utcDate.getTime() - offsetMinutes * 60 * 1000);
 
-    const localHour = (localDate.getHours() + '0').slice(0, 2);
-    const localMin = (localDate.getMinutes() + '0').slice(0, 2);
+    const localHour = ('0'+localDate.getHours()).slice(-2);
+    const localMin = ('0'+localDate.getMinutes()).slice(-2);
+
+    return `${localHour}:${localMin}`
+  }
+
+  public static LocalToUTCTimeTimeString(timeString: string): string {
+    if (timeString.split(':').length < 2) {
+      return timeString;
+    }
+
+    // generating utc date from time string
+    const hour = +timeString.split(':')[0];
+    const min = +timeString.split(':')[1];
+    const utcDate = new Date();
+    utcDate.setHours(hour);
+    utcDate.setMinutes(min);
+
+    // getting local date and time zone difference offset in minutes
+    const localDate = new Date();
+    const offsetMinutes = localDate.getTimezoneOffset();
+    localDate.setTime(utcDate.getTime() + offsetMinutes * 60 * 1000);
+
+    const localHour = ('0' +localDate.getHours() ).slice(-2);
+    const localMin = ('0' +localDate.getMinutes() ).slice(-2);
 
     return `${localHour}:${localMin}`
   }
