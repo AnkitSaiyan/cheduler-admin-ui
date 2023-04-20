@@ -165,7 +165,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 					this.notifications.push(
 						new NavigationItemEvent(
 							element?.apmtId.toString(),
-							DateTimeUtils.UTCToLocalDateString(new Date(element.date)),
+							DateTimeUtils.UTCDateToLocalDate(new Date(element.date)),
 							element?.title,
 							NavigationItemEventType.SUCCESS,
 							element?.message,
@@ -181,7 +181,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 				this.messages = [];
 				res.forEach((element) => {
 					this.messages.push(
-						new NavigationItemEvent(element.id.toString(), DateTimeUtils.UTCToLocalDateString(new Date(element.createdAt)), element?.message),
+						new NavigationItemEvent(element.id.toString(), DateTimeUtils.UTCDateToLocalDate(new Date(element.createdAt)), element?.message),
 					);
 				});
 				this.messages$$.next(this.messages);

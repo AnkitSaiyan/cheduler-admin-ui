@@ -16,120 +16,145 @@ import {AddPostComponent} from './add-post/add-post.component';
 import {ViewPostComponent} from './view-post/view-post.component';
 
 @Component({
-    selector: 'dfm-post-it',
-    templateUrl: './post-it.component.html',
-    styleUrls: ['./post-it.component.scss'],
+	selector: 'dfm-post-it',
+	templateUrl: './post-it.component.html',
+	styleUrls: ['./post-it.component.scss'],
 })
 export class PostItComponent extends DestroyableComponent implements OnInit, OnDestroy {
-    public filteredPosts$$: BehaviorSubject<any[]>;
-    private selectedLang: string = ENG_BE;
-    public statuses = Statuses;
+	public filteredPosts$$: BehaviorSubject<any[]>;
+	private selectedLang: string = ENG_BE;
+	public statuses = Statuses;
 
-    postData!: PostIt[];
+	postData!: PostIt[];
 
-    constructor(
-        private dashboardApiService: DashboardApiService,
-        private formBuilder: FormBuilder,
-        private modalSvc: ModalService,
-        private notificationSvc: NotificationDataService,
-        private ref: ChangeDetectorRef,
-        private shareDataSvc: ShareDataService,
-    ) {
-        super();
-        this.filteredPosts$$ = new BehaviorSubject<any[]>([]);
-    }
+	private refresh$$ = new BehaviorSubject<undefined>(undefined);
 
-  ngOnInit(): void {
-    this.dashboardApiService.posts$.pipe(takeUntil(this.destroy$$)).subscribe((posts) => {
-      this.filteredPosts$$.next(posts);
-      this.postData = posts;
-      this.dashboardApiService.postItData$$.next(posts);
-    });
-    this.shareDataSvc
-      .getLanguage$()
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
-        this.selectedLang = lang;
-        // eslint-disable-next-line default-case
-        switch (lang) {
-          case ENG_BE:
-            this.statuses = Statuses;
-            break;
-          case DUTCH_BE:
-            this.statuses = StatusesNL;
-            break;
-        }
-      });
-  }
+	public isLoading$$ = new BehaviorSubject<boolean>(true);
 
-    public addPost() {
-        const dialogRef = this.modalSvc.open(AddPostComponent, {
-            data: {
-                titleText: 'Post It',
-                confirmButtonText: 'Add',
-                cancelButtonText: 'Cancel',
-            } as ConfirmActionModalData,
-        });
+	constructor(
+		private dashboardApiService: DashboardApiService,
+		private formBuilder: FormBuilder,
+		private modalSvc: ModalService,
+		private notificationSvc: NotificationDataService,
+		private ref: ChangeDetectorRef,
+		private shareDataSvc: ShareDataService,
+		private cdr: ChangeDetectorRef,
+	) {
+		super();
+		this.filteredPosts$$ = new BehaviorSubject<any[]>([]);
+	}
 
-        dialogRef.closed
-            .pipe(
-                filter((message) => !!message),
-                switchMap((message: string) => this.dashboardApiService.addPost(message)),
-                take(1),
-            )
-            .subscribe({
-                next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.PostAddedSuccessfully[this.selectedLang])
-            });
-    }
+	ngOnInit(): void {
+		this.refresh$$
+			.pipe(
+				switchMap(() => this.dashboardApiService.posts$),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (posts) => {
+					this.isLoading$$.next(false);
+					this.filteredPosts$$.next(posts);
+					this.postData = posts;
+					this.dashboardApiService.postItData$$.next(posts);
+				},
+				error: () => this.isLoading$$.next(false),
+			});
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe((lang) => {
+				this.selectedLang = lang;
+				// eslint-disable-next-line default-case
+				switch (lang) {
+					case ENG_BE:
+						this.statuses = Statuses;
+						break;
+					case DUTCH_BE:
+						this.statuses = StatusesNL;
+						break;
+				}
+			});
+	}
 
-    public reomvePost(id: number) {
-        const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
-            data: {
-                titleText: 'Confirmation',
-                bodyText: 'AreYouSureYouWantToDeleteThisPost',
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Cancel',
-            } as ConfirmActionModalData,
-        });
+	public addPost() {
+		const dialogRef = this.modalSvc.open(AddPostComponent, {
+			data: {
+				titleText: 'Post It',
+				confirmButtonText: 'Add',
+				cancelButtonText: 'Cancel',
+			} as ConfirmActionModalData,
+		});
 
-    dialogRef.closed
-      .pipe(
-        filter((value) => !!value),
-        switchMap(() => this.dashboardApiService.deletePost(id)),
-        take(1),
-      )
-      .subscribe((response) => {
-        if (response) {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.PostDeletedSuccessfully[this.selectedLang]);
-          this.ngOnInit();
-        }
-      });
-  }
+		dialogRef.closed
+			.pipe(
+				filter((message) => !!message),
+				switchMap((message: string) => this.dashboardApiService.addPost(message)),
+				take(1),
+			)
+			.subscribe({
+				next: () => {
+					this.isLoading$$.next(true);
+					this.notificationSvc.showNotification(Translate.SuccessMessage.PostAddedSuccessfully[this.selectedLang]);
+					this.refresh$$.next(undefined);
+					this.cdr.detectChanges();
+				},
+				error: () => this.isLoading$$.next(false),
+			});
+	}
 
-    public openViewPostModal() {
-        const dialogRef = this.modalSvc.open(ViewPostComponent, {
-            data: {
-                titleText: 'Post it',
-                postData: this.postData,
-            },
-            options: {
-                size: 'xl',
-                centered: true,
-                backdropClass: 'modal-backdrop-remove-mv',
-                keyboard: false,
-            },
-        });
+	public reomvePost(id: number) {
+		const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
+			data: {
+				titleText: 'Confirmation',
+				bodyText: 'AreYouSureYouWantToDeleteThisPost',
+				confirmButtonText: 'Delete',
+				cancelButtonText: 'Cancel',
+			} as ConfirmActionModalData,
+		});
 
-        dialogRef.closed
-            .pipe(
-                filter(Boolean),
-                switchMap((message: string) => this.dashboardApiService.addPost(message)),
-                take(1),
-            )
-            .subscribe((response) => {
-                if (response) {
-                    this.notificationSvc.showNotification(Translate.SuccessMessage.PostAddedSuccessfully[this.selectedLang]);
-                }
-            });
-    }
+		dialogRef.closed
+			.pipe(
+				filter((value) => !!value),
+				switchMap(() => this.dashboardApiService.deletePost(id)),
+				take(1),
+			)
+			.subscribe({
+				next: (response) => {
+					if (response) {
+						this.isLoading$$.next(true);
+						this.notificationSvc.showNotification(Translate.SuccessMessage.PostDeletedSuccessfully[this.selectedLang]);
+						this.cdr.detectChanges();
+						this.refresh$$.next(undefined);
+					}
+				},
+				error: () => this.isLoading$$.next(false),
+			});
+	}
+
+	public openViewPostModal() {
+		const dialogRef = this.modalSvc.open(ViewPostComponent, {
+			data: {
+				titleText: 'Post it',
+				postData: this.postData,
+			},
+			options: {
+				size: 'xl',
+				centered: true,
+				backdropClass: 'modal-backdrop-remove-mv',
+				keyboard: false,
+			},
+		});
+
+		dialogRef.closed
+			.pipe(
+				filter(Boolean),
+				switchMap((message: string) => this.dashboardApiService.addPost(message)),
+				take(1),
+			)
+			.subscribe((response) => {
+				if (response) {
+					this.notificationSvc.showNotification(Translate.SuccessMessage.PostAddedSuccessfully[this.selectedLang]);
+				}
+			});
+	}
 }

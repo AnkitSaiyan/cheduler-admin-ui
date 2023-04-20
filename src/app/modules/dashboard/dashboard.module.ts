@@ -23,29 +23,30 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddPostComponent } from './components/post-it/add-post/add-post.component';
 import { ViewPostComponent } from './components/post-it/view-post/view-post.component';
 import { AppointmentAdvanceSearchComponent } from './components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
+import { MatSpinnerComponent } from 'src/app/shared/components/mat-spinner/mat-spinner.component';
 
 @NgModule({
-  declarations: [
-    DashboardComponent,
-    DashboardAppointmentsListComponent,
-    AppointmentsDoughnutChartComponent,
-    UpcomingAppointmentsComponent,
-    RecentPatientsComponent,
-    PatientConsultationsLineChartComponent,
-    TopReferringDoctorsListComponent,
-    DashboardNotificationsComponent,
-    TopExaminationsComponent,
-    UnavailableHallPeriodsComponent,
-    AppointmentsBarChartComponent,
-    PatientsBarChartComponent,
-    CancelledBarChartComponent,
-    CompletedBarChartComponent,
-    EmployeeAbsencesComponent,
-    PostItComponent,
-    AddPostComponent,
-    ViewPostComponent,
-    AppointmentAdvanceSearchComponent,
-  ],
-  imports: [CommonModule, DashboardRoutingModule, SharedModule, FormsModule, ReactiveFormsModule],
+	declarations: [
+		DashboardComponent,
+		DashboardAppointmentsListComponent,
+		AppointmentsDoughnutChartComponent,
+		UpcomingAppointmentsComponent,
+		RecentPatientsComponent,
+		PatientConsultationsLineChartComponent,
+		TopReferringDoctorsListComponent,
+		DashboardNotificationsComponent,
+		TopExaminationsComponent,
+		UnavailableHallPeriodsComponent,
+		AppointmentsBarChartComponent,
+		PatientsBarChartComponent,
+		CancelledBarChartComponent,
+		CompletedBarChartComponent,
+		EmployeeAbsencesComponent,
+		PostItComponent,
+		AddPostComponent,
+		ViewPostComponent,
+		AppointmentAdvanceSearchComponent,
+	],
+	imports: [CommonModule, DashboardRoutingModule, SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class DashboardModule {}
