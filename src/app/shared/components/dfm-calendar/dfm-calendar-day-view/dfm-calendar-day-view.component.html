@@ -53,7 +53,7 @@
         <div role="presentation" class="calender-day-view-body" >
           <div role="row" class="calender-day-view-time-slot-container" *ngIf="timeSlot?.timings?.length">
             <div class="calender-day-view-time-slot text-sm" *ngFor="let time of timeSlot.timings" >
-              <span>{{ time }}</span>
+              <span>{{ time | dfmUtcToLocal : true}}</span>
               <div class="calender-day-view-horizontal-line"></div>
             </div>
           </div>
@@ -122,7 +122,7 @@
                               <!-- POP OVER ENDS -->
 
                               <div class="calender-day-view-event-details-container" (click)="$event.stopPropagation()"
-                                   [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto center': +eventHeight <= 40 }"
+                                   [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto': +eventHeight <= 40 , 'center': +eventHeight >20 && +eventHeight <=40}"
                                    [routerLink]="['/', 'appointment', data.appointment.id, 'view']">
                                 <div class="d-flex dfm-gap-4" triggers="hover" [ngbPopover]="eventDetails"
                                      [autoClose]="'outside'" container="body">
@@ -136,14 +136,14 @@
                                     </span>
                                     <ng-template #date>
                                       <span class="calender-day-view-event-time">
-                                        {{ data.appointment.startedAt | date : 'hh:mm' }} -
-                                        {{ data.appointment.endedAt | date : 'hh:mm' }}
+                                        {{ (data.appointment.startedAt | date : 'HH:mm')! | dfmUtcToLocal : true }} -
+                                        {{ (data.appointment.endedAt | date : 'HH:mm')! | dfmUtcToLocal : true }}
                                       </span>
                                     </ng-template>
 
                                     <span class="calender-day-view-event-time" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname">
-                                      {{ data.appointment.startedAt | date : 'hh:mm' }} -
-                                      {{ data.appointment.endedAt | date : 'hh:mm' }}
+                                      {{ (data.appointment.startedAt | date : 'HH:mm')! | dfmUtcToLocal : true }} -
+                                      {{ (data.appointment.endedAt | date : 'HH:mm')! | dfmUtcToLocal : true }}
                                     </span>
                                   </div>
                                 </div>
