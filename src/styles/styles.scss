@@ -1139,7 +1139,7 @@ ngb-datepicker {
 
 @media (max-width: 680px) {
   .modal-footer {
-    justify-content: center;
+    justify-content:flex-start ;
   }
 
   .weekday-header {
