@@ -41,7 +41,7 @@ export interface ConfirmActionModalData {
 
         dfm-button {
           height: 44px;
-          flex: 1;
+          flex: 0;
         }
       }
     `,

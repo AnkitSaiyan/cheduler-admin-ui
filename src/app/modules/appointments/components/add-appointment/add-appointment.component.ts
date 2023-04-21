@@ -164,9 +164,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
             this.physicianList = [...keyValuePhysicians];
         });
 
-        this.routerStateSvc
-            .listenForParamChange$(APPOINTMENT_ID)
+        this.route.params
             .pipe(
+                map((params) => params[APPOINTMENT_ID]),
                 filter((appointmentID: string) => {
                     if (!appointmentID) {
                         this.appointment$$.next({} as Appointment);
@@ -220,6 +220,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         )
             .subscribe({
                 next: (slots) => {
+                    console.log()
                     this.setSlots(slots[0].slots, slots[0]?.isCombined);
                     this.loadingSlots$$.next(false);
                 },
@@ -503,6 +504,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         this.examIdToAppointmentSlots = examIdToSlots;
         this.slots = newSlots;
 
+        console.log(examIdToSlots);
         // if (newSlots?.length) {
         //   const appointment = this.appointment$$.value;
         //   if (appointment && this.edit && !this.isSlotUpdated) {
