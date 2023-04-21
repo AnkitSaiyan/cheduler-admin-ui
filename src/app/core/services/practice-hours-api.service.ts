@@ -21,7 +21,24 @@ export class PracticeHoursApiService {
 		return combineLatest([this.refreshPracticeHours$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchPractices$()));
 	}
 
+	public get practiceHoursWithTimeConversion$(): Observable<PracticeAvailabilityServer[]> {
+		return combineLatest([this.refreshPracticeHours$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchPracticesWithTimeConversion$()));
+	}
+
 	private fetchPractices$(): Observable<any> {
+		this.loaderSvc.spinnerActivate();
+		this.loaderSvc.activate();
+		return this.http.get<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.schedulerApiUrl}/practice`).pipe(
+			map((response) => response.data),
+			tap(() => {
+				this.loaderSvc.deactivate();
+				this.loaderSvc.spinnerDeactivate();
+			}),
+			catchError((error) => of({})),
+		);
+	}
+
+	private fetchPracticesWithTimeConversion$(): Observable<any> {
 		this.loaderSvc.spinnerActivate();
 		this.loaderSvc.activate();
 		return this.http.get<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.schedulerApiUrl}/practice`).pipe(
