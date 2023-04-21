@@ -59,7 +59,7 @@
 
     <form [formGroup]="appointmentForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-start">
-        <div class="flex-1">
+        <div class="flex-1 input-field-mv">
         <dfm-input
           size="md"
           placeholder="{{ 'EnterFirstName' | translate }}"
@@ -71,7 +71,7 @@
         <span class="validation-error" *ngIf="appointmentForm.controls['patientFname'].hasError('required') && appointmentForm.controls['patientFname'].touched">
           {{ 'RequiredField' | translate }}</span>
         </div>
-        <div class="flex-1">
+        <div class="flex-1 input-field-mv">
         <dfm-input
           size="md"
           placeholder="{{ 'EnterLastName' | translate }}"
@@ -83,7 +83,7 @@
         <span class="validation-error" *ngIf="appointmentForm.controls['patientLname'].hasError('required') && appointmentForm.controls['patientLname'].touched">
           {{ 'RequiredField' | translate }}</span>
         </div>
-        <div class="flex-1">
+        <div class="flex-1 input-field-mv">
         <dfm-input
           size="md"
           placeholder="{{ 'EnterTelephone' | translate }}"
@@ -231,8 +231,8 @@
             <div *ngIf="edit" class="d-flex gap-2 text-sm">
               <span class="font-weight-medium">{{"SelectedSlot" | translate}}</span>
               <div class="text-center">
-                {{ selectedTimeSlot[examID]?.slot?.split("-")?.[0]?.slice(0,-3) }} -
-                {{ selectedTimeSlot[examID]?.slot?.split("-")?.[1]?.slice(0,-3) }}
+                {{ (selectedTimeSlot[examID]?.slot?.split("-")?.[0]?.slice(0,-3))! | dfmUtcToLocal : true }} -
+                {{ (selectedTimeSlot[examID]?.slot?.split("-")?.[1]?.slice(0,-3))! | dfmUtcToLocal: true }}
               </div>
             </div>
 
@@ -264,10 +264,10 @@
             </div>
 
             <div *ngIf="edit" class="d-flex gap-2 text-sm">
-              <span class="font-weight-medium">Selected Slot</span>
+              <span class="font-weight-medium">{{"SelectedSlot" | translate}} </span>
               <div class="text-center">
-                {{ selectedTimeSlot[+exams.value[0]]?.slot?.split("-")?.[0]?.slice(0, -3) }} -
-                {{ selectedTimeSlot[+exams.value[0]]?.slot?.split("-")?.[1]?.slice(0, -3) }}
+                {{ (selectedTimeSlot[+exams.value[0]]?.slot?.split("-")?.[0]?.slice(0, -3))! | dfmUtcToLocal: true }} -
+                {{ (selectedTimeSlot[+exams.value[0]]?.slot?.split("-")?.[1]?.slice(0, -3))! | dfmUtcToLocal: true }}
               </div>
             </div>
 
