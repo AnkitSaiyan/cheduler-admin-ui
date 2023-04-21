@@ -153,14 +153,8 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		let queryParams = new HttpParams();
 		queryParams.append('id', 0);
 		requestData.id = id;
-		const payload = {
-			...restData,
-			endedAt: DateTimeUtils.LocalDateToUTCDate(new Date(restData.endedAt)),
-			startedAt: DateTimeUtils.LocalDateToUTCDate(new Date(restData.startedAt)),
-			slotStartTime: DateTimeUtils.LocalToUTCTimeTimeString(restData.slotStartTime),
-			slotEndTime: DateTimeUtils.LocalToUTCTimeTimeString(restData.slotEndTime),
-		};
-		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}`, payload, { params: queryParams }).pipe(
+
+		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}`, restData, { params: queryParams }).pipe(
 			map((response) => response.data),
 			tap(() => {
 				this.refreshPrioritySlots$$.next();
@@ -175,16 +169,10 @@ export class PrioritySlotApiService extends DestroyableComponent {
 
 	public updatePrioritySlot$(requestData: PrioritySlot) {
 		this.loaderSvc.activate();
-		const { id, ...restData } = requestData;
-		const payload = {
-			...restData,
-			endedAt: DateTimeUtils.LocalDateToUTCDate(new Date(restData.endedAt)),
-			startedAt: DateTimeUtils.LocalDateToUTCDate(new Date(restData.startedAt)),
-			slotStartTime: DateTimeUtils.LocalToUTCTimeTimeString(restData.slotStartTime),
-			slotEndTime: DateTimeUtils.LocalToUTCTimeTimeString(restData.slotEndTime),
-		};
-
-		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}?id=${id}`, payload).pipe(
+		let { id, ...restData } = requestData;
+		let queryParams = new HttpParams();
+		queryParams.append('id', String(id));
+		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}?id=${id}`, restData).pipe(
 			map((response) => response.data),
 			tap(() => {
 				this.refreshPrioritySlots$$.next();
@@ -209,6 +197,8 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		);
 	}
 }
+
+
 
 
 
