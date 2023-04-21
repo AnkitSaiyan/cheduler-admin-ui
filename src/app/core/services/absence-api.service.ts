@@ -40,15 +40,8 @@ export class AbsenceApiService {
 	}
 
 	public addNewAbsence$(requestData: AddAbsenceRequestDate): Observable<Absence> {
-		const payload: AddAbsenceRequestDate = {
-			...requestData,
-			startedAt: DateTimeUtils.LocalDateToUTCDate(new Date(requestData.startedAt)).toISOString(),
-			endedAt: DateTimeUtils.LocalDateToUTCDate(new Date(requestData.endedAt)).toISOString(),
-		};
-
 		this.loaderSvc.activate();
-		const { id, ...restdata } = payload;
-		console.log(payload, restdata);
+		const { id, ...restdata } = requestData;
 		return this.http.post<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences`, restdata).pipe(
 			map((response) => ({
 				...response.data,
@@ -63,15 +56,9 @@ export class AbsenceApiService {
 	}
 
 	public updateAbsence(requestData: AddAbsenceRequestDate): Observable<Absence> {
-		const { id, ...restData } = requestData;
-		const payload: AddAbsenceRequestDate = {
-			...restData,
-			startedAt: DateTimeUtils.LocalDateToUTCDate(new Date(restData.startedAt)).toISOString(),
-			endedAt: DateTimeUtils.LocalDateToUTCDate(new Date(requestData.endedAt)).toISOString(),
-		};
 		this.loaderSvc.activate();
-
-		return this.http.put<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences/${id}`, payload).pipe(
+		const { id, ...restData } = requestData;
+		return this.http.put<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences/${id}`, restData).pipe(
 			map((response) => ({
 				...response.data,
 				startedAt: this.utcToLocalPipe.transform(response?.data?.startedAt),
