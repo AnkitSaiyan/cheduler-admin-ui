@@ -23,6 +23,8 @@ import { LoaderService } from './loader.service';
 import { RepeatType } from '../../shared/models/absence.model';
 import { ShareDataService } from './share-data.service';
 import { Translate } from '../../shared/models/translate.model';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 
 @Injectable({
 	providedIn: 'root',
@@ -46,7 +48,12 @@ export class PrioritySlotApiService extends DestroyableComponent {
 	private refreshPrioritySlots$$ = new Subject<void>();
 	private selectedLang$$ = new BehaviorSubject<string>('');
 
-	constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService) {
+	constructor(
+		private shareDataSvc: ShareDataService,
+		private http: HttpClient,
+		private loaderSvc: LoaderService,
+		private utcToLocalPipe: UtcToLocalPipe,
+	) {
 		super();
 		this.shareDataSvc
 			.getLanguage$()
@@ -120,6 +127,13 @@ export class PrioritySlotApiService extends DestroyableComponent {
 						}
 						return response.data;
 					}),
+					map((data) => ({
+						...data,
+						startedAt: this.utcToLocalPipe.transform(data.startedAt),
+						endedAt: this.utcToLocalPipe.transform(data.endedAt),
+						slotStartTime: this.utcToLocalPipe.transform(data.slotStartTime, true),
+						slotEndTime: this.utcToLocalPipe.transform(data.slotEndTime, true),
+					})),
 					tap(() => {
 						this.loaderSvc.deactivate();
 						this.loaderSvc.spinnerDeactivate();
@@ -139,7 +153,14 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		let queryParams = new HttpParams();
 		queryParams.append('id', 0);
 		requestData.id = id;
-		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}`, restData, { params: queryParams }).pipe(
+		const payload = {
+			...restData,
+			endedAt: DateTimeUtils.LocalDateToUTCDate(new Date(restData.endedAt)),
+			startedAt: DateTimeUtils.LocalDateToUTCDate(new Date(restData.startedAt)),
+			slotStartTime: DateTimeUtils.LocalToUTCTimeTimeString(restData.slotStartTime),
+			slotEndTime: DateTimeUtils.LocalToUTCTimeTimeString(restData.slotEndTime),
+		};
+		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}`, payload, { params: queryParams }).pipe(
 			map((response) => response.data),
 			tap(() => {
 				this.refreshPrioritySlots$$.next();
@@ -154,11 +175,16 @@ export class PrioritySlotApiService extends DestroyableComponent {
 
 	public updatePrioritySlot$(requestData: PrioritySlot) {
 		this.loaderSvc.activate();
-		let { id, ...restData } = requestData;
-		let queryParams = new HttpParams();
-		queryParams.append('id', String(id));
+		const { id, ...restData } = requestData;
+		const payload = {
+			...restData,
+			endedAt: DateTimeUtils.LocalDateToUTCDate(new Date(restData.endedAt)),
+			startedAt: DateTimeUtils.LocalDateToUTCDate(new Date(restData.startedAt)),
+			slotStartTime: DateTimeUtils.LocalToUTCTimeTimeString(restData.slotStartTime),
+			slotEndTime: DateTimeUtils.LocalToUTCTimeTimeString(restData.slotEndTime),
+		};
 
-		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}?id=${id}`, restData).pipe(
+		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}?id=${id}`, payload).pipe(
 			map((response) => response.data),
 			tap(() => {
 				this.refreshPrioritySlots$$.next();
@@ -183,4 +209,11 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		);
 	}
 }
+
+
+
+
+
+
+
 

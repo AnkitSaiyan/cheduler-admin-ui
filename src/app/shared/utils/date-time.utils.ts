@@ -138,6 +138,26 @@ export class DateTimeUtils {
 		const newDate = new Date();
 		newDate.setTime(utcDate.getTime() - utcDate.getTimezoneOffset() * 60 * 1000);
 
+		newDate.setDate(utcDate.getDate());
+		newDate.setMonth(utcDate.getMonth());
+		newDate.setFullYear(utcDate.getFullYear());
+
+		return newDate;
+	}
+
+	public static LocalDateToUTCDate(localDate: Date): Date {
+		if (!localDate) {
+			return localDate;
+		}
+
+		const newDate = new Date();
+		newDate.setTime(localDate.getTime() + localDate.getTimezoneOffset() * 60 * 1000);
+
+		newDate.setDate(localDate.getDate());
+
+		newDate.setMonth(localDate.getMonth());
+		newDate.setFullYear(localDate.getFullYear());
+
 		return newDate;
 	}
 
@@ -187,5 +207,16 @@ export class DateTimeUtils {
 		return `${localHour}:${localMin}`;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
 
 

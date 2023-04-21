@@ -595,3 +595,4 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
         toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
     }
 }
+
