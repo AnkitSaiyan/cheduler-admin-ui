@@ -237,17 +237,22 @@
             </div>
 
             <div class="d-flex align-items-center gap-3 overflow-y-auto max-h-128 dfm-mt-12 flex-wrap">
-              <div
-                class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
-                *ngFor="let slot of examIdToAppointmentSlots[examID]"
-                (click)="handleSlotSelectionToggle(slot)"
-                [ngClass]="{
+              <ng-container *ngIf="examIdToAppointmentSlots[examID] as slots; else noSlots">
+                <div
+                        class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
+                        *ngFor="let slot of slots"
+                        (click)="handleSlotSelectionToggle(slot)"
+                        [ngClass]="{
                   'time-slot-disabled-text': !checkSlotAvailability(slot),
                   'time-slot-selected-text': selectedTimeSlot[examID]?.slot === slot.start + '-' + slot.end
                 }"
-              >
-                {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
-              </div>
+                >
+                  {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
+                </div>
+              </ng-container>
+              <ng-template #noSlots>
+                <span class="dfm-text-main-300">No slots found for this exam</span>
+              </ng-template>
             </div>
           </div>
         </ng-container>
