@@ -31,7 +31,7 @@
         </div>
         <span>{{notification.message | translate}}</span>
       </div>
-      <span class="dfm-text-main-400 text-nowrap"> {{ notification.date | dfmUtcToLocal | dfmDefaultDate : 'time' }} </span>
+      <span class="dfm-text-main-400 text-nowrap"> {{ notification.date | dfmUtcToLocal | dfmDefaultDate : 'time'  }} </span>
     </div>
     <div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!notifications.length">
       {{ 'NoDataFound' | translate }}
