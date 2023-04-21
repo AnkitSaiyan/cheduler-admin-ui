@@ -43,6 +43,7 @@ export class AppointmentUtils {
 							userList: exam.users,
 						} as SlotModified;
 					} else {
+						console.log('is Combinable', isCombinable)
 						newSlot = {
 							start: exam.start,
 							end: exam.end,
