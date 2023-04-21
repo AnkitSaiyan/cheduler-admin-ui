@@ -59,7 +59,7 @@
 
     <form [formGroup]="appointmentForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex dfm-gap-32 align-items-start">
-        <div class="flex-1">
+        <div class="flex-1 input-field-mv">
         <dfm-input
           size="md"
           placeholder="{{ 'EnterFirstName' | translate }}"
@@ -71,7 +71,7 @@
         <span class="validation-error" *ngIf="appointmentForm.controls['patientFname'].hasError('required') && appointmentForm.controls['patientFname'].touched">
           {{ 'RequiredField' | translate }}</span>
         </div>
-        <div class="flex-1">
+        <div class="flex-1 input-field-mv">
         <dfm-input
           size="md"
           placeholder="{{ 'EnterLastName' | translate }}"
@@ -83,7 +83,7 @@
         <span class="validation-error" *ngIf="appointmentForm.controls['patientLname'].hasError('required') && appointmentForm.controls['patientLname'].touched">
           {{ 'RequiredField' | translate }}</span>
         </div>
-        <div class="flex-1">
+        <div class="flex-1 input-field-mv">
         <dfm-input
           size="md"
           placeholder="{{ 'EnterTelephone' | translate }}"

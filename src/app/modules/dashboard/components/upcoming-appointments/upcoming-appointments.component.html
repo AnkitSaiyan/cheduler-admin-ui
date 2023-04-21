@@ -21,6 +21,13 @@
 
 	<section *ngIf="filteredUpcommingAppointments$$ | async as upcomingAppointments" class="h-92">
 		<div *ngIf="!noDataFound" class="d-flex flex-column dfm-gap-16 upcoming-events-container">
+			<div class="d-flex flex-row  font-weight-bold">
+				<div class="time-title dfm-px-10 dfm-py-4"><small class="text-xs text-center ">Time</small></div>
+				<div class="avatar-title avatar-container"><small class="text-xs text-center">Avatar</small></div>
+				<div class="dfm-px-10 dfm-py-4 patient-title text-center mx-1"><small class="text-xs">Patient</small></div>
+				<div class="dfm-px-10 dfm-py-4 exam-title text-center mx-1"><small class="text-xs">Exam</small></div>
+				<div class="dfm-px-10 dfm-py-4 room-title text-center mx-1"><small class="text-xs">Room</small></div>
+			</div>
 			<div *ngFor="let appointment of upcomingAppointments" class="d-flex flex-row dfm-gap-8 position-relative">
 				<div class="circle-icon"></div>
 				<div class="d-flex flex-column justify-content-center dfm-bg-main-50 dfm-px-10 dfm-py-4 text-xs text-center rounded">
@@ -28,27 +35,19 @@
 						<span>{{ appointment?.exam?.startedAt | dfmDefaultDate : 'time' }}</span>
 					</ng-container>
 				</div>
-				<!-- <div class="d-flex flex-column">
-          <div class="d-flex flex-row align-items-center justify-content-between gap-2 font-weight-medium">
-					<div class="w-100 d-flex flex-3 text-center px-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-					<div class="w-100 d-flex flex-1 justify-content-center align-items-center px-2"><small>Patient</small></div>
-					<div class="w-100 d-flex flex-1 justify-content-center align-items-center px-2"><small>Exam</small></div>
-					<div class="w-100 d-flex flex-1 justify-content-center align-items-center px-2"><small>Room</small></div>
-        </div> -->
-
 					<div class="d-flex flex-row align-items-center">
 						<div class="rounded-circle avatar-container">
 							<div class="circle-gray-200-40 d-flex justify-content-center align-items-center">
 								{{ appointment?.patientFname?.toString()[0].toUpperCase() }}
 							</div>
 						</div>
-						<div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs name">
+						<div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs patient-name mx-1">
 							<span class="font-weight-medium"> {{ appointment?.patientFname | titlecase }} {{ appointment?.patientLname | titlecase }} </span>
 						</div>
-						<div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs">
+						<div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs exam-name mx-1">
 							<span class="font-weight-medium"> {{ appointment?.exam?.name | titlecase }}</span>
 						</div>
-						<div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs">
+						<div class="d-flex flex-column dfm-px-10 dfm-py-4 text-xs room-name mx-1">
 							<span class="font-weight-medium" *ngFor="let room of appointment.rooms; let i = index">
 								{{ room?.name | titlecase }}{{ i < appointment.rooms.length ? ',' : '' }}
 							</span>
