@@ -25,44 +25,48 @@ export class AppointmentUtils {
 
 		const newSlots: SlotModified[] = [];
 		const examIdToSlotsMap: { [key: number]: SlotModified[] } = {};
-		const uniqueSlots = new Set<string>();
 
 		slots.forEach((slot) => {
-			const slotString = `${slot.start}-${slot.end}`;
+			const uniqueSlots = new Set<string>();
 
-			if (!uniqueSlots.has(slotString)) {
 				slot?.exams?.forEach((exam: any) => {
-					let newSlot;
+					let slotString: string;
 					if (isCombinable) {
-						newSlot = {
-							start: slot.start,
-							end: slot.end,
-							exams: slot.exams,
-							examId: exam.examId,
-							roomList: exam.rooms,
-							userList: exam.users,
-						} as SlotModified;
+						slotString = `${slot.start}-${slot.end}`;
 					} else {
-						console.log('is Combinable', isCombinable)
-						newSlot = {
-							start: exam.start,
-							end: exam.end,
-							examId: exam.examId,
-							roomList: exam.rooms,
-							userList: exam.users,
-						} as SlotModified;
+						slotString = `${exam.start}-${exam.end}`;
 					}
 
-					if (!examIdToSlotsMap[+exam.examId]) {
-						examIdToSlotsMap[+exam.examId] = [];
-					}
+					if (!uniqueSlots.has(slotString)) {
+						let newSlot;
+						if (isCombinable) {
+							newSlot = {
+								start: slot.start,
+								end: slot.end,
+								exams: slot.exams,
+								examId: exam.examId,
+								roomList: exam.rooms,
+								userList: exam.users,
+							} as SlotModified;
+						} else {
+							newSlot = {
+								start: exam.start,
+								end: exam.end,
+								examId: exam.examId,
+								roomList: exam.rooms,
+								userList: exam.users,
+							} as SlotModified;
+						}
 
-					examIdToSlotsMap[+exam.examId].push(newSlot);
-					newSlots.push(newSlot);
+						if (!examIdToSlotsMap[+exam.examId]) {
+							examIdToSlotsMap[+exam.examId] = [];
+						}
+
+						examIdToSlotsMap[+exam.examId].push(newSlot);
+						newSlots.push(newSlot);
+						uniqueSlots.add(slotString);
+					}
 				});
-
-				uniqueSlots.add(slotString);
-			}
 		});
 
 		return { newSlots, examIdToSlots: examIdToSlotsMap };
