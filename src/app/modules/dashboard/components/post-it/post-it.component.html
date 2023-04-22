@@ -9,7 +9,7 @@
 
 
     <div class="d-flex dfm-gap-16">
-      <dfm-button size="md" color="secondary" class="text-nowrap post-view-all-btn" (click)="openViewPostModal()"> {{"ViewAll" | translate}} </dfm-button>
+      <dfm-button size="md" color="secondary" class="text-nowrap post-view-all-btn" (click)="openViewPostModal()" [disabled]="!posts?.length"> {{"ViewAll" | translate}} </dfm-button>
       <dfm-button size="md" color="primary" (click)="addPost()"> {{"Add" | translate}} </dfm-button>
     </div>
   </section>
