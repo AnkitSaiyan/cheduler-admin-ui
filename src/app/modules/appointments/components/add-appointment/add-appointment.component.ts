@@ -220,7 +220,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         )
             .subscribe({
                 next: (slots) => {
-                    console.log()
                     this.setSlots(slots[0].slots, slots[0]?.isCombined);
                     this.loadingSlots$$.next(false);
                 },
@@ -270,6 +269,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
                 });
             }
 
+            console.log(this.selectedTimeSlot);
+
             const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
                 {...this.formValues},
                 {...this.selectedTimeSlot},
@@ -277,6 +278,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
                 this.isCombinable,
             );
 
+            console.log(requestData);
 
             if (this.edit) {
                 this.appointmentApiSvc
@@ -416,6 +418,13 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         let date!: Date;
         let dateDistributed: DateDistributed = {} as DateDistributed;
 
+        console.log(appointment);
+        appointment?.exams?.sort((exam1, exam2) => {
+            if (exam1.startedAt < exam2.startedAt) {
+                return -1;
+            }
+            return 1;
+        })
         if (appointment?.startedAt) {
             date = new Date(appointment.startedAt);
         } else if (appointment?.exams[0]?.startedAt) {
@@ -457,7 +466,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
             .pipe(take(1))
             .subscribe((slots) => {
-                this.setSlots(slots[0].slots, slots[0]?.isCombined);
+                console.log('slots', slots);
+                console.log('isCombinable', this.isCombinable);
+                this.setSlots(slots[0].slots, this.isCombinable);
 
                 this.loadingSlots$$.next(false);
 
@@ -471,21 +482,37 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
                     } as SlotModified);
 
                 if (appointment?.exams?.length) {
-                    const exams = this.isCombinable ? [appointment.exams[0]] : [...appointment.exams];
+                    // const exams = this.isCombinable ? [appointment.exams[0]] : [...appointment.exams];
+                    const exams = [...appointment.exams];
 
                     exams.forEach((exam) => {
                         const start = DateTimeUtils.DateTo24TimeString(exam.startedAt);
                         const end = DateTimeUtils.DateTo24TimeString(exam.endedAt);
+                        const userList = exam.users?.filter((u) => +u.examId === +exam.id)?.map((u) => +u.id) || [];
+                        const roomList = [
+                            ...exam.rooms
+                                ?.filter((r) => +r.examId === +exam.id)
+                                ?.map((r) => ({
+                                    start: ((r?.startedAt) as string)?.slice(-8),
+                                    end: ((r?.endedAt) as string)?.slice(-8),
+                                    roomId: +r.id
+                                })) || []
+                        ];
+
                         this.handleSlotSelectionToggle(
                             slotData(
                                 start,
                                 end,
                                 +exam.id,
-                                this.findSlot(+exam.id, start, end)?.roomList ?? [],
-                                this.findSlot(+exam.id, start, end)?.userList ?? [],
+                                roomList,
+                                userList
                             ),
                         );
+
+                        console.log('selected time slot', this.selectedTimeSlot);
                     });
+
+
                 }
 
                 this.cdr.detectChanges();

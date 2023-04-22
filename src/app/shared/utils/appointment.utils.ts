@@ -141,6 +141,7 @@ export class AppointmentUtils {
 									rooms: selectedTimeSlot[+examID]?.roomList ?? [],
 									users: selectedTimeSlot[+examID]?.userList ?? [],
 								};
+
 								if (selectedTimeSlot[+examID]) {
 									const time: any = selectedTimeSlot[+examID];
 									examDetails['start'] = time.start;
@@ -159,6 +160,18 @@ export class AppointmentUtils {
 					  }
 					: { ...finalCombinableRequestData, examId: 0 },
 		};
+
+		if (isCombinable) {
+			requestData.slot.exams.sort((e1, e2) => DateTimeUtils.TimeToNumber(e1.start) - DateTimeUtils.TimeToNumber(e2.start));
+
+			if (!requestData.slot.start) {
+				requestData.slot.start = requestData.slot.exams[0].start;
+			}
+			if (!requestData.slot.end) {
+				requestData.slot.end = requestData.slot.exams[requestData.slot.exams.length - 1].end;
+			}
+
+		}
 
 		if (appointment && appointment?.id) {
 			requestData.id = appointment.id;
