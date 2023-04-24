@@ -35,6 +35,7 @@ import {Translate} from '../../shared/models/translate.model';
 import {NameValue} from 'src/app/shared/components/search-modal.component';
 import {DestroyableComponent} from 'src/app/shared/components/destroyable.component';
 import {UserManagementApiService} from './user-management-api.service';
+import {DatePipe} from "@angular/common";
 
 @Injectable({
     providedIn: 'root',
@@ -65,6 +66,7 @@ export class AppointmentApiService extends DestroyableComponent {
         private loaderSvc: LoaderService,
         private shareDataSvc: ShareDataService,
         private userManagementSvc: UserManagementApiService,
+        private datePipe: DatePipe
     ) {
         super();
         this.shareDataSvc
@@ -248,11 +250,25 @@ export class AppointmentApiService extends DestroyableComponent {
 
     public saveAppointment$(requestData: AddAppointmentRequestData): Observable<Appointment> {
         const {id, ...restData} = requestData;
+        let timeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
+
+        if (timeZone && timeZone[0] === '+') {
+            timeZone = timeZone.slice(1);
+        }
+
+        requestData.patientTimeZone = timeZone ?? '';
         return this.http.post<BaseResponse<Appointment>>(`${this.appointmentUrl}`, restData).pipe(map((response) => response.data));
     }
 
     public updateAppointment$(requestData: AddAppointmentRequestData): Observable<Appointment> {
         const {id, ...restData} = requestData;
+        let timeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
+
+        if (timeZone && timeZone[0] === '+') {
+            timeZone = timeZone.slice(1);
+        }
+
+        requestData.patientTimeZone = timeZone ?? '';
         return this.http.put<BaseResponse<Appointment>>(`${this.appointmentUrl}/${id}`, restData).pipe(
             map((response) => response.data),
             tap(() => this.refreshAppointment$$.next()),
