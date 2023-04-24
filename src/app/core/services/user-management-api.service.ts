@@ -149,5 +149,11 @@ export class UserManagementApiService {
             tap(() => this.refreshUserList$$.next())
         );
     }
+
+    public getPatientByIds$(patientIds: string[]): Observable<SchedulerUser[]> {
+        return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?ids=${patientIds}`).pipe(
+            map((patientRes) => patientRes.items)
+        );
+    }
 }
 
