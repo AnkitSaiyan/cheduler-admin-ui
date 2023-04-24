@@ -213,6 +213,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
             tap(() => this.loadingSlots$$.next(true)),
             map((examList) => {
                 this.clearSlotDetails();
+                console.log('examList', examList)
                 return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
             }),
             switchMap((reqData) => this.getSlotData(reqData)),
@@ -220,7 +221,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         )
             .subscribe({
                 next: (slots) => {
-                    this.setSlots(slots[0].slots, slots[0]?.isCombined);
+                    console.log('modified slots response', slots);
+                    this.setSlots(slots[0].slots, this.isCombinable);
                     this.loadingSlots$$.next(false);
                 },
                 error: () => this.loadingSlots$$.next(false),
@@ -247,8 +249,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
             }
 
             if (
-                (this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
-                (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length)
+                (this.isCombinable && !Object.values(this.selectedTimeSlot).length || Object.values(this.selectedTimeSlot).some((slot) => !slot.start)) ||
+                (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length || Object.values(this.selectedTimeSlot).some((slot) => !slot.start))
             ) {
                 this.notificationSvc.showNotification('Please select slots for all exams.', NotificationType.WARNING);
                 return;
@@ -344,11 +346,12 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
     }
 
     public checkSlotAvailability(slot: SlotModified) {
-        return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot);
+        return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot, this.isCombinable);
     }
 
     public handleSlotSelectionToggle(slots: SlotModified) {
-        AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot);
+        console.log('slots on selection', slots);
+        AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
     }
 
     public handleEmailInput(e: Event): void {
@@ -501,8 +504,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
                         this.handleSlotSelectionToggle(
                             slotData(
-                                start,
-                                end,
+                                this.isCombinable ? DateTimeUtils.DateTo24TimeString(appointment.startedAt) : start,
+                                this.isCombinable ? DateTimeUtils.DateTo24TimeString(appointment.endedAt) : end,
                                 +exam.id,
                                 roomList,
                                 userList
@@ -531,6 +534,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
         this.examIdToAppointmentSlots = examIdToSlots;
         this.slots = newSlots;
 
+        console.log('new slots', newSlots);
         console.log(examIdToSlots);
         // if (newSlots?.length) {
         //   const appointment = this.appointment$$.value;

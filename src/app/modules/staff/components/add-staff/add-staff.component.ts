@@ -28,6 +28,8 @@ import {Status} from '../../../../shared/models/status.model';
 import {TimeInIntervalPipe} from '../../../../shared/pipes/time-in-interval.pipe';
 import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
 import {Translate} from '../../../../shared/models/translate.model';
+import {UtcToLocalPipe} from "../../../../shared/pipes/utc-to-local.pipe";
+import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
 
 interface FormValues {
     firstname: string;
@@ -121,9 +123,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
         this.createForm();
 
-        this.routerStateSvc
-            .listenForParamChange$(STAFF_ID)
+        this.route.params
             .pipe(
+                map((params) => params[STAFF_ID]),
                 tap((staffID) => (this.staffID = +staffID)),
                 switchMap((staffID) => {
                     if (staffID) {
@@ -138,7 +140,18 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
                     this.updateForm(staffDetails);
 
                     if (staffDetails?.practiceAvailability?.length) {
-                        this.staffAvailabilityData$$.next(staffDetails.practiceAvailability);
+                        const practice = [
+                            ...staffDetails.practiceAvailability.map((availability) => {
+                                return {
+                                    ...availability,
+                                    dayStart: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayStart),
+                                    dayEnd: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayEnd),
+                                }
+                            })
+                        ];
+
+                        console.log(practice, staffDetails.practiceAvailability);
+                        this.staffAvailabilityData$$.next(practice);
                     }
                 }
 

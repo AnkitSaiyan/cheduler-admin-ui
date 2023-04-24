@@ -13,7 +13,7 @@ export interface PrioritySlot {
 	userList: number[];
 	users: User[];
 	slotStartTime: string;
-	slotEndTime: string | null;
+	slotEndTime: string;
 	nxtSlotOpenPct: number | null;
 }
 
@@ -22,4 +22,5 @@ export interface NextSlotOpenPercentageData {
 	mediumPriorityPercentage: number;
 	lowPriorityPercentage: number;
 }
+
 

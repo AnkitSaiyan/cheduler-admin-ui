@@ -86,6 +86,8 @@ export interface Slot {
   end: string;
   isCombined: boolean;
   exams: {
+      start: string;
+      end: string;
     examId: number;
     roomId?: number[];
     userId?: number[];
