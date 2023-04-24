@@ -1,16 +1,19 @@
 // import { UserTenantItem } from './../models/user-tenant.model';
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {catchError, combineLatest, forkJoin, map, Observable, of, startWith, Subject, switchMap, tap} from 'rxjs';
+import {catchError, combineLatest, forkJoin, map, Observable, of, pipe, startWith, Subject, switchMap, tap} from 'rxjs';
 import {environment} from 'src/environments/environment';
 import {UserPropertiesPermitItem} from '../../shared/models/user-properties-permit-item.model';
 import {UserInviteResponse} from '../../shared/models/user-invite-response.model';
 import {UserProperties} from '../../shared/models/user-properties.model';
-import {SchedulerUser, UserRoleEnum} from '../../shared/models/user.model';
+import {SchedulerUser, UserListResponse, UserRoleEnum} from '../../shared/models/user.model';
 import {UserTenantItem} from '../../shared/models/user-tenant.model';
 import {UserInvite} from '../../shared/models/invite.model';
 import {LoaderService} from "./loader.service";
 import {UserApiService} from "./user-api.service";
+import {GeneralUtils} from "../../shared/utils/general.utils";
+import {ShareDataService} from "./share-data.service";
+import {TenantService} from "./tenant.service";
 
 @Injectable({
     providedIn: 'root',
@@ -22,35 +25,52 @@ export class UserManagementApiService {
 
     private userIdToRoleMap = new Map<string, UserRoleEnum>();
 
-    constructor(private httpClient: HttpClient, private loaderSvc: LoaderService, private userApiSvc: UserApiService) {
+    constructor(
+        private httpClient: HttpClient,
+        private loaderSvc: LoaderService,
+        private userApiSvc: UserApiService,
+        private tenantSvc: TenantService
+    ) {
     }
 
-    public get userList$(): Observable<SchedulerUser[]> {
+    public get userList$(): Observable<UserListResponse> {
         return combineLatest([this.refreshUserList$$.pipe(startWith(''))]).pipe(
             switchMap(() => {
                 this.loaderSvc.spinnerDeactivate();
                 this.loaderSvc.activate();
 
-                return this.httpClient.get<SchedulerUser[]>(`${this.baseUrl}/users`).pipe(
-                    switchMap((users) => {
-                        return forkJoin([
-                            ...users.map((user) => {
-                                const userRole = this.userIdToRoleMap.get(user.id);
-                                if (userRole) {
-                                    user.userRole = userRole;
-                                    return of(user);
-                                }
+                const tenantId = this.tenantSvc.currentTenant;
 
-                                return this.userApiSvc.getUserRole(user.id).pipe(
-                                    map((role) => {
-                                        user.userRole = role ?? '' as UserRoleEnum;
-                                        return user;
-                                    }),
-                                    tap(({id, userRole}) => this.userIdToRoleMap.set(id, userRole)),
-                                    catchError(() => of({...user, userRole: ''})),
-                                ) as Observable<SchedulerUser>
+                return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?tenantId=${tenantId}`).pipe(
+                    switchMap((userRes) => {
+                        return of(null).pipe(
+                            switchMap(() => {
+                                return forkJoin([
+                                    ...userRes.items.map((user) => {
+                                        const userRole = this.userIdToRoleMap.get(user.id);
+                                        if (userRole) {
+                                            user.userRole = userRole;
+                                            return of(user);
+                                        }
+
+                                        return this.userApiSvc.getUserRole(user.id).pipe(
+                                            map((role) => {
+                                                user.userRole = role ?? '' as UserRoleEnum;
+                                                return user;
+                                            }),
+                                            tap(({id, userRole}) => this.userIdToRoleMap.set(id, userRole)),
+                                            catchError(() => of({...user, userRole: ''})),
+                                        ) as Observable<SchedulerUser>;
+                                    })
+                                ]);
+                            }),
+                            map((users) => {
+                                return {
+                                    ...userRes,
+                                    items: users
+                                }
                             })
-                        ]);
+                        )
                     }),
                     tap(() => {
                         this.loaderSvc.deactivate();
@@ -127,6 +147,12 @@ export class UserManagementApiService {
 
         return this.httpClient.put<any>(`${this.baseUrl}/users/state`, { users: stateRequest }).pipe(
             tap(() => this.refreshUserList$$.next())
+        );
+    }
+
+    public getPatientByIds$(patientIds: string[]): Observable<SchedulerUser[]> {
+        return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?ids=${patientIds}`).pipe(
+            map((patientRes) => patientRes.items)
         );
     }
 }
