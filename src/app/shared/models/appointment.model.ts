@@ -64,6 +64,7 @@ export interface AddAppointmentRequestData {
   readStatus?: number;
   endedAt?: Date | null;
   id?: number;
+  patientTimeZone?: string;
 }
 
 export type ExtensionType = 'shorten' | 'extend';
