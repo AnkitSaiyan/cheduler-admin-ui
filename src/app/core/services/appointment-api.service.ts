@@ -250,27 +250,25 @@ export class AppointmentApiService extends DestroyableComponent {
 
     public saveAppointment$(requestData: AddAppointmentRequestData): Observable<Appointment> {
         const {id, ...restData} = requestData;
-        let timeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
+        let patientTimeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
 
-        if (timeZone && timeZone[0] === '+') {
-            timeZone = timeZone.slice(1);
+        if (patientTimeZone && patientTimeZone[0] === '+') {
+            patientTimeZone = patientTimeZone.slice(1);
         }
 
-        requestData.patientTimeZone = timeZone ?? '';
+        Object.assign(requestData, { patientTimeZone });
         return this.http.post<BaseResponse<Appointment>>(`${this.appointmentUrl}`, restData).pipe(map((response) => response.data));
     }
 
     public updateAppointment$(requestData: AddAppointmentRequestData): Observable<Appointment> {
         const {id, ...restData} = requestData;
-        let timeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
+        let patientTimeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
 
-        if (timeZone && timeZone[0] === '+') {
-            timeZone = timeZone.slice(1);
+        if (patientTimeZone && patientTimeZone[0] === '+') {
+            patientTimeZone = patientTimeZone.slice(1);
         }
 
-        console.log('timezone', timeZone)
-
-        requestData['patientTimeZone'] = timeZone ?? '';
+        Object.assign(requestData, { patientTimeZone });
         return this.http.put<BaseResponse<Appointment>>(`${this.appointmentUrl}/${id}`, restData).pipe(
             map((response) => response.data),
             tap(() => this.refreshAppointment$$.next()),
