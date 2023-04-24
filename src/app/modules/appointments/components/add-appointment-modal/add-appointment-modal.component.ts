@@ -10,12 +10,12 @@ import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
 import {NameValue} from '../../../../shared/components/search-modal.component';
 import {AppointmentApiService} from '../../../../core/services/appointment-api.service';
 import {
-  AddAppointmentRequestData,
-  Appointment,
-  CreateAppointmentFormValues,
-  SelectedSlots,
-  Slot,
-  SlotModified
+    AddAppointmentRequestData,
+    Appointment,
+    CreateAppointmentFormValues,
+    SelectedSlots,
+    Slot,
+    SlotModified
 } from '../../../../shared/models/appointment.model';
 import {PhysicianApiService} from '../../../../core/services/physician.api.service';
 import {NotificationDataService} from '../../../../core/services/notification-data.service';
@@ -47,7 +47,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     public selectedTimeSlot: SelectedSlots = {};
     public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
     public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
-    public selectedTime!: string;
+    public selectedTimeInUTC!: string;
     public isCombinable: boolean = false;
     private examList: NameValue[] = [];
     private physicianList: NameValue[] = [];
@@ -107,7 +107,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
                 const hour = `0${Math.floor(minutes / 60)}`.slice(-2);
                 const min = `0${roundedMin % 60}`.slice(-2);
-                this.selectedTime = `${hour}:${min}:00`;
+                this.selectedTimeInUTC = DateTimeUtils.LocalToUTCTimeTimeString(`${hour}:${min}:00`) + ':00';
+
+                console.log('utc', this.selectedTimeInUTC);
             }
         });
 
@@ -174,41 +176,32 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
             });
 
         this.appointmentForm
-					.get('examList')
-					?.valueChanges.pipe(
-						debounceTime(0),
-						tap(() => this.updateEventCard()),
-						filter((examList) => examList?.length && this.formValues.startedAt?.day),
-						tap(() => this.loadingSlots$$.next(true)),
-						map((examList) => {
-							this.clearSlotDetails();
-							return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
-						}),
-						switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
-					)
-					.subscribe((data) => {
-						const { slots }: any = data[0];
-						// this.currentSlot$$.next(
-						//   slots
-						//     .map((slot) => slot.exams)
-						//     .flatMap((flatData) => flatData)
-						//     .map((exam: any) => exam.rooms)
-						//     .flatMap((flatData) => flatData)
-						//     .filter((item, index, items) => items.findIndex((room) => room.roomId === item.roomId) === index),
-						// );
-						// debugger;
-						const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTime);
-						if (matchedSlot) {
-							const modifiedSlot = AppointmentUtils.GetModifiedSlotData([matchedSlot], slots.isCombined);
-							modifiedSlot.newSlots.forEach((value) => {
-								this.handleSlotSelectionToggle(value);
-							});
-							this.setSlots([matchedSlot], slots.isCombined);
-						} else {
-							this.setSlots(slots, slots?.isCombined);
-						}
-						this.loadingSlots$$.next(false);
-					});
+            .get('examList')
+            ?.valueChanges.pipe(
+            debounceTime(0),
+            tap(() => this.updateEventCard()),
+            filter((examList) => examList?.length && this.formValues.startedAt?.day),
+            tap(() => this.loadingSlots$$.next(true)),
+            map((examList) => {
+                this.clearSlotDetails();
+                return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
+            }),
+            switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
+        )
+            .subscribe((data) => {
+                const {slots}: any = data[0];
+                const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTimeInUTC);
+                console.log('matchedSlot', matchedSlot);
+                if (matchedSlot) {
+                    this.setSlots([matchedSlot], this.isCombinable);
+                    this.slots.forEach((value) => {
+                        this.handleSlotSelectionToggle(value);
+                    });
+                } else {
+                    this.setSlots(slots, this.isCombinable);
+                }
+                this.loadingSlots$$.next(false);
+            });
 
         this.shareDataSvc
             .getLanguage$()
@@ -229,10 +222,18 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     }
 
     public handleSlotSelectionToggle(slots: SlotModified) {
-			// debugger;
-			AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
-			this.selectedTime = slots.start;
-		}
+        AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
+
+        console.log(slots);
+
+        let smallestStartTime = '';
+        Object.values(this.selectedTimeSlot).forEach((slot) => {
+            if (!smallestStartTime || DateTimeUtils.TimeToNumber(slot.start) < DateTimeUtils.TimeToNumber(smallestStartTime)) {
+                smallestStartTime = slot.start;
+            }
+        });
+        this.selectedTimeInUTC = smallestStartTime;
+    }
 
     public saveAppointment(): void {
         if (this.appointmentForm.invalid) {
@@ -242,8 +243,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
         }
 
         if (
-            (this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
-            (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length)
+            (this.isCombinable && !Object.values(this.selectedTimeSlot).length || Object.values(this.selectedTimeSlot).some((slot) => !slot.start)) ||
+            (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length || Object.values(this.selectedTimeSlot).some((slot) => !slot.start))
         ) {
             this.notificationSvc.showNotification(`${Translate.SelectSlots[this.selectedLang]}.`, NotificationType.WARNING);
             return;
@@ -251,18 +252,18 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
         this.submitting$$.next(true);
 
-        // if (this.isCombinable) {
-        //   this.formValues.examList.forEach((examID) => {
-        //     const selectedSlot = Object.values(this.selectedTimeSlot)[0];
+        if (this.isCombinable) {
+          this.formValues.examList.forEach((examID) => {
+            const selectedSlot = Object.values(this.selectedTimeSlot)[0];
 
-        //     if (!this.selectedTimeSlot[+examID]) {
-        //       this.selectedTimeSlot[+examID] = {
-        //         ...selectedSlot,
-        //         examId: +examID,
-        //       };
-        //     }
-        //   });
-        // }
+            if (!this.selectedTimeSlot[+examID]) {
+              this.selectedTimeSlot[+examID] = {
+                ...selectedSlot,
+                examId: +examID,
+              };
+            }
+          });
+        }
 
         const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
             {...this.formValues},
@@ -270,6 +271,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
             {} as Appointment,
             this.isCombinable,
         );
+
+        console.log(requestData);
 
         this.appointmentApiSvc
             .saveAppointment$(requestData)
@@ -350,7 +353,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
             // startTime: [null, [Validators.required]],
             // roomType: [null, [Validators.required]],
             examList: [[], [Validators.required]],
-            userId: [null, []],
+            userId: [null, [Validators.required]],
             comments: [null, []],
         });
 

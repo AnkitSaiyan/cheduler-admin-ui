@@ -31,7 +31,7 @@
 
           <div class="d-flex flex-column dfm-gap-8">
             <span class="text-sm font-weight-medium">{{ 'StartTime' | translate }}</span>
-            <span class="time-text"> {{ selectedTime | dfmUtcToLocal: true }} </span>
+            <span class="time-text"> {{ selectedTimeInUTC | dfmUtcToLocal : true }} </span>
           </div>
         </div>
 
@@ -63,7 +63,7 @@
         <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> {{"LoadingSlots" | translate}}... </span>
 
         <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="slots?.length">
-          <ng-container *ngIf="!isCombinable; else uncombinable">
+          <ng-container *ngIf="!isCombinable; else combinable">
             <div class="dfm-card d-flex flex-column dfm-p-16 card-item" *ngFor="let examID of exams.value">
               <div class="d-flex flex-column gap-1">
                 <div class="d-flex gap-2 align-items-center text-sm">
@@ -87,7 +87,7 @@
               </div>
             </div>
           </ng-container>
-          <ng-template #uncombinable>
+          <ng-template #combinable>
             <div class="d-flex flex-column gap-1">
               <div class="d-flex gap-2 align-items-center text-sm">
                 <span class="font-weight-medium">Exam(s): </span>
@@ -107,7 +107,7 @@
                     'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === slot.start + '-' + slot.end
                   }"
                 >
-                  {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
+                  {{ slot.start?.slice(0, -3) | dfmUtcToLocal: true }} - {{ slot.end?.slice(0, -3) | dfmUtcToLocal: true }}
                 </div>
               </div>
             </div>
@@ -195,7 +195,7 @@
             </dfm-input-dropdown>
           </div>
 
-          <div class="dfm-input-dropdown-wrapper flex-1">
+          <div class="dfm-input-dropdown-wrapper flex-1" [ngClass]="{'dfm-input-error': appointmentForm.get('userId')?.hasError('required') && appointmentForm.get('userId')?.touched }">
             <dfm-input-dropdown
               #generalUsers
               [items]="filteredUserList"
