@@ -457,6 +457,11 @@ h3 {
   position: absolute;
   opacity: .5;
 }
+.calendar-comments-text{
+  word-wrap: break-word;
+  max-width:200px;
+  min-width:50px;
+}
 
 @media (max-width: 680px) {
   .calender-day-view-event-details-expanded {
