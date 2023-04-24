@@ -1,3 +1,4 @@
+<script src="../../../../core/services/practice-hours-api.service.ts"></script>
 <div class="d-flex flex-column dfm-gap-24 ad-ap-main-wrapper">
   <section class="content-section-1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-ap-title-buttons">
@@ -283,7 +284,7 @@
                   'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === slot.start + '-' + slot.end
                 }"
               >
-                {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
+                {{ slot.start?.slice(0, -3) | dfmUtcToLocal : true }} - {{ slot.end?.slice(0, -3) | dfmUtcToLocal : true }}
               </div>
             </div>
           </div>

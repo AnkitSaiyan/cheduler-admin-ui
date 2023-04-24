@@ -225,12 +225,12 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
     }
 
     public checkSlotAvailability(slot: SlotModified) {
-        return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot);
+        return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot, this.isCombinable);
     }
 
     public handleSlotSelectionToggle(slots: SlotModified) {
 			// debugger;
-			AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot);
+			AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
 			this.selectedTime = slots.start;
 		}
 
