@@ -101,7 +101,6 @@ import { DUTCH_BE, ENG_BE } from '../utils/const';
 
               dfm-button {
                 height: 44px;
-                flex: 1;
               }
             }
           }

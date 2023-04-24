@@ -1,4 +1,4 @@
-section.sf-vw-section2 {
+  section.sf-vw-section2 {
   &>div {
     //max-height: 256px;
     min-width: 256px;
@@ -41,7 +41,6 @@ section.sf-vw-section2 {
 
     &>dfm-button {
       height: 44px;
-      flex: 1;
     }
   }
 }

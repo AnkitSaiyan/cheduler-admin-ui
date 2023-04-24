@@ -86,8 +86,8 @@
         <dfm-table-body-cell>
           <div class="text-truncate">{{ item.name | titlecase | dashIfNothing }}</div>
         </dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item?.startedAt | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item?.endedAt | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item?.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item?.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>
           <div class="text-truncate ab-li-info-cell"> {{ item.info | dashIfNothing }} </div>
         </dfm-table-body-cell>

@@ -85,8 +85,8 @@
         </ng-template>
 
         <ng-template #bodyRowTemplate let-item>
-          <dfm-table-body-cell>{{ item.startedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ item.endedAt | date : 'dd/MM/yyyy, HH:mm' | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item.startedAt  | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item.endedAt  | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>
             <div [ngClass]="item.priority">
               <dfm-badge color="success" size="sm" fontWeight="medium">
