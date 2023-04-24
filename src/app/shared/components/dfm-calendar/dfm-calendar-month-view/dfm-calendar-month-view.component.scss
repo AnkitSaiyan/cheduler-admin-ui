@@ -160,6 +160,11 @@ table, th, tr, td {
     color: black;
   }
 }
+.calendar-comments-text{
+  word-wrap: break-word;
+  max-width:200px;
+  min-width:50px;
+}
 
 @media (max-width: 680px) {
   .calender-month-view-day-exam-event-container {

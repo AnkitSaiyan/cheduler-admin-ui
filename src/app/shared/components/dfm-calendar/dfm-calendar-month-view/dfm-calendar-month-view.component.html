@@ -45,7 +45,7 @@
                        <span class="font-weight-medium"> {{"Exam" | translate}} </span>
                        <span *ngIf="ap.exams?.length">{{ ap.exams | joinWithAnd : 'name'}}</span>
                        <span class="font-weight-medium dfm-mt-8"> {{"Comments" | translate}} </span>
-                       <span class=""> {{ ap?.comments | dashIfNothing }} </span>
+                       <span class="calendar-comments-text"> {{ ap?.comments | dashIfNothing }} </span>
                        <span class="font-weight-medium dfm-mt-8">{{"Staff" | translate}}</span>
 
                        <ng-container *ngIf="ap.exams | isData : 'users'; else dash">

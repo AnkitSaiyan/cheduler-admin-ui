@@ -116,7 +116,7 @@
 																	<span class="font-weight-medium"> {{ 'Exam' | translate }} </span>
 																	<span *ngIf="data.exams?.length">{{ data.exams | joinWithAnd : 'name' }}</span>
 																	<span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
-																	<span class=""> {{ data?.comments | dashIfNothing }} </span>
+																	<span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
 																	<span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
 
 																	<ng-container *ngIf="data.exams | isData : 'users'; else dash">
