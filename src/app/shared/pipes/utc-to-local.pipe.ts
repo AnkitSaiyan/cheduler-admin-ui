@@ -5,9 +5,9 @@ import {DateTimeUtils} from "../utils/date-time.utils";
     name: 'dfmUtcToLocal'
 })
 export class UtcToLocalPipe implements PipeTransform {
-    public transform(utcDateTimeString: string, timeOnly = false): string {
+    public transform(utcDateTimeString: string | undefined | null, timeOnly = false): string {
         if (!utcDateTimeString) {
-            return utcDateTimeString;
+            return '';
         }
         
         if (timeOnly) {

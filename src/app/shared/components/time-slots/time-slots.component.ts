@@ -402,8 +402,8 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
       values.forEach((value) => {
         if (value.dayStart && value.dayEnd) {
           timeSlots.push({
-            dayStart: value.dayStart,
-            dayEnd: value.dayEnd,
+            dayStart: DateTimeUtils.LocalToUTCTimeTimeString(value.dayStart),
+            dayEnd: DateTimeUtils.LocalToUTCTimeTimeString(value.dayEnd),
             weekday: value.weekday,
             ...(value.id ? { id: value.id } : {})
           });

@@ -43,7 +43,7 @@
 					class="calendar-week-view-time-slot text-sm"
 					*ngFor="let time of timeInterval | timeInInterval : format24Hour : false : getMinute(limit.min) : getMinute(limit.max)"
 				>
-					<span>{{ time }}</span>
+					<span>{{ time | dfmUtcToLocal : true }}</span>
 					<div class="calendar-week-view-horizontal-line"></div>
 				</div>
 			</div>
@@ -101,9 +101,9 @@
 																	<div class="d-flex flex-column dfm-p-8">
 																		<span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{ data.patientFname + ' ' + data.patientLname }}</span>
 																		<span class="text-sm dfm-text-main-500">
-																			{{ data.startedAt | date : 'HH:mm' }}
+																			{{ (data.startedAt | date : 'HH:mm')! | dfmUtcToLocal: true }}
 																			-
-																			{{ data.endedAt | date : 'HH:mm' }}
+																			{{ (data.endedAt | date : 'HH:mm')! | dfmUtcToLocal: true }}
 																			({{ getDurationFn(data.startedAt, data.endedAt) }} min)
 																		</span>
 																	</div>
@@ -116,7 +116,7 @@
 																	<span class="font-weight-medium"> {{ 'Exam' | translate }} </span>
 																	<span *ngIf="data.exams?.length">{{ data.exams | joinWithAnd : 'name' }}</span>
 																	<span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
-																	<span class=""> {{ data?.comments | dashIfNothing }} </span>
+																	<span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
 																	<span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
 
 																	<ng-container *ngIf="data.exams | isData : 'users'; else dash">
@@ -159,8 +159,8 @@
 										>
 											<span class="calendar-week-view-event-title" *ngIf="eventHeight >= 60">{{ 'Appointments' | translate }}</span>
 											<span class="calendar-week-view-event-time" [ngClass]="{ 'dfm-ms-12': eventHeight <= 40, 'dfm-ms-16': eventHeight <= 20 }">
-												{{ groupedData[0].startedAt | date : 'hh:mm' }} -
-												{{ groupedData | largest : 'endedAt' | date : 'hh:mm' }}
+												{{ (groupedData[0].startedAt | date : 'HH:mm')! | dfmUtcToLocal : true }} -
+												{{ (groupedData | largest : 'endedAt' | date : 'HH:mm')! | dfmUtcToLocal: true }}
 											</span>
 										</div>
 									</div>

@@ -396,6 +396,11 @@ h3 {
   font-size: 0.7rem !important;
   line-height: 20px !important;
 }
+.calendar-comments-text{
+  word-wrap: break-word;
+  max-width:200px;
+  min-width:50px;
+}
 
 @media (max-width: 680px) {
   .calendar-week-view-event-details-expanded {

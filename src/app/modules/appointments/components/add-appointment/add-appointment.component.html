@@ -1,3 +1,4 @@
+<script src="../../../../core/services/practice-hours-api.service.ts"></script>
 <div class="d-flex flex-column dfm-gap-24 ad-ap-main-wrapper">
   <section class="content-section-1">
     <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-ap-title-buttons">
@@ -142,7 +143,7 @@
         </div>
         <span class="validation-error" *ngIf="appointmentForm.controls['userId'].hasError('required') && appointmentForm.controls['userId'].touched">
           {{ 'RequiredField' | translate }}</span>
-        
+
         </div>
       </div>
 
@@ -180,7 +181,7 @@
                       required
                       ngbDatepicker
                       #date="ngbDatepicker"
-                      
+
                     />
                   </div>
                   <div>
@@ -219,7 +220,7 @@
       <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> {{ 'SlotsLoading' | translate }} </span>
 
       <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="slots?.length">
-        <ng-container *ngIf="!isCombinable; else uncombinable">
+        <ng-container *ngIf="!isCombinable; else combinable">
           <div class="dfm-card d-flex flex-column dfm-p-16 card-item" *ngFor="let examID of exams.value">
             <div class="d-flex flex-column gap-1">
               <div class="d-flex gap-2 align-items-center text-sm">
@@ -231,8 +232,6 @@
             <div *ngIf="edit" class="d-flex gap-2 text-sm">
               <span class="font-weight-medium">{{"SelectedSlot" | translate}}</span>
               <div class="text-center">
-                {{ selectedTimeSlot[examID]?.slot?.split("-")?.[0]?.slice(0,-3) }} -
-                {{ selectedTimeSlot[examID]?.slot?.split("-")?.[1]?.slice(0,-3) }}
               </div>
             </div>
 
@@ -246,9 +245,9 @@
                   'time-slot-disabled-text': !checkSlotAvailability(slot),
                   'time-slot-selected-text': selectedTimeSlot[examID]?.slot === slot.start + '-' + slot.end
                 }"
-                >
-                  {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
-                </div>
+              >
+                {{ (slot.start?.slice(0, -3))! | dfmUtcToLocal : true }} - {{ (slot.end?.slice(0, -3))! | dfmUtcToLocal : true }}
+              </div>
               </ng-container>
               <ng-template #noSlots>
                 <span class="dfm-text-main-300">No slots found for this exam</span>
@@ -257,7 +256,7 @@
           </div>
         </ng-container>
 
-        <ng-template #uncombinable>
+        <ng-template #combinable>
           <div class="d-flex flex-column gap-1">
             <div class="d-flex gap-2 align-items-center text-sm">
               <span class="font-weight-medium">{{ 'ExamName' | translate }}: </span>
@@ -269,10 +268,10 @@
             </div>
 
             <div *ngIf="edit" class="d-flex gap-2 text-sm">
-              <span class="font-weight-medium">Selected Slot</span>
+              <span class="font-weight-medium">{{"SelectedSlot" | translate}} </span>
               <div class="text-center">
-                {{ selectedTimeSlot[+exams.value[0]]?.slot?.split("-")?.[0]?.slice(0, -3) }} -
-                {{ selectedTimeSlot[+exams.value[0]]?.slot?.split("-")?.[1]?.slice(0, -3) }}
+                {{ (selectedTimeSlot[+exams.value[0]]?.slot?.split("-")?.[0]?.slice(0, -3))! | dfmUtcToLocal: true }} -
+                {{ (selectedTimeSlot[+exams.value[0]]?.slot?.split("-")?.[1]?.slice(0, -3))! | dfmUtcToLocal: true }}
               </div>
             </div>
 
@@ -285,7 +284,7 @@
                   'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === slot.start + '-' + slot.end
                 }"
               >
-                {{ slot.start?.slice(0, -3) }} - {{ slot.end?.slice(0, -3) }}
+                {{ slot.start?.slice(0, -3) | dfmUtcToLocal : true }} - {{ slot.end?.slice(0, -3) | dfmUtcToLocal : true }}
               </div>
             </div>
           </div>
