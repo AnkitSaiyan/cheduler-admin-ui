@@ -80,7 +80,7 @@
         </dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.patientEmail | dashIfNothing }}</dfm-table-body-cell>
         <dfm-table-body-cell>{{ item.doctor | titlecase | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.startedAt | dfmDefaultDate }}</dfm-table-body-cell>
+        <dfm-table-body-cell>{{ item.startedAt | dfmUtcToLocal | dfmDefaultDate }}</dfm-table-body-cell>
 
         <!-- <dfm-table-body-cell>
           <div class="d-flex dfm-gap-16">

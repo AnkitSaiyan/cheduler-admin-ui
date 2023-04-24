@@ -53,7 +53,7 @@
         <div role="presentation" class="calender-day-view-body" >
           <div role="row" class="calender-day-view-time-slot-container" *ngIf="timeSlot?.timings?.length">
             <div class="calender-day-view-time-slot text-sm" *ngFor="let time of timeSlot.timings" >
-              <span>{{ time | dfmUtcToLocal : true}}</span>
+              <span>{{ time }}</span>
               <div class="calender-day-view-horizontal-line"></div>
             </div>
           </div>
@@ -136,14 +136,14 @@
                                     </span>
                                     <ng-template #date>
                                       <span class="calender-day-view-event-time">
-                                        {{ (data.appointment.startedAt | date : 'HH:mm')! | dfmUtcToLocal : true }} -
-                                        {{ (data.appointment.endedAt | date : 'HH:mm')! | dfmUtcToLocal : true }}
+                                        {{ data.appointment.startedAt | date : 'hh:mm' }} -
+                                        {{ data.appointment.endedAt | date : 'hh:mm' }}
                                       </span>
                                     </ng-template>
 
                                     <span class="calender-day-view-event-time" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname">
-                                      {{ (data.appointment.startedAt | date : 'HH:mm')! | dfmUtcToLocal : true }} -
-                                      {{ (data.appointment.endedAt | date : 'HH:mm')! | dfmUtcToLocal : true }}
+                                      {{ data.appointment.startedAt | date : 'hh:mm' }} -
+                                      {{ data.appointment.endedAt | date : 'hh:mm' }}
                                     </span>
                                   </div>
                                 </div>

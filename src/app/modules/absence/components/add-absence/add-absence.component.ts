@@ -248,11 +248,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		const addAbsenceReqData: AddAbsenceRequestDate = {
 			...rest,
-			startedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`,
+			startedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day} ${DateTimeUtils.LocalToUTCTimeTimeString(startTime)}:00`,
 			// endedAt: rest.isRepeat
 			//   ? `${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`
 			//   : `${startedAt.year}-${startedAt.month}-${startedAt.day} ${endTime}:00`,
-			endedAt: `${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`,
+			endedAt: `${endedAt.year}-${endedAt.month}-${endedAt.day} ${DateTimeUtils.LocalToUTCTimeTimeString(endTime)}:00`,
 			userList: rest.isHoliday ? [] : userList,
 			roomList: rest.isHoliday ? [] : roomList,
 			repeatType: rest.isRepeat ? rest.repeatType : null,
