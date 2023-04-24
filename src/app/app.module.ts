@@ -37,6 +37,7 @@ import { PermissionGuard } from './core/guard/permission.guard';
 import { TitleStrategy } from '@angular/router';
 import { AppTitlePrefix } from './core/services/title.service';
 import { UtcToLocalPipe } from './shared/pipes/utc-to-local.pipe';
+import {DefaultDatePipe} from "./shared/pipes/default-date.pipe";
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -99,6 +100,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 		PermissionGuard,
 		TranslatePipe,
 		UtcToLocalPipe,
+		DefaultDatePipe,
 		{ provide: TitleStrategy, useClass: AppTitlePrefix },
 		{
 			provide: HTTP_INTERCEPTORS,

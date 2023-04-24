@@ -35,6 +35,7 @@ import {Status} from '../../../../shared/models/status.model';
 import {Translate} from '../../../../shared/models/translate.model';
 import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
 
 interface FormValues {
     name: string;
@@ -275,7 +276,16 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 						if (examDetails) {
 							this.updateForm(examDetails);
 							if (examDetails?.practiceAvailability?.length) {
-								this.examAvailabilityData$$.next(examDetails.practiceAvailability);
+                                const practice = [
+                                    ...examDetails.practiceAvailability.map((availability) => {
+                                        return {
+                                            ...availability,
+                                            dayStart: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayStart),
+                                            dayEnd: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayEnd),
+                                        }
+                                    })
+                                ];
+								this.examAvailabilityData$$.next(practice);
 							}
 						}
 						this.loading$$.next(false);

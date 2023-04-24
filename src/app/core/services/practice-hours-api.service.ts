@@ -58,13 +58,8 @@ export class PracticeHoursApiService {
 	}
 
 	public savePracticeHours$(requestData: TimeSlot[]): Observable<PracticeAvailabilityServer[]> {
-		const payload = requestData.map((data) => ({
-			...data,
-			dayStart: DateTimeUtils.LocalToUTCTimeTimeString(data.dayStart),
-			dayEnd: DateTimeUtils.LocalToUTCTimeTimeString(data.dayEnd),
-		}));
 		this.loaderSvc.activate();
-		return this.http.post<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.schedulerApiUrl}/practice`, payload).pipe(
+		return this.http.post<BaseResponse<PracticeAvailabilityServer[]>>(`${environment.schedulerApiUrl}/practice`, requestData).pipe(
 			map((response) => response.data),
 			tap(() => {
 				this.refreshPracticeHours$$.next();
