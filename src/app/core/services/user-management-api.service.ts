@@ -1,4 +1,3 @@
-// import { UserTenantItem } from './../models/user-tenant.model';
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {catchError, combineLatest, forkJoin, map, Observable, of, pipe, startWith, Subject, switchMap, tap} from 'rxjs';
@@ -11,8 +10,6 @@ import {UserTenantItem} from '../../shared/models/user-tenant.model';
 import {UserInvite} from '../../shared/models/invite.model';
 import {LoaderService} from "./loader.service";
 import {UserApiService} from "./user-api.service";
-import {GeneralUtils} from "../../shared/utils/general.utils";
-import {ShareDataService} from "./share-data.service";
 import {TenantService} from "./tenant.service";
 
 @Injectable({
