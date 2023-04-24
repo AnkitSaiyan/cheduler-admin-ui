@@ -85,6 +85,13 @@ export interface SchedulerUser {
 	properties?: any;
 }
 
+export interface UserListResponse {
+  items: SchedulerUser[],
+  count: number,
+  hasMoreItems: boolean,
+  continuationToken: string | null
+}
+
 export class AuthUser {
   mail: string = '';
   givenName: string = '';

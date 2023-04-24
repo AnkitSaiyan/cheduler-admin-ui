@@ -130,7 +130,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 							this.columns$$.next(this.columnsForScheduler);
 							return this.userManagementApiSvc.userList$.pipe(
 								map((users) =>
-									users.map((user) => {
+									users.items.map((user) => {
 										return {
 											id: user.id,
 											email: user.email,
