@@ -132,7 +132,7 @@
 
                                   <div class="d-flex flex-column ">
                                     <span class="calender-day-view-event-title" *ngIf="data?.appointment?.patientFname; else date">
-                                      {{ data.appointment.patientFname + ' ' + data.appointment.patientLname }}
+                                      {{data.appointment.id}} - {{ data.appointment.patientFname + ' ' + data.appointment.patientLname }}
                                     </span>
                                     <ng-template #date>
                                       <span class="calender-day-view-event-time">
