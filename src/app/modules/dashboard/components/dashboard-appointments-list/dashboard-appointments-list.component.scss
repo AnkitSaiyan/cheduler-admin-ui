@@ -74,7 +74,8 @@
     display: block;
   }
     .table-wrapper {
-      max-height: calc(80vh - 148px);
+      // max-height: calc(80vh - 250px);
+      max-height: 240px;
     }
 
 }
