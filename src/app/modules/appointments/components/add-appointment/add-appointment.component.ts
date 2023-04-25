@@ -38,516 +38,521 @@ import {CustomDateParserFormatter} from '../../../../shared/utils/dateFormat';
 import {UserApiService} from "../../../../core/services/user-api.service";
 
 @Component({
-    selector: 'dfm-add-appointment',
-    templateUrl: './add-appointment.component.html',
-    styleUrls: ['./add-appointment.component.scss'],
-    providers: [{provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter}],
+	selector: 'dfm-add-appointment',
+	templateUrl: './add-appointment.component.html',
+	styleUrls: ['./add-appointment.component.scss'],
+	providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
 })
 export class AddAppointmentComponent extends DestroyableComponent implements OnInit, OnDestroy {
-    public appointmentForm!: FormGroup;
+	public appointmentForm!: FormGroup;
 
-    public appointment$$ = new BehaviorSubject<Appointment | undefined>(undefined);
+	public appointment$$ = new BehaviorSubject<Appointment | undefined>(undefined);
 
-    public loading$$ = new BehaviorSubject(false);
+	public loading$$ = new BehaviorSubject(false);
 
-    public loadingSlots$$ = new BehaviorSubject<boolean>(false);
+	public loadingSlots$$ = new BehaviorSubject<boolean>(false);
 
-    public submitting$$ = new BehaviorSubject(false);
+	public submitting$$ = new BehaviorSubject(false);
 
-    public filteredUserList: NameValue[] = [];
-    public filteredExamList: NameValue[] = [];
-    public filteredPhysicianList: NameValue[] = [];
-    public roomType = RoomType;
-    public edit = false;
-    public comingFromRoute = '';
-    examsData = [
-        {
-            name: 'Aanpasing steunzolen',
-            value: 1,
-        },
-        {
-            name: 'Levering steunzolen',
-            value: 2,
-        },
-        {
-            name: 'Maatname',
-            value: 3,
-        },
-    ];
-    public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
-    public slots: SlotModified[] = [];
-    public selectedTimeSlot: SelectedSlots = {};
-    public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
-    public isSlotUpdated = false;
-    public slots$$ = new BehaviorSubject<any>(null);
-    public isCombinable: boolean = false;
-    private userList: NameValue[] = [];
-    private examList: NameValue[] = [];
-    private physicianList: NameValue[] = [];
+	public filteredUserList: NameValue[] = [];
+	public filteredExamList: NameValue[] = [];
+	public filteredPhysicianList: NameValue[] = [];
+	public roomType = RoomType;
+	public edit = false;
+	public comingFromRoute = '';
+	examsData = [
+		{
+			name: 'Aanpasing steunzolen',
+			value: 1,
+		},
+		{
+			name: 'Levering steunzolen',
+			value: 2,
+		},
+		{
+			name: 'Maatname',
+			value: 3,
+		},
+	];
+	public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
+	public slots: SlotModified[] = [];
+	public selectedTimeSlot: SelectedSlots = {};
+	public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
+	public isSlotUpdated = false;
+	public slots$$ = new BehaviorSubject<any>(null);
+	public isCombinable: boolean = false;
 
-    constructor(
-        private fb: FormBuilder,
-        private notificationSvc: NotificationDataService,
-        private appointmentApiSvc: AppointmentApiService,
-        private roomApiSvc: RoomsApiService,
-        private userApiService: UserApiService,
-        private examApiService: ExamApiService,
-        private physicianApiSvc: PhysicianApiService,
-        private nameValuePipe: NameValuePairPipe,
-        private timeInIntervalPipe: TimeInIntervalPipe,
-        private datePipe: DatePipe,
-        private routerStateSvc: RouterStateService,
-        private router: Router,
-        private route: ActivatedRoute,
-        private shareDataService: ShareDataService,
-        private siteManagementApiSvc: SiteManagementApiService,
-        private cdr: ChangeDetectorRef,
-        private loaderService: LoaderService,
-        private shareDataSvc: ShareDataService,
-    ) {
-        super();
+	public isDoctorConsentDisable$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-        const state = this.router.getCurrentNavigation()?.extras?.state;
-        if (state !== undefined) {
-            this.loading$$.next(true);
-            this.comingFromRoute = state[COMING_FROM_ROUTE];
-            this.edit = state[EDIT];
+	private userList: NameValue[] = [];
+	private examList: NameValue[] = [];
+	private physicianList: NameValue[] = [];
 
-            localStorage.setItem(COMING_FROM_ROUTE, this.comingFromRoute);
-            if (typeof this.edit === 'boolean') {
-                localStorage.setItem(EDIT, this.edit.toString());
-            }
-        } else {
-            this.loading$$.next(true);
-            this.getComingFromRouteFromLocalStorage();
-        }
-    }
+	constructor(
+		private fb: FormBuilder,
+		private notificationSvc: NotificationDataService,
+		private appointmentApiSvc: AppointmentApiService,
+		private roomApiSvc: RoomsApiService,
+		private userApiService: UserApiService,
+		private examApiService: ExamApiService,
+		private physicianApiSvc: PhysicianApiService,
+		private nameValuePipe: NameValuePairPipe,
+		private timeInIntervalPipe: TimeInIntervalPipe,
+		private datePipe: DatePipe,
+		private routerStateSvc: RouterStateService,
+		private router: Router,
+		private route: ActivatedRoute,
+		private shareDataService: ShareDataService,
+		private siteManagementApiSvc: SiteManagementApiService,
+		private cdr: ChangeDetectorRef,
+		private loaderService: LoaderService,
+		private shareDataSvc: ShareDataService,
+	) {
+		super();
 
-    public get formValues(): CreateAppointmentFormValues {
-        return this.appointmentForm?.value;
-    }
+		const state = this.router.getCurrentNavigation()?.extras?.state;
+		if (state !== undefined) {
+			this.loading$$.next(true);
+			this.comingFromRoute = state[COMING_FROM_ROUTE];
+			this.edit = state[EDIT];
 
-    public ngOnInit(): void {
-        this.createForm();
+			localStorage.setItem(COMING_FROM_ROUTE, this.comingFromRoute);
+			if (typeof this.edit === 'boolean') {
+				localStorage.setItem(EDIT, this.edit.toString());
+			}
+		} else {
+			this.loading$$.next(true);
+			this.getComingFromRouteFromLocalStorage();
+		}
+	}
 
-        this.siteManagementApiSvc.siteManagementData$.pipe(take(1)).subscribe((siteSettings) => {
-            this.isCombinable = siteSettings.isSlotsCombinable;
-        });
+	public get formValues(): CreateAppointmentFormValues {
+		return this.appointmentForm?.value;
+	}
 
-        this.examApiService.allExams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
-            const keyValueExams = this.nameValuePipe.transform(exams, 'name', 'id');
-            this.filteredExamList = [...keyValueExams];
-            this.examList = [...keyValueExams];
+	public ngOnInit(): void {
+		this.createForm();
 
-            exams.forEach((exam) => {
-                if (!this.examIdToDetails[+exam.id]) {
-                    this.examIdToDetails[+exam.id] = {
-                        name: exam.name,
-                        expensive: exam.expensive,
-                    };
-                }
-            });
-        });
+		this.siteManagementApiSvc.siteManagementData$.pipe(take(1)).subscribe((siteSettings) => {
+			this.isCombinable = siteSettings.isSlotsCombinable;
+			this.isDoctorConsentDisable$$.next(siteSettings.doctorReferringConsent === 1);
+		});
 
-        this.userApiService
-            .allGeneralUsers$
-            .pipe(takeUntil(this.destroy$$))
-            .subscribe((users) => {
-                const keyValueExams = this.nameValuePipe.transform(users, 'fullName', 'id');
-                this.filteredUserList = [...keyValueExams];
-                this.userList = [...keyValueExams];
-            });
+		this.examApiService.allExams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
+			const keyValueExams = this.nameValuePipe.transform(exams, 'name', 'id');
+			this.filteredExamList = [...keyValueExams];
+			this.examList = [...keyValueExams];
 
-        this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
-            const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
-            this.filteredPhysicianList = [...keyValuePhysicians];
-            this.physicianList = [...keyValuePhysicians];
-        });
+			exams.forEach((exam) => {
+				if (!this.examIdToDetails[+exam.id]) {
+					this.examIdToDetails[+exam.id] = {
+						name: exam.name,
+						expensive: exam.expensive,
+					};
+				}
+			});
+		});
 
-        this.route.params
-            .pipe(
-                map((params) => params[APPOINTMENT_ID]),
-                filter((appointmentID: string) => {
-                    if (!appointmentID) {
-                        this.appointment$$.next({} as Appointment);
-                    }
-                    return !!appointmentID;
-                }),
-                switchMap((appointmentID) => {
-                    return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
-                }),
-                debounceTime(0),
-                takeUntil(this.destroy$$),
-            )
-            .subscribe((appointment) => {
-                this.appointment$$.next(appointment ?? ({} as Appointment));
-                this.updateForm(appointment);
-            });
+		this.userApiService.allGeneralUsers$.pipe(takeUntil(this.destroy$$)).subscribe((users) => {
+			const keyValueExams = this.nameValuePipe.transform(users, 'fullName', 'id');
+			this.filteredUserList = [...keyValueExams];
+			this.userList = [...keyValueExams];
+		});
 
-        this.appointmentForm
-            ?.get('startedAt')
-            ?.valueChanges.pipe(
-            debounceTime(0),
-            filter((startedAt) => {
-                console.log(startedAt, this.formValues.examList);
-                return startedAt?.day && this.formValues.examList?.length;
-            }),
-            tap(() => this.loadingSlots$$.next(true)),
-            map((date) => {
-                this.clearSlotDetails();
-                return AppointmentUtils.GenerateSlotRequestData(date, this.formValues.examList);
-            }),
-            switchMap((reqData) => this.getSlotData(reqData)),
-            takeUntil(this.destroy$$),
-        )
-            .subscribe((slots) => {
-                this.setSlots(slots[0].slots, slots[0]?.isCombined);
-                this.loadingSlots$$.next(false);
-            });
+		this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
+			const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
+			this.filteredPhysicianList = [...keyValuePhysicians];
+			this.physicianList = [...keyValuePhysicians];
+		});
 
-        this.appointmentForm
-            .get('examList')
-            ?.valueChanges.pipe(
-            debounceTime(0),
-            filter((examList) => examList?.length && this.formValues.startedAt?.day),
-            tap(() => this.loadingSlots$$.next(true)),
-            map((examList) => {
-                this.clearSlotDetails();
-                console.log('examList', examList)
-                return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
-            }),
-            switchMap((reqData) => this.getSlotData(reqData)),
-            takeUntil(this.destroy$$),
-        )
-            .subscribe({
-                next: (slots) => {
-                    console.log('modified slots response', slots);
-                    this.setSlots(slots[0].slots, this.isCombinable);
-                    this.loadingSlots$$.next(false);
-                },
-                error: () => this.loadingSlots$$.next(false),
-            });
-    }
+		this.route.params
+			.pipe(
+				map((params) => params[APPOINTMENT_ID]),
+				filter((appointmentID: string) => {
+					if (!appointmentID) {
+						this.appointment$$.next({} as Appointment);
+					}
+					return !!appointmentID;
+				}),
+				switchMap((appointmentID) => {
+					return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
+				}),
+				debounceTime(0),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((appointment) => {
+				this.appointment$$.next(appointment ?? ({} as Appointment));
+				this.updateForm(appointment);
+			});
 
-    public override ngOnDestroy() {
-        localStorage.removeItem(COMING_FROM_ROUTE);
-        localStorage.removeItem(EDIT);
-        super.ngOnDestroy();
-    }
+		this.appointmentForm
+			?.get('startedAt')
+			?.valueChanges.pipe(
+				debounceTime(0),
+				filter((startedAt) => {
+					console.log(startedAt, this.formValues.examList);
+					return startedAt?.day && this.formValues.examList?.length;
+				}),
+				tap(() => this.loadingSlots$$.next(true)),
+				map((date) => {
+					this.clearSlotDetails();
+					return AppointmentUtils.GenerateSlotRequestData(date, this.formValues.examList);
+				}),
+				switchMap((reqData) => this.getSlotData(reqData)),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((slots) => {
+				this.setSlots(slots[0].slots, slots[0]?.isCombined);
+				this.loadingSlots$$.next(false);
+			});
 
-    public getSlotData(reqData: AppointmentSlotsRequestData) {
-        return this.appointmentApiSvc.getSlots$(reqData);
-    }
+		this.appointmentForm
+			.get('examList')
+			?.valueChanges.pipe(
+				debounceTime(0),
+				filter((examList) => examList?.length && this.formValues.startedAt?.day),
+				tap(() => this.loadingSlots$$.next(true)),
+				map((examList) => {
+					this.clearSlotDetails();
+					console.log('examList', examList);
+					return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
+				}),
+				switchMap((reqData) => this.getSlotData(reqData)),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (slots) => {
+					console.log('modified slots response', slots);
+					this.setSlots(slots[0].slots, this.isCombinable);
+					this.loadingSlots$$.next(false);
+				},
+				error: () => this.loadingSlots$$.next(false),
+			});
+	}
 
-    public saveAppointment(): void {
-        try {
-            if (this.appointmentForm.invalid) {
-                this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
-                // this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-                this.appointmentForm.markAllAsTouched();
-                return;
-            }
+	public override ngOnDestroy() {
+		localStorage.removeItem(COMING_FROM_ROUTE);
+		localStorage.removeItem(EDIT);
+		super.ngOnDestroy();
+	}
 
-            if (
-                (this.isCombinable && !Object.values(this.selectedTimeSlot).length || Object.values(this.selectedTimeSlot).some((slot) => !slot.start)) ||
-                (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length || Object.values(this.selectedTimeSlot).some((slot) => !slot.start))
-            ) {
-                this.notificationSvc.showNotification('Please select slots for all exams.', NotificationType.WARNING);
-                return;
-            }
+	public getSlotData(reqData: AppointmentSlotsRequestData) {
+		return this.appointmentApiSvc.getSlots$(reqData);
+	}
 
-            this.submitting$$.next(true);
+	public saveAppointment(): void {
+		try {
+			if (this.appointmentForm.invalid) {
+				this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+				// this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+				this.appointmentForm.markAllAsTouched();
+				return;
+			}
 
-            if (this.isCombinable) {
-                this.formValues.examList.forEach((examID) => {
-                    const selectedSlot = Object.values(this.selectedTimeSlot)[0];
+			if (
+				(this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
+				Object.values(this.selectedTimeSlot).some((slot) => !slot.start) ||
+				(!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length) ||
+				Object.values(this.selectedTimeSlot).some((slot) => !slot.start)
+			) {
+				this.notificationSvc.showNotification('Please select slots for all exams.', NotificationType.WARNING);
+				return;
+			}
 
-                    if (!this.selectedTimeSlot[+examID]) {
-                        this.selectedTimeSlot[+examID] = {
-                            ...selectedSlot,
-                            examId: +examID,
-                        };
-                    }
-                });
-            }
+			this.submitting$$.next(true);
 
-            console.log(this.selectedTimeSlot);
+			if (this.isCombinable) {
+				this.formValues.examList.forEach((examID) => {
+					const selectedSlot = Object.values(this.selectedTimeSlot)[0];
 
-            const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
-                {...this.formValues},
-                {...this.selectedTimeSlot},
-                {...(this.appointment$$.value ?? ({} as Appointment))},
-                this.isCombinable,
-            );
+					if (!this.selectedTimeSlot[+examID]) {
+						this.selectedTimeSlot[+examID] = {
+							...selectedSlot,
+							examId: +examID,
+						};
+					}
+				});
+			}
 
-            console.log(requestData);
+			console.log(this.selectedTimeSlot);
 
-            if (this.edit) {
-                this.appointmentApiSvc
-                    .updateAppointment$(requestData)
-                    .pipe(takeUntil(this.destroy$$))
-                    .subscribe({
-                        next: () => {
-                            this.shareDataService.getLanguage$().subscribe((language: string) => {
-                                this.notificationSvc.showNotification(language === ENG_BE ? `Appointment updated successfully` : 'Afspraak succesvol geupdated');
-                            });
-                            this.submitting$$.next(false);
+			const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
+				{ ...this.formValues },
+				{ ...this.selectedTimeSlot },
+				{ ...(this.appointment$$.value ?? ({} as Appointment)) },
+				this.isCombinable,
+			);
 
-                            let route: string;
+			console.log(requestData);
 
-                            if (this.comingFromRoute === 'view') {
-                                route = '../view';
-                            } else {
-                                route = this.edit ? '/appointment' : '/dashboard';
-                            }
-                            this.router.navigate([route], {relativeTo: this.route});
-                        },
-                        error: (err) => {
-                            this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-                            this.submitting$$.next(false);
-                        },
-                    });
-            } else {
-                this.appointmentApiSvc
-                    .saveAppointment$(requestData)
-                    .pipe(takeUntil(this.destroy$$))
-                    .subscribe({
-                        next: () => {
-                            this.shareDataService.getLanguage$().subscribe((language: string) => {
-                                this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully` : 'Afspraak succesvol opgeslagen');
-                            });
-                            this.submitting$$.next(false);
+			if (this.isDoctorConsentDisable$$.value) {
+				delete requestData.doctorId;
+			}
 
-                            let route: string;
-                            switch (this.comingFromRoute) {
-                                case 'view':
-                                    route = '../view';
-                                    break;
-                                case 'dashboard':
-                                    route = '/';
-                                    break;
-                                default:
-                                    route = this.edit ? '/appointment' : '../';
-                            }
-                            this.router.navigate([route], {relativeTo: this.route});
-                        },
-                        error: (err) => {
-                            this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-                            this.submitting$$.next(false);
-                        },
-                    });
-            }
-        } catch (e) {
-            console.log(e);
-            this.notificationSvc.showNotification('Failed to save the appointment', NotificationType.DANGER);
-            this.submitting$$.next(false);
-            return;
-        }
-    }
+			if (this.edit) {
+				this.appointmentApiSvc
+					.updateAppointment$(requestData)
+					.pipe(takeUntil(this.destroy$$))
+					.subscribe({
+						next: () => {
+							this.shareDataService.getLanguage$().subscribe((language: string) => {
+								this.notificationSvc.showNotification(language === ENG_BE ? `Appointment updated successfully` : 'Afspraak succesvol geupdated');
+							});
+							this.submitting$$.next(false);
 
-    public checkSlotAvailability(slot: SlotModified) {
-        return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot, this.isCombinable);
-    }
+							let route: string;
 
-    public handleSlotSelectionToggle(slots: SlotModified) {
-        console.log('slots on selection', slots);
-        AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
-    }
+							if (this.comingFromRoute === 'view') {
+								route = '../view';
+							} else {
+								route = this.edit ? '/appointment' : '/dashboard';
+							}
+							this.router.navigate([route], { relativeTo: this.route });
+						},
+						error: (err) => {
+							this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+							this.submitting$$.next(false);
+						},
+					});
+			} else {
+				this.appointmentApiSvc
+					.saveAppointment$(requestData)
+					.pipe(takeUntil(this.destroy$$))
+					.subscribe({
+						next: () => {
+							this.shareDataService.getLanguage$().subscribe((language: string) => {
+								this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully` : 'Afspraak succesvol opgeslagen');
+							});
+							this.submitting$$.next(false);
 
-    public handleEmailInput(e: Event): void {
-        const inputText = (e.target as HTMLInputElement).value;
+							let route: string;
+							switch (this.comingFromRoute) {
+								case 'view':
+									route = '../view';
+									break;
+								case 'dashboard':
+									route = '/';
+									break;
+								default:
+									route = this.edit ? '/appointment' : '../';
+							}
+							this.router.navigate([route], { relativeTo: this.route });
+						},
+						error: (err) => {
+							this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+							this.submitting$$.next(false);
+						},
+					});
+			}
+		} catch (e) {
+			console.log(e);
+			this.notificationSvc.showNotification('Failed to save the appointment', NotificationType.DANGER);
+			this.submitting$$.next(false);
+			return;
+		}
+	}
 
-        if (!inputText) {
-            return;
-        }
+	public checkSlotAvailability(slot: SlotModified) {
+		return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot, this.isCombinable);
+	}
 
-        if (!inputText.match(EMAIL_REGEX)) {
-            this.appointmentForm.get('patientEmail')?.setErrors({
-                email: true,
-            });
-        } else {
-            this.appointmentForm.get('patientEmail')?.setErrors(null);
-        }
-    }
+	public handleSlotSelectionToggle(slots: SlotModified) {
+		console.log('slots on selection', slots);
+		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
+	}
 
-    public clearSlotDetails() {
-        this.examIdToAppointmentSlots = {};
-        this.selectedTimeSlot = {};
-        this.slots = [];
-    }
+	public handleEmailInput(e: Event): void {
+		const inputText = (e.target as HTMLInputElement).value;
 
-    public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam'): void {
-        switch (type) {
-            case 'doctor':
-                this.filteredPhysicianList = [...GeneralUtils.FilterArray(this.physicianList, searchText, 'name')];
-                break;
-            case 'user':
-                this.filteredUserList = [...GeneralUtils.FilterArray(this.userList, searchText, 'name')];
-                break;
-            case 'exam':
-                this.filteredExamList = [...GeneralUtils.FilterArray(this.examList, searchText, 'name')];
-                break;
-        }
-    }
+		if (!inputText) {
+			return;
+		}
 
-    private getComingFromRouteFromLocalStorage() {
-        const comingFromRoute = localStorage.getItem(COMING_FROM_ROUTE);
-        if (comingFromRoute) {
-            this.comingFromRoute = comingFromRoute;
-        }
-        const edit = localStorage.getItem(EDIT);
-        if (edit) {
-            this.edit = edit === 'true';
-        }
-    }
+		if (!inputText.match(EMAIL_REGEX)) {
+			this.appointmentForm.get('patientEmail')?.setErrors({
+				email: true,
+			});
+		} else {
+			this.appointmentForm.get('patientEmail')?.setErrors(null);
+		}
+	}
 
-    private createForm(): void {
-        this.appointmentForm = this.fb.group({
-            patientFname: ['', [Validators.required]],
-            patientLname: ['', [Validators.required]],
-            patientTel: [null, [Validators.required]],
-            patientEmail: ['', []],
-            doctorId: [null, []],
-            startedAt: ['', [Validators.required]],
-            startTime: [null, []],
-            examList: [[], [Validators.required]],
-            userId: [null, [Validators.required]],
-            comments: ['', []],
-            approval: [AppointmentStatus.Pending, []],
-        });
-    }
+	public clearSlotDetails() {
+		this.examIdToAppointmentSlots = {};
+		this.selectedTimeSlot = {};
+		this.slots = [];
+	}
 
-    private updateForm(appointment: Appointment | undefined) {
-        let date!: Date;
-        let dateDistributed: DateDistributed = {} as DateDistributed;
+	public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam'): void {
+		switch (type) {
+			case 'doctor':
+				this.filteredPhysicianList = [...GeneralUtils.FilterArray(this.physicianList, searchText, 'name')];
+				break;
+			case 'user':
+				this.filteredUserList = [...GeneralUtils.FilterArray(this.userList, searchText, 'name')];
+				break;
+			case 'exam':
+				this.filteredExamList = [...GeneralUtils.FilterArray(this.examList, searchText, 'name')];
+				break;
+		}
+	}
 
-        console.log(appointment);
-        appointment?.exams?.sort((exam1, exam2) => {
-            if (exam1.startedAt < exam2.startedAt) {
-                return -1;
-            }
-            return 1;
-        })
-        if (appointment?.startedAt) {
-            date = new Date(appointment.startedAt);
-        } else if (appointment?.exams[0]?.startedAt) {
-            date = new Date(appointment?.exams[0]?.startedAt);
-        }
+	private getComingFromRouteFromLocalStorage() {
+		const comingFromRoute = localStorage.getItem(COMING_FROM_ROUTE);
+		if (comingFromRoute) {
+			this.comingFromRoute = comingFromRoute;
+		}
+		const edit = localStorage.getItem(EDIT);
+		if (edit) {
+			this.edit = edit === 'true';
+		}
+	}
 
-        dateDistributed = DateTimeUtils.DateToDateDistributed(date);
+	private createForm(): void {
+		this.appointmentForm = this.fb.group({
+			patientFname: ['', [Validators.required]],
+			patientLname: ['', [Validators.required]],
+			patientTel: [null, [Validators.required]],
+			patientEmail: ['', []],
+			doctorId: [null, []],
+			startedAt: ['', [Validators.required]],
+			startTime: [null, []],
+			examList: [[], [Validators.required]],
+			userId: [null, [Validators.required]],
+			comments: ['', []],
+			approval: [AppointmentStatus.Pending, []],
+		});
+	}
 
-        setTimeout(() => {
-            this.appointmentForm.patchValue(
-                {
-                    patientFname: appointment?.patientFname ?? null,
-                    patientLname: appointment?.patientLname ?? null,
-                    patientTel: appointment?.patientTel ?? null,
-                    patientEmail: appointment?.patientEmail ?? null,
-                    doctorId: appointment?.doctorId?.toString() ?? null,
-                    startedAt: dateDistributed,
-                    examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
-                    userId: appointment?.userId?.toString() ?? null,
-                    comments: appointment?.comments ?? null,
-                    approval: appointment?.approval ?? AppointmentStatus.Pending,
-                },
-                {emitEvent: false},
-            );
+	private updateForm(appointment: Appointment | undefined) {
+		let date!: Date;
+		let dateDistributed: DateDistributed = {} as DateDistributed;
 
-            if (!appointment?.exams?.length) {
-                this.appointmentForm.get('examList')?.markAsUntouched();
-            }
-        }, 200);
+		console.log(appointment);
+		appointment?.exams?.sort((exam1, exam2) => {
+			if (exam1.startedAt < exam2.startedAt) {
+				return -1;
+			}
+			return 1;
+		});
+		if (appointment?.startedAt) {
+			date = new Date(appointment.startedAt);
+		} else if (appointment?.exams[0]?.startedAt) {
+			date = new Date(appointment?.exams[0]?.startedAt);
+		}
 
-        const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
+		dateDistributed = DateTimeUtils.DateToDateDistributed(date);
 
-        if (!examList?.length) {
-            return;
-        }
+		setTimeout(() => {
+			this.appointmentForm.patchValue(
+				{
+					patientFname: appointment?.patientFname ?? null,
+					patientLname: appointment?.patientLname ?? null,
+					patientTel: appointment?.patientTel ?? null,
+					patientEmail: appointment?.patientEmail ?? null,
+					doctorId: appointment?.doctorId?.toString() ?? null,
+					startedAt: dateDistributed,
+					examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
+					userId: appointment?.userId?.toString() ?? null,
+					comments: appointment?.comments ?? null,
+					approval: appointment?.approval ?? AppointmentStatus.Pending,
+				},
+				{ emitEvent: false },
+			);
 
-        this.loadingSlots$$.next(true);
+			if (!appointment?.exams?.length) {
+				this.appointmentForm.get('examList')?.markAsUntouched();
+			}
+		}, 200);
 
-        this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
-            .pipe(take(1))
-            .subscribe((slots) => {
-                console.log('slots', slots);
-                console.log('isCombinable', this.isCombinable);
-                this.setSlots(slots[0].slots, this.isCombinable);
+		const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
 
-                this.loadingSlots$$.next(false);
+		if (!examList?.length) {
+			return;
+		}
 
-                const slotData = (start, end, examId, roomList, userList) =>
-                    ({
-                        start,
-                        end,
-                        roomList,
-                        userList,
-                        examId,
-                    } as SlotModified);
+		this.loadingSlots$$.next(true);
 
-                if (appointment?.exams?.length) {
-                    // const exams = this.isCombinable ? [appointment.exams[0]] : [...appointment.exams];
-                    const exams = [...appointment.exams];
+		this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
+			.pipe(take(1))
+			.subscribe((slots) => {
+				console.log('slots', slots);
+				console.log('isCombinable', this.isCombinable);
+				this.setSlots(slots[0].slots, this.isCombinable);
 
-                    exams.forEach((exam) => {
-                        const start = DateTimeUtils.DateTo24TimeString(exam.startedAt);
-                        const end = DateTimeUtils.DateTo24TimeString(exam.endedAt);
-                        const userList = exam.users?.filter((u) => +u.examId === +exam.id)?.map((u) => +u.id) || [];
-                        const roomList = [
-                            ...exam.rooms
-                                ?.filter((r) => +r.examId === +exam.id)
-                                ?.map((r) => ({
-                                    start: ((r?.startedAt) as string)?.slice(-8),
-                                    end: ((r?.endedAt) as string)?.slice(-8),
-                                    roomId: +r.id
-                                })) || []
-                        ];
+				this.loadingSlots$$.next(false);
 
-                        this.handleSlotSelectionToggle(
-                            slotData(
-                                this.isCombinable ? DateTimeUtils.DateTo24TimeString(appointment.startedAt) : start,
-                                this.isCombinable ? DateTimeUtils.DateTo24TimeString(appointment.endedAt) : end,
-                                +exam.id,
-                                roomList,
-                                userList
-                            ),
-                        );
+				const slotData = (start, end, examId, roomList, userList) =>
+					({
+						start,
+						end,
+						roomList,
+						userList,
+						examId,
+					} as SlotModified);
 
-                        console.log('selected time slot', this.selectedTimeSlot);
-                    });
+				if (appointment?.exams?.length) {
+					// const exams = this.isCombinable ? [appointment.exams[0]] : [...appointment.exams];
+					const exams = [...appointment.exams];
 
+					exams.forEach((exam) => {
+						const start = DateTimeUtils.DateTo24TimeString(exam.startedAt);
+						const end = DateTimeUtils.DateTo24TimeString(exam.endedAt);
+						const userList = exam.users?.filter((u) => +u.examId === +exam.id)?.map((u) => +u.id) || [];
+						const roomList = [
+							...(exam.rooms
+								?.filter((r) => +r.examId === +exam.id)
+								?.map((r) => ({
+									start: (r?.startedAt as string)?.slice(-8),
+									end: (r?.endedAt as string)?.slice(-8),
+									roomId: +r.id,
+								})) || []),
+						];
 
-                }
+						this.handleSlotSelectionToggle(
+							slotData(
+								this.isCombinable ? DateTimeUtils.DateTo24TimeString(appointment.startedAt) : start,
+								this.isCombinable ? DateTimeUtils.DateTo24TimeString(appointment.endedAt) : end,
+								+exam.id,
+								roomList,
+								userList,
+							),
+						);
 
-                this.cdr.detectChanges();
-            });
-    }
+						console.log('selected time slot', this.selectedTimeSlot);
+					});
+				}
 
-    private findSlot(examID: number, start: string, end: string): SlotModified | undefined {
-        if (this.examIdToAppointmentSlots[examID]?.length) {
-            return this.examIdToAppointmentSlots[examID].find((slot) => slot.start === start && slot.end === end);
-        }
-    }
+				this.cdr.detectChanges();
+			});
+	}
 
-    private setSlots(slots: Slot[], isCombinable: boolean) {
-        const {examIdToSlots, newSlots} = AppointmentUtils.GetModifiedSlotData(slots, isCombinable);
+	private findSlot(examID: number, start: string, end: string): SlotModified | undefined {
+		if (this.examIdToAppointmentSlots[examID]?.length) {
+			return this.examIdToAppointmentSlots[examID].find((slot) => slot.start === start && slot.end === end);
+		}
+	}
 
-        this.examIdToAppointmentSlots = examIdToSlots;
-        this.slots = newSlots;
+	private setSlots(slots: Slot[], isCombinable: boolean) {
+		const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots, isCombinable);
 
-        console.log('new slots', newSlots);
-        console.log(examIdToSlots);
-        // if (newSlots?.length) {
-        //   const appointment = this.appointment$$.value;
-        //   if (appointment && this.edit && !this.isSlotUpdated) {
-        //     this.isSlotUpdated = true;
-        //     this.toggleSlotSelection({
-        //       examId: appointment?.exams[0]?.id,
-        //       start: appointment?.startedAt?.toString().slice(-8),
-        //       end: appointment?.endedAt?.toString().slice(-8),
-        //       userList: newSlots.find((slot) => +slot.examId === +appointment?.exams[0]?.id)?.userList ?? [],
-        //       roomList: newSlots.find((slot) => +slot.examId === +appointment?.exams[0]?.id)?.roomList ?? []
-        //     });
-        //   }
-        // }
-    }
+		this.examIdToAppointmentSlots = examIdToSlots;
+		this.slots = newSlots;
+
+		console.log('new slots', newSlots);
+		console.log(examIdToSlots);
+		// if (newSlots?.length) {
+		//   const appointment = this.appointment$$.value;
+		//   if (appointment && this.edit && !this.isSlotUpdated) {
+		//     this.isSlotUpdated = true;
+		//     this.toggleSlotSelection({
+		//       examId: appointment?.exams[0]?.id,
+		//       start: appointment?.startedAt?.toString().slice(-8),
+		//       end: appointment?.endedAt?.toString().slice(-8),
+		//       userList: newSlots.find((slot) => +slot.examId === +appointment?.exams[0]?.id)?.userList ?? [],
+		//       roomList: newSlots.find((slot) => +slot.examId === +appointment?.exams[0]?.id)?.roomList ?? []
+		//     });
+		//   }
+		// }
+	}
 }

@@ -181,7 +181,7 @@
         </div>
 
         <div class="d-flex flex-column dfm-gap-16 dfm-mt-8">
-          <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
+          <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128" *ngIf="(isDoctorConsentDisable$$ | async) === false">
             <dfm-input-dropdown
               [items]="filteredPhysicianList"
               [typeToSearch]="true"

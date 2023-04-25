@@ -36,35 +36,35 @@ export interface Appointment {
 }
 
 export interface AddAppointmentRequestData {
-  doctorId: number;
-  userId: number;
-  patientFname: string;
-  patientLname: string;
-  patientEmail: string;
-  patientTel: number;
-  comments: string;
-  examDetails: Array<{
-    examId: number;
-    startedAt: string;
-    endedAt: string;
-    roomList?: number[];
-    userList?: number[];
-  }>;
-  exams: Array<{
-    examId: number;
-    startedAt: string;
-    endedAt: string;
-    rooms?: any[];
-    users?: number[];
-  }>;
-  approval?: AppointmentStatus;
-  createdBy?: number;
-  updatedBy?: number;
-  rejectReason?: string;
-  readStatus?: number;
-  endedAt?: Date | null;
-  id?: number;
-  patientTimeZone?: string;
+	doctorId?: number;
+	userId: number;
+	patientFname: string;
+	patientLname: string;
+	patientEmail: string;
+	patientTel: number;
+	comments: string;
+	examDetails: Array<{
+		examId: number;
+		startedAt: string;
+		endedAt: string;
+		roomList?: number[];
+		userList?: number[];
+	}>;
+	exams: Array<{
+		examId: number;
+		startedAt: string;
+		endedAt: string;
+		rooms?: any[];
+		users?: number[];
+	}>;
+	approval?: AppointmentStatus;
+	createdBy?: number;
+	updatedBy?: number;
+	rejectReason?: string;
+	readStatus?: number;
+	endedAt?: Date | null;
+	id?: number;
+	patientTimeZone?: string;
 }
 
 export type ExtensionType = 'shorten' | 'extend';
