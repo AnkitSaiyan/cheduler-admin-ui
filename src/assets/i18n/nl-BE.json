@@ -400,7 +400,9 @@
 	"Sep": "Sep",
 	"Oct": "Okt",
 	"Nov": "Nov",
-	"Dec": "Dec"
+	"Dec": "Dec",
+	"Instructions" : "Aanwijzingen",
+	"EnterInstructions": "Voer instructies in"
 }
 
 

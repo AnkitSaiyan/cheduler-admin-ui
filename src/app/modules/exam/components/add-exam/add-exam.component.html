@@ -137,9 +137,16 @@
             {{"ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame" | translate}}
           </small>
         </div>
-
+        <div class="d-flex dfm-gap-24">
+          <div class="flex-1">
+        <dfm-text-area size="md" placeholder="{{ 'EnterInstructions' | translate }}" label="{{'Instructions' | translate}}" class="ad-ex-info-input" formControlName="instructions">
+        </dfm-text-area>
+      </div>
+      <div class="flex-1">
         <dfm-text-area size="md" placeholder="{{ 'EnterInfo' | translate }}" label="Info" class="ad-ex-info-input" formControlName="info">
         </dfm-text-area>
+      </div>
+      </div>
 
         <div class="d-flex flex-1 dfm-gap-24">
           <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1" [ngClass]="{ 'dfm-mb-32': uncombinableDropdown.value?.length }">

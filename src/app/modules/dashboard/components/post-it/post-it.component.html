@@ -22,7 +22,7 @@
     </div>
   </section> -->
 
-  <section id="here"  class="h-100" *ngIf="filteredPosts$$ | async as posts">
+  <section id="here" class="h-100 container-mv" *ngIf="filteredPosts$$ | async as posts">
     <ng-container *ngIf="(isLoading$$ | async) === false; else loading">
       <ng-container *ngIf="posts?.length">
         <mdb-carousel  [animation]="'slide'" [controls]="posts.length > 1" [indicators]="posts.length > 1" [dark]="true" [wrap]="posts.length > 1">
