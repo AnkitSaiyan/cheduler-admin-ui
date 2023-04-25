@@ -66,9 +66,9 @@ export class DashboardNotificationsComponent extends DestroyableComponent implem
 
   public ngOnInit(): void {
     this.dashboardApiService.notification$.pipe(takeUntil(this.destroy$$)).subscribe((notifications) => {
-      this.notifications$$.next(notifications['notifications']);
-      this.filteredNotifications$$.next(notifications['notifications']);
-      this.dashboardApiService.notificationData$$.next(notifications['notifications']);
+      this.notifications$$.next(notifications);
+      this.filteredNotifications$$.next(notifications);
+      this.dashboardApiService.notificationData$$.next(notifications);
     });
   }
 }

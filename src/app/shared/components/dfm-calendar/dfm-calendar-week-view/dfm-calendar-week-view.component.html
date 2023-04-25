@@ -57,7 +57,7 @@
 			>
 				<div role="row" class="calendar-week-view-events-container">
 					<div
-						class="gray-out-area"
+						class="gray-out-area-week"
 						*ngFor="let item of grayOutSlot$$ | async"
 						[ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
 					></div>
