@@ -53,7 +53,7 @@
         <div role="presentation" class="calender-day-view-body" >
           <div role="row" class="calender-day-view-time-slot-container" *ngIf="timeSlot?.timings?.length">
             <div class="calender-day-view-time-slot text-sm" *ngFor="let time of timeSlot.timings" >
-              <span>{{ time }}</span>
+              <span>{{ time | dfmUtcToLocal: true }}</span>
               <div class="calender-day-view-horizontal-line"></div>
             </div>
           </div>
@@ -132,7 +132,7 @@
 
                                   <div class="d-flex flex-column ">
                                     <span class="calender-day-view-event-title" *ngIf="data?.appointment?.patientFname; else date">
-                                      {{ data.appointment.patientFname + ' ' + data.appointment.patientLname }}
+                                      {{data.appointment.id}} - {{ data.appointment.patientFname + ' ' + data.appointment.patientLname }}
                                     </span>
                                     <ng-template #date>
                                       <span class="calender-day-view-event-time">

@@ -13,6 +13,9 @@ import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
 import { Translate } from '../../shared/models/translate.model';
 import { Notification } from '../../shared/models/notification.model';
+import {AppointmentApiService} from "./appointment-api.service";
+import {UserManagementApiService} from "./user-management-api.service";
+import {SchedulerUser} from "../../shared/models/user.model";
 
 export interface PostIt {
   id: number,
@@ -24,7 +27,7 @@ export interface PostIt {
 	providedIn: 'root',
 })
 export class DashboardApiService extends DestroyableComponent {
-	constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService) {
+	constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService, private userManagementApiSvc: UserManagementApiService) {
 		super();
 		this.shareDataSvc
 			.getLanguage$()
@@ -59,8 +62,6 @@ export class DashboardApiService extends DestroyableComponent {
 	private refreshOverallLineChart$$ = new Subject<void>();
 
 	private refreshDoctors$$ = new Subject<void>();
-
-	private upcommingAppointments$$ = new Subject<void>();
 
 	private refreshAppointmentStatus$$ = new Subject<void>();
 
@@ -133,8 +134,36 @@ export class DashboardApiService extends DestroyableComponent {
 
 	private fetchAllNotifications(): Observable<Notification[]> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<Notification[]>>(`${environment.schedulerApiUrl}/dashboard/notifications`).pipe(
-			map((response) => response.data),
+		return this.http.get<BaseResponse<{ notifications: Notification[] }>>(`${environment.schedulerApiUrl}/dashboard/notifications`).pipe(
+			switchMap((response) => {
+				const notifications = response?.data?.notifications;
+
+				if (!notifications || !notifications.length) {
+					return of([]);
+				}
+
+				const patientIds = new Set<string>();
+				notifications.forEach((n) => {
+					if (n.patientAzureId && !patientIds.has(n.patientAzureId)) {
+						patientIds.add(n.patientAzureId);
+					}
+				});
+
+				if (!patientIds.size) {
+					return of(notifications);
+				}
+
+				return this.userManagementApiSvc.getPatientByIds$([...patientIds]).pipe(
+					map((users) => {
+						const userIdToDetailsMap = new Map<string, SchedulerUser>;
+
+						users.forEach((u) => userIdToDetailsMap.set(u.id, u));
+						return notifications.map((n) => ({
+							...n, ...(n?.patientAzureId ? { title: `${userIdToDetailsMap.get(n.patientAzureId)?.givenName} ${userIdToDetailsMap.get(n.patientAzureId)?.surname}` } : {})
+						}));
+					})
+				) as Observable<Notification[]>;
+			}),
 			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
@@ -161,17 +190,6 @@ export class DashboardApiService extends DestroyableComponent {
 			map((response) => response.data),
 			tap(() => this.loaderSvc.deactivate()),
 		);
-	}
-
-	public get recentPatient$(): Observable<Appointment[]> {
-		return combineLatest([this.refreshRoomAbsence$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRecentPatients()));
-	}
-
-	private fetchRecentPatients(): Observable<Appointment[]> {
-		this.loaderSvc.activate();
-		return this.http
-			.get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/recentpatients`)
-			.pipe(map((response) => response.data?.appointment));
 	}
 
 	public get posts$(): Observable<PostIt[]> {
@@ -396,19 +414,6 @@ export class DashboardApiService extends DestroyableComponent {
 				this.refreshClearPost$$.next();
 				this.loaderSvc.deactivate();
 			}),
-		);
-	}
-
-	public get upcommingAppointment$(): Observable<Appointment[]> {
-		this.loaderSvc.activate();
-		return combineLatest([this.upcommingAppointments$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllUpcomingAppointment()));
-	}
-
-	private fetchAllUpcomingAppointment(): Observable<Appointment[]> {
-		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<Appointment[]>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`).pipe(
-			map((response) => response.data),
-			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
 

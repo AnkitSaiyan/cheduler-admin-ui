@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import {AppointmentApiService} from "../../../../core/services/appointment-api.service";
 
 @Component({
   selector: 'dfm-upcoming-appointments',
@@ -53,17 +54,17 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
   //     avatar: ''
   //   }
   // ]
-  constructor(private dashboardApiService: DashboardApiService, private router: Router) {
+  constructor(private appointmentApiService: AppointmentApiService, private router: Router) {
     super();
     this.upcomingAppointments$$ = new BehaviorSubject<any[]>([]);
     this.filteredUpcommingAppointments$$ = new BehaviorSubject<any[]>([]);
   }
 
   ngOnInit(): void {
-    this.dashboardApiService.upcommingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-      if (appointments['upcomingAppointments'].length > 0) {
-        this.upcomingAppointments$$.next(appointments['upcomingAppointments']);
-        this.filteredUpcommingAppointments$$.next(appointments['upcomingAppointments']);
+    this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
+      if (appointments.length > 0) {
+        this.upcomingAppointments$$.next(appointments);
+        this.filteredUpcommingAppointments$$.next(appointments);
         this.noDataFound = false;
       } else {
         this.noDataFound = true;
