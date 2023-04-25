@@ -14,6 +14,8 @@ import { ShareDataService } from './share-data.service';
 import { Translate } from '../../shared/models/translate.model';
 import { Notification } from '../../shared/models/notification.model';
 import {AppointmentApiService} from "./appointment-api.service";
+import {UserManagementApiService} from "./user-management-api.service";
+import {SchedulerUser} from "../../shared/models/user.model";
 
 export interface PostIt {
   id: number,
@@ -25,7 +27,7 @@ export interface PostIt {
 	providedIn: 'root',
 })
 export class DashboardApiService extends DestroyableComponent {
-	constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService) {
+	constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService, private userManagementApiSvc: UserManagementApiService) {
 		super();
 		this.shareDataSvc
 			.getLanguage$()
@@ -132,8 +134,36 @@ export class DashboardApiService extends DestroyableComponent {
 
 	private fetchAllNotifications(): Observable<Notification[]> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<Notification[]>>(`${environment.schedulerApiUrl}/dashboard/notifications`).pipe(
-			map((response) => response.data),
+		return this.http.get<BaseResponse<{ notifications: Notification[] }>>(`${environment.schedulerApiUrl}/dashboard/notifications`).pipe(
+			switchMap((response) => {
+				const notifications = response?.data?.notifications;
+
+				if (!notifications || !notifications.length) {
+					return of([]);
+				}
+
+				const patientIds = new Set<string>();
+				notifications.forEach((n) => {
+					if (n.patientAzureId && !patientIds.has(n.patientAzureId)) {
+						patientIds.add(n.patientAzureId);
+					}
+				});
+
+				if (!patientIds.size) {
+					return of(notifications);
+				}
+
+				return this.userManagementApiSvc.getPatientByIds$([...patientIds]).pipe(
+					map((users) => {
+						const userIdToDetailsMap = new Map<string, SchedulerUser>;
+
+						users.forEach((u) => userIdToDetailsMap.set(u.id, u));
+						return notifications.map((n) => ({
+							...n, ...(n?.patientAzureId ? { title: `${userIdToDetailsMap.get(n.patientAzureId)?.givenName} ${userIdToDetailsMap.get(n.patientAzureId)?.surname}` } : {})
+						}));
+					})
+				) as Observable<Notification[]>;
+			}),
 			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
