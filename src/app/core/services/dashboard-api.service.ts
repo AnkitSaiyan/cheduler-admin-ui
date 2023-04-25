@@ -13,6 +13,7 @@ import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
 import { Translate } from '../../shared/models/translate.model';
 import { Notification } from '../../shared/models/notification.model';
+import {AppointmentApiService} from "./appointment-api.service";
 
 export interface PostIt {
   id: number,
@@ -59,8 +60,6 @@ export class DashboardApiService extends DestroyableComponent {
 	private refreshOverallLineChart$$ = new Subject<void>();
 
 	private refreshDoctors$$ = new Subject<void>();
-
-	private upcommingAppointments$$ = new Subject<void>();
 
 	private refreshAppointmentStatus$$ = new Subject<void>();
 
@@ -161,17 +160,6 @@ export class DashboardApiService extends DestroyableComponent {
 			map((response) => response.data),
 			tap(() => this.loaderSvc.deactivate()),
 		);
-	}
-
-	public get recentPatient$(): Observable<Appointment[]> {
-		return combineLatest([this.refreshRoomAbsence$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRecentPatients()));
-	}
-
-	private fetchRecentPatients(): Observable<Appointment[]> {
-		this.loaderSvc.activate();
-		return this.http
-			.get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/recentpatients`)
-			.pipe(map((response) => response.data?.appointment));
 	}
 
 	public get posts$(): Observable<PostIt[]> {
@@ -396,19 +384,6 @@ export class DashboardApiService extends DestroyableComponent {
 				this.refreshClearPost$$.next();
 				this.loaderSvc.deactivate();
 			}),
-		);
-	}
-
-	public get upcommingAppointment$(): Observable<Appointment[]> {
-		this.loaderSvc.activate();
-		return combineLatest([this.upcommingAppointments$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllUpcomingAppointment()));
-	}
-
-	private fetchAllUpcomingAppointment(): Observable<Appointment[]> {
-		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<Appointment[]>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`).pipe(
-			map((response) => response.data),
-			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
 

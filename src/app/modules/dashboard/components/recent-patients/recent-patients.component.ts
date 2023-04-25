@@ -15,6 +15,7 @@ import { NameValue } from 'src/app/shared/components/search-modal.component';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from 'src/app/shared/utils/const';
+import {AppointmentApiService} from "../../../../core/services/appointment-api.service";
 
 @Component({
   selector: 'dfm-recent-patients',
@@ -117,7 +118,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
   public filteredRecentPatients$$: BehaviorSubject<any[]>;
 
   constructor(
-    private dashboardApiService: DashboardApiService,
+    private appointmentApiService: AppointmentApiService,
     private downloadSvc: DownloadService,
     private notificationSvc: NotificationDataService,
     private router: Router,
@@ -138,7 +139,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
   public ngOnInit(): void {
     this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
-    this.dashboardApiService.recentPatient$.pipe(takeUntil(this.destroy$$)).subscribe((recentPatient) => {
+    this.appointmentApiService.recentPatients$.pipe(takeUntil(this.destroy$$)).subscribe((recentPatient) => {
       this.recentPatients$$.next(recentPatient);
       this.filteredRecentPatients$$.next(recentPatient);
     });
@@ -227,6 +228,4 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
       this.clipboardData = '';
     }
   }
-
-  public deletePatient(id: number) {}
 }
