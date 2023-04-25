@@ -81,40 +81,7 @@ export class AppointmentApiService extends DestroyableComponent {
         return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
             switchMap(() => {
                 return this.fetchAllAppointments$().pipe(
-                    switchMap((appointments) => {
-                        const patientIds: string[] = []
-
-                        appointments.forEach((ap) => {
-                            if (ap.patientAzureId) {
-                                patientIds.push(ap.patientAzureId);
-                            }
-                        });
-
-                        if (!patientIds || !patientIds.length) {
-                            return of(appointments);
-                        }
-
-                        return this.userManagementSvc.getPatientByIds$(patientIds).pipe(
-                            map((patients) => {
-                                const patientIdsToDetailsMap = new Map<string, SchedulerUser>();
-
-                                patients.forEach((p) => patientIdsToDetailsMap.set(p.id, p));
-
-                                return appointments.map((a) => {
-                                    if (!a.patientAzureId) {
-                                        return a;
-                                    }
-
-                                    return {
-                                        ...a,
-                                        patientFname: patientIdsToDetailsMap.get(a.patientAzureId)?.givenName ?? '',
-                                        patientLname: patientIdsToDetailsMap.get(a.patientAzureId)?.surname ?? '',
-                                        patientEmail: patientIdsToDetailsMap.get(a.patientAzureId)?.email ?? '',
-                                    }
-                                })
-                            })
-                        );
-                    })
+                    switchMap((appointments) => this.AttachPatientDetails(appointments))
                 );
             }),
 			tap((res) => console.log(res))
@@ -177,6 +144,7 @@ export class AppointmentApiService extends DestroyableComponent {
                 }),
             );
         }
+
         return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`).pipe(
             map((response) => {
                 if (!response?.data?.length) {
@@ -368,5 +336,66 @@ export class AppointmentApiService extends DestroyableComponent {
         ap.endedAt = endedAt;
 
         return ap;
+    }
+
+    public AttachPatientDetails(appointments: Appointment[]): Observable<Appointment[]> {
+        const patientIds = new Set<string>();
+
+        appointments.forEach((ap) => {
+            if (ap.patientAzureId && !patientIds.has(ap.patientAzureId)) {
+                patientIds.add(ap.patientAzureId);
+            }
+        });
+
+        if (!patientIds.size) {
+            return of(appointments);
+        }
+
+        return this.userManagementSvc.getPatientByIds$([...patientIds]).pipe(
+            map((patients) => {
+                const patientIdsToDetailsMap = new Map<string, SchedulerUser>();
+
+                patients.forEach((p) => patientIdsToDetailsMap.set(p.id, p));
+
+                return appointments.map((a) => {
+                    if (!a.patientAzureId) {
+                        return a;
+                    }
+
+                    return {
+                        ...a,
+                        patientFname: patientIdsToDetailsMap.get(a.patientAzureId)?.givenName ?? '',
+                        patientLname: patientIdsToDetailsMap.get(a.patientAzureId)?.surname ?? '',
+                        patientEmail: patientIdsToDetailsMap.get(a.patientAzureId)?.email ?? '',
+                    }
+                })
+            })
+        );
+    }
+
+    public get upcomingAppointment$(): Observable<Appointment[]> {
+        this.loaderSvc.activate();
+
+        return this.http.get<BaseResponse<{ upcomingAppointments: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`).pipe(
+            switchMap((response) => {
+                const upcoming = response.data?.upcomingAppointments;
+                return !upcoming || !upcoming.length
+                    ? of([])
+                    : this.AttachPatientDetails(upcoming);
+            }),
+            tap(() => this.loaderSvc.deactivate()),
+        );
+    }
+
+    public get recentPatients$(): Observable<Appointment[]> {
+        this.loaderSvc.activate();
+        return this.http
+            .get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/recentpatients`)
+            .pipe(switchMap((response) => {
+                const recentAppointments = response.data?.appointment;
+                return !recentAppointments || !recentAppointments.length
+                    ? of([])
+                    : this.AttachPatientDetails(recentAppointments);
+            }));
     }
 }

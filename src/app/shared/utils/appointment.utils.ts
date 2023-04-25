@@ -7,6 +7,8 @@ import {
 } from "../models/appointment.model";
 import {DateDistributed} from "../models/calendar.model";
 import {DateTimeUtils} from "./date-time.utils";
+import {map} from "rxjs";
+import {SchedulerUser} from "../models/user.model";
 
 export class AppointmentUtils {
 	constructor() {}

@@ -148,7 +148,8 @@ export class UserManagementApiService {
     }
 
     public getPatientByIds$(patientIds: string[]): Observable<SchedulerUser[]> {
-        return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?ids=${patientIds}`).pipe(
+        let ids = patientIds.join('&ids=');
+        return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?ids=${ids}`).pipe(
             map((patientRes) => patientRes.items)
         );
     }
