@@ -1234,3 +1234,9 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+@media (max-width:680px){
+  .carousel-inner {
+    height: 240px !important;
+  }
+}

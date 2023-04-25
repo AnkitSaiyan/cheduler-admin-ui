@@ -35,4 +35,9 @@
   .patient-placeholder {
     display: block;
   }
+  .re-pt-main-wrapper {
+    section:last-child {
+      max-height: 240px;
+    }
+  }
 }

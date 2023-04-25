@@ -397,6 +397,8 @@
 	"Sep": "Sep",
 	"Oct": "Oct",
 	"Nov": "Nov",
-	"Dec": "Dec"
+	"Dec": "Dec",
+	"Instructions" : "Instructions",
+	"EnterInstructions": "Enter Instructions"
 }
 
