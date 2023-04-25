@@ -108,10 +108,10 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 		dialogRef.closed
 			.pipe(
 				filter((res: boolean) => res),
+				switchMap(() => this.appointmentApiSvc.deleteAppointment$(id)),
 				take(1),
 			)
 			.subscribe(() => {
-				this.appointmentApiSvc.deleteAppointment$(id);
 				this.notificationSvc.showNotification(Translate.DeleteAppointment[this.selectedLang]);
 				this.router.navigate(['/', 'appointment']);
 			});
