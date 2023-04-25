@@ -123,11 +123,11 @@
           <dfm-table-body-cell>{{ item?.exams.length ? (item.startedAt | dfmUtcToLocal | dfmDefaultDate  | dashIfNothing) : '' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.exams.length ? (item.endedAt | dfmUtcToLocal | dfmDefaultDate  | dashIfNothing) : '' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>
-            <div class="text-truncate">{{ item?.patientFname | titlecase }} {{ item?.patientLname | titlecase }}</div>
+            <div class="text-truncate">{{ item?.patientFname | titlecase  }} {{ item?.patientLname | titlecase }}</div>
           </dfm-table-body-cell>
           <dfm-table-body-cell>
             <div class="text-truncate">
-              {{ item?.doctor | titlecase }}
+              {{ item?.doctor | titlecase | dashIfNothing }}
             </div>
           </dfm-table-body-cell>
           <!-- <dfm-table-body-cell>

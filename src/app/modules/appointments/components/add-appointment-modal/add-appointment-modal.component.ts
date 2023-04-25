@@ -50,6 +50,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
 	public selectedTimeInUTC!: string;
 	public isCombinable: boolean = false;
+
+	public isDoctorConsentDisable$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
 	private examList: NameValue[] = [];
 	private physicianList: NameValue[] = [];
 	private userList: NameValue[] = [];
@@ -88,6 +91,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	public ngOnInit(): void {
 		this.siteManagementApiSvc.siteManagementData$.pipe(take(1)).subscribe((siteSettings) => {
 			this.isCombinable = siteSettings.isSlotsCombinable;
+			this.isDoctorConsentDisable$$.next(siteSettings.doctorReferringConsent === 1);
 		});
 
 		this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
@@ -274,6 +278,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		);
 
 		console.log(requestData);
+		if (this.isDoctorConsentDisable$$.value) {
+			delete requestData.doctorId;
+		}
 
 		this.appointmentApiSvc
 			.saveAppointment$(requestData)
