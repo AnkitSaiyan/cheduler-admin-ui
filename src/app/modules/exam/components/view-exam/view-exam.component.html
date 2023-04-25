@@ -107,6 +107,26 @@
 					<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
 						<span class="font-weight-medium flex-1">{{ examDetails.info | titlecase }}</span>
 					</div>
+
+
+				</div>
+        <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
+          <header class="d-flex align-items-center dfm-gap-8">
+						<div class="dfm-button-gray-400">
+							<dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+						</div>
+						<span class="font-weight-medium">{{ 'Exam' | translate }} {{'Instructions' | translate}}</span>
+					</header>
+
+					<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
+						<span class="font-weight-medium flex-1" *ngIf="examDetails.instructions?.length; else noInstructionData">{{ examDetails.instructions | titlecase }}</span>
+            <ng-template #noInstructionData>
+              <span
+                class="dfm-text-main-600"
+                >{{ 'NoDataFound' | translate }}</span
+              >
+            </ng-template>
+					</div>
 				</div>
 			</div>
 
