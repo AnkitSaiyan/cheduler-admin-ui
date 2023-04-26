@@ -49,6 +49,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
 	public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
 	public selectedTimeInUTC!: string;
+	public selectedTimeInUTCOrig!: string;
 	public isCombinable: boolean = false;
 
 	public isDoctorConsentDisable$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -114,7 +115,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				const hour = `0${Math.floor(minutes / 60)}`.slice(-2);
 				const min = `0${roundedMin % 60}`.slice(-2);
 				// this.selectedTimeInUTC = this.utcToLocalPipe.transform(`${hour}:${min}`, true) + ':00';
-				this.selectedTimeInUTC = `${hour}:${min}:00`;
+				this.selectedTimeInUTCOrig = `${hour}:${min}:00`;
+				this.selectedTimeInUTC = this.selectedTimeInUTCOrig
 
 				console.log('utc', this.selectedTimeInUTC);
 			}
@@ -194,8 +196,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			.subscribe((data) => {
 				const { slots }: any = data[0];
 				const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTimeInUTC);
-				console.log('matchedSlot', matchedSlot);
-				if (matchedSlot) {
+
+				// Show selected slot in case of one exam only
+				if (matchedSlot && this.formValues.examList.length === 1) {
 					this.setSlots([matchedSlot], this.isCombinable);
 					this.slots.forEach((value) => {
 						this.handleSlotSelectionToggle(value);
