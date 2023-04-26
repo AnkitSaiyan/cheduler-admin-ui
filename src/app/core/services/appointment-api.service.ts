@@ -324,8 +324,8 @@ export class AppointmentApiService extends DestroyableComponent {
 				return {
 					...exam,
 					rooms: examIdToRooms[+exam.id],
-					allUsers: exam?.users ?? [],
-					users: examIdToUsers[+exam.id],
+					allUsers: exam?.users?.filter((user, index, rest) => rest.findIndex((restUser) => restUser.id === user.id) === index) ?? [],
+					users: examIdToUsers[+exam.id]?.filter((user, index, rest) => rest.findIndex((restUser) => restUser.id === user.id) === index),
 				};
 			}),
 		};
