@@ -195,10 +195,10 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			)
 			.subscribe((data) => {
 				const { slots }: any = data[0];
-				const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTimeInUTC);
 
-				// Show selected slot in case of one exam only
-				if (matchedSlot && this.formValues.examList.length === 1) {
+				const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTimeInUTC);
+				// Show selected slot in case of one exam or if the case is combinable
+				if (matchedSlot && (this.formValues.examList.length === 1 || this.isCombinable)) {
 					this.setSlots([matchedSlot], this.isCombinable);
 					this.slots.forEach((value) => {
 						this.handleSlotSelectionToggle(value);
