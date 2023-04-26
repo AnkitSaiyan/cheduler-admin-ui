@@ -83,7 +83,7 @@ div section:last-child {
   // .exam-title{
   //   margin: 0px 0px 0px 50px!important;
   // }
-  
+
 }
 @media(min-width:1301px) and (max-width:1920px){
   // .patient-title{
@@ -92,4 +92,7 @@ div section:last-child {
   // .exam-title{
   //   margin-left: -10px!important;
   // }
+}
+.cursor-pointer {
+  cursor: pointer;
 }
