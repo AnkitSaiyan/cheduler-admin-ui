@@ -10,6 +10,12 @@
       max-width: 160px;
     }
   }
+    .refresh-btn {
+      position: fixed;
+      bottom: 18px;
+      left: 18px;
+      z-index: 1;
+    }
 
   .pr-li-searchbar-mv{
     display: none;

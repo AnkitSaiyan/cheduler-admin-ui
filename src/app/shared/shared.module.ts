@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { DesignSystemModule, NgDfmDropdownModule, TableModule } from 'diflexmo-angular-design';
+import { MatButtonModule } from '@angular/material/button';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
@@ -17,6 +18,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { HttpClient } from '@angular/common/http';
 import { MatProgressSpinner, MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
 import { DestroyableComponent } from './components/destroyable.component';
 import { StatusNamePipe } from './pipes/status-name.pipe';
 import { DashIfNothingPipe } from './pipes/dash-if-nothing.pipe';
@@ -57,7 +60,6 @@ import { UtcToLocalPipe } from './pipes/utc-to-local.pipe';
 import { DefaultDatePipe } from './pipes/default-date.pipe';
 import { ShowSlotPercentagePipe } from './pipes/showSlotPercentage.pipe';
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
-import {MatDividerModule} from "@angular/material/divider";
 import { LoginFailedComponent } from './components/login-failed/login-failed.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -125,6 +127,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		NgOptimizedImage,
 		MatDividerModule,
 		MatProgressSpinnerModule,
+		MatButtonModule,
+		MatIconModule,
 	],
 	exports: [
 		DesignSystemModule,
@@ -175,6 +179,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DefaultDatePipe,
 		ShowSlotPercentagePipe,
 		MatProgressSpinner,
+		MatButtonModule,
+		MatIconModule,
 	],
 	providers: [TranslatePipe],
 })

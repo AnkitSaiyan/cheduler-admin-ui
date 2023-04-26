@@ -196,7 +196,12 @@ export class PrioritySlotApiService extends DestroyableComponent {
 			}),
 		);
 	}
+
+	public refresh(): void {
+		this.refreshPrioritySlots$$.next();
+	}
 }
+
 
 
 
