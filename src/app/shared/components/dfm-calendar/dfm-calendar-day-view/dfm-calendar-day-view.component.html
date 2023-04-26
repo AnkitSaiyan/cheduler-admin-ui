@@ -136,14 +136,14 @@
                                     </span>
                                     <ng-template #date>
                                       <span class="calender-day-view-event-time">
-                                        {{ data.appointment.startedAt | date : 'hh:mm' }} -
-                                        {{ data.appointment.endedAt | date : 'hh:mm' }}
+                                        {{ data.appointment.startedAt | date : 'hh:mm' | dfmUtcToLocal : true }} -
+                                        {{ data.appointment.endedAt | date : 'hh:mm' | dfmUtcToLocal : true }}
                                       </span>
                                     </ng-template>
 
                                     <span class="calender-day-view-event-time" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname">
-                                      {{ data.appointment.startedAt | date : 'hh:mm' }} -
-                                      {{ data.appointment.endedAt | date : 'hh:mm' }}
+                                      {{ data.appointment.startedAt | date : 'hh:mm' | dfmUtcToLocal : true }} -
+                                      {{ data.appointment.endedAt | date : 'hh:mm' | dfmUtcToLocal: true }}
                                     </span>
                                   </div>
                                 </div>
