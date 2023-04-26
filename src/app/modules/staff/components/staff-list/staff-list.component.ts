@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil} from 'rxjs';
 import {FormControl} from '@angular/forms';
-import {NotificationType, TableItem} from 'diflexmo-angular-design';
+import {NotificationType, TableItem} from 'diflexmo-angular-design-dev';
 import {ActivatedRoute, Router} from '@angular/router';
 import {getStatusEnum} from '../../../../shared/utils/getEnums';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';

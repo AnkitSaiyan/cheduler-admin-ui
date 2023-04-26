@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, takeUntil } from 'rxjs';
-import { InputDropdownComponent } from 'diflexmo-angular-design';
+import { InputDropdownComponent } from 'diflexmo-angular-design-dev';
 import { ModalService } from '../../core/services/modal.service';
 import { DestroyableComponent } from './destroyable.component';
 

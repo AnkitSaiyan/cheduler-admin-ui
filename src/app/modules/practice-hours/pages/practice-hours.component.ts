@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {BehaviorSubject, Subject, take, takeUntil} from 'rxjs';
-import {BadgeColor, InputDropdownComponent, NotificationType} from 'diflexmo-angular-design';
+import {BadgeColor, InputDropdownComponent, NotificationType} from 'diflexmo-angular-design-dev';
 import {DestroyableComponent} from '../../../shared/components/destroyable.component';
 import {TimeSlot, Weekday} from '../../../shared/models/calendar.model';
 import {NotificationDataService} from '../../../core/services/notification-data.service';

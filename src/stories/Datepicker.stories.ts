@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { moduleMetadata } from '@storybook/angular';
 import { Meta, Story } from '@storybook/angular/types-6-0';
-import { ButtonModule, DatepickerComponent, ErrorModule, IconCoreModule, IconModule, InputModule } from 'diflexmo-angular-design';
+import { ButtonModule, DatepickerComponent, ErrorModule, IconCoreModule, IconModule, InputModule } from 'diflexmo-angular-design-dev';
 
 export default {
   title: 'Design System/Datepicker',
@@ -21,3 +21,4 @@ const Template: Story<DatepickerComponent> = () => ({
 
 export const Datepicker = Template.bind({});
 Datepicker.args = {};
+

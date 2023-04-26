@@ -1,5 +1,5 @@
 import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/core';
-import { InputComponent } from 'diflexmo-angular-design';
+import { InputComponent } from 'diflexmo-angular-design-dev';
 
 @Directive({
   selector: '[dfmEmailInput]',

@@ -16,7 +16,7 @@ import {
     takeUntil, tap
 } from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NotificationType, TableItem} from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design-dev';
 import {NgbDropdown} from '@ng-bootstrap/ng-bootstrap';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {ChangeStatusRequestData, Status, StatusToName} from '../../../../shared/models/status.model';

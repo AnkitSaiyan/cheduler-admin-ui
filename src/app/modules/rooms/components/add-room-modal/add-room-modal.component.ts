@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, of, Subject, switchMap, take, takeUntil} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {NotificationType} from 'diflexmo-angular-design';
+import {NotificationType} from 'diflexmo-angular-design-dev';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {ModalService} from '../../../../core/services/modal.service';
 import {PracticeAvailabilityServer} from '../../../../shared/models/practice.model';
