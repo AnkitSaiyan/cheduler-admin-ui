@@ -31,7 +31,7 @@ div section:last-child {
       border-radius: 50%;
       width: 16px;
       height: 16px;
-      left: -32px;
+      left: -40px;
       top: 0;
       bottom: 0;
       margin: auto;
@@ -45,17 +45,22 @@ div section:last-child {
 
     .avatar-container {
       object-fit: contain;
-      border: 1px solid var(--bs-gray-200)
+      border: 1px solid var(--bs-gray-200);
+      width: 40px;
+      height: 40px;
+
     }
-    // .patient-title{
-    //   margin: 0px 20px 0px 0px;
-    // }
-    // .exam-title{
-    //   margin: 0px 15px 0px 0px;
-    // }
     .time-title, .avatar-title{
       visibility: hidden;
     }
+    table{
+      border-collapse: separate;
+      border-spacing: 8px;
+}
+table .name-td, .exam-td, .room-td{
+  min-width: 100px;
+}
+   
     @media only screen and (min-width: 1060px) and (max-width: 1300px) {
       .avatar-container {
         display: none;
@@ -66,15 +71,36 @@ div section:last-child {
 
 @media (min-width:320px) and (max-width:525px){
   .patient-title{
-    margin-left:25px!important;
+    // margin-left:25px!important;
+  }
+  .exam-title{
+    margin-left: 10px!important;
+  }
+  .room-title{
+    margin-left:46px!important;
+  }
+  .exam-name{
+    word-break: break-word;
+  }
+  // table th,td{
+  //  white-space: nowrap;
+  //  word-break: break-all;
+  //  width: 150px;
+  // }
+}
+@media (min-width:568px) and (max-width:680px){
+  .patient-title{
+    margin-left: 40px!important;
   }
   .exam-title{
     margin-left: 40px!important;
   }
-  .room-title{
-    margin-left:35px!important;
-  }
 }
+// @media(max-width:568px){
+//   .exam-title{
+// margin-left: 28px!important;
+// }
+// }
 
 @media(min-width:425px)and (max-width: 534px) {
   // .patient-title{

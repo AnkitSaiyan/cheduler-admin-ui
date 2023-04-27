@@ -21,41 +21,42 @@
 
 	<section *ngIf="filteredUpcommingAppointments$$ | async as upcomingAppointments" class="h-92">
 		<div *ngIf="!noDataFound" class="d-flex flex-column dfm-gap-16 upcoming-events-container">
-<!--			<table>-->
-<!--				<thead class="text-xs">-->
-<!--					<th></th>-->
-<!--					<th>Time</th>-->
-<!--					<th>Avatar</th>-->
-<!--					<th>Patient</th>-->
-<!--					<th>Exam</th>-->
-<!--					<th>Room</th>-->
-<!--				</thead>-->
-<!--				<tbody>-->
-<!--					<tr *ngFor="let appointment of upcomingAppointments" class="position-relative text-xs">-->
-<!--						<div class="circle-icon"></div>-->
-<!--						<td>-->
-<!--							<span>{{ appointment?.exam?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>-->
-<!--						</td>-->
-<!--						<td>-->
-<!--							<div class="rounded-circle avatar-container">-->
-<!--								<div class="circle-gray-200-40 d-flex justify-content-center align-items-center">-->
-<!--									{{ appointment?.patientFname?.toString()[0].toUpperCase() }}-->
-<!--								</div>-->
-<!--							</div>-->
-<!--						</td>-->
-<!--						<td>-->
-<!--							<span class="font-weight-medium"> {{ appointment?.patientFname | titlecase }} {{ appointment?.patientLname | titlecase }} </span>-->
-<!--						</td>-->
-<!--						<td>-->
-<!--							<span class="font-weight-medium"> {{ appointment?.exam?.name | titlecase }}</span>-->
-<!--						</td>-->
-<!--						<td>-->
-<!--							<span class="font-weight-medium">{{ appointment.rooms | joinWithAnd : 'name' | dashIfNothing }}</span>-->
-<!--						</td>-->
-<!--					</tr>-->
-<!--				</tbody>-->
-<!--			</table>-->
-			<div class="d-flex flex-row  font-weight-bold">
+			<table>
+				<thead class="text-xs">
+					<th class="mx-1"></th>
+					<th class="mx-1">{{"Time" | translate}}</th>
+					<th class="mx-1"></th>
+					<th class="text-start mx-1">{{"Patient" | translate}}</th>
+					<th class="text-start mx-1">{{"Exam" | translate}}</th>
+					<th class="text-start mx-1">{{"Room" | translate}}</th>
+				</thead>
+				<tbody>
+					<tr *ngFor="let appointment of upcomingAppointments" class="position-relative text-xs">
+						<div class="circle-icon"></div>
+						<td class="mx-3">
+							<span>{{ appointment?.exam?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
+						</td>
+						<td class="mx-3">
+							<div class="rounded-circle avatar-container d-flex justify-content-center">
+								<div class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+									{{ appointment?.patientFname?.toString()[0].toUpperCase() }}
+								</div>
+							</div>
+						</td>
+						<td class="mx-3 name-td">
+							<span class="font-weight-medium"> {{ appointment?.patientFname | titlecase }} {{ appointment?.patientLname | titlecase }} </span>
+						</td>
+						<td class="mx-3 exam-td">
+							<span class="font-weight-medium"> {{ appointment?.exam?.name | titlecase }}</span>
+						</td>
+						<td class="mx-3 room-td">
+							<span class="font-weight-medium">{{ appointment.rooms | joinWithAnd : 'name' | dashIfNothing }}</span>
+						</td>
+					</tr>
+				</tbody>
+</table>
+</div>
+			<!-- <div class="d-flex flex-row  font-weight-bold">
 				<div class="time-title dfm-px-10 dfm-py-4"><small class="text-xs text-center ">Time</small></div>
 				<div class="avatar-title avatar-container"><small class="text-xs text-center">Avatar</small></div>
 				<div class="dfm-px-10 dfm-py-4 patient-title text-center mx-1"><small class="text-xs">Patient</small></div>
@@ -88,7 +89,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div> -->
 
 		<div class="chart-wrapper align-self-center dfm-mb-16 no-data-found" *ngIf="noDataFound">
 			<span class="dfm-text-main-400">{{ 'NoDataFound' | translate }}</span>
