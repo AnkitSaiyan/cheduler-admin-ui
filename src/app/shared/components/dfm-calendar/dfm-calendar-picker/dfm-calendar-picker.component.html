@@ -1,0 +1,14 @@
+<div>
+  <input matInput [formControl]="dateControl" [value]="selectedDate"  [matDatepicker]="picker" readonly class="w-0 invisible">
+  <dfm-button-icon
+    color="secondary-gray"
+    size="md"
+    icon="calendar-date"
+    ngbPopover="{{ 'Calendar' | translate }}"
+    triggers="mouseenter:mouseleave"
+    popoverClass="popover-p-8"
+    [openDelay]="200"
+    (click)="picker.open()"
+  ></dfm-button-icon>
+  <mat-datepicker #picker></mat-datepicker>
+</div>

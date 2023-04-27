@@ -62,6 +62,11 @@ import { ShowSlotPercentagePipe } from './pipes/showSlotPercentage.pipe';
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
 import { LoginFailedComponent } from './components/login-failed/login-failed.component';
 
+
+import { DfmCalendarPickerComponent } from './components/dfm-calendar/dfm-calendar-picker/dfm-calendar-picker.component';
+import { DateAdapter, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { CustomDatePickerAdapter, CUSTOM_DATE_FORMATS } from './utils/date-adapter';
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
 }
@@ -105,6 +110,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		ShowSlotPercentagePipe,
 		CompleteProfileComponent,
 		LoginFailedComponent,
+		DfmCalendarPickerComponent,
 	],
 	imports: [
 		CommonModule,
@@ -129,6 +135,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatProgressSpinnerModule,
 		MatButtonModule,
 		MatIconModule,
+		MatNativeDateModule,
+		MatDatepickerModule,
 	],
 	exports: [
 		DesignSystemModule,
@@ -181,7 +189,13 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatProgressSpinner,
 		MatButtonModule,
 		MatIconModule,
+		DfmCalendarPickerComponent,
+		MatDatepickerModule,
 	],
-	providers: [TranslatePipe],
+	providers: [
+		TranslatePipe,
+		{ provide: MAT_DATE_LOCALE, useValue: 'en-BE' },
+		{ provide: DateAdapter, useClass: CustomDatePickerAdapter, deps: [MAT_DATE_LOCALE] },
+	],
 })
 export class SharedModule {}

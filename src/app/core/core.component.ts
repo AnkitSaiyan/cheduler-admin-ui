@@ -36,6 +36,7 @@ import {DateTimeUtils} from '../shared/utils/date-time.utils';
 import {NotificationDataService} from "./services/notification-data.service";
 import {UserService} from "./services/user.service";
 import {DefaultDatePipe} from "../shared/pipes/default-date.pipe";
+import { DateAdapter } from '@angular/material/core';
 
 @Component({
 	selector: 'dfm-main',
@@ -144,6 +145,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		private permissionSvc: PermissionService,
 		private notificationSvc: NotificationDataService,
 		private defaultDatePipe: DefaultDatePipe,
+		private dateAdapter: DateAdapter<Date>,
 	) {
 		super();
 
@@ -157,7 +159,11 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: (language: string) => this.currentTenant$$.next(language),
+				next: (language: string) => {
+					this.currentTenant$$.next(language);
+					this.dateAdapter.setLocale(language);
+					console.log(this.dateAdapter);
+				},
 			});
 
 		this.dashboardApiService.clearNotification$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -166,13 +172,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 				res.forEach((element) => {
 					const date: Date = DateTimeUtils.UTCDateToLocalDate(new Date(element.date));
 					this.notifications.push(
-						new NavigationItemEvent(
-							element?.apmtId.toString(),
-							date,
-							element?.title,
-							NavigationItemEventType.SUCCESS,
-							element?.message,
-						),
+						new NavigationItemEvent(element?.apmtId.toString(), date, element?.title, NavigationItemEventType.SUCCESS, element?.message),
 					);
 				});
 				this.notifications$$.next(this.notifications);
@@ -184,11 +184,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 				this.messages = [];
 				res.forEach((element) => {
 					this.messages.push(
-						new NavigationItemEvent(
-							element.id.toString(),
-							DateTimeUtils.UTCDateToLocalDate(new Date(element.createdAt)),
-							element?.message,
-						)
+						new NavigationItemEvent(element.id.toString(), DateTimeUtils.UTCDateToLocalDate(new Date(element.createdAt)), element?.message),
 					);
 				});
 				this.messages$$.next(this.messages);
