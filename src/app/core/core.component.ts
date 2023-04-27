@@ -1,12 +1,12 @@
 import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {
-	NavigationItem,
-	NavigationItemEvent,
-	NavigationItemEventType,
-	NavigationProfileData,
-	NavigationUser,
-	SelectItem,
-} from 'diflexmo-angular-design-dev';
+    NavigationItem,
+    NavigationItemEvent,
+    NavigationItemEventType,
+    NavigationProfileData,
+    NavigationUser,
+    SelectItem,
+} from 'diflexmo-angular-design';
 import {TranslateService} from '@ngx-translate/core';
 import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from '@azure/msal-angular';
 import {

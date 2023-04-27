@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnIn
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationType, TableItem } from 'diflexmo-angular-design-dev';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';

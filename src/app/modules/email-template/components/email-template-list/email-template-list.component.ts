@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
-import { NotificationType } from 'diflexmo-angular-design-dev';
+import { NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';

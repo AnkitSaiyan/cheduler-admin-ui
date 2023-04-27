@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/angular/types-6-0';
 import { moduleMetadata } from '@storybook/angular';
-import { TableModule, IconCoreModule, IconModule, TableComponent } from 'diflexmo-angular-design-dev';
+import { TableModule, IconCoreModule, IconModule, TableComponent } from 'diflexmo-angular-design';
 
 const vessels: any[] = [
   {
@@ -53,4 +53,3 @@ export const Table = Template.bind({});
 Table.args = {
   items: vessels,
 };
-

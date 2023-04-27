@@ -1,7 +1,7 @@
 import { FormsModule } from '@angular/forms';
 import { moduleMetadata } from '@storybook/angular';
 import { Story, Meta } from '@storybook/angular/types-6-0';
-import { ErrorModule, IconCoreModule, IconModule, TextAreaComponent } from 'diflexmo-angular-design-dev';
+import { ErrorModule, IconCoreModule, IconModule, TextAreaComponent } from 'diflexmo-angular-design';
 
 export default {
   title: 'Design System/Text Area',
@@ -38,4 +38,3 @@ TextArea.args = {
   hint: 'This is a hint text to help user.',
   placeholder: 'Enter a description...',
 };
-

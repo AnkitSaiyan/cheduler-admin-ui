@@ -2,7 +2,7 @@ import { ChangeDetectorRef, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
-import { DesignSystemCoreModule, NgDfmNotificationModule } from 'diflexmo-angular-design-dev';
+import { DesignSystemCoreModule, NgDfmNotificationModule } from 'diflexmo-angular-design';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from 'src/environments/environment';

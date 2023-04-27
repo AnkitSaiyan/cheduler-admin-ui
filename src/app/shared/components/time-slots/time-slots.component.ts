@@ -7,7 +7,7 @@ import {TimeInIntervalPipe} from "../../pipes/time-in-interval.pipe";
 import {NameValue} from "../search-modal.component";
 import {DestroyableComponent} from "../destroyable.component";
 import {BehaviorSubject, debounceTime, filter, Subject, takeUntil} from "rxjs";
-import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design-dev';
+import {BadgeColor, InputDropdownComponent, NotificationType} from "diflexmo-angular-design";
 import {GeneralUtils} from "../../utils/general.utils";
 import {toggleControlError} from "../../utils/toggleControlError";
 import {ENG_BE, TIME_24} from "../../utils/const";
@@ -420,4 +420,3 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
   }
 
 }
-

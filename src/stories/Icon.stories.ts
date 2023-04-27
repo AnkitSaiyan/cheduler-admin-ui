@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/angular/types-6-0';
 import { moduleMetadata } from '@storybook/angular';
-import { IconModule, IconCoreModule, IconComponent, iconsConfig } from 'diflexmo-angular-design-dev';
+import { IconModule, IconCoreModule, IconComponent, iconsConfig } from 'diflexmo-angular-design';
 
 export default {
   title: 'Design System/Icons/Icon',
@@ -28,4 +28,3 @@ export const Icon = Template.bind({});
 Icon.args = {
   name: 'activity',
 };
-

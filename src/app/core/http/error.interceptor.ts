@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
 import {catchError, Observable, switchMap, throwError} from "rxjs";
 import {NotificationDataService} from "../services/notification-data.service";
-import { NotificationType } from 'diflexmo-angular-design-dev';
+import {NotificationType} from "diflexmo-angular-design";
 import {LoaderService} from "../services/loader.service";
 import {HttpStatusCodes} from "../../shared/models/base-response.model";
 import {ShareDataService} from "../services/share-data.service";
@@ -91,4 +91,3 @@ export class ErrorInterceptor implements HttpInterceptor {
     this.loaderSvc.spinnerDeactivate();
   }
 }
-

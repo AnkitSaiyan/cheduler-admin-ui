@@ -30,7 +30,7 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "./node_modules/diflexmo-angular-design-dev/assets",
+                "input": "./node_modules/diflexmo-angular-design/assets",
                 "output": "./assets"
               },
               {

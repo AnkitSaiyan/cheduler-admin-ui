@@ -1,6 +1,6 @@
 import { moduleMetadata } from '@storybook/angular';
 import { Story, Meta } from '@storybook/angular/types-6-0';
-import { IconCoreModule, IconModule, TagComponent, iconsConfig } from 'diflexmo-angular-design-dev';
+import { IconCoreModule, IconModule, TagComponent, iconsConfig } from 'diflexmo-angular-design';
 
 export default {
   title: 'Design System/Tag',
@@ -43,4 +43,3 @@ Tag.args = {
   size: 'lg',
   color: 'default',
 };
-

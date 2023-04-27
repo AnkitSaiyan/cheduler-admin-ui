@@ -1,6 +1,6 @@
 import { moduleMetadata } from '@storybook/angular';
 import { Story, Meta } from '@storybook/angular/types-6-0';
-import { ButtonModule, ButtonGroupComponent, IconCoreModule, IconModule } from 'diflexmo-angular-design-dev';
+import { ButtonModule, ButtonGroupComponent, IconCoreModule, IconModule } from 'diflexmo-angular-design';
 
 export default {
   title: 'Design System/Button',
@@ -27,4 +27,3 @@ const Template: Story<ButtonGroupComponent> = (args: ButtonGroupComponent) => ({
 
 export const ButtonGroup = Template.bind({});
 ButtonGroup.args = {};
-

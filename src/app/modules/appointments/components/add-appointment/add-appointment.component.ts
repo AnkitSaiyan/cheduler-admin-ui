@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BehaviorSubject, debounceTime, filter, map, switchMap, take, takeUntil, tap} from 'rxjs';
-import {NotificationType} from 'diflexmo-angular-design-dev';
+import {NotificationType} from 'diflexmo-angular-design';
 import {DatePipe} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';

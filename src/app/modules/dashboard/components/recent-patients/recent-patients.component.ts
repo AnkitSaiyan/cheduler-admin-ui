@@ -12,7 +12,7 @@ import { RouterStateService } from 'src/app/core/services/router-state.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { NameValue } from 'src/app/shared/components/search-modal.component';
-import { NotificationType, TableItem } from 'diflexmo-angular-design-dev';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from 'src/app/shared/utils/const';
 import {AppointmentApiService} from "../../../../core/services/appointment-api.service";

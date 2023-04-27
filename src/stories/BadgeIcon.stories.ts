@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/angular/types-6-0';
 import { moduleMetadata } from '@storybook/angular';
-import { IconModule, IconCoreModule, BadgeIconComponent, iconsConfig } from 'diflexmo-angular-design-dev';
+import { IconModule, IconCoreModule, BadgeIconComponent, iconsConfig } from 'diflexmo-angular-design';
 
 export default {
   title: 'Design System/Badge',
@@ -37,4 +37,3 @@ BadgeIcon.args = {
   color: 'primary',
   icon: 'placeholder',
 };
-
