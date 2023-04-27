@@ -10,7 +10,7 @@ import { Absence } from 'src/app/shared/models/absence.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { DatePipe } from '@angular/common';
-import { NotificationType, TableItem } from 'diflexmo-angular-design-dev';
+import { NotificationType, TableItem } from 'diflexmo-angular-design';
 
 @Component({
   selector: 'dfm-employee-absences',

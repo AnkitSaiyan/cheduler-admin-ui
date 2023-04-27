@@ -13,7 +13,7 @@ import {
 import {BehaviorSubject, filter, lastValueFrom, switchMap, take, takeUntil, tap} from 'rxjs';
 import {DatePipe} from '@angular/common';
 import {NgbDropdown} from '@ng-bootstrap/ng-bootstrap';
-import { NotificationType } from 'diflexmo-angular-design-dev';
+import {NotificationType} from 'diflexmo-angular-design';
 import {NameValue} from '../../search-modal.component';
 import {
     AddAppointmentRequestData,

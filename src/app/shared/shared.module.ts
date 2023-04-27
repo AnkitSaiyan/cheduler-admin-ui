@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
-import { DesignSystemModule, NgDfmDropdownModule, TableModule } from 'diflexmo-angular-design-dev';
+import { DesignSystemModule, NgDfmDropdownModule, TableModule } from 'diflexmo-angular-design';
 import { MatButtonModule } from '@angular/material/button';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { ReactiveFormsModule } from '@angular/forms';

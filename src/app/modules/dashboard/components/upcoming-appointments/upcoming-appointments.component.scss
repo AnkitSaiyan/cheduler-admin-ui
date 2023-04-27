@@ -31,7 +31,7 @@ div section:last-child {
       border-radius: 50%;
       width: 16px;
       height: 16px;
-      left: -32px;
+      left: -40px;
       top: 0;
       bottom: 0;
       margin: auto;
@@ -53,6 +53,14 @@ div section:last-child {
     .time-title, .avatar-title{
       visibility: hidden;
     }
+    table{
+      border-collapse: separate;
+      border-spacing: 8px;
+}
+table .name-td, .exam-td, .room-td{
+  min-width: 100px;
+}
+   
     @media only screen and (min-width: 1060px) and (max-width: 1300px) {
       .avatar-container {
         display: none;
@@ -74,6 +82,11 @@ div section:last-child {
   .exam-name{
     word-break: break-word;
   }
+  // table th,td{
+  //  white-space: nowrap;
+  //  word-break: break-all;
+  //  width: 150px;
+  // }
 }
 @media (min-width:568px) and (max-width:680px){
   .patient-title{

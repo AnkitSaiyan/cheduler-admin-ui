@@ -1,6 +1,6 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Meta, Story, moduleMetadata } from '@storybook/angular';
-import { ErrorModule, IconCoreModule, IconModule, InputComponent, iconsConfig } from 'diflexmo-angular-design-dev';
+import { ErrorModule, IconCoreModule, IconModule, InputComponent, iconsConfig } from 'diflexmo-angular-design';
 
 export default {
   title: 'Design System/Input',
@@ -59,4 +59,3 @@ Input.args = {
   onChange: () => {},
   onTouched: () => {},
 };
-

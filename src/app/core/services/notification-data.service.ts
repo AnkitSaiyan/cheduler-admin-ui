@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import { NotificationService, NotificationType } from 'diflexmo-angular-design-dev';
+import {NotificationService, NotificationType} from 'diflexmo-angular-design';
 
 @Injectable({
   providedIn: 'root',

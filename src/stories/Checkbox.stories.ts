@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/angular/types-6-0';
 import { moduleMetadata } from '@storybook/angular';
 import { FormsModule } from '@angular/forms';
-import { CheckboxComponent, IconCoreModule, IconModule } from 'diflexmo-angular-design-dev';
+import { CheckboxComponent, IconCoreModule, IconModule } from 'diflexmo-angular-design';
 
 export default {
   title: 'Design System/Checkboxes',
@@ -48,4 +48,3 @@ Checkbox.args = {
   onChange: () => {},
   onTouch: () => {},
 };
-

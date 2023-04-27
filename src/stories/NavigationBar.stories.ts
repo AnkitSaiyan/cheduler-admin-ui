@@ -1,7 +1,7 @@
 import { RouterTestingModule } from '@angular/router/testing';
 import { moduleMetadata } from '@storybook/angular';
 import { Story, Meta } from '@storybook/angular/types-6-0';
-import { IconCoreModule, IconModule, NavigationBarModule, NavigationBarComponent } from 'diflexmo-angular-design-dev';
+import { IconCoreModule, IconModule, NavigationBarModule, NavigationBarComponent } from 'diflexmo-angular-design';
 
 export default {
   title: 'Design System/Navigation Bar',
@@ -45,4 +45,3 @@ export const NavigationBar = NavigationTemplate.bind({});
 NavigationBar.args = {
   isCollapsed: false,
 };
-

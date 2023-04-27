@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@an
 import {FormControl} from '@angular/forms';
 import {BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NotificationType, TableItem} from 'diflexmo-angular-design-dev';
+import {NotificationType, TableItem} from 'diflexmo-angular-design';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {NotificationDataService} from '../../../../core/services/notification-data.service';
 import {ModalService} from '../../../../core/services/modal.service';

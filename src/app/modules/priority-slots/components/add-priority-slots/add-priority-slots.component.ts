@@ -11,7 +11,7 @@ import {
     take,
     takeUntil
 } from 'rxjs';
-import {InputComponent, NotificationType} from 'diflexmo-angular-design-dev';
+import {InputComponent, NotificationType} from 'diflexmo-angular-design';
 import {DatePipe} from '@angular/common';
 import {PrioritySlotApiService} from 'src/app/core/services/priority-slot-api.service';
 import {PrioritySlot} from 'src/app/shared/models/priority-slots.model';

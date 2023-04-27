@@ -1,7 +1,7 @@
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap} from 'rxjs';
-import {NotificationType} from 'diflexmo-angular-design-dev';
+import {NotificationType} from 'diflexmo-angular-design';
 import {ModalService} from '../../../../core/services/modal.service';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {ShareDataService} from '../../../../core/services/share-data.service';
