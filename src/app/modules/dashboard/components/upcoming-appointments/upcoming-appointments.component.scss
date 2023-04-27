@@ -46,6 +46,8 @@ div section:last-child {
     .avatar-container {
       object-fit: contain;
       border: 1px solid var(--bs-gray-200)
+      // flex: 0.6;
+      // border: transparent;
     }
     // .patient-title{
     //   margin: 0px 20px 0px 0px;
@@ -66,15 +68,31 @@ div section:last-child {
 
 @media (min-width:320px) and (max-width:525px){
   .patient-title{
-    margin-left:25px!important;
+    // margin-left:25px!important;
+  }
+  .exam-title{
+    margin-left: 10px!important;
+  }
+  .room-title{
+    margin-left:46px!important;
+  }
+  .exam-name{
+    word-break: break-word;
+  }
+}
+@media (min-width:568px) and (max-width:680px){
+  .patient-title{
+    margin-left: 40px!important;
   }
   .exam-title{
     margin-left: 40px!important;
   }
-  .room-title{
-    margin-left:35px!important;
-  }
 }
+// @media(max-width:568px){
+//   .exam-title{
+// margin-left: 28px!important;
+// }
+// }
 
 @media(min-width:425px)and (max-width: 534px) {
   // .patient-title{
