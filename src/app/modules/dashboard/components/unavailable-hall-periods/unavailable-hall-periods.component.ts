@@ -13,7 +13,7 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { NameValue } from 'src/app/shared/components/search-modal.component';
 import { Appointment } from 'src/app/shared/models/appointment.model';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { NotificationType, TableItem } from 'diflexmo-angular-design-dev';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from 'src/app/shared/utils/const';
 

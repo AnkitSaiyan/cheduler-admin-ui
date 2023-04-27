@@ -31,7 +31,7 @@
 
           <div class="d-flex flex-column dfm-gap-8">
             <span class="text-sm font-weight-medium">{{ 'StartTime' | translate }}</span>
-            <span class="time-text"> {{ selectedTimeInUTC | dfmUtcToLocal : true }} </span>
+            <span class="time-text"> {{ selectedTimeInUTC ?? selectedTimeInUTCOrig | dfmUtcToLocal : true }} </span>
           </div>
         </div>
 
@@ -73,17 +73,22 @@
               </div>
 
               <div class="d-flex align-items-center gap-3 overflow-y-auto max-h-128 dfm-mt-12 flex-wrap">
-                <div
-                  class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
-                  *ngFor="let slot of examIdToAppointmentSlots[examID];"
-                  (click)="handleSlotSelectionToggle(slot)"
-                  [ngClass]="{
-                    'time-slot-disabled-text': !checkSlotAvailability(slot),
-                    'time-slot-selected-text': selectedTimeSlot[examID]?.slot === slot.start + '-' + slot.end
-                  }"
-                >
-                  {{ (slot.start?.slice(0, -3))! | dfmUtcToLocal: true }} - {{ (slot.end?.slice(0, -3))! | dfmUtcToLocal : true }}
-                </div>
+                <ng-container *ngIf="examIdToAppointmentSlots[examID] as slots; else noSlots">
+                  <div
+                    class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
+                    *ngFor="let slot of examIdToAppointmentSlots[examID];"
+                    (click)="handleSlotSelectionToggle(slot)"
+                    [ngClass]="{
+                      'time-slot-disabled-text': !checkSlotAvailability(slot),
+                      'time-slot-selected-text': selectedTimeSlot[examID]?.slot === slot.start + '-' + slot.end
+                    }"
+                  >
+                    {{ (slot.start?.slice(0, -3))! | dfmUtcToLocal: true }} - {{ (slot.end?.slice(0, -3))! | dfmUtcToLocal : true }}
+                  </div>
+                </ng-container>
+                <ng-template #noSlots>
+                  <span class="dfm-text-main-300">No slots found for this exam</span>
+                </ng-template>
               </div>
             </div>
           </ng-container>
@@ -181,7 +186,7 @@
         </div>
 
         <div class="d-flex flex-column dfm-gap-16 dfm-mt-8">
-          <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128">
+          <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128" *ngIf="(isDoctorConsentDisable$$ | async) === false">
             <dfm-input-dropdown
               [items]="filteredPhysicianList"
               [typeToSearch]="true"

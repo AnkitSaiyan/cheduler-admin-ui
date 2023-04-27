@@ -1,7 +1,7 @@
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap} from 'rxjs';
-import {NotificationType} from 'diflexmo-angular-design';
+import {NotificationType} from 'diflexmo-angular-design-dev';
 import {ModalService} from '../../../../core/services/modal.service';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {ShareDataService} from '../../../../core/services/share-data.service';
@@ -49,7 +49,11 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
 	public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
 	public selectedTimeInUTC!: string;
+	public selectedTimeInUTCOrig!: string;
 	public isCombinable: boolean = false;
+
+	public isDoctorConsentDisable$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
 	private examList: NameValue[] = [];
 	private physicianList: NameValue[] = [];
 	private userList: NameValue[] = [];
@@ -88,6 +92,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	public ngOnInit(): void {
 		this.siteManagementApiSvc.siteManagementData$.pipe(take(1)).subscribe((siteSettings) => {
 			this.isCombinable = siteSettings.isSlotsCombinable;
+			this.isDoctorConsentDisable$$.next(siteSettings.doctorReferringConsent === 1);
 		});
 
 		this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
@@ -110,7 +115,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				const hour = `0${Math.floor(minutes / 60)}`.slice(-2);
 				const min = `0${roundedMin % 60}`.slice(-2);
 				// this.selectedTimeInUTC = this.utcToLocalPipe.transform(`${hour}:${min}`, true) + ':00';
-				this.selectedTimeInUTC = `${hour}:${min}:00`;
+				this.selectedTimeInUTCOrig = `${hour}:${min}:00`;
+				this.selectedTimeInUTC = this.selectedTimeInUTCOrig
 
 				console.log('utc', this.selectedTimeInUTC);
 			}
@@ -189,9 +195,10 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			)
 			.subscribe((data) => {
 				const { slots }: any = data[0];
+
 				const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTimeInUTC);
-				console.log('matchedSlot', matchedSlot);
-				if (matchedSlot) {
+				// Show selected slot in case of one exam or if the case is combinable
+				if (matchedSlot && (this.formValues.examList.length === 1 || this.isCombinable)) {
 					this.setSlots([matchedSlot], this.isCombinable);
 					this.slots.forEach((value) => {
 						this.handleSlotSelectionToggle(value);
@@ -274,6 +281,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		);
 
 		console.log(requestData);
+		if (this.isDoctorConsentDisable$$.value) {
+			delete requestData.doctorId;
+		}
 
 		this.appointmentApiSvc
 			.saveAppointment$(requestData)

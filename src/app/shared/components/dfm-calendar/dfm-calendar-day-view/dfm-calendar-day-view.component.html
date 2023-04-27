@@ -102,9 +102,9 @@
                                     <ng-container *ngIf="data.exams | isData : 'users'; else dash">
                                       <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
                                         <div *ngFor="let user of exam?.users"
-                                             class="d-flex align-items-center dfm-gap-8">
+                                             class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
                                           <div class="circle-gray-200-40">
-                                            <!--                                    {{ user ? user?.firstname[0] : 'U' | uppercase }}-->
+                                            {{ user?.firstname?.length ? (user.firstname[0] | uppercase) : '' }}
                                           </div>
                                           <div class="d-flex flex-column">
                                             <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
@@ -136,14 +136,14 @@
                                     </span>
                                     <ng-template #date>
                                       <span class="calender-day-view-event-time">
-                                        {{ data.appointment.startedAt | date : 'hh:mm' }} -
-                                        {{ data.appointment.endedAt | date : 'hh:mm' }}
+                                        {{ data.appointment.startedAt | date : 'hh:mm' | dfmUtcToLocal : true }} -
+                                        {{ data.appointment.endedAt | date : 'hh:mm' | dfmUtcToLocal : true }}
                                       </span>
                                     </ng-template>
 
                                     <span class="calender-day-view-event-time" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname">
-                                      {{ data.appointment.startedAt | date : 'hh:mm' }} -
-                                      {{ data.appointment.endedAt | date : 'hh:mm' }}
+                                      {{ data.appointment.startedAt | date : 'hh:mm' | dfmUtcToLocal : true }} -
+                                      {{ data.appointment.endedAt | date : 'hh:mm' | dfmUtcToLocal: true }}
                                     </span>
                                   </div>
                                 </div>

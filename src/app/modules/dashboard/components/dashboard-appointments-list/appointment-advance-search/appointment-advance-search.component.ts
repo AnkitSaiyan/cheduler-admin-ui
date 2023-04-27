@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil} from 'rxjs';
-import {NotificationType} from 'diflexmo-angular-design';
+import {NotificationType} from 'diflexmo-angular-design-dev';
 import {DatePipe} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ShareDataService} from 'src/app/core/services/share-data.service';

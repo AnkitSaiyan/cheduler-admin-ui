@@ -1,6 +1,6 @@
 import { moduleMetadata } from '@storybook/angular';
 import { Story, Meta } from '@storybook/angular/types-6-0';
-import { ButtonIconComponent, IconCoreModule, IconModule, iconsConfig } from 'diflexmo-angular-design';
+import { ButtonIconComponent, IconCoreModule, IconModule, iconsConfig } from 'diflexmo-angular-design-dev';
 
 export default {
   title: 'Design System/Button',
@@ -40,3 +40,4 @@ ButtonIcon.args = {
   color: 'primary',
   icon: 'placeholder',
 };
+

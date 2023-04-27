@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {InputComponent, NotificationType} from 'diflexmo-angular-design';
+import {InputComponent, NotificationType} from 'diflexmo-angular-design-dev';
 import {
     BehaviorSubject,
     combineLatest,

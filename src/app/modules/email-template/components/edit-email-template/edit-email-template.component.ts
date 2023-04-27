@@ -11,7 +11,7 @@ import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { Status } from 'src/app/shared/models/status.model';
 import { ShareDataService } from '../../../../core/services/share-data.service';
 import { Translate } from '../../../../shared/models/translate.model';
-import { NotificationType } from 'diflexmo-angular-design';
+import { NotificationType } from 'diflexmo-angular-design-dev';
 import { ActivatedRoute, Router } from '@angular/router';
 
 interface FormValues {

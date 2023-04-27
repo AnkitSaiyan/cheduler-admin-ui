@@ -4,7 +4,7 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { ModalService } from '../../../../core/services/modal.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ShareDataService } from '../../../../core/services/share-data.service';
-import { InputComponent } from 'diflexmo-angular-design';
+import { InputComponent } from 'diflexmo-angular-design-dev';
 
 interface FormValues {
   minutes: number;

@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnIn
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CheckboxComponent, NotificationType, TableItem } from 'diflexmo-angular-design';
+import { CheckboxComponent, NotificationType, TableItem } from 'diflexmo-angular-design-dev';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';

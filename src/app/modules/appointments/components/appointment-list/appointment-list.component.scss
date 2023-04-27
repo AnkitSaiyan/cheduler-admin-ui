@@ -2,6 +2,16 @@
   background: transparent;
 }
 
+.refresh-btn {
+  position: fixed;
+  bottom: 18px;
+  left: 18px;
+  z-index: 9;
+  
+    @media (max-width: 680px) {
+      bottom: 64px;
+    }
+}
 @media (max-width: 680px) {
   .ap-ls-main-wrapper {
     padding: 0;

@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BehaviorSubject, debounceTime, map, of, Subject, switchMap, takeUntil, tap} from 'rxjs';
-import {NotificationType} from 'diflexmo-angular-design';
+import {NotificationType} from 'diflexmo-angular-design-dev';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {AvailabilityType, User, UserType} from '../../../../shared/models/user.model';

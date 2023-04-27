@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
-import { InputComponent, NotificationType } from 'diflexmo-angular-design';
+import { InputComponent, NotificationType } from 'diflexmo-angular-design-dev';
 import { DatePipe } from '@angular/common';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { LoaderService } from 'src/app/core/services/loader.service';

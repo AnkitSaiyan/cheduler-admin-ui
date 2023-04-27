@@ -1,6 +1,6 @@
 import { moduleMetadata } from '@storybook/angular';
 import { Meta, Story } from '@storybook/angular/types-6-0';
-import { DiflexmoNotification, NotificationType, PositionType, IconModule, IconCoreModule, NotificationComponent } from 'diflexmo-angular-design';
+import { DiflexmoNotification, NotificationType, PositionType, IconModule, IconCoreModule, NotificationComponent } from 'diflexmo-angular-design-dev';
 
 export default {
   title: 'Design System/Notification',
@@ -43,3 +43,4 @@ Notification.args = {
   currentNotification: new DiflexmoNotification(NotificationType.DANGER, 'Successfully saved', '', true),
   position: PositionType.BOTTOM_LEFT,
 };
+

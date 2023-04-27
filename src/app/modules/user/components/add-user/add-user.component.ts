@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {NotificationType} from 'diflexmo-angular-design';
+import { NotificationType } from 'diflexmo-angular-design-dev';
 import {BehaviorSubject, catchError, Observable, switchMap, take, takeUntil} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ShareDataService} from 'src/app/core/services/share-data.service';

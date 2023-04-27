@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/angular/types-6-0';
 import { moduleMetadata } from '@storybook/angular';
-import { IconModule, IconCoreModule, FeaturedIconComponent, iconsConfig } from 'diflexmo-angular-design';
+import { IconModule, IconCoreModule, FeaturedIconComponent, iconsConfig } from 'diflexmo-angular-design-dev';
 
 export default {
   title: 'Design System/Icons/Featured Icon',
@@ -40,3 +40,4 @@ export const FeaturedIcon = Template.bind({});
 FeaturedIcon.args = {
   name: 'activity',
 };
+

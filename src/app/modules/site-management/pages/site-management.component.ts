@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, takeUntil } from 'rxjs';
-import { NotificationType } from 'diflexmo-angular-design';
+import { NotificationType } from 'diflexmo-angular-design-dev';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SiteManagement, SiteManagementRequestData } from '../../../shared/models/site-management.model';
 import { TimeDurationType } from '../../../shared/models/calendar.model';

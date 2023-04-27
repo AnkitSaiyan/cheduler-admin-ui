@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/angular/types-6-0';
 import { moduleMetadata } from '@storybook/angular';
 import { FormsModule } from '@angular/forms';
-import { IconModule, IconCoreModule, InputDropdownComponent, InputModule, TagModule, iconsConfig } from 'diflexmo-angular-design';
+import { IconModule, IconCoreModule, InputDropdownComponent, InputModule, TagModule, iconsConfig } from 'diflexmo-angular-design-dev';
 
 export default {
   title: 'Design System/Inputs Dropdown',
@@ -80,3 +80,4 @@ InputDropdown.args = {
   onChange: () => {},
   onTouch: () => {},
 };
+

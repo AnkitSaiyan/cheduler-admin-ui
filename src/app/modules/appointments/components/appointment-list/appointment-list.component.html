@@ -1,4 +1,7 @@
 <div class="d-flex flex-column dfm-gap-16 position-relative ap-ls-main-wrapper">
+  <button  mat-mini-fab color="primary" *ngIf="(calendarView$$ | async) === false" class="refresh-btn" (click)="onRefresh()">
+    <mat-icon>refresh</mat-icon>
+  </button>
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 ap-li-section-1" *ngIf="(calendarView$$ | async) === false">
       <dfm-button class="hidden ap-li-title-buttons" color="link" size="lg" routerLink="./">{{ 'Appointment' | translate }} </dfm-button>
@@ -123,11 +126,11 @@
           <dfm-table-body-cell>{{ item?.exams.length ? (item.startedAt | dfmUtcToLocal | dfmDefaultDate  | dashIfNothing) : '' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.exams.length ? (item.endedAt | dfmUtcToLocal | dfmDefaultDate  | dashIfNothing) : '' | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>
-            <div class="text-truncate">{{ item?.patientFname | titlecase }} {{ item?.patientLname | titlecase }}</div>
+            <div class="text-truncate">{{ item?.patientFname | titlecase  }} {{ item?.patientLname | titlecase }}</div>
           </dfm-table-body-cell>
           <dfm-table-body-cell>
             <div class="text-truncate">
-              {{ item?.doctor | titlecase }}
+              {{ item?.doctor | titlecase | dashIfNothing }}
             </div>
           </dfm-table-body-cell>
           <!-- <dfm-table-body-cell>
