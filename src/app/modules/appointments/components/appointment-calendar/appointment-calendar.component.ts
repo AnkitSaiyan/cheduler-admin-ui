@@ -33,6 +33,8 @@ import { LoaderService } from 'src/app/core/services/loader.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { UserRoleEnum } from 'src/app/shared/models/user.model';
+import { NotificationService } from 'diflexmo-angular-design';
+import { NotificationDataService } from 'src/app/core/services/notification-data.service';
 
 @Component({
 	selector: 'dfm-appointment-calendar',
@@ -99,6 +101,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		private loaderSvc: LoaderService,
 		public permissionSvc: PermissionService,
 		private route: ActivatedRoute,
+		private notificationSvc: NotificationDataService,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -114,7 +117,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	public ngOnInit(): void {
-    this.route.queryParams.pipe(debounceTime(100), take(1)).subscribe((params) => {
+		this.route.queryParams.pipe(debounceTime(100), take(1)).subscribe((params) => {
 			if (params['v'] !== 't') {
 				this.calendarViewFormControl.setValue(this.paramsToCalendarView[params['v']]);
 			}
@@ -436,6 +439,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 		const { e, eventsContainer, day, grayOutSlot } = event;
 		const eventCard = this.createAppointmentCard(e, eventsContainer);
+
+		const currentDate = new Date();
+		const selectedDate = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
+		if (selectedDate.getTime() < currentDate.getTime()) {
+			this.notificationSvc.showWarning(`Can't add appointment on past date`);
+			return;
+		}
 
 		const isGrayOutArea = grayOutSlot.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
 
