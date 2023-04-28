@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
+import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { DesignSystemModule, NgDfmDropdownModule, TableModule } from 'diflexmo-angular-design';
 import { MatButtonModule } from '@angular/material/button';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
@@ -61,7 +62,6 @@ import { DefaultDatePipe } from './pipes/default-date.pipe';
 import { ShowSlotPercentagePipe } from './pipes/showSlotPercentage.pipe';
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
 import { LoginFailedComponent } from './components/login-failed/login-failed.component';
-
 
 import { DfmCalendarPickerComponent } from './components/dfm-calendar/dfm-calendar-picker/dfm-calendar-picker.component';
 import { DateAdapter, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
@@ -192,10 +192,6 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DfmCalendarPickerComponent,
 		MatDatepickerModule,
 	],
-	providers: [
-		TranslatePipe,
-		{ provide: MAT_DATE_LOCALE, useValue: 'en-BE' },
-		{ provide: DateAdapter, useClass: CustomDatePickerAdapter, deps: [MAT_DATE_LOCALE] },
-	],
+	providers: [TranslatePipe, { provide: DateAdapter, useClass: CustomDatePickerAdapter, deps: [MAT_DATE_LOCALE] }],
 })
 export class SharedModule {}

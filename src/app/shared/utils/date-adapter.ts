@@ -1,4 +1,6 @@
+import { Injectable } from '@angular/core';
 import { NativeDateAdapter } from '@angular/material/core';
+import { DUTCH_BE } from './const';
 
 export interface DateDisplay {
 	year: string;
@@ -19,25 +21,26 @@ export const CUSTOM_DATE_FORMATS = {
 	},
 };
 
+@Injectable({ providedIn: 'root' })
 export class CustomDatePickerAdapter extends NativeDateAdapter {
-	override parse(value: string | number): Date | null {
-		if (typeof value === 'string' && value.indexOf('.') > -1) {
-			const str: string[] = value.split('.');
-			if (str.length < 2 || Number.isNaN(+str[0]) || Number.isNaN(+str[1]) || Number.isNaN(+str[2])) {
-				return null;
-			}
-			return new Date(Number(str[2]), Number(str[1]) - 1, Number(str[0]));
+	override getDayOfWeekNames() {
+		const language = localStorage.getItem('lang');
+		if (language === DUTCH_BE) {
+			return ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za'];
 		}
-		const timestamp: number = typeof value === 'number' ? value : Date.parse(value);
-		return Number.isNaN(timestamp) ? null : new Date(timestamp);
+		return ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 	}
 
-	// format(date: Date, display: string | DateDisplay): string {
-	// 	if (display === 'customInput') {
-	// 		return new DatePipe(this.locale).transform(date, 'shortDate');
-	// 	} else {
-	// 		return new DatePipe(this.locale).transform(date, 'MMM yyyy');
-	// 	}
-	// }
+	override getFirstDayOfWeek(): number {
+		return 1;
+	}
+
+	override getMonthNames(): string[] {
+		const language = localStorage.getItem('lang');
+		if (language === DUTCH_BE) {
+			return ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
+		}
+		return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	}
 }
 

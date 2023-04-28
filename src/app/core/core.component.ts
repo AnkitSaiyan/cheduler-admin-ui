@@ -161,8 +161,6 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 			.subscribe({
 				next: (language: string) => {
 					this.currentTenant$$.next(language);
-					this.dateAdapter.setLocale(language);
-					console.log(this.dateAdapter);
 				},
 			});
 
