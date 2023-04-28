@@ -35,6 +35,18 @@ import { PermissionService } from 'src/app/core/services/permission.service';
 import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { NotificationService } from 'diflexmo-angular-design';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
+import {
+    COMING_FROM_ROUTE,
+    DUTCH_BE,
+    EDIT,
+    EMAIL_REGEX,
+    ENG_BE,
+    STAFF_ID,
+    Statuses,
+    StatusesNL
+} from '../../../../shared/utils/const';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Translate } from 'src/app/shared/models/translate.model';
 
 @Component({
 	selector: 'dfm-appointment-calendar',
@@ -73,6 +85,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	private weekdayToPractice$$ = new BehaviorSubject<any>(null);
 
 	public practiceHourMinMax$$ = new BehaviorSubject<{ min: string; max: string; grayOutMin: string; grayOutMax: string } | null>(null);
+	private selectedLang: string = ENG_BE;
 
 	appointmentGroupedByDateAndRoom: {
 		[key: string]: {
@@ -102,6 +115,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		public permissionSvc: PermissionService,
 		private route: ActivatedRoute,
 		private notificationSvc: NotificationDataService,
+        private shareDataSvc: ShareDataService,
+
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -214,6 +229,20 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				const value = new Date(queryParams['d']);
 				this.selectedSlot$$.next(this.weekdayToPractice$$.value[value.getDay()]);
 			});
+			this.shareDataSvc
+            .getLanguage$()
+            .pipe(takeUntil(this.destroy$$))
+            .subscribe((lang) => {
+                this.selectedLang = lang;
+                switch (lang) {
+                    case ENG_BE:
+                        // this.statuses = Statuses;
+                        break;
+                    case DUTCH_BE:
+                        // this.statuses = StatusesNL;
+                        break;
+                }
+            });
 	}
 
 	public override ngOnDestroy() {
@@ -443,7 +472,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		const currentDate = new Date();
 		const selectedDate = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
 		if (selectedDate.getTime() < currentDate.getTime()) {
-			this.notificationSvc.showWarning(`Can't add appointment on past date`);
+			this.notificationSvc.showWarning(Translate.ErrorMessage.CanNotAddAppointmentInPostDate[this.selectedLang]);
 			return;
 		}
 
