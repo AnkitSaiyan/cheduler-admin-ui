@@ -474,6 +474,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 								limit: this.practiceHourMinMax$$.value,
 							},
 							options: {
+								size: 'xl',
 								backdrop: false,
 								centered: true,
 								modalDialogClass: 'ad-ap-modal-shadow',
@@ -498,6 +499,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 						limit: this.practiceHourMinMax$$.value,
 					},
 					options: {
+						size: 'xl',
 						backdrop: false,
 						centered: true,
 						modalDialogClass: 'ad-ap-modal-shadow',

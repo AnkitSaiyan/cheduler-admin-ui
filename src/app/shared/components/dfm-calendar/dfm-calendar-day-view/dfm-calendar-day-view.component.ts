@@ -358,6 +358,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 								startTime: this.timeSlot.timings[0],
 							},
 							options: {
+								size: 'xl',
 								backdrop: false,
 								centered: true,
 								modalDialogClass: 'ad-ap-modal-shadow',
@@ -386,6 +387,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 						startTime: this.timeSlot.timings[0],
 					},
 					options: {
+						size: 'xl',
 						backdrop: false,
 						centered: true,
 						modalDialogClass: 'ad-ap-modal-shadow',
