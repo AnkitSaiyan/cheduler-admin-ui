@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
-import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { DesignSystemModule, NgDfmDropdownModule, TableModule } from 'diflexmo-angular-design';
 import { MatButtonModule } from '@angular/material/button';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
