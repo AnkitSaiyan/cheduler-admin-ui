@@ -52,6 +52,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	public selectedTimeInUTCOrig!: string;
 	public isCombinable: boolean = false;
 
+	public currentDate = DateTimeUtils.DateToDateDistributed(new Date());
+
 	public isDoctorConsentDisable$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
 	private examList: NameValue[] = [];
@@ -116,7 +118,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				const min = `0${roundedMin % 60}`.slice(-2);
 				// this.selectedTimeInUTC = this.utcToLocalPipe.transform(`${hour}:${min}`, true) + ':00';
 				this.selectedTimeInUTCOrig = `${hour}:${min}:00`;
-				this.selectedTimeInUTC = this.selectedTimeInUTCOrig
+				this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
 
 				console.log('utc', this.selectedTimeInUTC);
 			}
