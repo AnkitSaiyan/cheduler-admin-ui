@@ -200,7 +200,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		});
 
 		this.dataControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
-			const date = new Date(value.year, value.month - 1, value.day);
+			const date = new Date(value);
 			this.updateDate(date);
 			this.newDate$$.next(date);
 		});

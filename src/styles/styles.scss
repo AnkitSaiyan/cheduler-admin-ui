@@ -965,13 +965,18 @@ ngb-datepicker {
 .max-h-128 {
   max-height: 128px;
 }
-
+.w-0 {
+  width: 0;
+}
 .text-red {
   color: red;
 }
 
 .hidden {
   display: none;
+}
+.invisible {
+  visibility: hidden;
 }
 
 .m-0-auto {
