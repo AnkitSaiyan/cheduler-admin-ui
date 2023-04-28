@@ -438,14 +438,15 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
 
 		const { e, eventsContainer, day, grayOutSlot } = event;
-		const eventCard = this.createAppointmentCard(e, eventsContainer);
-
 		const currentDate = new Date();
+		currentDate.setDate(currentDate.getDate() - 1);
 		const selectedDate = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
 		if (selectedDate.getTime() < currentDate.getTime()) {
 			this.notificationSvc.showWarning(`Can't add appointment on past date`);
 			return;
 		}
+		const eventCard = this.createAppointmentCard(e, eventsContainer);
+
 
 		const isGrayOutArea = grayOutSlot.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
 

@@ -323,6 +323,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement) {
 		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
 		const currentDate = new Date();
+		currentDate.setDate(currentDate.getDate() - 1);
 		if (this.selectedDate.getTime() < currentDate.getTime()) {
 			this.notificationSvc.showWarning(`Can't add appointment on past date`);
 			return;
