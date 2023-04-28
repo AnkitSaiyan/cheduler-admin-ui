@@ -88,6 +88,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	private examList: NameValue[] = [];
 	private physicianList: NameValue[] = [];
 
+	public currentDate = DateTimeUtils.DateToDateDistributed(new Date());
+
 	constructor(
 		private fb: FormBuilder,
 		private notificationSvc: NotificationDataService,
