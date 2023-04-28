@@ -66,7 +66,7 @@ import { LoginFailedComponent } from './components/login-failed/login-failed.com
 import { DfmCalendarPickerComponent } from './components/dfm-calendar/dfm-calendar-picker/dfm-calendar-picker.component';
 import { DateAdapter, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { CustomDatePickerAdapter, CUSTOM_DATE_FORMATS } from './utils/date-adapter';
+import { CustomDatePickerAdapter } from './utils/date-adapter';
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
 }

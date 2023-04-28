@@ -2,24 +2,8 @@ import { Injectable } from '@angular/core';
 import { NativeDateAdapter } from '@angular/material/core';
 import { DUTCH_BE } from './const';
 
-export interface DateDisplay {
-	year: string;
-	month: string;
-	day: string;
-}
 
-export const CUSTOM_DATE_FORMATS = {
-	parse: {
-		dateInput: { month: 'short', year: 'numeric', day: 'numeric' },
-	},
-	display: {
-		//dateInput: { month: 'short', year: 'numeric', day: 'numeric'},
-		dateInput: 'customInput',
-		monthYearLabel: { year: 'numeric', month: 'short' },
-		dateA11yLabel: { year: 'numeric', month: 'long', day: 'numeric' },
-		monthYearA11yLabel: { year: 'numeric', month: 'long' },
-	},
-};
+
 
 @Injectable({ providedIn: 'root' })
 export class CustomDatePickerAdapter extends NativeDateAdapter {
@@ -43,4 +27,9 @@ export class CustomDatePickerAdapter extends NativeDateAdapter {
 		return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 	}
 }
+
+
+
+
+
 
