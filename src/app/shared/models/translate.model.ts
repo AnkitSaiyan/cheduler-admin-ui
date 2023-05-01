@@ -417,6 +417,10 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'Failed to copy Data',
 			[DUTCH_BE]: 'Kan gegevens niet kopiëren',
 		},
+		CanNotAddAppointmentInPostDate:{
+			[ENG_BE]: 'Can not add appointment on past date',
+			[DUTCH_BE]: 'kan geen afspraak toevoegen op datum in het verleden',
+		}
 	},
 
 	// Form Invalid
