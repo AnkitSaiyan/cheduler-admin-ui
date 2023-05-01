@@ -176,7 +176,7 @@
                   <div class="input-as-dfm-input">
                     <input [formControl]="dateControl" (dateChange)="onDateChange($event.value, 'startedAt')"
                     placeholder="{{'dateFormat' | translate}}"
-                    required [value]="currentDate"  [matDatepicker]="picker" readonly class="w-full min-w-128">
+                    required [value]="currentDate" [min]="currentDate"  [matDatepicker]="picker" readonly class="w-full min-w-128">
                   </div>
                   <dfm-button-icon
                     color="secondary-gray"
