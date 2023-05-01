@@ -191,16 +191,16 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DfmCalendarPickerComponent,
 		MatDatepickerModule,
 	],
+	providers: [
+		TranslatePipe,
+		{ provide: DateAdapter, useClass: CustomDatePickerAdapter, deps: [MAT_DATE_LOCALE] },
+		{ provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
+	],
 })
 export class SharedModule {
 	static forRoot(): ModuleWithProviders<SharedModule> {
 		return {
 			ngModule: SharedModule,
-			providers: [
-				TranslatePipe,
-				{ provide: DateAdapter, useClass: CustomDatePickerAdapter, deps: [MAT_DATE_LOCALE] },
-				{ provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
-			],
 		};
 	}
 }
