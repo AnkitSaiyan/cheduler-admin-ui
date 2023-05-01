@@ -38,6 +38,7 @@ import { TitleStrategy } from '@angular/router';
 import { AppTitlePrefix } from './core/services/title.service';
 import { UtcToLocalPipe } from './shared/pipes/utc-to-local.pipe';
 import {DefaultDatePipe} from "./shared/pipes/default-date.pipe";
+import { SharedModule } from './shared/shared.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -85,6 +86,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 			},
 		}),
 		NgDfmNotificationModule,
+		SharedModule.forRoot(),
 		// HttpClientInMemoryWebApiModule.forRoot(DataService),
 	],
 	bootstrap: [AppComponent, MsalRedirectComponent],

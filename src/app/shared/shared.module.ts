@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import { ModuleWithProviders, NgModule } from '@angular/core';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { DesignSystemModule, NgDfmDropdownModule, TableModule } from 'diflexmo-angular-design';
 import { MatButtonModule } from '@angular/material/button';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
@@ -62,6 +62,10 @@ import { ShowSlotPercentagePipe } from './pipes/showSlotPercentage.pipe';
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
 import { LoginFailedComponent } from './components/login-failed/login-failed.component';
 
+import { DfmCalendarPickerComponent } from './components/dfm-calendar/dfm-calendar-picker/dfm-calendar-picker.component';
+import { DateAdapter, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { CustomDatePickerAdapter } from './utils/date-adapter';
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
 }
@@ -105,6 +109,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		ShowSlotPercentagePipe,
 		CompleteProfileComponent,
 		LoginFailedComponent,
+		DfmCalendarPickerComponent,
 	],
 	imports: [
 		CommonModule,
@@ -129,6 +134,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatProgressSpinnerModule,
 		MatButtonModule,
 		MatIconModule,
+		MatNativeDateModule,
+		MatDatepickerModule,
 	],
 	exports: [
 		DesignSystemModule,
@@ -181,7 +188,19 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatProgressSpinner,
 		MatButtonModule,
 		MatIconModule,
+		DfmCalendarPickerComponent,
+		MatDatepickerModule,
 	],
-	providers: [TranslatePipe],
 })
-export class SharedModule {}
+export class SharedModule {
+	static forRoot(): ModuleWithProviders<SharedModule> {
+		return {
+			ngModule: SharedModule,
+			providers: [
+				TranslatePipe,
+				{ provide: DateAdapter, useClass: CustomDatePickerAdapter, deps: [MAT_DATE_LOCALE] },
+				{ provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
+			],
+		};
+	}
+}

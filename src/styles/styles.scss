@@ -965,13 +965,18 @@ ngb-datepicker {
 .max-h-128 {
   max-height: 128px;
 }
-
+.w-0 {
+  width: 0;
+}
 .text-red {
   color: red;
 }
 
 .hidden {
   display: none;
+}
+.invisible {
+  visibility: hidden;
 }
 
 .m-0-auto {
@@ -993,6 +998,9 @@ ngb-datepicker {
   height: 20px;
   border: 2px solid gray;
   border-radius: 50%;
+}
+.modal {
+  --bs-modal-zindex: 999;
 }
 
 .modal-header {
@@ -1242,4 +1250,8 @@ body {
   .carousel-inner {
     height: 240px !important;
   }
+}
+
+.modal-backdrop {
+  z-index: 999 !important;
 }
