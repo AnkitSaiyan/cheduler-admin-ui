@@ -1,5 +1,5 @@
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap} from 'rxjs';
 import {NotificationType} from 'diflexmo-angular-design';
 import {ModalService} from '../../../../core/services/modal.service';
@@ -55,6 +55,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	public currentDate = DateTimeUtils.DateToDateDistributed(new Date());
 
 	public isDoctorConsentDisable$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+	public dateControl = new FormControl();
 
 	private examList: NameValue[] = [];
 	private physicianList: NameValue[] = [];
@@ -378,6 +380,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				day: date.getDate(),
 			};
 			this.appointmentForm.patchValue({ startedAt }, { emitEvent: true });
+			this.dateControl.setValue(date);
 		}
 	}
 
@@ -422,5 +425,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			behavior: 'smooth',
 			block: 'center',
 		});
+	}
+
+	public onDateChange(value: string, controlName: string) {
+		this.appointmentForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }

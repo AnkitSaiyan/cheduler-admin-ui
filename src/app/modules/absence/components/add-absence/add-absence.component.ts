@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
@@ -93,6 +93,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	private staffs: NameValue[] = [];
 	private times: NameValue[];
 	private selectedLang: string = ENG_BE;
+
+	public startDateControl = new FormControl();
+
+	public endDateControl = new FormControl();
 
 	constructor(
 		private modalSvc: ModalService,
@@ -373,6 +377,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			if (startTime && !this.startTimes.find((time) => time.value === startTime)) {
 				this.startTimes.push({ name: startTime, value: startTime });
 			}
+			this.startDateControl.setValue(date);
 		}
 
 		if (absenceDetails?.endedAt) {
@@ -382,6 +387,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			if (endTime && !this.endTimes.find((time) => time.value === endTime)) {
 				this.endTimes.push({ name: endTime, value: endTime });
 			}
+			this.endDateControl.setValue(date);
 		}
 
 		this.absenceForm = this.fb.group({
@@ -562,5 +568,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		toggleControlError(this.absenceForm.get('startTime'), 'time', false);
 		toggleControlError(this.absenceForm.get('endTime'), 'time', false);
+	}
+
+	public onDateChange(value: string, controlName: string) {
+		this.absenceForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }

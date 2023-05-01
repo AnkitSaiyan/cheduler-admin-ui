@@ -174,29 +174,21 @@
               <div class="d-flex align-items-center dfm-gap-16 ad-ap-dates">
                 <div class="dfm-button-group-wrapper w-full h-fit">
                   <div class="input-as-dfm-input">
-                    <input
-                      class="w-full min-w-128"
-                      formControlName="startedAt"
-                      placeholder="{{'dateFormat' | translate}}"
-                      required
-                      ngbDatepicker
-                      [minDate]="currentDate"
-                      #date="ngbDatepicker"
-
-                    />
+                    <input [formControl]="dateControl" (dateChange)="onDateChange($event.value, 'startedAt')"
+                    placeholder="{{'dateFormat' | translate}}"
+                    required [value]="currentDate"  [matDatepicker]="picker" readonly class="w-full min-w-128">
                   </div>
-                  <div>
-                    <dfm-button-icon
-                      color="tertiary-gray"
-                      size="md"
-                      icon="calendar-date"
-                      ngbPopover="{{'Calendar' | translate }}"
-                      triggers="mouseenter:mouseleave"
-                      popoverClass="popover-p-8"
-                      [openDelay]="200"
-                      (click)="date.toggle()"
-                    ></dfm-button-icon>
-                  </div>
+                  <dfm-button-icon
+                    color="secondary-gray"
+                    size="md"
+                    icon="calendar-date"
+                    ngbPopover="{{ 'Calendar' | translate }}"
+                    triggers="mouseenter:mouseleave"
+                    popoverClass="popover-p-8"
+                    [openDelay]="200"
+                    (click)="picker.open()"
+                  ></dfm-button-icon>
+                  <mat-datepicker #picker></mat-datepicker>
                 </div>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { DesignSystemModule, NgDfmDropdownModule, TableModule } from 'diflexmo-angular-design';
 import { MatButtonModule } from '@angular/material/button';
@@ -191,6 +191,16 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DfmCalendarPickerComponent,
 		MatDatepickerModule,
 	],
-	providers: [TranslatePipe, { provide: DateAdapter, useClass: CustomDatePickerAdapter, deps: [MAT_DATE_LOCALE] }],
 })
-export class SharedModule {}
+export class SharedModule {
+	static forRoot(): ModuleWithProviders<SharedModule> {
+		return {
+			ngModule: SharedModule,
+			providers: [
+				TranslatePipe,
+				{ provide: DateAdapter, useClass: CustomDatePickerAdapter, deps: [MAT_DATE_LOCALE] },
+				{ provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
+			],
+		};
+	}
+}

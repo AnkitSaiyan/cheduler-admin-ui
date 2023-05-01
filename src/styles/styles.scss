@@ -999,6 +999,9 @@ ngb-datepicker {
   border: 2px solid gray;
   border-radius: 50%;
 }
+.modal {
+  --bs-modal-zindex: 999;
+}
 
 .modal-header {
   display: flex;
@@ -1247,4 +1250,8 @@ body {
   .carousel-inner {
     height: 240px !important;
   }
+}
+
+.modal-backdrop {
+  z-index: 999 !important;
 }

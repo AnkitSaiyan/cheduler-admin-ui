@@ -1,62 +1,52 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {
-    BehaviorSubject,
-    combineLatest,
-    debounceTime,
-    distinctUntilChanged,
-    of,
-    startWith,
-    switchMap,
-    take,
-    takeUntil
-} from 'rxjs';
-import {InputComponent, NotificationType} from 'diflexmo-angular-design';
-import {DatePipe} from '@angular/common';
-import {PrioritySlotApiService} from 'src/app/core/services/priority-slot-api.service';
-import {PrioritySlot} from 'src/app/shared/models/priority-slots.model';
-import {User, UserType} from 'src/app/shared/models/user.model';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {GeneralUtils} from 'src/app/shared/utils/general.utils';
-import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {ModalService} from '../../../../core/services/modal.service';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {PriorityType, RepeatType} from '../../../../shared/models/absence.model';
-import {NameValue} from '../../../../shared/components/search-modal.component';
-import {getNumberArray} from '../../../../shared/utils/getNumberArray';
-import {WeekdayToNamePipe} from '../../../../shared/pipes/weekday-to-name.pipe';
-import {MonthToNamePipe} from '../../../../shared/pipes/month-to-name.pipe';
-import {TimeInIntervalPipe} from '../../../../shared/pipes/time-in-interval.pipe';
-import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
-import {toggleControlError} from '../../../../shared/utils/toggleControlError';
-import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
-import {Translate} from '../../../../shared/models/translate.model';
-import {CustomDateParserFormatter} from '../../../../shared/utils/dateFormat';
-import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
-import {UserApiService} from "../../../../core/services/user-api.service";
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, of, startWith, switchMap, take, takeUntil } from 'rxjs';
+import { InputComponent, NotificationType } from 'diflexmo-angular-design';
+import { DatePipe } from '@angular/common';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
+import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
+import { User, UserType } from 'src/app/shared/models/user.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { PriorityType, RepeatType } from '../../../../shared/models/absence.model';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { getNumberArray } from '../../../../shared/utils/getNumberArray';
+import { WeekdayToNamePipe } from '../../../../shared/pipes/weekday-to-name.pipe';
+import { MonthToNamePipe } from '../../../../shared/pipes/month-to-name.pipe';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { toggleControlError } from '../../../../shared/utils/toggleControlError';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { UserApiService } from '../../../../core/services/user-api.service';
 
 interface FormValues {
-    name: string;
-    startedAt: {
-        year: number;
-        month: number;
-        day: number;
-    };
-    slotStartTime: string;
-    endedAt: {
-        year: number;
-        month: number;
-        day: number;
-    };
-    slotEndTime: string;
-    isRepeat: boolean;
-    priority: PriorityType;
-    repeatType: RepeatType;
-    repeatFrequency: string;
-    repeatDays: string[];
-    userList: number[];
-    nxtSlotOpenPct: number;
+	name: string;
+	startedAt: {
+		year: number;
+		month: number;
+		day: number;
+	};
+	slotStartTime: string;
+	endedAt: {
+		year: number;
+		month: number;
+		day: number;
+	};
+	slotEndTime: string;
+	isRepeat: boolean;
+	priority: PriorityType;
+	repeatType: RepeatType;
+	repeatFrequency: string;
+	repeatDays: string[];
+	userList: number[];
+	nxtSlotOpenPct: number;
 }
 
 @Component({
@@ -100,6 +90,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 	private staffDetails: User[] = [];
 	private times: NameValue[];
 	private selectedLang: string = ENG_BE;
+
+	public startDateControl = new FormControl();
+
+	public endDateControl = new FormControl();
 
 	constructor(
 		private modalSvc: ModalService,
@@ -359,6 +353,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			if (startTime && !this.startTimes.find((time) => time.value === startTime)) {
 				this.startTimes.push({ name: startTime, value: startTime });
 			}
+			this.startDateControl.setValue(date);
 		}
 
 		if (prioritySlotDetails?.endedAt) {
@@ -368,6 +363,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			if (endTime && !this.endTimes.find((time) => time.value === endTime)) {
 				this.endTimes.push({ name: endTime, value: endTime });
 			}
+			this.endDateControl.setValue(date);
 		}
 
 		// let slotStartTime;
@@ -598,7 +594,12 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', false);
 		toggleControlError(this.prioritySlotForm.get('slotEndTime'), 'time', false);
 	}
+
+	public onDateChange(value: string, controlName: string) {
+		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
+	}
 }
+
 
 
 
