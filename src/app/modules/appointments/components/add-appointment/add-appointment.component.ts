@@ -268,7 +268,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	public saveAppointment(): void {
 		try {
 			if (this.appointmentForm.invalid) {
-				this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+				this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}.`, NotificationType.WARNING);
 				// this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 				this.appointmentForm.markAllAsTouched();
 				return;
@@ -280,7 +280,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				(!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length) ||
 				Object.values(this.selectedTimeSlot).some((slot) => !slot.start)
 			) {
-				this.notificationSvc.showNotification('Please select slots for all exams.', NotificationType.WARNING);
+				this.notificationSvc.showNotification(`${Translate.SelectSlots[this.selectedLang]}.`, NotificationType.WARNING);
 				return;
 			}
 
@@ -371,7 +371,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			}
 		} catch (e) {
 			console.log(e);
-			this.notificationSvc.showNotification('Failed to save the appointment', NotificationType.DANGER);
+			this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}`, NotificationType.DANGER);
 			this.submitting$$.next(false);
 			return;
 		}

@@ -259,7 +259,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
                 (this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
                 (!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length)
             ) {
-                this.notificationSvc.showNotification('Please select slots for all exams.', NotificationType.WARNING);
+                this.notificationSvc.showNotification(`${Translate.SelectSlots[this.selectedLang]}`, NotificationType.WARNING);
                 return;
             }
 
@@ -344,7 +344,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
             }
         } catch (e) {
             console.log(e);
-            this.notificationSvc.showNotification('Failed to save the appointment', NotificationType.DANGER);
+            this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}.`, NotificationType.DANGER);
             this.submitting$$.next(false);
             return;
         }
