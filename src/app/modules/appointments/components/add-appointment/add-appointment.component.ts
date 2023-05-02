@@ -90,7 +90,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 	public dateControl = new FormControl();
 
-	public currentDate = DateTimeUtils.DateToDateDistributed(new Date());
+	public currentDate = new Date();
 
 	constructor(
 		private fb: FormBuilder,

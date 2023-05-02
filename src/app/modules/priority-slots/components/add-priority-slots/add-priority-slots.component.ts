@@ -78,11 +78,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		weekly: 'Weeks',
 		monthly: 'Months',
 	};
-	public minFromDate = {
-		year: new Date().getFullYear(),
-		month: new Date().getMonth() + 1,
-		day: new Date().getDate(),
-	};
+	public minFromDate = new Date();
 
 	@ViewChild('repeatFrequency')
 	private repeatFrequency!: InputComponent;
@@ -599,6 +595,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
+
 
 
 

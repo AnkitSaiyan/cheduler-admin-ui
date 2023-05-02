@@ -52,7 +52,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	public selectedTimeInUTCOrig!: string;
 	public isCombinable: boolean = false;
 
-	public currentDate = DateTimeUtils.DateToDateDistributed(new Date());
+	public currentDate = new Date();
 
 	public isDoctorConsentDisable$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
