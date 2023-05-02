@@ -26,7 +26,7 @@ import {
 	Slot,
 	SlotModified,
 } from '../../../../shared/models/appointment.model';
-import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
+import { APPOINTMENT_ID, COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { AppointmentStatus } from '../../../../shared/models/status.model';
 import { AppointmentUtils } from '../../../../shared/utils/appointment.utils';
@@ -36,6 +36,8 @@ import { DateDistributed } from '../../../../shared/models/calendar.model';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { UserApiService } from '../../../../core/services/user-api.service';
+import {Translate} from '../../../../shared/models/translate.model';
+
 
 @Component({
 	selector: 'dfm-add-appointment',
@@ -53,6 +55,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	public loadingSlots$$ = new BehaviorSubject<boolean>(false);
 
 	public submitting$$ = new BehaviorSubject(false);
+    private selectedLang: string = ENG_BE;
 
 	public filteredUserList: NameValue[] = [];
 	public filteredExamList: NameValue[] = [];
@@ -232,6 +235,24 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				},
 				error: () => this.loadingSlots$$.next(false),
 			});
+			this.shareDataSvc
+            .getLanguage$()
+            .pipe(takeUntil(this.destroy$$))
+            .subscribe({
+                next: (lang) => {
+                    this.selectedLang = lang;
+
+                    // eslint-disable-next-line default-case
+                    switch (lang) {
+                        case ENG_BE:
+                            // this.statuses = Statuses;
+                            break;
+                        case DUTCH_BE:
+                            // this.statuses = StatusesNL;
+                            break;
+                    }
+                }
+            });
 	}
 
 	public override ngOnDestroy() {
@@ -247,7 +268,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	public saveAppointment(): void {
 		try {
 			if (this.appointmentForm.invalid) {
-				this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+				this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 				// this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 				this.appointmentForm.markAllAsTouched();
 				return;

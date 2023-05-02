@@ -35,6 +35,7 @@ import {ModalService} from 'src/app/core/services/modal.service';
 import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
 import {CustomDateParserFormatter} from '../../../../../shared/utils/dateFormat';
 import {UserApiService} from "../../../../../core/services/user-api.service";
+import { Translate } from 'src/app/shared/models/translate.model';
 
 @Component({
     selector: 'dfm-appointment-advance-search',
@@ -50,6 +51,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
     public loading$$ = new BehaviorSubject(false);
 
     public loadingSlots$$ = new BehaviorSubject<boolean>(false);
+    private selectedLang: string = ENG_BE;
 
     public submitting$$ = new BehaviorSubject(false);
 
@@ -112,6 +114,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
         private shareDataService: ShareDataService,
         private siteManagementApiSvc: SiteManagementApiService,
         private cdr: ChangeDetectorRef,
+		private shareDataSvc: ShareDataService,
     ) {
         super();
         const times = this.nameValuePipe.transform(this.timeInIntervalPipe.transform(5));
@@ -212,6 +215,24 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
                 this.appointment$$.next(appointment ?? ({} as Appointment));
                 this.updateForm(appointment);
             });
+            this.shareDataSvc
+            .getLanguage$()
+            .pipe(takeUntil(this.destroy$$))
+            .subscribe({
+                next: (lang) => {
+                    // this.selectedLang = lang;
+
+                    // eslint-disable-next-line default-case
+                    switch (lang) {
+                        case ENG_BE:
+                            // this.statuses = Statuses;
+                            break;
+                        // case DUTCH_BE:
+                            // this.statuses = StatusesNL;
+                            break;
+                    }
+                }
+            });
     }
 
     public override ngOnDestroy() {
@@ -229,7 +250,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 
         try {
             if (this.appointmentForm.invalid) {
-                this.notificationSvc.showNotification('Form is not valid, please fill out the required fields.', NotificationType.WARNING);
+                this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
                 Object.keys(this.appointmentForm.controls).forEach((key) => this.appointmentForm.get(key)?.markAsTouched());
                 return;
             }
