@@ -7,7 +7,7 @@
     [messages]="(messages$$ | async) ?? []"
     [isTenantDropdownShown]="true"
     [tenants]="languages"
-    [currentTenant]="(currentTenant$$ | async) ?? 'nl-BE'"
+    [currentTenant]="(currentTenant$$ | async) ?? DUTCH_BE"
     (tenantChanged)="onLanguageChange($event)"
     [isProfileShown]="true"
     [profileData]="profileData"
