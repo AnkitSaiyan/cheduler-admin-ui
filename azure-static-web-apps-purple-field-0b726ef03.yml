@@ -31,7 +31,7 @@ jobs:
     displayName: 'npm build'
     inputs:
       command: 'custom'
-      customCommand: 'run build --configuration=production --base-href ./'
+      customCommand: 'run build --configuration=production'
   - task: Bash@3
     displayName: 'Copy staticwebapp.config.json'
     inputs:
