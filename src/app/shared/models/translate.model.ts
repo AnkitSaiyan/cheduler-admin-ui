@@ -440,7 +440,7 @@ export const Translate = Object.freeze({
 
 	SelectSlots: {
 		[ENG_BE]: 'Please select slots for all exams',
-		[DUTCH_BE]: 'Selecteer slots voor alle examens',
+		[DUTCH_BE]: 'Selecteer uren voor alle onderzoeken',
 	},
 
 	FillSlot: {
@@ -511,6 +511,10 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'Something Went Wrong',
 			[DUTCH_BE]: 'Er is iets fout gegaan',
 		},
+		FailedToSave:{
+			[ENG_BE]: 'Failed to save the appointment',
+			[DUTCH_BE]: 'Afspraak werd niet weerhouden',
+		}
 	},
 
 	//title
