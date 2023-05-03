@@ -22,14 +22,13 @@ import {
     throwError
 } from 'rxjs';
 import {DestroyableComponent} from '../shared/components/destroyable.component';
-import {DUTCH_BE, ENG_BE} from '../shared/utils/const';
+import { DUTCH_BE, ENG_BE } from '../shared/utils/const';
 import englishLanguage from '../../assets/i18n/en-BE.json';
 import dutchLanguage from '../../assets/i18n/nl-BE.json';
 import {ShareDataService} from './services/share-data.service';
 import {DashboardApiService} from './services/dashboard-api.service';
 import {LoaderService} from './services/loader.service';
 import {UserApiService} from './services/user-api.service';
-import {Translate} from '../shared/models/translate.model';
 import {PermissionService} from './services/permission.service';
 import {AuthUser, UserRoleEnum} from '../shared/models/user.model';
 import {DateTimeUtils} from '../shared/utils/date-time.utils';
@@ -51,7 +50,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 
 	public messages$$ = new BehaviorSubject<NavigationItemEvent[]>([]);
 
-	public currentTenant$$ = new BehaviorSubject<string>('nl-BE');
+	public currentTenant$$ = new BehaviorSubject<string>(DUTCH_BE);
 
 	public loggingOut$$ = new BehaviorSubject(false);
 
@@ -70,8 +69,11 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		links: [],
 	};
 	public isLoaderActive$$ = new Subject<boolean>();
+
 	public navItems: NavigationItem[] = [];
+
 	public user!: AuthUser;
+
 	private navigationItems: NavigationItem[] = [
 		new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
 		new NavigationItem('Appointment', 'file-06', '/appointment', false),
@@ -306,4 +308,6 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 				},
 			});
 	}
+
+	protected readonly DUTCH_BE = DUTCH_BE;
 }

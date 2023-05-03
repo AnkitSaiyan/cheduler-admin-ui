@@ -63,9 +63,10 @@ import { CompleteProfileComponent } from './components/complete-profile/complete
 import { LoginFailedComponent } from './components/login-failed/login-failed.component';
 
 import { DfmCalendarPickerComponent } from './components/dfm-calendar/dfm-calendar-picker/dfm-calendar-picker.component';
-import { DateAdapter, MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { DateAdapter, MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CustomDatePickerAdapter } from './utils/date-adapter';
+import { DUTCH_BE } from "./utils/const";
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
 }
@@ -194,7 +195,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 	providers: [
 		TranslatePipe,
 		{ provide: DateAdapter, useClass: CustomDatePickerAdapter, deps: [MAT_DATE_LOCALE] },
-		{ provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
+		{ provide: MAT_DATE_LOCALE, useValue: DUTCH_BE },
 	],
 })
 export class SharedModule {
