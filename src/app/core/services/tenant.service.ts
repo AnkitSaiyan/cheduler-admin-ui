@@ -16,6 +16,7 @@ export class TenantService {
         let currentTenantId = GeneralUtils.TenantID;
 
         const tenantIds = tenants ?? [];
+
         if (!tenantIds.find((tenantId) => currentTenantId === tenantId)) {
             currentTenantId = tenants[0] as string;
         }
@@ -23,3 +24,5 @@ export class TenantService {
         return currentTenantId;
     }
 }
+
+
