@@ -8,8 +8,8 @@ export const ABSENCE_ID = 'absenceID';
 export const APPOINTMENT_ID = 'appointmentID';
 export const EMAIL_TEMPLATE_ID = 'emailID';
 export const PRIORITY_ID = 'priorityID';
-export const DEV_TENANT_ID = 'NBK0';
-export const UAT_TENANT_ID = 'N5v0';
+// export const DEV_TENANT_ID = 'NBK0';
+// export const UAT_TENANT_ID = 'N5v0';
 
 // Language Constants
 

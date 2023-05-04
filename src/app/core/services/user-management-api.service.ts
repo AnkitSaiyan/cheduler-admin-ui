@@ -22,7 +22,7 @@ export class UserManagementApiService {
 
 	private userIdToRoleMap = new Map<string, UserRoleEnum>();
 
-	private currentTenantId = '';
+	private currentTenantId = 'NBK0';
 
 	constructor(
 		private httpClient: HttpClient,
@@ -168,6 +168,7 @@ export class UserManagementApiService {
 		return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?ids=${ids}`).pipe(map((patientRes) => patientRes.items));
 	}
 }
+
 
 
 
