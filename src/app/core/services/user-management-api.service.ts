@@ -13,145 +13,170 @@ import {UserApiService} from "./user-api.service";
 import {TenantService} from "./tenant.service";
 
 @Injectable({
-    providedIn: 'root',
+	providedIn: 'root',
 })
 export class UserManagementApiService {
-    private baseUrl: string = environment.userManagementApiUrl;
+	private baseUrl: string = environment.userManagementApiUrl;
 
-    private refreshUserList$$ = new Subject<void>();
+	private schedulerApiUrl: string = environment.schedulerApiUrl;
 
-    private userIdToRoleMap = new Map<string, UserRoleEnum>();
+	private refreshUserList$$ = new Subject<void>();
 
-    constructor(
-        private httpClient: HttpClient,
-        private loaderSvc: LoaderService,
-        private userApiSvc: UserApiService,
-        private tenantSvc: TenantService
-    ) {
-    }
+	private userIdToRoleMap = new Map<string, UserRoleEnum>();
 
-    public get userList$(): Observable<UserListResponse> {
-        return combineLatest([this.refreshUserList$$.pipe(startWith(''))]).pipe(
-            switchMap(() => {
-                this.loaderSvc.spinnerDeactivate();
-                this.loaderSvc.activate();
+	private currentTenantId = '';
 
-                const tenantId = this.tenantSvc.currentTenant;
+	constructor(
+		private httpClient: HttpClient,
+		private loaderSvc: LoaderService,
+		private userApiSvc: UserApiService,
+		private tenantSvc: TenantService,
+	) {}
 
-                return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?tenantId=${tenantId}`).pipe(
-                    switchMap((userRes) => {
-                        return of(null).pipe(
-                            switchMap(() => {
-                                return forkJoin([
-                                    ...userRes.items.map((user) => {
-                                        const userRole = this.userIdToRoleMap.get(user.id);
-                                        if (userRole) {
-                                            user.userRole = userRole;
-                                            return of(user);
-                                        }
+	public get userList$(): Observable<UserListResponse> {
+		return combineLatest([this.refreshUserList$$.pipe(startWith(''))]).pipe(
+			switchMap(() => {
+				this.loaderSvc.spinnerDeactivate();
+				this.loaderSvc.activate();
 
-                                        return this.userApiSvc.getUserRole(user.id).pipe(
-                                            map((role) => {
-                                                user.userRole = role ?? '' as UserRoleEnum;
-                                                return user;
-                                            }),
-                                            tap(({id, userRole}) => this.userIdToRoleMap.set(id, userRole)),
-                                            catchError(() => of({...user, userRole: ''})),
-                                        ) as Observable<SchedulerUser>;
-                                    })
-                                ]);
-                            }),
-                            map((users) => {
-                                return {
-                                    ...userRes,
-                                    items: users
-                                }
-                            })
-                        )
-                    }),
-                    tap(() => {
-                        this.loaderSvc.deactivate();
-                        this.loaderSvc.spinnerDeactivate();
-                    }),
-                    catchError(() => ([]))
-                );
-            })
-        );
-    }
+				const tenantId = this.currentTenantId;
 
-    public getUserProperties(userId: string): Observable<UserProperties> {
-        return this.httpClient.get<UserProperties>(`${this.baseUrl}/users/${userId}/properties`);
-    }
+				return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?tenantId=${tenantId}`).pipe(
+					switchMap((userRes) => {
+						return of(null).pipe(
+							switchMap(() => {
+								return forkJoin([
+									...userRes.items.map((user) => {
+										const userRole = this.userIdToRoleMap.get(user.id);
+										if (userRole) {
+											user.userRole = userRole;
+											return of(user);
+										}
 
-    public patchUserProperties(userId: string, properties: Record<string, any>) {
-        return this.httpClient.patch(`${this.baseUrl}/users/${userId}/properties`, {properties});
-    }
+										return this.userApiSvc.getUserRole(user.id).pipe(
+											map((role) => {
+												user.userRole = role ?? ('' as UserRoleEnum);
+												return user;
+											}),
+											tap(({ id, userRole }) => this.userIdToRoleMap.set(id, userRole)),
+											catchError(() => of({ ...user, userRole: '' })),
+										) as Observable<SchedulerUser>;
+									}),
+								]);
+							}),
+							map((users) => {
+								return {
+									...userRes,
+									items: users,
+								};
+							}),
+						);
+					}),
+					tap(() => {
+						this.loaderSvc.deactivate();
+						this.loaderSvc.spinnerDeactivate();
+					}),
+					catchError(() => []),
+				);
+			}),
+		);
+	}
 
-    public getUserById(userId: string): Observable<SchedulerUser> {
-        this.loaderSvc.spinnerDeactivate();
-        this.loaderSvc.activate();
+	public getUserProperties(userId: string): Observable<UserProperties> {
+		return combineLatest([this.httpClient.get<UserProperties>(`${this.baseUrl}/users/${userId}/properties`), this.getTenantId()]).pipe(
+			map(([data]) => data),
+		);
+	}
 
-        return this.httpClient.get<SchedulerUser>(`${this.baseUrl}/users/${userId}`).pipe(tap(() => {
-            this.loaderSvc.deactivate();
-            this.loaderSvc.spinnerDeactivate();
-        }));
-    }
+	public getTenantId(): Observable<any> {
+		return this.httpClient.get<any>(`${this.schedulerApiUrl}/common/gettenantid`).pipe(tap((res) => (this.currentTenantId = res.data)));
+	}
 
-    public createUserInvite(userInvite: UserInvite): Observable<UserInviteResponse> {
-        return this.httpClient.post<UserInviteResponse>(`${this.baseUrl}/users/invites`, userInvite);
-    }
+	public get tenantId(): string {
+		return this.currentTenantId;
+	}
 
-    public getPropertiesPermits(userId: string): Observable<UserPropertiesPermitItem[]> {
-        return this.httpClient.get<UserPropertiesPermitItem[]>(`${this.baseUrl}/users/${userId}/properties/permits`);
-    }
+	public patchUserProperties(userId: string, properties: Record<string, any>) {
+		return this.httpClient.patch(`${this.baseUrl}/users/${userId}/properties`, { properties });
+	}
 
-    public createPropertiesPermit(userId: string, tenantId: string): Observable<Record<string, string>> {
-        return this.httpClient.post<Record<string, string>>(`${this.baseUrl}/users/${userId}/properties/permit`, {tenantId});
-    }
+	public getUserById(userId: string): Observable<SchedulerUser> {
+		this.loaderSvc.spinnerDeactivate();
+		this.loaderSvc.activate();
 
-    public revokePropertiesPermit(userId: string, tenantId: string): Observable<any> {
-        return this.httpClient.post<any>(`${this.baseUrl}/users/${userId}/properties/revoke`, {tenantId});
-    }
+		return this.httpClient.get<SchedulerUser>(`${this.baseUrl}/users/${userId}`).pipe(
+			tap(() => {
+				this.loaderSvc.deactivate();
+				this.loaderSvc.spinnerDeactivate();
+			}),
+		);
+	}
 
-    public getTenantGlobalPermissions(userId: string, tenantId: string): Observable<string[]> {
-        return this.httpClient.get<string[]>(`${this.baseUrl}/users/${userId}/tenants/${tenantId}/global-permissions`);
-    }
+	public createUserInvite(userInvite: UserInvite): Observable<UserInviteResponse> {
+		return this.httpClient.post<UserInviteResponse>(`${this.baseUrl}/users/invites`, userInvite);
+	}
 
-    public getUserTenantsList(userId: string): Observable<UserTenantItem[]> {
-        return this.httpClient.get<UserTenantItem[]>(`${this.baseUrl}/users/${userId}/tenants`);
-    }
+	public getPropertiesPermits(userId: string): Observable<UserPropertiesPermitItem[]> {
+		return this.httpClient.get<UserPropertiesPermitItem[]>(`${this.baseUrl}/users/${userId}/properties/permits`);
+	}
 
-    public deleteUser(userId: string): Observable<{}> {
-        return this.httpClient.delete<{}>(`${this.baseUrl}/users/${userId}`).pipe(tap(() => {
-            this.refreshUserList$$.next();
+	public createPropertiesPermit(userId: string, tenantId: string): Observable<Record<string, string>> {
+		return this.httpClient.post<Record<string, string>>(`${this.baseUrl}/users/${userId}/properties/permit`, { tenantId });
+	}
 
-            if (this.userIdToRoleMap.has(userId)) {
-                this.userIdToRoleMap.delete(userId);
-            }
-        }));
-    }
+	public revokePropertiesPermit(userId: string, tenantId: string): Observable<any> {
+		return this.httpClient.post<any>(`${this.baseUrl}/users/${userId}/properties/revoke`, { tenantId });
+	}
 
-    public changeUserState(userId: string, state: boolean): Observable<any> {
-        this.loaderSvc.activate();
+	public getTenantGlobalPermissions(userId: string, tenantId: string): Observable<string[]> {
+		return this.httpClient.get<string[]>(`${this.baseUrl}/users/${userId}/tenants/${tenantId}/global-permissions`);
+	}
 
-        return this.httpClient.put<any>(`${this.baseUrl}/users/${userId}/state`, { accountEnabled: state }).pipe(
-            tap(() => this.refreshUserList$$.next())
-        );
-    }
+	public getUserTenantsList(userId: string): Observable<UserTenantItem[]> {
+		return this.httpClient.get<UserTenantItem[]>(`${this.baseUrl}/users/${userId}/tenants`);
+	}
 
-    public changeUsersStates(stateRequest: Array<{ id: string, accountEnabled: boolean }>): Observable<any> {
-        this.loaderSvc.activate();
+	public deleteUser(userId: string): Observable<{}> {
+		return this.httpClient.delete<{}>(`${this.baseUrl}/users/${userId}`).pipe(
+			tap(() => {
+				this.refreshUserList$$.next();
 
-        return this.httpClient.put<any>(`${this.baseUrl}/users/state`, { users: stateRequest }).pipe(
-            tap(() => this.refreshUserList$$.next())
-        );
-    }
+				if (this.userIdToRoleMap.has(userId)) {
+					this.userIdToRoleMap.delete(userId);
+				}
+			}),
+		);
+	}
 
-    public getPatientByIds$(patientIds: string[]): Observable<SchedulerUser[]> {
-        let ids = patientIds.join('&ids=');
-        return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?ids=${ids}`).pipe(
-            map((patientRes) => patientRes.items)
-        );
-    }
+	public changeUserState(userId: string, state: boolean): Observable<any> {
+		this.loaderSvc.activate();
+
+		return this.httpClient
+			.put<any>(`${this.baseUrl}/users/${userId}/state`, { accountEnabled: state })
+			.pipe(tap(() => this.refreshUserList$$.next()));
+	}
+
+	public changeUsersStates(stateRequest: Array<{ id: string; accountEnabled: boolean }>): Observable<any> {
+		this.loaderSvc.activate();
+
+		return this.httpClient.put<any>(`${this.baseUrl}/users/state`, { users: stateRequest }).pipe(tap(() => this.refreshUserList$$.next()));
+	}
+
+	public getPatientByIds$(patientIds: string[]): Observable<SchedulerUser[]> {
+		let ids = patientIds.join('&ids=');
+		return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?ids=${ids}`).pipe(map((patientRes) => patientRes.items));
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
 

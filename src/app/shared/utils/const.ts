@@ -8,8 +8,8 @@ export const ABSENCE_ID = 'absenceID';
 export const APPOINTMENT_ID = 'appointmentID';
 export const EMAIL_TEMPLATE_ID = 'emailID';
 export const PRIORITY_ID = 'priorityID';
-export const DEV_TENANT_ID = 'NBK0';
-export const UAT_TENANT_ID = 'N5v0';
+// export const DEV_TENANT_ID = 'NBK0';
+// export const UAT_TENANT_ID = 'N5v0';
 
 // Language Constants
 
@@ -41,7 +41,4 @@ export const GlobalDateFormat = 'dd/MM/yyyy';
 export const GlobalDateTimeFormat = 'dd/MM/yyyy, HH:mm';
 
 // URL constants
-
 export const DEV_SUBDOMAIN = 'red-sea-08bb7b903'
-export const UAT_SUBDOMAIN = ''
-
