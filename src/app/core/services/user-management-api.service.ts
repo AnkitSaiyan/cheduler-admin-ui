@@ -18,11 +18,13 @@ import {TenantService} from "./tenant.service";
 export class UserManagementApiService {
 	private baseUrl: string = environment.userManagementApiUrl;
 
+	private schedulerApiUrl: string = environment.schedulerApiUrl;
+
 	private refreshUserList$$ = new Subject<void>();
 
 	private userIdToRoleMap = new Map<string, UserRoleEnum>();
 
-	private currentTenantId = 'NBK0';
+	private currentTenantId = '';
 
 	constructor(
 		private httpClient: HttpClient,
@@ -87,10 +89,7 @@ export class UserManagementApiService {
 	}
 
 	public getTenantId(): Observable<any> {
-		console.log('tenantId');
-		return of(null);
-
-		return this.httpClient.get<any>(`${this.baseUrl}/tenantId`).pipe(tap((data) => (this.currentTenantId = data)));
+		return this.httpClient.get<any>(`${this.schedulerApiUrl}/common/gettenantid`).pipe(tap((res) => (this.currentTenantId = res.data)));
 	}
 
 	public get tenantId(): string {
@@ -168,6 +167,9 @@ export class UserManagementApiService {
 		return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?ids=${ids}`).pipe(map((patientRes) => patientRes.items));
 	}
 }
+
+
+
 
 
 
