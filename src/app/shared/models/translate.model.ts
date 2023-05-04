@@ -440,7 +440,7 @@ export const Translate = Object.freeze({
 
 	SelectSlots: {
 		[ENG_BE]: 'Please select slots for all exams',
-		[DUTCH_BE]: 'Selecteer uren voor alle onderzoeken',
+		[DUTCH_BE]: 'Selecteer uur voor alle onderzoeken',
 	},
 
 	FillSlot: {
