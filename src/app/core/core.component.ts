@@ -35,6 +35,8 @@ import {DateTimeUtils} from '../shared/utils/date-time.utils';
 import {NotificationDataService} from "./services/notification-data.service";
 import {UserService} from "./services/user.service";
 import {DefaultDatePipe} from "../shared/pipes/default-date.pipe";
+import { ModalService } from './services/modal.service';
+import { ConfirmActionModalComponent } from '../shared/components/confirm-action-modal.component';
 
 @Component({
 	selector: 'dfm-main',
@@ -146,6 +148,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		private permissionSvc: PermissionService,
 		private notificationSvc: NotificationDataService,
 		private defaultDatePipe: DefaultDatePipe,
+		private modalSvc: ModalService,
 	) {
 		super();
 
@@ -168,13 +171,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 				res.forEach((element) => {
 					const date: Date = DateTimeUtils.UTCDateToLocalDate(new Date(element.date));
 					this.notifications.push(
-						new NavigationItemEvent(
-							element?.apmtId.toString(),
-							date,
-							element?.title,
-							NavigationItemEventType.SUCCESS,
-							element?.message,
-						),
+						new NavigationItemEvent(element?.apmtId.toString(), date, element?.title, NavigationItemEventType.SUCCESS, element?.message),
 					);
 				});
 				this.notifications$$.next(this.notifications);
@@ -186,11 +183,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 				this.messages = [];
 				res.forEach((element) => {
 					this.messages.push(
-						new NavigationItemEvent(
-							element.id.toString(),
-							DateTimeUtils.UTCDateToLocalDate(new Date(element.createdAt)),
-							element?.message,
-						)
+						new NavigationItemEvent(element.id.toString(), DateTimeUtils.UTCDateToLocalDate(new Date(element.createdAt)), element?.message),
 					);
 				});
 				this.messages$$.next(this.messages);
@@ -237,8 +230,26 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 	}
 
 	public logout() {
-		this.loggingOut$$.next(true);
-		this.userSvc.logout();
+		const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
+			data: {
+				titleText: 'LogoutConfirmation',
+				bodyText: 'Areyousurewanttologout',
+				cancelButtonText: 'Cancel',
+				confirmButtonText: 'Logout',
+			},
+		});
+
+		modalRef.closed
+			.pipe(
+				filter((res) => !!res),
+				take(1),
+			)
+			.subscribe({
+				next: () => {
+					this.loggingOut$$.next(true);
+					this.userSvc.logout();
+				},
+			});
 	}
 
 	private fetchUserAndUserRoles() {

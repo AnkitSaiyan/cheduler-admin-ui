@@ -398,8 +398,12 @@
 	"Oct": "Oct",
 	"Nov": "Nov",
 	"Dec": "Dec",
-	"Instructions" : "Instructions",
+	"Instructions": "Instructions",
 	"EnterInstructions": "Enter Instructions",
-	"Time" : "Time"
+	"Time": "Time",
+	"LogoutConfirmation": "Logout Confirmation",
+	"Areyousurewanttologout": "Are you sure you want to logout the session?"
 }
+
+
 
