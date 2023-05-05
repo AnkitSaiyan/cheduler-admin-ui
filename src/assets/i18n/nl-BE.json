@@ -401,12 +401,14 @@
 	"Oct": "Okt",
 	"Nov": "Nov",
 	"Dec": "Dec",
-	"Instructions" : "Aanwijzingen",
+	"Instructions": "Aanwijzingen",
 	"EnterInstructions": "Voer instructies in",
 	"Time" : "Tijd",
 	"LogoutConfirmation" : "Bevestiging Uitloggen",
 	"Areyousurewanttologout":"Ben je zeker dat je uit deze sessie wil loggen?"
 }
+
+
 
 
 
