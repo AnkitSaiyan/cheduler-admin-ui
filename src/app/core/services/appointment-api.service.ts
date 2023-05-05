@@ -222,9 +222,10 @@ export class AppointmentApiService extends DestroyableComponent {
 			patientTimeZone = patientTimeZone.slice(1);
 		}
 
-		return this.http
-			.post<BaseResponse<Appointment>>(`${this.appointmentUrl}`, { ...restData, patientTimeZone })
-			.pipe(map((response) => response.data));
+		return this.http.post<BaseResponse<Appointment>>(`${this.appointmentUrl}`, { ...restData, patientTimeZone }).pipe(
+			map((response) => response.data),
+			tap(() => this.refreshAppointment$$.next()),
+		);
 	}
 
 	public updateAppointment$(requestData: AddAppointmentRequestData): Observable<Appointment> {
