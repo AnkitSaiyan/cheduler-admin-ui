@@ -31,7 +31,7 @@
                         size="sm"
                         label="{{'GSM' | translate}}*"
                         placeholder="{{'EnterGsm' | translate}}"
-                        icon="file-06"
+                        icon="phone"
                         formControlName="MobilePhone"
                         #gsm
                         [dfmNumberInput]="gsm"
@@ -45,7 +45,7 @@
                         size="sm"
                         label="{{'Street' | translate}}*"
                         placeholder="{{'EnterStreet' | translate}}"
-                        icon="file-06"
+                        icon="home-03"
                         formControlName="StreetAddress"
                 >
                 </dfm-input>
@@ -57,7 +57,7 @@
                         size="sm"
                         label="{{'City' | translate}}*"
                         placeholder="{{'EnterCity' | translate}}"
-                        icon="file-06"
+                        icon="building-01"
                         formControlName="City"
                 >
                 </dfm-input>
@@ -69,7 +69,7 @@
                         size="sm"
                         label="{{'Country' | translate}}*"
                         placeholder="{{'EnterCountry' | translate}}"
-                        icon="file-06"
+                        icon="marker-pin-01"
                         formControlName="Country"
                         #country
                         [dfmNameInput]="country"
@@ -83,7 +83,7 @@
                         size="sm"
                         label="{{'PostalCode' | translate}}*"
                         placeholder="{{'EnterPostalCode' | translate}}"
-                        icon="file-06"
+                        icon="mail-05"
                         formControlName="PostalCode"
                         #postal
                         [dfmNumberInput]="postal"
@@ -94,11 +94,11 @@
 
         <div class="section-divider"></div>
 
-        <section class="complete-profile-section">
+        <section class="footer-btn">
             <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="save()">
                 {{"Confirm" | translate}}
             </dfm-button>
-            <dfm-button color="link" size="md" (click)="logout()">{{"Logout" | translate}}</dfm-button>
+            <dfm-button color="secondary" size="md" (click)="logout()">{{"Logout" | translate}}</dfm-button>
         </section>
     </div>
 </div>
