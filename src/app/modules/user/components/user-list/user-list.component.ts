@@ -286,7 +286,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						},
 						{
 							value: UserType.Scheduler,
-							name: `${Translate[UserType.Scheduler][lang]} ${Translate.User[lang]}`,
+							name: `${Translate.User[lang]}`,
 						},
 					]);
 

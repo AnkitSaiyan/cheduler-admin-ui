@@ -118,7 +118,8 @@
           <dfm-table-body-cell>{{ item?.exams.length ? (item.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing ) : ('' | dashIfNothing) }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.exams.length ? (item.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing) : ('' | dashIfNothing) }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.patientFname | titlecase }} {{ item?.patientLname  }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ item?.doctor | titlecase }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item?.exams | joinWithAnd : 'name'  | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item?.doctor | titlecase | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.id }}</dfm-table-body-cell>
           <dfm-table-body-cell>{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
           <!-- <dfm-table-body-cell>

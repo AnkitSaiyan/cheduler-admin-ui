@@ -268,7 +268,7 @@ export const Translate = Object.freeze({
 	SuccessMessage: {
 		StatusChanged: {
 			[ENG_BE]: 'Status has changed successfully',
-			[DUTCH_BE]: 'Status succesvol verandert',
+			[DUTCH_BE]: 'Status succesvol veranderd',
 		},
 		Deleted: {
 			[ENG_BE]: 'Deleted successfully',
