@@ -406,6 +406,10 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'Site Updated Successfully',
 			[DUTCH_BE]: 'Site succesvol geüpdated',
 		},
+		ProfileSavedSuccessfully:{
+			[ENG_BE]: 'Profile saved successfully',
+			[DUTCH_BE]: 'Profiel succesvol opgeslagen',
+		}
 	},
 
 	ErrorMessage: {
@@ -420,7 +424,17 @@ export const Translate = Object.freeze({
 		CanNotAddAppointmentInPostDate:{
 			[ENG_BE]: 'Can not add appointment on past date',
 			[DUTCH_BE]: 'kan geen afspraak toevoegen op datum in het verleden',
+		},
+		FailedToSaveProfile:{
+			[ENG_BE]: 'Failed to save profile',
+			[DUTCH_BE]: 'Profiel niet weerhouden',
+		},
+		FailedToLoginLoggingOut:{
+			[ENG_BE]: 'Failed to Login. Logging out',
+			[DUTCH_BE]: 'Login gefaald. Uitloggen',
 		}
+
+
 	},
 
 	// Form Invalid

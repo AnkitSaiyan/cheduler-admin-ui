@@ -403,9 +403,9 @@
 	"Dec": "Dec",
 	"Instructions": "Aanwijzingen",
 	"EnterInstructions": "Voer instructies in",
-	"Time": "Tijd",
-	"LogoutConfirmation": "Bevestiging Uitloggen",
-	"Areyousurewanttologout": "Ben je zeker dat je uit deze sessie wil loggen?"
+	"Time" : "Tijd",
+	"LogoutConfirmation" : "Bevestiging Uitloggen",
+	"Areyousurewanttologout":"Ben je zeker dat je uit deze sessie wil loggen?"
 }
 
 

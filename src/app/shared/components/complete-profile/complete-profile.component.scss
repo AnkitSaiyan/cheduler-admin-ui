@@ -38,3 +38,9 @@
 .dfm-color-primary {
   color: var(--dfm-primary);
 }
+.footer-btn{
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
