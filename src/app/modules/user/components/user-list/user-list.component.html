@@ -108,7 +108,7 @@
         </dfm-table-body-cell>
         <dfm-table-body-cell>
           <dfm-badge *ngIf="item.status === statusTypeEnum.Active || item.status === 2" color="success" size="sm" fontWeight="medium">
-            {{ 1 | statusName | translate | dashIfNothing }}
+            {{ item.status | statusName | translate | dashIfNothing }}
           </dfm-badge>
 
           <dfm-badge *ngIf="item.status === statusTypeEnum.Inactive" color="primary" size="sm">
