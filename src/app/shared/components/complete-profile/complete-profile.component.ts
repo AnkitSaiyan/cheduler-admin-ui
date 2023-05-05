@@ -15,6 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 import defaultLanguage from '../../../../../src/assets/i18n/en-BE.json';
 import dutchLangauge from '../../../../../src/assets/i18n/nl-BE.json';
 import { UserApiService } from 'src/app/core/services/user-api.service';
+import { Translate } from '../../models/translate.model';
 
 @Component({
 	selector: 'dfm-complete-profile',
@@ -79,7 +80,7 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 
 	public save(): void {
 		if (this.completeProfileForm.invalid) {
-			this.notificationSvc.showWarning('Form is invalid');
+			this.notificationSvc.showWarning(Translate.FormInvalidSimple[this.selectedLang]);
 			this.completeProfileForm.markAllAsTouched();
 			return;
 		}
@@ -99,15 +100,15 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 			.subscribe({
 				next: (success) => {
 					if (!success) {
-						this.notificationSvc.showError('Failed to Login. Logging out.');
+						this.notificationSvc.showError(Translate.ErrorMessage.FailedToLoginLoggingOut[this.selectedLang]);
 						this.userSvc.logout();
 					}
 
-					this.notificationSvc.showSuccess('Profile saved successfully.');
+					this.notificationSvc.showSuccess(Translate.SuccessMessage.ProfileSavedSuccessfully[this.selectedLang]);
 					this.router.navigate(['/']);
 				},
 				error: () => {
-					this.notificationSvc.showError('Failed to save profile.');
+					this.notificationSvc.showError(Translate.ErrorMessage.FailedToSaveProfile[this.selectedLang]);
 					this.submitting$$.next(false);
 				},
 			});
@@ -116,8 +117,8 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 	public logout() {
 		const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
 			data: {
-				titleText: 'Logout Confirmation',
-				bodyText: 'Are you sure you want to logout?',
+				titleText: 'LogoutConfirmation',
+				bodyText: 'Areyousurewanttologout',
 				confirmButtonText: 'Confirm',
 				cancelButtonText: 'Cancel',
 			} as ConfirmActionModalData,
