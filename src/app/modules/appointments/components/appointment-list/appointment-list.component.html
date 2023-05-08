@@ -128,6 +128,7 @@
           <dfm-table-body-cell>
             <div class="text-truncate">{{ item?.patientFname | titlecase  }} {{ item?.patientLname | titlecase }}</div>
           </dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item?.exams | joinWithAnd : 'name'  | dashIfNothing }}</dfm-table-body-cell>
           <dfm-table-body-cell>
             <div class="text-truncate">
               {{ item?.doctor | titlecase | dashIfNothing }}
