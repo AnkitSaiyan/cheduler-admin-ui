@@ -99,9 +99,9 @@
 
                                   <div class="d-flex flex-column dfm-gap-4">
                                     <span class="font-weight-medium dfm-mt-8">{{"Staff" | translate}}</span>
-                                    <ng-container *ngIf="data.exams | isData : 'allUsers'; else dash">
+                                    <ng-container *ngIf="data.exams | isData : 'users'; else dash">
                                       <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
-                                        <div *ngFor="let user of exam?.allUsers"
+                                        <div *ngFor="let user of exam?.users"
                                              class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
                                           <div class="circle-gray-200-40">
                                             {{ user?.firstname?.length ? (user.firstname[0] | uppercase) : '' }}
