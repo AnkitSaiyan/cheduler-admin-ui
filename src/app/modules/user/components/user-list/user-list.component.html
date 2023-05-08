@@ -107,7 +107,7 @@
           </span>
         </dfm-table-body-cell>
         <dfm-table-body-cell>
-          <dfm-badge *ngIf="item.status === statusTypeEnum.Active" color="success" size="sm" fontWeight="medium">
+          <dfm-badge *ngIf="item.status === statusTypeEnum.Active || item.status === 2" color="success" size="sm" fontWeight="medium">
             {{ item.status | statusName | translate | dashIfNothing }}
           </dfm-badge>
 
@@ -118,30 +118,32 @@
 
         <dfm-table-body-cell *dfmPermitted="[Permission.UpdateUser, Permission.DeleteUser]">
           <div class="d-flex dfm-gap-16 align-items-center us-li-action-buttons">
-            <ng-container *dfmPermitted="Permission.UpdateUser">
-              <dfm-button
-                *ngIf="item.status === statusTypeEnum.Inactive"
-                color="link-gray"
-                size="sm"
-                trailingIcon="check-circle"
-                ngbPopover="{{ 'ChangeStatus' | translate }}"
-                triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8"
-                [openDelay]="200"
-                (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Active }])"
-              ></dfm-button>
+            <ng-container *ngIf="item.status !== 2">
+              <ng-container *dfmPermitted="Permission.UpdateUser">
+                <dfm-button
+                  *ngIf="item.status === statusTypeEnum.Inactive"
+                  color="link-gray"
+                  size="sm"
+                  trailingIcon="check-circle"
+                  ngbPopover="{{ 'ChangeStatus' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Active }])"
+                ></dfm-button>
 
-              <dfm-button
-                *ngIf="item.status === statusTypeEnum.Active"
-                color="link-gray"
-                size="sm"
-                trailingIcon="x-circle"
-                ngbPopover="{{ 'ChangeStatus' | translate }}"
-                triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8"
-                [openDelay]="200"
-                (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Inactive }])"
-              ></dfm-button>
+                <dfm-button
+                  *ngIf="item.status === statusTypeEnum.Active"
+                  color="link-gray"
+                  size="sm"
+                  trailingIcon="x-circle"
+                  ngbPopover="{{ 'ChangeStatus' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Inactive }])"
+                ></dfm-button>
+              </ng-container>
             </ng-container>
 
             <dfm-button
@@ -186,28 +188,30 @@
 
           <ng-template #actionMenu>
             <div class="us-li-menus" aria-labelledby="dropdownManual">
-              <ng-container *dfmPermitted="Permission.UpdateUser">
-                <div
-                  *ngIf="!item.status"
-                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Active }])"
-                  ngbPopover="{{ 'Status' | translate }}"
-                  triggers="mouseenter:mouseleave"
-                  popoverClass="popover-p-8"
-                  [openDelay]="200"
-                >
-                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-                </div>
+              <ng-container *ngIf="item.status !== 2">
+                <ng-container *dfmPermitted="Permission.UpdateUser">
+                  <div
+                    *ngIf="!item.status"
+                    (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Active }])"
+                    ngbPopover="{{ 'Status' | translate }}"
+                    triggers="mouseenter:mouseleave"
+                    popoverClass="popover-p-8"
+                    [openDelay]="200"
+                  >
+                    <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
+                  </div>
 
-                <div
-                  *ngIf="item.status"
-                  (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Inactive }])"
-                  ngbPopover="{{ 'Status' | translate }}"
-                  triggers="mouseenter:mouseleave"
-                  popoverClass="popover-p-8"
-                  [openDelay]="200"
-                >
-                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-                </div>
+                  <div
+                    *ngIf="item.status"
+                    (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Inactive }])"
+                    ngbPopover="{{ 'Status' | translate }}"
+                    triggers="mouseenter:mouseleave"
+                    popoverClass="popover-p-8"
+                    [openDelay]="200"
+                  >
+                    <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
+                  </div>
+                </ng-container>
               </ng-container>
 
               <div

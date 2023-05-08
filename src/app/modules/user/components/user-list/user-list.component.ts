@@ -138,7 +138,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 											lastname: user.surname,
 											fullName: user.displayName,
 											userType: UserType.Scheduler,
-											status: +user.accountEnabled,
+											status: user.accountEnabled === null ? 2 : +user.accountEnabled,
 											userRole: user?.userRole,
 										} as unknown as UserBase;
 									}),
@@ -286,7 +286,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						},
 						{
 							value: UserType.Scheduler,
-							name: `${Translate[UserType.Scheduler][lang]} ${Translate.User[lang]}`,
+							name: `${Translate.User[lang]}`,
 						},
 					]);
 
