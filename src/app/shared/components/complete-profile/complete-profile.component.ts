@@ -108,14 +108,14 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 			.subscribe({
 				next: (success) => {
 					if (!success) {
-						this.notificationSvc.showError(Translate.ErrorMessage.FailedToLoginLoggingOut[this.selectedLang]);
 						setTimeout(() => this.userSvc.logout(), 1500);
+						return;
 					}
 					this.notificationSvc.showSuccess(Translate.SuccessMessage.ProfileSavedSuccessfully[this.selectedLang]);
 					this.router.navigate(['/']);
 				},
 				error: (e) => {
-					this.notificationSvc.showError(e);
+					this.notificationSvc.showError(Translate.ErrorMessage.FailedToSaveProfile[this.selectedLang]);
 					this.submitting$$.next(false);
 				},
 			});
