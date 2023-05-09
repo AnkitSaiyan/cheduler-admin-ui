@@ -66,7 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     if (this.authService.instance.getAllAccounts().length === 0) {
                         window.location.pathname = '/';
                     } else {
-                        this.setLoginDisplay();
+                        // this.setLoginDisplay();
                         this.checkAndSetActiveAccount();
                     }
                 }
@@ -79,7 +79,7 @@ export class AppComponent implements OnInit, OnDestroy {
             )
             .subscribe({
                 next: (status) => {
-                    this.setLoginDisplay();
+                    // this.setLoginDisplay();
                     this.checkAndSetActiveAccount();
                 }
             });
@@ -168,12 +168,13 @@ export class AppComponent implements OnInit, OnDestroy {
         });
 
         this.userService.initializeUser().pipe(takeUntil(this._destroying$)).subscribe({
-            next: (x) => {},
-            error: (e) => {
-                // this.userService.logout();
-                setTimeout(() => this.userService.logout(), 1500);
-                this.notificationSvc.showError(e);
-            }
+            next: (x) => {
+              if (!x) {
+                  setTimeout(() => this.userService.logout(), 1500);
+              } else {
+                  this.setLoginDisplay();
+              }
+            },
         });
     }
 
