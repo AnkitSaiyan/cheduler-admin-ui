@@ -402,7 +402,8 @@
 	"EnterInstructions": "Enter Instructions",
 	"Time" : "Time",
 	"LogoutConfirmation" : "Logout Confirmation",
-	"Areyousurewanttologout":"Are you sure you want to logout the session?"
+	"Areyousurewanttologout":"Are you sure you want to logout the session?",
+	"NoRoomsAreAvailable" : "No rooms are availale"
 }
 
 
