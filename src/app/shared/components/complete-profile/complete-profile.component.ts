@@ -102,22 +102,20 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 			})
 			.pipe(
 				switchMap(() => this.userManagementApiSvc.createPropertiesPermit(this.user.id, this.user?.tenantIds[0])),
-				switchMap(() => this.userSvc.initializeUser().pipe(
-					catchError((e) => {
-						this.notificationSvc.showError(e);
-						setTimeout(() => this.userSvc.logout(),1500);
-						return throwError(e);
-					})
-				)),
+				switchMap(() => this.userSvc.initializeUser()),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
-				next: () => {
+				next: (success) => {
+					if (!success) {
+						setTimeout(() => this.userSvc.logout(), 1500);
+						return;
+					}
 					this.notificationSvc.showSuccess(Translate.SuccessMessage.ProfileSavedSuccessfully[this.selectedLang]);
 					this.router.navigate(['/']);
 				},
 				error: (e) => {
-					this.notificationSvc.showError(e);
+					this.notificationSvc.showError(Translate.ErrorMessage.FailedToSaveProfile[this.selectedLang]);
 					this.submitting$$.next(false);
 				},
 			});
