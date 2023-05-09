@@ -11,7 +11,7 @@ import {
     RedirectRequest,
 } from '@azure/msal-browser';
 import {IdTokenClaims} from '@azure/msal-common';
-import {filter, Subject, takeUntil} from 'rxjs';
+import {filter, Subject , takeUntil} from 'rxjs';
 import defaultLanguage from '../assets/i18n/nl-BE.json';
 import englishLanguage from '../assets/i18n/en-BE.json';
 import {AuthConfig} from './configuration/auth.config';
@@ -167,14 +167,12 @@ export class AppComponent implements OnInit, OnDestroy {
             next: (x) => (this.user = x)
         });
 
-        this.userService.initializeUser().subscribe({
-            next: (x) => {
-                if (!x) {
-                    // not showing error for now
-                    this.userService.logout();
-                    // this.notificationSvc.showError('User login failed. Logging out.');
-                    // setTimeout(() => this.userService.logout(), 1500);
-                }
+        this.userService.initializeUser().pipe(takeUntil(this._destroying$)).subscribe({
+            next: (x) => {},
+            error: (e) => {
+                // this.userService.logout();
+                setTimeout(() => this.userService.logout(), 1500);
+                this.notificationSvc.showError(e);
             }
         });
     }

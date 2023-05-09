@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from "rxjs";
+import {BehaviorSubject, catchError, filter, switchMap, take, takeUntil, throwError} from "rxjs";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { UserManagementApiService } from "../../../core/services/user-management-api.service";
 import { DestroyableComponent } from "../destroyable.component";
@@ -102,21 +102,22 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 			})
 			.pipe(
 				switchMap(() => this.userManagementApiSvc.createPropertiesPermit(this.user.id, this.user?.tenantIds[0])),
-				switchMap(() => this.userSvc.initializeUser()),
+				switchMap(() => this.userSvc.initializeUser().pipe(
+					catchError((e) => {
+						this.notificationSvc.showError(e);
+						setTimeout(() => this.userSvc.logout(),1500);
+						return throwError(e);
+					})
+				)),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
-				next: (success) => {
-					if (!success) {
-						this.notificationSvc.showError(Translate.ErrorMessage.FailedToLoginLoggingOut[this.selectedLang]);
-						this.userSvc.logout();
-					}
-
+				next: () => {
 					this.notificationSvc.showSuccess(Translate.SuccessMessage.ProfileSavedSuccessfully[this.selectedLang]);
 					this.router.navigate(['/']);
 				},
-				error: () => {
-					this.notificationSvc.showError(Translate.ErrorMessage.FailedToSaveProfile[this.selectedLang]);
+				error: (e) => {
+					this.notificationSvc.showError(e);
 					this.submitting$$.next(false);
 				},
 			});
