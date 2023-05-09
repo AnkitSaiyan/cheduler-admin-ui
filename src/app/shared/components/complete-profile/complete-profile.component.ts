@@ -109,9 +109,8 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 				next: (success) => {
 					if (!success) {
 						this.notificationSvc.showError(Translate.ErrorMessage.FailedToLoginLoggingOut[this.selectedLang]);
-						this.userSvc.logout();
+						setTimeout(() => this.userSvc.logout(), 1500);
 					}
-
 					this.notificationSvc.showSuccess(Translate.SuccessMessage.ProfileSavedSuccessfully[this.selectedLang]);
 					this.router.navigate(['/']);
 				},
