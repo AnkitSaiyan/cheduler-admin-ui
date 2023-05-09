@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, map, Observable, of, tap} from "rxjs";
+import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap, throwError} from "rxjs";
 import {AuthUser} from "../../shared/models/user.model";
 import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
 import {UserManagementApiService} from "./user-management-api.service";
