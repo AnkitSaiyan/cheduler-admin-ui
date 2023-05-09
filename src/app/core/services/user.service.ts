@@ -9,6 +9,7 @@ import {PermissionService} from "./permission.service";
 
 import { NotificationDataService } from './notification-data.service';
 import {error} from "@angular/compiler-cli/src/transformers/util";
+import {EXT_Admin_Tenant} from "../../shared/utils/const";
 
 @Injectable({
 	providedIn: 'root',
