@@ -6,7 +6,7 @@ import {UserManagementApiService} from "./user-management-api.service";
 import {Router} from "@angular/router";
 import {InteractionType} from "@azure/msal-browser";
 import {PermissionService} from "./permission.service";
-import { EXT_Patient_Tenant } from 'src/app/shared/utils/const';
+import {EXT_Admin_Tenant, EXT_Patient_Tenant} from 'src/app/shared/utils/const';
 import { NotificationDataService } from './notification-data.service';
 
 @Injectable({
@@ -40,7 +40,7 @@ export class UserService {
 
 		const tenantIds = (user?.idTokenClaims as any)?.extension_Tenants?.split(',');
 
-		if (tenantIds?.some((value) => value === EXT_Patient_Tenant)) {
+		if (!tenantIds.length || !tenantIds.includes(EXT_Admin_Tenant)) {
 			this.notificationSvc.showError(`you don't have permission to view this page`);
 			return of(false);
 		}
@@ -48,13 +48,7 @@ export class UserService {
 		return this.userManagementApiService.getUserProperties(userId).pipe(
 			map((res: any) => {
 				try {
-					const tenants = ((user?.idTokenClaims as any).extension_Tenants as string).split(',');
-					if (tenants.length === 0) {
-						return false;
-					}
-
 					this.authUser$$.next(new AuthUser(res.mail, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
-
 					return true;
 				} catch (error) {
 					return false;
