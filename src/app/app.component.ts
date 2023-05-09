@@ -11,7 +11,7 @@ import {
     RedirectRequest,
 } from '@azure/msal-browser';
 import {IdTokenClaims} from '@azure/msal-common';
-import {filter, Subject, takeUntil} from 'rxjs';
+import {filter, Subject , takeUntil} from 'rxjs';
 import defaultLanguage from '../assets/i18n/nl-BE.json';
 import englishLanguage from '../assets/i18n/en-BE.json';
 import {AuthConfig} from './configuration/auth.config';

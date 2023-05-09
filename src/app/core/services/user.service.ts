@@ -1,13 +1,14 @@
 import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, map, Observable, of, tap} from "rxjs";
+import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap, throwError} from "rxjs";
 import {AuthUser} from "../../shared/models/user.model";
 import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
 import {UserManagementApiService} from "./user-management-api.service";
 import {Router} from "@angular/router";
 import {InteractionType} from "@azure/msal-browser";
 import {PermissionService} from "./permission.service";
-import {EXT_Admin_Tenant, EXT_Patient_Tenant} from 'src/app/shared/utils/const';
+
 import { NotificationDataService } from './notification-data.service';
+import {error} from "@angular/compiler-cli/src/transformers/util";
 
 @Injectable({
 	providedIn: 'root',
@@ -32,7 +33,7 @@ export class UserService {
 		return this.authUser$$.value;
 	}
 
-	public initializeUser(): Observable<boolean> {
+	public initializeUser(): Observable<any> {
 		const user = this.msalService.instance.getActiveAccount();
 		const userId = user?.localAccountId ?? '';
 
