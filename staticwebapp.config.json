@@ -3,7 +3,10 @@
     "rewrite": "/index.html",
     "exclude": [
       "/images/*.{png,jpg,gif}",
-      "/css/*"
+      "/css/*",
+      "*.js,",
+      "/admin/css/*",
+      "/admin/*.js"
     ]
   }
 }
