@@ -45,3 +45,15 @@ export const DEV_SUBDOMAIN = 'red-sea-08bb7b903'
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const EXT_Patient_Tenant = 'NPXN';
+export const EXT_Admin_Tenant = 'N5v0';
+
+// error messages
+
+export const ErrNoAccessPermitted: string = 'You are not permitted to access this page';
+export const ErrNoActionPermission: string = 'You are not permitted to perform this action';
+export const ErrUnauthorized: string = 'You are not authorized to access this page';
+export const ErrLoginFailed: string = 'Failed to login user';
+
+// Info messages
+
+export const LoggingYouOut = 'Logging you out';
