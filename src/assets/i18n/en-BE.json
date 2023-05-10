@@ -65,7 +65,6 @@
 	"EndTime": "End Time",
 	"ClickToAddSlot": "Click to add slot",
 	"RequiredField": "The field is required",
-	"BothRequiredField": "Both field is required",
 	"AddAvailabilityData": "Add Availability Data",
 	"ViewAll": "View All",
 	"SUN": "SUN",
@@ -406,6 +405,7 @@
 	"Areyousurewanttologout": "Are you sure you want to logout the session?",
 	"NoRoomsAreAvailable": "No rooms are availale"
 }
+
 
 
 

@@ -220,11 +220,12 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 				dayEnd: null,
 			});
 
+			fa.controls[i].markAsUntouched();
+
 			return;
 		}
 
 		fa.removeAt(i);
-
 		const formArrays = this.getFormArray(weekday.toString());
 		this.handleInvalidSlotRangeError([formArrays]);
 		this.handleSlotExistsError([formArrays]);
@@ -446,6 +447,10 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		return timeSlots;
 	}
 }
+
+
+
+
 
 
 

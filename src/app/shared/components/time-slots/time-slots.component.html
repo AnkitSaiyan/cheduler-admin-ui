@@ -61,6 +61,10 @@
                       'InvalidTime' | translate
                     }}</small>
 
+                    <small class="validation-error" *ngIf="controls.get('dayStart')?.touched && controls.get('dayStart')?.hasError('customRequired')">
+                      {{ 'RequiredField' | translate }}
+                    </small>
+
                   </div>
 
                   <div class="d-flex flex-column w-full">
@@ -81,6 +85,9 @@
                     </div>
 
                     <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">{{ 'InvalidTime' | translate }}</small>
+                    <small class="validation-error" *ngIf="controls.get('dayEnd')?.touched && controls.get('dayEnd')?.hasError('customRequired')">
+                      {{ 'RequiredField' | translate }}
+                    </small>
                   </div>
 
                   <div class="dfm-mt-32 trash-btn">
@@ -120,9 +127,6 @@
                 >
                   {{ 'SlotOverlapsOtherSlots' | translate }}
                 </small>
-
-                <small class="validation-error" *ngIf="controls?.get('dayStart')?.touched && controls?.get('dayEnd')?.touched && controls.hasError('bothFieldRequired')">
-                  {{ 'BothRequiredField' | translate }}</small>
               </div>
 
               <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(weekday)">
@@ -160,6 +164,9 @@
                     <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">{{
                       'InvalidTime' | translate
                     }}</small>
+                    <small class="validation-error" *ngIf="controls.get('dayStart')?.touched && controls.get('dayStart')?.hasError('customRequired')">
+                      {{ 'RequiredField' | translate }}
+                    </small>
                   </div>
 
                   <div class="d-flex flex-column w-full">
@@ -180,6 +187,10 @@
                     </div>
 
                     <small class="validation-error" *ngIf="controls.get('dayEnd')?.hasError(invalidTimeError)">{{ 'Invalidtime' | translate }}</small>
+                    <small class="validation-error" *ngIf="controls.get('dayEnd')?.touched && controls.get('dayEnd')?.hasError('customRequired')">
+                      {{ 'RequiredField' | translate }}
+                    </small>
+
                   </div>
 
                   <div class="dfm-mt-32 trash-btn">
