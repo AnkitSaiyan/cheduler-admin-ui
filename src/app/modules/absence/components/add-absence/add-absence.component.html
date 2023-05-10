@@ -65,7 +65,7 @@
             </div>
 
             <div>
-              <div class="dfm-input-dropdown-wrapper-wo-label flex-1 min-w-128 max-w-192">
+              <div class="flex-1 min-w-128 max-w-192">
                 <dfm-input-dropdown
                   #startTime
                   [items]="startTimes"
@@ -120,7 +120,7 @@
               </small>
             </div>
             <div class="flex-1">
-              <div class="dfm-input-dropdown-wrapper-wo-label min-w-128 max-w-192">
+              <div class="min-w-128 max-w-192">
                 <dfm-input-dropdown
                   #endTime
                   [items]="endTimes"
@@ -197,7 +197,7 @@
       <ng-container *ngIf="formValues.isRepeat">
         <div class="d-flex dfm-gap-32 flex-wrap align-items-start ad-ab-repeat-form">
           <div class="flex-1">
-            <div class="dfm-input-dropdown-wrapper ">
+            <div class="">
               <dfm-input-dropdown
                 #repeatType
                 [items]="repeatTypes"
@@ -240,14 +240,12 @@
             }}</small>
           </div>
 
-          <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
+          <div class="flex-1 ad-ab-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
             <dfm-input-dropdown
               #repeatEveryDropdown
               [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
               [multiple]="true"
-              placeholder="{{
-                !!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + (' Selected' | translate) : ('SelectRepeatEvery' | translate)
-              }}"
+              [placeholder]="((repeatEveryDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRepeatEvery') | async) ?? ''"
               size="md"
               label="{{ 'RepeatOn' | translate }} *"
               [required]="formValues.isRepeat && formValues.repeatType !== 'daily'"
@@ -259,16 +257,14 @@
       </ng-container>
 
       <div class="d-flex flex-wrap flex-1 gap" [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" *ngIf="!formValues.isHoliday">
-        <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
+        <div class="flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
           <dfm-input-dropdown
             #roomDropdown
             [items]="roomList"
             [multiple]="true"
             [typeToSearch]="true"
             (searchInput)="handleDropdownSearch($event, 'room')"
-            placeholder="{{
-              !!roomDropdown.value?.length ? roomDropdown.value.length + ' ' + ('Selected' | translate) : ('SelectRooms' | translate)
-            }}"
+            [placeholder]="((roomDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRooms') | async) ?? ''"
             size="md"
             formControlName="roomList"
             label="{{ 'Rooms' | translate }}"
@@ -276,7 +272,7 @@
           </dfm-input-dropdown>
         </div>
 
-        <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 ad-ab-staffs" *ngIf="filteredStaffs$$ | async as staffList">
+        <div class="flex-1 ad-ab-staffs" *ngIf="filteredStaffs$$ | async as staffList">
           <dfm-input-dropdown
             #staffDropDown
             [items]="staffList"
@@ -286,9 +282,7 @@
             size="md"
             formControlName="userList"
             label="{{ 'Staff' | translate }}"
-            placeholder="{{
-              !!staffDropDown.value?.length ? staffDropDown.value.length + ' ' + ('Selected' | translate) : ('SelectStaff' | translate)
-            }}"
+            [placeholder]="((staffDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
           >
           </dfm-input-dropdown>
         </div>

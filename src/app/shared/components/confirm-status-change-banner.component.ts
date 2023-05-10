@@ -19,7 +19,7 @@ import { DUTCH_BE, ENG_BE } from '../utils/const';
       </div>
 
       <div class="d-flex align-items-center dfm-gap-16 w-fit">
-        <div class="dfm-input-dropdown-wrapper-wo-label flex-1 dropdown-wrapper">
+        <div class="flex-1 dropdown-wrapper">
           <dfm-input-dropdown
             (click)="$event.stopPropagation()"
             #statusDropdown

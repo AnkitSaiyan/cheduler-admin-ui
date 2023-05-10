@@ -21,10 +21,10 @@
     <form [formGroup]="prioritySlotForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16" *ngIf="prioritySlot$$ | async as prioritySlot">
       <div class="d-flex dfm-gap-32 align-items-center ad-pr-dates">
         <div class="ad-pr-from-date flex-1 max-w-5">
-          <span class="text-sm font-weight-medium dfm-text-main-700">{{ !formValues.isRepeat ? ('From' | translate) : ('From' | translate) }} *</span>
-
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
-            <div class="flex-1 d-flex flex-column">
+            <div class="flex-1 d-flex dfm-gap-8 flex-column">
+              <span class="text-sm font-weight-medium dfm-text-main-700">{{ !formValues.isRepeat ? ('From' | translate) : ('From' | translate) }} *</span>
+
               <div class="dfm-button-group-wrapper h-fit flex-1">
                 <div class="input-as-dfm-input">
                   <input [formControl]="startDateControl" (dateChange)="onDateChange($event.value, 'startedAt')"
@@ -52,7 +52,7 @@
               </small>
             </div>
             <div class="flex-1 min-w-128 max-w-192">
-              <div class="dfm-input-dropdown-wrapper-wo-label">
+              <div class="">
                 <dfm-input-dropdown
                   #slotStartTime
                   [items]="startTimes"
@@ -77,10 +77,9 @@
         </div>
 
         <div class="ad-pr-to-date flex-1 max-w-5">
-          <span class="text-sm font-weight-medium dfm-text-main-700">{{ "To" | translate }} *</span>
-
           <div class="d-flex align-items-start dfm-gap-16">
-            <div class="flex-1 d-flex flex-column">
+            <div class="flex-1 d-flex dfm-gap-8 flex-column">
+              <span class="text-sm font-weight-medium dfm-text-main-700">{{ "To" | translate }} *</span>
               <div class="dfm-button-group-wrapper flex-1">
                 <div class="input-as-dfm-input">
                   <input [formControl]="endDateControl" (dateChange)="onDateChange($event.value, 'endedAt')"
@@ -108,7 +107,7 @@
               </small>
             </div>
             <div class="flex-1 min-w-128 max-w-192">
-              <div class="dfm-input-dropdown-wrapper-wo-label">
+              <div class="">
                 <dfm-input-dropdown
                   #slotEndTime
                   [items]="endTimes"
@@ -187,7 +186,7 @@
       <ng-container *ngIf="formValues.isRepeat">
         <div class="d-flex dfm-gap-32 flex-wrap align-items-start ad-pr-repeat-form">
           <div class="flex-1">
-            <div class="dfm-input-dropdown-wrapper">
+            <div class="">
               <dfm-input-dropdown
                 #repeatType
                 [items]="repeatTypes"
@@ -236,14 +235,12 @@
             >
           </div>
           <div class="flex-1">
-            <div class="dfm-input-multi-dropdown-wrapper ad-pr-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
+            <div class="ad-pr-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
               <dfm-input-dropdown
                 #repeatEveryDropdown
                 [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
                 [multiple]="true"
-                [placeholder]="
-                  !!repeatEveryDropdown.value?.length ? repeatEveryDropdown.value.length + ' Selected' : ('SelectRepeatEvery' | translate)
-                "
+                [placeholder]="((repeatEveryDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRepeatEvery') | async) ?? ''"
                 size="md"
                 label="{{ 'RepeatOn' | translate }} *"
                 [required]="formValues.isRepeat && formValues.repeatType !== 'daily'"

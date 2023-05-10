@@ -113,7 +113,7 @@
           <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">{{ 'InvalidEmail' | translate }}</small>
         </div>
 
-        <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-128" *ngIf="(isDoctorConsentDisable$$ | async) === false">
+        <div class="flex-1 w-full min-w-128" *ngIf="(isDoctorConsentDisable$$ | async) === false">
           <dfm-input-dropdown
             [items]="filteredPhysicianList"
             [typeToSearch]="true"
@@ -128,7 +128,7 @@
         </div>
 
         <div class="flex-1">
-        <div class="dfm-input-dropdown-wrapper w-full">
+        <div class="w-full">
           <dfm-input-dropdown
             #generalUser
             [items]="filteredUserList"
@@ -150,12 +150,12 @@
       <div class="exam-date d-flex flex-row">
         <div class="ad-ab-from-date flex-wrap-reverse dfm-gap-32 d-flex flex-1">
           <div class="flex-1">
-          <div class="dfm-input-multi-dropdown-wrapper-mb-0 min-w-256 ad-ap-multi-dropdown">
+          <div class="min-w-256 ad-ap-multi-dropdown">
             <dfm-input-dropdown
               #exams
               [items]="filteredExamList"
               [multiple]="true"
-              [placeholder]="!!exams.value?.length ? exams.value.length + ' ' + ('Selected' | translate) : ('SelectExams' | translate)"
+              [placeholder]="((exams.value?.length | dfmMultiDropdownPlaceholderName : 'SelectExams') | async) ?? ''"
               [typeToSearch]="true"
               (searchInput)="handleDropdownSearch($event, 'exam')"
               formControlName="examList"
