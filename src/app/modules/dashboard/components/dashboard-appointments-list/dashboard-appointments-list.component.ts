@@ -196,7 +196,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 							// ap.readStatus ? 'Yes' : 'No',
 							this.translatePipe.transform(AppointmentStatusToName[+ap?.approval]),
 						]),
-						'physician',
+						'appointments',
 					);
 
 					if (value !== 'PRINT') {
