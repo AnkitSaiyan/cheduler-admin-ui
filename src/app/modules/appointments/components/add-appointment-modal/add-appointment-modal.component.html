@@ -85,14 +85,12 @@
           </div>
         </div>
 
-        <div class="dfm-input-multi-dropdown-wrapper-mb-0 flex-1 dfm-mb-8">
+        <div class="flex-1 dfm-mb-8">
           <dfm-input-dropdown
             #exams
             [items]="filteredExamList"
             [multiple]="true"
-            [placeholder]="
-              !!exams.value?.length ? exams.value.length + ' ' + ('Selected' | translate) : ('Select' | translate) + ' ' + ('Exams' | translate)
-            "
+            [placeholder]="((exams.value?.length | dfmMultiDropdownPlaceholderName : 'SelectExams') | async) ?? ''"
             [showDescription]="false"
             [typeToSearch]="true"
             (searchInput)="handleDropdownSearch($event, 'exam')"
@@ -189,7 +187,7 @@
 
 
         <div class="d-flex dfm-gap-16 dfm-mt-8">
-          <div class="dfm-input-dropdown-wrapper flex-1 w-full min-w-228" *ngIf="(isDoctorConsentDisable$$ | async) === false">
+          <div class="flex-1 w-full min-w-228" *ngIf="(isDoctorConsentDisable$$ | async) === false">
             <dfm-input-dropdown
               [items]="filteredPhysicianList"
               [typeToSearch]="true"
@@ -203,13 +201,11 @@
             </dfm-input-dropdown>
           </div>
 
-          <div class="dfm-input-dropdown-wrapper flex-1 min-w-228" [ngClass]="{'dfm-input-error': appointmentForm.get('userId')?.hasError('required') && appointmentForm.get('userId')?.touched }">
+          <div class="flex-1 min-w-228">
             <dfm-input-dropdown
               #generalUsers
               [items]="filteredUserList"
-              [placeholder]="
-                !!generalUsers.value?.length ? generalUsers.value.length + ' z' + ('Selected' | translate) : ('SelectGeneralUser' | translate)
-              "
+              [placeholder]="((generalUsers.value?.length | dfmMultiDropdownPlaceholderName : 'SelectGeneralUser') | async) ?? ''"
               [typeToSearch]="true"
               (searchInput)="handleDropdownSearch($event, 'user')"
               formControlName="userId"

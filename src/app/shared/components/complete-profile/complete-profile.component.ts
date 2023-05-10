@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from "rxjs";
+import {BehaviorSubject, catchError, filter, switchMap, take, takeUntil, throwError} from "rxjs";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { UserManagementApiService } from "../../../core/services/user-management-api.service";
 import { DestroyableComponent } from "../destroyable.component";
@@ -108,14 +108,13 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 			.subscribe({
 				next: (success) => {
 					if (!success) {
-						this.notificationSvc.showError(Translate.ErrorMessage.FailedToLoginLoggingOut[this.selectedLang]);
-						this.userSvc.logout();
+						setTimeout(() => this.userSvc.logout(), 1500);
+						return;
 					}
-
 					this.notificationSvc.showSuccess(Translate.SuccessMessage.ProfileSavedSuccessfully[this.selectedLang]);
 					this.router.navigate(['/']);
 				},
-				error: () => {
+				error: (e) => {
 					this.notificationSvc.showError(Translate.ErrorMessage.FailedToSaveProfile[this.selectedLang]);
 					this.submitting$$.next(false);
 				},

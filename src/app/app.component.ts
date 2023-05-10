@@ -11,7 +11,7 @@ import {
     RedirectRequest,
 } from '@azure/msal-browser';
 import {IdTokenClaims} from '@azure/msal-common';
-import {filter, Subject, takeUntil} from 'rxjs';
+import {filter, Subject , takeUntil} from 'rxjs';
 import defaultLanguage from '../assets/i18n/nl-BE.json';
 import englishLanguage from '../assets/i18n/en-BE.json';
 import {AuthConfig} from './configuration/auth.config';
@@ -66,7 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     if (this.authService.instance.getAllAccounts().length === 0) {
                         window.location.pathname = '/';
                     } else {
-                        this.setLoginDisplay();
+                        // this.setLoginDisplay();
                         this.checkAndSetActiveAccount();
                     }
                 }
@@ -79,7 +79,7 @@ export class AppComponent implements OnInit, OnDestroy {
             )
             .subscribe({
                 next: (status) => {
-                    this.setLoginDisplay();
+                    // this.setLoginDisplay();
                     this.checkAndSetActiveAccount();
                 }
             });
@@ -167,15 +167,14 @@ export class AppComponent implements OnInit, OnDestroy {
             next: (x) => (this.user = x)
         });
 
-        this.userService.initializeUser().subscribe({
+        this.userService.initializeUser().pipe(takeUntil(this._destroying$)).subscribe({
             next: (x) => {
-                if (!x) {
-                    // not showing error for now
-                    this.userService.logout();
-                    // this.notificationSvc.showError('User login failed. Logging out.');
-                    // setTimeout(() => this.userService.logout(), 1500);
-                }
-            }
+              if (!x) {
+                  setTimeout(() => this.userService.logout(), 1500);
+              } else {
+                  this.setLoginDisplay();
+              }
+            },
         });
     }
 

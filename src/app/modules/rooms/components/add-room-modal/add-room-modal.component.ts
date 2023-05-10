@@ -133,10 +133,16 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
     public saveForm(timeSlotFormValues?: { isValid: boolean; values: TimeSlot[] }) {
         if (this.addRoomForm.invalid) {
-            this.addRoomForm.markAllAsTouched();
-            this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-            return;
-        }
+					// this.addRoomForm.markAllAsTouched();
+					const requiredKeys: string[] = ['name', 'type'];
+					requiredKeys.forEach((key) => {
+						if (this.addRoomForm.get(key)?.invalid) {
+							this.addRoomForm.get(key)?.markAsTouched();
+						}
+					});
+					this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+					return;
+				}
 
         if (this.formValues.practiceAvailabilityToggle && timeSlotFormValues && !timeSlotFormValues.isValid) {
             this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
@@ -194,18 +200,18 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
     private createForm(roomDetails?: Room | undefined): void {
         this.addRoomForm = this.fb.group({
-            name: [roomDetails?.name ?? '', [Validators.required]],
-            placeInAgenda: [roomDetails?.placeInAgenda, []],
-            placeInAgendaIndex: [{value: null, disabled: true}, [Validators.required]],
-            description: [roomDetails?.description ?? '', []],
-            type: [roomDetails?.type ?? null, [Validators.required]],
-            practiceAvailabilityToggle: [!!roomDetails?.availabilityType, []],
-            status: [this.modalData.edit ? roomDetails?.status : Status.Inactive, []],
-        });
+					name: [roomDetails?.name ?? '', [Validators.required]],
+					placeInAgenda: [roomDetails?.placeInAgenda, []],
+					placeInAgendaIndex: [{ value: null, disabled: true }, []],
+					description: [roomDetails?.description ?? '', []],
+					type: [roomDetails?.type ?? null, [Validators.required]],
+					practiceAvailabilityToggle: [!!roomDetails?.availabilityType, []],
+					status: [this.modalData.edit ? roomDetails?.status : Status.Inactive, []],
+				});
 
-        setTimeout(() => {
-            this.addRoomForm.patchValue({placeInAgendaIndex: this.modalData?.placeInAgendaIndex});
-        }, 0);
+				setTimeout(() => {
+					this.addRoomForm.patchValue({ placeInAgendaIndex: this.modalData?.placeInAgendaIndex });
+				}, 0);
 
         if (roomDetails?.practiceAvailability?.length) {
             const practice = [

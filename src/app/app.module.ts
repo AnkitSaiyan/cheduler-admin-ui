@@ -39,6 +39,7 @@ import { AppTitlePrefix } from './core/services/title.service';
 import { UtcToLocalPipe } from './shared/pipes/utc-to-local.pipe';
 import {DefaultDatePipe} from "./shared/pipes/default-date.pipe";
 import { SharedModule } from './shared/shared.module';
+import { JoinWithAndPipe } from './shared/pipes/join-with-and.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -103,6 +104,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 		TranslatePipe,
 		UtcToLocalPipe,
 		DefaultDatePipe,
+		JoinWithAndPipe,
 		{ provide: TitleStrategy, useClass: AppTitlePrefix },
 		{
 			provide: HTTP_INTERCEPTORS,

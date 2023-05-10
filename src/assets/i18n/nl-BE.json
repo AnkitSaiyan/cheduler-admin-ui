@@ -403,11 +403,13 @@
 	"Dec": "Dec",
 	"Instructions": "Aanwijzingen",
 	"EnterInstructions": "Voer instructies in",
-	"Time" : "Tijd",
-	"LogoutConfirmation" : "Bevestiging Uitloggen",
-	"Areyousurewanttologout":"Ben je zeker dat je uit deze sessie wil loggen?",
-	"NoRoomsAreAvailable" : "Er zijn geen kamers beschikbaar"
+	"Time": "Tijd",
+	"LogoutConfirmation": "Bevestiging Uitloggen",
+	"Areyousurewanttologout": "Ben je zeker dat je uit deze sessie wil loggen?",
+	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar"
 }
+
+
 
 
 

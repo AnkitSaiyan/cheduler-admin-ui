@@ -592,6 +592,14 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Complete Profile',
 		[DUTCH_BE]: 'Complete Profile',
 	},
+
+	// General
+	GENERAL: {
+		SELECTED: {
+			[ENG_BE]: 'Selected',
+			[DUTCH_BE]: 'Geselecteerd',
+		},
+	}
 });
 
 
