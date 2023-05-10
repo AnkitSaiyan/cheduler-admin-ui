@@ -26,6 +26,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { UserRoleEnum } from 'src/app/shared/models/user.model';
+import { DefaultDatePipe } from '../../../../shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
 	selector: 'dfm-appointment-list',
@@ -99,6 +103,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		private shareDataSvc: ShareDataService,
 		private translate: TranslateService,
 		public permissionSvc: PermissionService,
+		private defaultDatePipe: DefaultDatePipe,
+		private utcToLocalPipe: UtcToLocalPipe,
+		private joinWithAndPipe: JoinWithAndPipe,
+		private translatePipe: TranslatePipe,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -161,14 +169,15 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 					value as DownloadAsType,
 					this.columns.slice(0, -1),
 					this.filteredAppointments$$.value?.map((ap: Appointment) => [
-						ap?.startedAt?.toString() ?? '',
-						ap?.endedAt?.toString() ?? '',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
 						`${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
+						this.joinWithAndPipe.transform(ap.exams, 'name'),
 						this.titleCasePipe.transform(ap?.doctor),
 						ap?.id?.toString(),
 						ap?.createdAt?.toString(),
 						// ap.readStatus ? 'Yes' : 'No',
-						AppointmentStatusToName[+ap?.approval],
+						this.translatePipe.transform(AppointmentStatusToName[+ap?.approval]),
 					]),
 					'appointment',
 				);
