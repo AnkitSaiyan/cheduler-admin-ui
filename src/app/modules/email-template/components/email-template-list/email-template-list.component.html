@@ -1,4 +1,4 @@
-<div class="d-flex flex-column dfm-gap-16 position-relative">
+<div class="d-flex flex-column dfm-gap-16">
   <section class="list-page-section-1">
     <dfm-button class="hidden et-ls-title-buttons" color="link" size="lg" routerLink="./">{{ 'EmailTemplate' | translate }}</dfm-button>
 
@@ -24,7 +24,7 @@
         ></dfm-button-icon>
       </div>
 
-      <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-bg-transparent max-w-192">
+      <div class="dfm-dropdown-placeholder-text-primary dfm-dropdown-border-none dfm-dropdown-bg-transparent max-w-192">
         <dfm-input-dropdown
           [items]="downloadItems"
           [showDescription]="false"
