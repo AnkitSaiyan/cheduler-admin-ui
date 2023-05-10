@@ -127,7 +127,7 @@
                 </dfm-input-dropdown>
               </div>
             </div>
-            <div class="room-message" *ngIf="!roomsForExamControls.length">No rooms are available</div>
+            <div class="room-message" *ngIf="!roomsForExamControls.length">{{"NoRoomsAreAvailable" | translate}}</div>
           </div>
 
           <small *ngIf="formErrors.selectRoomErr" class="validation-error">
@@ -156,7 +156,7 @@
               [multiple]="true"
               [typeToSearch]="true"
               (searchInput)="handleDropdownSearch($event, 'exam')"
-              [placeholder]="!!uncombinableDropdown.value?.length ? uncombinableDropdown.value.length + ' Selected' : ('SelectExam' | translate)"
+              [placeholder]="!!uncombinableDropdown.value?.length ? uncombinableDropdown.value.length + ('Selected' | translate) : ('SelectExam' | translate)"
               label="{{ 'Uncombinable' | translate }}"
               [items]="filteredExams$$.value"
               formControlName="uncombinables"
@@ -172,7 +172,7 @@
               [typeToSearch]="true"
               (searchInput)="handleDropdownSearch($event, 'mandatory')"
               [placeholder]="
-                !!mandatoryStaffsDropdown.value?.length ? mandatoryStaffsDropdown.value.length + ' Selected' : ('SelectStaff' | translate)
+                !!mandatoryStaffsDropdown.value?.length ? mandatoryStaffsDropdown.value.length + ('Selected' | translate) : ('SelectStaff' | translate)
               "
               label="{{ 'MandatoryStaffs' | translate }}"
               [items]="filteredMandatoryStaffs$$.value"
@@ -213,7 +213,7 @@
                   formControlName="assistants"
                   [typeToSearch]="true"
                   (searchInput)="handleDropdownSearch($event, 'assistant')"
-                  [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ' Selected' : ('SelectAssistant' | translate)"
+                  [placeholder]="!!assistantDropdown.value?.length ? assistantDropdown.value.length + ('Selected' | translate) : ('SelectAssistant' | translate)"
                   [items]="filteredAssistants$$.value"
                 >
                 </dfm-input-dropdown>
@@ -258,7 +258,7 @@
                   [multiple]="true"
                   formControlName="radiologists"
                   [placeholder]="
-                    !!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ' Selected' : ('Select Radiologists' | translate)
+                    !!radiologistDropdown.value?.length ? radiologistDropdown.value.length + ('Selected' | translate) : ('Select Radiologists' | translate)
                   "
                   [items]="filteredRadiologists$$.value"
                 >
@@ -303,7 +303,7 @@
                   formControlName="nursing"
                   [typeToSearch]="true"
                   (searchInput)="handleDropdownSearch($event, 'nursing')"
-                  [placeholder]="!!nursingDropdown.value?.length ? nursingDropdown.value.length + ' Selected' : ('SelectNursing' | translate)"
+                  [placeholder]="!!nursingDropdown.value?.length ? nursingDropdown.value.length + ('Selected' | translate) : ('SelectNursing' | translate)"
                   [items]="filteredNursing$$.value"
                 >
                 </dfm-input-dropdown>
@@ -347,7 +347,7 @@
                   formControlName="secretaries"
                   [typeToSearch]="true"
                   (searchInput)="handleDropdownSearch($event, 'secretary')"
-                  [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ' Selected' : ('SelectSecretary' | translate)"
+                  [placeholder]="!!secretaryDropdown.value?.length ? secretaryDropdown.value.length + ('Selected' | translate) : ('SelectSecretary' | translate)"
                   [items]="filteredSecretaries$$.value"
                   class="add-exam-dropdown"
                 >
