@@ -115,7 +115,7 @@
             class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{'ReminderMailDuration' | translate}} *</span>
           <div class="w-fit d-flex flex-1 justify-content-between dfm-gap-24">
             <dfm-input type="number" size="sm" formControlName="reminderTime"></dfm-input>
-            <div class="dfm-input-dropdown-wrapper-wo-label st-mg-time-duration-type">
+            <div class="st-mg-time-duration-type">
               <dfm-input-dropdown [items]="timeDurations" size="sm"
                                   formControlName="reminderTimeType"></dfm-input-dropdown>
             </div>
@@ -128,9 +128,8 @@
             class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{'AppointmentCancellationDuration' | translate}} *</span>
           <div class="w-fit d-flex flex-1 justify-content-between dfm-gap-24">
             <dfm-input type="number" size="sm" formControlName="cancelAppointmentTime"></dfm-input>
-            <div class="dfm-input-dropdown-wrapper-wo-label st-mg-time-duration-type">
-              <dfm-input-dropdown [items]="timeDurations" size="sm"
-                                  formControlName="cancelAppointmentType"></dfm-input-dropdown>
+            <div class="st-mg-time-duration-type">
+              <dfm-input-dropdown [items]="timeDurations" size="sm" formControlName="cancelAppointmentType"></dfm-input-dropdown>
             </div>
           </div>
         </div>

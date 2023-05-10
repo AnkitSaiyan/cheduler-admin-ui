@@ -67,6 +67,7 @@ import { DateAdapter, MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/mate
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CustomDatePickerAdapter } from './utils/date-adapter';
 import { DUTCH_BE } from "./utils/const";
+import {MultiDropdownPlaceholderNamePipe} from "./pipes/multi-dropdown-placeholder-name.pipe";
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
 }
@@ -111,6 +112,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		CompleteProfileComponent,
 		LoginFailedComponent,
 		DfmCalendarPickerComponent,
+		MultiDropdownPlaceholderNamePipe
 	],
 	imports: [
 		CommonModule,
@@ -191,6 +193,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatIconModule,
 		DfmCalendarPickerComponent,
 		MatDatepickerModule,
+		MultiDropdownPlaceholderNamePipe
 	],
 	providers: [
 		TranslatePipe,

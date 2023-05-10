@@ -41,7 +41,7 @@
               <div [formGroupName]="i" *ngFor="let controls of getFormArray(weekday).controls; let i = index" class="d-flex flex-column">
                 <div class="d-flex dfm-gap-16 align-items-start flex-1">
                   <div class="d-flex flex-column w-full">
-                    <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
+                    <div class=" flex-1 pr-hr-time-dropdown min-w-128">
                       <dfm-input-dropdown
                         #start
                         [items]="controls?.get('startTimings')?.value"
@@ -63,7 +63,7 @@
                   </div>
 
                   <div class="d-flex flex-column w-full">
-                    <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
+                    <div class=" flex-1 pr-hr-time-dropdown min-w-128">
                       <dfm-input-dropdown
                         #end
                         [items]="controls?.get('endTimings')?.value"
@@ -137,7 +137,7 @@
               <div [formGroupName]="i" *ngFor="let controls of getFormArray(weekday).controls; let i = index" class="d-flex flex-column">
                 <div class="d-flex dfm-gap-16 align-items-start flex-1">
                   <div class="d-flex flex-column w-full">
-                    <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
+                    <div class="flex-1 pr-hr-time-dropdown min-w-128">
                       <dfm-input-dropdown
                         #start
                         [items]="controls?.get('startTimings')?.value"
@@ -159,7 +159,7 @@
                   </div>
 
                   <div class="d-flex flex-column w-full">
-                    <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
+                    <div class="flex-1 pr-hr-time-dropdown min-w-128">
                       <dfm-input-dropdown
                         #end
                         [items]="controls?.get('endTimings')?.value"
@@ -232,7 +232,7 @@
               <div class="d-flex flex-column" [formGroupName]="i" *ngFor="let controls of getFormArray(0).controls; let i = index">
                 <div class="d-flex dfm-gap-16 align-items-start flex-1">
                   <div class="d-flex flex-column w-full">
-                    <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
+                    <div class="flex-1 pr-hr-time-dropdown min-w-128">
                       <dfm-input-dropdown
                         #start
                         [items]="controls?.get('startTimings')?.value"
@@ -254,7 +254,7 @@
                   </div>
 
                   <div class="d-flex flex-column w-full">
-                    <div class="dfm-input-dropdown-wrapper dfm-dropdown-input-pr-10 flex-1 pr-hr-time-dropdown min-w-128">
+                    <div class="flex-1 pr-hr-time-dropdown min-w-128">
                       <dfm-input-dropdown
                         #end
                         [items]="controls?.get('endTimings')?.value"

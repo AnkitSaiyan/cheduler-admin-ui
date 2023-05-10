@@ -450,7 +450,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 					this.absenceForm.get('repeatDays')?.setValue(null);
 				}
 				this.updateRepeatFrequency();
-				if (!this.absence$$.value || !Object.keys(this.absence$$.value)?.length) {
+				if (this.repeatFrequency && (!this.absence$$.value || !Object.keys(this.absence$$.value)?.length)) {
 					this.repeatFrequency.type = 'number';
 				}
 			});
