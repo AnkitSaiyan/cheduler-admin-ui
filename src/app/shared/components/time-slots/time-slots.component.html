@@ -60,6 +60,7 @@
                     <small class="validation-error" *ngIf="controls.get('dayStart')?.hasError(invalidTimeError)">{{
                       'InvalidTime' | translate
                     }}</small>
+
                   </div>
 
                   <div class="d-flex flex-column w-full">
@@ -119,6 +120,9 @@
                 >
                   {{ 'SlotOverlapsOtherSlots' | translate }}
                 </small>
+
+                <small class="validation-error" *ngIf="controls?.get('dayStart')?.touched && controls?.get('dayEnd')?.touched && controls.hasError('bothFieldRequired')">
+                  {{ 'BothRequiredField' | translate }}</small>
               </div>
 
               <div class="d-flex align-items-center dfm-gap-8 pointer w-fit" (click)="addSlot(weekday)">
@@ -295,7 +299,7 @@
                     ></dfm-button-icon>
                   </div>
                    <!--====Trash Button For Mobile Ends====-->
-                  
+
                 </div>
 
                 <small

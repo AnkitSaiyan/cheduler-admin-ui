@@ -66,6 +66,7 @@
 	"EndTime": "Eind tijd",
 	"ClickToAddSlot": "Klik om tijdslot toe te voegen",
 	"RequiredField": "Dit veld is verplicht",
+	"BothRequiredField": "Beide veld is verplicht",
 	"AddAvailabilityData": "Toevoegen beschikbare dagen",
 	"ViewAll": "Zie alles",
 	"SUN": "ZON",
@@ -403,11 +404,12 @@
 	"Dec": "Dec",
 	"Instructions": "Aanwijzingen",
 	"EnterInstructions": "Voer instructies in",
-	"Time" : "Tijd",
-	"LogoutConfirmation" : "Bevestiging Uitloggen",
-	"Areyousurewanttologout":"Ben je zeker dat je uit deze sessie wil loggen?",
-	"NoRoomsAreAvailable" : "Er zijn geen kamers beschikbaar"
+	"Time": "Tijd",
+	"LogoutConfirmation": "Bevestiging Uitloggen",
+	"Areyousurewanttologout": "Ben je zeker dat je uit deze sessie wil loggen?",
+	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar"
 }
+
 
 
 
