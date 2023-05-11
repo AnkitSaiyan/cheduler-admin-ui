@@ -29,6 +29,11 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Actief',
 	},
 
+	Subject: {
+		[ENG_BE]: 'Subject',
+		[DUTCH_BE]: 'Onderwerp',
+	},
+
 	Inactive: {
 		[ENG_BE]: 'Inactive',
 		[DUTCH_BE]: 'Inactief',
@@ -406,10 +411,10 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'Site Updated Successfully',
 			[DUTCH_BE]: 'Site succesvol geüpdated',
 		},
-		ProfileSavedSuccessfully:{
+		ProfileSavedSuccessfully: {
 			[ENG_BE]: 'Profile saved successfully',
 			[DUTCH_BE]: 'Profiel succesvol opgeslagen',
-		}
+		},
 	},
 
 	ErrorMessage: {
@@ -421,20 +426,18 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'Failed to copy Data',
 			[DUTCH_BE]: 'Kan gegevens niet kopiëren',
 		},
-		CanNotAddAppointmentInPostDate:{
+		CanNotAddAppointmentInPostDate: {
 			[ENG_BE]: 'Can not add appointment on past date',
 			[DUTCH_BE]: 'kan geen afspraak toevoegen op datum in het verleden',
 		},
-		FailedToSaveProfile:{
+		FailedToSaveProfile: {
 			[ENG_BE]: 'Failed to save profile',
 			[DUTCH_BE]: 'Profiel niet weerhouden',
 		},
-		FailedToLoginLoggingOut:{
+		FailedToLoginLoggingOut: {
 			[ENG_BE]: 'Failed to Login. Logging out',
 			[DUTCH_BE]: 'Login gefaald. Uitloggen',
-		}
-
-
+		},
 	},
 
 	// Form Invalid
@@ -525,10 +528,10 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'Something Went Wrong',
 			[DUTCH_BE]: 'Er is iets fout gegaan',
 		},
-		FailedToSave:{
+		FailedToSave: {
 			[ENG_BE]: 'Failed to save the appointment',
 			[DUTCH_BE]: 'Afspraak werd niet weerhouden',
-		}
+		},
 	},
 
 	//title
@@ -599,8 +602,9 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'Selected',
 			[DUTCH_BE]: 'Geselecteerd',
 		},
-	}
+	},
 });
+
 
 
 
