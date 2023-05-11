@@ -245,6 +245,17 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			.subscribe({
 				next: ([lang]) => {
 					this.selectedLang = lang;
+					this.columns = [
+						Translate.StartedAt[lang],
+						Translate.EndedAt[lang],
+						Translate.PatientName[lang],
+						Translate.Exam[lang],
+						Translate.Physician[lang],
+						Translate.AppointmentNo[lang],
+						Translate.AppliedOn[lang],
+						// Translate.Read[lang],
+						Translate.Status[lang],
+					];
 					if (this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments])) {
 						if (!this.columns.includes(Translate.Actions[lang])) {
 							this.columns.push();
