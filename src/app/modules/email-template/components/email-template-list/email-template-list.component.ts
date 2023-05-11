@@ -12,10 +12,12 @@ import { Email } from 'src/app/shared/models/email-template.model';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { ENG_BE, Statuses, StatusesNL, DUTCH_BE } from 'src/app/shared/utils/const';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
+
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { UserRoleEnum } from 'src/app/shared/models/user.model';
+import { StatusNamePipe } from 'src/app/shared/pipes/status-name.pipe';
 
 @Component({
 	selector: 'dfm-email-template-list',
@@ -66,6 +68,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		private shareDataSvc: ShareDataService,
 		private translate: TranslateService,
 		public permissionSvc: PermissionService,
+		private translatePipe: TranslatePipe,
 	) {
 		super();
 		this.emails$$ = new BehaviorSubject<any[]>([]);
@@ -103,7 +106,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 				this.downloadSvc.downloadJsonAs(
 					downloadAs as DownloadAsType,
 					this.columns.slice(0, -1),
-					this.filteredEmails$$.value.map((em: Email) => [em.title, em.subject?.toString(), StatusToName[em.status]]),
+					this.filteredEmails$$.value.map((em: Email) => [em.title, em.subject?.toString(), this.translatePipe.transform(StatusToName[em.status])]),
 					'email-template',
 				);
 
@@ -151,6 +154,9 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe(([lang]) => {
 				this.selectedLang = lang;
+
+				this.columns = [Translate.Title[lang], Translate.Subject[lang], Translate.Status[lang]];
+
 				if (this.permissionSvc.isPermitted(Permission.UpdateEmailTemplate)) {
 					this.columns = [...this.columns, Translate.Actions[lang]];
 				}
@@ -240,6 +246,10 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		}, 0);
 	}
 }
+
+
+
+
 
 
 
