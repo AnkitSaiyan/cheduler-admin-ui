@@ -105,7 +105,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 		UtcToLocalPipe,
 		DefaultDatePipe,
 		JoinWithAndPipe,
-		// { provide: APP_BASE_HREF, useValue: '/admin' },
+		{ provide: APP_BASE_HREF, useValue: '/admin' },
 		{ provide: TitleStrategy, useClass: AppTitlePrefix },
 		{
 			provide: HTTP_INTERCEPTORS,
