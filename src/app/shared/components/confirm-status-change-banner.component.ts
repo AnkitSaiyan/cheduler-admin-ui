@@ -1,14 +1,17 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { TranslatePipe } from '@ngx-translate/core';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { AppointmentStatus, Status } from '../models/status.model';
-import { DUTCH_BE, ENG_BE } from '../utils/const';
+import { ENG_BE } from '../utils/const';
 
 @Component({
 	selector: 'dfm-confirm-status-change-banner',
 	template: `
-		<div *ngIf="display" class="confirm-banner dfm-gap-16 dfm-px-32 dfm-py-12 shadow-lg">
+		<div
+			*ngIf="display"
+			class="confirm-banner dfm-gap-16 dfm-px-32 dfm-py-12 shadow-lg"
+			(click)="$event.preventDefault(); $event.stopImmediatePropagation()"
+		>
 			<div class="hidden align-items-center justify-content-between dfm-gap-16">
 				<h5 class="modal-title">{{ 'Confirmation' | translate }}</h5>
 				<dfm-button-icon color="tertiary-gray" icon="x-close" (click)="$event.stopPropagation(); handleClick(false)"></dfm-button-icon>
