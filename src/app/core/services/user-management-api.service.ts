@@ -83,9 +83,7 @@ export class UserManagementApiService {
 	}
 
 	public getUserProperties(userId: string): Observable<UserProperties> {
-		return combineLatest([this.httpClient.get<UserProperties>(`${this.baseUrl}/users/${userId}/properties`), this.getTenantId()]).pipe(
-			map(([data]) => data),
-		);
+		return this.httpClient.get<UserProperties>(`${this.baseUrl}/users/${userId}/properties`);
 	}
 
 	public getTenantId(): Observable<any> {
@@ -167,6 +165,10 @@ export class UserManagementApiService {
 		return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?ids=${ids}`).pipe(map((patientRes) => patientRes.items));
 	}
 }
+
+
+
+
 
 
 

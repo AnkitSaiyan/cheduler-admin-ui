@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap, throwError} from "rxjs";
+import { BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import {AuthUser} from "../../shared/models/user.model";
 import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
 import {UserManagementApiService} from "./user-management-api.service";
@@ -45,7 +45,15 @@ export class UserService {
 			return of(false);
 		}
 
-		return this.userManagementApiService.getUserProperties(userId).pipe(
+		return combineLatest([
+			this.userManagementApiService.getUserProperties(userId),
+			this.userManagementApiService.getTenantId().pipe(
+				catchError(() => {
+					return of(false);
+				}),
+			),
+		]).pipe(
+			map(([data]) => data),
 			map((res: any) => {
 				try {
 					const tenants = ((user?.idTokenClaims as any).extension_Tenants as string).split(',');
@@ -98,6 +106,7 @@ export class UserService {
 		this.permissionSvc.removePermissionType();
 	}
 }
+
 
 
 
