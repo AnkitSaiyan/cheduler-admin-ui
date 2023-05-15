@@ -16,8 +16,6 @@ export class ErrorInterceptor implements HttpInterceptor {
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
         catchError((err) => {
-          console.log(err);
-
           // lang hardcoded to english for now
           this.generateErrorMessage(err, ENG_BE);
           this.stopLoaders();

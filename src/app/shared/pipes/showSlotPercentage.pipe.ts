@@ -11,7 +11,6 @@ export class ShowSlotPercentagePipe implements PipeTransform {
 		Low: 'lowPriorityPercentage',
 	};
 	transform(currentPrioritySlot: any, slotPercentage: NextSlotOpenPercentageData, prioritySlots: any[]): boolean {
-		console.log({ prioritySlots });
 		if (prioritySlots.length === 1) return true;
 		if (currentPrioritySlot.priority === 'High') return true;
 

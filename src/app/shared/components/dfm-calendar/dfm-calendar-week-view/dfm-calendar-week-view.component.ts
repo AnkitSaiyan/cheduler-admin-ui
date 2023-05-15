@@ -169,10 +169,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public changeWeek(offset: number) {
-		console.log(offset);
 		if (offset !== 0) {
 			const date = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + offset * 7));
-			console.log('147', date);
 			this.updateDate(date);
 			this.changeWeek$$.next(0);
 		}

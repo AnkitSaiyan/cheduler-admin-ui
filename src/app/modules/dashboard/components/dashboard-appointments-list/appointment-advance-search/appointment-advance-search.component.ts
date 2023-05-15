@@ -165,7 +165,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
             });
 
         this.roomApiSvc.allRooms$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
-            console.log(staffs);
             const keyValueExams = this.nameValuePipe.transform(staffs, 'name', 'id');
             this.filteredRoomList = [...keyValueExams];
 
@@ -173,14 +172,12 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
         });
 
         this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
-            console.log(physicians);
             const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
             this.filteredPhysicianList = [...keyValuePhysicians];
             this.physicianList = [...keyValuePhysicians];
         });
 
         this.shareDataService.patient$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
-            console.log(physicians);
             const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'patientFname', 'appointmentId', 'patientLname');
             const tempKeyValue = physicians.map((val) => ({
                 // eslint-disable-next-line no-unsafe-optional-chaining
@@ -190,7 +187,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
                 value: val.patientFname ? val['patientFname']?.toString() + ':' + val['patientLname']?.toString() + ':' + val['appointmentId']?.toString() : val?.toString(),
             }));
             this.filteredPatientsList = [...tempKeyValue];
-            console.log(this.filteredPatientsList);
             this.patientList = [...tempKeyValue];
         });
 
@@ -198,14 +194,12 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
             .listenForParamChange$(APPOINTMENT_ID)
             .pipe(
                 filter((appointmentID: string) => {
-                    console.log('appointmentID in filter: ', appointmentID);
                     if (!appointmentID) {
                         this.appointment$$.next({} as Appointment);
                     }
                     return !!appointmentID;
                 }),
                 switchMap((appointmentID) => {
-                    console.log('appointmentID: ', appointmentID);
                     return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
                 }),
                 debounceTime(0),
@@ -246,8 +240,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
     }
 
     public saveAppointment(): void {
-        console.log(this.selectedTimeSlot);
-
         try {
             if (this.appointmentForm.invalid) {
                 this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
@@ -285,8 +277,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
                 this.isCombinable
             );
 
-            console.log(requestData);
-
             if (this.edit) {
                 this.appointmentApiSvc
                     .updateAppointment$(requestData)
@@ -299,7 +289,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
                             this.submitting$$.next(false);
 
                             let route: string;
-                            console.log('this.comingFromRoute: ', this.comingFromRoute);
                             if (this.comingFromRoute === 'view') {
                                 route = '../view';
                             } else {
@@ -343,7 +332,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
                     });
             }
         } catch (e) {
-            console.log(e);
             this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}.`, NotificationType.DANGER);
             this.submitting$$.next(false);
             return;
@@ -424,7 +412,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
     }
 
     private updateForm(appointment: Appointment | undefined) {
-        console.log(appointment);
         let date!: Date;
         let dateDistributed: DateDistributed = {} as DateDistributed;
 
@@ -435,8 +422,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
         }
 
         dateDistributed = DateTimeUtils.DateToDateDistributed(date);
-
-        console.log(dateDistributed);
 
         this.appointmentForm.patchValue(
             {

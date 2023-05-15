@@ -19,6 +19,7 @@ import {AuthService} from "../../../../core/services/auth.service";
 import {MsalService} from "@azure/msal-angular";
 import {Permission} from "../../../../shared/models/permission.model";
 import {PermissionService} from "../../../../core/services/permission.service";
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
 
 interface FormValues {
     userType: UserType;

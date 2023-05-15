@@ -90,8 +90,6 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 				return { ...finalValue, grayOutMin: min, grayOutMax: max };
 			}),
 		);
-
-		this.practiceHourMinMax$.subscribe(console.log);
 	}
 
 	private calculate(minutes: number, time: string, type: 'plus' | 'minus'): string {
@@ -143,7 +141,6 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			.subscribe((slotPercentage) => {
 				this.slotPercentage$$.next(slotPercentage);
 			});
-		console.log({ dates });
 	}
 
 	private updateQuery(queryStr?: string, date?: Date) {
@@ -236,7 +233,6 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			}
 		});
 
-		console.log({ myPrioritySlots });
 		this.prioritySlots$$.next({ ...myPrioritySlots });
 	}
 }

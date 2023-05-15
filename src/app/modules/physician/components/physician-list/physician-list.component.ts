@@ -198,7 +198,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         let status: any;
         if (physician.status) status = this.translate.instant('Active');
         if (!physician.status) status = this.translate.instant('Inactive');
-        console.log(status);
+
         return (
           physician.firstname?.toLowerCase()?.includes(searchText) ||
           physician.lastname?.toLowerCase()?.includes(searchText) ||
