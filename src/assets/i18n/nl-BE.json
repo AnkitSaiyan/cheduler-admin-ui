@@ -146,7 +146,7 @@
 	"Yes": "Ja",
 	"No": "Nee",
 	"CombineSlots": "Combineer Tijdslots",
-	"ReminderMailDuration": "Duur Herinneringsbericht",
+	"ReminderMailDuration": "Duur herinneringsbericht e-mail",
 	"NoExamsFound": "Geen onderzoeken gevonden",
 	"RoomAvailabilityInfo": "Info Kamer Beschikbaarheid",
 	"RoomAvailabilityData": "Gegevens Kamer Beschikbaarheid",
@@ -293,6 +293,7 @@
 	"StartedAt": "Start",
 	"EndedAt": "Eind",
 	"Change": "Wijziging",
+	"ChangeRadiologist": "Wijzig Radioloog",
 	"Move": "Verplaats",
 	"Shorten": "Inkorten",
 	"Extend": "Verlengen",
@@ -372,6 +373,7 @@
 	"ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame": "De duur van het examen en het totale aantal minuten van de kamers moet hetzelfde zijn.",
 	"NoSlotsFoundForSelectedExamsAndTime": "Geen slots gevonden voor geselecteerde onderzoek  en Tijd",
 	"Save": "Winkel",
+	"Save2": "bevestig",
 	"SelectPhysician": "Selecteer dokter",
 	"Heading": "Hoofding",
 	"SubHeading": "Sub-Hoofding",
@@ -408,6 +410,9 @@
 	"Areyousurewanttologout": "Ben je zeker dat je uit deze sessie wil loggen?",
 	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar"
 }
+
+
+
 
 
 
