@@ -47,7 +47,7 @@
 			<div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 flex-1 vw-ap-sec2-card">
 				<header class="d-flex align-items-center dfm-gap-8">
 					<div class="dfm-button-gray-400">
-						<dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+						<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
 					</div>
 					<span class="font-weight-medium">{{ 'AppointmentDetails' | translate }}</span>
 				</header>
@@ -104,7 +104,7 @@
 			<div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ap-sec2-card flex-1">
 				<header class="d-flex align-items-center dfm-gap-8">
 					<div class="dfm-button-gray-400">
-						<dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+						<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
 					</div>
 					<span class="font-weight-medium">{{ 'PatientDetails' | translate }}</span>
 				</header>
@@ -130,7 +130,7 @@
 			<!-- <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ap-sec2-card flex-1">
         <header class="d-flex align-items-center dfm-gap-8">
           <div class="dfm-button-gray-400">
-            <dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+            <dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
           </div>
           <span class="font-weight-medium">Exam Details</span>
         </header>
@@ -158,7 +158,7 @@
 	<section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16 vw-ap-sec2-card" *ngIf="examDetails$$ | async as examDetails">
 		<header class="d-flex align-items-center dfm-gap-8">
 			<div class="dfm-button-gray-400">
-				<dfm-button size="md" leadingIcon="drag" color="link-gray"></dfm-button>
+				<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
 			</div>
 			<span class="font-weight-medium">{{ 'ExamDetails' | translate }}</span>
 		</header>

@@ -761,6 +761,11 @@ ngb-datepicker {
   }
 }
 
+.cursor-default {
+  * {
+    cursor: default !important;
+  }
+}
 
 // Custom Global styling ==============================================================
 .overflow-auto {

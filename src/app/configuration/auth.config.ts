@@ -21,24 +21,25 @@ export class AuthConfig {
 }
 
 export const MSALConfig: Configuration = Object.freeze({
-    auth: {
-        clientId: AuthConfig.authClientId,
-        authority: `${AuthConfig.fullAuthority}/${AuthConfig.authFlow}`,
-        knownAuthorities: [AuthConfig.authority],
-        redirectUri: '/',
-    },
-    cache: {
-        cacheLocation: BrowserCacheLocation.LocalStorage,
-        storeAuthStateInCookie: isIE,
-    },
-    system: {
-        loggerOptions: {
-            loggerCallback: (logLevel, message) => {
-                // console.log(message);
-            },
-            logLevel: LogLevel.Verbose,
-            piiLoggingEnabled: true
-        }
-    }
+	auth: {
+		clientId: AuthConfig.authClientId,
+		authority: `${AuthConfig.fullAuthority}/${AuthConfig.authFlow}`,
+		knownAuthorities: [AuthConfig.authority],
+		redirectUri: window.origin,
+	},
+	cache: {
+		cacheLocation: BrowserCacheLocation.LocalStorage,
+		storeAuthStateInCookie: isIE,
+	},
+	system: {
+		loggerOptions: {
+			loggerCallback: (logLevel, message) => {
+				// console.log(message);
+			},
+			logLevel: LogLevel.Verbose,
+			piiLoggingEnabled: true,
+		},
+	},
 });
+
 
