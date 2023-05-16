@@ -215,7 +215,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				take(1),
 			)
 			.subscribe({
-				next: () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated}!`),
+				next: () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated[this.selectedLang]}!`),
 			});
 	}
 
