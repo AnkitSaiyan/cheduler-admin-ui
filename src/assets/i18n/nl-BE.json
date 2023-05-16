@@ -372,6 +372,7 @@
 	"ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame": "De duur van het examen en het totale aantal minuten van de kamers moet hetzelfde zijn.",
 	"NoSlotsFoundForSelectedExamsAndTime": "Geen slots gevonden voor geselecteerde onderzoek  en Tijd",
 	"Save": "Winkel",
+	"Save2": "bevestig",
 	"SelectPhysician": "Selecteer dokter",
 	"Heading": "Hoofding",
 	"SubHeading": "Sub-Hoofding",
@@ -408,6 +409,7 @@
 	"Areyousurewanttologout": "Ben je zeker dat je uit deze sessie wil loggen?",
 	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar"
 }
+
 
 
 
