@@ -365,7 +365,7 @@
 	"Daily": "Dagelijks",
 	"AddAppointmentConfirmation": "Afspraakbevestiging toevoegen",
 	"AreYouSureWantToMakeAppointmentOutsideOperatingHours": "Weet u zeker dat u buiten openingstijden een afspraak wilt maken?",
-	"LoadingSlots": "uren laden zijn",
+	"LoadingSlots": "uren zijn aan het laden",
 	"To": "Naar",
 	"PracticeNotAvailableForDay": "De praktijk is deze dag niet beschikbaar",
 	"SelectedSlot": "Gekozen uren",
@@ -410,6 +410,7 @@
 	"Areyousurewanttologout": "Ben je zeker dat je uit deze sessie wil loggen?",
 	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar"
 }
+
 
 
 
