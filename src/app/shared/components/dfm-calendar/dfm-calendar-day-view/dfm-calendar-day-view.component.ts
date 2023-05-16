@@ -44,6 +44,7 @@ import {ENG_BE} from 'src/app/shared/utils/const';
 import {DestroyableComponent} from '../../destroyable.component';
 import {PermissionService} from 'src/app/core/services/permission.service';
 import {UserRoleEnum} from 'src/app/shared/models/user.model';
+import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 
 @Component({
 	selector: 'dfm-calendar-day-view',
@@ -87,6 +88,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private lastScrollTime: number = 0;
 	private requestId: number | null = null;
 	private selectedLang: string = ENG_BE;
+
+	private pixelPerMinute = 4;
 
 	constructor(
 		private datePipe: DatePipe,
@@ -323,8 +326,24 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement) {
 		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
 		const currentDate = new Date();
-		currentDate.setDate(currentDate.getDate() - 1);
-		if (this.selectedDate.getTime() < currentDate.getTime()) {
+
+		let minutes = Math.round(+e.offsetY / this.pixelPerMinute);
+
+		// In case if calendar start time is not 00:00 then adding extra minutes
+		if (this.timeSlot.timings[0]) {
+			const startTime = this.timeSlot.timings[0].split(':');
+			minutes += DateTimeUtils.DurationInMinFromHour(+startTime[0], +startTime[1]);
+		}
+		const roundedMin = minutes - (minutes % 5);
+		const hour = Math.floor(minutes / 60);
+		const min = roundedMin % 60;
+		const currentSelectedTime = new Date(this.selectedDate);
+		currentSelectedTime.setHours(hour);
+		currentSelectedTime.setMinutes(min);
+
+		const currentTimeInLocal = DateTimeUtils.UTCDateToLocalDate(currentSelectedTime);
+
+		if (currentTimeInLocal.getTime() < currentDate.getTime()) {
 			this.notificationSvc.showWarning(`Can't add appointment on past date`);
 			return;
 		}
