@@ -126,9 +126,9 @@
                                    [routerLink]="['/', 'appointment', data.appointment.id, 'view']">
                                 <div class="d-flex dfm-gap-4" triggers="hover" [ngbPopover]="eventDetails"
                                      [autoClose]="'outside'" container="body">
-                                  <div class="circle-gray-200-24" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname?.length">
+                                  <!-- <div class="circle-gray-200-24" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname?.length">
                                     {{ (data.appointment.patientFname[0] | uppercase)}}
-                                  </div>
+                                  </div> -->
 
                                   <div class="d-flex flex-column ">
                                     <span class="calender-day-view-event-title" *ngIf="data?.appointment?.patientFname; else date">

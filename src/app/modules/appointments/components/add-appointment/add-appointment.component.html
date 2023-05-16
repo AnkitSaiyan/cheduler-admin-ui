@@ -264,9 +264,9 @@
 
             <div *ngIf="edit" class="d-flex gap-2 text-sm">
               <span class="font-weight-medium">{{"SelectedSlot" | translate}} </span>
-              <div class="text-center">
-                {{ (selectedTimeSlot[+exams.value[0]]?.slot?.split("-")?.[0]?.slice(0, -3))! | dfmUtcToLocal: true }} -
-                {{ (selectedTimeSlot[+exams.value[0]]?.slot?.split("-")?.[1]?.slice(0, -3))! | dfmUtcToLocal: true }}
+              <div class="text-center" *ngIf="selectedTimeSlot | keyvalue as selectedTimeSlotArray">
+                {{ (selectedTimeSlotArray[0].value?.slot?.split("-")?.[0]?.slice(0, -3))! | dfmUtcToLocal: true }} -
+                {{ (selectedTimeSlotArray[0].value?.slot?.split("-")?.[1]?.slice(0, -3))! | dfmUtcToLocal: true }}
               </div>
             </div>
 
