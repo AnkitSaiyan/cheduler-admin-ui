@@ -375,8 +375,9 @@ h3 {
     font-size: 0.9rem;
 
     .calender-day-view-event-title {
+      width: calc(100% - 24px);
       font-weight: 600;
-      font-size: 0.8rem;
+      font-size: 0.7rem;
     }
 
     .calender-day-view-event-time {
