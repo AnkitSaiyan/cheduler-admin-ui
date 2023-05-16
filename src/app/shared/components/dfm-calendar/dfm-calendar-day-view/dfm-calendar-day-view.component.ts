@@ -222,7 +222,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	public openChangeTimeModal(appointment: Appointment, extend = true, eventContainer?: HTMLDivElement) {
 		const top = eventContainer?.style.top;
 		const height = eventContainer?.style.height;
-
 		const modalRef = this.modalSvc.open(AppointmentTimeChangeModalComponent, {
 			data: { extend, eventContainer },
 		});
@@ -255,6 +254,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 						from: res.top ? 'AtTheTop' : 'AtTheBottom',
 						appointmentId: appointment.id,
 						examId: appointment.exams[0].id,
+						roomId: appointment.exams[0]?.rooms?.length ? appointment.exams[0]?.rooms[0]?.id : null,
 					} as UpdateDurationRequestData;
 
 					eventContainer?.scrollIntoView({ behavior: 'smooth', block: 'start' });
