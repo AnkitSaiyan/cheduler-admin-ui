@@ -22,7 +22,7 @@
                 <span class="calender-month-view-day-exam-details-expanded-title">
                   {{"Appointments" | translate}} ({{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length }})
                 </span>
-              <div class="calender-month-view-day-exam-details-expanded-patients-container">
+              <div class="calender-month-view-day-exam-details-expanded-patients-container accordion-content">
                 <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0"
                                *ngFor="let ap of dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]; let i = index">
                   <ngb-panel>

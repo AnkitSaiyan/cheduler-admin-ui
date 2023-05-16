@@ -166,6 +166,10 @@ table, th, tr, td {
   min-width:50px;
 }
 
+.accordion-content {
+  max-height: calc(90vh - 72px);
+  overflow: auto;
+}
 @media (max-width: 680px) {
   .calender-month-view-day-exam-event-container {
     left: -8px

@@ -93,7 +93,7 @@
 													{{ 'Appointments' | translate }} ({{ groupedData.length }})
 												</span>
 
-												<div class="calendar-week-view-event-patients-container">
+												<div class="calendar-week-view-event-patients-container accordion-content">
 													<ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0" *ngFor="let data of groupedData; let i = index">
 														<ngb-panel>
 															<ng-template ngbPanelTitle>
