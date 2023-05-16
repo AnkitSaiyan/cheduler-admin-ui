@@ -45,47 +45,44 @@ export class UserService {
 			return of(false);
 		}
 
-		return combineLatest([
-			this.userManagementApiService.getUserProperties(userId),
-			this.userManagementApiService.getTenantId().pipe(
-				catchError(() => {
-					return of(false);
-				}),
-			),
-		]).pipe(
-			map(([data]) => data),
-			map((res: any) => {
-				try {
-					const tenants = ((user?.idTokenClaims as any).extension_Tenants as string).split(',');
-					if (tenants.length === 0) {
-						return false;
-					}
+		return this.userManagementApiService.getTenantId().pipe(
+			switchMap(() => {
+				return this.userManagementApiService.getUserProperties(userId).pipe(
+					map((res: any) => {
+						try {
+							const tenants = ((user?.idTokenClaims as any).extension_Tenants as string).split(',');
+							if (tenants.length === 0) {
+								return false;
+							}
 
-					this.authUser$$.next(new AuthUser(res.mail, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
+							this.authUser$$.next(new AuthUser(res.mail, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
 
-					return true;
-				} catch (error) {
-					return false;
-				}
+							return true;
+						} catch (error) {
+							return false;
+						}
+					}),
+					tap((res) => {
+						// Complete Profile if not completed
+
+						if (!res) {
+							return;
+						}
+
+						const user = this.authUser$$.value;
+						if (!user) {
+							return;
+						}
+
+						if (user.properties['extension_ProfileIsIncomplete']) {
+							// this.authUser$$.next(new AuthUser(user.mail, user.givenName, user.id, user.surname, user.displayName, user.email, {}, []))
+							this.router.navigate(['/complete-profile']);
+						}
+					}),
+					catchError((err) => of(false)),
+				);
 			}),
-			tap((res) => {
-				// Complete Profile if not completed
-
-				if (!res) {
-					return;
-				}
-
-				const user = this.authUser$$.value;
-				if (!user) {
-					return;
-				}
-
-				if (user.properties['extension_ProfileIsIncomplete']) {
-					// this.authUser$$.next(new AuthUser(user.mail, user.givenName, user.id, user.surname, user.displayName, user.email, {}, []))
-					this.router.navigate(['/complete-profile']);
-				}
-			}),
-			catchError((err) => of(false)),
+			catchError(() => of(false)),
 		);
 	}
 
