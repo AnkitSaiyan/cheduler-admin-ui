@@ -293,6 +293,7 @@
 	"StartedAt": "Start",
 	"EndedAt": "Eind",
 	"Change": "Wijziging",
+	"ChangeRadiologist": "Wijzig Radioloog",
 	"Move": "Verplaats",
 	"Shorten": "Inkorten",
 	"Extend": "Verlengen",
@@ -409,6 +410,7 @@
 	"Areyousurewanttologout": "Ben je zeker dat je uit deze sessie wil loggen?",
 	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar"
 }
+
 
 
 
