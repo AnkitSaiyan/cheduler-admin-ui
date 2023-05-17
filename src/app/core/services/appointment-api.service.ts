@@ -290,10 +290,30 @@ export class AppointmentApiService extends DestroyableComponent {
 		const examIdToRooms: { [key: number]: Room[] } = {};
 		const examIdToUsers: { [key: number]: User[] } = {};
 
+		// const examIdToStartEndTime: {
+		// 	[key: number]: {
+		// 		startedAt: Date;
+		// 		endedAt: Date;
+		// 	}
+		// }
+
 		if (appointment.roomsDetail?.length) {
 			appointment?.roomsDetail?.forEach((room) => {
-				if (!examIdToRooms[+room.examId]) {
-					examIdToRooms[+room.examId] = [];
+				const examId = +room.examId;
+				if (!examIdToRooms[examId]) {
+					examIdToRooms[examId] = [];
+					// if (!examIdToStartEndTime[examId]) {
+					// 	examIdToStartEndTime[examId] = {
+					// 		startedAt: new Date(room.startedAt as string),
+					// 		endedAt: new Date(room.startedAt as string),
+					// 	}
+					// } else {
+					// 	const startedAt = new Date(room.startedAt as string)
+					// 	const endedAt = new Date()
+					// 	if (new Date(room.startedAt as string).getTime() < examIdToStartEndTime[examId].startedAt.getTime()) {
+					//
+					// 	}
+					// }
 				}
 				examIdToRooms[+room.examId].push(room);
 			});
