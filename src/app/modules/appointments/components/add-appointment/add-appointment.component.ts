@@ -468,6 +468,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 		dateDistributed = DateTimeUtils.DateToDateDistributed(date);
 
+		const verifiedUser = Boolean(appointment?.patientAzureId);
+
 		setTimeout(() => {
 			this.appointmentForm.patchValue(
 				{
@@ -489,6 +491,12 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				this.appointmentForm.get('examList')?.markAsUntouched();
 			}
 			this.dateControl.setValue(date);
+
+			if (verifiedUser) {
+				['patientFname', 'patientLname', 'patientTel', 'patientEmail'].forEach((key) => {
+					this.appointmentForm.get(key)?.disable();
+				});
+			}
 		}, 200);
 
 		const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
