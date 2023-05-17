@@ -150,8 +150,8 @@
                               </div>
                             </div>
 
-                            <div class="calender-day-view-event-more-button"
-                                 (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">
+                            <div class="calender-day-view-event-more-button" [matMenuTriggerFor]="menu"
+                                 >
                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                    xmlns="http://www.w3.org/2000/svg">
                                 <path
@@ -165,68 +165,39 @@
                                   stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                               </svg>
 
-                              <div ngbDropdown #moreMenu="ngbDropdown" [autoClose]="false">
-                                <div ngbDropdownMenu class="view-more-menu">
-                                  <button ngbDropdownItem
-                                          (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); changeRadiologists(data.appointment)">
+                              <mat-menu  #menu="matMenu" >
+                                <button mat-menu-item
+                                          (click)="changeRadiologists(data.appointment);">
                                     <div class="icon-20">
                                       <dfm-icon name="home-03"></dfm-icon>
                                     </div>
                                     <span>{{ 'ChangeRadiologist' | translate }}</span>
                                   </button>
 
-<!--                                  <button ngbDropdownItem-->
-<!--                                          (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">-->
-<!--                                    <div class="icon-20" style="transform: rotateZ(180deg)">-->
-<!--                                      <dfm-icon name="alert-circle"></dfm-icon>-->
-<!--                                    </div>-->
-<!--                                    <span>Detail Research</span>-->
-<!--                                  </button>-->
-
-<!--                                  <button ngbDropdownItem-->
-<!--                                          (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">-->
-<!--                                    <div class="icon-20">-->
-<!--                                      <dfm-icon name="home-03"></dfm-icon>-->
-<!--                                    </div>-->
-<!--                                    <span>Detail Appointment</span>-->
-<!--                                  </button>-->
-
-                                  <button ngbDropdownItem
-                                          (click)="$event.stopPropagation(); moveMenu.toggle()">
+                                  <button mat-menu-item [matMenuTriggerFor]="subMenu"
+                                          (click)="$event.stopPropagation()">
                                     <div class="icon-20">
                                       <dfm-icon name="arrow-right"></dfm-icon>
                                     </div>
                                     <span>{{ 'Move' | translate }}</span>
-                                    <div class="icon-20 ml-auto">
+                                    <!-- <div class="icon-20 ml-auto">
                                       <dfm-icon name="chevron-right"></dfm-icon>
-                                    </div>
+                                    </div> -->
 
-                                    <div ngbDropdown #moveMenu="ngbDropdown" placement="auto">
-                                      <div ngbDropdownMenu class="view-more-menu">
-<!--                                        <button ngbDropdownItem-->
-<!--                                                (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">-->
-<!--                                          <span>Proposals</span>-->
-<!--                                        </button>-->
-
-<!--                                        <button ngbDropdownItem-->
-<!--                                                (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu)">-->
-<!--                                          <span>Manual</span>-->
-<!--                                        </button>-->
-
-                                        <button ngbDropdownItem
-                                                (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); openChangeTimeModal(data.appointment, false, eventContainer)">
+                                    <mat-menu #subMenu="matMenu">
+                                      <button mat-menu-item
+                                                (click)="openChangeTimeModal(data.appointment, false, eventContainer)">
                                           <span>{{ 'Shorten' | translate }}</span>
                                         </button>
 
-                                        <button ngbDropdownItem
-                                                (click)="$event.stopPropagation(); toggleMoreMenu(moreMenu); openChangeTimeModal(data.appointment, true, eventContainer)">
+                                        <button mat-menu-item
+                                                (click)="openChangeTimeModal(data.appointment, true, eventContainer)">
                                           <span>{{ 'Extend' | translate }}</span>
                                         </button>
-                                      </div>
-                                    </div>
+                                    </mat-menu>
                                   </button>
 
-                                  <button ngbDropdownItem (click)="$event.stopPropagation(); moreMenu.close();"
+                                  <button mat-menu-item
                                           [routerLink]="['/', 'appointment', data.appointment.id, 'edit']"
                                           [state]="{ edit: true, comingFromRoute: 'appointment' }">
                                     <div class="icon-20">
@@ -237,15 +208,14 @@
 
                                   <div class="dropdown-divider"></div>
 
-                                  <button ngbDropdownItem
-                                          (click)="$event.stopPropagation(); deleteAppointment(data.appointment.id); moreMenu.close()">
+                                  <button mat-menu-item
+                                          (click)=" deleteAppointment(data.appointment.id);">
                                     <div class="icon-20">
                                       <dfm-icon name="trash-01"></dfm-icon>
                                     </div>
                                     <span>{{ 'Delete' | translate}}</span>
                                   </button>
-                                </div>
-                              </div>
+                              </mat-menu>
                             </div>
                           </div>
                         </ng-container>

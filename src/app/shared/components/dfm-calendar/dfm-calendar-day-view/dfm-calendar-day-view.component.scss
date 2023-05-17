@@ -479,3 +479,9 @@ h3 {
     }
   }
 }
+.mat-menu-item {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  max-height: 40px;
+}
