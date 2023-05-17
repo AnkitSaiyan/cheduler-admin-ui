@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
@@ -55,7 +55,7 @@ interface FormValues {
 	styleUrls: ['./add-priority-slots.component.scss'],
 	providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
 })
-export class AddPrioritySlotsComponent extends DestroyableComponent implements OnInit, OnDestroy {
+export class AddPrioritySlotsComponent extends DestroyableComponent implements OnInit, OnDestroy, AfterViewInit {
 	public prioritySlotForm!: FormGroup;
 
 	public radiologist$$ = new BehaviorSubject<NameValue[] | null>(null);
@@ -168,6 +168,13 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 						break;
 				}
 			});
+	}
+
+	public ngAfterViewInit() {
+		console.log('in', this.prioritySlot$$.value);
+		if (!this.prioritySlot$$.value?.id) {
+
+		}
 	}
 
 	public override ngOnDestroy() {
@@ -442,20 +449,22 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			nxtSlotOpenPct: [prioritySlotDetails?.nxtSlotOpenPct ?? null, [Validators.required, Validators.max(100), Validators.minLength(1)]],
 		});
 
-		setTimeout(
-			() =>
-				this.prioritySlotForm.patchValue({
-					slotStartTime: startTime,
-					slotEndTime: endTime,
-					repeatType: prioritySlotDetails?.repeatType,
-					repeatFrequency:
-						prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
-							? `${prioritySlotDetails.repeatFrequency} ${this.repeatTypeToName[prioritySlotDetails.repeatType]}`
-							: null,
-					repeatDays: prioritySlotDetails?.repeatDays ? prioritySlotDetails.repeatDays.split(',') : '',
-				}),
-			0,
-		);
+		if (prioritySlotDetails?.id) {
+			setTimeout(
+				() =>
+					this.prioritySlotForm.patchValue({
+						slotStartTime: startTime,
+						slotEndTime: endTime,
+						repeatType: prioritySlotDetails?.repeatType,
+						repeatFrequency:
+							prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
+								? `${prioritySlotDetails.repeatFrequency} ${this.repeatTypeToName[prioritySlotDetails.repeatType]}`
+								: null,
+						repeatDays: prioritySlotDetails?.repeatDays ? prioritySlotDetails.repeatDays.split(',') : '',
+					}),
+				0,
+			);
+		}
 
 		this.cdr.detectChanges();
 
