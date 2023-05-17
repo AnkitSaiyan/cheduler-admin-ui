@@ -139,6 +139,10 @@
     flex-direction:column;
     height: auto;
   }
+        .contaienr-max-height {
+          max-height: 80vh;
+          overflow: auto;
+        }
   .card-container{
     width: 100%;
   }
