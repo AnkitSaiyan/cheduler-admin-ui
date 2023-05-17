@@ -260,7 +260,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		//             eventTitle.appendChild(titleTextNode);
 		//
 		//             const eventTime = document.createElement('span');
-		//             const timeText = `${this.datePipe.transform(startedAt ?? data.startedAt, 'hh:mm')} - ${this.datePipe.transform(endDate, 'hh:mm')}`;
+		//             const timeText = `${this.datePipe.transform(startedAt ?? data.startedAt, 'HH:mm')} - ${this.datePipe.transform(endDate, 'HH:mm')}`;
 		//             const timeTextNode = document.createTextNode(timeText);
 		//             eventTime.classList.add('calender-week-view-event-time');
 		//             eventTime.appendChild(timeTextNode);
