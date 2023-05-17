@@ -123,7 +123,7 @@ export class AppComponent implements OnInit, OnDestroy {
 	private checkTimeOut() {
 		this.timeoutId = setTimeout(() => {
 			this.authService.logout();
-		}, 60 * 1000);
+		}, 60 * 60 * 1000);
 	}
 
 	loginRedirect() {
@@ -159,6 +159,7 @@ export class AppComponent implements OnInit, OnDestroy {
 	ngOnDestroy() {
 		this._destroying$.next();
 		this._destroying$.complete();
+    clearTimeout(this.timeoutId);
 	}
 
 	private setLoginDisplay() {
