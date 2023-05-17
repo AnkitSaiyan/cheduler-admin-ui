@@ -408,8 +408,10 @@
 	"Time": "Tijd",
 	"LogoutConfirmation": "Bevestiging Uitloggen",
 	"Areyousurewanttologout": "Ben je zeker dat je uit deze sessie wil loggen?",
-	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar"
+	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar",
+	"CanNotAddAppointmentOnPastDate": "Kan geen afspraak toevoegen op verleden tijd"
 }
+
 
 
 

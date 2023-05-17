@@ -45,6 +45,7 @@ import {DestroyableComponent} from '../../destroyable.component';
 import {PermissionService} from 'src/app/core/services/permission.service';
 import {UserRoleEnum} from 'src/app/shared/models/user.model';
 import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
 	selector: 'dfm-calendar-day-view',
@@ -98,6 +99,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		private modalSvc: ModalService,
 		private shareDataSvc: ShareDataService,
 		public permissionSvc: PermissionService,
+		private translatePipe: TranslatePipe,
 	) {
 		super();
 	}
@@ -344,14 +346,14 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const currentTimeInLocal = DateTimeUtils.UTCDateToLocalDate(currentSelectedTime);
 
 		if (currentTimeInLocal.getTime() < currentDate.getTime()) {
-			this.notificationSvc.showWarning(`Can't add appointment on past date`);
+			this.notificationSvc.showWarning(this.translatePipe.transform(`CanNotAddAppointmentOnPastDate`));
 			return;
 		}
 
 		if (!e.offsetY) return;
 
 		const isGrayOutArea = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
-		const eventCard = this.createAppointmentCard(e, eventsContainer);
+		let eventCard;
 
 		if (isGrayOutArea) {
 			this.modalSvc
@@ -364,7 +366,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				})
 				.closed.pipe(
 					tap((value) => {
-						if (!value) eventCard.remove();
+						if (value) eventCard = this.createAppointmentCard(e, eventsContainer);
 					}),
 					filter(Boolean),
 					switchMap(() => {
@@ -396,6 +398,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 					},
 				});
 		} else {
+			eventCard = this.createAppointmentCard(e, eventsContainer);
 			this.modalSvc
 				.open(AddAppointmentModalComponent, {
 					data: {
