@@ -405,8 +405,11 @@
 	"Time": "Time",
 	"LogoutConfirmation": "Logout Confirmation",
 	"Areyousurewanttologout": "Are you sure you want to logout the session?",
-	"NoRoomsAreAvailable": "No rooms are availale"
+	"NoRoomsAreAvailable": "No rooms are availale",
+	"CanNotAddAppointmentOnPastDate": "Can't add appointment on past time"
 }
+
+
 
 
 

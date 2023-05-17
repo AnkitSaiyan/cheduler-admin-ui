@@ -47,6 +47,7 @@ import {
 } from '../../../../shared/utils/const';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Translate } from 'src/app/shared/models/translate.model';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
 	selector: 'dfm-appointment-calendar',
@@ -87,6 +88,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	public practiceHourMinMax$$ = new BehaviorSubject<{ min: string; max: string; grayOutMin: string; grayOutMax: string } | null>(null);
 	private selectedLang: string = ENG_BE;
 
+	private pixelPerMinute = 4;
+
 	appointmentGroupedByDateAndRoom: {
 		[key: string]: {
 			[key: number]: {
@@ -115,8 +118,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		public permissionSvc: PermissionService,
 		private route: ActivatedRoute,
 		private notificationSvc: NotificationDataService,
-        private shareDataSvc: ShareDataService,
-
+		private shareDataSvc: ShareDataService,
+		private translatePipe: TranslatePipe,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -229,20 +232,20 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				const value = new Date(queryParams['d']);
 				this.selectedSlot$$.next(this.weekdayToPractice$$.value[value.getDay()]);
 			});
-			this.shareDataSvc
-            .getLanguage$()
-            .pipe(takeUntil(this.destroy$$))
-            .subscribe((lang) => {
-                this.selectedLang = lang;
-                switch (lang) {
-                    case ENG_BE:
-                        // this.statuses = Statuses;
-                        break;
-                    case DUTCH_BE:
-                        // this.statuses = StatusesNL;
-                        break;
-                }
-            });
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe((lang) => {
+				this.selectedLang = lang;
+				switch (lang) {
+					case ENG_BE:
+						// this.statuses = Statuses;
+						break;
+					case DUTCH_BE:
+						// this.statuses = StatusesNL;
+						break;
+				}
+			});
 	}
 
 	public override ngOnDestroy() {
@@ -467,15 +470,38 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
 
 		const { e, eventsContainer, day, grayOutSlot } = event;
+		// const currentDate = new Date();
+		// currentDate.setDate(currentDate.getDate() - 1);
+		// const selectedDate = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
+		// if (selectedDate.getTime() < currentDate.getTime()) {
+		// 	this.notificationSvc.showWarning(Translate.ErrorMessage.CanNotAddAppointmentInPostDate[this.selectedLang]);
+		// 	return;
+		// }
+
 		const currentDate = new Date();
-		currentDate.setDate(currentDate.getDate() - 1);
-		const selectedDate = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
-		if (selectedDate.getTime() < currentDate.getTime()) {
-			this.notificationSvc.showWarning(Translate.ErrorMessage.CanNotAddAppointmentInPostDate[this.selectedLang]);
+
+		let minutes = Math.round(+e.offsetY / this.pixelPerMinute);
+
+		// In case if calendar start time is not 00:00 then adding extra minutes
+
+		if (this.practiceHourMinMax$$.value) {
+			minutes += getDurationMinutes(this.myDate('00:00:00'), this.myDate(this.practiceHourMinMax$$.value.min));
+		}
+
+		const roundedMin = minutes - (minutes % 5);
+		const hour = Math.floor(minutes / 60);
+		const min = roundedMin % 60;
+		const currentSelectedTime = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
+		currentSelectedTime.setHours(hour);
+		currentSelectedTime.setMinutes(min);
+
+		const currentTimeInLocal = DateTimeUtils.UTCDateToLocalDate(currentSelectedTime);
+
+		if (currentTimeInLocal.getTime() < currentDate.getTime()) {
+			this.notificationSvc.showWarning(this.translatePipe.transform(`CanNotAddAppointmentOnPastDate`));
 			return;
 		}
-		const eventCard = this.createAppointmentCard(e, eventsContainer);
-
+		let eventCard;
 
 		const isGrayOutArea = grayOutSlot.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
 
@@ -490,7 +516,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				})
 				.closed.pipe(
 					tap((value) => {
-						if (!value) eventCard.remove();
+						if (value) eventCard = this.createAppointmentCard(e, eventsContainer);
 					}),
 					filter(Boolean),
 					switchMap(() => {
@@ -518,6 +544,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					// }
 				});
 		} else {
+			eventCard = this.createAppointmentCard(e, eventsContainer);
 			this.modalSvc
 				.open(AddAppointmentModalComponent, {
 					data: {
@@ -561,5 +588,14 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		eventsContainer.appendChild(eventCard);
 
 		return eventCard;
+	}
+
+	private myDate(date: string): Date {
+		const formattedDate = new Date();
+		const splitDate = date.split(':');
+		formattedDate.setHours(+splitDate[0]);
+		formattedDate.setMinutes(+splitDate[1]);
+		formattedDate.setSeconds(0);
+		return formattedDate;
 	}
 }
