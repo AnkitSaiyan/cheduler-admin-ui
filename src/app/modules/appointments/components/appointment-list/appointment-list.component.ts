@@ -1,35 +1,32 @@
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { NotificationType, TableItem } from 'diflexmo-angular-design';
-import { DatePipe, TitleCasePipe } from '@angular/common';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
-import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
-import { Appointment } from '../../../../shared/models/appointment.model';
+import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { RouterStateService } from '../../../../core/services/router-state.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
+import { Appointment } from '../../../../shared/models/appointment.model';
 import { getDurationMinutes } from '../../../../shared/models/calendar.model';
 import { Exam } from '../../../../shared/models/exam.model';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { LoaderService } from 'src/app/core/services/loader.service';
-import { TranslateService } from '@ngx-translate/core';
-import { Permission } from 'src/app/shared/models/permission.model';
-import { PermissionService } from 'src/app/core/services/permission.service';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { DefaultDatePipe } from '../../../../shared/pipes/default-date.pipe';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
-import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
-import { TranslatePipe } from '@ngx-translate/core';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
 
 @Component({
 	selector: 'dfm-appointment-list',
@@ -49,7 +46,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public downloadItems: NameValue[] = [];
 
-	private appointments$$: BehaviorSubject<any[]>;
+	public appointments$$: BehaviorSubject<any[]>;
 
 	public filteredAppointments$$: BehaviorSubject<any[]>;
 
@@ -177,7 +174,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 						ap?.id?.toString(),
 						ap?.createdAt?.toString(),
 						// ap.readStatus ? 'Yes' : 'No',
-						this.translatePipe.transform(AppointmentStatusToName[+ap?.approval]),
+						this.translatePipe.transform(AppointmentStatusToName[+ap.approval]),
 					]),
 					'appointment',
 				);
@@ -331,7 +328,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		}
 	}
 
-	public navigateToView(e: TableItem, appointments: Appointment[]) {
+	public navigateToView(e: TableItem) {
 		if (e?.id) {
 			this.router.navigate([`./${e.id}/view`], { replaceUrl: true, relativeTo: this.route });
 		}
@@ -495,6 +492,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			}
 		});
 	}
+
 	private clearDownloadDropdown() {
 		setTimeout(() => {
 			this.downloadDropdownControl.setValue('');

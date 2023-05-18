@@ -1,18 +1,7 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import {
-  BehaviorSubject,
-  combineLatest,
-  debounceTime,
-  filter,
-  lastValueFrom,
-  switchMap,
-  take,
-  takeUntil,
-  tap,
-  throttleTime
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, lastValueFrom, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -35,16 +24,7 @@ import { PermissionService } from 'src/app/core/services/permission.service';
 import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { NotificationService } from 'diflexmo-angular-design';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
-import {
-    COMING_FROM_ROUTE,
-    DUTCH_BE,
-    EDIT,
-    EMAIL_REGEX,
-    ENG_BE,
-    STAFF_ID,
-    Statuses,
-    StatusesNL
-} from '../../../../shared/utils/const';
+import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -86,9 +66,12 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	private weekdayToPractice$$ = new BehaviorSubject<any>(null);
 
 	public practiceHourMinMax$$ = new BehaviorSubject<{ min: string; max: string; grayOutMin: string; grayOutMax: string } | null>(null);
+
 	private selectedLang: string = ENG_BE;
 
 	private pixelPerMinute = 4;
+
+	@Input() appointmentData$$!: BehaviorSubject<any[]>;
 
 	appointmentGroupedByDateAndRoom: {
 		[key: string]: {
@@ -110,11 +93,9 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,
 		private router: Router,
-		private routerStateSvc: RouterStateService,
 		private practiceHoursApiSvc: PracticeHoursApiService,
 		private timeIntervalPipe: TimeInIntervalPipe,
 		private modalSvc: ModalService,
-		private loaderSvc: LoaderService,
 		public permissionSvc: PermissionService,
 		private route: ActivatedRoute,
 		private notificationSvc: NotificationDataService,
@@ -185,7 +166,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			this.practiceHourMinMax$$.next(minMaxValue);
 		});
 
-		this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
+		this.appointmentData$$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
 			this.appointments$$.next(appointments);
 			this.filteredAppointments$$.next(appointments);
 
