@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
+import {BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap, take, tap, throwError} from 'rxjs';
 import {AuthUser} from "../../shared/models/user.model";
 import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
 import {UserManagementApiService} from "./user-management-api.service";
@@ -90,18 +90,13 @@ export class UserService {
 	}
 
 	public logout() {
-		if (this.msalGuardConfig.interactionType === InteractionType.Popup) {
-			this.msalService.logoutPopup({
-				mainWindowRedirectUri: '/',
-			});
-		} else {
-			this.msalService.logoutRedirect();
-		}
-
-		sessionStorage.clear();
-		localStorage.removeItem('sessionExp');
-
-		setTimeout(() => this.removeUser(), 500);
+		this.msalService.logoutRedirect().pipe(take(1)).subscribe({
+			next: () => {
+				sessionStorage.clear();
+				localStorage.removeItem('sessionExp');
+				setTimeout(() => this.removeUser(), 500);
+			}
+		});
 	}
 
 	public removeUser() {
