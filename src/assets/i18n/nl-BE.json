@@ -407,7 +407,7 @@
 	"EnterInstructions": "Voer instructies in",
 	"Time": "Tijd",
 	"LogoutConfirmation": "Bevestiging Uitloggen",
-	"Areyousurewanttologout": "Ben je zeker dat je uit deze sessie wil verlaten?",
+	"Areyousurewanttologout": "Ben je zeker dat je deze sessie wil verlaten?",
 	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar",
 	"CanNotAddAppointmentOnPastDate": "Kan geen afspraak toevoegen op verleden tijd"
 }
