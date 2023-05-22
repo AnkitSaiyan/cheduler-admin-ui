@@ -80,9 +80,9 @@
             <span class="calender-month-view-day-exam-event-title text-truncate">{{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length === 1 ? ('Appointment' | translate) : ('Appointments' | translate) }}</span>
             <span class="calender-month-view-day-exam-event-time"
                   *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length === 1">
-              {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()][0]?.startedAt | date : 'HH:mm' }}
+              {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()][0]?.startedAt | dfmDefaultDate : 'time' }}
               -
-              {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()][0]?.endedAt | date : 'HH:mm' }}
+              {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()][0]?.endedAt | dfmDefaultDate : 'time' }}
             </span>
             <span class="calender-month-view-day-exam-event-time"
                   *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length !== 1">

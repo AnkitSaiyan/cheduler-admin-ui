@@ -1,41 +1,28 @@
-import {Injectable} from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import { NameValue } from 'src/app/shared/components/search-modal.component';
+import { BaseResponse } from 'src/app/shared/models/base-response.model';
+import { environment } from 'src/environments/environment';
 import {
-    BehaviorSubject,
-    catchError,
-    combineLatest,
-    map,
-    Observable,
-    of,
-    startWith,
-    Subject,
-    switchMap,
-    takeUntil,
-    tap,
-    throwError,
-} from 'rxjs';
-import {BaseResponse} from 'src/app/shared/models/base-response.model';
-import {environment} from 'src/environments/environment';
-import {HttpClient} from '@angular/common/http';
-import {
-    AddAppointmentRequestData,
-    Appointment,
-    AppointmentSlot,
-    AppointmentSlotsRequestData,
-    UpdateDurationRequestData,
-    UpdateRadiologistRequestData,
+	AddAppointmentRequestData,
+	Appointment,
+	AppointmentSlot,
+	AppointmentSlotsRequestData,
+	UpdateDurationRequestData,
+	UpdateRadiologistRequestData,
 } from '../../shared/models/appointment.model';
-import {ChangeStatusRequestData} from '../../shared/models/status.model';
-import {PhysicianApiService} from './physician.api.service';
-import {DashboardApiService} from './dashboard-api.service';
-import {Room} from '../../shared/models/rooms.model';
-import {SchedulerUser, User} from '../../shared/models/user.model';
-import {LoaderService} from './loader.service';
-import {ShareDataService} from './share-data.service';
-import {Translate} from '../../shared/models/translate.model';
-import {NameValue} from 'src/app/shared/components/search-modal.component';
-import {DestroyableComponent} from 'src/app/shared/components/destroyable.component';
-import {UserManagementApiService} from './user-management-api.service';
-import {DatePipe} from "@angular/common";
+import { Room } from '../../shared/models/rooms.model';
+import { ChangeStatusRequestData } from '../../shared/models/status.model';
+import { Translate } from '../../shared/models/translate.model';
+import { SchedulerUser, User } from '../../shared/models/user.model';
+import { DashboardApiService } from './dashboard-api.service';
+import { LoaderService } from './loader.service';
+import { PhysicianApiService } from './physician.api.service';
+import { ShareDataService } from './share-data.service';
+import { UserManagementApiService } from './user-management-api.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -55,8 +42,11 @@ export class AppointmentApiService extends DestroyableComponent {
 			value: 'month',
 		},
 	];
+
 	private refreshAppointment$$ = new Subject<void>();
+
 	private selectedLang$$ = new BehaviorSubject<string>('');
+
 	private appointmentUrl = `${environment.schedulerApiUrl}/appointment`;
 
 	constructor(

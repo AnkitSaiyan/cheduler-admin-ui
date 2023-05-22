@@ -8,6 +8,7 @@ import {InteractionType} from "@azure/msal-browser";
 import {PermissionService} from "./permission.service";
 import { EXT_Patient_Tenant } from 'src/app/shared/utils/const';
 import { NotificationDataService } from './notification-data.service';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
 @Injectable({
 	providedIn: 'root',
@@ -37,6 +38,8 @@ export class UserService {
 		const userId = user?.localAccountId ?? '';
 
 		console.log(user);
+
+		GeneralUtils.saveSessionExpTime();
 
 		const tenantIds = (user?.idTokenClaims as any)?.extension_Tenants?.split(',');
 
@@ -94,6 +97,7 @@ export class UserService {
 		} else {
 			this.msalService.logoutRedirect();
 		}
+		localStorage.removeItem('sessionExp');
 
 		setTimeout(() => this.removeUser(), 500);
 	}
@@ -103,6 +107,15 @@ export class UserService {
 		this.permissionSvc.removePermissionType();
 	}
 }
+
+
+
+
+
+
+
+
+
 
 
 

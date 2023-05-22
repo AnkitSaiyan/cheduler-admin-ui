@@ -115,7 +115,7 @@
         (selected)="handleCheckboxSelection($event)"
         [clearSelected$]="clearSelected$$"
         [rowClickable]="true"
-        (rowClicked)="navigateToView($event, appointments)"
+        (rowClicked)="navigateToView($event)"
         class="dfm-table-wrapper"
       >
         <ng-template #headerRowTemplate>
@@ -254,7 +254,7 @@
     </ng-container>
 
     <ng-container *ngIf="calendarView$$ | async">
-      <dfm-appointment-calendar class="h-100"> </dfm-appointment-calendar>
+      <dfm-appointment-calendar class="h-100" [appointmentData$$]="appointments$$"> </dfm-appointment-calendar>
     </ng-container>
   </section>
 
