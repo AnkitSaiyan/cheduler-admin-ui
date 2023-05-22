@@ -97,6 +97,8 @@ export class UserService {
 		} else {
 			this.msalService.logoutRedirect();
 		}
+
+		sessionStorage.clear();
 		localStorage.removeItem('sessionExp');
 
 		setTimeout(() => this.removeUser(), 500);

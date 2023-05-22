@@ -193,7 +193,7 @@ export class AppComponent implements OnInit, OnDestroy {
 			.subscribe({
 				next: (x) => {
 					if (!x) {
-						setTimeout(() => this.userService.logout(), 1500);
+						// setTimeout(() => this.userService.logout(), 1500);
 					} else {
 						this.setLoginDisplay();
 					}
