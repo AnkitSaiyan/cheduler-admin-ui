@@ -511,6 +511,11 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Geen gegevens om te downloaden',
 	},
 
+	sessionExp: {
+		[ENG_BE]: 'Your session has expired',
+		[DUTCH_BE]: 'Uw sessie is verlopen',
+	},
+
 	Profile: {
 		[ENG_BE]: 'Profile',
 		[DUTCH_BE]: 'Profiel',
@@ -604,6 +609,8 @@ export const Translate = Object.freeze({
 		},
 	},
 });
+
+
 
 
 
