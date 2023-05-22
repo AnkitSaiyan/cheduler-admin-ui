@@ -40,13 +40,18 @@ export class AppComponent implements OnInit, OnDestroy {
 
 	private timeoutId;
 
-	@HostListener('keydown')
-	@HostListener('mousedown')
-	@HostListener('touchstart')
-	checkUserActivity() {
-		clearTimeout(this.timeoutId);
-		this.checkTimeOut();
-	}
+	// @HostListener('keydown')
+	// @HostListener('mousedown')
+	// @HostListener('touchstart')
+	// checkUserActivity() {
+	// 	clearTimeout(this.timeoutId);
+	// 	this.checkTimeOut();
+	// }
+
+	// @HostListener('mouseout')
+	// checkMouseOut() {
+	// 	console.log(new Date());
+	// }
 
 	constructor(
 		public translate: TranslateService,
@@ -56,7 +61,7 @@ export class AppComponent implements OnInit, OnDestroy {
 		public userService: UserService,
 		public notificationSvc: NotificationDataService,
 	) {
-		this.checkTimeOut();
+		console.log('test');
 	}
 
 	ngOnInit(): void {
@@ -120,11 +125,11 @@ export class AppComponent implements OnInit, OnDestroy {
 			});
 	}
 
-	private checkTimeOut() {
-		this.timeoutId = setTimeout(() => {
-			this.authService.logout();
-		}, 60 * 60 * 1000);
-	}
+	// private checkTimeOut() {
+	// 	this.timeoutId = setTimeout(() => {
+	// 		this.authService.logout();
+	// 	}, 60 * 60 * 1000);
+	// }
 
 	loginRedirect() {
 		if (this.msalGuardConfig.authRequest) {
@@ -159,7 +164,6 @@ export class AppComponent implements OnInit, OnDestroy {
 	ngOnDestroy() {
 		this._destroying$.next();
 		this._destroying$.complete();
-    clearTimeout(this.timeoutId);
 	}
 
 	private setLoginDisplay() {
