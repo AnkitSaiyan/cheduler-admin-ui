@@ -14,6 +14,10 @@ export class GeneralUtils {
 		}
 	}
 
+	public static saveSessionExpTime(): void {
+		localStorage.setItem('sessionExp', JSON.stringify(new Date(new Date().getTime() + 2 * 60 * 1000).getTime()));
+	}
+
 	// public static get TenantID(): string {
 	//   const subDomain = window.location.host.split('.')[0];
 	//   const localhost = 'localhost';
@@ -27,4 +31,7 @@ export class GeneralUtils {
 	//   }
 	// }
 }
+
+
+
 
