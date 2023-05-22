@@ -19,10 +19,11 @@ export class HeaderInterceptor implements HttpInterceptor {
 		const sessionExp = localStorage.getItem('sessionExp');
 
 		if (sessionExp && +sessionExp < new Date().getTime()) {
-			this.userSvc.logout();
 			const lang = localStorage.getItem('lang');
+			this.notificationSvc.showError(Translate.sessionExp[lang!]);
+
 			setTimeout(() => {
-				this.notificationSvc.showError(Translate.sessionExp[lang!]);
+				this.userSvc.logout();
 			}, 1500);
 
 			return EMPTY;

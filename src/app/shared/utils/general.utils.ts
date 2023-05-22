@@ -15,7 +15,7 @@ export class GeneralUtils {
 	}
 
 	public static saveSessionExpTime(): void {
-		localStorage.setItem('sessionExp', JSON.stringify(new Date(new Date().getTime() + 1 * 60 * 1000).getTime()));
+		localStorage.setItem('sessionExp', JSON.stringify(new Date(new Date().getTime() + 60 * 60 * 1000).getTime()));
 	}
 
 	// public static get TenantID(): string {
