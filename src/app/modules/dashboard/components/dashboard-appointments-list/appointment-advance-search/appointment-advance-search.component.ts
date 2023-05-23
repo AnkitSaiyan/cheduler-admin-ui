@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil} from 'rxjs';
+import {BehaviorSubject, debounceTime, filter, of, switchMap, take, takeUntil} from 'rxjs';
 import {NotificationType} from 'diflexmo-angular-design';
 import {DatePipe} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -190,43 +190,41 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
             this.patientList = [...tempKeyValue];
         });
 
-        this.routerStateSvc
-            .listenForParamChange$(APPOINTMENT_ID)
-            .pipe(
-                filter((appointmentID: string) => {
-                    if (!appointmentID) {
-                        this.appointment$$.next({} as Appointment);
-                    }
-                    return !!appointmentID;
-                }),
-                switchMap((appointmentID) => {
-                    return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
-                }),
-                debounceTime(0),
-                takeUntil(this.destroy$$),
-            )
-            .subscribe((appointment) => {
-                this.appointment$$.next(appointment ?? ({} as Appointment));
-                this.updateForm(appointment);
-            });
-            this.shareDataSvc
-            .getLanguage$()
-            .pipe(takeUntil(this.destroy$$))
-            .subscribe({
-                next: (lang) => {
-                    // this.selectedLang = lang;
-
-                    // eslint-disable-next-line default-case
-                    switch (lang) {
-                        case ENG_BE:
-                            // this.statuses = Statuses;
-                            break;
-                        // case DUTCH_BE:
-                            // this.statuses = StatusesNL;
-                            break;
-                    }
-                }
-            });
+        // this.routerStateSvc
+        //     .listenForParamChange$(APPOINTMENT_ID)
+        //     .pipe(
+        //         switchMap((appointmentID) => {
+        //             if (!appointmentID) {
+        //                 return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
+        //             }
+        //             return of({} as Appointment);
+        //         }),
+        //         debounceTime(0),
+        //         takeUntil(this.destroy$$),
+        //     )
+        //     .subscribe((appointment) => {
+        //         this.appointment$$.next(appointment ?? ({} as Appointment));
+        //         this.updateForm(appointment);
+        //     });
+        //
+        //     this.shareDataSvc
+        //     .getLanguage$()
+        //     .pipe(takeUntil(this.destroy$$))
+        //     .subscribe({
+        //         next: (lang) => {
+        //             // this.selectedLang = lang;
+        //
+        //             // eslint-disable-next-line default-case
+        //             switch (lang) {
+        //                 case ENG_BE:
+        //                     // this.statuses = Statuses;
+        //                     break;
+        //                 // case DUTCH_BE:
+        //                     // this.statuses = StatusesNL;
+        //                     // break;
+        //             }
+        //         }
+        //     });
     }
 
     public override ngOnDestroy() {
