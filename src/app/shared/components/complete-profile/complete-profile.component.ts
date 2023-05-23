@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {BehaviorSubject, catchError, filter, switchMap, take, takeUntil, throwError} from "rxjs";
+import { BehaviorSubject, filter, switchMap, take, takeUntil } from "rxjs";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { UserManagementApiService } from "../../../core/services/user-management-api.service";
 import { DestroyableComponent } from "../destroyable.component";
@@ -53,15 +53,13 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 	) {
 		super();
 		this.siteDetails$$ = new BehaviorSubject<any[]>([]);
-		// this.landingService.siteFooterDetails$$.pipe(takeUntil(this.destroy$$)).subscribe((res) => {
-		//   this.ngOnInit();
-		// });
 	}
 
 	public ngOnInit(): void {
 		this.userSvc.authUser$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (user) => (this.user = user as AuthUser),
 		});
+
 		this.shareDataSvc
 			.getLanguage$()
 			.pipe(take(1))
@@ -150,6 +148,7 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 			value: 'NL',
 		},
 	];
+	protected readonly window = window;
 }
 
 

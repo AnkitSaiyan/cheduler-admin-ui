@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
@@ -7,19 +7,12 @@ import { APP_BASE_HREF, DatePipe, TitleCasePipe } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from 'src/environments/environment';
 import {
-	MSAL_GUARD_CONFIG,
-	MSAL_INSTANCE,
-	MSAL_INTERCEPTOR_CONFIG,
-	MsalBroadcastService,
 	MsalGuard,
-	MsalGuardConfiguration,
 	MsalInterceptor,
-	MsalInterceptorConfiguration,
 	MsalModule,
-	MsalRedirectComponent,
-	MsalService,
+	MsalRedirectComponent
 } from '@azure/msal-angular';
-import { BrowserCacheLocation, InteractionType, IPublicClientApplication, LogLevel, PublicClientApplication } from '@azure/msal-browser';
+import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { WeekdayToNamePipe } from './shared/pipes/weekday-to-name.pipe';
@@ -37,34 +30,12 @@ import { PermissionGuard } from './core/guard/permission.guard';
 import { TitleStrategy } from '@angular/router';
 import { AppTitlePrefix } from './core/services/title.service';
 import { UtcToLocalPipe } from './shared/pipes/utc-to-local.pipe';
-import {DefaultDatePipe} from "./shared/pipes/default-date.pipe";
+import { DefaultDatePipe } from "./shared/pipes/default-date.pipe";
 import { SharedModule } from './shared/shared.module';
 import { JoinWithAndPipe } from './shared/pipes/join-with-and.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
-}
-
-export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
-	const protectedResourceMap = new Map<string, Array<string>>();
-	AuthConfig.protectedApis.forEach((protectedApi) => {
-		protectedResourceMap.set(protectedApi.url, [protectedApi.scope]);
-	});
-
-	return {
-		interactionType: InteractionType.Redirect,
-		protectedResourceMap,
-	};
-}
-
-export function MSALGuardConfigFactory(): MsalGuardConfiguration {
-	return {
-		interactionType: InteractionType.Redirect,
-		authRequest: {
-			scopes: [environment.schedulerApiAuthScope],
-		},
-		loginFailedRoute: '/login-failed',
-	};
 }
 
 @NgModule({
@@ -77,7 +48,20 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 		HttpClientModule,
 		DesignSystemCoreModule,
 		BrowserAnimationsModule,
-		MsalModule,
+		MsalModule.forRoot(new PublicClientApplication(MSALConfig),
+			{
+				// The routing guard configuration.
+				interactionType: InteractionType.Redirect,
+				authRequest: {
+					scopes: [environment.schedulerApiAuthScope]
+				}
+			},
+			{
+				// MSAL interceptor configuration.
+				// The protected resource mapping maps your web API with the corresponding app scopes. If your code needs to call another web API, add the URI mapping here.
+				interactionType: InteractionType.Redirect,
+				protectedResourceMap: new Map(AuthConfig.protectedApis.map((apis) => ([apis.url, [apis.scope]])))
+			}),
 		FormsModule,
 		TranslateModule.forRoot({
 			loader: {
@@ -88,7 +72,6 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 		}),
 		NgDfmNotificationModule,
 		SharedModule.forRoot(),
-		// HttpClientInMemoryWebApiModule.forRoot(DataService),
 	],
 	bootstrap: [AppComponent, MsalRedirectComponent],
 	providers: [
@@ -113,18 +96,6 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 			multi: true,
 		},
 		{
-			provide: MSAL_INSTANCE,
-			useValue: new PublicClientApplication({ ...MSALConfig }),
-		},
-		{
-			provide: MSAL_GUARD_CONFIG,
-			useFactory: MSALGuardConfigFactory,
-		},
-		{
-			provide: MSAL_INTERCEPTOR_CONFIG,
-			useFactory: MSALInterceptorConfigFactory,
-		},
-		{
 			provide: HTTP_INTERCEPTORS,
 			useClass: HeaderInterceptor,
 			multi: true,
@@ -134,9 +105,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 			useClass: ErrorInterceptor,
 			multi: true,
 		},
-		MsalService,
 		MsalGuard,
-		MsalBroadcastService,
 	],
 })
 export class AppModule {}

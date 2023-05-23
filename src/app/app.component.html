@@ -1,3 +1,2 @@
 <dfm-notification [position]="2"></dfm-notification>
-<router-outlet *ngIf="(!isIframe || !loginDisplay) && user"></router-outlet>
-
+<router-outlet *ngIf="user$ | async"></router-outlet>
