@@ -16,7 +16,7 @@ const rootRoutes: Routes = [
 	{
 		path: '',
 		loadChildren: async () => (await import('./core/core.module')).CoreModule,
-		canActivate: [MsalGuard, RouteGuard],
+		canActivate: [MsalGuard],
 	},
 	{
 		path: '',
@@ -28,7 +28,7 @@ const rootRoutes: Routes = [
 @NgModule({
 	imports: [
 		RouterModule.forRoot(rootRoutes, {
-			initialNavigation: !BrowserUtils.isInIframe() && !BrowserUtils.isInPopup() ? 'enabledNonBlocking' : 'disabled', // Set to enabledBlocking to use Angular Universal
+			initialNavigation: 'enabledBlocking'
 		}),
 	],
 	exports: [RouterModule],

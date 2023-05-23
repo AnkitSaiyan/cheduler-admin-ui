@@ -17,6 +17,7 @@ import dutchLangauge from '../../../../../src/assets/i18n/nl-BE.json';
 import { UserApiService } from 'src/app/core/services/user-api.service';
 import { Translate } from '../../models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import {RouteName} from "../../models/permission.model";
 
 @Component({
 	selector: 'dfm-complete-profile',
@@ -53,15 +54,13 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 	) {
 		super();
 		this.siteDetails$$ = new BehaviorSubject<any[]>([]);
-		// this.landingService.siteFooterDetails$$.pipe(takeUntil(this.destroy$$)).subscribe((res) => {
-		//   this.ngOnInit();
-		// });
 	}
 
 	public ngOnInit(): void {
 		this.userSvc.authUser$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (user) => (this.user = user as AuthUser),
 		});
+
 		this.shareDataSvc
 			.getLanguage$()
 			.pipe(take(1))
@@ -150,6 +149,7 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 			value: 'NL',
 		},
 	];
+	protected readonly window = window;
 }
 
 

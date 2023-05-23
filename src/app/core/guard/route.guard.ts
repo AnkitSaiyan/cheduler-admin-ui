@@ -31,12 +31,16 @@ export class RouteGuard implements CanActivate, CanActivateChild {
 
     private isProfileIncomplete(url: string) {
         return this.userService.authUser$.pipe(
-            filter((user) => !!user),
-            debounceTime(0),
             map((user) => {
                 try {
+                    if (!user) {
+                        return this.router.parseUrl('/');
+                    }
+
                     const isIncomplete = !!user?.properties['extension_ProfileIsIncomplete'];
                     const splitUrl = url.split('/')[1];
+
+                    console.log(splitUrl);
 
                     switch (splitUrl) {
                         case RouteName.LoginFailed: {

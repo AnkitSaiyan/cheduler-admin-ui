@@ -77,7 +77,20 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 		HttpClientModule,
 		DesignSystemCoreModule,
 		BrowserAnimationsModule,
-		MsalModule,
+		MsalModule.forRoot(new PublicClientApplication(MSALConfig),
+			{
+				// The routing guard configuration.
+				interactionType: InteractionType.Redirect,
+				authRequest: {
+					scopes: [environment.schedulerApiAuthScope]
+				}
+			},
+			{
+				// MSAL interceptor configuration.
+				// The protected resource mapping maps your web API with the corresponding app scopes. If your code needs to call another web API, add the URI mapping here.
+				interactionType: InteractionType.Redirect,
+				protectedResourceMap: new Map(AuthConfig.protectedApis.map((apis) => ([apis.url, [apis.scope]])))
+			}),
 		FormsModule,
 		TranslateModule.forRoot({
 			loader: {
@@ -88,7 +101,6 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 		}),
 		NgDfmNotificationModule,
 		SharedModule.forRoot(),
-		// HttpClientInMemoryWebApiModule.forRoot(DataService),
 	],
 	bootstrap: [AppComponent, MsalRedirectComponent],
 	providers: [
@@ -113,18 +125,6 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 			multi: true,
 		},
 		{
-			provide: MSAL_INSTANCE,
-			useValue: new PublicClientApplication({ ...MSALConfig }),
-		},
-		{
-			provide: MSAL_GUARD_CONFIG,
-			useFactory: MSALGuardConfigFactory,
-		},
-		{
-			provide: MSAL_INTERCEPTOR_CONFIG,
-			useFactory: MSALInterceptorConfigFactory,
-		},
-		{
 			provide: HTTP_INTERCEPTORS,
 			useClass: HeaderInterceptor,
 			multi: true,
@@ -134,9 +134,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 			useClass: ErrorInterceptor,
 			multi: true,
 		},
-		MsalService,
 		MsalGuard,
-		MsalBroadcastService,
 	],
 })
 export class AppModule {}
