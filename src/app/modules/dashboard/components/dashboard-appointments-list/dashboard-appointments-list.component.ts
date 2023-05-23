@@ -313,6 +313,10 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			});
 	}
 
+	public onRefresh(): void {
+		this.appointmentApiSvc.refresh();
+	}
+
 	public deleteAppointment(id: number) {
 		const dialogRef = this.modalSvc.open(ConfirmActionModalComponent, {
 			data: {
@@ -399,11 +403,16 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			} as SearchModalData,
 		});
 
-		modalRef.closed.pipe(filter((res) => !!res), take(1)).subscribe({
-			next: (result) => {
-				this.filterAppointments(result)
-			},
-		});
+		modalRef.closed
+			.pipe(
+				filter((res) => !!res),
+				take(1),
+			)
+			.subscribe({
+				next: (result) => {
+					this.filterAppointments(result);
+				},
+			});
 	}
 
 	private filterAppointments(result: { name: string; value: string }[]) {
