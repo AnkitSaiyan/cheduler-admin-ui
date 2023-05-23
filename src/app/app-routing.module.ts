@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { BrowserUtils } from '@azure/msal-browser';
 import { MsalGuard } from '@azure/msal-angular';
 import { CompleteProfileComponent } from './shared/components/complete-profile/complete-profile.component';
 import { RouteGuard } from './core/guard/route.guard';

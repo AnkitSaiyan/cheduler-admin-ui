@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {BehaviorSubject, catchError, filter, switchMap, take, takeUntil, throwError} from "rxjs";
+import { BehaviorSubject, filter, switchMap, take, takeUntil } from "rxjs";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { UserManagementApiService } from "../../../core/services/user-management-api.service";
 import { DestroyableComponent } from "../destroyable.component";
@@ -17,7 +17,6 @@ import dutchLangauge from '../../../../../src/assets/i18n/nl-BE.json';
 import { UserApiService } from 'src/app/core/services/user-api.service';
 import { Translate } from '../../models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
-import {RouteName} from "../../models/permission.model";
 
 @Component({
 	selector: 'dfm-complete-profile',

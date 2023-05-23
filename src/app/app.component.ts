@@ -1,4 +1,4 @@
-import { Component, HostListener, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
 import {
@@ -6,12 +6,9 @@ import {
 	EventMessage,
 	EventType,
 	InteractionStatus,
-	InteractionType,
-	PopupRequest,
-	RedirectRequest,
 } from '@azure/msal-browser';
 import { IdTokenClaims } from '@azure/msal-common';
-import {filter, Observable, Subject, switchMap, takeUntil, tap} from 'rxjs';
+import {filter, Observable, Subject, switchMap, tap} from 'rxjs';
 import defaultLanguage from '../assets/i18n/nl-BE.json';
 import englishLanguage from '../assets/i18n/en-BE.json';
 import { AuthConfig } from './configuration/auth.config';
@@ -35,26 +32,7 @@ type IdTokenClaimsWithPolicyId = IdTokenClaims & {
 export class AppComponent implements OnInit, OnDestroy {
 	public user$?: Observable<AuthUser | undefined>;
 
-	isIframe = false;
-
-	loginDisplay = false;
-
 	private readonly _destroying$ = new Subject<void>();
-
-	private timeoutId;
-
-	// @HostListener('keydown')
-	// @HostListener('mousedown')
-	// @HostListener('touchstart')
-	// checkUserActivity() {
-	// 	clearTimeout(this.timeoutId);
-	// 	this.checkTimeOut();
-	// }
-
-	// @HostListener('mouseout')
-	// checkMouseOut() {
-	// 	console.log(new Date());
-	// }
 
 	constructor(
 		public translate: TranslateService,
@@ -119,47 +97,6 @@ export class AppComponent implements OnInit, OnDestroy {
 				}
 			})
 		);
-
-
-		// this.msalBroadcastService.inProgress$
-		// 	.pipe(
-		// 		filter((status: InteractionStatus) => status === InteractionStatus.None),
-		// 		takeUntil(this._destroying$),
-		// 	)
-		// 	.subscribe({
-		// 		next: (status) => {
-		// 			// this.setLoginDisplay();
-		// 			this.checkAndSetActiveAccount();
-		// 		},
-		// 	});
-
-		// this.msalBroadcastService.msalSubject$
-		// 	.pipe(
-		// 		filter(
-		// 			(msg: EventMessage) =>
-		// 				msg.eventType === EventType.LOGIN_SUCCESS ||
-		// 				msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS ||
-		// 				msg.eventType === EventType.SSO_SILENT_SUCCESS,
-		// 		),
-		// 		// eslint-disable-next-line no-underscore-dangle
-		// 		takeUntil(this._destroying$),
-		// 	)
-		// 	.subscribe({
-		// 		next: (result: EventMessage) => {
-		// 			const payload = result.payload as AuthenticationResult;
-		// 			const idToken = payload.idTokenClaims as IdTokenClaimsWithPolicyId;
-		//
-		// 			if (idToken.acr === AuthConfig.authFlow || idToken.tfp === AuthConfig.authFlow) {
-		// 				this.authService.instance.setActiveAccount(payload.account);
-		// 			}
-		//
-		// 			// return result;
-		// 		},
-		// 	});
-	}
-
-	private setLoginDisplay() {
-		this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
 	}
 
 	private checkAndSetActiveAccount() {
