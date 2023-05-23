@@ -399,8 +399,10 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			} as SearchModalData,
 		});
 
-		modalRef.closed.pipe(take(1)).subscribe({
-			next: (result) => this.filterAppointments(result),
+		modalRef.closed.pipe(filter((res) => !!res), take(1)).subscribe({
+			next: (result) => {
+				this.filterAppointments(result)
+			},
 		});
 	}
 
@@ -449,6 +451,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 		modalRef.closed
 			.pipe(
+				filter((res) => !!res),
 				switchMap((result) => this.appointmentApiSvc.fetchAllAppointments$(result)),
 				take(1),
 			)
