@@ -37,7 +37,7 @@ export class UserService {
 		const user = this.msalService.instance.getActiveAccount();
 		const userId = user?.localAccountId ?? '';
 
-		console.log(user);
+
 
 		GeneralUtils.saveSessionExpTime();
 

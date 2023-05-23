@@ -122,7 +122,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				this.selectedTimeInUTCOrig = `${hour}:${min}:00`;
 				this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
 
-				console.log('utc', this.selectedTimeInUTC);
+
 			}
 		});
 
@@ -234,7 +234,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	public handleSlotSelectionToggle(slots: SlotModified) {
 		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
 
-		console.log(slots);
+
 
 		let smallestStartTime = '';
 		Object.values(this.selectedTimeSlot).forEach((slot) => {
@@ -284,7 +284,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			this.isCombinable,
 		);
 
-		console.log(requestData);
+
 		if (this.isDoctorConsentDisable$$.value) {
 			delete requestData.doctorId;
 		}

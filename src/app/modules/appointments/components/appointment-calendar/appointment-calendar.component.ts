@@ -108,7 +108,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		this.selectedSlot$$ = new BehaviorSubject<any>(null);
 		this.appointmentApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => {
-				// console.log(items);
+				//
 				this.calendarViewType = items;
 				this.ngOnInit();
 			},
@@ -356,7 +356,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			});
 		});
 
-		console.log({ appointments });
+
 
 		appointments.forEach((appointment) => {
 			if (appointment.startedAt) {
@@ -383,7 +383,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			}
 		});
 
-		console.log(this.appointmentGroupedByDateAndRoom, 'test');
+
 	}
 
 	private updateQuery(queryStr?: string, date?: Date) {

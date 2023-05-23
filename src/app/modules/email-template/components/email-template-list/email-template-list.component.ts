@@ -214,7 +214,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 			let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
 
 			this.filteredEmails$$.value.forEach((email: Email) => {
-				console.log('email-template: ', email);
+
 				dataString += `${email.title}\t${email.subject}\t${StatusToName[email.status]}\n`;
 			});
 

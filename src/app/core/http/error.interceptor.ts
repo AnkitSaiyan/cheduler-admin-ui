@@ -14,33 +14,33 @@ export class ErrorInterceptor implements HttpInterceptor {
   constructor(private notificationSvc: NotificationDataService, private loaderSvc: LoaderService, private shareDataSvc: ShareDataService) {
   }
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(req).pipe(
-        catchError((err) => {
-          // lang hardcoded to english for now
-          this.generateErrorMessage(err, ENG_BE);
-          this.stopLoaders();
+		return next.handle(req).pipe(
+			catchError((err) => {
+				// lang hardcoded to english for now
+				this.generateErrorMessage(err, ENG_BE);
+				this.stopLoaders();
 
-          return throwError(err);
-        })
-    );
-    // return this.shareDataSvc.getLanguage$().pipe(
-    //     switchMap((lang) => next.handle(req).pipe(
-    //         catchError((err) => {
-    //           console.log(err);
-    //
-    //           this.generateErrorMessage(err, lang);
-    //           this.stopLoaders();
-    //
-    //           return throwError(err);
-    //           // return of(new HttpResponse({
-    //           //   body: {
-    //           //     data: null
-    //           //   }
-    //           // }));
-    //         })
-    //     ))
-    // );
-  }
+				return throwError(err);
+			}),
+		);
+		// return this.shareDataSvc.getLanguage$().pipe(
+		//     switchMap((lang) => next.handle(req).pipe(
+		//         catchError((err) => {
+		//
+		//
+		//           this.generateErrorMessage(err, lang);
+		//           this.stopLoaders();
+		//
+		//           return throwError(err);
+		//           // return of(new HttpResponse({
+		//           //   body: {
+		//           //     data: null
+		//           //   }
+		//           // }));
+		//         })
+		//     ))
+		// );
+	}
 
   private generateErrorMessage(err: any, lang: string) {
     // generate error message here
@@ -71,7 +71,7 @@ export class ErrorInterceptor implements HttpInterceptor {
             } else if (typeof errObj === 'string') {
               errorMessage = errObj;
             }
-            console.log(err)
+
           } else if (err?.error?.message && typeof err.error.message === 'string') {
             errorMessage = err.error.message;
           } else if (err?.message && typeof err?.message === 'string') {
@@ -89,3 +89,4 @@ export class ErrorInterceptor implements HttpInterceptor {
     this.loaderSvc.spinnerDeactivate();
   }
 }
+

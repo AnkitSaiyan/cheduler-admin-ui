@@ -66,7 +66,7 @@ export class AppointmentUtils {
 	}
 
 	public static IsSlotAvailable(slot: SlotModified, selectedTimeSlot: SelectedSlots, isCombinable = false) {
-		console.log('selected time slot', selectedTimeSlot);
+
 		return !Object.values(selectedTimeSlot)?.some((value) => {
 			const firstSlot = value?.slot?.split('-');
 			return (
@@ -93,7 +93,7 @@ export class AppointmentUtils {
 			};
 		}
 
-		console.log(selectedTimeSlot);
+
 	}
 
 	public static GenerateSlotRequestData(date: DateDistributed, examList: number[]): AppointmentSlotsRequestData {
@@ -122,9 +122,6 @@ export class AppointmentUtils {
 				exams: exams.map(({ userId, roomId, ...examRest }) => ({ ...examRest })),
 			};
 		}
-
-		console.log('selectedTimeSlot', selectedTimeSlot);
-		console.log('finalCombinableRequestData', finalCombinableRequestData)
 
 		const requestData: any = {
 			...rest,
@@ -170,7 +167,6 @@ export class AppointmentUtils {
 			if (!requestData.slot.end) {
 				requestData.slot.end = requestData.slot.exams[requestData.slot.exams.length - 1].end;
 			}
-
 		}
 
 		if (appointment && appointment?.id) {
@@ -180,6 +176,7 @@ export class AppointmentUtils {
 		return requestData;
 	}
 }
+
 
 
 

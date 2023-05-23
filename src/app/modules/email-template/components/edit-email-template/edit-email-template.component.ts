@@ -175,7 +175,7 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
 			requestData.id = this.email$$.value.id;
 		}
 
-		console.log('requestData: ', requestData);
+
 
 		this.emailTemplateApiSvc
 			.updateEmailTemplate(requestData)

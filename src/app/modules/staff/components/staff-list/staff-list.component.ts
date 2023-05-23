@@ -98,7 +98,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 					return;
 				}
 
-				console.log('test', this.selectedLang);
+
 
 				this.downloadSvc.downloadJsonAs(
 					value as DownloadAsType,

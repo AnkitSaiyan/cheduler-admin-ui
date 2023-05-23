@@ -155,7 +155,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				takeUntil(this.destroy$$),
 			)
 			.subscribe((value) => {
-				console.log('in download');
+
 				if (!this.filteredAppointments$$.value.length) {
 					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
 					this.clearDownloadDropdown();
