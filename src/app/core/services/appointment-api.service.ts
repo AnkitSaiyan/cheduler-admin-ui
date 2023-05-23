@@ -72,7 +72,6 @@ export class AppointmentApiService extends DestroyableComponent {
 			switchMap(() => {
 				return this.fetchAllAppointments$().pipe(switchMap((appointments) => this.AttachPatientDetails(appointments)));
 			}),
-			tap((res) =>
 		);
 	}
 
@@ -245,7 +244,6 @@ export class AppointmentApiService extends DestroyableComponent {
 		delete customRequestData?.toDate;
 		// this.loaderSvc.spinnerActivate();
 		return this.http.post<BaseResponse<AppointmentSlot>>(`${environment.schedulerApiUrl}/appointment/slots`, customRequestData).pipe(
-			tap((res) =>
 			map((res) => [
 				{
 					...res?.data,
