@@ -12,17 +12,31 @@
     <section>
       <div class="d-flex dfm-gap-8 align-items-center flex-1 dfm-px-16 ap-li-section2-action-bar">
         <dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" class="flex-1" [formControl]="searchControl"></dfm-input>
-        <dfm-input
-          size="md"
-          placeholder="{{ 'AdvancedSearch' | translate }}"
-          icon="search-sm"
-          class="flex-1"
-          (click)="openAdvancePopup()"
-          [readonly]="true"
-        ></dfm-input>
-        <button  mat-mini-fab color="primary" class="refresh-btn"  class="refresh-btn" (click)="onRefresh()">
-          <mat-icon>refresh</mat-icon>
-        </button>
+
+        <div class="d-flex align-items-center dfm-button-group-wrapper">
+          <div class="dfm-dropdown-border-none">
+            <dfm-input
+              size="md"
+              placeholder="{{ 'AdvancedSearch' | translate }}"
+              icon="search-sm"
+              class="flex-1"
+              (click)="openAdvancePopup()"
+              [readonly]="true"
+            ></dfm-input>
+          </div>
+          <div >
+            <dfm-button-icon
+              color="tertiary-gray"
+              size="md"
+              icon="x-close"
+              ngbPopover="{{ 'Reset' | translate }}"
+              triggers="mouseenter:mouseleave"
+              popoverClass="popover-p-8"
+              [openDelay]="200"
+              (click)="onRefresh()"
+            ></dfm-button-icon>
+          </div>
+        </div>
 
         <div class="d-flex align-items-center dfm-button-group-wrapper">
           <div [cdkCopyToClipboard]="clipboardData">
@@ -38,7 +52,7 @@
             ></dfm-button-icon>
           </div>
 
-          <div class="dfm-dropdown-border-none download-dropdown-max-w-144">
+          <div class="dfm-dropdown-border-none download-dropdown-max-w-152">
             <dfm-input-dropdown
               [items]="downloadItems"
               [showDescription]="false"
@@ -64,6 +78,17 @@
         <dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" [formControl]="searchControl"></dfm-input>
 
         <dfm-button-icon color="secondary-gray" size="md" icon="filter-funnel-01" (click)="openAdvancePopup()"></dfm-button-icon>
+
+        <dfm-button-icon
+            color="secondary-gray"
+            size="md"
+            icon="x-close"
+            ngbPopover="{{ 'Reset' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
+            (click)="onRefresh()"
+          ></dfm-button-icon>
 
         <div class="d-flex align-items-center dfm-button-group-wrapper">
           <div>
@@ -91,11 +116,6 @@
           routerLink="/appointment"
           [state]="{ comingFromRoute: 'dashboard' }"
         ></dfm-button-icon>
-
-        <button  mat-mini-fab color="primary"  (click)="onRefresh()">
-          <mat-icon>refresh</mat-icon>
-        </button>
-
         <dfm-button
           color="primary"
           size="md"
