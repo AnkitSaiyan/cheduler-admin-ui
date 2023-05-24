@@ -1170,3 +1170,18 @@ body {
 
   }
 }
+.small-dropdown {
+  .dfm-input-dropdown {
+    .input-dropdown-menu {
+      max-height: 32vh !important;
+    }
+  }
+}
+
+.extra-small-dropdown {
+  .dfm-input-dropdown {
+    .input-dropdown-menu {
+      max-height: 25vh !important;
+    }
+  }
+}
