@@ -171,7 +171,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 	}
 
 	public ngAfterViewInit() {
-		console.log('in', this.prioritySlot$$.value);
+
 		if (!this.prioritySlot$$.value?.id) {
 
 		}
@@ -559,7 +559,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 	}
 
 	private handleTimeChange() {
-		console.log('in');
+
 		if (
 			this.formValues.slotStartTime !== '' &&
 			DateTimeUtils.TimeToNumber(this.formValues.slotStartTime) < DateTimeUtils.TimeToNumber(this.formValues.slotEndTime)

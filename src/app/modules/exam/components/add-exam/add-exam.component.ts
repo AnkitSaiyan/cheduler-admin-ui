@@ -155,7 +155,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		this.createForm();
 
-		// this.examForm.valueChanges.subscribe(console.log);
+		// this.examForm.valueChanges.subscribe(
 
 		this.examApiSvc.exams$
 			.pipe(
@@ -660,7 +660,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		//     uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
 		//   });
 
-		//   console.log(this.formValues);
+		//
 
 		//   this.cdr.detectChanges();
 		// }, 500);
@@ -720,7 +720,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 	private createRoomsForExamFormArray(roomType: RoomType) {
 		const fa = this.examForm.get('roomsForExam') as FormArray;
-		console.log(this.examDetails$$.value);
+
 		fa.clear();
 
 		if (this.availableRooms$$.value[roomType]?.length) {

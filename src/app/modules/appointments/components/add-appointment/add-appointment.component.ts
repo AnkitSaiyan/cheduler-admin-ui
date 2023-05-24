@@ -197,7 +197,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			?.valueChanges.pipe(
 				debounceTime(0),
 				filter((startedAt) => {
-					console.log(startedAt, this.formValues.examList);
 					return startedAt?.day && this.formValues.examList?.length;
 				}),
 				tap(() => this.loadingSlots$$.next(true)),
@@ -221,7 +220,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				tap(() => this.loadingSlots$$.next(true)),
 				map((examList) => {
 					this.clearSlotDetails();
-					console.log('examList', examList);
+
 					return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
 				}),
 				switchMap((reqData) => this.getSlotData(reqData)),
@@ -229,7 +228,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			)
 			.subscribe({
 				next: (slots) => {
-					console.log('modified slots response', slots);
 					this.setSlots(slots[0].slots, this.isCombinable);
 					this.loadingSlots$$.next(false);
 				},
@@ -299,16 +297,12 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				});
 			}
 
-			console.log(this.selectedTimeSlot);
-
 			const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
 				{ ...this.formValues },
 				{ ...this.selectedTimeSlot },
 				{ ...(this.appointment$$.value ?? ({} as Appointment)) },
 				this.isCombinable,
 			);
-
-			console.log(requestData);
 
 			if (this.isDoctorConsentDisable$$.value) {
 				delete requestData.doctorId;
@@ -370,7 +364,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 					});
 			}
 		} catch (e) {
-			console.log(e);
 			this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}`, NotificationType.DANGER);
 			this.submitting$$.next(false);
 			return;
@@ -382,7 +375,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	}
 
 	public handleSlotSelectionToggle(slots: SlotModified) {
-		console.log('slots on selection', slots);
+
 		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
 	}
 
@@ -453,7 +446,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		let date!: Date;
 		let dateDistributed: DateDistributed = {} as DateDistributed;
 
-		console.log(appointment);
+
 		appointment?.exams?.sort((exam1, exam2) => {
 			if (exam1.startedAt < exam2.startedAt) {
 				return -1;
@@ -510,8 +503,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
 			.pipe(take(1))
 			.subscribe((slots) => {
-				console.log('slots', slots);
-				console.log('isCombinable', this.isCombinable);
 				this.setSlots(slots[0].slots, this.isCombinable);
 
 				this.loadingSlots$$.next(false);
@@ -552,8 +543,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 								userList,
 							),
 						);
-
-						console.log('selected time slot', this.selectedTimeSlot);
 					});
 				}
 
@@ -573,8 +562,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		this.examIdToAppointmentSlots = examIdToSlots;
 		this.slots = newSlots;
 
-		console.log('new slots', newSlots);
-		console.log(examIdToSlots);
 		// if (newSlots?.length) {
 		//   const appointment = this.appointment$$.value;
 		//   if (appointment && this.edit && !this.isSlotUpdated) {

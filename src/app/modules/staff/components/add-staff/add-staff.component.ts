@@ -150,7 +150,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
                             })
                         ];
 
-                        console.log(practice, staffDetails.practiceAvailability);
+
                         this.staffAvailabilityData$$.next(practice);
                     }
                 }

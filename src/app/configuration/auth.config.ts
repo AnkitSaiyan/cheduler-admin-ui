@@ -34,12 +34,13 @@ export const MSALConfig: Configuration = Object.freeze({
 	system: {
 		loggerOptions: {
 			loggerCallback: (logLevel, message) => {
-				// console.log(message);
+				//
 			},
 			logLevel: LogLevel.Verbose,
 			piiLoggingEnabled: true,
 		},
 	},
 });
+
 
 

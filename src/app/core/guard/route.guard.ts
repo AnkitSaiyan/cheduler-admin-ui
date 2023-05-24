@@ -13,60 +13,61 @@ import {AuthUser} from "../../shared/models/user.model";
 import {UserService} from "../services/user.service";
 
 @Injectable({
-    providedIn: 'root'
+	providedIn: 'root',
 })
 export class RouteGuard implements CanActivate, CanActivateChild {
-    constructor(private userService: UserService, private router: Router) {
-    }
+	constructor(private userService: UserService, private router: Router) {}
 
-    public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
-        const {url} = state;
-        return this.isProfileIncomplete(url);
-    }
+	public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
+		const { url } = state;
+		return this.isProfileIncomplete(url);
+	}
 
-    public canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        const {url} = state;
-        return this.isProfileIncomplete(url);
-    }
+	public canActivateChild(
+		childRoute: ActivatedRouteSnapshot,
+		state: RouterStateSnapshot,
+	): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+		const { url } = state;
+		return this.isProfileIncomplete(url);
+	}
 
-    private isProfileIncomplete(url: string) {
-        return this.userService.authUser$.pipe(
-            map((user) => {
-                try {
-                    if (!user) {
-                        return this.router.parseUrl('/');
-                    }
+	private isProfileIncomplete(url: string) {
+		return this.userService.authUser$.pipe(
+			map((user) => {
+				try {
+					if (!user) {
+						return this.router.parseUrl('/');
+					}
 
-                    const isIncomplete = !!user?.properties['extension_ProfileIsIncomplete'];
-                    const splitUrl = url.split('/')[1];
+					const isIncomplete = !!user?.properties['extension_ProfileIsIncomplete'];
+					const splitUrl = url.split('/')[1];
 
-                    console.log(splitUrl);
+					switch (splitUrl) {
+						case RouteName.LoginFailed: {
+							if (AuthUser) {
+								return this.router.parseUrl('/');
+							}
+							break;
+						}
+						case RouteName.CompleteProfile: {
+							if (!isIncomplete) {
+								return this.router.parseUrl(`/`);
+							}
+							break;
+						}
+						default: {
+							if (isIncomplete) {
+								return this.router.parseUrl(`/${RouteName.CompleteProfile}`);
+							}
+						}
+					}
 
-                    switch (splitUrl) {
-                        case RouteName.LoginFailed: {
-                            if (AuthUser) {
-                                return this.router.parseUrl('/');
-                            }
-                            break;
-                        }
-                        case RouteName.CompleteProfile: {
-                            if (!isIncomplete) {
-                                return this.router.parseUrl(`/`);
-                            }
-                            break;
-                        }
-                        default: {
-                            if (isIncomplete) {
-                                return this.router.parseUrl(`/${RouteName.CompleteProfile}`);
-                            }
-                        }
-                    }
-
-                    return true;
-                } catch (e) {
-                    return false;
-                }
-            })
-        )
-    }
+					return true;
+				} catch (e) {
+					return false;
+				}
+			}),
+		);
+	}
 }
+

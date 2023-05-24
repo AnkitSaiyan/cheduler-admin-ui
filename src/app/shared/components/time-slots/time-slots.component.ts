@@ -92,7 +92,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 			)
 			.subscribe({
 				next: (timeSlots) => {
-					console.log(timeSlots);
+
 					this.updateForm(timeSlots);
 				},
 			});
@@ -103,9 +103,9 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 					isValid: this.isFormValid(),
 					values: this.getFormRequestBody(this.formValues),
 				});
-				console.log(this.getFormRequestBody(this.formValues));
+
 				this.timeSlotForm.markAllAsTouched();
-				console.log(this.timeSlotForm.value, 'test', this.timeSlotForm, this.timeSlotForm.valid);
+
 			},
 		});
 
@@ -267,8 +267,8 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 	}
 
 	private patchUpdatedValues(control: AbstractControl<any>, timeSlot: TimeSlot) {
-		console.log(timeSlot.dayStart, timeSlot.dayEnd);
-		console.log(DateTimeUtils.TimeStringIn24Hour(timeSlot.dayStart), DateTimeUtils.TimeStringIn24Hour(timeSlot.dayEnd));
+
+
 		control.patchValue(
 			{
 				id: timeSlot.id,
