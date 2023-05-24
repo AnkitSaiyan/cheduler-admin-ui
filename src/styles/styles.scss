@@ -945,6 +945,9 @@ ngb-datepicker {
 .download-dropdown-max-w-144 {
   max-width: 144px;
 }
+.download-dropdown-max-w-152 {
+  max-width: 152px;
+}
 
 .circle-gray-200-40 {
   width: 40px;
@@ -1157,4 +1160,13 @@ body {
 
 .modal-backdrop {
   z-index: 999 !important;
+}
+
+.input-border-none {
+  >dfm-input {
+    .dfm-input {
+      border: none;
+    }
+
+  }
 }
