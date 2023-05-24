@@ -27,7 +27,12 @@ export interface PostIt {
 	providedIn: 'root',
 })
 export class DashboardApiService extends DestroyableComponent {
-	constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService, private userManagementApiSvc: UserManagementApiService) {
+	constructor(
+		private shareDataSvc: ShareDataService,
+		private http: HttpClient,
+		private loaderSvc: LoaderService,
+		private userManagementApiSvc: UserManagementApiService,
+	) {
 		super();
 		this.shareDataSvc
 			.getLanguage$()
@@ -155,13 +160,16 @@ export class DashboardApiService extends DestroyableComponent {
 
 				return this.userManagementApiSvc.getPatientByIds$([...patientIds]).pipe(
 					map((users) => {
-						const userIdToDetailsMap = new Map<string, SchedulerUser>;
+						const userIdToDetailsMap = new Map<string, SchedulerUser>();
 
 						users.forEach((u) => userIdToDetailsMap.set(u.id, u));
 						return notifications.map((n) => ({
-							...n, ...(n?.patientAzureId ? { title: `${userIdToDetailsMap.get(n.patientAzureId)?.givenName} ${userIdToDetailsMap.get(n.patientAzureId)?.surname}` } : {})
+							...n,
+							...(n?.patientAzureId
+								? { title: `${userIdToDetailsMap.get(n.patientAzureId)?.givenName} ${userIdToDetailsMap.get(n.patientAzureId)?.surname}` }
+								: {}),
 						}));
-					})
+					}),
 				) as Observable<Notification[]>;
 			}),
 			tap(() => this.loaderSvc.deactivate()),
@@ -175,7 +183,7 @@ export class DashboardApiService extends DestroyableComponent {
 	private fetchAllClearNotifications(): Observable<Notification[]> {
 		this.loaderSvc.activate();
 		return this.http.get<BaseResponse<Notification[]>>(`${environment.schedulerApiUrl}/dashboard/clearnotificationslist`).pipe(
-			map((response:any) => response.data?.notifications),
+			map((response: any) => response.data?.notifications),
 			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
@@ -204,7 +212,7 @@ export class DashboardApiService extends DestroyableComponent {
 		);
 	}
 
-  public get clearPosts$(): Observable<PostIt[]> {
+	public get clearPosts$(): Observable<PostIt[]> {
 		return combineLatest([this.refreshClearPost$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchClearPosts()));
 	}
 
@@ -258,7 +266,7 @@ export class DashboardApiService extends DestroyableComponent {
 
 	private completedBarChart(): Observable<any> {
 		this.loaderSvc.activate();
-    return combineLatest([
+		return combineLatest([
 			this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/weeklycompletedappointments`),
 			this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/completeappointmentgrowth`),
 		]).pipe(
@@ -273,7 +281,7 @@ export class DashboardApiService extends DestroyableComponent {
 
 	private cancelledBarChart(): Observable<any> {
 		this.loaderSvc.activate();
-    return combineLatest([
+		return combineLatest([
 			this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/weeklycancelledappointments`),
 			this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/cancelledappointmentgrowth`),
 		]).pipe(
@@ -287,11 +295,9 @@ export class DashboardApiService extends DestroyableComponent {
 	}
 
 	private overallStatusBarChart(): Observable<any> {
-		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/yearlyappointments`).pipe(
-			map((response) => response.data),
-			tap(() => this.loaderSvc.deactivate()),
-		);
+		return this.http
+			.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/yearlyappointments`)
+			.pipe(map((response) => response.data));
 	}
 
 	// public upsertAppointment$(requestData: AddAppointmentRequestData): Observable<string> {
@@ -389,32 +395,36 @@ export class DashboardApiService extends DestroyableComponent {
 		);
 	}
 
-  clearNotification(ids: number[]): Observable<PostIt> {
+	clearNotification(ids: number[]): Observable<PostIt> {
 		this.loaderSvc.activate();
-		return this.http.post<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/dashboard/clearnotifications`,{
-        objectType: 'appointment',
-        objectId: ids,
-    }).pipe(
-			map((response) => response.data),
-			tap(() => {
-				this.refreshClearNotification$$.next();
-				this.loaderSvc.deactivate();
-			}),
-		);
+		return this.http
+			.post<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/dashboard/clearnotifications`, {
+				objectType: 'appointment',
+				objectId: ids,
+			})
+			.pipe(
+				map((response) => response.data),
+				tap(() => {
+					this.refreshClearNotification$$.next();
+					this.loaderSvc.deactivate();
+				}),
+			);
 	}
 
-  clearPost(ids: number[]): Observable<PostIt> {
+	clearPost(ids: number[]): Observable<PostIt> {
 		this.loaderSvc.activate();
-		return this.http.post<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/dashboard/clearnotifications`,{
-        objectType: 'post_its',
-        objectId: ids,
-    }).pipe(
-			map((response) => response.data),
-			tap(() => {
-				this.refreshClearPost$$.next();
-				this.loaderSvc.deactivate();
-			}),
-		);
+		return this.http
+			.post<BaseResponse<PostIt>>(`${environment.schedulerApiUrl}/dashboard/clearnotifications`, {
+				objectType: 'post_its',
+				objectId: ids,
+			})
+			.pipe(
+				map((response) => response.data),
+				tap(() => {
+					this.refreshClearPost$$.next();
+					this.loaderSvc.deactivate();
+				}),
+			);
 	}
 
 	public get doctors$(): Observable<Physician[]> {
