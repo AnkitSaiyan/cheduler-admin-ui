@@ -5,6 +5,7 @@ export interface SiteManagement {
   disableAppointment: boolean;
   disableWarningText: string | null;
   introductoryText: string;
+  introductoryTextEnglish: string;
   doctorReferringConsent: 0 | 1;
   address: string;
   email: string;
@@ -17,10 +18,11 @@ export interface SiteManagement {
 }
 
 export interface SiteManagementRequestData {
-  name: string;
+  name: string; 
   disableAppointment: boolean;
   disableWarningText: string | null;
   introductoryText: string;
+  introductoryTextEnglish: string;
   doctorReferringConsent: 0 | 1;
   cancelAppointmentTime: number;
   address: string;

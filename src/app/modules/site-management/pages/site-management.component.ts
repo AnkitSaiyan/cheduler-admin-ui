@@ -21,6 +21,9 @@ interface FormValues {
   heading: string;
   subHeading: string;
   bodyText: string;
+  headingEnglish: string;
+  subHeadingEnglish: string;
+  bodyTextEnglish: string;
   doctorReferringConsent: 0 | 1;
   isAppointmentAutoconfirm: boolean;
   cancelAppointmentTime: number;
@@ -91,6 +94,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     let durationType: TimeDurationType = 'Minutes';
     let reminderDurationTYpe: TimeDurationType = 'Minutes';
     let introductoryTextObj;
+    let introductoryTextObjEnglish;
+
     const file: {
       loading: boolean;
       fileBlob: Blob | null;
@@ -127,6 +132,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       if (siteManagementData.introductoryText) {
         try {
           introductoryTextObj = JSON.parse(siteManagementData.introductoryText);
+          introductoryTextObjEnglish = JSON.parse(siteManagementData.introductoryTextEnglish);
         } catch (e) {}
       }
 
@@ -146,6 +152,9 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       heading: [introductoryTextObj?.heading ?? '', []],
       subHeading: [introductoryTextObj?.subHeading ?? '', []],
       bodyText: [introductoryTextObj?.bodyText ?? '', []],
+      headingEnglish: [introductoryTextObjEnglish?.headingEnglish ?? '', []],
+      subHeadingEnglish: [introductoryTextObjEnglish?.subHeadingEnglish ?? '', []],
+      bodyTextEnglish: [introductoryTextObjEnglish?.bodyTextEnglish ?? '', []],
       disableAppointment: [!!siteManagementData?.disableAppointment, [Validators.required]],
       disableWarningText: [siteManagementData?.disableWarningText ?? '', []],
       doctorReferringConsent: [siteManagementData?.doctorReferringConsent, []],
@@ -188,7 +197,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
     this.submitting$$.next(true);
 
-    const { heading, subHeading, bodyText, file, cancelAppointmentType, reminderTimeType, ...rest } = this.formValues;
+    const { heading, subHeading, bodyText, headingEnglish, subHeadingEnglish, bodyTextEnglish,  file, cancelAppointmentType, reminderTimeType, ...rest } = this.formValues;
 
     const requestData: SiteManagementRequestData = {
       ...rest,
@@ -214,12 +223,18 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
             return rest.reminderTime;
         }
       })(),
+      introductoryTextEnglish: ''
     };
 
     requestData.introductoryText = JSON.stringify({
       heading,
       subHeading,
       bodyText,
+    });
+    requestData.introductoryTextEnglish = JSON.stringify({
+      headingEnglish,
+      subHeadingEnglish,
+      bodyTextEnglish,
     });
 
     if (this.siteManagementData$$.value && this.siteManagementData$$.value?.id) {

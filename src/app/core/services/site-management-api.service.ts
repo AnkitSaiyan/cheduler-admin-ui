@@ -52,6 +52,7 @@ export class SiteManagementApiService extends DestroyableComponent {
     formData.append('DisableAppointment', String(requestData.disableAppointment));
     formData.append('DisableWarningText', String(requestData.disableWarningText));
     formData.append('IntroductoryText', requestData.introductoryText);
+    formData.append('IntroductoryTextEnglish', requestData.introductoryTextEnglish);
     formData.append('DoctorReferringConsent', String(requestData.doctorReferringConsent));
     formData.append('Address', requestData.address);
     formData.append('Email', requestData.email);
