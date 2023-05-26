@@ -1,17 +1,17 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {InputComponent, NotificationType} from 'diflexmo-angular-design';
 import {
-    BehaviorSubject,
-    combineLatest,
-    debounceTime,
-    filter,
-    map,
-    of,
-    startWith,
-    Subject,
-    switchMap,
-    take,
-    takeUntil
+	BehaviorSubject,
+	combineLatest,
+	debounceTime,
+	filter, first,
+	map,
+	of,
+	startWith,
+	Subject,
+	switchMap,
+	take,
+	takeUntil
 } from 'rxjs';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -159,7 +159,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		this.examApiSvc.allExams$
 			.pipe(
-				map((exams) => exams.filter((exam) => exam?.status && +exam.id !== (+this.examID ?? 0))),
+				first(),
+				map((exams) => exams.filter((exam) => (+exam.id !== (+this.examID ?? 0)))),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
