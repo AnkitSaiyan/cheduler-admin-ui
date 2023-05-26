@@ -157,7 +157,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		// this.examForm.valueChanges.subscribe(
 
-		this.examApiSvc.exams$
+		this.examApiSvc.allExams$
 			.pipe(
 				map((exams) => exams.filter((exam) => exam?.status && +exam.id !== (+this.examID ?? 0))),
 				takeUntil(this.destroy$$),
