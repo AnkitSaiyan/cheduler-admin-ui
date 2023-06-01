@@ -96,7 +96,7 @@ export class ExamApiService {
     return this.http.post<BaseResponse<Exam>>(`${this.examUrl}`, requestData).pipe(
       map((response) => response?.data),
       tap(() => {
-        // this.pageNo$$.next(1);
+        this.pageNo$$.next(1);
         this.loaderSvc.deactivate();
       }),
     );
@@ -108,7 +108,7 @@ export class ExamApiService {
     return this.http.put<BaseResponse<Exam>>(`${this.examUrl}/${id}`, restData).pipe(
       map((response) => response.data),
       tap(() => {
-        // this.refreshExams$$.next();
+        this.pageNo$$.next(1);
         this.loaderSvc.deactivate();
       }),
     );

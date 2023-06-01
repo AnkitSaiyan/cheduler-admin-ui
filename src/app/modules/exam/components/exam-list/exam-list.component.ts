@@ -20,6 +20,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { PaginationData } from "../../../../shared/models/base-response.model";
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
+
+enum ColumnNameToKey {
+  Name = 'name',
+  Expensive = 'expensive',
+  Status = 'status'
+}
 
 @Component({
   selector: 'dfm-exam-list',
@@ -45,9 +52,11 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
 
-  public tableData$$ = new BehaviorSubject<DfmDatasource<any> | undefined>(undefined);
-
-  public loading$$ = new BehaviorSubject(true);
+  public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+    items: [],
+    isInitialLoading: true,
+    isLoadingMore: false,
+  });
 
   public searchControl = new FormControl('', []);
 
@@ -56,9 +65,9 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   private columns: string[] = ['Name', 'Expensive', 'Status'];
 
   public tableHeaders: DfmTableHeader[] = [
-    { id: '1', title: 'Name' },
-    { id: '2', title: 'Expensive' },
-    { id: '3', title: 'Status' },
+    { id: '1', title: 'Name', isSortable: true },
+    { id: '2', title: 'Expensive', isSortable: true },
+    { id: '3', title: 'Status', isSortable: true },
   ];
 
   public downloadItems: DownloadType[] = [];
@@ -102,8 +111,15 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     this.filteredExams$$.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
       this.tableData$$.next({
         items: value,
+        isInitialLoading: false,
+        isLoading: false,
+        isLoadingMore: false
       });
     });
+
+    this.exams$$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (exams) => this.filteredExams$$.next([...exams])
+    })
 
     this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (examsBase) => {
@@ -112,12 +128,11 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         } else {
           this.exams$$.next(examsBase.data);
         }
-
-        this.filteredExams$$.next([...this.exams$$.value]);
         this.examPaginationData = examsBase.metaData.pagination;
-        this.loading$$.next(false);
       },
-      error: (e) => this.loading$$.next(false)
+      error: (e) => {
+        this.exams$$.next([]);
+      }
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
@@ -259,12 +274,8 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
       .subscribe({
         next: () => {
           this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang]);
-          // filtering exams
-          const index = this.exams$$.value.findIndex((exam) => +exam.id === +id);
-          if (index !== -1) {
-            this.exams$$.value.splice(index, 1);
-            this.filteredExams$$.value.splice(index, 1);
-          }
+          // filtering out deleting exam
+          this.exams$$.next([...this.exams$$.value.filter((exam) => +exam.id !== +id)]);
         }
       });
   }
@@ -351,10 +362,11 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   public onScroll(e: undefined): void {
     if (this.examPaginationData?.pageCount && this.examPaginationData?.pageNo && this.examPaginationData.pageCount > this.examPaginationData.pageNo) {
       this.examApiSvc.pageNo = this.examPaginationData.pageNo + 1;
+      this.tableData$$.value.isLoadingMore = true;
     }
   }
 
   public onSort(e: DfmTableHeader): void {
-    console.log(e);
+    this.filteredExams$$.next(GeneralUtils.SortArray(this.filteredExams$$.value, e.sort, ColumnNameToKey[e.title]));
   }
 }

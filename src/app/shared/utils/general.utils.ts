@@ -1,3 +1,5 @@
+import {ColumnSort} from "diflexmo-angular-design";
+
 export class GeneralUtils {
 	public static FilterArray([...arr]: readonly any[], filterText: string, key?: string): any[] {
 		if (filterText) {
@@ -18,18 +20,24 @@ export class GeneralUtils {
 		localStorage.setItem('sessionExp', JSON.stringify(new Date(new Date().getTime() + 60 * 60 * 1000).getTime()));
 	}
 
-	// public static get TenantID(): string {
-	//   const subDomain = window.location.host.split('.')[0];
-	//   const localhost = 'localhost';
-
-	//   switch (subDomain) {
-	//     case localhost:
-	//     case DEV_SUBDOMAIN:
-	//       return DEV_TENANT_ID;
-	//     default:
-	//       return UAT_TENANT_ID
-	//   }
-	// }
+	public static SortArray([...arr]: readonly any[], sort: ColumnSort | undefined, key?: string): any[] {
+		switch (sort) {
+			case "Asc":
+				return arr.sort((a, b) => {
+					if (key) {
+						return a[key] <= b[key] ? -1 : 1;
+					}
+					return a <= b ? -1 : 1;
+				});
+			default:
+				return arr.sort((a, b) => {
+					if (key) {
+						return a[key] >= b[key] ? -1 : 1;
+					}
+					return a >=	 b ? -1 : 1;
+				});
+		}
+	}
 }
 
 
