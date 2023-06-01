@@ -23,6 +23,7 @@ import { LoaderService } from './loader.service';
 import { PhysicianApiService } from './physician.api.service';
 import { ShareDataService } from './share-data.service';
 import { UserManagementApiService } from './user-management-api.service';
+import { SignalrService } from './signalr.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -57,6 +58,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		private shareDataSvc: ShareDataService,
 		private userManagementSvc: UserManagementApiService,
 		private datePipe: DatePipe,
+		private signalRService :SignalrService
 	) {
 		super();
 		this.shareDataSvc
@@ -68,7 +70,7 @@ export class AppointmentApiService extends DestroyableComponent {
 	}
 
 	public get appointment$(): Observable<Appointment[]> {
-		return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
+		return combineLatest([this.signalRService.appointments$$.pipe(startWith(''))]).pipe(
 			switchMap(() => {
 				return this.fetchAllAppointments$().pipe(switchMap((appointments) => this.AttachPatientDetails(appointments)));
 			}),

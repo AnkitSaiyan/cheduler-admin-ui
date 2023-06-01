@@ -23,6 +23,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddPostComponent } from './components/post-it/add-post/add-post.component';
 import { ViewPostComponent } from './components/post-it/view-post/view-post.component';
 import { AppointmentAdvanceSearchComponent } from './components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
+import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
 	declarations: [
@@ -46,6 +47,6 @@ import { AppointmentAdvanceSearchComponent } from './components/dashboard-appoin
 		ViewPostComponent,
 		AppointmentAdvanceSearchComponent,
 	],
-	imports: [CommonModule, DashboardRoutingModule, SharedModule, FormsModule, ReactiveFormsModule],
+	imports: [CommonModule, DashboardRoutingModule, SharedModule, FormsModule, ReactiveFormsModule, NgbCarouselModule],
 })
 export class DashboardModule {}
