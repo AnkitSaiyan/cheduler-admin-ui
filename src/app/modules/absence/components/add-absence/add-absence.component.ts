@@ -155,7 +155,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				this.createForm(absence);
 			});
 
-		this.roomApiSvc.rooms$
+		this.roomApiSvc.allRooms$
 			.pipe(
 				map((rooms) => rooms.filter((room) => !!room.status)),
 				takeUntil(this.destroy$$),

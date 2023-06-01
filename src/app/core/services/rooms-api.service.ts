@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap, takeUntil } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { AddRoomRequestData, Room, RoomsGroupedByType, RoomType, UpdateRoomPlaceInAgendaRequestData } from '../../shared/models/rooms.model';
 import { ChangeStatusRequestData, Status } from '../../shared/models/status.model';
@@ -14,6 +14,14 @@ import { Translate } from '../../shared/models/translate.model';
   providedIn: 'root',
 })
 export class RoomsApiService extends DestroyableComponent {
+  private refreshRooms$$ = new Subject<void>();
+
+  private selectedLang$$ = new BehaviorSubject<string>('');
+
+  private pageNo$$ = new BehaviorSubject<number>(1);
+
+  private readonly roomUrl = `${environment.schedulerApiUrl}/room`;
+
   private roomTypes: { name: string; value: string }[] = [
     {
       name: 'Private',
@@ -24,12 +32,6 @@ export class RoomsApiService extends DestroyableComponent {
       value: RoomType.Public,
     },
   ];
-
-  private refreshRooms$$ = new Subject<void>();
-
-  private readonly roomUrl = `${environment.schedulerApiUrl}/room`;
-
-  private selectedLang$$ = new BehaviorSubject<string>('');
 
   constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService) {
     super();
@@ -42,39 +44,53 @@ export class RoomsApiService extends DestroyableComponent {
       });
   }
 
-  public get rooms$(): Observable<Room[]> {
-    return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRooms()));
+  public set pageNo(pageNo: number) {
+    this.pageNo$$.next(pageNo);
+  }
+
+  public get pageNo(): number {
+    return this.pageNo$$.value;
   }
 
   get fileTypes$(): Observable<any[]> {
     return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
-      switchMap(([lang]) => {
-        return of(this.roomTypes).pipe(
-          map((downloadTypeItems) => {
-            if (lang) {
-              return downloadTypeItems.map((downloadType) => {
-                return {
-                  ...downloadType,
-                  name: Translate[downloadType.name][lang],
-                };
-              });
-            }
-            return downloadTypeItems;
-          }),
-        );
-      }),
+        switchMap(([lang]) => {
+          return of(this.roomTypes).pipe(
+              map((downloadTypeItems) => {
+                if (lang) {
+                  return downloadTypeItems.map((downloadType) => {
+                    return {
+                      ...downloadType,
+                      name: Translate[downloadType.name][lang],
+                    };
+                  });
+                }
+                return downloadTypeItems;
+              }),
+          );
+        }),
     );
   }
 
-  private fetchRooms(): Observable<Room[]> {
+  public get rooms$(): Observable<BaseResponse<Room[]>> {
+    return combineLatest([
+        this.refreshRooms$$.pipe(startWith('')),
+        this.pageNo$$
+    ]).pipe(switchMap(([_, pageNo]) => this.fetchRooms(pageNo)));
+  }
+
+  private fetchRooms(pageNo: number): Observable<BaseResponse<Room[]>> {
     this.loaderSvc.activate();
     this.loaderSvc.spinnerActivate();
-    return this.http.get<BaseResponse<Room[]>>(`${this.roomUrl}`).pipe(
-      map((response) =>
-        response?.data?.sort((r1, r2) => {
-          return r1.placeInAgenda - r2.placeInAgenda;
-        }),
-      ),
+
+    const params = new HttpParams().append('pageNo', pageNo);
+    return this.http.get<BaseResponse<Room[]>>(`${this.roomUrl}`, { params }).pipe(
+      map((response) => {
+        return {
+          ...response,
+          data: response?.data?.sort((r1, r2) => (r1.placeInAgenda - r2.placeInAgenda)),
+        }
+      }),
       tap(() => {
         this.loaderSvc.deactivate();
         this.loaderSvc.spinnerDeactivate();
