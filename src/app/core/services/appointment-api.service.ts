@@ -48,6 +48,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	private selectedLang$$ = new BehaviorSubject<string>('');
 
+	private signalData!: Appointment[];
 	private appointmentUrl = `${environment.schedulerApiUrl}/appointment`;
 
 	constructor(
@@ -67,10 +68,12 @@ export class AppointmentApiService extends DestroyableComponent {
 			.subscribe({
 				next: (lang) => this.selectedLang$$.next(lang),
 			});
+
+			this.signalRService.appointmentData$.subscribe(val=> this.signalData = val);
 	}
 
 	public get appointment$(): Observable<Appointment[]> {
-		return combineLatest([this.signalRService.appointments$$.pipe(startWith(''))]).pipe(
+		return combineLatest([this.signalRService.appointmentData$.pipe(startWith(''))]).pipe(
 			switchMap(() => {
 				return this.fetchAllAppointments$().pipe(switchMap((appointments) => this.AttachPatientDetails(appointments)));
 			}),
@@ -100,6 +103,21 @@ export class AppointmentApiService extends DestroyableComponent {
 	public fetchAllAppointments$(data?: any): Observable<Appointment[]> {
 		this.loaderSvc.activate();
 
+	if(this.signalData){
+		return of(this.signalData).pipe(
+			map((response) => {
+				console.log(response);
+				if (!response?.length) {
+					return [];
+				}
+				return response.map((appointment) => this.getAppointmentModified(appointment));
+			}),
+			tap(() => {
+				this.loaderSvc.deactivate();
+			}),
+		);
+	}
+	
 		if (data) {
 			const queryParams = {};
 			if (data?.appointmentNumber) queryParams['id'] = data.appointmentNumber;
