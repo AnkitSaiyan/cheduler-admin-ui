@@ -17,7 +17,7 @@ import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room, UpdateRoomPlaceInAgendaRequestData } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
 import { TranslateService } from '@ngx-translate/core';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
@@ -225,14 +225,12 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 						this.columns = [...this.columns, Translate.Actions[lang]];
 					}
 
-					// eslint-disable-next-line default-case
 					switch (lang) {
 						case ENG_BE:
 							this.statuses = Statuses;
 							break;
-						case DUTCH_BE:
+						default:
 							this.statuses = StatusesNL;
-							break;
 					}
 				}
 			});
