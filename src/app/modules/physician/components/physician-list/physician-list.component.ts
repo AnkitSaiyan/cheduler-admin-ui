@@ -37,8 +37,6 @@ const ColumnIdToKey = {
   styleUrls: ['./physician-list.component.scss'],
 })
 export class PhysicianListComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  clipboardData: string = '';
-
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
@@ -88,6 +86,8 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   private selectedLang: string = ENG_BE;
 
+  public clipboardData: string = '';
+
   private paginationData: PaginationData | undefined;
 
   constructor(
@@ -126,7 +126,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
     this.physicians$$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (physicians) => this.filteredPhysicians$$.next([...physicians])
-    })
+    });
 
     this.physicianApiSvc.physicians$
       .pipe(
@@ -221,10 +221,6 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
             ...h, title: Translate[this.columns[i]][lang]
           }));
 
-          if (this.permissionSvc.isPermitted([Permission.UpdatePhysicians, Permission.DeletePhysicians])) {
-            this.columns = [...this.columns, Translate.Actions[lang]];
-          }
-
           switch (lang) {
             case ENG_BE:
               this.statuses = Statuses;
@@ -303,7 +299,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public copyToClipboard() {
     try {
-      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+      let dataString = `${this.columns.join('\t')}\n`;
 
       this.filteredPhysicians$$.value.forEach((physician: Physician) => {
         dataString += `${physician.firstname}\t${physician.lastname}\t ${physician.email}\t ${StatusToName[+physician.status]}\n`;
