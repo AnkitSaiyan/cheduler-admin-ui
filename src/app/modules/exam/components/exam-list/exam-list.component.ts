@@ -119,7 +119,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
     this.exams$$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (exams) => this.filteredExams$$.next([...exams])
-    })
+    });
 
     this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (examsBase) => {

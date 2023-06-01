@@ -37,9 +37,9 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 	@ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
 
-	private emails$$: BehaviorSubject<any[]>;
+	private emails$$: BehaviorSubject<Email[]>;
 
-	public filteredEmails$$: BehaviorSubject<any[]>;
+	public filteredEmails$$: BehaviorSubject<Email[]>;
 
 	public clearSelected$$ = new Subject<void>();
 

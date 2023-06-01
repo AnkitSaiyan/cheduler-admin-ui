@@ -45,8 +45,8 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 
   async ngOnInit(): Promise<void> {
     this.absenceApiService.absences$.pipe(takeUntil(this.destroy$$)).subscribe((employeeAbsences) => {
-      this.absences$$.next(employeeAbsences);
-      this.filteredAbsence$$.next(employeeAbsences);
+      this.absences$$.next(employeeAbsences.data);
+      this.filteredAbsence$$.next(employeeAbsences.data);
     });
 
     this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
