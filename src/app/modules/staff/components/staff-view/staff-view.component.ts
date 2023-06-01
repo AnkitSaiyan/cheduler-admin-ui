@@ -81,7 +81,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 				}
 			});
 
-		this.examApiSvc.exams$
+		this.examApiSvc.allExams$
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((exams) => exams.forEach((exam) => this.examIdToNameMap.set(+exam.id, exam.name)));
 
