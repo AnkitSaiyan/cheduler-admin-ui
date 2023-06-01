@@ -155,7 +155,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			});
 		});
 
-		this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
+		this.physicianApiSvc.allPhysicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
 			const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
 			this.filteredPhysicianList = [...keyValuePhysicians];
 			this.physicianList = [...keyValuePhysicians];

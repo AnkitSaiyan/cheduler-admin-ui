@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, combineLatest, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { BehaviorSubject, combineLatest, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
@@ -13,15 +13,23 @@ import { ModalService } from '../../../../core/services/modal.service';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
-import { User, UserRoleEnum } from '../../../../shared/models/user.model';
 import { ShareDataService } from '../../../../core/services/share-data.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Translate } from '../../../../shared/models/translate.model';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
+import {PaginationData} from "../../../../shared/models/base-response.model";
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
+
+const ColumnIdToKey = {
+  1: 'firstname',
+  2: 'lastname',
+  3: 'email',
+  4: 'status',
+}
 
 @Component({
   selector: 'dfm-physician-list',
@@ -41,33 +49,46 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   // @ViewChild('actionsMenuButton') private actionsMenuButton!: ButtonComponent;
 
-  public searchControl = new FormControl('', []);
+  private physicians$$: BehaviorSubject<Physician[]>;
 
-  public downloadDropdownControl = new FormControl('', []);
-
-  public columns: string[] = ['FirstName', 'LastName', 'Email', 'Status', 'Actions'];
-
-  public downloadItems: any[] = [];
-
-  private physicians$$: BehaviorSubject<any[]>;
-
-  public filteredPhysicians$$: BehaviorSubject<any[]>;
+  public filteredPhysicians$$: BehaviorSubject<Physician[]>;
 
   public clearSelected$$ = new Subject<void>();
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
 
+  public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+    items: [],
+    isInitialLoading: true,
+    isLoadingMore: false,
+  });
+
+  public searchControl = new FormControl('', []);
+
+  public downloadDropdownControl = new FormControl('', []);
+
+  public columns: string[] = ['FirstName', 'LastName', 'Email', 'Status'];
+
+  public tableHeaders: DfmTableHeader[] = [
+    { id: '1', title: 'FirstName', isSortable: true },
+    { id: '2', title: 'LastName', isSortable: true },
+    { id: '3', title: 'Email', isSortable: true },
+    { id: '4', title: 'Status', isSortable: true },
+  ];
+
+  public downloadItems: any[] = [];
+
   public selectedPhysicianIDs: string[] = [];
 
   public statusType = getStatusEnum();
-
-  public loading$$ = new BehaviorSubject(true);
 
   public statuses = Statuses;
 
   public readonly Permission = Permission;
 
   private selectedLang: string = ENG_BE;
+
+  private paginationData: PaginationData | undefined;
 
   constructor(
     private physicianApiSvc: PhysicianApiService,
@@ -88,24 +109,48 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
   }
 
   public ngOnInit(): void {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
+    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (items) => (this.downloadItems = items)
+    });
+
+    this.filteredPhysicians$$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (items) => {
+        this.tableData$$.next({
+          items,
+          isInitialLoading: false,
+          isLoading: false,
+          isLoadingMore: false
+        });
+      }
+    });
+
+    this.physicians$$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (physicians) => this.filteredPhysicians$$.next([...physicians])
+    })
 
     this.physicianApiSvc.physicians$
       .pipe(
-        tap(() => this.loading$$.next(true)),
         takeUntil(this.destroy$$),
       )
-      .subscribe((physicians) => {
-        this.physicians$$.next(physicians);
-        this.filteredPhysicians$$.next(physicians);
-        this.loading$$.next(false);
+      .subscribe({
+        next: (physicianBase) => {
+          if (this.paginationData && this.paginationData.pageNo < physicianBase.metaData.pagination.pageNo) {
+            this.physicians$$.next([...this.physicians$$.value, ...physicianBase.data]);
+          } else {
+            this.physicians$$.next(physicianBase.data);
+          }
+          this.paginationData = physicianBase.metaData.pagination;
+        },
+        error: (e) => this.physicians$$.next([])
       });
 
-    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-      if (searchText) {
-        this.handleSearch(searchText.toLowerCase());
-      } else {
-        this.filteredPhysicians$$.next([...this.physicians$$.value]);
+    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+      next: (searchText) => {
+        if (searchText) {
+          this.handleSearch(searchText.toLowerCase());
+        } else {
+          this.filteredPhysicians$$.next([...this.physicians$$.value]);
+        }
       }
     });
 
@@ -114,25 +159,28 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         filter((value) => !!value),
         takeUntil(this.destroy$$),
       )
-      .subscribe((value) => {
-        if (!this.filteredPhysicians$$.value.length) {
-          this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+      .subscribe({
+        next: (value) => {
+          if (!this.filteredPhysicians$$.value.length) {
+            this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+            this.clearDownloadDropdown();
+
+            return;
+          }
+
+          this.downloadSvc.downloadJsonAs(
+              value as DownloadAsType,
+              this.columns,
+              this.filteredPhysicians$$.value.map((p: Physician) => [p.firstname, p.lastname, p.email, Translate[StatusToName[+p.status]][this.selectedLang]]),
+              'physician',
+          );
+
+          if (value !== 'PRINT') {
+            this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
+          }
+
           this.clearDownloadDropdown();
-
-          return;
         }
-
-        this.downloadSvc.downloadJsonAs(
-          value as DownloadAsType,
-          this.columns.slice(0, -1),
-          this.filteredPhysicians$$.value.map((u: User) => [u.firstname, u.lastname, u.email, Translate[StatusToName[+u.status]][this.selectedLang]]),
-          'physician',
-        );
-
-        if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
-        }
-        this.clearDownloadDropdown();
       });
 
     this.afterBannerClosed$$
@@ -164,23 +212,28 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       });
 
     combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
-			.pipe(takeUntil(this.destroy$$))
-			.subscribe(([lang]) => {
-				this.selectedLang = lang;
-				this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Email[lang], Translate.Status[lang]];
-				if (this.permissionSvc.isPermitted([Permission.UpdatePhysicians, Permission.DeletePhysicians])) {
-					this.columns = [...this.columns, Translate.Actions[lang]];
-				}
-				// eslint-disable-next-line default-case
-				switch (lang) {
-					case ENG_BE:
-						this.statuses = Statuses;
-						break;
-					case DUTCH_BE:
-						this.statuses = StatusesNL;
-						break;
-				}
-			});
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe({
+        next: ([lang]) => {
+          this.selectedLang = lang;
+
+          this.tableHeaders = this.tableHeaders.map((h, i) => ({
+            ...h, title: Translate[this.columns[i]][lang]
+          }));
+
+          if (this.permissionSvc.isPermitted([Permission.UpdatePhysicians, Permission.DeletePhysicians])) {
+            this.columns = [...this.columns, Translate.Actions[lang]];
+          }
+
+          switch (lang) {
+            case ENG_BE:
+              this.statuses = Statuses;
+              break;
+            default:
+              this.statuses = StatusesNL;
+          }
+        }
+      });
   }
 
   public override ngOnDestroy() {
@@ -213,10 +266,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     this.physicianApiSvc
       .changePhysicianStatus$(changes)
       .pipe(takeUntil(this.destroy$$))
-      .subscribe(
-        () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`),
-        (err) => this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER),
-      );
+      .subscribe({
+        next: () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`),
+        error: (err) => this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER),
+  });
   }
 
   public deletePhysician(id: number) {
@@ -235,9 +288,11 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
         switchMap(() => this.physicianApiSvc.deletePhysician(id)),
         take(1),
       )
-      .subscribe((response) => {
-        if (response) {
+      .subscribe({
+        next: (response) => {
           this.notificationSvc.showNotification(`${Translate.SuccessMessage.PhysicianDeleted[this.selectedLang]}!`);
+          // filtering out deleted physician
+          this.physicians$$.next([...this.physicians$$.value.filter((p) => +p.id !== +id)]);
         }
       });
   }
@@ -301,7 +356,9 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
       } as SearchModalData,
     });
 
-    modalRef.closed.pipe(take(1)).subscribe((result) => this.filterPhysicians(result));
+    modalRef.closed.pipe(take(1)).subscribe({
+      next: (result) => this.filterPhysicians(result)
+    });
   }
 
   private filterPhysicians(result: { name: string; value: string }[]) {
@@ -335,8 +392,20 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
     }
   }
   private clearDownloadDropdown() {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       this.downloadDropdownControl.setValue('');
+      clearTimeout(timeout);
     }, 0);
+  }
+
+  public onScroll(e: undefined): void {
+    if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+      this.physicianApiSvc.pageNo = this.physicianApiSvc.pageNo + 1;
+      this.tableData$$.value.isLoadingMore = true;
+    }
+  }
+
+  public onSort(e: DfmTableHeader): void {
+    this.filteredPhysicians$$.next(GeneralUtils.SortArray(this.filteredPhysicians$$.value, e.sort, ColumnIdToKey[e.id]));
   }
 }

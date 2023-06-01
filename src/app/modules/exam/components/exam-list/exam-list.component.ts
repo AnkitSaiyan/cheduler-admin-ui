@@ -22,10 +22,10 @@ import { PermissionService } from 'src/app/core/services/permission.service';
 import { PaginationData } from "../../../../shared/models/base-response.model";
 import {GeneralUtils} from "../../../../shared/utils/general.utils";
 
-enum ColumnNameToKey {
-  Name = 'name',
-  Expensive = 'expensive',
-  Status = 'status'
+const ColumnIdToKey = {
+  1: 'name',
+  2: 'expensive',
+  3: 'status'
 }
 
 @Component({
@@ -84,7 +84,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
   public readonly Permission = Permission;
 
-  private examPaginationData: PaginationData | undefined;
+  private paginationData: PaginationData | undefined;
 
   constructor(
     private examApiSvc: ExamApiService,
@@ -123,12 +123,12 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
     this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (examsBase) => {
-        if (this.examPaginationData && this.examPaginationData.pageNo < examsBase.metaData.pagination.pageNo) {
+        if (this.paginationData && this.paginationData.pageNo < examsBase.metaData.pagination.pageNo) {
           this.exams$$.next([...this.exams$$.value, ...examsBase.data]);
         } else {
           this.exams$$.next(examsBase.data);
         }
-        this.examPaginationData = examsBase.metaData.pagination;
+        this.paginationData = examsBase.metaData.pagination;
       },
       error: (e) => {
         this.exams$$.next([]);
@@ -274,7 +274,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
       .subscribe({
         next: () => {
           this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang]);
-          // filtering out deleting exam
+          // filtering out deleted exam
           this.exams$$.next([...this.exams$$.value.filter((exam) => +exam.id !== +id)]);
         }
       });
@@ -360,13 +360,13 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   }
 
   public onScroll(e: undefined): void {
-    if (this.examPaginationData?.pageCount && this.examPaginationData?.pageNo && this.examPaginationData.pageCount > this.examPaginationData.pageNo) {
-      this.examApiSvc.pageNo = this.examPaginationData.pageNo + 1;
+    if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+      this.examApiSvc.pageNo = this.paginationData.pageNo + 1;
       this.tableData$$.value.isLoadingMore = true;
     }
   }
 
   public onSort(e: DfmTableHeader): void {
-    this.filteredExams$$.next(GeneralUtils.SortArray(this.filteredExams$$.value, e.sort, ColumnNameToKey[e.title]));
+    this.filteredExams$$.next(GeneralUtils.SortArray(this.filteredExams$$.value, e.sort, ColumnIdToKey[e.id]));
   }
 }
