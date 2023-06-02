@@ -51,6 +51,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 		super();
 		this.absences$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAbsence$$ = new BehaviorSubject<any[]>([]);
+    this.absenceApiService.pageNoOnDashboard = 1;
 	}
 
 	async ngOnInit(): Promise<void> {

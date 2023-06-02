@@ -152,6 +152,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 		super();
 		this.roomAbsence$$ = new BehaviorSubject<any[]>([]);
 		this.filteredRoomAbsence$$ = new BehaviorSubject<any[]>([]);
+		this.dashboardApiService.roomAbsencePageNo = 1;
+
 	}
 
 	ngOnInit(): void {
@@ -280,6 +282,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 		this.filteredRoomAbsence$$.next(GeneralUtils.SortArray(this.filteredRoomAbsence$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
 
 
 

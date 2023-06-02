@@ -28,6 +28,7 @@ export class DashboardNotificationsComponent extends DestroyableComponent implem
 		super();
 		this.notifications$$ = new BehaviorSubject<any[]>([]);
 		this.filteredNotifications$$ = new BehaviorSubject<any[]>([]);
+    this.dashboardApiService.notificationPageNo = 1;
 	}
 
 	public ngOnInit(): void {
