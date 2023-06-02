@@ -1,6 +1,6 @@
 <div class="d-flex flex-column dfm-p-16 h-100">
 	<section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-mb-16">
-		<header class="d-flex align-items-center dfm-gap-8" *ngIf="filteredUpcommingAppointments$$ | async as upcomingAppointments">
+		<header class="d-flex align-items-center dfm-gap-8" *ngIf="filteredUpcomingAppointments$$ | async as upcomingAppointments">
 			<div class="dfm-button-gray-400">
 				<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
 			</div>
@@ -19,7 +19,7 @@
 		></dfm-button-icon>
 	</section>
 
-	<section *ngIf="filteredUpcommingAppointments$$ | async as upcomingAppointments" class="h-92">
+	<section *ngIf="filteredUpcomingAppointments$$ | async as upcomingAppointments" class="h-92" infiniteScroll [scrollWindow]="false" (scrolled)="onScroll()">
 		<div *ngIf="!noDataFound" class="d-flex flex-column dfm-gap-16 upcoming-events-container">
 			<table>
 				<thead class="text-xs">

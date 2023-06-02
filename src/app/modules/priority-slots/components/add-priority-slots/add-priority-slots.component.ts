@@ -137,7 +137,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 				this.createForm(prioritySlot);
 			});
 
-		this.userApiService.staffs$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
+		this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
 			this.staffDetails = staffs;
 
 			const radiologist: NameValue[] = [];

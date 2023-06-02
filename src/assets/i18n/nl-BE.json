@@ -409,7 +409,37 @@
 	"LogoutConfirmation": "Bevestiging Uitloggen",
 	"Areyousurewanttologout": "Ben je zeker dat je deze sessie wil verlaten?",
 	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar",
-	"CanNotAddAppointmentOnPastDate": "Kan geen afspraak toevoegen op verleden tijd"
+	"CanNotAddAppointmentOnPastDate": "Kan geen afspraak toevoegen op verleden tijd",
+
+	"DESIGN_SYSTEM": {
+		"NAVIGATION_BAR": {
+			"PROFILE": "Profiel",
+			"LOG_OUT": "Uitloggen",
+			"SETTINGS": "instellingen",
+			"MORE": "Meer",
+			"LESS": "Minder",
+			"POWERED_BY": "Aangedreven door",
+			"TENANTS": "Taal",
+			"BADGE_TEXT": {
+				"SUCCESS": "Succes",
+				"WARNING": "Waarschuwing",
+				"ERROR": "Fout",
+				"NEW": "Nieuw",
+				"INFO": "Info"
+			},
+			"SHOW_ALL": "Toon alles",
+			"DISMISS_ALL": "Verwijder alle",
+			"NO_ITEMS": "Geen items te tonen"
+		},
+		"ERROR": {
+			"REQUIRED_FIELD": "Dit veld is vereist"
+		},
+		"INPUT_DROPDOWN": {
+			"SELECT_ALL": "Selecteer alle",
+			"NO_ITEMS": "Geen items gevonden",
+			"LOADING": "Loaden"
+		}
+	}
 }
 
 

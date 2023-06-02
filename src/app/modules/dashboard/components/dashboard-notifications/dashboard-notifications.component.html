@@ -15,7 +15,7 @@
     </div> -->
   </section>
 
-  <section class="d-flex flex-column doctor-list-wrapper" *ngIf="filteredNotifications$$ | async as notifications">
+  <section class="d-flex flex-column doctor-list-wrapper" *ngIf="filteredNotifications$$ | async as notifications" infiniteScroll [scrollWindow]="false" (scrolled)="onScroll()">
     <div *ngFor="let notification of notifications; let i = index;"
          class="d-flex dfm-gap-16 justify-content-between text-sm dfm-py-16 notification-mobile-view"
          [ngClass]="{

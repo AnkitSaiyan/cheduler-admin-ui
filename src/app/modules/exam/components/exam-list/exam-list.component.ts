@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnIn
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
@@ -14,13 +14,19 @@ import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../..
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { Exam } from '../../../../shared/models/exam.model';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { TranslateService } from '@ngx-translate/core';
 import { Permission } from 'src/app/shared/models/permission.model';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
-// import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { PaginationData } from "../../../../shared/models/base-response.model";
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
+
+const ColumnIdToKey = {
+  1: 'name',
+  2: 'expensive',
+  3: 'status'
+}
 
 @Component({
   selector: 'dfm-exam-list',
@@ -38,21 +44,33 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   @ViewChild('tableWrapper')
   private tableWrapper!: ElementRef;
 
-  public searchControl = new FormControl('', []);
+  private exams$$: BehaviorSubject<Exam[]>;
 
-  public downloadDropdownControl = new FormControl('', []);
-
-  public columns: string[] = ['Name', 'Expensive', 'Status', 'Actions'];
-
-  public downloadItems: DownloadType[] = [];
-
-  private exams$$: BehaviorSubject<any[]>;
-
-  public filteredExams$$: BehaviorSubject<any[]>;
+  public filteredExams$$: BehaviorSubject<Exam[]>;
 
   public clearSelected$$ = new Subject<void>();
 
   public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
+
+  public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+    items: [],
+    isInitialLoading: true,
+    isLoadingMore: false,
+  });
+
+  public searchControl = new FormControl('', []);
+
+  public downloadDropdownControl = new FormControl('', []);
+
+  private columns: string[] = ['Name', 'Expensive', 'Status'];
+
+  public tableHeaders: DfmTableHeader[] = [
+    { id: '1', title: 'Name', isSortable: true },
+    { id: '2', title: 'Expensive', isSortable: true },
+    { id: '3', title: 'Status', isSortable: true },
+  ];
+
+  public downloadItems: DownloadType[] = [];
 
   public selectedExamIDs: string[] = [];
 
@@ -65,6 +83,8 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   public statuses = Statuses;
 
   public readonly Permission = Permission;
+
+  private paginationData: PaginationData | undefined;
 
   constructor(
     private examApiSvc: ExamApiService,
@@ -79,8 +99,8 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     public permissionSvc: PermissionService,
   ) {
     super();
-    this.exams$$ = new BehaviorSubject<any[]>([]);
-    this.filteredExams$$ = new BehaviorSubject<any[]>([]);
+    this.exams$$ = new BehaviorSubject<Exam[]>([]);
+    this.filteredExams$$ = new BehaviorSubject<Exam[]>([]);
   }
 
   public ngOnInit(): void {
@@ -88,10 +108,30 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
       next: (items) => (this.downloadItems = items)
     });
 
+    this.filteredExams$$.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
+      this.tableData$$.next({
+        items: value,
+        isInitialLoading: false,
+        isLoading: false,
+        isLoadingMore: false
+      });
+    });
+
+    this.exams$$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (exams) => this.filteredExams$$.next([...exams])
+    });
+
     this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (exams) => {
-        this.exams$$.next(exams);
-        this.filteredExams$$.next(exams);
+      next: (examsBase) => {
+        if (this.paginationData && this.paginationData.pageNo < examsBase.metaData.pagination.pageNo) {
+          this.exams$$.next([...this.exams$$.value, ...examsBase.data]);
+        } else {
+          this.exams$$.next(examsBase.data);
+        }
+        this.paginationData = examsBase.metaData.pagination;
+      },
+      error: (e) => {
+        this.exams$$.next([]);
       }
     });
 
@@ -120,7 +160,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
           this.downloadSvc.downloadJsonAs(
             downloadAs as DownloadAsType,
-            this.columns.slice(0, -1),
+            this.columns,
             this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), Translate[StatusToName[+ex.status]][this.selectedLang]]),
             'exams',
           );
@@ -158,26 +198,24 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
       });
 
     combineLatest([this.shareDataService.getLanguage$(), this.permissionSvc.permissionType$])
-			.pipe(takeUntil(this.destroy$$))
-			.subscribe({
-				next: ([lang]) => {
-					this.selectedLang = lang;
-					this.columns = [Translate.Name[lang], Translate.Expensive[lang], Translate.Status[lang]];
-					if (this.permissionSvc.isPermitted([Permission.UpdateExams, Permission.DeleteExams])) {
-						this.columns = [...this.columns, Translate.Actions[lang]];
-					}
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe({
+          next: ([lang]) => {
+              this.selectedLang = lang;
 
-					// eslint-disable-next-line default-case
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						case DUTCH_BE:
-							this.statuses = StatusesNL;
-							break;
-					}
-				},
-			});
+              this.tableHeaders = this.tableHeaders.map((h, i) => ({
+                ...h, title: Translate[this.columns[i]][lang]
+              }));
+
+              switch (lang) {
+                  case ENG_BE:
+                      this.statuses = Statuses;
+                      break;
+                default:
+                      this.statuses = StatusesNL;
+              }
+          },
+      });
   }
 
   public override ngOnDestroy() {
@@ -192,13 +230,16 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
   private handleSearch(searchText: string): void {
     this.filteredExams$$.next([
       ...this.exams$$.value.filter((exam) => {
-        let status: any;
-        if (exam.status === 1) status = this.translate.instant('Active');
-        if (exam.status === 0) status = this.translate.instant('Inactive');
+        let status: string;
+
+        if (exam.status === 1) {
+          status = this.translate.instant('Active');
+        } else {
+          status = this.translate.instant('Inactive');
+        }
+
         return (
           exam.name?.toLowerCase()?.includes(searchText) ||
-          exam.lastname?.toLowerCase()?.includes(searchText) ||
-          exam.email?.toLowerCase()?.includes(searchText) ||
           status?.toLowerCase()?.startsWith(searchText)
         );
       }),
@@ -231,7 +272,11 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
         take(1),
       )
       .subscribe({
-        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang])
+        next: () => {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang]);
+          // filtering out deleted exam
+          this.exams$$.next([...this.exams$$.value.filter((exam) => +exam.id !== +id)]);
+        }
       });
   }
 
@@ -241,7 +286,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
   public copyToClipboard() {
     try {
-      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+      let dataString = `${this.columns.join('\t')}\n`;
 
       this.filteredExams$$.value.forEach((exam: Exam) => {
         dataString += `${exam.name}\t${exam.expensive}\t${StatusToName[exam.status]}\n`;
@@ -283,10 +328,9 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
       options: { fullscreen: true },
       data: {
         items: [
-          ...this.exams$$.value.map(({ id, firstname, lastname, email, status }) => ({
-            name: `${firstname} ${lastname}`,
-            description: email,
-            key: `${firstname} ${lastname} ${email} ${Statuses[+status]}`,
+          ...this.exams$$.value.map(({ id, name, status }) => ({
+            name: `${name}`,
+            key: `${name} ${Statuses[+status]}`,
             value: id,
           })),
         ],
@@ -307,9 +351,22 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
     result.forEach((item) => ids.add(+item.value));
     this.filteredExams$$.next([...this.exams$$.value.filter((exam: Exam) => ids.has(+exam.id))]);
   }
-  private clearDownloadDropdown() {
-    setTimeout(() => {
+
+  private clearDownloadDropdown(): void {
+    const timeout = setTimeout(() => {
       this.downloadDropdownControl.setValue('');
+      clearTimeout(timeout);
     }, 0);
+  }
+
+  public onScroll(e: undefined): void {
+    if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+      this.examApiSvc.pageNo = this.paginationData.pageNo + 1;
+      this.tableData$$.value.isLoadingMore = true;
+    }
+  }
+
+  public onSort(e: DfmTableHeader): void {
+    this.filteredExams$$.next(GeneralUtils.SortArray(this.filteredExams$$.value, e.sort, ColumnIdToKey[e.id]));
   }
 }

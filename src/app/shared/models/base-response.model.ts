@@ -27,6 +27,16 @@ export interface BaseResponse<T> {
   statusCode: HttpStatusCodes;
   statusText: HttpStatusName;
   message: string;
-  metaData: any;
+  metaData: MetaData;
   data: T;
+}
+
+export interface PaginationData {
+  rowCount: number;
+  pageCount: number;
+  pageNo: number;
+  pageSize: number;
+}
+export interface MetaData {
+  pagination: PaginationData
 }

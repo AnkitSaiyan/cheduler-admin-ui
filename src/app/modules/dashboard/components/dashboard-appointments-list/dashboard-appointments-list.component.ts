@@ -234,7 +234,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				},
 			});
 
-		this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe({
+		this.roomApiSvc.allRooms$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (rooms) => {
 				this.roomList = rooms.map(({ name, id }) => ({ name, value: id }));
 			},

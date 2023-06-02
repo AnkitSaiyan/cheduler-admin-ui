@@ -1,11 +1,19 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
+import {
+    BehaviorSubject,
+    combineLatest,
+    map,
+    Observable,
+    startWith,
+    Subject,
+    switchMap,
+    tap
+} from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { CreateExamRequestData, Exam } from '../../shared/models/exam.model';
-import { ChangeStatusRequestData, Status } from '../../shared/models/status.model';
-import { AvailabilityType } from '../../shared/models/user.model';
+import { ChangeStatusRequestData } from '../../shared/models/status.model';
 import { LoaderService } from './loader.service';
 
 @Injectable({
@@ -14,19 +22,33 @@ import { LoaderService } from './loader.service';
 export class ExamApiService {
   private refreshExams$$ = new Subject<void>();
 
+  private pageNo$$ = new BehaviorSubject<number>(1);
+
   private examUrl = `${environment.schedulerApiUrl}/exam`;
 
   constructor(private http: HttpClient, private loaderSvc: LoaderService) {}
 
-  public get exams$(): Observable<Exam[]> {
-    return combineLatest([this.refreshExams$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchExams()));
+    public set pageNo(pageNo: number) {
+      this.pageNo$$.next(pageNo);
+    }
+
+    public get pageNo(): number {
+      return this.pageNo$$.value;
+    }
+
+  public get exams$(): Observable<BaseResponse<Exam[]>> {
+    return combineLatest([
+        this.refreshExams$$.pipe(startWith('')),
+        this.pageNo$$
+    ]).pipe(switchMap(([_, pageNo]) => this.fetchExams(pageNo)));
   }
 
-  private fetchExams(): Observable<Exam[]> {
+  private fetchExams(pageNo: number): Observable<BaseResponse<Exam[]>> {
     this.loaderSvc.spinnerActivate();
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<Exam[]>>(this.examUrl).pipe(
-      map((response) => response.data),
+
+    const params = new HttpParams().append('pageNo', pageNo);
+    return this.http.get<BaseResponse<Exam[]>>(this.examUrl, { params }).pipe(
       tap(() => {
         this.loaderSvc.deactivate();
         this.loaderSvc.spinnerDeactivate();
@@ -39,7 +61,7 @@ export class ExamApiService {
     return this.http.put<BaseResponse<any>>(`${this.examUrl}/updateexamstatus`, requestData).pipe(
       map((resp) => resp?.data),
       tap(() => {
-        this.refreshExams$$.next();
+        this.pageNo$$.next(1);
         this.loaderSvc.deactivate();
       }),
     );
@@ -50,7 +72,7 @@ export class ExamApiService {
     return this.http.delete<BaseResponse<Boolean>>(`${this.examUrl}/${examID}`).pipe(
       map((response) => response.data),
       tap(() => {
-        this.refreshExams$$.next();
+        // this.refreshExams$$.next();
         this.loaderSvc.deactivate();
       }),
     );
@@ -62,7 +84,7 @@ export class ExamApiService {
     return this.http.get<BaseResponse<Exam>>(`${this.examUrl}/${examID}`).pipe(
       map((response) => response.data),
       tap(() => {
-        this.refreshExams$$.next();
+        // this.refreshExams$$.next();
         this.loaderSvc.deactivate();
         this.loaderSvc.spinnerDeactivate();
       }),
@@ -74,7 +96,7 @@ export class ExamApiService {
     return this.http.post<BaseResponse<Exam>>(`${this.examUrl}`, requestData).pipe(
       map((response) => response?.data),
       tap(() => {
-        this.refreshExams$$.next();
+        this.pageNo$$.next(1);
         this.loaderSvc.deactivate();
       }),
     );
@@ -86,7 +108,7 @@ export class ExamApiService {
     return this.http.put<BaseResponse<Exam>>(`${this.examUrl}/${id}`, restData).pipe(
       map((response) => response.data),
       tap(() => {
-        this.refreshExams$$.next();
+        this.pageNo$$.next(1);
         this.loaderSvc.deactivate();
       }),
     );

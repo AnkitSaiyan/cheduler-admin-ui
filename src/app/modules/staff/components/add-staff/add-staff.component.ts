@@ -161,9 +161,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
         this.userApiSvc.staffTypes$.pipe(takeUntil(this.destroy$$)).subscribe((staffTypes) => this.staffTypes$$.next(staffTypes));
 
-        this.examApiSvc.exams$
+        this.examApiSvc.allExams$
             .pipe(
-                map((exams) => exams.filter((exam) => !!exam.status).map(({name, id}) => ({
+                map((exams) => exams.map(({name, id}) => ({
                     name,
                     value: id.toString()
                 }))),
@@ -348,7 +348,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         addStaffReqData.id = Number.isNaN(+this.staffID) ? 0 : +this.staffID;
 
         this.userApiSvc
-            .upsertUser$(addStaffReqData)
+            .upsertUser$(addStaffReqData, 'staff')
             .pipe(takeUntil(this.destroy$$))
             .subscribe(() => {
                 if (this.staffID) {

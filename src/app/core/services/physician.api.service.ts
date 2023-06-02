@@ -1,6 +1,17 @@
 import { Injectable } from '@angular/core';
-import { catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import {
+    BehaviorSubject,
+    catchError,
+    combineLatest,
+    map,
+    Observable,
+    of,
+    startWith,
+    Subject,
+    switchMap,
+    tap
+} from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { AddPhysicianRequestData, Physician } from '../../shared/models/physician.model';
@@ -15,17 +26,37 @@ export class PhysicianApiService {
 
   private refreshPhysicians$$ = new Subject<void>();
 
+  private pageNo$$ = new BehaviorSubject<number>(1);
+
   constructor(private http: HttpClient, private loaderSvc: LoaderService) {}
 
-  public get physicians$(): Observable<Physician[]> {
-    return combineLatest([this.refreshPhysicians$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllPhysicians()));
+    public set pageNo(pageNo: number) {
+        this.pageNo$$.next(pageNo);
+    }
+
+    public get pageNo(): number {
+        return this.pageNo$$.value;
+    }
+
+  public get physicians$(): Observable<BaseResponse<Physician[]>> {
+    return combineLatest([
+        this.refreshPhysicians$$.pipe(startWith('')),
+        this.pageNo$$
+    ]).pipe(switchMap(([_, pageNo]) => this.fetchAllPhysicians(pageNo)));
   }
 
-  private fetchAllPhysicians(): Observable<Physician[]> {
+  private fetchAllPhysicians(pageNo: number): Observable<BaseResponse<Physician[]>> {
     this.loaderSvc.spinnerActivate();
     this.loaderSvc.activate();
-    return this.http.get<BaseResponse<Physician[]>>(`${environment.schedulerApiUrl}/doctor`).pipe(
-      map((response) => response.data?.map((p) => ({ ...p, fullName: `${p.firstname} ${p.lastname}` })).sort((p1, p2) => p2.id - p1.id)),
+
+    const params = new HttpParams().append('pageNo', pageNo);
+    return this.http.get<BaseResponse<Physician[]>>(`${environment.schedulerApiUrl}/doctor`, { params }).pipe(
+      map((response) => {
+          return {
+              ...response,
+              data: response.data?.map((p) => ({ ...p, fullName: `${p.firstname} ${p.lastname}` })).sort((p1, p2) => p2.id - p1.id)
+          }
+      }),
       tap(() => {
         this.loaderSvc.deactivate();
         this.loaderSvc.spinnerDeactivate();
@@ -53,7 +84,7 @@ export class PhysicianApiService {
     return this.http.put<BaseResponse<any>>(`${this.doctorUrl}/updatedoctorstatus`, requestData).pipe(
       map((resp) => resp?.data),
       tap(() => {
-        this.refreshPhysicians$$.next();
+        this.pageNo$$.next(1);
         this.loaderSvc.deactivate();
       }),
     );
@@ -64,7 +95,7 @@ export class PhysicianApiService {
     return this.http.post<BaseResponse<Physician>>(`${environment.schedulerApiUrl}/doctor`, requestData).pipe(
       map((response) => response.data),
       tap(() => {
-        this.refreshPhysicians$$.next();
+        this.pageNo$$.next(1);
         this.loaderSvc.deactivate();
       }),
     );
@@ -76,7 +107,7 @@ export class PhysicianApiService {
     return this.http.put<BaseResponse<Physician>>(`${environment.schedulerApiUrl}/doctor/${id}`, restData).pipe(
       map((response) => response.data),
       tap(() => {
-        this.refreshPhysicians$$.next();
+        this.pageNo$$.next(1);
         this.loaderSvc.deactivate();
       }),
     );
@@ -87,9 +118,26 @@ export class PhysicianApiService {
     return this.http.delete<BaseResponse<Boolean>>(`${environment.schedulerApiUrl}/doctor/${physicianID}`).pipe(
       map((response) => response.data),
       tap(() => {
-        this.refreshPhysicians$$.next();
+        // this.refreshPhysicians$$.next();
         this.loaderSvc.deactivate();
       }),
     );
   }
+
+    public get allPhysicians$(): Observable<Physician[]> {
+        return combineLatest([this.refreshPhysicians$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllExams$()));
+    }
+
+    private fetchAllExams$(): Observable<Physician[]> {
+        this.loaderSvc.activate();
+        this.loaderSvc.spinnerActivate();
+
+        return this.http.get<BaseResponse<Physician[]>>(`${environment.schedulerApiUrl}/common/getdoctors`).pipe(
+            map((response) => response.data?.map((p) => ({ ...p, fullName: `${p.firstname} ${p.lastname}` })).sort((p1, p2) => p2.id - p1.id)),
+            tap(() => {
+                this.loaderSvc.deactivate();
+                this.loaderSvc.spinnerDeactivate();
+            }),
+        );
+    }
 }

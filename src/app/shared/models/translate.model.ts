@@ -18,6 +18,10 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Status',
 		[DUTCH_BE]: 'Status',
 	},
+	Role: {
+		[ENG_BE]: 'Role',
+		[DUTCH_BE]: 'Role'
+	},
 	Actions: {
 		[ENG_BE]: 'Actions',
 		[DUTCH_BE]: 'Acties',
