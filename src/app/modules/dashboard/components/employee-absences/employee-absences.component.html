@@ -26,7 +26,7 @@
     </div>
   </section>
 
-  <section class="d-flex flex-column dfm-gap-16" *ngIf="filteredAbsence$$ | async as employeeAbsences">
+  <section class="d-flex flex-column dfm-gap-16" *ngIf="filteredAbsence$$ | async as employeeAbsences" infiniteScroll [scrollWindow]="false" (scrolled)="onScroll()">
     <div *ngFor="let employee of employeeAbsences" class="d-flex align-items-center dfm-gap-8">
 
       <div class="rounded-circle avatar-container">
