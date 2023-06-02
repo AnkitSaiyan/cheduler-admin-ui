@@ -104,6 +104,16 @@ export class DashboardApiService extends DestroyableComponent {
 		return this.notificationPageNo$$.value;
 	}
 
+	private roomAbsencePageNo$$ = new BehaviorSubject<number>(1);
+
+	public set roomAbsencePageNo(pageNo: number) {
+		this.roomAbsencePageNo$$.next(pageNo);
+	}
+
+	public get roomAbsencePageNo(): number {
+		return this.roomAbsencePageNo$$.value;
+	}
+
 	repeatTypes = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 	trnalsatedRepeatedTypes: any[] = [];
@@ -202,14 +212,17 @@ export class DashboardApiService extends DestroyableComponent {
 		);
 	}
 
-	public get roomAbsence$(): Observable<Room[]> {
-		return combineLatest([this.refreshRoomAbsence$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRoomAbsence()));
+	public get roomAbsence$(): Observable<BaseResponse<Room[]>> {
+		return combineLatest([this.refreshRoomAbsence$$.pipe(startWith('')), this.roomAbsencePageNo$$]).pipe(
+			switchMap(([_, pageNo]) => this.fetchRoomAbsence(pageNo)),
+		);
 	}
 
-	private fetchRoomAbsence(): Observable<Room[]> {
+	private fetchRoomAbsence(pageNo: number): Observable<BaseResponse<Room[]>> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<Room[]>>(`${environment.schedulerApiUrl}/dashboard/roomabsences`).pipe(
-			map((response) => response.data),
+		const params = new HttpParams().append('pageNo', pageNo);
+		return this.http.get<BaseResponse<{ roomAbsence: Room[] }>>(`${environment.schedulerApiUrl}/dashboard/roomabsences`, { params }).pipe(
+			map((response) => ({ ...response, data: response.data?.roomAbsence })),
 			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
