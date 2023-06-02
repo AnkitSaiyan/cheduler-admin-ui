@@ -37,10 +37,6 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 
     private selectedLang$$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-    private refreshUsers$$: Subject<void> = new Subject<void>();
-
-    private refreshStaff$$: Subject<void> = new Subject<void>();
-
     private pageNoUser$$ = new BehaviorSubject<number>(1);
 
     private pageNoStaff$$ = new BehaviorSubject<number>(1);
@@ -117,11 +113,8 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
     }
 
     public get generalUsers$(): Observable<BaseResponse<User[]>> {
-        return combineLatest([
-            this.refreshUsers$$.pipe(startWith('')),
-            this.pageNoUser$$
-        ]).pipe(
-            switchMap(([_, pageNo]) => this.fetchUsers$(pageNo)),
+        return combineLatest([this.pageNoUser$$]).pipe(
+            switchMap(([pageNo]) => this.fetchUsers$(pageNo)),
         );
     }
 
@@ -139,16 +132,14 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
     }
 
     public get staffs$(): Observable<BaseResponse<User[]>> {
-        this.loaderSvc.activate();
-        return combineLatest([
-            this.refreshStaff$$.pipe(startWith('')),
-            this.pageNoStaff$$
-        ]).pipe(
-            switchMap(([_, pageNo]) => this.fetchStaffs(pageNo))
+        return combineLatest([this.pageNoStaff$$]).pipe(
+            switchMap(([pageNo]) => this.fetchStaffs$(pageNo))
         );
     }
 
     public get allStaffs$(): Observable<User[]> {
+        this.loaderSvc.activate();
+
         return this.http.get<BaseResponse<User[]>>(`${environment.schedulerApiUrl}/common/getstaff`).pipe(
             map((res) => res?.data?.map((u) => ({...u, fullName: `${u.firstname} ${u.lastname}`}))),
             tap(() => {
@@ -162,21 +153,17 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         this.loaderSvc.activate();
         this.loaderSvc.spinnerActivate();
 
-        return combineLatest([this.refreshUsers$$.pipe(startWith(''))]).pipe(
-            switchMap(() =>
-                this.http.get<BaseResponse<User>>(`${this.userUrl}/${userID}`).pipe(
-                    map((res) => res?.data),
-                    tap(() => {
-                        this.loaderSvc.deactivate();
-                        this.loaderSvc.spinnerDeactivate();
-                    }),
-                    catchError((e) => of({} as User)),
-                ),
-            ),
+        return this.http.get<BaseResponse<User>>(`${this.userUrl}/${userID}`).pipe(
+            map((res) => res?.data),
+            tap(() => {
+                this.loaderSvc.deactivate();
+                this.loaderSvc.spinnerDeactivate();
+            }),
+            catchError((e) => of({} as User)),
         );
     }
 
-    public upsertUser$(requestData: AddStaffRequestData, from: 'staff' | 'user'): Observable<User> {
+    public upsertUser$(requestData: AddStaffRequestData): Observable<User> {
         this.loaderSvc.activate();
 
         const {id, ...restData} = requestData;
@@ -188,15 +175,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 
         return this.http.post<BaseResponse<User>>(url, restData).pipe(
             map((res) => res?.data),
-            tap(() => {
-                if (from === 'staff') {
-                    // this.pageNoStaff$$.next(1);
-                } else {
-                    this.pageNoUser$$.next(1);
-                }
-
-                this.loaderSvc.deactivate();
-            }),
+            tap(() => this.loaderSvc.deactivate()),
         );
     }
 
@@ -204,25 +183,15 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         this.loaderSvc.activate();
         return this.http.delete<BaseResponse<Boolean>>(`${this.userUrl}/${userID}`).pipe(
             map((res) => res?.data),
-            tap(() => {
-                // this.refreshUsers$$.next();
-                this.loaderSvc.deactivate();
-            }),
+            tap(() => this.loaderSvc.deactivate()),
         );
     }
 
-    public changeUserStatus$(requestData: ChangeStatusRequestData[], from: 'staff' | 'user'): Observable<null> {
+    public changeUserStatus$(requestData: ChangeStatusRequestData[]): Observable<null> {
         this.loaderSvc.activate();
         return this.http.put<BaseResponse<any>>(`${this.userUrl}/updateuserstatus`, requestData).pipe(
             map((res) => res?.data),
-            tap(() => {
-                if (from === 'staff') {
-                    // this.pageNoStaff$$.next(1);
-                } else {
-                    this.pageNoUser$$.next(1);
-                }
-                this.loaderSvc.deactivate();
-            }),
+            tap(() => this.loaderSvc.deactivate()),
         );
     }
 
@@ -283,7 +252,9 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         );
     }
 
-    private fetchStaffs(pageNo: number): Observable<BaseResponse<User[]>> {
+    private fetchStaffs$(pageNo: number): Observable<BaseResponse<User[]>> {
+        this.loaderSvc.activate();
+
         const params = new HttpParams().append('pageNo', pageNo);
 
         return this.http.get<BaseResponse<User[]>>(`${this.userUrl}/getstaff`, { params }).pipe(
