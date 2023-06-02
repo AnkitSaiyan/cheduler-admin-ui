@@ -50,6 +50,16 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	private appointmentUrl = `${environment.schedulerApiUrl}/appointment`;
 
+	private pageNo$$ = new BehaviorSubject<number>(1);
+
+	public set pageNo(pageNo: number) {
+		this.pageNo$$.next(pageNo);
+	}
+
+	public get pageNo(): number {
+		return this.pageNo$$.value;
+	}
+
 	constructor(
 		private physicianApiSvc: PhysicianApiService,
 		private http: HttpClient,
@@ -58,7 +68,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		private shareDataSvc: ShareDataService,
 		private userManagementSvc: UserManagementApiService,
 		private datePipe: DatePipe,
-		private signalRService :SignalrService
+		private signalRService: SignalrService,
 	) {
 		super();
 		this.shareDataSvc
@@ -382,13 +392,18 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public get upcomingAppointment$(): Observable<Appointment[]> {
+	public get upcomingAppointment$(): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
 
-		return this.http.get<BaseResponse<{ upcomingAppointments: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`).pipe(
+		return combineLatest([this.pageNo$$]).pipe(
+			switchMap(() => {
+				return this.http.get<BaseResponse<{ upcomingAppointments: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`);
+			}),
 			switchMap((response) => {
 				const upcoming = response.data?.upcomingAppointments;
-				return !upcoming || !upcoming.length ? of([]) : this.AttachPatientDetails(upcoming);
+				return !upcoming || !upcoming.length
+					? of({ ...response, data: [] })
+					: this.AttachPatientDetails(upcoming).pipe(map((data) => ({ ...response, data })));
 			}),
 			tap(() => this.loaderSvc.deactivate()),
 		);

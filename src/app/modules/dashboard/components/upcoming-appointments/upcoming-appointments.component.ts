@@ -1,9 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { DfmDatasource } from 'diflexmo-angular-design';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { Appointment } from 'src/app/shared/models/appointment.model';
+import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 
 @Component({
@@ -17,6 +19,14 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 	public filteredUpcommingAppointments$$: BehaviorSubject<any[]>;
 
 	public noDataFound: boolean = false;
+
+	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
+
+	private paginationData: PaginationData | undefined;
 
 	// public upcomingAppointments: any[] = [
 	//   {
@@ -62,11 +72,28 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 	}
 
 	ngOnInit(): void {
-		this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-			if (appointments.length > 0) {
-				this.upcomingAppointments$$.next(appointments);
-				this.filteredUpcommingAppointments$$.next(appointments);
-				this.noDataFound = false;
+		this.filteredUpcommingAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => {
+				this.tableData$$.next({
+					items,
+					isInitialLoading: false,
+					isLoading: false,
+					isLoadingMore: false,
+				});
+			},
+		});
+
+		this.upcomingAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (absences) => this.filteredUpcommingAppointments$$.next([...absences]),
+		});
+		this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointmentsBase) => {
+			if (appointmentsBase.data.length > 0) {
+				if (this.paginationData && this.paginationData.pageNo < appointmentsBase.metaData.pagination.pageNo) {
+					this.upcomingAppointments$$.next([...this.upcomingAppointments$$.value, ...appointmentsBase.data]);
+				} else {
+					this.upcomingAppointments$$.next(appointmentsBase.data);
+				}
+				this.paginationData = appointmentsBase.metaData.pagination;
 			} else {
 				this.noDataFound = true;
 			}
@@ -82,7 +109,17 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 	redirectToCalender() {
 		this.router.navigate(['/', 'appointment']);
 	}
+
+	public onScroll(): void {
+		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+			this.appointmentApiService.pageNo = this.appointmentApiService.pageNo + 1;
+		}
+	}
 }
+
+
+
+
 
 
 
