@@ -15,7 +15,7 @@ import {
 } from 'rxjs';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from '@azure/msal-angular';
-import {User, UserRoleEnum, UserType} from '../../shared/models/user.model';
+import {User, UserRoleEnum} from '../../shared/models/user.model';
 import {NameValue} from "../../shared/components/search-modal.component";
 import {PermissionService} from "./permission.service";
 import {environment} from "../../../environments/environment";
@@ -39,22 +39,12 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 
     private refreshUsers$$: Subject<void> = new Subject<void>();
 
-    private pageNo$$ =  new BehaviorSubject<number>(1);
+    private refreshStaff$$: Subject<void> = new Subject<void>();
 
-    private readonly userRoles: NameValue[] = [
-        {
-            name: 'Admin',
-            value: UserRoleEnum.Admin
-        },
-        {
-            name: 'General User',
-            value: UserRoleEnum.GeneralUser
-        },
-        {
-            name: 'Reader',
-            value: UserRoleEnum.Reader
-        }
-    ];
+    private pageNoUser$$ = new BehaviorSubject<number>(1);
+
+    private pageNoStaff$$ = new BehaviorSubject<number>(1);
+
     private readonly staffTypes$$ = new BehaviorSubject<NameValue[]>([
         {
             name: StaffType.Radiologist,
@@ -73,6 +63,21 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
             value: StaffType.Secretary,
         },
     ]);
+
+    private readonly userRoles: NameValue[] = [
+        {
+            name: 'Admin',
+            value: UserRoleEnum.Admin
+        },
+        {
+            name: 'General User',
+            value: UserRoleEnum.GeneralUser
+        },
+        {
+            name: 'Reader',
+            value: UserRoleEnum.Reader
+        }
+    ];
 
     public userIdToRoleMap = new Map<string, UserRoleEnum>();
 
@@ -95,43 +100,61 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
             });
     }
 
-    public set pageNo(pageNo: number) {
-        this.pageNo$$.next(pageNo);
+    public set pageNoStaff(pageNo: number) {
+        this.pageNoStaff$$.next(pageNo);
     }
 
-    public get pageNo(): number {
-        return this.pageNo$$.value;
+    public get pageNoStaff(): number {
+        return this.pageNoStaff$$.value;
+    }
+
+    public set pageNoUser(pageNo: number) {
+        this.pageNoUser$$.next(pageNo);
+    }
+
+    public get pageNoUser(): number {
+        return this.pageNoUser$$.value;
     }
 
     public get generalUsers$(): Observable<User[]> {
-        return this.getUsersByType(UserType.General).pipe(
-            map((res) => res.data)
+        return combineLatest([
+            this.refreshUsers$$.pipe(startWith('')),
+            this.pageNoUser$$
+        ]).pipe(
+            switchMap(([_, pageNo]) => this.fetchUsers$(pageNo)),
+            map((u) => u.data)
         );
     }
 
     public get allGeneralUsers$(): Observable<User[]> {
-        return this.fetchAllUsers$.pipe(map((users) => {
-            return users.filter((user) => user.userType === UserType.General);
-        }));
+        this.loaderSvc.activate();
+        this.loaderSvc.spinnerActivate();
+
+        return this.http.get<BaseResponse<User[]>>(`${environment.schedulerApiUrl}/common/getusers`).pipe(
+            map((res) => res?.data?.map((u) => ({...u, fullName: `${u.firstname} ${u.lastname}`}))),
+            tap(() => {
+                this.loaderSvc.deactivate();
+                this.loaderSvc.spinnerDeactivate();
+            }),
+        );
     }
 
     public get staffs$(): Observable<BaseResponse<User[]>> {
-        return this.getUsersByType(UserType.Assistant, UserType.Radiologist, UserType.Secretary, UserType.Nursing);
+        this.loaderSvc.activate();
+        return combineLatest([
+            this.refreshStaff$$.pipe(startWith('')),
+            this.pageNoStaff$$
+        ]).pipe(
+            switchMap(([_, pageNo]) => this.fetchStaffs(pageNo))
+        );
     }
 
     public get allStaffs$(): Observable<User[]> {
-        return this.fetchAllUsers$.pipe(map((users) => {
-            return users.filter((user) => [UserType.Nursing, UserType.Assistant, UserType.Radiologist, UserType.Secretary].includes(user.userType));
-        }));
-    }
-
-    public getUsersByType(...userTypes: UserType[]): Observable<BaseResponse<User[]>> {
-        return this.users$.pipe(
-            map((users) => {
-                return {
-                    ...users,
-                    data: users.data.filter((user) => userTypes.includes(user.userType))
-                }
+        return this.http.get<BaseResponse<User[]>>(`${environment.schedulerApiUrl}/common/getstaff`).pipe(
+            map((res) => res?.data?.map((u) => ({...u, fullName: `${u.firstname} ${u.lastname}`}))),
+            tap(() => {
+                this.loaderSvc.deactivate();
+                this.loaderSvc.spinnerDeactivate();
             }),
         );
     }
@@ -233,45 +256,39 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         return this.http.post<any>(`${environment.schedulerApiUrl}/userroles?userId=${userId}`, JSON.stringify(roleName), {headers});
     }
 
-    private get fetchAllUsers$(): Observable<User[]> {
+    private fetchUsers$(pageNo: number): Observable<BaseResponse<User[]>> {
         this.loaderSvc.activate();
-        this.loaderSvc.spinnerActivate();
 
-        return combineLatest([this.refreshUsers$$.pipe(startWith(''))]).pipe(
-            switchMap(() => {
-                return this.http.get<BaseResponse<User[]>>(`${environment.schedulerApiUrl}/common/getusers`).pipe(
-                    map((res) => res?.data?.map((u) => ({...u, fullName: `${u.firstname} ${u.lastname}`}))),
-                    tap(() => {
-                        this.loaderSvc.deactivate();
-                        this.loaderSvc.spinnerDeactivate();
-                    }),
-                );
+        const params = new HttpParams().append('pageNo', pageNo);
+
+        return this.http.get<BaseResponse<User[]>>(this.userUrl, { params }).pipe(
+            map((res) => {
+                return {
+                    ...res,
+                    data: res?.data?.map((user) => ({
+                        ...user,
+                        fullName: `${user.firstname} ${user.lastname}`
+                    }))
+                }
             }),
+            tap(() => this.loaderSvc.deactivate()),
         );
     }
 
-    private get users$(): Observable<BaseResponse<User[]>> {
-        this.loaderSvc.activate();
+    private fetchStaffs(pageNo: number): Observable<BaseResponse<User[]>> {
+        const params = new HttpParams().append('pageNo', pageNo);
 
-        return combineLatest([
-            this.refreshUsers$$.pipe(startWith('')),
-            this.pageNo$$
-        ]).pipe(
-            switchMap(([_, pageNo]) => {
-                const params = new HttpParams().append('pageNo', pageNo);
-                return this.http.get<BaseResponse<User[]>>(this.userUrl, { params }).pipe(
-                    map((res) => {
-                        return {
-                            ...res,
-                            data: res?.data?.map((user) => ({
-                                ...user,
-                                fullName: `${user.firstname} ${user.lastname}`
-                            }))
-                        }
-                    }),
-                    tap(() => this.loaderSvc.deactivate()),
-                );
+        return this.http.get<BaseResponse<User[]>>(`${this.userUrl}/getstaff`, { params }).pipe(
+            map((res) => {
+                return {
+                    ...res,
+                    data: res?.data?.map((user) => ({
+                        ...user,
+                        fullName: `${user.firstname} ${user.lastname}`
+                    }))
+                }
             }),
+            tap(() => this.loaderSvc.deactivate()),
         );
     }
 }

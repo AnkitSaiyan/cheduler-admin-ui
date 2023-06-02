@@ -383,7 +383,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 	public onScroll(e: undefined): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.userApiSvc.pageNo = this.paginationData.pageNo + 1;
+			this.userApiSvc.pageNoStaff = this.userApiSvc.pageNoStaff + 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}
 	}
