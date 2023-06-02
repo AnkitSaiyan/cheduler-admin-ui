@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, startWith, Subject, switchMap, tap, takeUntil, of } from 'rxjs';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -13,14 +13,14 @@ import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
 import { Translate } from '../../shared/models/translate.model';
 import { Notification } from '../../shared/models/notification.model';
-import {AppointmentApiService} from "./appointment-api.service";
-import {UserManagementApiService} from "./user-management-api.service";
-import {SchedulerUser} from "../../shared/models/user.model";
+import { AppointmentApiService } from './appointment-api.service';
+import { UserManagementApiService } from './user-management-api.service';
+import { SchedulerUser } from '../../shared/models/user.model';
 
 export interface PostIt {
-  id: number,
-  message: string;
-  createdAt: Date;
+	id: number;
+	message: string;
+	createdAt: Date;
 }
 
 @Injectable({
@@ -94,6 +94,16 @@ export class DashboardApiService extends DestroyableComponent {
 
 	private selectedLang$$ = new BehaviorSubject<string>('');
 
+	private notificationPageNo$$ = new BehaviorSubject<number>(1);
+
+	public set notificationPageNo(pageNo: number) {
+		this.notificationPageNo$$.next(pageNo);
+	}
+
+	public get notificationPageNo(): number {
+		return this.notificationPageNo$$.value;
+	}
+
 	repeatTypes = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 	trnalsatedRepeatedTypes: any[] = [];
@@ -133,18 +143,21 @@ export class DashboardApiService extends DestroyableComponent {
 		);
 	}
 
-	public get notification$(): Observable<Notification[]> {
-		return combineLatest([this.refreshNotification$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllNotifications()));
+	public get notification$(): Observable<BaseResponse<Notification[]>> {
+		return combineLatest([this.refreshNotification$$.pipe(startWith('')), this.notificationPageNo$$]).pipe(
+			switchMap(([_, pageNo]) => this.fetchAllNotifications(pageNo)),
+		);
 	}
 
-	private fetchAllNotifications(): Observable<Notification[]> {
+	private fetchAllNotifications(pageNo: number): Observable<BaseResponse<Notification[]>> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<{ notifications: Notification[] }>>(`${environment.schedulerApiUrl}/dashboard/notifications`).pipe(
+		const params = new HttpParams().append('pageNo', pageNo);
+		return this.http.get<BaseResponse<{ notifications: Notification[] }>>(`${environment.schedulerApiUrl}/dashboard/notifications`, { params }).pipe(
 			switchMap((response) => {
 				const notifications = response?.data?.notifications;
 
 				if (!notifications || !notifications.length) {
-					return of([]);
+					return of({ ...response, data: [] });
 				}
 
 				const patientIds = new Set<string>();
@@ -155,7 +168,7 @@ export class DashboardApiService extends DestroyableComponent {
 				});
 
 				if (!patientIds.size) {
-					return of(notifications);
+					return of({ ...response, data: notifications });
 				}
 
 				return this.userManagementApiSvc.getPatientByIds$([...patientIds]).pipe(
@@ -170,7 +183,8 @@ export class DashboardApiService extends DestroyableComponent {
 								: {}),
 						}));
 					}),
-				) as Observable<Notification[]>;
+					map((data) => ({ ...response, data })),
+				) as Observable<BaseResponse<Notification[]>>;
 			}),
 			tap(() => this.loaderSvc.deactivate()),
 		);
