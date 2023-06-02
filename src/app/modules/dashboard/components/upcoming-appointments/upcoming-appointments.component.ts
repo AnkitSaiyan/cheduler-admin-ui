@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DfmDatasource } from 'diflexmo-angular-design';
 import { BehaviorSubject, takeUntil } from 'rxjs';
-import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { Appointment } from 'src/app/shared/models/appointment.model';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
@@ -14,11 +13,9 @@ import { AppointmentApiService } from '../../../../core/services/appointment-api
 	styleUrls: ['./upcoming-appointments.component.scss'],
 })
 export class UpcomingAppointmentsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-	private upcomingAppointments$$: BehaviorSubject<any[]>;
+	private upcomingAppointments$$: BehaviorSubject<Appointment[]>;
 
-	public filteredUpcommingAppointments$$: BehaviorSubject<any[]>;
-
-	public noDataFound: boolean = false;
+	public filteredUpcomingAppointments$$: BehaviorSubject<Appointment[]>;
 
 	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
@@ -26,53 +23,18 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 		isLoadingMore: false,
 	});
 
+	public noDataFound: boolean = false;
+
 	private paginationData: PaginationData | undefined;
 
-	// public upcomingAppointments: any[] = [
-	//   {
-	//     name: 'Angela Bower',
-	//     time: (new Date()).setHours((new Date()).getHours() + 0.5),
-	//     roomNo: 2,
-	//     post: 'Pathologist',
-	//     avatar: ''
-	//   },
-	//   {
-	//     name: 'Angela Bower',
-	//     time: (new Date()).setHours((new Date()).getHours() + 0.5),
-	//     roomNo: 4,
-	//     post: 'Pathologist',
-	//     avatar: ''
-	//   },
-	//   {
-	//     name: 'Murdock',
-	//     time: (new Date()).setHours((new Date()).getHours() + 0.5),
-	//     roomNo: 3,
-	//     post: 'Surgeon',
-	//     avatar: ''
-	//   },
-	//   {
-	//     name: 'April Curtis',
-	//     time: (new Date()).setHours((new Date()).getHours() + 0.5),
-	//     roomNo: 11,
-	//     post: 'Cardiologist',
-	//     avatar: ''
-	//   },
-	//   {
-	//     name: 'Lorem',
-	//     time: (new Date()).setHours((new Date()).getHours() + 0.5),
-	//     roomNo: 8,
-	//     post: 'Neurologist',
-	//     avatar: ''
-	//   }
-	// ]
 	constructor(private appointmentApiService: AppointmentApiService, private router: Router) {
 		super();
 		this.upcomingAppointments$$ = new BehaviorSubject<any[]>([]);
-		this.filteredUpcommingAppointments$$ = new BehaviorSubject<any[]>([]);
+		this.filteredUpcomingAppointments$$ = new BehaviorSubject<any[]>([]);
 	}
 
 	ngOnInit(): void {
-		this.filteredUpcommingAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
+		this.filteredUpcomingAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => {
 				this.tableData$$.next({
 					items,
@@ -84,18 +46,21 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 		});
 
 		this.upcomingAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (absences) => this.filteredUpcommingAppointments$$.next([...absences]),
+			next: (absences) => this.filteredUpcomingAppointments$$.next([...absences]),
 		});
-		this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointmentsBase) => {
-			if (appointmentsBase.data.length > 0) {
-				if (this.paginationData && this.paginationData.pageNo < appointmentsBase.metaData.pagination.pageNo) {
-					this.upcomingAppointments$$.next([...this.upcomingAppointments$$.value, ...appointmentsBase.data]);
+
+		this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (appointmentsBase) => {
+				if (appointmentsBase.data.length > 0) {
+					if (this.paginationData && this.paginationData.pageNo < appointmentsBase.metaData.pagination.pageNo) {
+						this.upcomingAppointments$$.next([...this.upcomingAppointments$$.value, ...appointmentsBase.data]);
+					} else {
+						this.upcomingAppointments$$.next(appointmentsBase.data);
+					}
+					this.paginationData = appointmentsBase.metaData.pagination;
 				} else {
-					this.upcomingAppointments$$.next(appointmentsBase.data);
+					this.noDataFound = true;
 				}
-				this.paginationData = appointmentsBase.metaData.pagination;
-			} else {
-				this.noDataFound = true;
 			}
 		});
 	}
