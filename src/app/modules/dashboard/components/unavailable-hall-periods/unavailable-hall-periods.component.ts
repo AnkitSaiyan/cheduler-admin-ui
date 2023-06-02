@@ -35,10 +35,10 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 	public columns: string[] = ['RoomName', 'StartedAt', 'End', 'AbsenceTitle'];
 
 	public tableHeaders: DfmTableHeader[] = [
-		{ id: '1', title: 'RoomName', isSortable: true },
-		{ id: '2', title: 'StartedAt', isSortable: true },
+		{ id: '1', title: 'Room Name', isSortable: true },
+		{ id: '2', title: 'Started At', isSortable: true },
 		{ id: '3', title: 'End', isSortable: true },
-		{ id: '4', title: 'AbsenceTitle', isSortable: true },
+		{ id: '4', title: 'Absence Title', isSortable: true },
 	];
 
 	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
@@ -153,7 +153,6 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 		this.roomAbsence$$ = new BehaviorSubject<any[]>([]);
 		this.filteredRoomAbsence$$ = new BehaviorSubject<any[]>([]);
 		this.dashboardApiService.roomAbsencePageNo = 1;
-
 	}
 
 	ngOnInit(): void {
@@ -210,9 +209,9 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 					this.columns,
 					this.filteredRoomAbsence$$.value.map((ap: any) => [
 						ap?.roomName?.toString(),
-						ap?.absenceName?.toString(),
 						ap.startDate.toString(),
 						ap.endDate.toString(),
+						ap?.absenceName?.toString(),
 					]),
 					'unavailable-hall-period',
 				);
@@ -282,6 +281,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 		this.filteredRoomAbsence$$.next(GeneralUtils.SortArray(this.filteredRoomAbsence$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
 
 
 
