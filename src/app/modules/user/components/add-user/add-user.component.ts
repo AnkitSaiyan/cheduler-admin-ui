@@ -208,7 +208,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 				email: this.formValues.email ?? null,
 				userType: this.modalData.edit ? this.modalData.userDetails.userType : this.formValues.userType,
 				...(this.modalData.userDetails ? { id: this.modalData.userDetails.id } : {}),
-			});
+			}, 'user');
 		}
 
 		addUserObservable$.pipe(takeUntil(this.destroy$$)).subscribe({

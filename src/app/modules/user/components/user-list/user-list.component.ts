@@ -7,16 +7,15 @@ import {
     distinctUntilChanged,
     filter, from,
     interval,
-    map, observable,
+    map,
     Observable,
-    of,
     Subject,
     switchMap,
     take,
     takeUntil, tap
 } from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NotificationType, TableItem} from 'diflexmo-angular-design';
+import {DfmDatasource, DfmTableHeader, NotificationType, TableItem} from 'diflexmo-angular-design';
 import {NgbDropdown} from '@ng-bootstrap/ng-bootstrap';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
 import {ChangeStatusRequestData, Status, StatusToName} from '../../../../shared/models/status.model';
@@ -28,7 +27,7 @@ import {
     ConfirmActionModalData
 } from '../../../../shared/components/confirm-action-modal.component';
 import {NameValue, SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
-import {User, UserBase, UserRoleEnum, UserType} from '../../../../shared/models/user.model';
+import {User, UserBase, UserType} from '../../../../shared/models/user.model';
 import {DownloadAsType, DownloadService, DownloadType} from '../../../../core/services/download.service';
 import {AddUserComponent} from '../add-user/add-user.component';
 import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
@@ -42,6 +41,23 @@ import {UserApiService} from "../../../../core/services/user-api.service";
 import {RoleNamePipe} from "../../../../shared/pipes/role-name.pipe";
 import { AuthService } from 'src/app/core/services/auth.service';
 import { UserService } from 'src/app/core/services/user.service';
+import {BaseResponse, PaginationData} from "../../../../shared/models/base-response.model";
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
+
+const SchedulerColumnIdToKey = {
+	1: 'firstname',
+	2: 'lastname',
+	3: 'email',
+	4: 'Role',
+	5: 'Status'
+}
+
+const GeneralColumnIdToKey = {
+	1: 'firstname',
+	2: 'lastname',
+	3: 'email',
+	4: 'Status',
+}
 
 @Component({
 	selector: 'dfm-user-list',
@@ -49,29 +65,13 @@ import { UserService } from 'src/app/core/services/user.service';
 	styleUrls: ['./user-list.component.scss'],
 })
 export class UserListComponent extends DestroyableComponent implements OnInit, OnDestroy {
-	@ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
-	@ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
-
 	@HostListener('document:click', ['$event']) onClick() {
 		this.toggleMenu(true);
 	}
 
-	public searchControl = new FormControl('', []);
-	public downloadDropdownControl = new FormControl('', []);
-	public userTypeDropdownControl = new FormControl('', []);
+	@ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
 
-	public columns$$: BehaviorSubject<string[]>;
-	public filteredUsers$$: BehaviorSubject<any[]>;
-	public clearSelected$$ = new Subject<void>();
-	public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
-	public loading$$ = new BehaviorSubject(true);
-
-	public columnsForScheduler: string[] = ['FirstName', 'LastName', 'Email', 'Category', 'Role', 'Status', 'Actions'];
-	public columnsForGeneral: string[] = ['FirstName', 'LastName', 'Email', 'Category', 'Status', 'Actions'];
-	public downloadItems: DownloadType[] = [];
-	public selectedUserIds: string[] = [];
-	public statusTypeEnum = getStatusEnum();
-	public statuses = Statuses;
+	@ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
 
 	public userTypes$$: BehaviorSubject<NameValue[]> = new BehaviorSubject<NameValue[]>([
 		{
@@ -83,11 +83,54 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			name: `${UserType.Scheduler} User`,
 		},
 	]);
+
+	private users$$: BehaviorSubject<UserBase[]>;
+
+	public filteredUsers$$: BehaviorSubject<UserBase[]>;
+
+	public clearSelected$$ = new Subject<void>();
+
+	public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
+
+	public loading$$ = new BehaviorSubject(true);
+
+	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
+
+	public searchControl = new FormControl('', []);
+
+	public downloadDropdownControl = new FormControl('', []);
+
+	public userTypeDropdownControl = new FormControl('', []);
+
+	public columns: string[] = [];
+
+	public columnsForScheduler: string[] = ['FirstName', 'LastName', 'Email', 'Role', 'Status'];
+
+	public columnsForGeneral: string[] = ['FirstName', 'LastName', 'Email', 'Status'];
+
+	public tableHeaders: DfmTableHeader[] = [];
+
+	public downloadItems: DownloadType[] = [];
+
+	public selectedUserIds: string[] = [];
+
+	public statusTypeEnum = getStatusEnum();
+
+	public statuses = Statuses;
+
 	public readonly Permission = Permission;
+
 	protected readonly UserType = UserType;
-	private users$$: BehaviorSubject<any[]>;
+
 	private selectedLang: string = ENG_BE;
+
 	public clipboardData: string = '';
+
+	public paginationData: PaginationData | undefined;
 
 	constructor(
 		private userApiSvc: UserApiService,
@@ -107,7 +150,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		super();
 		this.users$$ = new BehaviorSubject<any[]>([]);
 		this.filteredUsers$$ = new BehaviorSubject<any[]>([]);
-		this.columns$$ = new BehaviorSubject<string[]>(this.columnsForScheduler);
 	}
 
 	public ngOnInit(): void {
@@ -115,52 +157,121 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			next: (types) => (this.downloadItems = types),
 		});
 
-		setTimeout(() => this.userTypeDropdownControl.setValue(UserType.General), 0);
+		const timeout = setTimeout(() => {
+			this.userTypeDropdownControl.setValue(UserType.General);
+			clearTimeout(timeout);
+		}, 0);
+
+		this.filteredUsers$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (value) => {
+				this.tableData$$.next({
+					items: value,
+					isInitialLoading: false,
+					isLoading: false,
+					isLoadingMore: false
+				});
+			}
+		});
+
+		this.users$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (staffs) => this.filteredUsers$$.next([...staffs])
+		});
 
 		this.userTypeDropdownControl.valueChanges
 			.pipe(
+				filter((userType) => !!userType),
 				debounceTime(0),
 				distinctUntilChanged(),
-				switchMap((userType) => {
-					this.users$$.next([]);
-					this.filteredUsers$$.next([]);
-
-					switch (userType) {
-						case UserType.Scheduler: {
-							this.columns$$.next(this.columnsForScheduler);
-							return this.userManagementApiSvc.userList$.pipe(
-								map((users) =>
-									users.items.map((user) => {
-										return {
-											id: user.id,
-											email: user.email,
-											firstname: user.givenName,
-											lastname: user.surname,
-											fullName: user.displayName,
-											userType: UserType.Scheduler,
-											status: user.accountEnabled === null ? 2 : +user.accountEnabled,
-											userRole: user?.userRole,
-										} as unknown as UserBase;
-									}),
-								),
-							);
-						}
-						default: {
-							this.columns$$.next(this.columnsForGeneral);
-							return this.userApiSvc.generalUsers$;
-						}
+				tap((userType) => {
+					if (userType === UserType.General) {
+						this.updateColumns(this.columnsForGeneral);
+					} else {
+						this.updateColumns(this.columnsForScheduler);
 					}
+					this.filteredUsers$$.next([]);
 				}),
-				takeUntil(this.destroy$$),
+				switchMap((userType) => {
+					if (userType === UserType.General) {
+						return this.userApiSvc.generalUsers$;
+					}
+					return this.userManagementApiSvc.userList$.pipe(
+						map((users) =>
+							users.items.map((user) => {
+								return {
+									id: user.id,
+									email: user.email,
+									firstname: user.givenName,
+									lastname: user.surname,
+									fullName: user.displayName,
+									userType: UserType.Scheduler,
+									status: user.accountEnabled === null ? 2 : +user.accountEnabled,
+									userRole: user?.userRole,
+								} as unknown as UserBase;
+							}),
+						),
+					);
+				}),
+				takeUntil(this.destroy$$)
 			)
 			.subscribe({
-				next: (users) => {
-					this.users$$.next([...users]);
-					this.filteredUsers$$.next([...users]);
+				next: (userBase) => {
+					if (this.userTypeDropdownControl.value === UserType.General) {
+						const generalUserBase = (userBase as BaseResponse<User[]>);
+						if (this.paginationData && this.paginationData.pageNo < generalUserBase.metaData.pagination.pageNo) {
+							this.users$$.next([...this.users$$.value, ...generalUserBase.data]);
+						} else {
+							this.users$$.next(generalUserBase.data);
+						}
+						this.paginationData = generalUserBase.metaData.pagination;
+					} else {
+						this.users$$.next([...(userBase as UserBase[])]);
+					}
+
 					this.loading$$.next(false);
 				},
-				error: () => this.loading$$.next(false),
+				error: (err) => {
+					this.users$$.next([]);
+					this.loading$$.next(false);
+				}
 			});
+
+		// this.userTypeDropdownControl.valueChanges
+		// 	.pipe(
+		// 		filter((userType) => userType === UserType.Scheduler),
+		// 		distinctUntilChanged(),
+		// 		switchMap(() => {
+		// 			this.updateColumns(this.columnsForScheduler);
+		// 			this.filteredUsers$$.next([]);
+		//
+		// 			return this.userManagementApiSvc.userList$.pipe(
+		// 				map((users) =>
+		// 					users.items.map((user) => {
+		// 						return {
+		// 							id: user.id,
+		// 							email: user.email,
+		// 							firstname: user.givenName,
+		// 							lastname: user.surname,
+		// 							fullName: user.displayName,
+		// 							userType: UserType.Scheduler,
+		// 							status: user.accountEnabled === null ? 2 : +user.accountEnabled,
+		// 							userRole: user?.userRole,
+		// 						} as unknown as UserBase;
+		// 					}),
+		// 				),
+		// 			);
+		// 		}),
+		// 		takeUntil(this.destroy$$)
+		// 	)
+		// 	.subscribe({
+		// 		next: (userBase) => {
+		// 			this.users$$.next([...userBase]);
+		// 			this.loading$$.next(false);
+		// 		},
+		// 		error: (err) => {
+		// 			this.users$$.next([]);
+		// 			this.loading$$.next(false)
+		// 		}
+		// 	});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
 			next: (searchText) => {
@@ -187,8 +298,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.columns$$.value.slice(0, -1),
-						this.filteredUsers$$.value.map((u: User) => [
+						this.columns,
+						this.filteredUsers$$.value.map((u: UserBase) => [
 							u.firstname,
 							u.lastname,
 							u.email,
@@ -226,7 +337,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				switchMap((changes) => {
 					switch (this.userTypeDropdownControl.value) {
 						case UserType.General:
-							return this.userApiSvc.changeUserStatus$(changes);
+							return this.userApiSvc.changeUserStatus$(changes, 'user');
 						case UserType.Scheduler:
 							return this.userManagementApiSvc.changeUsersStates(
 								changes.map(({ id, status }) => {
@@ -258,26 +369,15 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				next: () => this.closeMenus(),
 			});
 
-		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+		this.shareDataSvc.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: ([lang, permissionType]) => {
+				next: (lang) => {
 					this.selectedLang = lang;
-					this.columnsForGeneral = [
-						Translate.FirstName[lang],
-						Translate.LastName[lang],
-						Translate.Email[lang],
-						Translate.Category[lang],
-						Translate.Status[lang],
-					];
-					this.columnsForScheduler = [
-						Translate.FirstName[lang],
-						Translate.LastName[lang],
-						Translate.Email[lang],
-						Translate.Category[lang],
-						'Role',
-						Translate.Status[lang],
-					];
+
+					this.tableHeaders = this.tableHeaders.map((h, i) => ({
+						...h, title: Translate[this.columns[i]][lang] ?? this.columns[i]
+					}));
 
 					this.userTypes$$.next([
 						{
@@ -290,25 +390,12 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						},
 					]);
 
-					if (this.permissionSvc.isPermitted([Permission.UpdateUser, Permission.DeleteUser])) {
-						this.columnsForGeneral = [...this.columnsForGeneral, Translate.Actions[lang]];
-						this.columnsForScheduler = [...this.columnsForScheduler, Translate.Actions[lang]];
-					}
-
-					if (this.userTypeDropdownControl.value === UserType.General) {
-						this.columns$$.next(this.columnsForGeneral);
-					} else {
-						this.columns$$.next(this.columnsForScheduler);
-					}
-
-					// eslint-disable-next-line default-case
 					switch (lang) {
 						case ENG_BE:
 							this.statuses = Statuses;
 							break;
-						case DUTCH_BE:
+						default:
 							this.statuses = StatusesNL;
-							break;
 					}
 				},
 			});
@@ -327,7 +414,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		let observable: Observable<any>;
 		switch (this.userTypeDropdownControl.value) {
 			case UserType.General:
-				observable = this.userApiSvc.changeUserStatus$(changes);
+				observable = this.userApiSvc.changeUserStatus$(changes, 'user');
 				break;
 			default:
 				observable = this.userManagementApiSvc.changeUserState(changes[0].id as string, !!changes[0].status);
@@ -352,7 +439,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			.pipe(
 				filter((res: boolean) => res),
 				switchMap(() => {
-
 					if (this.userTypeDropdownControl.value === UserType.Scheduler) {
 						return this.userManagementApiSvc.deleteUser(id as string);
 					}
@@ -363,6 +449,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			.subscribe({
 				next: () => {
 					this.notificationSvc.showNotification(Translate.SuccessMessage.UserDeleted[this.selectedLang]);
+					// filtering out deleted users
+					this.users$$.next([...this.users$$.value.filter((s) => s.id.toString() !== id.toString())]);
 				},
 			});
 	}
@@ -373,10 +461,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 	public copyToClipboard() {
 		try {
-			let dataString = `${this.columns$$.value.slice(0, -1).join('\t')}\n`;
+			let dataString = `${this.columns.join('\t')}\n`;
 
-			this.filteredUsers$$.value.forEach((user: User) => {
-				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.telephone ?? '—'}\t${user.userType ?? '—'}\t${
+			this.filteredUsers$$.value.forEach((user: UserBase) => {
+				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user?.telephone ?? '—'}\t${user.userType ?? '—'}\t${
 					StatusToName[+user.status]
 				}\n`;
 			});
@@ -462,7 +550,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 					user.lastname?.toLowerCase()?.includes(searchText) ||
 					user.email?.toLowerCase()?.includes(searchText) ||
 					userType?.toLowerCase()?.includes(searchText) ||
-					user.telephone?.toLowerCase()?.includes(searchText) ||
+					(user?.telephone as string)?.toLowerCase()?.includes(searchText) ||
 					status.toLowerCase()?.startsWith(searchText)
 				);
 			}),
@@ -477,7 +565,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 		const ids = new Set<number>();
 		result.forEach((item) => ids.add(+item.value));
-		this.filteredUsers$$.next([...this.users$$.value.filter((user: User) => ids.has(+user.id))]);
+		this.filteredUsers$$.next([...this.users$$.value.filter((user) => ids.has(+user.id))]);
 	}
 
 	private closeMenus() {
@@ -493,5 +581,28 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		setTimeout(() => {
 			this.downloadDropdownControl.setValue('');
 		}, 0);
+	}
+
+	private updateColumns(columns: string[]) {
+		this.columns = [...columns];
+		this.tableHeaders = columns.map((c, i) => ({
+			id: (i + 1).toString(),
+			title: Translate[c][this.selectedLang],
+			isSortable: true,
+		}));
+	}
+
+	public onScroll(e: undefined): void {
+		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+			if (this.userTypeDropdownControl.value === UserType.General) {
+				this.userApiSvc.pageNoUser = this.userApiSvc.pageNoUser + 1;
+			}
+			this.tableData$$.value.isLoadingMore = true;
+		}
+	}
+
+	public onSort(e: DfmTableHeader): void {
+		const key = this.userTypeDropdownControl.value === UserType.Scheduler ? SchedulerColumnIdToKey[e.id] : GeneralColumnIdToKey[e.id];
+		this.filteredUsers$$.next(GeneralUtils.SortArray(this.filteredUsers$$.value, e.sort, key));
 	}
 }

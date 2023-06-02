@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
-import { NotificationType } from 'diflexmo-angular-design';
+import { DfmDatasource, DfmTableHeader, NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
@@ -10,14 +10,20 @@ import { Status, StatusToName } from 'src/app/shared/models/status.model';
 import { getStatusEnum, getUserTypeEnum } from 'src/app/shared/utils/getEnums';
 import { Email } from 'src/app/shared/models/email-template.model';
 import { Translate } from 'src/app/shared/models/translate.model';
-import { ENG_BE, Statuses, StatusesNL, DUTCH_BE } from 'src/app/shared/utils/const';
+import { ENG_BE, Statuses, StatusesNL } from 'src/app/shared/utils/const';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { Permission } from 'src/app/shared/models/permission.model';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
-import { StatusNamePipe } from 'src/app/shared/pipes/status-name.pipe';
+import {PaginationData} from "../../../../shared/models/base-response.model";
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
+
+const ColumnIdToKey = {
+	1: 'title',
+	2: 'subject',
+	3: 'status'
+}
 
 @Component({
 	selector: 'dfm-email-template-list',
@@ -25,12 +31,25 @@ import { StatusNamePipe } from 'src/app/shared/pipes/status-name.pipe';
 	styleUrls: ['./email-template-list.component.scss'],
 })
 export class EmailTemplateListComponent extends DestroyableComponent implements OnInit, OnDestroy {
-	clipboardData: string = '';
 	@HostListener('document:click', ['$event']) onClick() {
 		this.toggleMenu(true);
 	}
 
 	@ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
+
+	private emails$$: BehaviorSubject<Email[]>;
+
+	public filteredEmails$$: BehaviorSubject<Email[]>;
+
+	public clearSelected$$ = new Subject<void>();
+
+	public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
+
+	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
 
 	public searchControl = new FormControl('', []);
 
@@ -38,15 +57,13 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 	public columns: string[] = ['Title', 'Subject', 'Status'];
 
+	public tableHeaders: DfmTableHeader[] = [
+		{ id: '1', title: 'Title', isSortable: true },
+		{ id: '2', title: 'Subject', isSortable: true },
+		{ id: '3', title: 'Status', isSortable: true },
+	];
+
 	public downloadItems: any[] = [];
-
-	private emails$$: BehaviorSubject<any[]>;
-
-	public filteredEmails$$: BehaviorSubject<any[]>;
-
-	public clearSelected$$ = new Subject<void>();
-
-	public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
 
 	public selectedUserIds: string[] = [];
 
@@ -59,6 +76,10 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 	public statuses = Statuses;
 
 	public readonly Permission = Permission;
+
+	public clipboardData: string = '';
+
+	private paginationData: PaginationData | undefined;
 
 	constructor(
 		private notificationSvc: NotificationDataService,
@@ -76,18 +97,44 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 	}
 
 	public ngOnInit(): void {
-		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
-
-		this.emailTemplateApiSvc.emailTemplates$.pipe(takeUntil(this.destroy$$)).subscribe((emails) => {
-			this.emails$$.next(emails);
-			this.filteredEmails$$.next(emails);
+		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => (this.downloadItems = items)
 		});
 
-		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-			if (searchText) {
-				this.handleSearch(searchText.toLowerCase());
-			} else {
-				this.filteredEmails$$.next([...this.emails$$.value]);
+		this.filteredEmails$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => {
+				this.tableData$$.next({
+					items,
+					isInitialLoading: false,
+					isLoading: false,
+					isLoadingMore: false
+				});
+			}
+		});
+
+		this.emails$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (emails) => this.filteredEmails$$.next([...emails])
+		});
+
+		this.emailTemplateApiSvc.emailTemplates$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (emailBase) => {
+				if (this.paginationData && this.paginationData.pageNo < emailBase.metaData.pagination.pageNo) {
+					this.emails$$.next([...this.emails$$.value, ...emailBase.data]);
+				} else {
+					this.emails$$.next(emailBase.data);
+				}
+				this.paginationData = emailBase.metaData?.pagination;
+			},
+			error: (e) => this.emails$$.next([])
+		});
+
+		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+			next: (searchText) => {
+				if (searchText) {
+					this.handleSearch(searchText.toLowerCase());
+				} else {
+					this.filteredEmails$$.next([...this.emails$$.value]);
+				}
 			}
 		});
 
@@ -96,36 +143,27 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 				filter((value) => !!value),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe((downloadAs) => {
-				if (!this.filteredEmails$$.value.length) {
-					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+			.subscribe({
+				next: (downloadAs) => {
+					if (!this.filteredEmails$$.value.length) {
+						this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+						this.clearDownloadDropdown();
+						return;
+					}
+
+					this.downloadSvc.downloadJsonAs(
+						downloadAs as DownloadAsType,
+						this.columns,
+						this.filteredEmails$$.value.map((em: Email) => [em.title, em.subject?.toString(), this.translatePipe.transform(StatusToName[em.status])]),
+						'email-template',
+					);
+
+					if (downloadAs !== 'PRINT') {
+						this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
+					}
 					this.clearDownloadDropdown();
-					return;
 				}
-
-				this.downloadSvc.downloadJsonAs(
-					downloadAs as DownloadAsType,
-					this.columns.slice(0, -1),
-					this.filteredEmails$$.value.map((em: Email) => [em.title, em.subject?.toString(), this.translatePipe.transform(StatusToName[em.status])]),
-					'email-template',
-				);
-
-				if (downloadAs !== 'PRINT') {
-					this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
-				}
-				this.clearDownloadDropdown();
 			});
-
-		this.afterBannerClosed$$.pipe(
-			map((value) => {
-				if (value?.proceed) {
-					return [...this.selectedUserIds.map((id) => ({ id: +id, newStatus: value.newStatus }))];
-				}
-
-				return [];
-			}),
-			takeUntil(this.destroy$$),
-		);
 
 		this.afterBannerClosed$$
 			.pipe(
@@ -145,9 +183,11 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 				switchMap((changes) => this.emailTemplateApiSvc.changeEmailStatus$(changes)),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe(() => {
-				this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
-				this.clearSelected$$.next();
+			.subscribe({
+				next: () => {
+					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
+					this.clearSelected$$.next();
+				}
 			});
 
 		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
@@ -155,20 +195,16 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 			.subscribe(([lang]) => {
 				this.selectedLang = lang;
 
-				this.columns = [Translate.Title[lang], Translate.Subject[lang], Translate.Status[lang]];
+				this.tableHeaders = this.tableHeaders.map((h, i) => ({
+					...h, title: Translate[this.columns[i]][lang]
+				}));
 
-				if (this.permissionSvc.isPermitted(Permission.UpdateEmailTemplate)) {
-					this.columns = [...this.columns, Translate.Actions[lang]];
-				}
-
-				// eslint-disable-next-line default-case
 				switch (lang) {
 					case ENG_BE:
 						this.statuses = Statuses;
 						break;
-					case DUTCH_BE:
+					default:
 						this.statuses = StatusesNL;
-						break;
 				}
 			});
 	}
@@ -211,7 +247,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 	public copyToClipboard() {
 		try {
-			let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+			let dataString = `${this.columns.join('\t')}\n`;
 
 			this.filteredEmails$$.value.forEach((email: Email) => {
 
@@ -244,6 +280,17 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		setTimeout(() => {
 			this.downloadDropdownControl.setValue('');
 		}, 0);
+	}
+
+	public onScroll(e: undefined): void {
+		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+			this.emailTemplateApiSvc.pageNo = this.emailTemplateApiSvc.pageNo + 1;
+			this.tableData$$.value.isLoadingMore = true;
+		}
+	}
+
+	public onSort(e: DfmTableHeader): void {
+		this.filteredEmails$$.next(GeneralUtils.SortArray(this.filteredEmails$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
 

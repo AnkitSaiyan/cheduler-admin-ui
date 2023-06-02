@@ -49,25 +49,27 @@ import { WeekdayToNamePipe } from './pipes/weekday-to-name.pipe';
 // eslint-disable-next-line import/order
 import { TranslateLoader, TranslateModule, TranslatePipe } from '@ngx-translate/core';
 // eslint-disable-next-line import/order
+import { DateAdapter, MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatMenuModule } from '@angular/material/menu';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
+import { DfmCalendarPickerComponent } from './components/dfm-calendar/dfm-calendar-picker/dfm-calendar-picker.component';
 import { LoginFailedComponent } from './components/login-failed/login-failed.component';
 import { MatSpinnerComponent } from './components/mat-spinner/mat-spinner.component';
 import { TimeSlotsComponent } from './components/time-slots/time-slots.component';
 import { IsPermittedDirective } from './directives/permission.directive';
 import { DefaultDatePipe } from './pipes/default-date.pipe';
 import { IsDataPipe } from './pipes/is-data.pipe';
+import { MultiDropdownPlaceholderNamePipe } from './pipes/multi-dropdown-placeholder-name.pipe';
 import { RoleNamePipe } from './pipes/role-name.pipe';
 import { ShowSlotPercentagePipe } from './pipes/showSlotPercentage.pipe';
 import { UserRolePipe } from './pipes/user-role.pipe';
 import { UtcToLocalPipe } from './pipes/utc-to-local.pipe';
-import { DateAdapter, MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatMenuModule } from '@angular/material/menu';
-import { DfmCalendarPickerComponent } from './components/dfm-calendar/dfm-calendar-picker/dfm-calendar-picker.component';
-import { MultiDropdownPlaceholderNamePipe } from './pipes/multi-dropdown-placeholder-name.pipe';
 import { DUTCH_BE } from './utils/const';
 import { CustomDatePickerAdapter } from './utils/date-adapter';
+
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -125,6 +127,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		NgbAccordionModule,
 		MatProgressSpinnerModule,
 		RouterLink,
+		InfiniteScrollModule,
 		TranslateModule.forChild({
 			loader: {
 				provide: TranslateLoader,
@@ -197,6 +200,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatDatepickerModule,
 		MultiDropdownPlaceholderNamePipe,
 		MatMenuModule,
+		InfiniteScrollModule,
 	],
 	providers: [
 		TranslatePipe,

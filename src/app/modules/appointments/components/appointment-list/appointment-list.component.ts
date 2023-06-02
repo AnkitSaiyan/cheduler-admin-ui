@@ -209,7 +209,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				},
 			});
 
-		this.roomApiSvc.rooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
+		this.roomApiSvc.allRooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
 			this.roomList = rooms?.map(({ name, id }) => ({ name, value: id }));
 		});
 

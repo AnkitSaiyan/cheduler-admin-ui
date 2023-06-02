@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
@@ -13,12 +13,20 @@ import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../..
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { Absence } from '../../../../shared/models/absence.model';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
+import { PaginationData } from "../../../../shared/models/base-response.model";
+import { GeneralUtils } from "../../../../shared/utils/general.utils";
+
+const ColumnIdToKey = {
+  1: 'name',
+  2: 'startedAt',
+  3: 'endedAt',
+  4: 'info'
+}
 
 @Component({
   selector: 'dfm-absence-list',
@@ -26,29 +34,44 @@ import { UserRoleEnum } from 'src/app/shared/models/user.model';
   styleUrls: ['./absence-list.component.scss'],
 })
 export class AbsenceListComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  clipboardData: string = '';
-
   @HostListener('document:click', ['$event']) onClick() {
     this.toggleMenu(true);
   }
+
+  private absences$$: BehaviorSubject<Absence[]>;
+
+  public filteredAbsences$$: BehaviorSubject<Absence[]>;
+
+  public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+    items: [],
+    isInitialLoading: true,
+    isLoadingMore: false,
+  });
 
   public searchControl = new FormControl('', []);
 
   public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['Title', 'StartDate', 'EndDate', 'AbsenceInfo', 'Actions'];
+  public columns: string[] = ['Title', 'StartDate', 'EndDate', 'AbsenceInfo'];
+
+  public tableHeaders: DfmTableHeader[] = [
+    { id: '1', title: 'Title', isSortable: true },
+    { id: '2', title: 'StartDate', isSortable: true },
+    { id: '3', title: 'EndDate', isSortable: true },
+    { id: '4', title: 'AbsenceInfo', isSortable: true },
+  ];
 
   public downloadItems: DownloadType[] = [];
-
-  private absences$$: BehaviorSubject<any[]>;
-
-  public filteredAbsences$$: BehaviorSubject<any[]>;
 
   private selectedLang: string = ENG_BE;
 
   public statuses = Statuses;
 
   public readonly Permission = Permission;
+
+  public clipboardData: string = '';
+
+  private paginationData: PaginationData | undefined;
 
   constructor(
     private absenceApiSvc: AbsenceApiService,
@@ -72,10 +95,32 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
       next: (items) => (this.downloadItems = items)
     });
 
+    this.filteredAbsences$$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (value) => {
+        this.tableData$$.next({
+          items: value,
+          isInitialLoading: false,
+          isLoading: false,
+          isLoadingMore: false
+        });
+      }
+    });
+
+    this.absences$$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (absences) => this.filteredAbsences$$.next([...absences])
+    });
+
     this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (absences) => {
-        this.absences$$.next(absences);
-        this.filteredAbsences$$.next(absences);
+      next: (absencesBase) => {
+        if (this.paginationData && this.paginationData.pageNo < absencesBase.metaData.pagination.pageNo) {
+          this.absences$$.next([...this.absences$$.value, ...absencesBase.data]);
+        } else {
+          this.absences$$.next(absencesBase.data);
+        }
+        this.paginationData = absencesBase.metaData.pagination;
+      },
+      error: (e) => {
+        this.absences$$.next([]);
       }
     });
 
@@ -103,7 +148,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
           }
           this.downloadSvc.downloadJsonAs(
             value as DownloadAsType,
-            this.columns.slice(0, -1),
+            this.columns,
             this.filteredAbsences$$.value.map((u: Absence) => [
               u.name,
               u.startedAt ? `${new Date(u?.startedAt)?.toDateString()} ${new Date(u?.startedAt)?.toLocaleTimeString()}` : '',
@@ -121,25 +166,22 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         }
       });
 
-    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+    this.shareDataSvc.getLanguage$()
       .pipe(takeUntil(this.destroy$$))
       .subscribe({
-        next: ([lang, permissionType]) => {
+        next: (lang) => {
           this.selectedLang = lang;
 
-          this.columns = [Translate.Title[lang], Translate.StartDate[lang], Translate.EndDate[lang], Translate.AbsenceInfo[lang]];
-          if (permissionType === UserRoleEnum.Admin) {
-						this.columns = [...this.columns, Translate.Actions[lang]];
-					}
+          this.tableHeaders = this.tableHeaders.map((h, i) => ({
+            ...h, title: Translate[this.columns[i]][lang]
+          }));
 
-          // eslint-disable-next-line default-case
           switch (lang) {
             case ENG_BE:
               this.statuses = Statuses;
               break;
-            case DUTCH_BE:
+            default:
               this.statuses = StatusesNL;
-              break;
           }
         }
       });
@@ -178,13 +220,17 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         take(1),
       )
       .subscribe({
-        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang])
+        next: () => {
+          this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang]);
+          // filtering out deleted absence
+          this.absences$$.next([...this.absences$$.value.filter((a) => +a.id !== +id)]);
+        }
       });
   }
 
   public copyToClipboard() {
     try {
-      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+      let dataString = `${this.columns.join('\t')}\n`;
 
       this.filteredAbsences$$.value.forEach((absence: Absence) => {
         dataString += `${absence.name}\t${absence?.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
@@ -265,5 +311,16 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
     setTimeout(() => {
       this.downloadDropdownControl.setValue('');
     }, 0);
+  }
+
+  public onScroll(e: undefined): void {
+    if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+      this.absenceApiSvc.pageNo = this.paginationData.pageNo + 1;
+      this.tableData$$.value.isLoadingMore = true;
+    }
+  }
+
+  public onSort(e: DfmTableHeader): void {
+    this.filteredAbsences$$.next(GeneralUtils.SortArray(this.filteredAbsences$$.value, e.sort, ColumnIdToKey[e.id]));
   }
 }
