@@ -190,7 +190,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
             map((res) => res?.data),
             tap(() => {
                 if (from === 'staff') {
-                    this.pageNoStaff$$.next(1);
+                    // this.pageNoStaff$$.next(1);
                 } else {
                     this.pageNoUser$$.next(1);
                 }
@@ -217,7 +217,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
             map((res) => res?.data),
             tap(() => {
                 if (from === 'staff') {
-                    this.pageNoStaff$$.next(1);
+                    // this.pageNoStaff$$.next(1);
                 } else {
                     this.pageNoUser$$.next(1);
                 }
