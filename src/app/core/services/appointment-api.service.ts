@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -57,6 +57,16 @@ export class AppointmentApiService extends DestroyableComponent {
 	}
 
 	public get pageNo(): number {
+		return this.pageNo$$.value;
+	}
+
+	private recentPatientPageNo$$ = new BehaviorSubject<number>(1);
+
+	public set recentPatientPageNo(pageNo: number) {
+		this.pageNo$$.next(pageNo);
+	}
+
+	public get recentPatientPageNo(): number {
 		return this.pageNo$$.value;
 	}
 
@@ -396,8 +406,11 @@ export class AppointmentApiService extends DestroyableComponent {
 		this.loaderSvc.activate();
 
 		return combineLatest([this.pageNo$$]).pipe(
-			switchMap(() => {
-				return this.http.get<BaseResponse<{ upcomingAppointments: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`);
+			switchMap(([pageNo]) => {
+				const params = new HttpParams().append('pageNo', pageNo);
+				return this.http.get<BaseResponse<{ upcomingAppointments: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`, {
+					params,
+				});
 			}),
 			switchMap((response) => {
 				const upcoming = response.data?.upcomingAppointments;
@@ -409,12 +422,18 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public get recentPatients$(): Observable<Appointment[]> {
+	public get recentPatients$(): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/recentpatients`).pipe(
+		return combineLatest([this.recentPatientPageNo$$]).pipe(
+			switchMap(([pageNo]) => {
+				const params = new HttpParams().append('pageNo', pageNo);
+				return this.http.get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/recentpatients`, { params });
+			}),
 			switchMap((response) => {
 				const recentAppointments = response.data?.appointment;
-				return !recentAppointments || !recentAppointments.length ? of([]) : this.AttachPatientDetails(recentAppointments);
+				return !recentAppointments || !recentAppointments.length
+					? of({ ...response, data: [] })
+					: this.AttachPatientDetails(recentAppointments).pipe(map((data) => ({ ...response, data })));
 			}),
 		);
 	}
