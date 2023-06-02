@@ -13,7 +13,7 @@ import {
     takeUntil,
     tap
 } from 'rxjs';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from '@azure/msal-angular';
 import {User, UserRoleEnum, UserType} from '../../shared/models/user.model';
 import {NameValue} from "../../shared/components/search-modal.component";
@@ -36,7 +36,10 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
     private readonly userUrl = `${environment.schedulerApiUrl}/user`;
 
     private selectedLang$$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+
     private refreshUsers$$: Subject<void> = new Subject<void>();
+
+    private pageNo$$ =  new BehaviorSubject<number>(1);
 
     private readonly userRoles: NameValue[] = [
         {
@@ -92,8 +95,18 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
             });
     }
 
+    public set pageNo(pageNo: number) {
+        this.pageNo$$.next(pageNo);
+    }
+
+    public get pageNo(): number {
+        return this.pageNo$$.value;
+    }
+
     public get generalUsers$(): Observable<User[]> {
-        return this.getUsersByType(UserType.General);
+        return this.getUsersByType(UserType.General).pipe(
+            map((res) => res.data)
+        );
     }
 
     public get allGeneralUsers$(): Observable<User[]> {
@@ -102,7 +115,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         }));
     }
 
-    public get staffs$(): Observable<User[]> {
+    public get staffs$(): Observable<BaseResponse<User[]>> {
         return this.getUsersByType(UserType.Assistant, UserType.Radiologist, UserType.Secretary, UserType.Nursing);
     }
 
@@ -112,10 +125,13 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         }));
     }
 
-    public getUsersByType(...userTypes: UserType[]): Observable<User[]> {
+    public getUsersByType(...userTypes: UserType[]): Observable<BaseResponse<User[]>> {
         return this.users$.pipe(
             map((users) => {
-                return users.filter((user) => userTypes.includes(user.userType))
+                return {
+                    ...users,
+                    data: users.data.filter((user) => userTypes.includes(user.userType))
+                }
             }),
         );
     }
@@ -234,20 +250,26 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         );
     }
 
-    private get users$(): Observable<User[]> {
+    private get users$(): Observable<BaseResponse<User[]>> {
         this.loaderSvc.activate();
 
-        return combineLatest([this.refreshUsers$$.pipe(startWith(''))]).pipe(
-            switchMap(() => {
-                return this.http.get<BaseResponse<User[]>>(this.userUrl).pipe(
+        return combineLatest([
+            this.refreshUsers$$.pipe(startWith('')),
+            this.pageNo$$
+        ]).pipe(
+            switchMap(([_, pageNo]) => {
+                const params = new HttpParams().append('pageNo', pageNo);
+                return this.http.get<BaseResponse<User[]>>(this.userUrl, { params }).pipe(
                     map((res) => {
-                        return res?.data?.map((user) => ({
-                            ...user,
-                            fullName: `${user.firstname} ${user.lastname}`
-                        }));
+                        return {
+                            ...res,
+                            data: res?.data?.map((user) => ({
+                                ...user,
+                                fullName: `${user.firstname} ${user.lastname}`
+                            }))
+                        }
                     }),
                     tap(() => this.loaderSvc.deactivate()),
-                    catchError(() => of([]))
                 );
             }),
         );

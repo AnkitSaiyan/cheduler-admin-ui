@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
@@ -95,18 +95,20 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
       next: (items) => (this.downloadItems = items)
     });
 
-    this.filteredAbsences$$.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
-      this.tableData$$.next({
-        items: value,
-        isInitialLoading: false,
-        isLoading: false,
-        isLoadingMore: false
-      });
+    this.filteredAbsences$$.pipe(takeUntil(this.destroy$$)).subscribe({
+      next: (value) => {
+        this.tableData$$.next({
+          items: value,
+          isInitialLoading: false,
+          isLoading: false,
+          isLoadingMore: false
+        });
+      }
     });
 
     this.absences$$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (absences) => this.filteredAbsences$$.next([...absences])
-    })
+    });
 
     this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe({
       next: (absencesBase) => {
@@ -164,10 +166,10 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
         }
       });
 
-    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+    this.shareDataSvc.getLanguage$()
       .pipe(takeUntil(this.destroy$$))
       .subscribe({
-        next: ([lang, permissionType]) => {
+        next: (lang) => {
           this.selectedLang = lang;
 
           this.tableHeaders = this.tableHeaders.map((h, i) => ({
