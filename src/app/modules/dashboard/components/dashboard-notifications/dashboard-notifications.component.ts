@@ -4,6 +4,7 @@ import { BehaviorSubject, takeUntil } from 'rxjs';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
+import { Notification } from "../../../../shared/models/notification.model";
 
 @Component({
 	selector: 'dfm-dashboard-notifications',
@@ -11,11 +12,9 @@ import { PaginationData } from 'src/app/shared/models/base-response.model';
 	styleUrls: ['./dashboard-notifications.component.scss'],
 })
 export class DashboardNotificationsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-	private notifications$$: BehaviorSubject<any[]>;
+	private notifications$$: BehaviorSubject<Notification[]>;
 
-	public filteredNotifications$$: BehaviorSubject<any[]>;
-
-	private paginationData: PaginationData | undefined;
+	public filteredNotifications$$: BehaviorSubject<Notification[]>;
 
 	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
@@ -23,50 +22,7 @@ export class DashboardNotificationsComponent extends DestroyableComponent implem
 		isLoadingMore: false,
 	});
 
-	// public notifications = [
-	//   {
-	//     name: 'Angela Bower',
-	//     post: 'Staff',
-	//     message: 'Reported time-off leave on 06.12.2022',
-	//     date: new Date().setHours(new Date().getHours() - 1),
-	//   },
-	//   {
-	//     name: 'Thomas Magnum',
-	//     post: 'Patients',
-	//     message: 'Cancelled today’s appointment',
-	//     date: new Date().setHours(new Date().getHours() - 1),
-	//   },
-	//   {
-	//     name: 'Sledge Hammer',
-	//     post: 'General users',
-	//     message: 'Have been added to general users',
-	//     date: new Date().setHours(new Date().getHours() - 1),
-	//   },
-	//   {
-	//     name: 'Sledge Hammer',
-	//     post: 'General users',
-	//     message: 'Have been added to general users',
-	//     date: new Date().setHours(new Date().getHours() - 1),
-	//   },
-	//   {
-	//     name: 'Sledge Hammer',
-	//     post: 'General users',
-	//     message: 'Have been added to general users',
-	//     date: new Date().setHours(new Date().getHours() - 1),
-	//   },
-	//   {
-	//     name: 'Sledge Hammer',
-	//     post: 'General users',
-	//     message: 'Have been added to general users',
-	//     date: new Date().setHours(new Date().getHours() - 1),
-	//   },
-	//   {
-	//     name: 'Sledge Hammer',
-	//     post: 'General users',
-	//     message: 'Have been added to general users',
-	//     date: new Date().setHours(new Date().getHours() - 1),
-	//   },
-	// ];
+	private paginationData: PaginationData | undefined;
 
 	constructor(private dashboardApiService: DashboardApiService) {
 		super();
@@ -78,7 +34,7 @@ export class DashboardNotificationsComponent extends DestroyableComponent implem
 		this.filteredNotifications$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => {
 				this.tableData$$.next({
-					items,
+					items: items as any[],
 					isInitialLoading: false,
 					isLoading: false,
 					isLoadingMore: false,
@@ -89,13 +45,16 @@ export class DashboardNotificationsComponent extends DestroyableComponent implem
 		this.notifications$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (notifications) => this.filteredNotifications$$.next([...notifications]),
 		});
-		this.dashboardApiService.notification$.pipe(takeUntil(this.destroy$$)).subscribe((notificationsBase) => {
-			if (this.paginationData && this.paginationData.pageNo < notificationsBase?.metaData?.pagination?.pageNo) {
-				this.notifications$$.next([...this.notifications$$.value, ...notificationsBase.data]);
-			} else {
-				this.notifications$$.next(notificationsBase?.data);
+
+		this.dashboardApiService.notification$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (notificationsBase) => {
+				if (this.paginationData && this.paginationData.pageNo < notificationsBase?.metaData?.pagination?.pageNo) {
+					this.notifications$$.next([...this.notifications$$.value, ...notificationsBase.data]);
+				} else {
+					this.notifications$$.next(notificationsBase?.data);
+				}
+				this.paginationData = notificationsBase?.metaData?.pagination;
 			}
-			this.paginationData = notificationsBase?.metaData?.pagination;
 		});
 	}
 

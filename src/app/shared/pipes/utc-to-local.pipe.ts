@@ -5,13 +5,13 @@ import {DateTimeUtils} from "../utils/date-time.utils";
     name: 'dfmUtcToLocal'
 })
 export class UtcToLocalPipe implements PipeTransform {
-    public transform(utcDateTimeString: string | undefined | null, timeOnly = false): string {
+    public transform(utcDateTimeString: Date | string | undefined | null, timeOnly = false): string {
         if (!utcDateTimeString) {
             return '';
         }
         
         if (timeOnly) {
-            return DateTimeUtils.UTCTimeToLocalTimeString(utcDateTimeString);
+            return DateTimeUtils.UTCTimeToLocalTimeString(utcDateTimeString.toString());
         }
 
         return DateTimeUtils.UTCDateToLocalDate(new Date(utcDateTimeString)).toString();

@@ -116,13 +116,12 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         return this.pageNoUser$$.value;
     }
 
-    public get generalUsers$(): Observable<User[]> {
+    public get generalUsers$(): Observable<BaseResponse<User[]>> {
         return combineLatest([
             this.refreshUsers$$.pipe(startWith('')),
             this.pageNoUser$$
         ]).pipe(
             switchMap(([_, pageNo]) => this.fetchUsers$(pageNo)),
-            map((u) => u.data)
         );
     }
 
@@ -177,7 +176,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         );
     }
 
-    public upsertUser$(requestData: AddStaffRequestData): Observable<User> {
+    public upsertUser$(requestData: AddStaffRequestData, from: 'staff' | 'user'): Observable<User> {
         this.loaderSvc.activate();
 
         const {id, ...restData} = requestData;
@@ -190,7 +189,12 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         return this.http.post<BaseResponse<User>>(url, restData).pipe(
             map((res) => res?.data),
             tap(() => {
-                this.refreshUsers$$.next();
+                if (from === 'staff') {
+                    // this.pageNoStaff$$.next(1);
+                } else {
+                    this.pageNoUser$$.next(1);
+                }
+
                 this.loaderSvc.deactivate();
             }),
         );
@@ -201,18 +205,22 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
         return this.http.delete<BaseResponse<Boolean>>(`${this.userUrl}/${userID}`).pipe(
             map((res) => res?.data),
             tap(() => {
-                this.refreshUsers$$.next();
+                // this.refreshUsers$$.next();
                 this.loaderSvc.deactivate();
             }),
         );
     }
 
-    public changeUserStatus$(requestData: ChangeStatusRequestData[]): Observable<null> {
+    public changeUserStatus$(requestData: ChangeStatusRequestData[], from: 'staff' | 'user'): Observable<null> {
         this.loaderSvc.activate();
         return this.http.put<BaseResponse<any>>(`${this.userUrl}/updateuserstatus`, requestData).pipe(
             map((res) => res?.data),
             tap(() => {
-                this.refreshUsers$$.next();
+                if (from === 'staff') {
+                    // this.pageNoStaff$$.next(1);
+                } else {
+                    this.pageNoUser$$.next(1);
+                }
                 this.loaderSvc.deactivate();
             }),
         );
