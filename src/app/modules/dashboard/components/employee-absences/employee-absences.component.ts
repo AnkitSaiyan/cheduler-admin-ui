@@ -22,8 +22,6 @@ import { ENG_BE } from '../../../../shared/utils/const';
 export class EmployeeAbsencesComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	private absences$$: BehaviorSubject<any[]>;
 
-	public columns: string[] = ['Title', 'StartDate', 'EndDate', 'AbsenceInfo'];
-
 	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
 		isInitialLoading: true,
@@ -34,9 +32,11 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 
 	public searchControl = new FormControl('', []);
 
+	public columns: string[] = ['Title', 'StartDate', 'EndDate', 'AbsenceInfo'];
+
 	private selectedLang: string = ENG_BE;
 
-	clipboardData: string = '';
+	public clipboardData: string = '';
 
 	private paginationData: PaginationData | undefined;
 
@@ -69,8 +69,8 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 			next: (absences) => this.filteredAbsence$$.next([...absences]),
 		});
 
-		this.absenceApiService.absencesOnDashboard$.pipe(takeUntil(this.destroy$$)).subscribe(
-			(employeeAbsencesBase) => {
+		this.absenceApiService.absencesOnDashboard$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (employeeAbsencesBase) => {
 				if (this.paginationData && this.paginationData.pageNo < employeeAbsencesBase.metaData.pagination.pageNo) {
 					this.absences$$.next([...this.absences$$.value, ...employeeAbsencesBase.data]);
 				} else {
@@ -78,23 +78,27 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 				}
 				this.paginationData = employeeAbsencesBase.metaData.pagination;
 			},
-			() => this.absences$$.next([]),
-		);
+			error: () => this.absences$$.next([]),
+		});
 
-		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-			if (searchText) {
-				this.handleSearch(searchText.toLowerCase());
-			} else {
-				this.filteredAbsence$$.next([...this.absences$$.value]);
+		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+			next: (searchText) => {
+				if (searchText) {
+					this.handleSearch(searchText.toLowerCase());
+				} else {
+					this.filteredAbsence$$.next([...this.absences$$.value]);
+				}
 			}
 		});
 
 		this.shareDataSvc
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe((lang) => {
-				this.selectedLang = lang;
-				this.columns = [Translate.Title[lang], Translate.StartDate[lang], Translate.EndDate[lang], Translate.AbsenceInfo[lang]];
+			.subscribe({
+				next: (lang) => {
+					this.selectedLang = lang;
+					this.columns = [Translate.Title[lang], Translate.StartDate[lang], Translate.EndDate[lang], Translate.AbsenceInfo[lang]];
+				}
 			});
 	}
 
@@ -137,8 +141,4 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 			this.absenceApiService.pageNoOnDashboard = this.absenceApiService.pageNoOnDashboard + 1;
 		}
 	}
-
-	// public onSort(e: DfmTableHeader): void {
-	// 	this.filteredAbsence$$.next(GeneralUtils.SortArray(this.filteredAbsence$$.value, e.sort, ColumnIdToKey[e.id]));
-	// }
 }
