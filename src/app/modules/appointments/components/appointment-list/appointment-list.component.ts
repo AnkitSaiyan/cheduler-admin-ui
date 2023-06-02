@@ -128,8 +128,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
 		this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-			this.appointments$$.next(appointments);
-			this.filteredAppointments$$.next(appointments);
+			this.appointments$$.next(appointments.data);
+			this.filteredAppointments$$.next(appointments.data);
 
 			// appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
 			//

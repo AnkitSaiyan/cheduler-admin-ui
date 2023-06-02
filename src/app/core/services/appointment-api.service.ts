@@ -60,6 +60,16 @@ export class AppointmentApiService extends DestroyableComponent {
 		return this.pageNo$$.value;
 	}
 
+	private appointmentPageNo$$ = new BehaviorSubject<number>(1);
+
+	public set appointmentPageNo(pageNo: number) {
+		this.appointmentPageNo$$.next(pageNo);
+	}
+
+	public get appointmentPageNo(): number {
+		return this.appointmentPageNo$$.value;
+	}
+
 	private recentPatientPageNo$$ = new BehaviorSubject<number>(1);
 
 	public set recentPatientPageNo(pageNo: number) {
@@ -89,10 +99,12 @@ export class AppointmentApiService extends DestroyableComponent {
 			});
 	}
 
-	public get appointment$(): Observable<Appointment[]> {
-		return combineLatest([this.signalRService.appointments$$.pipe(startWith(''))]).pipe(
-			switchMap(() => {
-				return this.fetchAllAppointments$().pipe(switchMap((appointments) => this.AttachPatientDetails(appointments)));
+	public get appointment$(): Observable<BaseResponse<Appointment[]>> {
+		return combineLatest([this.signalRService.appointments$$.pipe(startWith('')), this.appointmentPageNo$$]).pipe(
+			switchMap(([_, pageNo]) => {
+				return this.fetchAllAppointments$(pageNo).pipe(
+					switchMap((appointments) => this.AttachPatientDetails(appointments.data).pipe(map((data) => ({ ...appointments, data })))),
+				);
 			}),
 		);
 	}
@@ -117,11 +129,11 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public fetchAllAppointments$(data?: any): Observable<Appointment[]> {
+	public fetchAllAppointments$(pageNo: number, data?: any): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
 
 		if (data) {
-			const queryParams = {};
+			const queryParams = { pageNo: 1 };
 			if (data?.appointmentNumber) queryParams['id'] = data.appointmentNumber;
 			if (data?.roomsId) queryParams['roomId'] = data.roomsId;
 			// if (data?.roomsId) queryParams['roomId'] = data.roomsId;
@@ -137,16 +149,16 @@ export class AppointmentApiService extends DestroyableComponent {
 			return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
 				map((response) => {
 					if (!response?.data?.length) {
-						return [];
+						return { ...response, data: [] };
 					}
 
 					const appointments = response.data;
 
 					if (!appointments?.length) {
-						return [];
+						return { ...response, data: [] };
 					}
 
-					return appointments.map((appointment) => this.getAppointmentModified(appointment));
+					return { ...response, data: appointments.map((appointment) => this.getAppointmentModified(appointment)) };
 				}),
 				tap(() => {
 					this.loaderSvc.deactivate();
@@ -154,19 +166,21 @@ export class AppointmentApiService extends DestroyableComponent {
 			);
 		}
 
-		return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`).pipe(
+		const params = new HttpParams().append('pageNo', pageNo);
+
+		return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params }).pipe(
 			map((response) => {
 				if (!response?.data?.length) {
-					return [];
+					return { ...response, data: [] };
 				}
 
 				const appointments = response.data;
 
 				if (!appointments?.length) {
-					return [];
+					return { ...response, data: [] };
 				}
 
-				return appointments.map((appointment) => this.getAppointmentModified(appointment));
+				return { ...response, data: appointments.map((appointment) => this.getAppointmentModified(appointment)) };
 			}),
 			tap(() => {
 				this.loaderSvc.deactivate();
