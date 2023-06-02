@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { IHttpConnectionOptions } from '@microsoft/signalr';
 import { Observable, Subject } from 'rxjs';
@@ -7,17 +7,24 @@ import { Observable, Subject } from 'rxjs';
 	providedIn: 'root',
 })
 export class SignalrService {
-	private appointments$$ = new Subject<string>();
+	private appointmentsModuleData$$ = new Subject<string>();
+	private priorityModuleData$$ = new Subject<string>();
+
 	private hubConnection!: signalR.HubConnection;
 
 	constructor() {
 		this.createConnection();
-		this.register();
+		this.registerForAppointmentModule();
+		this.registerForPriorityModule();
 		this.startConnection();
 	}
 
-	public get appointmentData$(): Observable<any> {
-		return this.appointments$$ as Observable<any>;
+	public get appointmentsModuleData$(): Observable<any> {
+		return this.appointmentsModuleData$$ as Observable<any>;
+	}
+
+	public get priorityModuleData$(): Observable<any> {
+		return this.priorityModuleData$$ as Observable<any>;
 	}
 
 	private createConnection() {
@@ -32,21 +39,28 @@ export class SignalrService {
 			.build();
 	}
 
-	private register(): void {
-		this.hubConnection.on('InformClient', (param: string) => {
-			this.appointments$$.next(param);
+	private startConnection(): void {
+		this.hubConnection
+		.start()
+		.then(() => {
+			console.log('Connection started.');
+		})
+		.catch((err) => {
+			console.log('Opps!');
 		});
 	}
 
-	private startConnection(): void {
-		this.hubConnection
-			.start()
-			.then(() => {
-				console.log('Connection started.');
-			})
-			.catch((err) => {
-				console.log('Opps!');
-			});
+	private registerForAppointmentModule(): void {
+		this.hubConnection.on('InformClient', (param: string) => {
+			this.appointmentsModuleData$$.next(param);
+		});
+	}
+
+	private registerForPriorityModule(): void {
+		this.hubConnection.on('UpdatePriorityPercentage', (param: string) => {
+			console.log('priority',param);
+			this.priorityModuleData$$.next(param)
+		});
 	}
 }
 

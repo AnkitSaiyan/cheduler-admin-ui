@@ -69,11 +69,13 @@ export class AppointmentApiService extends DestroyableComponent {
 				next: (lang) => this.selectedLang$$.next(lang),
 			});
 
-			this.signalRService.appointmentData$.subscribe(val=> this.signalData = val);
+			this.signalRService.appointmentsModuleData$
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe(data=> this.signalData = data);
 	}
 
 	public get appointment$(): Observable<Appointment[]> {
-		return combineLatest([this.signalRService.appointmentData$.pipe(startWith(''))]).pipe(
+		return combineLatest([this.signalRService.appointmentsModuleData$.pipe(startWith(''))]).pipe(
 			switchMap(() => {
 				return this.fetchAllAppointments$().pipe(switchMap((appointments) => this.AttachPatientDetails(appointments)));
 			}),
