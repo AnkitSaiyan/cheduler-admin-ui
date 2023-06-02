@@ -66,6 +66,7 @@ export interface UserBase {
   status: Status;
   userType: UserType;
   userRole?: UserRoleEnum;
+  telephone?: string | number;
 }
 
 

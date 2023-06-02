@@ -129,13 +129,13 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		});
 
 		this.userApiSvc.staffs$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (absencesBase) => {
-				if (this.paginationData && this.paginationData.pageNo < absencesBase.metaData.pagination.pageNo) {
-					this.staffs$$.next([...this.staffs$$.value, ...absencesBase.data]);
+			next: (staffBase) => {
+				if (this.paginationData && this.paginationData.pageNo < staffBase.metaData.pagination.pageNo) {
+					this.staffs$$.next([...this.staffs$$.value, ...staffBase.data]);
 				} else {
-					this.staffs$$.next(absencesBase.data);
+					this.staffs$$.next(staffBase.data);
 				}
-				this.paginationData = absencesBase.metaData.pagination;
+				this.paginationData = staffBase.metaData.pagination;
 			},
 			error: (e) => {
 				this.staffs$$.next([]);
@@ -201,7 +201,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 					}
 					return !!changes.length;
 				}),
-				switchMap((changes) => this.userApiSvc.changeUserStatus$(changes)),
+				switchMap((changes) => this.userApiSvc.changeUserStatus$(changes, 'staff')),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
@@ -243,7 +243,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 	public changeStatus(changes: ChangeStatusRequestData[]) {
 		this.userApiSvc
-			.changeUserStatus$(changes)
+			.changeUserStatus$(changes, 'staff')
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
 				next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
