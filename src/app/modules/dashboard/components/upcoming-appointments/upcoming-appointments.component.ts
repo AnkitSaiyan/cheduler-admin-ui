@@ -13,9 +13,9 @@ import { AppointmentApiService } from '../../../../core/services/appointment-api
 	styleUrls: ['./upcoming-appointments.component.scss'],
 })
 export class UpcomingAppointmentsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-	private upcomingAppointments$$: BehaviorSubject<Appointment[]>;
+	private upcomingAppointments$$: BehaviorSubject<any[]>;
 
-	public filteredUpcomingAppointments$$: BehaviorSubject<Appointment[]>;
+	public filteredUpcomingAppointments$$: BehaviorSubject<any[]>;
 
 	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
