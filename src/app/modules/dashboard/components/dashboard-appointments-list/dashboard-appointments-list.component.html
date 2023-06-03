@@ -131,41 +131,41 @@
     <section class="table-wrapper" *ngIf="filteredAppointments$$ | async as appointments">
 
       <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
-                    [clearSelected$]="clearSelected$$" [stickyActions]="true"  noDataMessage="{{ 'NoAppointmentsFound' | translate }}"
-                    [rowClickable]="true" [stickyCheckbox]="true" (rowClicked)="navigateToView($event, appointments)"
-                    [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
-      <ng-template #bodyRowTemplate let-item>
-        <dfm-table-row-cell [fullContent]="item">{{ item?.exams.length ? (item.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing ) : ('' | dashIfNothing) }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item">{{ item?.exams.length ? (item.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing) : ('' | dashIfNothing) }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.patientFname">{{ item?.patientFname | titlecase }} {{ item?.patientLname  }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.exams">{{ item?.exams | joinWithAnd : 'name'  | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.doctor">{{ item?.doctor | titlecase | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.id">{{ item?.id }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.createdAt">{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.status">
-          <dfm-badge *ngIf="item.approval === statusType.Approved" color="success" size="sm" fontWeight="medium">
-            {{ item.approval | approvalTypeName | translate | dashIfNothing }}
-          </dfm-badge>
+                      [clearSelected$]="clearSelected$$" [stickyActions]="true"  noDataMessage="{{ 'NoAppointmentsFound' | translate }}"
+                      [rowClickable]="true" [stickyCheckbox]="true" (rowClicked)="navigateToView($event, appointments)"
+                      [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
+        <ng-template #bodyRowTemplate let-item>
+          <dfm-table-row-cell [fullContent]="item">{{ item?.exams.length ? (item.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing ) : ('' | dashIfNothing) }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item">{{ item?.exams.length ? (item.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing) : ('' | dashIfNothing) }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.patientFname">{{ item?.patientFname | titlecase }} {{ item?.patientLname  }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.exams">{{ item?.exams | joinWithAnd : 'name'  | dashIfNothing }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.doctor">{{ item?.doctor | titlecase | dashIfNothing }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.id">{{ item?.id }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.createdAt">{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.status">
+            <dfm-badge *ngIf="item.approval === statusType.Approved" color="success" size="sm" fontWeight="medium">
+              {{ item.approval | approvalTypeName | translate | dashIfNothing }}
+            </dfm-badge>
 
-          <dfm-badge *ngIf="item.approval === statusType.Cancelled" color="primary" size="sm">
-            {{ item.approval | approvalTypeName  | translate | dashIfNothing }}
-          </dfm-badge>
+            <dfm-badge *ngIf="item.approval === statusType.Cancelled" color="primary" size="sm">
+              {{ item.approval | approvalTypeName  | translate | dashIfNothing }}
+            </dfm-badge>
 
-          <dfm-badge *ngIf="item.approval === statusType.Pending" color="gray" size="sm">
-            {{ item.approval | approvalTypeName | translate  | dashIfNothing }}
-          </dfm-badge>
-        </dfm-table-row-cell>
-        <dfm-data-table-action-cell *dfmPermitted="[Permission.UpdatePhysicians, Permission.DeletePhysicians]">
-          <ng-template #actionCellTemplate *dfmPermitted="[Permission.UpdateAppointments, Permission.DeleteAppointments]">
-            <dfm-data-table-action *ngIf="!item.confirm" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()" ></dfm-data-table-action>
-            <dfm-data-table-action *ngIf="item.confirm" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()"></dfm-data-table-action>
-            <dfm-data-table-action icon="pencil-02" tooltip="{{ 'Edit' | translate }}" *dfmPermitted="Permission.UpdateAppointments" (click)="$event.stopPropagation()" [routerLink]="['/appointment', item.id, 'edit']"
-            [state]="{ comingFromRoute: 'dashboard', edit: true }" ></dfm-data-table-action>
-            <dfm-data-table-action icon="trash-01" *dfmPermitted="Permission.DeleteAppointments" tooltip="{{ 'Delete' | translate }}" (click)="$event.stopPropagation(); deleteAppointment(item.id)"></dfm-data-table-action>
-          </ng-template>
-        </dfm-data-table-action-cell>
-      </ng-template>
-    </dfm-data-table>
+            <dfm-badge *ngIf="item.approval === statusType.Pending" color="gray" size="sm">
+              {{ item.approval | approvalTypeName | translate  | dashIfNothing }}
+            </dfm-badge>
+          </dfm-table-row-cell>
+          <dfm-data-table-action-cell *dfmPermitted="[Permission.UpdatePhysicians, Permission.DeletePhysicians]">
+            <ng-template #actionCellTemplate *dfmPermitted="[Permission.UpdateAppointments, Permission.DeleteAppointments]">
+              <!-- <dfm-data-table-action *ngIf="!item.confirm" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()" ></dfm-data-table-action>
+              <dfm-data-table-action *ngIf="item.confirm" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()"></dfm-data-table-action> -->
+              <dfm-data-table-action icon="pencil-02" tooltip="{{ 'Edit' | translate }}" *dfmPermitted="Permission.UpdateAppointments" (click)="$event.stopPropagation()" [routerLink]="['/appointment', item.id, 'edit']"
+              [state]="{ comingFromRoute: 'dashboard', edit: true }" ></dfm-data-table-action>
+              <dfm-data-table-action icon="trash-01" *dfmPermitted="Permission.DeleteAppointments" tooltip="{{ 'Delete' | translate }}" (click)="$event.stopPropagation(); deleteAppointment(item.id)"></dfm-data-table-action>
+            </ng-template>
+          </dfm-data-table-action-cell>
+        </ng-template>
+      </dfm-data-table>
 
 
 

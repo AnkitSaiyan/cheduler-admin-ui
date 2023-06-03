@@ -142,6 +142,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
+    this.appointmentApiSvc.appointmentPageNo = 1;
 
 		// this.routerStateSvc
 		//   .listenForQueryParamsChanges$()

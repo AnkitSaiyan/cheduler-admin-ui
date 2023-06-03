@@ -158,6 +158,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 		super();
 		this.recentPatients$$ = new BehaviorSubject<any[]>([]);
 		this.filteredRecentPatients$$ = new BehaviorSubject<any[]>([]);
+    this.appointmentApiService.recentPatientPageNo = 1;
 	}
 
 	public ngOnInit(): void {
