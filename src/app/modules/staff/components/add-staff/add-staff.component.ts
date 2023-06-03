@@ -65,8 +65,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     public emitEvents$$ = new Subject<void>();
 
-    public weekdayEnum = Weekday;
-
     public comingFromRoute = '';
 
     public staffID!: number;
@@ -80,6 +78,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     public readonly interval: number = 5;
 
     public statuses = Statuses;
+
     private selectedLang: string = ENG_BE;
 
     constructor(
@@ -348,7 +347,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
         addStaffReqData.id = Number.isNaN(+this.staffID) ? 0 : +this.staffID;
 
         this.userApiSvc
-            .upsertUser$(addStaffReqData, 'staff')
+            .upsertUser$(addStaffReqData)
             .pipe(takeUntil(this.destroy$$))
             .subscribe(() => {
                 if (this.staffID) {
@@ -356,6 +355,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
                 } else {
                     this.notificationSvc.showNotification(Translate.SuccessMessage.StaffAdded[this.selectedLang]);
                 }
+
                 let route: string;
                 if (this.comingFromRoute === 'view') {
                     route = '../view';

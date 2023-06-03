@@ -1,18 +1,18 @@
 import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {
-    BehaviorSubject,
-    combineLatest,
-    debounceTime,
-    distinctUntilChanged,
-    filter, from,
-    interval,
-    map,
-    Observable,
-    Subject,
-    switchMap,
-    take,
-    takeUntil, tap
+	BehaviorSubject, catchError,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	filter, from,
+	interval,
+	map,
+	Observable,
+	Subject,
+	switchMap,
+	take,
+	takeUntil, tap
 } from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DfmDatasource, DfmTableHeader, NotificationType, TableItem} from 'diflexmo-angular-design';
@@ -27,7 +27,7 @@ import {
     ConfirmActionModalData
 } from '../../../../shared/components/confirm-action-modal.component';
 import {NameValue, SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
-import {User, UserBase, UserType} from '../../../../shared/models/user.model';
+import {SchedulerUser, User, UserBase, UserListResponse, UserType} from '../../../../shared/models/user.model';
 import {DownloadAsType, DownloadService, DownloadType} from '../../../../core/services/download.service';
 import {AddUserComponent} from '../add-user/add-user.component';
 import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
@@ -130,7 +130,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 	public clipboardData: string = '';
 
-	public paginationData: PaginationData | undefined;
+	private paginationData: PaginationData | undefined;
+
+	private idsToObjMap: Map<string, any> = new Map<string, any>();
 
 	constructor(
 		private userApiSvc: UserApiService,
@@ -150,6 +152,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		super();
 		this.users$$ = new BehaviorSubject<any[]>([]);
 		this.filteredUsers$$ = new BehaviorSubject<any[]>([]);
+		this.userApiSvc.pageNoUser = 1;
 	}
 
 	public ngOnInit(): void {
@@ -174,7 +177,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		});
 
 		this.users$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (staffs) => this.filteredUsers$$.next([...staffs])
+			next: (users) => {
+				this.filteredUsers$$.next([...users]);
+				users.forEach((user) => this.idsToObjMap.set(user.id.toString(), user));
+			}
 		});
 
 		this.userTypeDropdownControl.valueChanges
@@ -184,11 +190,13 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				distinctUntilChanged(),
 				tap((userType) => {
 					if (userType === UserType.General) {
+						this.userApiSvc.pageNoUser = 1;
 						this.updateColumns(this.columnsForGeneral);
 					} else {
 						this.updateColumns(this.columnsForScheduler);
 					}
-					this.filteredUsers$$.next([]);
+
+					this.users$$.next([]);
 				}),
 				switchMap((userType) => {
 					if (userType === UserType.General) {
@@ -196,18 +204,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 					}
 					return this.userManagementApiSvc.userList$.pipe(
 						map((users) =>
-							users.items.map((user) => {
-								return {
-									id: user.id,
-									email: user.email,
-									firstname: user.givenName,
-									lastname: user.surname,
-									fullName: user.displayName,
-									userType: UserType.Scheduler,
-									status: user.accountEnabled === null ? 2 : +user.accountEnabled,
-									userRole: user?.userRole,
-								} as unknown as UserBase;
-							}),
+							users.items.map((user) => this.convertToUserBase(user)),
 						),
 					);
 				}),
@@ -217,11 +214,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				next: (userBase) => {
 					if (this.userTypeDropdownControl.value === UserType.General) {
 						const generalUserBase = (userBase as BaseResponse<User[]>);
-						if (this.paginationData && this.paginationData.pageNo < generalUserBase.metaData.pagination.pageNo) {
-							this.users$$.next([...this.users$$.value, ...generalUserBase.data]);
-						} else {
-							this.users$$.next(generalUserBase.data);
-						}
+						this.users$$.next([...this.users$$.value, ...generalUserBase.data]);
 						this.paginationData = generalUserBase.metaData.pagination;
 					} else {
 						this.users$$.next([...(userBase as UserBase[])]);
@@ -234,44 +227,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 					this.loading$$.next(false);
 				}
 			});
-
-		// this.userTypeDropdownControl.valueChanges
-		// 	.pipe(
-		// 		filter((userType) => userType === UserType.Scheduler),
-		// 		distinctUntilChanged(),
-		// 		switchMap(() => {
-		// 			this.updateColumns(this.columnsForScheduler);
-		// 			this.filteredUsers$$.next([]);
-		//
-		// 			return this.userManagementApiSvc.userList$.pipe(
-		// 				map((users) =>
-		// 					users.items.map((user) => {
-		// 						return {
-		// 							id: user.id,
-		// 							email: user.email,
-		// 							firstname: user.givenName,
-		// 							lastname: user.surname,
-		// 							fullName: user.displayName,
-		// 							userType: UserType.Scheduler,
-		// 							status: user.accountEnabled === null ? 2 : +user.accountEnabled,
-		// 							userRole: user?.userRole,
-		// 						} as unknown as UserBase;
-		// 					}),
-		// 				),
-		// 			);
-		// 		}),
-		// 		takeUntil(this.destroy$$)
-		// 	)
-		// 	.subscribe({
-		// 		next: (userBase) => {
-		// 			this.users$$.next([...userBase]);
-		// 			this.loading$$.next(false);
-		// 		},
-		// 		error: (err) => {
-		// 			this.users$$.next([]);
-		// 			this.loading$$.next(false)
-		// 		}
-		// 	});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
 			next: (searchText) => {
@@ -303,7 +258,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 							u.firstname,
 							u.lastname,
 							u.email,
-							u.userType,
 							...(this.userTypeDropdownControl.value === UserType.Scheduler
 								? [this.roleNamePipe.transform(this.userApiSvc.userIdToRoleMap.get(u.id.toString()))]
 								: []),
@@ -337,7 +291,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				switchMap((changes) => {
 					switch (this.userTypeDropdownControl.value) {
 						case UserType.General:
-							return this.userApiSvc.changeUserStatus$(changes, 'user');
+							return this.userApiSvc.changeUserStatus$(changes);
 						case UserType.Scheduler:
 							return this.userManagementApiSvc.changeUsersStates(
 								changes.map(({ id, status }) => {
@@ -347,7 +301,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						default:
 							return from([null]).pipe(
 								tap(() => {
-									this.notificationSvc.showError('Something wen wrong');
+									this.notificationSvc.showError('Something went wrong');
 									this.clearSelected$$.next();
 								}),
 								filter((res) => !!res),
@@ -358,6 +312,13 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			)
 			.subscribe({
 				next: (value) => {
+					this.selectedUserIds.map((id) => {
+						this.users$$.next([...GeneralUtils.modifyListData(this.users$$.value, {
+							...(this.idsToObjMap.get(id.toString()) ?? {}),
+							status: this.afterBannerClosed$$.value?.newStatus,
+						}, 'update', 'id')]);
+					});
+
 					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
 					this.clearSelected$$.next();
 				},
@@ -410,18 +371,23 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		this.selectedUserIds = [...selected];
 	}
 
-	public changeStatus(changes: ChangeStatusRequestData[]) {
+	public changeStatus(changes: ChangeStatusRequestData[], item: any) {
 		let observable: Observable<any>;
 		switch (this.userTypeDropdownControl.value) {
 			case UserType.General:
-				observable = this.userApiSvc.changeUserStatus$(changes, 'user');
+				observable = this.userApiSvc.changeUserStatus$(changes);
 				break;
 			default:
 				observable = this.userManagementApiSvc.changeUserState(changes[0].id as string, !!changes[0].status);
 		}
 
 		observable.pipe(take(1)).subscribe({
-			next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
+			next: () => {
+				this.users$$.next([...GeneralUtils.modifyListData(this.users$$.value, {
+					...item, status: changes[0].status
+				}, 'update', 'id')]);
+				this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang])
+			},
 		});
 	}
 
@@ -448,9 +414,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			)
 			.subscribe({
 				next: () => {
+					this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, { id }, 'delete', 'id'));
 					this.notificationSvc.showNotification(Translate.SuccessMessage.UserDeleted[this.selectedLang]);
-					// filtering out deleted users
-					this.users$$.next([...this.users$$.value.filter((s) => s.id.toString() !== id.toString())]);
 				},
 			});
 	}
@@ -526,7 +491,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public openAddUserModal(userDetails?: User) {
-		this.modalSvc.open(AddUserComponent, {
+		const modalRef = this.modalSvc.open(AddUserComponent, {
 			data: { edit: !!userDetails?.id, userDetails },
 			options: {
 				size: 'lg',
@@ -534,6 +499,22 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				backdropClass: 'modal-backdrop-remove-mv',
 			},
 		});
+
+		modalRef.closed.pipe(take(1)).subscribe({
+			next: (res) => {
+				if (res) {
+					if (
+						(isNaN(+res.id) && this.userTypeDropdownControl.value === UserType.General) ||
+						(!isNaN(+res.id) && this.userTypeDropdownControl.value === UserType.Scheduler)
+					) {
+						return;
+					}
+
+					const item = isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : res as UserBase;
+					this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, item, 'add'));
+				}
+			}
+		})
 	}
 
 	private handleSearch(searchText: string): void {
@@ -590,6 +571,19 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			title: Translate[c][this.selectedLang],
 			isSortable: true,
 		}));
+	}
+
+	private convertToUserBase(user: SchedulerUser): UserBase {
+		return {
+			id: user.id,
+			email: user.email,
+			firstname: user.givenName,
+			lastname: user.surname,
+			fullName: user.displayName,
+			userType: UserType.Scheduler,
+			status: user.accountEnabled === null ? 2 : +user.accountEnabled,
+			userRole: user?.userRole,
+		} as unknown as UserBase;
 	}
 
 	public onScroll(e: undefined): void {
