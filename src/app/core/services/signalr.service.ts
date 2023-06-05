@@ -22,7 +22,7 @@ export class SignalrService {
 		this.startConnection();
 	}
 
-	public get appointmentsModuleData$(): Observable<any> {
+	public get latestAppointmentInfo$(): Observable<any> {
 		return this.appointmentsModuleData$$.asObservable().pipe(switchMap((val:any) =>
 			this.appointmentApiSvc.AttachPatientDetails([this.appointmentApiSvc.getAppointmentModified(val)])
 		));
@@ -33,11 +33,11 @@ export class SignalrService {
 	}
 
 	private createConnection() {
-
 		const SubDomain: string = window.location.host.split('.')[0];
 		const options: IHttpConnectionOptions = {
 			headers: { SubDomain },
 		}
+
 		this.hubConnection = new signalR.HubConnectionBuilder()
 			.withUrl(`https://diflexmo-scheduler-api-dev.azurewebsites.net/informhub`, options  )
 			.configureLogging(signalR.LogLevel.Debug)

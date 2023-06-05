@@ -71,9 +71,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public downloadItems: NameValue[] = [];
 
-	public appointments$$: BehaviorSubject<any[]>;
+	public appointments$$: BehaviorSubject<Appointment[]>;
 
-	public filteredAppointments$$: BehaviorSubject<any[]>;
+	public filteredAppointments$$: BehaviorSubject<Appointment[]>;
 
 	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
@@ -287,11 +287,14 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				}
 			});
 
-			this.signalRSvc.appointmentsModuleData$.pipe(withLatestFrom(this.filteredAppointments$$)).subscribe({
+			this.signalRSvc.latestAppointmentInfo$.pipe(
+				withLatestFrom(this.filteredAppointments$$),
+				takeUntil(this.destroy$$)
+			).subscribe({
 				next : ([item , list])=>{
 					const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase());
 					this.filteredAppointments$$.next(modifiedList);
-					this.notificationSvc.showNotification(`Appointment ${item[0].action}`);
+					this.notificationSvc.showSuccess(`Appointment ${item[0].action}`);
 				}
 			});			
 	}
