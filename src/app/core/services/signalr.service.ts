@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { IHttpConnectionOptions } from '@microsoft/signalr';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, switchMap } from 'rxjs';
+import { AppointmentApiService } from './appointment-api.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -12,7 +13,9 @@ export class SignalrService {
 
 	private hubConnection!: signalR.HubConnection;
 
-	constructor() {
+	constructor(
+		private appointmentApiSvc : AppointmentApiService
+	) {
 		this.createConnection();
 		this.registerForAppointmentModule();
 		this.registerForPriorityModule();
@@ -20,11 +23,13 @@ export class SignalrService {
 	}
 
 	public get appointmentsModuleData$(): Observable<any> {
-		return this.appointmentsModuleData$$ as Observable<any>;
+		return this.appointmentsModuleData$$.asObservable().pipe(switchMap((val:any) =>
+			this.appointmentApiSvc.AttachPatientDetails([this.appointmentApiSvc.getAppointmentModified(val)])
+		));
 	}
 
 	public get priorityModuleData$(): Observable<any> {
-		return this.priorityModuleData$$ as Observable<any>;
+		return this.priorityModuleData$$.asObservable();
 	}
 
 	private createConnection() {
