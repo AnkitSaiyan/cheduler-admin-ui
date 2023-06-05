@@ -103,8 +103,8 @@ export class AppointmentApiService extends DestroyableComponent {
 	}
 
 	public get appointment$(): Observable<BaseResponse<Appointment[]>> {
-		return combineLatest([this.signalRService.appointments$$.pipe(startWith('')), this.appointmentPageNo$$]).pipe(
-			switchMap(([_, pageNo]) => {
+		return combineLatest([this.appointmentPageNo$$]).pipe(
+			switchMap(([pageNo]) => {
 				return this.fetchAllAppointments$(pageNo).pipe(
 					switchMap((appointments) => this.AttachPatientDetails(appointments.data).pipe(map((data) => ({ ...appointments, data })))),
 				);
@@ -134,21 +134,6 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	public fetchAllAppointments$(pageNo: number, data?: any): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
-
-	if(this.signalData){
-		return of(this.signalData).pipe(
-			map((response) => {
-				console.log(response);
-				if (!response?.length) {
-					return [];
-				}
-				return response.map((appointment) => this.getAppointmentModified(appointment));
-			}),
-			tap(() => {
-				this.loaderSvc.deactivate();
-			}),
-		);
-	}
 	
 		if (data) {
 			const queryParams = { pageNo: 1 };
