@@ -89,7 +89,6 @@ export class AppointmentApiService extends DestroyableComponent {
 		private shareDataSvc: ShareDataService,
 		private userManagementSvc: UserManagementApiService,
 		private datePipe: DatePipe,
-		private signalRService: SignalrService,
 	) {
 		super();
 		this.shareDataSvc
@@ -98,8 +97,6 @@ export class AppointmentApiService extends DestroyableComponent {
 			.subscribe({
 				next: (lang) => this.selectedLang$$.next(lang),
 			});
-
-			this.signalRService.appointmentData$.subscribe(val=> this.signalData = val);
 	}
 
 	public get appointment$(): Observable<BaseResponse<Appointment[]>> {
@@ -313,7 +310,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	private getAppointmentModified(appointment: Appointment): Appointment {
+	public getAppointmentModified(appointment: Appointment): Appointment {
 		const examIdToRooms: { [key: number]: Room[] } = {};
 		const examIdToUsers: { [key: number]: User[] } = {};
 

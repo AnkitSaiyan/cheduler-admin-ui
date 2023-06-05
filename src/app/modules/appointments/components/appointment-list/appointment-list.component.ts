@@ -4,7 +4,7 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
-import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil, withLatestFrom } from 'rxjs';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
@@ -29,6 +29,7 @@ import { Translate } from '../../../../shared/models/translate.model';
 import { DefaultDatePipe } from '../../../../shared/pipes/default-date.pipe';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
+import { SignalrService } from 'src/app/core/services/signalr.service';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -70,9 +71,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public downloadItems: NameValue[] = [];
 
-	public appointments$$: BehaviorSubject<any[]>;
+	public appointments$$: BehaviorSubject<Appointment[]>;
 
-	public filteredAppointments$$: BehaviorSubject<any[]>;
+	public filteredAppointments$$: BehaviorSubject<Appointment[]>;
 
 	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
@@ -136,6 +137,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		private utcToLocalPipe: UtcToLocalPipe,
 		private joinWithAndPipe: JoinWithAndPipe,
 		private translatePipe: TranslatePipe,
+		private signalRSvc : SignalrService
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -284,6 +286,17 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 						break;
 				}
 			});
+
+			this.signalRSvc.latestAppointmentInfo$.pipe(
+				withLatestFrom(this.filteredAppointments$$),
+				takeUntil(this.destroy$$)
+			).subscribe({
+				next : ([item , list])=>{
+					const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase());
+					this.filteredAppointments$$.next(modifiedList);
+					this.notificationSvc.showSuccess(`Appointment ${item[0].action}`);
+				}
+			});			
 	}
 
 	public override ngOnDestroy() {

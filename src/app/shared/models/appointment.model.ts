@@ -4,6 +4,7 @@ import {User} from './user.model';
 import {AppointmentStatus, ReadStatus} from './status.model';
 
 export interface Appointment {
+  action?: any;
 	id: number;
 	createdAt: Date;
 	updatedAt: string;

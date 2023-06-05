@@ -12,6 +12,7 @@ import { getDateOfMonth } from 'src/app/shared/models/calendar.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { SignalrService } from 'src/app/core/services/signalr.service';
 
 @Component({
 	selector: 'dfm-priority-slots-calendar-view',
@@ -34,11 +35,14 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 
 	public practiceHourMinMax$: Observable<{ min: string; max: string; grayOutMin: string; grayOutMax: string } | null> = of(null);
 
+	private currentSlotPrecentageData : any[] = [];
+
 	constructor(
 		private router: Router,
 		private datePipe: DatePipe,
 		private priorityApiSvc: PrioritySlotApiService,
 		private practiceHourSvc: PracticeHoursApiService,
+		private signalRService :SignalrService,
 	) {
 		super();
 		this.prioritySlots$$ = new BehaviorSubject<any>({});
@@ -90,6 +94,14 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 				return { ...finalValue, grayOutMin: min, grayOutMax: max };
 			}),
 		);
+
+		this.signalRService.priorityModuleData$.pipe(takeUntil(this.destroy$$)).subscribe(data => {
+			const indexOfChangedSlot = this.currentSlotPrecentageData.findIndex(ele => ele.date == data.date);
+			if (indexOfChangedSlot !== -1) {
+				this.currentSlotPrecentageData[indexOfChangedSlot] = data;
+				this.slotPercentage$$.next(this.currentSlotPrecentageData);
+			}
+		});
 	}
 
 	private calculate(minutes: number, time: string, type: 'plus' | 'minus'): string {
@@ -140,6 +152,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((slotPercentage) => {
 				this.slotPercentage$$.next(slotPercentage);
+				this.currentSlotPrecentageData = slotPercentage
 			});
 	}
 
