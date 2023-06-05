@@ -90,6 +90,8 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 	private paginationData: PaginationData | undefined;
 
+	private idsToObjMap: Map<string, any> = new Map<string, any>();
+
 	constructor(
 		private userApiSvc: UserApiService,
 		private notificationSvc: NotificationDataService,
@@ -106,6 +108,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		super();
 		this.staffs$$ = new BehaviorSubject<any[]>([]);
 		this.filteredStaffs$$ = new BehaviorSubject<any[]>([]);
+		this.userApiSvc.pageNoStaff = 1;
 	}
 
 	public ngOnInit(): void {
@@ -125,16 +128,20 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		});
 
 		this.staffs$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (staffs) => this.filteredStaffs$$.next([...staffs])
+			next: (staffs) => {
+				this.filteredStaffs$$.next([...staffs])
+				staffs.forEach((staff) => this.idsToObjMap.set(staff.id.toString(), staff));
+			}
 		});
 
 		this.userApiSvc.staffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (staffBase) => {
-				if (this.paginationData && this.paginationData.pageNo < staffBase.metaData.pagination.pageNo) {
-					this.staffs$$.next([...this.staffs$$.value, ...staffBase.data]);
-				} else {
-					this.staffs$$.next(staffBase.data);
-				}
+				// if (this.paginationData && this.paginationData.pageNo < staffBase.metaData.pagination.pageNo) {
+				// } else {
+				// 	this.staffs$$.next(staffBase.data);
+				// }
+
+				this.staffs$$.next([...this.staffs$$.value, ...staffBase.data]);
 				this.paginationData = staffBase.metaData.pagination;
 			},
 			error: (e) => {
@@ -201,11 +208,17 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 					}
 					return !!changes.length;
 				}),
-				switchMap((changes) => this.userApiSvc.changeUserStatus$(changes, 'staff')),
+				switchMap((changes) => this.userApiSvc.changeUserStatus$(changes)),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
 				next: () => {
+					this.selectedStaffIds.map((id) => {
+						this.staffs$$.next([...GeneralUtils.modifyListData(this.staffs$$.value, {
+							...(this.idsToObjMap.get(id.toString()) ?? {}),
+							status: this.afterBannerClosed$$.value?.newStatus,
+						}, 'update', 'id')]);
+					});
 					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
 					this.clearSelected$$.next();
 				}
@@ -241,12 +254,17 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		this.selectedStaffIds = [...selected];
 	}
 
-	public changeStatus(changes: ChangeStatusRequestData[]) {
+	public changeStatus(changes: ChangeStatusRequestData[], item: any) {
 		this.userApiSvc
-			.changeUserStatus$(changes, 'staff')
+			.changeUserStatus$(changes)
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
+				next: () => {
+					this.staffs$$.next([...GeneralUtils.modifyListData(this.staffs$$.value, {
+						...item, status: changes[0].status
+					}, 'update', 'id')]);
+					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
+				},
 				error: (err) => this.notificationSvc.showNotification(err, NotificationType.DANGER),
 			});
 	}
@@ -269,9 +287,8 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 			)
 			.subscribe({
 				next: (response) => {
+					this.staffs$$.next(GeneralUtils.modifyListData(this.staffs$$.value, { id }, 'delete', 'id'));
 					this.notificationSvc.showNotification(Translate.SuccessMessage.StaffDeleted[this.selectedLang]);
-					// filtering out deleted staff
-					this.staffs$$.next([...this.staffs$$.value.filter((s) => +s.id !== +id)]);
 				}
 			});
 	}
