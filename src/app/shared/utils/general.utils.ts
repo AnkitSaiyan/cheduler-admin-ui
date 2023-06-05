@@ -1,4 +1,6 @@
 import {ColumnSort} from "diflexmo-angular-design";
+import {isSetEqual} from "@angular/compiler-cli/src/ngtsc/incremental/semantic_graph";
+import {ensureOriginalSegmentLinks} from "@angular/compiler-cli/src/ngtsc/sourcemaps/src/source_file";
 
 export class GeneralUtils {
 	public static FilterArray([...arr]: readonly any[], filterText: string, key?: string): any[] {
@@ -35,6 +37,42 @@ export class GeneralUtils {
 						return a[key] >= b[key] ? -1 : 1;
 					}
 					return a >=	 b ? -1 : 1;
+				});
+		}
+	}
+
+	public static modifyListData([...list]: any[], item: any, action: 'add' | 'delete' | 'update', key?: string, index?: null | number): any[] {
+		if (!list.length) {
+			return list;
+		}
+
+		switch (action) {
+			case 'add':
+				return [item, ...list];
+			case 'delete':
+				return list.filter((data) =>  {
+					if (key) {
+						return data[key]?.toString() !== item[key]?.toString();
+					}
+					return data !== item;
+				});
+			case 'update':
+				if (typeof index === 'number' && index > -1 && index < list.length) {
+					list[index] = item;
+					return list;
+				}
+
+				return list.map((data) => {
+					if (key) {
+						if (data[key] === item[key]) {
+							return item;
+						}
+					} else {
+						if (data.toString() === item.toString()) {
+							return item;
+						}
+					}
+					return data;
 				});
 		}
 	}

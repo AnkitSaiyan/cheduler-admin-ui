@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -61,6 +61,26 @@ export class AppointmentApiService extends DestroyableComponent {
 		return this.pageNo$$.value;
 	}
 
+	private appointmentPageNo$$ = new BehaviorSubject<number>(1);
+
+	public set appointmentPageNo(pageNo: number) {
+		this.appointmentPageNo$$.next(pageNo);
+	}
+
+	public get appointmentPageNo(): number {
+		return this.appointmentPageNo$$.value;
+	}
+
+	private recentPatientPageNo$$ = new BehaviorSubject<number>(1);
+
+	public set recentPatientPageNo(pageNo: number) {
+		this.pageNo$$.next(pageNo);
+	}
+
+	public get recentPatientPageNo(): number {
+		return this.pageNo$$.value;
+	}
+
 	constructor(
 		private physicianApiSvc: PhysicianApiService,
 		private http: HttpClient,
@@ -82,10 +102,12 @@ export class AppointmentApiService extends DestroyableComponent {
 			this.signalRService.appointmentData$.subscribe(val=> this.signalData = val);
 	}
 
-	public get appointment$(): Observable<Appointment[]> {
-		return combineLatest([this.signalRService.appointmentData$.pipe(startWith(''))]).pipe(
-			switchMap(() => {
-				return this.fetchAllAppointments$().pipe(switchMap((appointments) => this.AttachPatientDetails(appointments)));
+	public get appointment$(): Observable<BaseResponse<Appointment[]>> {
+		return combineLatest([this.signalRService.appointments$$.pipe(startWith('')), this.appointmentPageNo$$]).pipe(
+			switchMap(([_, pageNo]) => {
+				return this.fetchAllAppointments$(pageNo).pipe(
+					switchMap((appointments) => this.AttachPatientDetails(appointments.data).pipe(map((data) => ({ ...appointments, data })))),
+				);
 			}),
 		);
 	}
@@ -110,7 +132,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public fetchAllAppointments$(data?: any): Observable<Appointment[]> {
+	public fetchAllAppointments$(pageNo: number, data?: any): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
 
 	if(this.signalData){
@@ -129,7 +151,7 @@ export class AppointmentApiService extends DestroyableComponent {
 	}
 	
 		if (data) {
-			const queryParams = {};
+			const queryParams = { pageNo: 1 };
 			if (data?.appointmentNumber) queryParams['id'] = data.appointmentNumber;
 			if (data?.roomsId) queryParams['roomId'] = data.roomsId;
 			// if (data?.roomsId) queryParams['roomId'] = data.roomsId;
@@ -145,16 +167,16 @@ export class AppointmentApiService extends DestroyableComponent {
 			return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
 				map((response) => {
 					if (!response?.data?.length) {
-						return [];
+						return { ...response, data: [] };
 					}
 
 					const appointments = response.data;
 
 					if (!appointments?.length) {
-						return [];
+						return { ...response, data: [] };
 					}
 
-					return appointments.map((appointment) => this.getAppointmentModified(appointment));
+					return { ...response, data: appointments.map((appointment) => this.getAppointmentModified(appointment)) };
 				}),
 				tap(() => {
 					this.loaderSvc.deactivate();
@@ -162,19 +184,21 @@ export class AppointmentApiService extends DestroyableComponent {
 			);
 		}
 
-		return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`).pipe(
+		const params = new HttpParams().append('pageNo', pageNo);
+
+		return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params }).pipe(
 			map((response) => {
 				if (!response?.data?.length) {
-					return [];
+					return { ...response, data: [] };
 				}
 
 				const appointments = response.data;
 
 				if (!appointments?.length) {
-					return [];
+					return { ...response, data: [] };
 				}
 
-				return appointments.map((appointment) => this.getAppointmentModified(appointment));
+				return { ...response, data: appointments.map((appointment) => this.getAppointmentModified(appointment)) };
 			}),
 			tap(() => {
 				this.loaderSvc.deactivate();
@@ -414,8 +438,11 @@ export class AppointmentApiService extends DestroyableComponent {
 		this.loaderSvc.activate();
 
 		return combineLatest([this.pageNo$$]).pipe(
-			switchMap(() => {
-				return this.http.get<BaseResponse<{ upcomingAppointments: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`);
+			switchMap(([pageNo]) => {
+				const params = new HttpParams().append('pageNo', pageNo);
+				return this.http.get<BaseResponse<{ upcomingAppointments: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`, {
+					params,
+				});
 			}),
 			switchMap((response) => {
 				const upcoming = response.data?.upcomingAppointments;
@@ -427,12 +454,18 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public get recentPatients$(): Observable<Appointment[]> {
+	public get recentPatients$(): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/recentpatients`).pipe(
+		return combineLatest([this.recentPatientPageNo$$]).pipe(
+			switchMap(([pageNo]) => {
+				const params = new HttpParams().append('pageNo', pageNo);
+				return this.http.get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/recentpatients`, { params });
+			}),
 			switchMap((response) => {
 				const recentAppointments = response.data?.appointment;
-				return !recentAppointments || !recentAppointments.length ? of([]) : this.AttachPatientDetails(recentAppointments);
+				return !recentAppointments || !recentAppointments.length
+					? of({ ...response, data: [] })
+					: this.AttachPatientDetails(recentAppointments).pipe(map((data) => ({ ...response, data })));
 			}),
 		);
 	}

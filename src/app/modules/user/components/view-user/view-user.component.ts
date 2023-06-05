@@ -26,10 +26,15 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
 	public userDetails$$ = new BehaviorSubject<User | undefined>(undefined);
 
 	public userTypeEnum = getUserTypeEnum();
+
 	public currentUserType!: UserType;
+
 	public userProperties: Record<string, string> = {};
+
 	protected readonly UserType = UserType;
+
 	protected readonly Permission = Permission;
+
 	private selectedLang: string = ENG_BE;
 
 	constructor(
@@ -124,7 +129,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public openEditUserModal() {
-		this.modalSvc.open(AddUserComponent, {
+		const modalRef = this.modalSvc.open(AddUserComponent, {
 			data: { edit: !!this.userDetails$$.value?.id, userDetails: { ...this.userDetails$$.value } },
 			options: {
 				size: 'lg',
@@ -132,5 +137,13 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
 				backdropClass: 'modal-backdrop-remove-mv',
 			},
 		});
+
+		modalRef.closed.pipe(take(1)).subscribe({
+			next: (user) => {
+				if (user) {
+					this.userDetails$$.next(user);
+				}
+			}
+		})
 	}
 }

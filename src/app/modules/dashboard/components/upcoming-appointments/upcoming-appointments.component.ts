@@ -31,6 +31,8 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 		super();
 		this.upcomingAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredUpcomingAppointments$$ = new BehaviorSubject<any[]>([]);
+		this.appointmentApiService.pageNo = 1;
+
 	}
 
 	ngOnInit(): void {
@@ -81,6 +83,8 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 		}
 	}
 }
+
+
 
 
 

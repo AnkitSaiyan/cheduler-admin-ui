@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NotificationType} from 'diflexmo-angular-design';
-import {BehaviorSubject, catchError, Observable, switchMap, take, takeUntil} from 'rxjs';
+import {BehaviorSubject, catchError, map, Observable, switchMap, take, takeUntil} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
@@ -36,6 +36,7 @@ interface FormValues {
 	styleUrls: ['./add-user.component.scss'],
 })
 export class AddUserComponent extends DestroyableComponent implements OnInit, OnDestroy {
+
 	public addUserForm!: FormGroup;
 
 	public modalData!: { edit: boolean; userDetails: User };
@@ -55,6 +56,10 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 	public readonly Permission = Permission;
 
 	public permissionType!: UserRoleEnum;
+
+	protected readonly UserType = UserType;
+
+	protected readonly UserRoleEnum = UserRoleEnum;
 
 	constructor(
 		private modalSvc: ModalService,
@@ -146,7 +151,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 		});
 	}
 
-	public closeModal(res: boolean) {
+	public closeModal(res: any) {
 		this.modalSvc.close(res);
 	}
 
@@ -200,7 +205,10 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 						clientId: environment.authClientId,
 					},
 				})
-				.pipe(switchMap((user) => this.userApiSvc.assignUserRole(user.id, this.formValues.userRole)));
+				.pipe(switchMap((user) => {
+					return this.userApiSvc.assignUserRole(user.id, this.formValues.userRole)
+						.pipe(map( _ => user));
+				}));
 		} else {
 			addUserObservable$ = this.userApiSvc.upsertUser$({
 				firstname: this.formValues.firstname,
@@ -208,18 +216,18 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 				email: this.formValues.email ?? null,
 				userType: this.modalData.edit ? this.modalData.userDetails.userType : this.formValues.userType,
 				...(this.modalData.userDetails ? { id: this.modalData.userDetails.id } : {}),
-			}, 'user');
+			});
 		}
 
 		addUserObservable$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: () => {
+			next: (user) => {
 				if (this.modalData.edit) {
 					this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
 				} else {
 					this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
 				}
 				this.loading$$.next(false);
-				this.closeModal(true);
+				this.closeModal({ ...user, userRole: this.formValues.userRole, accountEnabled: true });
 			},
 			error: (err) => this.loading$$.next(false),
 		});
@@ -240,7 +248,4 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 			this.addUserForm.get('email')?.setErrors(null);
 		}
 	}
-
-	protected readonly UserType = UserType;
-	protected readonly UserRoleEnum = UserRoleEnum;
 }

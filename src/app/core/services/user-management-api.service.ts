@@ -137,8 +137,6 @@ export class UserManagementApiService {
 	public deleteUser(userId: string): Observable<{}> {
 		return this.httpClient.delete<{}>(`${this.baseUrl}/users/${userId}`).pipe(
 			tap(() => {
-				this.refreshUserList$$.next();
-
 				if (this.userIdToRoleMap.has(userId)) {
 					this.userIdToRoleMap.delete(userId);
 				}
@@ -151,13 +149,14 @@ export class UserManagementApiService {
 
 		return this.httpClient
 			.put<any>(`${this.baseUrl}/users/${userId}/state`, { accountEnabled: state })
-			.pipe(tap(() => this.refreshUserList$$.next()));
+			.pipe(tap(() => this.loaderSvc.deactivate()));
 	}
 
 	public changeUsersStates(stateRequest: Array<{ id: string; accountEnabled: boolean }>): Observable<any> {
 		this.loaderSvc.activate();
 
-		return this.httpClient.put<any>(`${this.baseUrl}/users/state`, { users: stateRequest }).pipe(tap(() => this.refreshUserList$$.next()));
+		return this.httpClient.put<any>(`${this.baseUrl}/users/state`, { users: stateRequest })
+			.pipe(tap(() => this.loaderSvc.deactivate()));
 	}
 
 	public getPatientByIds$(patientIds: string[]): Observable<SchedulerUser[]> {
