@@ -174,7 +174,7 @@
 											[ngbPopover]="priorityCardDetail"
 											triggers="mouseenter:mouseleave"
 											triggers="mouseenter:mouseleave"
-											class="priority-slots-area"
+											[class]="'priority-slots-area '+ prioritySlotsVariant"
 											[ngClass]="prioritySlot.priority"
 											[ngStyle]="{
 												'top.px': getPrioritySlotTop(prioritySlot),
@@ -190,8 +190,10 @@
 															: prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]
 												"
 											>
-												<span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
-												<span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
+                        <ng-container *ngIf="slotPercentage?.length">
+                          <span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
+                          <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
+                        </ng-container>
 											</div>
 											<ng-template #priorityCardDetail>
 												<span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end }}</span>

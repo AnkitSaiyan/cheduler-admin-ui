@@ -5,7 +5,7 @@ import { BehaviorSubject, combineLatest, debounceTime, filter, lastValueFrom, sw
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
-import { getDurationMinutes } from 'src/app/shared/models/calendar.model';
+import { getDateOfMonth, getDurationMinutes } from 'src/app/shared/models/calendar.model';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { Exam } from '../../../../shared/models/exam.model';
@@ -28,6 +28,9 @@ import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statu
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { TranslatePipe } from '@ngx-translate/core';
+import { RepeatType } from 'src/app/shared/models/absence.model';
+import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 
 @Component({
 	selector: 'dfm-appointment-calendar',
@@ -71,6 +74,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	private pixelPerMinute = 4;
 
+	public prioritySlots$$: BehaviorSubject<any>;
+
 	@Input() appointmentData$$!: BehaviorSubject<any[]>;
 
 	appointmentGroupedByDateAndRoom: {
@@ -101,11 +106,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		private notificationSvc: NotificationDataService,
 		private shareDataSvc: ShareDataService,
 		private translatePipe: TranslatePipe,
+		private priorityApiSvc: PrioritySlotApiService,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.selectedSlot$$ = new BehaviorSubject<any>(null);
+		this.prioritySlots$$ = new BehaviorSubject<any>({});
 		this.appointmentApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => {
 				//
@@ -131,6 +138,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					this.selectedDate$$.next(date);
 				}
 			}
+		});
+
+		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
+			this.setPrioritySlots(prioritySlots);
 		});
 
 		this.practiceHoursApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
@@ -166,21 +177,23 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			this.practiceHourMinMax$$.next(minMaxValue);
 		});
 
-		this.appointmentData$$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-			this.appointments$$.next(appointments);
-			this.filteredAppointments$$.next(appointments);
+		if (this.appointmentData$$) {
+			this.appointmentData$$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
+				this.appointments$$.next(appointments);
+				this.filteredAppointments$$.next(appointments);
 
-			const filteredAps = [...appointments].sort((ap1, ap2) => {
-				if (ap1.startedAt && ap2.startedAt) {
-					return new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime();
-				}
+				const filteredAps = [...appointments].sort((ap1, ap2) => {
+					if (ap1.startedAt && ap2.startedAt) {
+						return new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime();
+					}
 
-				return -1;
+					return -1;
+				});
+
+				this.groupAppointmentsForCalendar(...filteredAps);
+				this.groupAppointmentByDateAndRoom(...filteredAps);
 			});
-
-			this.groupAppointmentsForCalendar(...filteredAps);
-			this.groupAppointmentByDateAndRoom(...filteredAps);
-		});
+		}
 
 		this.calendarViewFormControl.valueChanges
 			.pipe(
@@ -356,8 +369,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			});
 		});
 
-
-
 		appointments.forEach((appointment) => {
 			if (appointment.startedAt) {
 				const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
@@ -382,8 +393,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				}
 			}
 		});
-
-
 	}
 
 	private updateQuery(queryStr?: string, date?: Date) {
@@ -578,5 +587,88 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		formattedDate.setMinutes(+splitDate[1]);
 		formattedDate.setSeconds(0);
 		return formattedDate;
+	}
+
+	private setPrioritySlots(prioritySlots: PrioritySlot[]) {
+		const myPrioritySlots = {};
+		prioritySlots.forEach((prioritySlot: PrioritySlot) => {
+			let { repeatFrequency } = prioritySlot;
+			const { priority, nxtSlotOpenPct } = prioritySlot;
+			const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
+			let firstDate = new Date(new Date(prioritySlot.startedAt).toDateString());
+			const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
+			switch (true) {
+				case !prioritySlot.isRepeat:
+				case prioritySlot.repeatType === RepeatType.Daily: {
+					repeatFrequency = prioritySlot.isRepeat ? repeatFrequency : 1;
+					while (true) {
+						const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+						const customPrioritySlot = {
+							start: prioritySlot.slotStartTime.slice(0, 5),
+							end: prioritySlot.slotEndTime?.slice(0, 5),
+							priority,
+							nxtSlotOpenPct,
+						};
+						myPrioritySlots[dateString] = myPrioritySlots[dateString] ? [...myPrioritySlots[dateString], customPrioritySlot] : [customPrioritySlot];
+						if (firstDate.getTime() >= lastDate.getTime()) break;
+						firstDate.setDate(firstDate.getDate() + repeatFrequency);
+					}
+					break;
+				}
+				case prioritySlot.repeatType === RepeatType.Weekly: {
+					const closestSunday = new Date(startDate.getTime() - startDate.getDay() * 24 * 60 * 60 * 1000);
+					firstDate = new Date(closestSunday);
+					while (true) {
+						prioritySlot.repeatDays.split(',').forEach((day) => {
+							firstDate.setTime(closestSunday.getTime());
+							firstDate.setDate(closestSunday.getDate() + +day);
+							if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
+								const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+								const customPrioritySlot = {
+									start: prioritySlot.slotStartTime.slice(0, 5),
+									end: prioritySlot.slotEndTime?.slice(0, 5),
+									priority,
+									nxtSlotOpenPct,
+								};
+								myPrioritySlots[dateString] = myPrioritySlots[dateString]
+									? [...myPrioritySlots[dateString], customPrioritySlot]
+									: [customPrioritySlot];
+							}
+						});
+						if (closestSunday.getTime() >= lastDate.getTime()) break;
+						closestSunday.setDate(closestSunday.getDate() + repeatFrequency * 7);
+					}
+					break;
+				}
+				case prioritySlot.repeatType === RepeatType.Monthly: {
+					while (true) {
+						prioritySlot.repeatDays.split(',').forEach((day) => {
+							if (getDateOfMonth(firstDate.getFullYear(), firstDate.getMonth() + 1, 0) >= +day) {
+								firstDate.setDate(+day);
+								if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
+									const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+									const customPrioritySlot = {
+										start: prioritySlot.slotStartTime.slice(0, 5),
+										end: prioritySlot.slotEndTime?.slice(0, 5),
+										priority,
+										nxtSlotOpenPct,
+									};
+									myPrioritySlots[dateString] = myPrioritySlots[dateString]
+										? [...myPrioritySlots[dateString], customPrioritySlot]
+										: [customPrioritySlot];
+								}
+							}
+						});
+						if (firstDate.getTime() >= lastDate.getTime()) break;
+						firstDate.setMonth(firstDate.getMonth() + repeatFrequency);
+					}
+					break;
+				}
+				default:
+					break;
+			}
+		});
+
+		this.prioritySlots$$.next({ ...myPrioritySlots });
 	}
 }

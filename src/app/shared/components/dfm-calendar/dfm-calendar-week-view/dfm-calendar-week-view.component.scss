@@ -351,19 +351,27 @@ h3 {
 }
 
 .gray-out-area-week {
-  // background: var(--dfm-main-200);
+  background: var(--dfm-main-200);
   width: 100%;
   position: absolute;
   opacity: .5;
 }
 .priority-slots-area {
   position: absolute;
-  left: 0px;
-  right: 0px;
+
   display: flex;
   z-index: 1;
   transition: 200ms all linear;
-  width: calc(100% + 12px);
+  &.small {
+      width: 4px;
+      right: -12px;
+    }
+  
+    &.large {
+      left: 0px;
+      right: 0px;
+    width: calc(100% + 12px);
+}
 
   &.High {
     background: var(--dfm-priority-slot-high-color);
