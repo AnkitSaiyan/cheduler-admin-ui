@@ -56,11 +56,6 @@
 				#scrollTwo
 			>
 				<div role="row" class="calendar-week-view-events-container">
-					<div
-						class="gray-out-area-week"
-						*ngFor="let item of grayOutSlot$$ | async"
-						[ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
-					></div>
 					<div>
 						<ng-container *ngFor="let i of timeInterval | timeInInterval : format24Hour : false : getMinute(limit.min) : getMinute(limit.max)">
 							<div class="calendar-week-view-horizontal-line"></div>
@@ -196,13 +191,25 @@
                         </ng-container>
 											</div>
 											<ng-template #priorityCardDetail>
-												<span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end }}</span>
+												<span style="white-space: nowrap">{{ prioritySlot.start | dfmUtcToLocal : true }} - {{ prioritySlot.end  | dfmUtcToLocal : true }}</span>
 											</ng-template>
 										</div>
 									</ng-container>
 								</ng-container>
 							</ng-container>
 						</div>
+            <div
+              (dblclick)="onDblClick($event, eventsContainer, day, true)"
+              class="gray-out-area-week"
+              *ngIf="grayOutSlot$$.value.start[weekday] && grayOutSlot$$.value.start[weekday] as item"
+              [ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
+            ></div>
+            <div
+              (dblclick)="onDblClick($event, eventsContainer, day, true)"
+              class="gray-out-area-week"
+              *ngIf="grayOutSlot$$.value.end[weekday]  && grayOutSlot$$.value.end[weekday] as item"
+              [ngStyle]="{ 'bottom.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
+            ></div>
 					</div>
 				</div>
 			</div>
