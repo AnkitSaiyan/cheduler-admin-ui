@@ -371,6 +371,15 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			valid = false;
 		}
 
+		if (
+			this.formValues.roomsForExam
+				.map((value) => value.sortOrder)
+				.filter(Boolean)
+				.some((value, index, array) => index !== array.findIndex((val) => val === value))
+		) {
+			valid = false;
+		}
+
 		if (!valid) {
 			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 			return;
@@ -441,8 +450,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			this.examApiSvc
 				.updateExam$(createExamRequestData)
 				.pipe(takeUntil(this.destroy$$))
-				.subscribe(
-					() => {
+				.subscribe({
+					next: () => {
 						this.notificationSvc.showNotification(Translate.SuccessMessage.ExamUpdated[this.selectedLang]);
 						let route: string;
 						if (this.comingFromRoute === 'view') {
@@ -455,17 +464,17 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 						this.router.navigate([route], { relativeTo: this.route });
 					},
-					(err) => {
+					error: (err) => {
 						this.submitting$$.next(false);
 						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
 					},
-				);
+				});
 		} else {
 			this.examApiSvc
 				.createExam$(createExamRequestData)
 				.pipe(takeUntil(this.destroy$$))
-				.subscribe(
-					() => {
+				.subscribe({
+					next: () => {
 						this.notificationSvc.showNotification(Translate.SuccessMessage.ExamAdded[this.selectedLang]);
 						let route: string;
 						if (this.comingFromRoute === 'view') {
@@ -478,11 +487,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 						this.router.navigate([route], { relativeTo: this.route });
 					},
-					(err) => {
+					error: (err) => {
 						this.submitting$$.next(false);
 						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
 					},
-				);
+				});
 		}
 	}
 

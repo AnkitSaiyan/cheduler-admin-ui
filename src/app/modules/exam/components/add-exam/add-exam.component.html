@@ -134,9 +134,12 @@
                                         size="sm"
                                         formControlName="sortOrder"
                                         placeholder="{{ 'Order' | translate }}"
-                                        [items]="orderOption | numberArray : 1 | nameValuePair"
+                                        [items]="orderOption | numberArray : 1 | nameValuePair "
                                 >
                                 </dfm-input-dropdown>
+                                <small *ngIf="roomsForExamControls[rowIndex]?.value?.sortOrder | sortOrderValidation : examForm?.value : rowIndex"  class="validation-error">
+                                  {{ 'OrderingNotValid' | translate }}
+                              </small>
                             </div>
                         </div>
                         <div class="room-message"
@@ -236,7 +239,7 @@
                             {{
                           formValues.assistantCount.toString() === '0'
                             ? 'Please deselect Assistants'
-                            : 'Please select at least ' + formValues.assistantCount + ' Assistant(s).'
+                            : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.assistantCount + ' ' + ('Assistant(s)' | translate)+'.'
                             }}
                         </small>
                     </div>
@@ -278,7 +281,7 @@
                             {{
                           formValues.radiologistCount.toString() === '0'
                             ? 'Please deselect Radiologists'
-                            : 'Please select at least ' + formValues.radiologistCount + ' Radiologist(s).'
+                            : ('PleaseSelectAtLeast' | translate) + ' ' + (formValues.radiologistCount) + ' ' + ('Radiologist(s)' | translate) + '.'
                             }}
                         </small>
                     </div>
@@ -319,7 +322,7 @@
                             {{
                           formValues.nursingCount.toString() === '0'
                             ? 'Please deselect Nursing'
-                            : 'Please select at least ' + formValues.nursingCount + (' Nursing' | translate)
+                            : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.nursingCount + ' ' + (' Nursing' | translate)
                             }}
                         </small>
                     </div>
@@ -361,7 +364,7 @@
                             {{
                           formValues.secretaryCount.toString() === '0'
                             ? 'Please deselect Secretaries'
-                            : 'Please select at least ' + formValues.secretaryCount + ' Secretary(s).'
+                            : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.secretaryCount + ' ' + ('Secretary(s)' | translate)+'.'
                             }}
                         </small>
                     </div>

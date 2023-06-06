@@ -608,7 +608,13 @@ export const Translate = Object.freeze({
 			[DUTCH_BE]: 'Geselecteerd',
 		},
 	},
+
+	CanNotAddAppointmentOnPastDate: {
+		[ENG_BE]: `Can't add appointment on past time`,
+		[DUTCH_BE]: 'Kan geen afspraken toevoegen op dit tijdstip',
+	},
 });
+
 
 
 

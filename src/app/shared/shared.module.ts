@@ -68,6 +68,7 @@ import { DfmCalendarPickerComponent } from './components/dfm-calendar/dfm-calend
 import { MultiDropdownPlaceholderNamePipe } from './pipes/multi-dropdown-placeholder-name.pipe';
 import { DUTCH_BE } from './utils/const';
 import { CustomDatePickerAdapter } from './utils/date-adapter';
+import { SortOrderValidation } from './pipes/remove-selected-item.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -114,6 +115,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		LoginFailedComponent,
 		DfmCalendarPickerComponent,
 		MultiDropdownPlaceholderNamePipe,
+		SortOrderValidation,
 	],
 	imports: [
 		CommonModule,
@@ -166,6 +168,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		ApprovalTypeNamePipe,
 		SumPipe,
 		RepeatTypeToNamePipe,
+		SortOrderValidation,
 		AppendTextToInputDirective,
 		DfmCalendarMonthViewComponent,
 		DfmCalendarWeekViewComponent,

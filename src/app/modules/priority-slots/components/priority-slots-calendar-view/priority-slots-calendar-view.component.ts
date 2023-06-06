@@ -112,9 +112,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 	}
 
 	public updateToToday() {
-		if (this.selectedDate$$.value?.toDateString() !== new Date().toDateString()) {
-			this.newDate$$.next(new Date());
-		}
+		this.newDate$$.next(new Date());
+		this.updateQuery('', new Date());
 	}
 
 	public changeDate(offset: number) {
@@ -144,9 +143,9 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 	}
 
 	private updateQuery(queryStr?: string, date?: Date) {
-		this.router.navigate([], {
+		this.router.navigate(['appointment'], {
 			queryParams: {
-				...(queryStr ? { v: queryStr } : {}),
+				...(queryStr ? { v: queryStr } : { v: 'd' }),
 				...(date ? { d: this.datePipe.transform(date, 'yyyy-MM-dd') } : {}),
 			},
 			queryParamsHandling: 'merge',
@@ -236,4 +235,10 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		this.prioritySlots$$.next({ ...myPrioritySlots });
 	}
 }
+
+
+
+
+
+
 

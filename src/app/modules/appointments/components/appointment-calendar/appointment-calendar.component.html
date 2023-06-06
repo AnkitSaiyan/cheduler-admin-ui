@@ -62,6 +62,9 @@
           (addAppointment)="addAppointment($event)"
           [format24Hour]="true"
           [showGrayOutSlot] ="true"
+          [prioritySlots]="prioritySlots$$ | async"
+          [prioritySlotsVariant]="'small'"
+          [practiceData]="weekdayToPractice$$ | async"
           [limit] ="(practiceHourMinMax$$ | async ) ?? { min: '00:00:00', max: '24:00:00', grayOutMin: '00:00:00', grayOutMax: '24:00:00' }"
         ></dfm-calendar-week-view>
       </ng-container>

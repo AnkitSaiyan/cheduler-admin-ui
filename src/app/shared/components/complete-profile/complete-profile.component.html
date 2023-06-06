@@ -6,99 +6,108 @@
                 <span class="dfm-text-main-500 pointer" [ngClass]="{'dfm-color-primary': selectedLang === 'nl-BE'}" (click)="changeLanguage('nl-BE')">NL</span>
                 <span>|</span>
                 <span class="dfm-text-main-500 pointer" [ngClass]="{'dfm-color-primary': selectedLang === 'en-BE'}" (click)="changeLanguage('en-BE')">EN</span>
-              </div>
+            </div>
         </section>
-        <h3 class="font-weight-semi-bold">{{"CompleteYourProfile" | translate}}</h3>
+        <h3 class="font-weight-semi-bold fs-mv">{{"CompleteYourProfile" | translate}}</h3>
 
         <section class="complete-profile-section overflow-y-auto hide-scrollbar" [formGroup]="completeProfileForm">
-            <div class="flex-1">
-                <dfm-input
-                        type="text"
-                        size="sm"
-                        label="{{'Telephone' | translate}}*"
-                        placeholder="{{'EnterTelephone' | translate}}"
-                        icon="phone"
-                        formControlName="extension_PhoneNumber"
-                        #phone
-                        [dfmNumberInput]="phone"
-                >
-                </dfm-input>
-            </div>
+            <div class="row w-100 details-field-mv">
+                <div class="flex-1">
+                    <dfm-input
+                            type="text"
+                            size="sm"
+                            label="{{'Telephone' | translate}}*"
+                            placeholder="{{'EnterTelephone' | translate}}"
+                            icon="phone"
+                            formControlName="extension_PhoneNumber"
+                            #phone
+                            [dfmNumberInput]="phone"
+                    >
+                    </dfm-input>
+                </div>
 
-            <div class="flex-1">
-                <dfm-input
-                        type="text"
-                        size="sm"
-                        label="{{'GSM' | translate}}*"
-                        placeholder="{{'EnterGsm' | translate}}"
-                        icon="phone"
-                        formControlName="MobilePhone"
-                        #gsm
-                        [dfmNumberInput]="gsm"
-                >
-                </dfm-input>
-            </div>
 
-            <div class="flex-1">
-                <dfm-input
-                        type="text"
-                        size="sm"
-                        label="{{'Street' | translate}}*"
-                        placeholder="{{'EnterStreet' | translate}}"
-                        icon="home-03"
-                        formControlName="StreetAddress"
-                >
-                </dfm-input>
+                <div class="flex-1">
+                    <dfm-input
+                            type="text"
+                            size="sm"
+                            label="{{'GSM' | translate}}*"
+                            placeholder="{{'EnterGsm' | translate}}"
+                            icon="phone"
+                            formControlName="MobilePhone"
+                            #gsm
+                            [dfmNumberInput]="gsm"
+                    >
+                    </dfm-input>
+                </div>
             </div>
+            <div class="row w-100 details-field-mv">
+                <div class="flex-1">
+                    <dfm-input
+                            type="text"
+                            size="sm"
+                            label="{{'Street' | translate}}*"
+                            placeholder="{{'EnterStreet' | translate}}"
+                            icon="home-03"
+                            formControlName="StreetAddress"
+                    >
+                    </dfm-input>
+                </div>
 
-            <div class="flex-1">
-                <dfm-input
-                        type="text"
-                        size="sm"
-                        label="{{'City' | translate}}*"
-                        placeholder="{{'EnterCity' | translate}}"
-                        icon="building-01"
-                        formControlName="City"
-                >
-                </dfm-input>
+                <div class="flex-1">
+                    <dfm-input
+                            type="text"
+                            size="sm"
+                            label="{{'City' | translate}}*"
+                            placeholder="{{'EnterCity' | translate}}"
+                            icon="building-01"
+                            formControlName="City"
+                    >
+                    </dfm-input>
+                </div>
             </div>
+            <div class="row w-100 details-field-mv">
+                <div class="flex-1">
+                    <dfm-input
+                            type="text"
+                            size="sm"
+                            label="{{'Country' | translate}}*"
+                            placeholder="{{'EnterCountry' | translate}}"
+                            icon="marker-pin-01"
+                            formControlName="Country"
+                            #country
+                            [dfmNameInput]="country"
+                    >
+                    </dfm-input>
+                </div>
 
-            <div class="flex-1">
-                <dfm-input
-                        type="text"
-                        size="sm"
-                        label="{{'Country' | translate}}*"
-                        placeholder="{{'EnterCountry' | translate}}"
-                        icon="marker-pin-01"
-                        formControlName="Country"
-                        #country
-                        [dfmNameInput]="country"
-                >
-                </dfm-input>
-            </div>
-
-            <div class="flex-1">
-                <dfm-input
-                        type="text"
-                        size="sm"
-                        label="{{'PostalCode' | translate}}*"
-                        placeholder="{{'EnterPostalCode' | translate}}"
-                        icon="mail-05"
-                        formControlName="PostalCode"
-                        #postal
-                        [dfmNumberInput]="postal"
-                >
-                </dfm-input>
+                <div class="flex-1">
+                    <dfm-input
+                            type="text"
+                            size="sm"
+                            label="{{'PostalCode' | translate}}*"
+                            placeholder="{{'EnterPostalCode' | translate}}"
+                            icon="mail-05"
+                            formControlName="PostalCode"
+                            #postal
+                            [dfmNumberInput]="postal"
+                    >
+                    </dfm-input>
+                </div>
             </div>
         </section>
 
         <div class="section-divider"></div>
 
-        <section class="footer-btn">
-            <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="save()">
-                {{"Confirm" | translate}}
-            </dfm-button>
-            <dfm-button color="secondary" size="md" (click)="logout()">{{"Logout" | translate}}</dfm-button>
+        <section class="footer-buttons">
+            <div class="confirm-buttons">
+                <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="save()">
+                    {{"Confirm" | translate}}
+                </dfm-button>
+            </div>
+            <div class="confirm-buttons">
+                <dfm-button color="secondary" size="md" (click)="logout()">{{"Logout" | translate}}</dfm-button>
+            </div>
         </section>
     </div>
 </div>
