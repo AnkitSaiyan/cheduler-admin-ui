@@ -69,6 +69,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public prioritySlots!: { [key: string]: any[] };
 
 	@Input()
+	public prioritySlotsVariant: 'small' | 'large' = 'large';
+
+	@Input()
 	public format24Hour = false;
 
 	@Input()
