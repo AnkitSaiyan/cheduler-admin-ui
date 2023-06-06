@@ -41,7 +41,7 @@
 			<div role="row" class="calendar-week-view-time-slot-container">
 				<div
 					class="calendar-week-view-time-slot text-sm"
-					*ngFor="let time of timeInterval | timeInInterval : format24Hour : false : getMinute(limit.min) : getMinute(limit.max)"
+					*ngFor="let time of timeInterval | timeInInterval : format24Hour : false : getMinute( limit.min) : getMinute(limit.grayOutMax)"
 				>
 					<span>{{ time | dfmUtcToLocal : true }}</span>
 					<div class="calendar-week-view-horizontal-line"></div>
@@ -57,7 +57,7 @@
 			>
 				<div role="row" class="calendar-week-view-events-container">
 					<div>
-						<ng-container *ngFor="let i of timeInterval | timeInInterval : format24Hour : false : getMinute(limit.min) : getMinute(limit.max)">
+						<ng-container *ngFor="let i of timeInterval | timeInInterval : format24Hour : false : getMinute(limit.min) : getMinute(limit.grayOutMax)">
 							<div class="calendar-week-view-horizontal-line"></div>
 							<div class="calendar-week-view-horizontal-line-light"></div>
 						</ng-container>
