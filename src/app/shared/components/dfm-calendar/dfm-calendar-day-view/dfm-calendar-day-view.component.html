@@ -130,8 +130,8 @@
                                     {{ (data.appointment.patientFname[0] | uppercase)}}
                                   </div> -->
 
-                                  <div class="d-flex flex-column ">
-                                    <span class="calender-day-view-event-title" *ngIf="data?.appointment?.patientFname; else date">
+                                  <div class="d-flex flex-column calender-day-view-event-title">
+                                    <span class=" text-truncate" *ngIf="data?.appointment?.patientFname; else date">
                                       {{data.appointment.id}} - {{ data.appointment.patientFname + ' ' + data.appointment.patientLname }}
                                     </span>
                                     <ng-template #date>

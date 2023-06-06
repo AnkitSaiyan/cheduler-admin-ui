@@ -474,6 +474,11 @@ dfm-notification {
   }
 }
 
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .input-type-file-secondary-md {
   background: var(--dfm-secondary);
   color: var(--dfm-primary);
