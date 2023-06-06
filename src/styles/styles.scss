@@ -1173,7 +1173,7 @@ body {
 .small-dropdown {
   .dfm-input-dropdown {
     .input-dropdown-menu {
-      max-height: 32vh !important;
+      max-height: min(232px, 32vh) !important;
     }
   }
 }
