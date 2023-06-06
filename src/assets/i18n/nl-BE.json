@@ -410,6 +410,7 @@
 	"Areyousurewanttologout": "Ben je zeker dat je deze sessie wil verlaten?",
 	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar",
 	"CanNotAddAppointmentOnPastDate": "Kan geen afspraak toevoegen op verleden tijd",
+	"OrderingNotValid": "Bestelling niet geldig",
 
 	"DESIGN_SYSTEM": {
 		"NAVIGATION_BAR": {
@@ -440,7 +441,6 @@
 			"LOADING": "Loaden"
 		}
 	}
-	"OrderingNotValid": "Bestelling niet geldig"
 }
 
 
