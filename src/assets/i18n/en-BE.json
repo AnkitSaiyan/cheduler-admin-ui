@@ -408,7 +408,10 @@
 	"NoRoomsAreAvailable": "No rooms are availale",
 	"CanNotAddAppointmentOnPastDate": "Can't add appointment on past time",
 	"OrderingNotValid": "Ordering not valid",
-
+	"PleaseSelectAtLeast": "Please select at least",
+	"Radiologist(s)": "Radiologist(s)",
+	"Assistant(s)": "Assistant(s)",
+	"Secretary(s)": "Secretary(s)",
 	"DESIGN_SYSTEM": {
 		"NAVIGATION_BAR": {
 			"PROFILE": "Profile",
@@ -439,6 +442,8 @@
 		}
 	}
 }
+
+
 
 
 
