@@ -66,7 +66,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	public selectedSlot$$: BehaviorSubject<any>;
 
-	private weekdayToPractice$$ = new BehaviorSubject<any>(null);
+	public weekdayToPractice$$ = new BehaviorSubject<any>(null);
 
 	public practiceHourMinMax$$ = new BehaviorSubject<{ min: string; max: string; grayOutMin: string; grayOutMax: string } | null>(null);
 
@@ -459,7 +459,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	public async addAppointment(event: any) {
 		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
 
-		const { e, eventsContainer, day, grayOutSlot } = event;
+		const { e, eventsContainer, day, isGrayOutArea } = event;
 		// const currentDate = new Date();
 		// currentDate.setDate(currentDate.getDate() - 1);
 		// const selectedDate = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
@@ -493,7 +493,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		}
 		let eventCard;
 
-		const isGrayOutArea = grayOutSlot.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
 
 		if (isGrayOutArea) {
 			this.modalSvc
