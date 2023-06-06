@@ -134,9 +134,12 @@
                                         size="sm"
                                         formControlName="sortOrder"
                                         placeholder="{{ 'Order' | translate }}"
-                                        [items]="orderOption | numberArray : 1 | nameValuePair"
+                                        [items]="orderOption | numberArray : 1 | nameValuePair "
                                 >
                                 </dfm-input-dropdown>
+                                <small *ngIf="roomsForExamControls[rowIndex]?.value?.sortOrder | sortOrderValidation : examForm?.value : rowIndex"  class="validation-error">
+                                  {{ 'OrderingNotValid' | translate }}
+                              </small>
                             </div>
                         </div>
                         <div class="room-message"

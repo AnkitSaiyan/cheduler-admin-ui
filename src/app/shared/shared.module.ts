@@ -68,6 +68,7 @@ import { UserRolePipe } from './pipes/user-role.pipe';
 import { UtcToLocalPipe } from './pipes/utc-to-local.pipe';
 import { DUTCH_BE } from './utils/const';
 import { CustomDatePickerAdapter } from './utils/date-adapter';
+import { SortOrderValidation } from './pipes/remove-selected-item.pipe';
 
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
@@ -116,6 +117,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		LoginFailedComponent,
 		DfmCalendarPickerComponent,
 		MultiDropdownPlaceholderNamePipe,
+		SortOrderValidation,
 	],
 	imports: [
 		CommonModule,
@@ -169,6 +171,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		ApprovalTypeNamePipe,
 		SumPipe,
 		RepeatTypeToNamePipe,
+		SortOrderValidation,
 		AppendTextToInputDirective,
 		DfmCalendarMonthViewComponent,
 		DfmCalendarWeekViewComponent,
