@@ -129,7 +129,7 @@
 	"AddPracticeDataInfo": "Toevoegen Uren Beschikbaarheid Info",
 	"PracticeHours": "Uren praktijk",
 	"PracticeAvailabilityData": "Uren Beschikbaarheid dagen",
-	"SiteManagement": "Pratijkbeheer",
+	"SiteManagement": "Praktijkbeheer",
 	"SiteName": "Naam Praktijk",
 	"SiteLogo": "Logo Praktijk",
 	"ChooseFile": "Kies Bestand",
@@ -409,9 +409,16 @@
 	"LogoutConfirmation": "Bevestiging Uitloggen",
 	"Areyousurewanttologout": "Ben je zeker dat je deze sessie wil verlaten?",
 	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar",
-	"CanNotAddAppointmentOnPastDate": "Kan geen afspraak toevoegen op verleden tijd",
-	"OrderingNotValid": "Bestelling niet geldig"
+	"CanNotAddAppointmentOnPastDate": "Kan geen afspraken toevoegen op dit tijdstip",
+	"OrderingNotValid": "Bestelling niet geldig",
+	"PleaseSelectAtLeast": "Selecteer ten minste",
+	"Radiologist(s)": "Radioloog(s)",
+	"Assistant(s)": "Assistent(s)",
+	"Secretary(s)": "secretaresse(s)"
 }
+
+
+
 
 
 
