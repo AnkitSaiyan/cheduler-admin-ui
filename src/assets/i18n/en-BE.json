@@ -406,8 +406,10 @@
 	"LogoutConfirmation": "Logout Confirmation",
 	"Areyousurewanttologout": "Are you sure you want to logout the session?",
 	"NoRoomsAreAvailable": "No rooms are availale",
-	"CanNotAddAppointmentOnPastDate": "Can't add appointment on past time"
+	"CanNotAddAppointmentOnPastDate": "Can't add appointment on past time",
+	"OrderingNotValid": "Ordering not valid"
 }
+
 
 
 

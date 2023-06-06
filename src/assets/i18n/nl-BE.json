@@ -409,8 +409,10 @@
 	"LogoutConfirmation": "Bevestiging Uitloggen",
 	"Areyousurewanttologout": "Ben je zeker dat je deze sessie wil verlaten?",
 	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar",
-	"CanNotAddAppointmentOnPastDate": "Kan geen afspraak toevoegen op verleden tijd"
+	"CanNotAddAppointmentOnPastDate": "Kan geen afspraak toevoegen op verleden tijd",
+	"OrderingNotValid": "Bestelling niet geldig"
 }
+
 
 
 
