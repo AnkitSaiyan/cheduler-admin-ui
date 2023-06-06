@@ -408,92 +408,92 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		// }
 		//
 
-		// const createExamRequestData: CreateExamRequestData = {
-		// 	name: this.formValues.name,
-		// 	expensive: this.formValues.expensive,
-		// 	info: this.formValues.info ?? null,
-		// 	instructions: this.formValues?.instructions ?? null,
-		// 	assistantCount: this.formValues.assistantCount ?? 0,
-		// 	nursingCount: this.formValues.nursingCount ?? 0,
-		// 	radiologistCount: this.formValues.radiologistCount ?? 0,
-		// 	secretaryCount: this.formValues.secretaryCount ?? 0,
-		// 	mandatoryUsers: [...(this.formValues.mandatoryStaffs ?? [])],
-		// 	usersList: [
-		// 		...(this.formValues.assistants ?? []),
-		// 		...(this.formValues.nursing ?? []),
-		// 		...(this.formValues.radiologists ?? []),
-		// 		...(this.formValues.secretaries ?? []),
-		// 	],
-		// 	roomsForExam: [
-		// 		...this.formValues.roomsForExam
-		// 			.filter((room) => room.selectRoom)
-		// 			.map(({ roomId, duration, sortOrder }) => ({
-		// 				roomId,
-		// 				duration,
-		// 				sortOrder,
-		// 			})),
-		// 	].sort((a, b) => (+a.sortOrder < +b.sortOrder ? -1 : 1)),
-		// 	status: this.formValues.status,
-		// 	availabilityType: timeSlotFormValues ? +!!timeSlotFormValues.values?.length : 0,
-		// 	uncombinables: this.formValues.uncombinables ?? [],
-		// 	practiceAvailability: timeSlotFormValues ? timeSlotFormValues.values : [],
-		// };
+		const createExamRequestData: CreateExamRequestData = {
+			name: this.formValues.name,
+			expensive: this.formValues.expensive,
+			info: this.formValues.info ?? null,
+			instructions: this.formValues?.instructions ?? null,
+			assistantCount: this.formValues.assistantCount ?? 0,
+			nursingCount: this.formValues.nursingCount ?? 0,
+			radiologistCount: this.formValues.radiologistCount ?? 0,
+			secretaryCount: this.formValues.secretaryCount ?? 0,
+			mandatoryUsers: [...(this.formValues.mandatoryStaffs ?? [])],
+			usersList: [
+				...(this.formValues.assistants ?? []),
+				...(this.formValues.nursing ?? []),
+				...(this.formValues.radiologists ?? []),
+				...(this.formValues.secretaries ?? []),
+			],
+			roomsForExam: [
+				...this.formValues.roomsForExam
+					.filter((room) => room.selectRoom)
+					.map(({ roomId, duration, sortOrder }) => ({
+						roomId,
+						duration,
+						sortOrder,
+					})),
+			].sort((a, b) => (+a.sortOrder < +b.sortOrder ? -1 : 1)),
+			status: this.formValues.status,
+			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues.values?.length : 0,
+			uncombinables: this.formValues.uncombinables ?? [],
+			practiceAvailability: timeSlotFormValues ? timeSlotFormValues.values : [],
+		};
 
-		// if (this.examDetails$$.value?.id) {
-		// 	createExamRequestData.id = this.examDetails$$.value?.id;
-		// }
+		if (this.examDetails$$.value?.id) {
+			createExamRequestData.id = this.examDetails$$.value?.id;
+		}
 
-		// if (!createExamRequestData.practiceAvailability?.length) {
-		// 	createExamRequestData.availabilityType = AvailabilityType.Unavailable;
-		// }
+		if (!createExamRequestData.practiceAvailability?.length) {
+			createExamRequestData.availabilityType = AvailabilityType.Unavailable;
+		}
 
-		// if (this.edit) {
-		// 	this.examApiSvc
-		// 		.updateExam$(createExamRequestData)
-		// 		.pipe(takeUntil(this.destroy$$))
-		// 		.subscribe(
-		// 			() => {
-		// 				this.notificationSvc.showNotification(Translate.SuccessMessage.ExamUpdated[this.selectedLang]);
-		// 				let route: string;
-		// 				if (this.comingFromRoute === 'view') {
-		// 					route = '../view';
-		// 				} else {
-		// 					route = this.edit ? '/exam' : '../';
-		// 				}
+		if (this.edit) {
+			this.examApiSvc
+				.updateExam$(createExamRequestData)
+				.pipe(takeUntil(this.destroy$$))
+				.subscribe({
+					next: () => {
+						this.notificationSvc.showNotification(Translate.SuccessMessage.ExamUpdated[this.selectedLang]);
+						let route: string;
+						if (this.comingFromRoute === 'view') {
+							route = '../view';
+						} else {
+							route = this.edit ? '/exam' : '../';
+						}
 
-		// 				this.submitting$$.next(false);
+						this.submitting$$.next(false);
 
-		// 				this.router.navigate([route], { relativeTo: this.route });
-		// 			},
-		// 			(err) => {
-		// 				this.submitting$$.next(false);
-		// 				this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-		// 			},
-		// 		);
-		// } else {
-		// 	this.examApiSvc
-		// 		.createExam$(createExamRequestData)
-		// 		.pipe(takeUntil(this.destroy$$))
-		// 		.subscribe(
-		// 			() => {
-		// 				this.notificationSvc.showNotification(Translate.SuccessMessage.ExamAdded[this.selectedLang]);
-		// 				let route: string;
-		// 				if (this.comingFromRoute === 'view') {
-		// 					route = '../view';
-		// 				} else {
-		// 					route = this.edit ? '/exam' : '../';
-		// 				}
+						this.router.navigate([route], { relativeTo: this.route });
+					},
+					error: (err) => {
+						this.submitting$$.next(false);
+						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+					},
+				});
+		} else {
+			this.examApiSvc
+				.createExam$(createExamRequestData)
+				.pipe(takeUntil(this.destroy$$))
+				.subscribe({
+					next: () => {
+						this.notificationSvc.showNotification(Translate.SuccessMessage.ExamAdded[this.selectedLang]);
+						let route: string;
+						if (this.comingFromRoute === 'view') {
+							route = '../view';
+						} else {
+							route = this.edit ? '/exam' : '../';
+						}
 
-		// 				this.submitting$$.next(false);
+						this.submitting$$.next(false);
 
-		// 				this.router.navigate([route], { relativeTo: this.route });
-		// 			},
-		// 			(err) => {
-		// 				this.submitting$$.next(false);
-		// 				this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-		// 			},
-		// 		);
-		// }
+						this.router.navigate([route], { relativeTo: this.route });
+					},
+					error: (err) => {
+						this.submitting$$.next(false);
+						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+					},
+				});
+		}
 	}
 
 	public handleDropdownSearch(searchText: string, type: 'mandatory' | 'radio' | 'nursing' | 'assistant' | 'secretary' | 'exam'): void {
