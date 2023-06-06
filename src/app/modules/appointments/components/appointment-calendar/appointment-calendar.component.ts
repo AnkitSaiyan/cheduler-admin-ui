@@ -140,6 +140,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			}
 		});
 
+
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
 			this.setPrioritySlots(prioritySlots);
 		});
@@ -488,11 +489,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		const currentTimeInLocal = DateTimeUtils.UTCDateToLocalDate(currentSelectedTime);
 
 		if (currentTimeInLocal.getTime() < currentDate.getTime()) {
-			this.notificationSvc.showWarning(this.translatePipe.transform(`CanNotAddAppointmentOnPastDate`));
+			this.notificationSvc.showWarning(Translate.CanNotAddAppointmentOnPastDate[this.selectedLang]);
 			return;
 		}
 		let eventCard;
-
 
 		if (isGrayOutArea) {
 			this.modalSvc
