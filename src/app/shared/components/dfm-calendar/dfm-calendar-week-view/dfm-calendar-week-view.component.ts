@@ -87,7 +87,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public showGrayOutSlot: boolean = false;
 
 	@Output()
-	public selectedDateEvent = new EventEmitter<Date>();
+	public selectedDateEvent = new EventEmitter<{ selectedDate: Date; isWeekChange: boolean }>();
 
 	@Output()
 	public dayViewEvent = new EventEmitter<number>();
@@ -186,7 +186,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public changeWeek(offset: number) {
 		if (offset !== 0) {
 			const date = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + offset * 7));
-			this.updateDate(date);
+			this.updateDate(date, true);
 			this.changeWeek$$.next(0);
 		}
 
@@ -199,14 +199,14 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		this.rendered = false;
 	}
 
-	private updateDate(date: Date) {
+	private updateDate(date: Date, isWeekChange: boolean = false) {
 		date.setMinutes(date.getMinutes() - (date.getMinutes() % 5));
 		this.selectedDate = date;
-		this.emitDate();
+		this.emitDate(isWeekChange);
 	}
 
-	private emitDate() {
-		this.selectedDateEvent.emit(this.selectedDate);
+	private emitDate(isWeekChange: boolean = false) {
+		this.selectedDateEvent.emit({ selectedDate: this.selectedDate, isWeekChange });
 	}
 
 	public getMinute(date: string) {

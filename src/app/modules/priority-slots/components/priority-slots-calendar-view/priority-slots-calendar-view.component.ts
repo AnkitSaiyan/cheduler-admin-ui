@@ -106,14 +106,14 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		super.ngOnDestroy();
 	}
 
-	public updateDate(newDate: Date) {
+	public updateDate(newDate: Date, isWeekChange: boolean = false) {
 		this.selectedDate$$.next(new Date(newDate));
-		this.updateQuery('', newDate);
+		this.updateQuery('', newDate, isWeekChange ? '' : 'appointment');
 	}
 
 	public updateToToday() {
 		this.newDate$$.next(new Date());
-		this.updateQuery('', new Date());
+		this.updateQuery('', new Date(), 'appointment');
 	}
 
 	public changeDate(offset: number) {
@@ -142,8 +142,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			});
 	}
 
-	private updateQuery(queryStr?: string, date?: Date) {
-		this.router.navigate(['appointment'], {
+	private updateQuery(queryStr?: string, date?: Date, routeName: string = '') {
+		this.router.navigate(routeName?.length ? [routeName] : [], {
 			queryParams: {
 				...(queryStr ? { v: queryStr } : { v: 'd' }),
 				...(date ? { d: this.datePipe.transform(date, 'yyyy-MM-dd') } : {}),
@@ -235,6 +235,11 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		this.prioritySlots$$.next({ ...myPrioritySlots });
 	}
 }
+
+
+
+
+
 
 
 

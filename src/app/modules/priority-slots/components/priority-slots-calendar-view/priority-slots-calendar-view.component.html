@@ -47,7 +47,7 @@
 
   <section class="calendar-body">
     <dfm-calendar-week-view
-      (selectedDateEvent)="updateDate($event)"
+      (selectedDateEvent)="updateDate($event.selectedDate, $event.isWeekChange)"
       [changeWeek$$]="changeWeek$$"
       (dayViewEvent)="changeToDayView($event)"
       [selectedDate]="selectedDate"
