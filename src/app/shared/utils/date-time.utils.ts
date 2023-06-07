@@ -130,22 +130,22 @@ export class DateTimeUtils {
 		return !(b <= c || d <= a);
 	}
 
-	public static UTCDateToLocalDate(utcDate: Date): Date {
+	public static UTCDateToLocalDate(utcDate: Date, changeDate: boolean = false): Date {
 		if (!utcDate) {
 			return utcDate;
 		}
 
 		const newDate = new Date();
 		newDate.setTime(utcDate.getTime() - utcDate.getTimezoneOffset() * 60 * 1000);
-
-		newDate.setDate(utcDate.getDate());
-		newDate.setMonth(utcDate.getMonth());
-		newDate.setFullYear(utcDate.getFullYear());
-
+		if (!changeDate) {
+			newDate.setDate(utcDate.getDate());
+			newDate.setMonth(utcDate.getMonth());
+			newDate.setFullYear(utcDate.getFullYear());
+		}
 		return newDate;
 	}
 
-	public static LocalDateToUTCDate(localDate: Date): Date {
+	public static LocalDateToUTCDate(localDate: Date, changeDate: boolean = false): Date {
 		if (!localDate) {
 			return localDate;
 		}
@@ -153,10 +153,12 @@ export class DateTimeUtils {
 		const newDate = new Date();
 		newDate.setTime(localDate.getTime() + localDate.getTimezoneOffset() * 60 * 1000);
 
-		newDate.setDate(localDate.getDate());
+		if (!changeDate) {
+			newDate.setDate(localDate.getDate());
 
-		newDate.setMonth(localDate.getMonth());
-		newDate.setFullYear(localDate.getFullYear());
+			newDate.setMonth(localDate.getMonth());
+			newDate.setFullYear(localDate.getFullYear());
+		}
 
 		return newDate;
 	}
@@ -207,6 +209,10 @@ export class DateTimeUtils {
 		return `${localHour}:${localMin}`;
 	}
 }
+
+
+
+
 
 
 

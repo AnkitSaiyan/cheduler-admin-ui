@@ -250,19 +250,27 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
 
+
 		const addAbsenceReqData: AddAbsenceRequestDate = {
 			...rest,
-			startedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day} ${DateTimeUtils.LocalToUTCTimeTimeString(startTime)}:00`,
+			startedAt: this.datePipe.transform(
+				DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`), true),
+				'yyyy-MM-dd HH:mm:ss',
+			) as string,
 			// endedAt: rest.isRepeat
 			//   ? `${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`
 			//   : `${startedAt.year}-${startedAt.month}-${startedAt.day} ${endTime}:00`,
-			endedAt: `${endedAt.year}-${endedAt.month}-${endedAt.day} ${DateTimeUtils.LocalToUTCTimeTimeString(endTime)}:00`,
+			endedAt: this.datePipe.transform(
+				DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), true),
+				'yyyy-MM-dd HH:mm:ss',
+			) as string,
 			userList: rest.isHoliday ? [] : userList,
 			roomList: rest.isHoliday ? [] : roomList,
 			repeatType: rest.isRepeat ? rest.repeatType : null,
 			repeatFrequency: rest.isRepeat && rest.repeatFrequency ? +rest.repeatFrequency.toString().split(' ')[0] : 0,
 			repeatDays: '',
 		};
+
 
 		if (rest.isRepeat && repeatDays?.length) {
 			addAbsenceReqData.repeatDays = repeatDays?.reduce((acc, curr, i) => {

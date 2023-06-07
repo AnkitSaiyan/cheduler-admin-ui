@@ -45,8 +45,8 @@ export class AbsenceApiService {
 		return this.http.post<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences`, restdata).pipe(
 			map((response) => ({
 				...response.data,
-				startedAt: this.utcToLocalPipe.transform(response?.data?.startedAt),
-				endedAt: this.utcToLocalPipe.transform(response?.data?.endedAt),
+				startedAt: this.utcToLocalPipe.transform(response?.data?.startedAt, false, true),
+				endedAt: this.utcToLocalPipe.transform(response?.data?.endedAt, false, true),
 			})),
 			tap(() => {
 				this.refreshAbsences$$.next();
@@ -61,8 +61,8 @@ export class AbsenceApiService {
 		return this.http.put<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences/${id}`, restData).pipe(
 			map((response) => ({
 				...response.data,
-				startedAt: this.utcToLocalPipe.transform(response?.data?.startedAt),
-				endedAt: this.utcToLocalPipe.transform(response?.data?.endedAt),
+				startedAt: this.utcToLocalPipe.transform(response?.data?.startedAt, false, true),
+				endedAt: this.utcToLocalPipe.transform(response?.data?.endedAt, false, true),
 			})),
 			tap(() => {
 				this.refreshAbsences$$.next();
@@ -84,8 +84,8 @@ export class AbsenceApiService {
 		return this.http.get<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences/${absenceID}`).pipe(
 			map((response) => ({
 				...response.data,
-				startedAt: this.utcToLocalPipe.transform(response?.data?.startedAt),
-				endedAt: this.utcToLocalPipe.transform(response?.data?.endedAt),
+				startedAt: this.utcToLocalPipe.transform(response?.data?.startedAt, false, true),
+				endedAt: this.utcToLocalPipe.transform(response?.data?.endedAt, false, true),
 			})),
 			tap(() => this.loaderSvc.deactivate()),
 		);
