@@ -315,7 +315,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				next : ([item , list])=>{
 					const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
 					this.filteredAppointments$$.next(modifiedList);
-					this.notificationSvc.showSuccess(`Appointment ${item[0].action}`);
 				}
 			});	
 	}

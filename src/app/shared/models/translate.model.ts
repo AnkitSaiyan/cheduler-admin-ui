@@ -396,6 +396,10 @@ export const Translate = Object.freeze({
 			[DUTCH_BE]: 'Afwezigheid succesvol verwijderd',
 		},
 		AppointmentAdded: {
+			[ENG_BE]: 'Appointment updated successfully',
+			[DUTCH_BE]: 'Afspraak succesvol geupdated',
+		},
+		AppointmentUpdate: {
 			[ENG_BE]: 'Appointment Added Successfully',
 			[DUTCH_BE]: 'Afspraak succesvol toegevoegd',
 		},
