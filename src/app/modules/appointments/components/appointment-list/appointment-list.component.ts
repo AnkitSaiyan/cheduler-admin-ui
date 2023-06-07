@@ -292,7 +292,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				takeUntil(this.destroy$$)
 			).subscribe({
 				next : ([item , list])=>{
-					const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase());
+					const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
 					this.filteredAppointments$$.next(modifiedList);
 					this.notificationSvc.showSuccess(`Appointment ${item[0].action}`);
 				}
