@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, of, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, map, of, switchMap, take, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -175,20 +175,27 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			this.physicianList = [...keyValuePhysicians];
 		});
 
-		this.shareDataService.patient$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
-			const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'patientFname', 'appointmentId', 'patientLname');
-			const tempKeyValue = physicians.map((val) => ({
-				// eslint-disable-next-line no-unsafe-optional-chaining
-				name: val.patientFname ? val['patientFname']?.toString() + '  ' + val['patientLname']?.toString() : val?.toString(),
+		this.shareDataService.patient$
+			.pipe(
+				takeUntil(this.destroy$$),
+				map((values) => {
+					return values.filter((val) => val.patientFname && val.patientLname);
+				}),
+			)
+			.subscribe((physicians) => {
+				const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'patientFname', 'appointmentId', 'patientLname');
+				const tempKeyValue = physicians.map((val) => ({
+					// eslint-disable-next-line no-unsafe-optional-chaining
+					name: val.patientFname ? val['patientFname']?.toString() + '  ' + val['patientLname']?.toString() : val?.toString(),
 
-				// eslint-disable-next-line no-unsafe-optional-chaining
-				value: val.patientFname
-					? val['patientFname']?.toString() + ':' + val['patientLname']?.toString() + ':' + val['appointmentId']?.toString()
-					: val?.toString(),
-			}));
-			this.filteredPatientsList = [...tempKeyValue];
-			this.patientList = [...tempKeyValue];
-		});
+					// eslint-disable-next-line no-unsafe-optional-chaining
+					value: val.patientFname
+						? val['patientFname']?.toString() + ':' + val['patientLname']?.toString() + ':' + val['appointmentId']?.toString()
+						: val?.toString(),
+				}));
+				this.filteredPatientsList = [...tempKeyValue];
+				this.patientList = [...tempKeyValue];
+			});
 
 		// this.routerStateSvc
 		//     .listenForParamChange$(APPOINTMENT_ID)

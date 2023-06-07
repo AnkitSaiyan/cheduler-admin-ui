@@ -37,8 +37,6 @@ export class UserService {
 		const user = this.msalService.instance.getActiveAccount();
 		const userId = user?.localAccountId ?? '';
 
-
-
 		GeneralUtils.saveSessionExpTime();
 
 		const tenantIds = (user?.idTokenClaims as any)?.extension_Tenants?.split(',');
@@ -90,13 +88,10 @@ export class UserService {
 	}
 
 	public logout() {
-		this.msalService.logoutRedirect().pipe(take(1)).subscribe({
-			next: () => {
-				sessionStorage.clear();
-				localStorage.removeItem('sessionExp');
-				setTimeout(() => this.removeUser(), 500);
-			}
-		});
+		sessionStorage.clear();
+		localStorage.removeItem('sessionExp');
+		this.removeUser();
+		this.msalService.logoutRedirect().pipe(take(1)).subscribe();
 	}
 
 	public removeUser() {
@@ -104,6 +99,9 @@ export class UserService {
 		this.permissionSvc.removePermissionType();
 	}
 }
+
+
+
 
 
 
