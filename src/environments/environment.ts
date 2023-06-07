@@ -3,12 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 interface Environment {
-  production: boolean;
-  schedulerApiUrl: string;
-  authClientId: string;
-  userManagementApiUrl: string;
-  redirectUrl: string;
-  schedulerApiAuthScope: string;
+	production: boolean;
+	schedulerApiUrl: string;
+	authClientId: string;
+	userManagementApiUrl: string;
+	redirectUrl: string;
+	schedulerApiAuthScope: string;
 }
 
 export const environment: Environment = {

@@ -409,8 +409,8 @@
 	"LogoutConfirmation": "Bevestiging Uitloggen",
 	"Areyousurewanttologout": "Ben je zeker dat je deze sessie wil verlaten?",
 	"NoRoomsAreAvailable": "Er zijn geen kamers beschikbaar",
-	"CanNotAddAppointmentOnPastDate": "Kan geen afspraak toevoegen op verleden tijd",
-	"OrderingNotValid": "Bestelling niet geldig",
+	"CanNotAddAppointmentOnPastDate": "Kan geen afspraken toevoegen op dit tijdstip",
+	"OrderingNotValid": "Niet geldig",
 	"PleaseSelectAtLeast": "Selecteer ten minste",
 	"Radiologist(s)": "Radioloog(s)",
 	"Assistant(s)": "Assistent(s)",
@@ -445,6 +445,7 @@
 		}
 	}
 }
+
 
 
 
