@@ -129,8 +129,8 @@ export class PrioritySlotApiService extends DestroyableComponent {
 					}),
 					map((data) => ({
 						...data,
-						startedAt: this.utcToLocalPipe.transform(data.startedAt),
-						endedAt: this.utcToLocalPipe.transform(data.endedAt),
+						startedAt: this.utcToLocalPipe.transform(data.startedAt, false, true),
+						endedAt: this.utcToLocalPipe.transform(data.endedAt, false, true),
 						slotStartTime: this.utcToLocalPipe.transform(data.slotStartTime, true),
 						slotEndTime: this.utcToLocalPipe.transform(data.slotEndTime, true),
 					})),
@@ -201,6 +201,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		this.refreshPrioritySlots$$.next();
 	}
 }
+
 
 
 

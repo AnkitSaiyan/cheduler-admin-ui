@@ -218,9 +218,15 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
 		const addPriorityReqData: PrioritySlot = {
 			...rest,
-			startedAt: `${startedAt.year}-${startedAt.month}-${startedAt.day} ${DateTimeUtils.LocalToUTCTimeTimeString(slotStartTime)}:00`,
+			startedAt: this.datePipe.transform(
+				DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${slotStartTime}:00`), true),
+				'yyyy-MM-dd HH:mm:ss',
+			) as string,
 
-			endedAt: `${endedAt.year}-${endedAt.month}-${endedAt.day} ${DateTimeUtils.LocalToUTCTimeTimeString(slotEndTime)}:00`,
+			endedAt: this.datePipe.transform(
+				DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${slotEndTime}:00`), true),
+				'yyyy-MM-dd HH:mm:ss',
+			) as string,
 
 			repeatType: rest.isRepeat ? rest.repeatType : null,
 			repeatFrequency: rest.isRepeat && rest.repeatFrequency ? +rest.repeatFrequency.toString().split(' ')[0] : 0,
@@ -604,6 +610,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
+
 
 
 
