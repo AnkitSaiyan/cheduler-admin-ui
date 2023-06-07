@@ -161,8 +161,8 @@
                     (scrolled)="onScroll($event)" (sorted)="onSort($event)">
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-row-cell [fullContent]="item.name">{{ item.name | titlecase | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.startedAt" >{{ item?.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.endedAt">{{ item?.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.startedAt" >{{ item?.startedAt | dfmUtcToLocal : false : true | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.endedAt">{{ item?.endedAt | dfmUtcToLocal : false : true | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-row-cell [fullContent]="item.info">{{ item.info | dashIfNothing }}</dfm-table-row-cell>
         <dfm-data-table-action-cell *dfmPermitted="[Permission.UpdateAbsences, Permission.DeleteAbsences]">
           <ng-template #actionCellTemplate>
