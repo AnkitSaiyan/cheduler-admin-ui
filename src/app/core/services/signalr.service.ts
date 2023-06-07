@@ -63,7 +63,6 @@ export class SignalrService {
 
 	private registerForPriorityModule(): void {
 		this.hubConnection.on('UpdatePriorityPercentage', (param: string) => {
-			console.log('priority',param);
 			this.priorityModuleData$$.next(param)
 		});
 	}

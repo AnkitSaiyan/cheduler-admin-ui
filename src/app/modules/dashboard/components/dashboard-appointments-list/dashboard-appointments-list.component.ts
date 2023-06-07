@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil} from 'rxjs';
+import {BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil, withLatestFrom} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DatePipe, TitleCasePipe } from '@angular/common';
@@ -31,6 +31,7 @@ import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { SignalrService } from 'src/app/core/services/signalr.service';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -138,6 +139,8 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		private utcToLocalPipe: UtcToLocalPipe,
 		private joinWithAndPipe: JoinWithAndPipe,
 		private translatePipe: TranslatePipe,
+		private signalRSvc : SignalrService,
+
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -304,6 +307,17 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 					}
 				},
 			});
+
+			this.signalRSvc.latestAppointmentInfo$.pipe(
+				withLatestFrom(this.filteredAppointments$$),
+				takeUntil(this.destroy$$)
+			).subscribe({
+				next : ([item , list])=>{
+					const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
+					this.filteredAppointments$$.next(modifiedList);
+					this.notificationSvc.showSuccess(`Appointment ${item[0].action}`);
+				}
+			});	
 	}
 
 	public override ngOnDestroy() {
