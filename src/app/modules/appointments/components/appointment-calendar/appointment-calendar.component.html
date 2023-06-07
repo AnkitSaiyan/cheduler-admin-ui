@@ -53,7 +53,7 @@
 
       <ng-container *ngSwitchCase="'week'">
         <dfm-calendar-week-view
-          (selectedDateEvent)="updateDate($event)"
+          (selectedDateEvent)="updateDate($event.selectedDate)"
           [changeWeek$$]="changeWeek$$"
           (dayViewEvent)="changeToDayView($event)"
           [selectedDate]="selectedDate"
