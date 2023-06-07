@@ -1,40 +1,40 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {BehaviorSubject, debounceTime, filter, of, switchMap, take, takeUntil} from 'rxjs';
-import {NotificationType} from 'diflexmo-angular-design';
-import {DatePipe} from '@angular/common';
-import {ActivatedRoute, Router} from '@angular/router';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {DestroyableComponent} from '../../../../../shared/components/destroyable.component';
-import {NotificationDataService} from '../../../../../core/services/notification-data.service';
-import {AppointmentApiService} from '../../../../../core/services/appointment-api.service';
-import {RoomType} from '../../../../../shared/models/rooms.model';
-import {NameValue} from '../../../../../shared/components/search-modal.component';
-import {RoomsApiService} from '../../../../../core/services/rooms-api.service';
-import {ExamApiService} from '../../../../../core/services/exam-api.service';
-import {NameValuePairPipe} from '../../../../../shared/pipes/name-value-pair.pipe';
-import {TimeInIntervalPipe} from '../../../../../shared/pipes/time-in-interval.pipe';
-import {PhysicianApiService} from '../../../../../core/services/physician.api.service';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { BehaviorSubject, debounceTime, filter, of, switchMap, take, takeUntil } from 'rxjs';
+import { NotificationType } from 'diflexmo-angular-design';
+import { DatePipe } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { DestroyableComponent } from '../../../../../shared/components/destroyable.component';
+import { NotificationDataService } from '../../../../../core/services/notification-data.service';
+import { AppointmentApiService } from '../../../../../core/services/appointment-api.service';
+import { RoomType } from '../../../../../shared/models/rooms.model';
+import { NameValue } from '../../../../../shared/components/search-modal.component';
+import { RoomsApiService } from '../../../../../core/services/rooms-api.service';
+import { ExamApiService } from '../../../../../core/services/exam-api.service';
+import { NameValuePairPipe } from '../../../../../shared/pipes/name-value-pair.pipe';
+import { TimeInIntervalPipe } from '../../../../../shared/pipes/time-in-interval.pipe';
+import { PhysicianApiService } from '../../../../../core/services/physician.api.service';
 import {
-  AddAppointmentRequestData,
-  Appointment,
-  AppointmentSlotsRequestData,
-  CreateAppointmentFormValues,
-  SelectedSlots,
-  SlotModified,
+	AddAppointmentRequestData,
+	Appointment,
+	AppointmentSlotsRequestData,
+	CreateAppointmentFormValues,
+	SelectedSlots,
+	SlotModified,
 } from '../../../../../shared/models/appointment.model';
-import {APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE} from '../../../../../shared/utils/const';
-import {RouterStateService} from '../../../../../core/services/router-state.service';
-import {AppointmentStatus} from '../../../../../shared/models/status.model';
-import {AppointmentUtils} from '../../../../../shared/utils/appointment.utils';
-import {SiteManagementApiService} from '../../../../../core/services/site-management-api.service';
-import {DateTimeUtils} from '../../../../../shared/utils/date-time.utils';
-import {DateDistributed} from '../../../../../shared/models/calendar.model';
-import {GeneralUtils} from '../../../../../shared/utils/general.utils';
-import {ModalService} from 'src/app/core/services/modal.service';
-import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
-import {CustomDateParserFormatter} from '../../../../../shared/utils/dateFormat';
-import {UserApiService} from "../../../../../core/services/user-api.service";
+import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../../shared/utils/const';
+import { RouterStateService } from '../../../../../core/services/router-state.service';
+import { AppointmentStatus } from '../../../../../shared/models/status.model';
+import { AppointmentUtils } from '../../../../../shared/utils/appointment.utils';
+import { SiteManagementApiService } from '../../../../../core/services/site-management-api.service';
+import { DateTimeUtils } from '../../../../../shared/utils/date-time.utils';
+import { DateDistributed } from '../../../../../shared/models/calendar.model';
+import { GeneralUtils } from '../../../../../shared/utils/general.utils';
+import { ModalService } from 'src/app/core/services/modal.service';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { CustomDateParserFormatter } from '../../../../../shared/utils/dateFormat';
+import { UserApiService } from '../../../../../core/services/user-api.service';
 import { Translate } from 'src/app/shared/models/translate.model';
 
 @Component({
@@ -169,7 +169,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			this.roomList = [...keyValueExams];
 		});
 
-		this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
+		this.physicianApiSvc.allPhysicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
 			const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
 			this.filteredPhysicianList = [...keyValuePhysicians];
 			this.physicianList = [...keyValuePhysicians];
@@ -491,8 +491,4 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 		this.loadingSlots$$.next(true);
 	}
 }
-
-
-
-
 
