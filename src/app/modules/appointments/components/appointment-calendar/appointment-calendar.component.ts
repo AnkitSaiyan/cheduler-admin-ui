@@ -140,7 +140,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			}
 		});
 
-
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
 			this.setPrioritySlots(prioritySlots);
 		});
@@ -164,13 +163,19 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			}, {});
 
 			const { min, max } = minMaxValue;
-			if (DateTimeUtils.TimeToNumber('02:00:00') >= DateTimeUtils.TimeToNumber(min)) {
+			if (
+				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(min)) > DateTimeUtils.TimeToNumber(min) ||
+				DateTimeUtils.TimeToNumber('02:00:00') >= DateTimeUtils.TimeToNumber(min)
+			) {
 				minMaxValue = { ...minMaxValue, min: '00:00:00' };
 			} else {
 				minMaxValue = { ...minMaxValue, min: this.calculate(120, min, 'minus') };
 			}
-			if (DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)) {
-				minMaxValue = { ...minMaxValue, max: '23:59:00' };
+			if (
+				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) < DateTimeUtils.TimeToNumber(max) ||
+				DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)
+			) {
+				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 			} else {
 				minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
 			}
