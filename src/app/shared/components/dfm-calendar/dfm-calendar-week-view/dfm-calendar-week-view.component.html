@@ -11,7 +11,7 @@
 				<div class="calendar-week-view-weekday-header-left-vertical-line"></div>
 				<div *ngFor="let day of daysOfWeekArr; let weekday = index" role="columnheader" class="calendar-week-view-weekday">
 					<div class="calendar-week-view-header-cell-left-line"></div>
-					<h3>
+					<h3 class="d-flex align-items-center flex-column">
 						<div class="text-xs font-weight-medium w-fit calendar-week-view-day-name">
 							{{ weekday + 1 | weekdayToName : true : true | uppercase | translate }}
 						</div>
