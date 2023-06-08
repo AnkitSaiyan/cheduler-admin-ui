@@ -74,11 +74,11 @@ export class AppointmentApiService extends DestroyableComponent {
 	private recentPatientPageNo$$ = new BehaviorSubject<number>(1);
 
 	public set recentPatientPageNo(pageNo: number) {
-		this.pageNo$$.next(pageNo);
+		this.recentPatientPageNo$$.next(pageNo);
 	}
 
 	public get recentPatientPageNo(): number {
-		return this.pageNo$$.value;
+		return this.recentPatientPageNo$$.value;
 	}
 
 	constructor(
@@ -131,7 +131,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	public fetchAllAppointments$(pageNo: number, data?: any): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
-	
+
 		if (data) {
 			const queryParams = { pageNo: 1 };
 			if (data?.appointmentNumber) queryParams['id'] = data.appointmentNumber;
