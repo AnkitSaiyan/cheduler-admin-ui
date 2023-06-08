@@ -56,13 +56,13 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public downloadDropdownControl = new FormControl('', []);
 
-	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exams', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status'];
+	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status'];
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'StartedAt', isSortable: true },
 		{ id: '2', title: 'EndedAt', isSortable: true },
 		{ id: '3', title: 'PatientName', isSortable: true },
-		{ id: '4', title: 'Exams', isSortable: true },
+		{ id: '4', title: 'Exam', isSortable: true },
 		{ id: '5', title: 'Physician', isSortable: true },
 		{ id: '6', title: 'AppointmentNo', isSortable: true },
 		{ id: '7', title: 'AppliedOn', isSortable: true },
@@ -137,7 +137,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		private utcToLocalPipe: UtcToLocalPipe,
 		private joinWithAndPipe: JoinWithAndPipe,
 		private translatePipe: TranslatePipe,
-		private signalRSvc : SignalrService
+		private signalRSvc: SignalrService,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -211,7 +211,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 				this.downloadSvc.downloadJsonAs(
 					value as DownloadAsType,
-					this.columns,
+					this.tableHeaders.map(({ title }) => title),
 					this.filteredAppointments$$.value?.map((ap: Appointment) => [
 						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
 						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
@@ -264,18 +264,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe(([lang]) => {
 				this.selectedLang = lang;
-				this.columns = [
-					Translate.StartedAt[lang],
-					Translate.EndedAt[lang],
-					Translate.PatientName[lang],
-					Translate.Exam[lang],
-					Translate.Physician[lang],
-					Translate.AppointmentNo[lang],
-					Translate.AppliedOn[lang],
-					// Translate.Read[lang],
-					Translate.Status[lang],
-				];
-
+				this.tableHeaders = this.tableHeaders.map((h, i) => ({
+					...h,
+					title: Translate[this.columns[i]][lang],
+				}));
 				// eslint-disable-next-line default-case
 				switch (lang) {
 					case ENG_BE:
@@ -287,15 +279,12 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				}
 			});
 
-			this.signalRSvc.latestAppointmentInfo$.pipe(
-				withLatestFrom(this.filteredAppointments$$),
-				takeUntil(this.destroy$$)
-			).subscribe({
-				next : ([item , list])=>{
-					const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
-					this.filteredAppointments$$.next(modifiedList);
-				}
-			});			
+		this.signalRSvc.latestAppointmentInfo$.pipe(withLatestFrom(this.filteredAppointments$$), takeUntil(this.destroy$$)).subscribe({
+			next: ([item, list]) => {
+				const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
+				this.filteredAppointments$$.next(modifiedList);
+			},
+		});
 	}
 
 	public override ngOnDestroy() {
@@ -361,7 +350,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	public copyToClipboard() {
 		try {
 			let dataString = `Started At\t\t\tEnded At\t\t\t`;
-			dataString += `${this.columns.join('\t\t')}\n`;
+			dataString += `${this.tableHeaders.map(({ title }) => title).join('\t\t')}\n`;
 
 			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
 				dataString += `${ap.startedAt.toString()}\t${ap.endedAt.toString()}\t${this.titleCasePipe.transform(
