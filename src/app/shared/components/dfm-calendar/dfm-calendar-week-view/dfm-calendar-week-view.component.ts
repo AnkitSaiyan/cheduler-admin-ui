@@ -455,14 +455,14 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 					dayStart: interval.dayEnd,
 					dayEnd: this.limit.max,
 					top: 0,
-					height: getDurationMinutes(this.myDate(interval.dayEnd), this.myDate(this.limit.grayOutMax)) * this.pixelsPerMin,
+					height: getDurationMinutes(this.myDate(interval.dayEnd), this.myDate(this.limit.max)) * this.pixelsPerMin,
 				};
 			} else {
 				endGrayOutSlot[+value - 1] = {
 					dayStart: interval.dayEnd,
 					dayEnd: this.limit.max,
 					top: 0,
-					height: (getDurationMinutes(this.myDate(interval.dayEnd), this.myDate(this.limit.grayOutMax)) + 5) * this.pixelsPerMin,
+					height: getDurationMinutes(this.myDate(interval.dayEnd), this.myDate(this.limit.max)) * this.pixelsPerMin,
 				};
 			}
 		});
