@@ -164,6 +164,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 					}
 				},
 			});
+    console.log({ slotPercentage: this.slotPercentage });
 	}
 
 	public ngAfterViewInit() {
@@ -395,10 +396,11 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 		const top =
 			(startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
-
+    if (top < 0) return 0;
 		if (top % 20) {
 			return Math.floor(top / 20) * 20 + 20;
 		}
+
 		return top;
 	}
 
