@@ -153,7 +153,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 					this.downloadSvc.downloadJsonAs(
 						downloadAs as DownloadAsType,
-						this.columns,
+						this.tableHeaders.map(({ title }) => title),
 						this.filteredEmails$$.value.map((em: Email) => [em.title, em.subject?.toString(), this.translatePipe.transform(StatusToName[em.status])]),
 						'email-template',
 					);
@@ -247,7 +247,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 	public copyToClipboard() {
 		try {
-			let dataString = `${this.columns.join('\t')}\n`;
+			let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t')}\n`;
 
 			this.filteredEmails$$.value.forEach((email: Email) => {
 
