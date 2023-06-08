@@ -159,11 +159,11 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
           }
 
           this.downloadSvc.downloadJsonAs(
-            downloadAs as DownloadAsType,
-            this.columns,
-            this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), Translate[StatusToName[+ex.status]][this.selectedLang]]),
-            'exams',
-          );
+						downloadAs as DownloadAsType,
+						this.tableHeaders.map(({ title }) => title),
+						this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), Translate[StatusToName[+ex.status]][this.selectedLang]]),
+						'exams',
+					);
 
           if (downloadAs !== 'PRINT') {
             this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
@@ -286,7 +286,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
   public copyToClipboard() {
     try {
-      let dataString = `${this.columns.join('\t')}\n`;
+      let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t')}\n`;
 
       this.filteredExams$$.value.forEach((exam: Exam) => {
         dataString += `${exam.name}\t${exam.expensive}\t${StatusToName[exam.status]}\n`;

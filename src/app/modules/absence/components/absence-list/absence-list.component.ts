@@ -147,16 +147,16 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
             return;
           }
           this.downloadSvc.downloadJsonAs(
-            value as DownloadAsType,
-            this.columns,
-            this.filteredAbsences$$.value.map((u: Absence) => [
-              u.name,
-              u.startedAt ? `${new Date(u?.startedAt)?.toDateString()} ${new Date(u?.startedAt)?.toLocaleTimeString()}` : '',
-              u.endedAt ? `${new Date(u?.endedAt)?.toDateString()} ${new Date(u?.endedAt)?.toLocaleTimeString()}` : '',
-              u.info,
-            ]),
-            'absences',
-          );
+						value as DownloadAsType,
+						this.tableHeaders.map(({ title }) => title),
+						this.filteredAbsences$$.value.map((u: Absence) => [
+							u.name,
+							u.startedAt ? `${new Date(u?.startedAt)?.toDateString()} ${new Date(u?.startedAt)?.toLocaleTimeString()}` : '',
+							u.endedAt ? `${new Date(u?.endedAt)?.toDateString()} ${new Date(u?.endedAt)?.toLocaleTimeString()}` : '',
+							u.info,
+						]),
+						'absences',
+					);
 
           if (value !== 'PRINT') {
             this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
@@ -230,7 +230,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
   public copyToClipboard() {
     try {
-      let dataString = `${this.columns.join('\t')}\n`;
+      let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t')}\n`;
 
       this.filteredAbsences$$.value.forEach((absence: Absence) => {
         dataString += `${absence.name}\t${absence?.startedAt}\t${absence.endedAt}\t${absence.info}\n`;

@@ -253,7 +253,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.columns,
+						this.tableHeaders.map(({ title }) => title),
 						this.filteredUsers$$.value.map((u: UserBase) => [
 							u.firstname,
 							u.lastname,
@@ -426,7 +426,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 	public copyToClipboard() {
 		try {
-			let dataString = `${this.columns.join('\t')}\n`;
+			let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t')}\n`;
 
 			this.filteredUsers$$.value.forEach((user: UserBase) => {
 				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user?.telephone ?? '—'}\t${user.userType ?? '—'}\t${
