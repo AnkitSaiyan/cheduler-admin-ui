@@ -70,7 +70,7 @@ export class SignalrService {
 	private registerForAppointmentModule(): void {
 		this.hubConnection.on('InformClient', (param: any) => {
 			this.appointmentsModuleData$$.next(param);
-			this.notificationSvc.showSuccess(`${param.action == 'Add' ? Translate.SuccessMessage.AppointmentAdded[this.selectedLang] : param.action == 'Delete' ? Translate.DeleteAppointment[this.selectedLang] :  Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`);
+			this.notificationSvc.showSuccess(`${param.action == 'Add' ? Translate.SuccessMessage.AppointmentAdded[this.selectedLang] : param.action == 'Delete' ? Translate.DeleteAppointment[this.selectedLang] :  Translate.SuccessMessage.AppointmentUpdate[this.selectedLang]}!`);
 		});
 	}
 
