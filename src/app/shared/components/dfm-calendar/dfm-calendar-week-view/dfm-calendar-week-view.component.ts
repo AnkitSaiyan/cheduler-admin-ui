@@ -402,8 +402,14 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		return top;
 	}
 
-	public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[], isGrayOutArea: boolean = false) {
-		this.addAppointment.emit({ e, eventsContainer, day, grayOutSlot: this.grayOutSlot$$.value, isGrayOutArea });
+	public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[], isGrayOutArea: boolean = false, offsetY: number = 0) {
+		this.addAppointment.emit({
+			e: { ...e, offsetY: e.offsetY + offsetY },
+			eventsContainer,
+			day,
+			grayOutSlot: this.grayOutSlot$$.value,
+			isGrayOutArea,
+		});
 	}
 
 	private myDate(date: string): Date {
@@ -456,6 +462,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 					dayEnd: this.limit.max,
 					top: 0,
 					height: getDurationMinutes(this.myDate(interval.dayEnd), this.myDate(this.limit.max)) * this.pixelsPerMin,
+					offsetY: getDurationMinutes(this.myDate(this.limit.min), this.myDate(interval.dayEnd)) * this.pixelsPerMin,
 				};
 			} else {
 				endGrayOutSlot[+value - 1] = {
@@ -463,6 +470,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 					dayEnd: this.limit.max,
 					top: 0,
 					height: getDurationMinutes(this.myDate(interval.dayEnd), this.myDate(this.limit.max)) * this.pixelsPerMin,
+					offsetY: getDurationMinutes(this.myDate(this.limit.min), this.myDate(interval.dayEnd)) * this.pixelsPerMin,
 				};
 			}
 		});

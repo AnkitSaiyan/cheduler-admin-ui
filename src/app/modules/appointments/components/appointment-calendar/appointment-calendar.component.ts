@@ -140,7 +140,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			}
 		});
 
-
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
 			this.setPrioritySlots(prioritySlots);
 		});
@@ -464,7 +463,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	public async addAppointment(event: any) {
-    console.log({ event });
 		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
 
 		const { e, eventsContainer, day, isGrayOutArea } = event;
