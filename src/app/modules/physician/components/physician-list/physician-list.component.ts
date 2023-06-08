@@ -169,11 +169,16 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
           }
 
           this.downloadSvc.downloadJsonAs(
-              value as DownloadAsType,
-              this.columns,
-              this.filteredPhysicians$$.value.map((p: Physician) => [p.firstname, p.lastname, p.email, Translate[StatusToName[+p.status]][this.selectedLang]]),
-              'physician',
-          );
+						value as DownloadAsType,
+						this.tableHeaders.map(({ title }) => title),
+						this.filteredPhysicians$$.value.map((p: Physician) => [
+							p.firstname,
+							p.lastname,
+							p.email,
+							Translate[StatusToName[+p.status]][this.selectedLang],
+						]),
+						'physician',
+					);
 
           if (value !== 'PRINT') {
             this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
@@ -299,7 +304,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
   public copyToClipboard() {
     try {
-      let dataString = `${this.columns.join('\t')}\n`;
+      let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t')}\n`;
 
       this.filteredPhysicians$$.value.forEach((physician: Physician) => {
         dataString += `${physician.firstname}\t${physician.lastname}\t ${physician.email}\t ${StatusToName[+physician.status]}\n`;
