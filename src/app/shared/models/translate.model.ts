@@ -20,7 +20,7 @@ export const Translate = Object.freeze({
 	},
 	Role: {
 		[ENG_BE]: 'Role',
-		[DUTCH_BE]: 'Role'
+		[DUTCH_BE]: 'Role',
 	},
 	Actions: {
 		[ENG_BE]: 'Actions',
@@ -151,6 +151,10 @@ export const Translate = Object.freeze({
 	AppointmentNo: {
 		[ENG_BE]: 'Appointment No',
 		[DUTCH_BE]: 'Afspraak nr.',
+	},
+	AppointmentDate: {
+		[ENG_BE]: 'Appointment Date',
+		[DUTCH_BE]: 'Afspraak Datum',
 	},
 	AppliedOn: {
 		[ENG_BE]: 'Applied On',
@@ -622,6 +626,7 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Kan geen afspraken toevoegen op dit tijdstip',
 	},
 });
+
 
 
 

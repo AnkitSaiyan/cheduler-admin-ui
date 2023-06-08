@@ -31,7 +31,7 @@ const ColumnIdToKey = {
 	styleUrls: ['./recent-patients.component.scss'],
 })
 export class RecentPatientsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-	public columns: string[] = ['PatientName', 'Email ID', 'Doctor', 'AppointmentDate'];
+	public columns: string[] = ['PatientName', 'PatientEmail', 'Doctor', 'AppointmentDate'];
 
 	public searchControl = new FormControl('', []);
 
@@ -134,7 +134,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'PatientName', isSortable: true },
-		{ id: '2', title: 'Email ID', isSortable: true },
+		{ id: '2', title: 'EmailID', isSortable: true },
 		{ id: '3', title: 'Doctor', isSortable: true },
 		{ id: '4', title: 'AppointmentDate', isSortable: true },
 	];
@@ -158,7 +158,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 		super();
 		this.recentPatients$$ = new BehaviorSubject<any[]>([]);
 		this.filteredRecentPatients$$ = new BehaviorSubject<any[]>([]);
-    this.appointmentApiService.recentPatientPageNo = 1;
+		this.appointmentApiService.recentPatientPageNo = 1;
 	}
 
 	public ngOnInit(): void {
@@ -211,7 +211,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
 				this.downloadSvc.downloadJsonAs(
 					value as DownloadAsType,
-					this.columns.slice(0),
+					this.tableHeaders.map(({ title }) => title).slice(0),
 					this.filteredRecentPatients$$.value.map((ap: any) => [
 						ap?.patientFname?.toString(),
 						ap?.patientEmail?.toString(),
@@ -235,13 +235,10 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((lang) => {
 				this.selectedLang = lang;
-				this.columns = [
-					// Translate.Read[lang],
-					Translate.PatientName[lang],
-					Translate.PatientEmail[lang],
-					Translate.Doctor[lang],
-					Translate.StartedAt[lang],
-				];
+				this.tableHeaders = this.tableHeaders.map((h, i) => ({
+					...h,
+					title: Translate[this.columns[i]][lang],
+				}));
 			});
 	}
 
@@ -261,7 +258,10 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 	public copyToClipboard() {
 		try {
 			let dataString = `Patient Name\t\t\tEmail Id\t\t\t`;
-			dataString += `${this.columns.slice(2).join('\t\t')}\n`;
+			dataString += `${this.tableHeaders
+				.map(({ title }) => title)
+				.slice(2)
+				.join('\t\t')}\n`;
 
 			this.filteredRecentPatients$$.value.forEach((ap: any) => {
 				dataString += `${ap?.patientFname?.toString()}\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${ap.startedAt.toString()}\n`;
