@@ -232,7 +232,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			)
 			.subscribe(([_, queryParams]) => {
 				const value = new Date(queryParams['d']);
-				this.selectedSlot$$.next(this.weekdayToPractice$$.value[value.getDay()]);
+        const time = this.weekdayToPractice$$.value[value.getDay()];
+				this.selectedSlot$$.next({
+					...time,
+					timings: time.timings.filter(
+						(timing: any) => DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(timing)) > DateTimeUtils.TimeToNumber(timing),
+					),
+				});
 			});
 		this.shareDataSvc
 			.getLanguage$()
