@@ -183,12 +183,12 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			},
 		});
 
-		this.userTypeDropdownControl.valueChanges
+		combineLatest([this.userTypeDropdownControl.valueChanges, this.permissionSvc.permissionType$])
 			.pipe(
 				filter((userType) => !!userType),
 				debounceTime(0),
 				distinctUntilChanged(),
-				tap((userType) => {
+				tap(([userType]) => {
 					if (userType === UserType.General) {
 						this.userApiSvc.pageNoUser = 1;
 						this.updateColumns(this.columnsForGeneral);
@@ -198,7 +198,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 					this.users$$.next([]);
 				}),
-				switchMap((userType) => {
+				switchMap(([userType]) => {
 					if (userType === UserType.General) {
 						return this.userApiSvc.generalUsers$;
 					}
@@ -249,7 +249,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).filter((value) => value !== 'Actions'),
+						this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
 						this.filteredUsers$$.value.map((u: UserBase) => [
 							u.firstname,
 							u.lastname,
@@ -333,12 +333,15 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				next: () => this.closeMenus(),
 			});
 
-		this.shareDataSvc
-			.getLanguage$()
+		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: (lang) => {
+				next: ([lang]) => {
 					this.selectedLang = lang;
+
+					if (!this.permissionSvc.isPermitted([Permission.UpdateUser, Permission.DeleteUser])) {
+						this.tableHeaders = this.tableHeaders.filter((value) => value.title !== 'Actions');
+					}
 
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({
 						...h,
@@ -582,11 +585,13 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 	private updateColumns(columns: string[]) {
 		this.columns = [...columns];
-		this.tableHeaders = columns.map((c, i) => ({
+		if (!this.permissionSvc.isPermitted([Permission.UpdateUser, Permission.DeleteUser])) {
+			this.columns = this.columns.filter((value) => value !== 'Actions');
+		}
+		this.tableHeaders = this.columns.map((c, i) => ({
 			id: (i + 1).toString(),
 			title: Translate[c][this.selectedLang],
 			isSortable: true,
-			isAction: c === 'Actions',
 		}));
 	}
 

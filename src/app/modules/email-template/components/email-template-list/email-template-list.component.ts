@@ -61,7 +61,6 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		{ id: '1', title: 'Title', isSortable: true },
 		{ id: '2', title: 'Subject', isSortable: true },
 		{ id: '3', title: 'Status', isSortable: true },
-		{ id: '4', title: 'Actions', isSortable: false, isAction: true },
 	];
 
 	public downloadItems: any[] = [];
@@ -196,6 +195,13 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 			.subscribe(([lang]) => {
 				this.selectedLang = lang;
 
+				if (this.permissionSvc.isPermitted([Permission.UpdateEmailTemplate])) {
+					this.tableHeaders = [
+						...this.tableHeaders,
+						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+					];
+				}
+
 				this.tableHeaders = this.tableHeaders.map((h, i) => ({
 					...h,
 					title: Translate[this.columns[i]][lang],
@@ -297,6 +303,8 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		this.filteredEmails$$.next(GeneralUtils.SortArray(this.filteredEmails$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
 
 
 
