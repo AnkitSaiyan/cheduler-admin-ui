@@ -164,7 +164,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 					}
 				},
 			});
-    console.log({ slotPercentage: this.slotPercentage });
+    console.log({ prioritySlots: this.prioritySlots });
 	}
 
 	public ngAfterViewInit() {
@@ -345,19 +345,16 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public getPrioritySlotHeight(prioritySlot: any): number {
-		const startDate: Date = this.myDate(
-			DateTimeUtils.TimeToNumber(prioritySlot.start) < DateTimeUtils.TimeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start,
-		);
+    const max = DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max);
+		const startDate: Date = this.myDate(prioritySlot.start);
 		if (this.myDate(prioritySlot.end).getTime() <= this.myDate(this.limit.min).getTime()) {
 			return 0;
 		}
 
-		if (this.myDate(prioritySlot.start).getTime() >= this.myDate(this.limit.max).getTime()) {
+		if (this.myDate(prioritySlot.start).getTime() >= this.myDate(max).getTime()) {
 			return 0;
 		}
-		const endDate: Date = this.myDate(
-			DateTimeUtils.TimeToNumber(prioritySlot.end) > DateTimeUtils.TimeToNumber(this.limit.max) ? this.limit.max : prioritySlot.end,
-		);
+		const endDate: Date = this.myDate(DateTimeUtils.TimeToNumber(prioritySlot.end) > DateTimeUtils.TimeToNumber(max) ? max : prioritySlot.end);
 		const durationMinutes = getDurationMinutes(startDate, endDate);
 		return durationMinutes * this.pixelsPerMin;
 	}
@@ -384,19 +381,20 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public getPrioritySlotTop(prioritySlot: any): number {
+		const min = DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min);
 		const startDate = this.myDate(
-			DateTimeUtils.TimeToNumber(prioritySlot.start) < DateTimeUtils.TimeToNumber(this.limit.min) ? this.limit.min : prioritySlot.start,
+			DateTimeUtils.TimeToNumber(prioritySlot.start) < DateTimeUtils.TimeToNumber(min) ? this.limit.min : prioritySlot.start,
 		);
 		const startHour = startDate.getHours();
 		const startMinute = startDate.getMinutes();
-		const startCalendarDate = this.myDate(this.limit.min);
+		const startCalendarDate = this.myDate(min);
 		const startCalendarHour = startCalendarDate.getHours();
 		const startCalendarMinute = startCalendarDate.getMinutes();
 		const barHeight = 1;
 		const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 		const top =
 			(startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
-    if (top < 0) return 0;
+		// if (top < 0) return 0;
 		if (top % 20) {
 			return Math.floor(top / 20) * 20 + 20;
 		}
