@@ -31,6 +31,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { RepeatType } from 'src/app/shared/models/absence.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 
 @Component({
 	selector: 'dfm-appointment-calendar',
@@ -107,6 +108,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		private shareDataSvc: ShareDataService,
 		private translatePipe: TranslatePipe,
 		private priorityApiSvc: PrioritySlotApiService,
+		private utcToLocalPipe: UtcToLocalPipe,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -140,7 +142,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			}
 		});
 
-
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
 			this.setPrioritySlots(prioritySlots);
 		});
@@ -164,13 +165,19 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			}, {});
 
 			const { min, max } = minMaxValue;
-			if (DateTimeUtils.TimeToNumber('02:00:00') >= DateTimeUtils.TimeToNumber(min)) {
+			if (
+				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(min)) > DateTimeUtils.TimeToNumber(min) ||
+				DateTimeUtils.TimeToNumber('02:00:00') >= DateTimeUtils.TimeToNumber(min)
+			) {
 				minMaxValue = { ...minMaxValue, min: '00:00:00' };
 			} else {
 				minMaxValue = { ...minMaxValue, min: this.calculate(120, min, 'minus') };
 			}
-			if (DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)) {
-				minMaxValue = { ...minMaxValue, max: '23:59:00' };
+			if (
+				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) < DateTimeUtils.TimeToNumber(max) ||
+				DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)
+			) {
+				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 			} else {
 				minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
 			}
@@ -590,60 +597,45 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	private setPrioritySlots(prioritySlots: PrioritySlot[]) {
 		const myPrioritySlots = {};
-		prioritySlots.forEach((prioritySlot: PrioritySlot) => {
-			let { repeatFrequency } = prioritySlot;
-			const { priority, nxtSlotOpenPct } = prioritySlot;
-			const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
-			let firstDate = new Date(new Date(prioritySlot.startedAt).toDateString());
-			const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
-			switch (true) {
-				case !prioritySlot.isRepeat:
-				case prioritySlot.repeatType === RepeatType.Daily: {
-					repeatFrequency = prioritySlot.isRepeat ? repeatFrequency : 1;
-					while (true) {
-						const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
-						const customPrioritySlot = {
-							start: prioritySlot.slotStartTime.slice(0, 5),
-							end: prioritySlot.slotEndTime?.slice(0, 5),
-							priority,
-							nxtSlotOpenPct,
-						};
-						myPrioritySlots[dateString] = myPrioritySlots[dateString] ? [...myPrioritySlots[dateString], customPrioritySlot] : [customPrioritySlot];
-						if (firstDate.getTime() >= lastDate.getTime()) break;
-						firstDate.setDate(firstDate.getDate() + repeatFrequency);
+		prioritySlots
+			.map((value) => ({
+				...value,
+				startedAt: this.utcToLocalPipe.transform(value.startedAt, false, true),
+				endedAt: this.utcToLocalPipe.transform(value.endedAt, false, true),
+				slotStartTime: this.utcToLocalPipe.transform(value.slotStartTime, true),
+				slotEndTime: this.utcToLocalPipe.transform(value.slotEndTime, true),
+			}))
+			.forEach((prioritySlot: PrioritySlot) => {
+				let { repeatFrequency } = prioritySlot;
+				const { priority, nxtSlotOpenPct } = prioritySlot;
+				const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
+				let firstDate = new Date(new Date(prioritySlot.startedAt).toDateString());
+				const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
+				switch (true) {
+					case !prioritySlot.isRepeat:
+					case prioritySlot.repeatType === RepeatType.Daily: {
+						repeatFrequency = prioritySlot.isRepeat ? repeatFrequency : 1;
+						while (true) {
+							const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+							const customPrioritySlot = {
+								start: prioritySlot.slotStartTime.slice(0, 5),
+								end: prioritySlot.slotEndTime?.slice(0, 5),
+								priority,
+								nxtSlotOpenPct,
+							};
+							myPrioritySlots[dateString] = myPrioritySlots[dateString] ? [...myPrioritySlots[dateString], customPrioritySlot] : [customPrioritySlot];
+							if (firstDate.getTime() >= lastDate.getTime()) break;
+							firstDate.setDate(firstDate.getDate() + repeatFrequency);
+						}
+						break;
 					}
-					break;
-				}
-				case prioritySlot.repeatType === RepeatType.Weekly: {
-					const closestSunday = new Date(startDate.getTime() - startDate.getDay() * 24 * 60 * 60 * 1000);
-					firstDate = new Date(closestSunday);
-					while (true) {
-						prioritySlot.repeatDays.split(',').forEach((day) => {
-							firstDate.setTime(closestSunday.getTime());
-							firstDate.setDate(closestSunday.getDate() + +day);
-							if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
-								const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
-								const customPrioritySlot = {
-									start: prioritySlot.slotStartTime.slice(0, 5),
-									end: prioritySlot.slotEndTime?.slice(0, 5),
-									priority,
-									nxtSlotOpenPct,
-								};
-								myPrioritySlots[dateString] = myPrioritySlots[dateString]
-									? [...myPrioritySlots[dateString], customPrioritySlot]
-									: [customPrioritySlot];
-							}
-						});
-						if (closestSunday.getTime() >= lastDate.getTime()) break;
-						closestSunday.setDate(closestSunday.getDate() + repeatFrequency * 7);
-					}
-					break;
-				}
-				case prioritySlot.repeatType === RepeatType.Monthly: {
-					while (true) {
-						prioritySlot.repeatDays.split(',').forEach((day) => {
-							if (getDateOfMonth(firstDate.getFullYear(), firstDate.getMonth() + 1, 0) >= +day) {
-								firstDate.setDate(+day);
+					case prioritySlot.repeatType === RepeatType.Weekly: {
+						const closestSunday = new Date(startDate.getTime() - startDate.getDay() * 24 * 60 * 60 * 1000);
+						firstDate = new Date(closestSunday);
+						while (true) {
+							prioritySlot.repeatDays.split(',').forEach((day) => {
+								firstDate.setTime(closestSunday.getTime());
+								firstDate.setDate(closestSunday.getDate() + +day);
 								if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
 									const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
 									const customPrioritySlot = {
@@ -656,17 +648,40 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 										? [...myPrioritySlots[dateString], customPrioritySlot]
 										: [customPrioritySlot];
 								}
-							}
-						});
-						if (firstDate.getTime() >= lastDate.getTime()) break;
-						firstDate.setMonth(firstDate.getMonth() + repeatFrequency);
+							});
+							if (closestSunday.getTime() >= lastDate.getTime()) break;
+							closestSunday.setDate(closestSunday.getDate() + repeatFrequency * 7);
+						}
+						break;
 					}
-					break;
+					case prioritySlot.repeatType === RepeatType.Monthly: {
+						while (true) {
+							prioritySlot.repeatDays.split(',').forEach((day) => {
+								if (getDateOfMonth(firstDate.getFullYear(), firstDate.getMonth() + 1, 0) >= +day) {
+									firstDate.setDate(+day);
+									if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
+										const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+										const customPrioritySlot = {
+											start: prioritySlot.slotStartTime.slice(0, 5),
+											end: prioritySlot.slotEndTime?.slice(0, 5),
+											priority,
+											nxtSlotOpenPct,
+										};
+										myPrioritySlots[dateString] = myPrioritySlots[dateString]
+											? [...myPrioritySlots[dateString], customPrioritySlot]
+											: [customPrioritySlot];
+									}
+								}
+							});
+							if (firstDate.getTime() >= lastDate.getTime()) break;
+							firstDate.setMonth(firstDate.getMonth() + repeatFrequency);
+						}
+						break;
+					}
+					default:
+						break;
 				}
-				default:
-					break;
-			}
-		});
+			});
 
 		this.prioritySlots$$.next({ ...myPrioritySlots });
 	}

@@ -160,6 +160,12 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Applied On',
 		[DUTCH_BE]: 'Aangevraagd op',
 	},
+
+	AbsenceTitle: {
+		[ENG_BE]: 'Absence Title',
+		[DUTCH_BE]: 'Afwezigheid Titel',
+	},
+
 	Read: {
 		[ENG_BE]: 'Read',
 		[DUTCH_BE]: 'Lees',

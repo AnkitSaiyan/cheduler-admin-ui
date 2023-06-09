@@ -206,7 +206,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 				this.downloadSvc.downloadJsonAs(
 					value as DownloadAsType,
-					this.columns,
+					this.tableHeaders.map(({ title }) => title),
 					this.filteredRoomAbsence$$.value.map((ap: any) => [
 						ap?.roomName?.toString(),
 						ap.startDate.toString(),
@@ -229,13 +229,10 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((lang) => {
 				this.selectedLang = lang;
-				this.columns = [
-					// Translate.Read[lang],
-					Translate.RoomName[lang],
-					Translate.StartDate[lang],
-					Translate.EndDate[lang],
-					Translate.AbsenceName[lang],
-				];
+				this.tableHeaders = this.tableHeaders.map((h, i) => ({
+          ...h,
+          title: Translate[this.columns[i]][lang],
+        }));
 			});
 	}
 
@@ -255,7 +252,11 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 	public copyToClipboard() {
 		try {
 			let dataString = `Room Name\t\t\tStarted At\t\t\t`;
-			dataString += `${this.columns.slice(2).join('\t\t')}\n`;
+			dataString += `${this.tableHeaders
+				.map(({ title }) => title)
+				.slice(2)
+				.join('\t\t')}\n`;
+
 
 			this.filteredRoomAbsence$$.value.forEach((ap: any) => {
 				dataString += `${ap?.roomName?.toString()}\t${ap?.startDate?.toString()}\t\t${ap.endDate.toString()}\t\t${ap.absenceName.toString()}\n`;
