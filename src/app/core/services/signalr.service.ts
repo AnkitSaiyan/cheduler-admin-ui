@@ -20,9 +20,9 @@ export class SignalrService {
 	private selectedLang!: string;
 
 	constructor(
-		private appointmentApiSvc : AppointmentApiService,
-		private notificationSvc : NotificationDataService,
-		private shareDataSvc : ShareDataService,
+		private appointmentApiSvc: AppointmentApiService,
+		private notificationSvc: NotificationDataService,
+		private shareDataSvc: ShareDataService,
 	) {
 		this.createConnection();
 		this.registerForAppointmentModule();
@@ -30,14 +30,14 @@ export class SignalrService {
 		this.startConnection();
 
 		this.shareDataSvc.getLanguage$().subscribe({
-        next: (lang) => this.selectedLang = lang
-      });
+			next: (lang) => (this.selectedLang = lang),
+		});
 	}
 
 	public get latestAppointmentInfo$(): Observable<any> {
-		return this.appointmentsModuleData$$.asObservable().pipe(switchMap((val:any) =>
-			this.appointmentApiSvc.AttachPatientDetails([this.appointmentApiSvc.getAppointmentModified(val)])
-		));
+		return this.appointmentsModuleData$$
+			.asObservable()
+			.pipe(switchMap((val: any) => this.appointmentApiSvc.AttachPatientDetails([this.appointmentApiSvc.getAppointmentModified(val)])));
 	}
 
 	public get priorityModuleData$(): Observable<any> {
@@ -48,29 +48,39 @@ export class SignalrService {
 		const SubDomain: string = window.location.host.split('.')[0];
 		const options: IHttpConnectionOptions = {
 			headers: { SubDomain },
-		}
+		};
 
 		this.hubConnection = new signalR.HubConnectionBuilder()
-			.withUrl(`https://diflexmo-scheduler-api-dev.azurewebsites.net/informhub`, options  )
+			.withUrl(`https://diflexmo-scheduler-api-dev.azurewebsites.net/informhub`, options)
 			.configureLogging(signalR.LogLevel.Debug)
 			.build();
 	}
 
 	private startConnection(): void {
 		this.hubConnection
-		.start()
-		.then(() => {
-			console.log('Connection started.');
-		})
-		.catch((err) => {
-			console.log('Opps!');
-		});
+			.start()
+			.then(() => {
+				console.log('Connection started.');
+			})
+			.catch((err) => {
+				console.log('Opps!');
+			});
 	}
 
 	private registerForAppointmentModule(): void {
 		this.hubConnection.on('InformClient', (param: any) => {
 			this.appointmentsModuleData$$.next(param);
-			this.notificationSvc.showSuccess(`${param.action == 'Add' ? Translate.SuccessMessage.AppointmentAdded[this.selectedLang] : param.action == 'Delete' ? Translate.DeleteAppointment[this.selectedLang] :  Translate.SuccessMessage.AppointmentUpdate[this.selectedLang]}!`);
+			this.notificationSvc.showSuccess(
+				`${
+					param.action == 'Add'
+						? Translate.AppointmentRecived[this.selectedLang]
+						: Translate.AppointmentNo[this.selectedLang] +
+						  ' ' +
+						  param.id +
+						  ' ' +
+						  `${param.action == 'Delete' ? Translate.Delete[this.selectedLang] : Translate.SuccessMessage.Update[this.selectedLang]}`
+				}!`,
+			);
 		});
 	}
 
@@ -80,4 +90,3 @@ export class SignalrService {
 		});
 	}
 }
-
