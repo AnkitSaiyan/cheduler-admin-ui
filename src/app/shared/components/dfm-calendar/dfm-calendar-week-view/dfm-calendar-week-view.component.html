@@ -204,18 +204,15 @@
 								</ng-container>
 							</ng-container>
 						</div>
-            <div
-              (dblclick)="onDblClick($event, eventsContainer, day, true, item?.offsetY)"
-              class="gray-out-area-week"
-              *ngIf="grayOutSlot$$.value.start[weekday] && grayOutSlot$$.value.start[weekday] as item"
-              [ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
-            ></div>
-            <div
-              (dblclick)="onDblClick($event, eventsContainer, day, true, item?.offsetY)"
-              class="gray-out-area-week"
-              *ngIf="grayOutSlot$$.value.end[weekday]  && grayOutSlot$$.value.end[weekday] as item"
-              [ngStyle]="{ 'bottom.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
-            ></div>
+            <ng-container *ngIf="grayOutSlot$$.value[weekday] && grayOutSlot$$.value[weekday] as items">
+              <ng-container *ngFor="let item of items">
+                <div
+                  (dblclick)="onDblClick($event, eventsContainer, day, true, item?.offsetY)"
+                  class="gray-out-area-week"
+                  [ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
+                ></div>
+              </ng-container>
+            </ng-container>
 					</div>
 				</div>
 			</div>
