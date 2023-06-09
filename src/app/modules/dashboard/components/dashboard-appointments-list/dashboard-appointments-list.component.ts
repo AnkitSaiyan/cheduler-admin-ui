@@ -58,7 +58,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public downloadDropdownControl = new FormControl('', []);
 
-	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status'];
+	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'StartedAt', isSortable: true },
@@ -69,6 +69,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		{ id: '6', title: 'AppointmentNo', isSortable: true },
 		{ id: '7', title: 'AppliedOn', isSortable: true },
 		{ id: '8', title: 'Status', isSortable: true },
+		{ id: '9', title: 'Actions', isSortable: false, isAction: true },
 	];
 
 	public downloadItems: NameValue[] = [];
@@ -223,7 +224,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title),
+						this.tableHeaders.map(({ title }) => title).slice(0, -1),
 						this.filteredAppointments$$.value.map((ap: Appointment) => [
 							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
 							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
@@ -377,7 +378,10 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	public copyToClipboard() {
 		try {
 			let dataString = `Started At\t\t\tEnded At\t\t\t`;
-			dataString += `${this.tableHeaders.map(({ title }) => title).join('\t\t')}\n`;
+			dataString += `${this.tableHeaders
+				.map(({ title }) => title)
+				.slice(0, -1)
+				.join('\t\t')}\n`;
 
 			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
 				dataString += `${ap?.startedAt?.toString()}\t${ap?.endedAt?.toString()}\t${this.titleCasePipe.transform(
