@@ -105,7 +105,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
 				this.downloadSvc.downloadJsonAs(
 					downloadAs as DownloadAsType,
-					this.columns.slice(0, -1),
+					this.columns.filter((value) => value !== 'Actions'),
 					this.filteredPrioritySlots$$.value.map((pr: PrioritySlot) => [
 						pr.startedAt,
 						pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`,
@@ -170,7 +170,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
 	public copyToClipboard() {
 		try {
-			let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+			let dataString = `${this.columns.filter((value) => value !== 'Actions').join('\t')}\n`;
 
 			this.filteredPrioritySlots$$.value.forEach((prioritySlot: PrioritySlot) => {
 				dataString += `${prioritySlot.startedAt}\t${prioritySlot.endedAt ? prioritySlot.endedAt : prioritySlot.startedAt.slice(0, -9)}\t${

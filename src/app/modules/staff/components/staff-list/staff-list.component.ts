@@ -175,7 +175,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).slice(0, -1),
+						this.tableHeaders.map(({ title }) => title).filter((value) => value !== 'Actions'),
 						this.filteredStaffs$$.value.map((u: User) => [
 							u.firstname,
 							u.lastname,
@@ -319,7 +319,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		try {
 			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
-				.slice(0, -1)
+				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
 
 			this.filteredStaffs$$.value.forEach((staff: User) => {

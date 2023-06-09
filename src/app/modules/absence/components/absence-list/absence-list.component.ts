@@ -149,7 +149,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 					}
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).slice(0, -1),
+						this.tableHeaders.map(({ title }) => title).filter((value) => value !== 'Actions'),
 						this.filteredAbsences$$.value.map((u: Absence) => [
 							u.name,
 							u.startedAt ? `${new Date(u?.startedAt)?.toDateString()} ${new Date(u?.startedAt)?.toLocaleTimeString()}` : '',
@@ -235,7 +235,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 		try {
 			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
-				.slice(0, -1)
+				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
 
 			this.filteredAbsences$$.value.forEach((absence: Absence) => {

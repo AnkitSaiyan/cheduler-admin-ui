@@ -153,7 +153,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.columns.slice(0, -1),
+						this.columns.filter((value) => value !== 'Actions'),
 						this.filteredRooms$$.value.map((u: Room) => [
 							u.name,
 							u.description,
@@ -319,7 +319,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
 	public copyToClipboard() {
 		try {
-			let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+			let dataString = `${this.columns.filter((value) => value !== 'Actions').join('\t')}\n`;
 
 			this.filteredRooms$$.value.forEach((room: Room) => {
 				dataString += `${room.name}\t${room.description}\t${room.placeInAgenda}\t ${room.type}\t ${StatusToName[+room.status]}\n`;

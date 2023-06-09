@@ -68,7 +68,6 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 		{ id: '1', title: 'Name', isSortable: true },
 		{ id: '2', title: 'Expensive', isSortable: true },
 		{ id: '3', title: 'Status', isSortable: true },
-		{ id: '4', title: 'Actions', isSortable: false, isAction: true },
 	];
 
 	public downloadItems: DownloadType[] = [];
@@ -161,7 +160,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
 					this.downloadSvc.downloadJsonAs(
 						downloadAs as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).slice(0, -1),
+						this.tableHeaders.map(({ title }) => title).filter((value) => value !== 'Actions'),
 						this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), Translate[StatusToName[+ex.status]][this.selectedLang]]),
 						'exams',
 					);
@@ -203,6 +202,13 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 			.subscribe({
 				next: ([lang]) => {
 					this.selectedLang = lang;
+
+					if (this.permissionSvc.isPermitted([Permission.UpdateExams, Permission.DeleteExams])) {
+						this.tableHeaders = [
+							...this.tableHeaders,
+							{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+						];
+					}
 
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({
 						...h,
@@ -287,7 +293,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 		try {
 			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
-				.slice(0, -1)
+				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
 
 			this.filteredExams$$.value.forEach((exam: Exam) => {

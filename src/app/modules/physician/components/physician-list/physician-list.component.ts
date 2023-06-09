@@ -167,7 +167,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).slice(0, -1),
+						this.tableHeaders.map(({ title }) => title).filter((value) => value !== 'Actions'),
 						this.filteredPhysicians$$.value.map((p: Physician) => [
 							p.firstname,
 							p.lastname,
@@ -304,7 +304,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 		try {
 			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
-				.slice(0, -1)
+				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
 
 			this.filteredPhysicians$$.value.forEach((physician: Physician) => {

@@ -154,7 +154,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 					this.downloadSvc.downloadJsonAs(
 						downloadAs as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).slice(0, -1),
+						this.tableHeaders.map(({ title }) => title).filter((value) => value !== 'Actions'),
 						this.filteredEmails$$.value.map((em: Email) => [em.title, em.subject?.toString(), this.translatePipe.transform(StatusToName[em.status])]),
 						'email-template',
 					);
@@ -251,7 +251,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		try {
 			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
-				.slice(0, -1)
+				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
 
 			this.filteredEmails$$.value.forEach((email: Email) => {

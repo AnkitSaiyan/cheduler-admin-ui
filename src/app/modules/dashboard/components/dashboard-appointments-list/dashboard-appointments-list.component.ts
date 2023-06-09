@@ -224,7 +224,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).slice(0, -1),
+						this.tableHeaders.map(({ title }) => title).filter((value) => value !== 'Actions'),
 						this.filteredAppointments$$.value.map((ap: Appointment) => [
 							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
 							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
@@ -380,7 +380,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			let dataString = `Started At\t\t\tEnded At\t\t\t`;
 			dataString += `${this.tableHeaders
 				.map(({ title }) => title)
-				.slice(0, -1)
+				.filter((value) => value !== 'Actions')
 				.join('\t\t')}\n`;
 
 			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
