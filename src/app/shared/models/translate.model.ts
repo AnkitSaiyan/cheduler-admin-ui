@@ -149,7 +149,7 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Dokter',
 	},
 	AppointmentNo: {
-		[ENG_BE]: 'Appointment No',
+		[ENG_BE]: 'Appointment No.',
 		[DUTCH_BE]: 'Afspraak nr.',
 	},
 	AppointmentDate: {
@@ -433,6 +433,10 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'Profile saved successfully',
 			[DUTCH_BE]: 'Profiel succesvol opgeslagen',
 		},
+		Update: {
+			[ENG_BE]: 'Updated',
+			[DUTCH_BE]: 'bijgewerkt',
+		},
 	},
 
 	ErrorMessage: {
@@ -538,6 +542,11 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Profile',
 		[DUTCH_BE]: 'Profiel',
 	},
+
+	AppointmentRecived: {
+		[ENG_BE]: 'New Appointment Received',
+		[DUTCH_BE]: 'Nieuwe afspraak ontvangen',
+	},
 	Error: {
 		Forbidden: {
 			[ENG_BE]: 'Forbidden! You are not permitted to perform this action',
@@ -618,6 +627,10 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Complete Profile',
 		[DUTCH_BE]: 'Complete Profile',
 	},
+	Delete: {
+		[ENG_BE]: 'Deleted',
+		[DUTCH_BE]: 'verwijderd',
+	},
 
 	// General
 	GENERAL: {
@@ -632,14 +645,3 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Kan geen afspraken toevoegen op dit tijdstip',
 	},
 });
-
-
-
-
-
-
-
-
-
-
-
