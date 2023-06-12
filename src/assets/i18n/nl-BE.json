@@ -1,4 +1,7 @@
 {
+	"Admin": "Beheerder",
+	"Reader": "Lezer",
+	"General User": "Algemene Gebruiker",
 	"FirstName": "Voornaam",
 	"LastName": "Naam",
 	"Email": "E-mail",
@@ -445,6 +448,10 @@
 		}
 	}
 }
+
+
+
+
 
 
 
