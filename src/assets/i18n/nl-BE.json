@@ -13,7 +13,7 @@
 	"EditUser": "Bewerk Gebruiker",
 	"EditStaff": "Bewerk Medewerker",
 	"DeleteStaff": "Verwijder Medewerker",
-	"SelectUserType": "Selecteer type gebruiker",
+	"SelectUserType": "Selecteer Type Gebruiker",
 	"SchedulerUser": "gebruiker",
 	"GeneralUser": "Algemene gebruiker",
 	"SaveChanges": "Bewaar wijziging",
@@ -445,6 +445,7 @@
 		}
 	}
 }
+
 
 
 
