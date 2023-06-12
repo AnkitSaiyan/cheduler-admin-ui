@@ -418,7 +418,7 @@
 	"DESIGN_SYSTEM": {
 		"NAVIGATION_BAR": {
 			"PROFILE": "Profiel",
-			"LOG_OUT": "Uitloggen",
+			"LOG_OUT": "Log uit",
 			"SETTINGS": "instellingen",
 			"MORE": "Meer",
 			"LESS": "Minder",
@@ -445,6 +445,7 @@
 		}
 	}
 }
+
 
 
 
