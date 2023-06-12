@@ -1,5 +1,5 @@
 {
-	"Admin": "Beheerder",
+	"Admin": "Abeheerder",
 	"Reader": "Lezer",
 	"General User": "Algemene Gebruiker",
 	"FirstName": "Voornaam",
@@ -448,6 +448,7 @@
 		}
 	}
 }
+
 
 
 
