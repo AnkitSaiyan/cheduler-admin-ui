@@ -1,4 +1,7 @@
 {
+	"Admin": "Admin",
+	"Reader": "Reader",
+	"General User": "General User",
 	"FirstName": "First Name",
 	"LastName": "Last Name",
 	"Email": "Email",
@@ -442,6 +445,9 @@
 		}
 	}
 }
+
+
+
 
 
 
