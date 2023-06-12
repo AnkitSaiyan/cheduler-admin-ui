@@ -207,7 +207,7 @@
             <ng-container *ngIf="grayOutSlot$$.value[weekday] && grayOutSlot$$.value[weekday] as items">
               <ng-container *ngFor="let item of items">
                 <div
-                  (dblclick)="onDblClick($event, eventsContainer, day, true, item?.offsetY)"
+                  (dblclick)="onDblClick($event, eventsContainer, day, true, item.top)"
                   class="gray-out-area-week"
                   [ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
                 ></div>

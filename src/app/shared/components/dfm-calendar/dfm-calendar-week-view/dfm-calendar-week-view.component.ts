@@ -161,7 +161,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 					}
 				},
 			});
-		console.log({ prioritySlots: this.prioritySlots });
 	}
 
 	public ngAfterViewInit() {
@@ -401,7 +400,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[], isGrayOutArea: boolean = false, offsetY: number = 0) {
 		this.addAppointment.emit({
-			e,
+			e: { ...e, offsetY: e.offsetY + offsetY },
 			eventsContainer,
 			day,
 			grayOutSlot: this.grayOutSlot$$.value,
@@ -520,8 +519,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 				},
 			];
 		}
-
-		console.log({ start: grayOutSlot }, 'test');
 		this.grayOutSlot$$.next(grayOutSlot);
 	}
 
