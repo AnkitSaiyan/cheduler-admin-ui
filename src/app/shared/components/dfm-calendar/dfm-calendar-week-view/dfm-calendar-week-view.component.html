@@ -185,32 +185,34 @@
 															: slotPercentage[weekday]
 															: prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]
 												"
+                        [ngStyle]="{
+                          'top.px': getPrioritySlotTop(prioritySlot) < 0 && getPrioritySlotTop(prioritySlot)* (-1) < eventHeight ? getPrioritySlotTop(prioritySlot) * (-1) : '24px'
+                        }"
 											>
                         <ng-container *ngIf="slotPercentage?.length">
                           <span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
                           <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
                         </ng-container>
 											</div>
+
+
 											<ng-template #priorityCardDetail>
-												<span style="white-space: nowrap">{{ prioritySlot.start | dfmUtcToLocal : true }} - {{ prioritySlot.end  | dfmUtcToLocal : true }}</span>
+												<span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end  }}</span>
 											</ng-template>
 										</div>
 									</ng-container>
 								</ng-container>
 							</ng-container>
 						</div>
-            <div
-              (dblclick)="onDblClick($event, eventsContainer, day, true, item?.offsetY)"
-              class="gray-out-area-week"
-              *ngIf="grayOutSlot$$.value.start[weekday] && grayOutSlot$$.value.start[weekday] as item"
-              [ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
-            ></div>
-            <div
-              (dblclick)="onDblClick($event, eventsContainer, day, true, item?.offsetY)"
-              class="gray-out-area-week"
-              *ngIf="grayOutSlot$$.value.end[weekday]  && grayOutSlot$$.value.end[weekday] as item"
-              [ngStyle]="{ 'bottom.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
-            ></div>
+            <ng-container *ngIf="grayOutSlot$$.value[weekday] && grayOutSlot$$.value[weekday] as items">
+              <ng-container *ngFor="let item of items">
+                <div
+                  (dblclick)="onDblClick($event, eventsContainer, day, true, item.top)"
+                  class="gray-out-area-week"
+                  [ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
+                ></div>
+              </ng-container>
+            </ng-container>
 					</div>
 				</div>
 			</div>

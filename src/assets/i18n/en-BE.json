@@ -411,8 +411,38 @@
 	"PleaseSelectAtLeast": "Please select at least",
 	"Radiologist(s)": "Radiologist(s)",
 	"Assistant(s)": "Assistant(s)",
-	"Secretary(s)": "Secretary(s)"
+	"Secretary(s)": "Secretary(s)",
+	"DESIGN_SYSTEM": {
+		"NAVIGATION_BAR": {
+			"PROFILE": "Profile",
+			"LOG_OUT": "Log out",
+			"SETTINGS": "Settings",
+			"MORE": "More",
+			"LESS": "Less",
+			"POWERED_BY": "Powered by",
+			"TENANTS": "Language",
+			"BADGE_TEXT": {
+				"SUCCESS": "Success",
+				"WARNING": "Warning",
+				"ERROR": "Error",
+				"NEW": "New",
+				"INFO": "Info"
+			},
+			"SHOW_ALL": "Show all",
+			"DISMISS_ALL": "Dismiss all",
+			"NO_ITEMS": "No items to display"
+		},
+		"ERROR": {
+			"REQUIRED_FIELD": "This field is required"
+		},
+		"INPUT_DROPDOWN": {
+			"SELECT_ALL": "Select all",
+			"NO_ITEMS": "No items found",
+			"LOADING": "Loading"
+		}
+	}
 }
+
 
 
 
