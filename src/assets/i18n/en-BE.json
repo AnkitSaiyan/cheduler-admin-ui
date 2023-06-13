@@ -42,7 +42,7 @@
 	"Name": "Name",
 	"RizvNumber": "Rizv Number",
 	"EnterRizvNumber": "Please Enter Riziv Number",
-	"SearchByNameEmailCategory": "Search By First Name, Last Name, Email & Category",
+	"SearchByNameEmailCategory": "Search By First Name, Last Name & Email ",
 	"SearchByPrioritySlots": "Search By Priority Slots",
 	"Priority": "Priority",
 	"Rooms": "Rooms",

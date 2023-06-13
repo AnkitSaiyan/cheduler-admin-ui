@@ -597,6 +597,10 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'User',
 		[DUTCH_BE]: 'Gebruiker',
 	},
+  ApplicationUser: {
+		[ENG_BE]: 'Application User',
+		[DUTCH_BE]: 'Applicatie Gebruiker',
+	},
 	General: {
 		[ENG_BE]: 'General',
 		[DUTCH_BE]: 'Algemene',
