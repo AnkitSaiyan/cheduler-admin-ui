@@ -49,7 +49,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
 	public statuses = Statuses;
 
-	public userRoles: NameValue[] = [];
+	public userRoles$$ = new BehaviorSubject<NameValue[]>([]);
 
 	public userTenants: NameValue[] = [];
 
@@ -123,7 +123,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 				},
 			});
 
-		this.userRoles = this.userApiSvc.getRoleTypes();
+		this.userApiSvc.roleTypes$.pipe(takeUntil(this.destroy$$)).subscribe((userRoles) => this.userRoles$$.next(userRoles));
 	}
 
 	public override ngOnDestroy() {
@@ -177,8 +177,6 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 		}
 
 		this.loading$$.next(true);
-
-
 
 		let addUserObservable$: Observable<any>;
 

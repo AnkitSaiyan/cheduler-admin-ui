@@ -18,10 +18,6 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Status',
 		[DUTCH_BE]: 'Status',
 	},
-	Role: {
-		[ENG_BE]: 'Role',
-		[DUTCH_BE]: 'Role',
-	},
 	Actions: {
 		[ENG_BE]: 'Actions',
 		[DUTCH_BE]: 'Acties',
@@ -51,6 +47,10 @@ export const Translate = Object.freeze({
 	Category: {
 		[ENG_BE]: 'Category',
 		[DUTCH_BE]: 'Categorie',
+	},
+	Role: {
+		[ENG_BE]: 'Role',
+		[DUTCH_BE]: 'Rol',
 	},
 	CSV: {
 		[ENG_BE]: 'CSV',
@@ -177,6 +177,18 @@ export const Translate = Object.freeze({
 	Private: {
 		[ENG_BE]: 'Private',
 		[DUTCH_BE]: 'Privaat',
+	},
+	Admin: {
+		[ENG_BE]: 'Admin',
+		[DUTCH_BE]: 'Abeheerder',
+	},
+	Reader: {
+		[ENG_BE]: 'Reader',
+		[DUTCH_BE]: 'Lezer',
+	},
+	'General User': {
+		[ENG_BE]: 'General User',
+		[DUTCH_BE]: 'Algemene Gebruiker',
 	},
 	Minutes: {
 		[ENG_BE]: 'Minutes',
