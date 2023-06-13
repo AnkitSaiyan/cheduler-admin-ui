@@ -592,6 +592,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			id: (i + 1).toString(),
 			title: Translate[c][this.selectedLang],
 			isSortable: true,
+			isAction: c === 'Actions',
 		}));
 	}
 
