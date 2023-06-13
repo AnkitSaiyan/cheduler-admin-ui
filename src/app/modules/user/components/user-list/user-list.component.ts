@@ -275,7 +275,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						Translate.LastName[lang],
 						Translate.Email[lang],
 						Translate.Category[lang],
-						'Role',
+						Translate.Role[lang],
 						Translate.Status[lang],
 					];
 

@@ -38,7 +38,7 @@
 
       <div class="d-flex flex-column dfm-gap-16 flex-1" *ngIf="modalData?.userDetails?.userType ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler">
         <div class="d-flex flex-column flex-1">
-          <div>
+          <div *ngIf="userRoles$$ | async as userRoles">
             <dfm-input-dropdown
               [required]="
                 modalData?.userDetails?.userType ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler
