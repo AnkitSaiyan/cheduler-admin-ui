@@ -339,7 +339,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				next: ([lang]) => {
 					this.selectedLang = lang;
 
-					if (!this.permissionSvc.isPermitted([Permission.UpdateUser, Permission.DeleteUser])) {
+					if (
+						!this.permissionSvc.isPermitted([Permission.UpdateUser, Permission.DeleteUser]) &&
+						!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+					) {
 						this.tableHeaders = this.tableHeaders.filter((value) => value.title !== 'Actions');
 					}
 

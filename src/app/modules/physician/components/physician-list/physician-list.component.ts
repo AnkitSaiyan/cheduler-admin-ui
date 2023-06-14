@@ -217,7 +217,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 			.subscribe({
 				next: ([lang]) => {
 					this.selectedLang = lang;
-					if (this.permissionSvc.isPermitted([Permission.UpdatePhysicians, Permission.DeletePhysicians])) {
+					if (
+						this.permissionSvc.isPermitted([Permission.UpdatePhysicians, Permission.DeletePhysicians]) &&
+						!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+					) {
 						this.tableHeaders = [
 							...this.tableHeaders,
 							{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },

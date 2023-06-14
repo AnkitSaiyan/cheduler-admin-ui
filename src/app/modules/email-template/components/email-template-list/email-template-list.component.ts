@@ -195,7 +195,10 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 			.subscribe(([lang]) => {
 				this.selectedLang = lang;
 
-				if (this.permissionSvc.isPermitted([Permission.UpdateEmailTemplate])) {
+				if (
+					this.permissionSvc.isPermitted([Permission.UpdateEmailTemplate]) &&
+					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+				) {
 					this.tableHeaders = [
 						...this.tableHeaders,
 						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
@@ -303,6 +306,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		this.filteredEmails$$.next(GeneralUtils.SortArray(this.filteredEmails$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
 
 
 

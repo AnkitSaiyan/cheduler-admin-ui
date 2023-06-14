@@ -171,7 +171,10 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 			.subscribe({
 				next: ([lang]) => {
 					this.selectedLang = lang;
-					if (this.permissionSvc.isPermitted([Permission.UpdateAbsences, Permission.DeleteAbsences])) {
+					if (
+						this.permissionSvc.isPermitted([Permission.UpdateAbsences, Permission.DeleteAbsences]) &&
+						!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+					) {
 						this.tableHeaders = [
 							...this.tableHeaders,
 							{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },

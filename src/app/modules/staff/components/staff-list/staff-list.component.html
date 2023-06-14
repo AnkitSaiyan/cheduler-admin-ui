@@ -206,7 +206,7 @@
 <!--      {{"NoStaffFound" | translate}}-->
 <!--    </div>-->
 
-    <dfm-data-table [actionsHeader]="permissionSvc.isPermitted([Permission.UpdateStaffs, Permission.DeleteStaffs]) ? ('Actions' | translate) : ''" [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+    <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                     [clearSelected$]="clearSelected$$" [stickyActions]="true"
                     noDataMessage="{{ 'NoStaffFound' | translate }}" [rowClickable]="true" [stickyCheckbox]="true"
                     (rowClicked)="navigateToViewStaff($event)" [stickyFirstColumn]="false" [headers]="tableHeaders"

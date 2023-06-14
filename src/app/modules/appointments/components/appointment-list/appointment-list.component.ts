@@ -264,7 +264,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe(([lang]) => {
 				this.selectedLang = lang;
-				if (this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments])) {
+				if (
+					this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments]) &&
+					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+				) {
 					this.tableHeaders = [
 						...this.tableHeaders,
 						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
