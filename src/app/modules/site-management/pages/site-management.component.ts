@@ -14,27 +14,28 @@ import { Translate } from '../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
-  name: string;
-  introductoryText: string;
-  disableAppointment: boolean;
-  disableWarningText: string;
-  heading: string;
-  subHeading: string;
-  bodyText: string;
-  headingEnglish: string;
-  subHeadingEnglish: string;
-  bodyTextEnglish: string;
-  doctorReferringConsent: 0 | 1;
-  isAppointmentAutoconfirm: boolean;
-  cancelAppointmentTime: number;
-  cancelAppointmentType: TimeDurationType;
-  address: string;
-  email: string;
-  telephone: number;
-  file: { file: ArrayBuffer | string | SafeResourceUrl; loading: boolean; fileBlob: Blob };
-  isSlotsCombinable: boolean;
-  reminderTime: number;
-  reminderTimeType: TimeDurationType;
+	name: string;
+	introductoryText: string;
+	disableAppointment: boolean;
+	disableWarningText: string;
+	heading: string;
+	subHeading: string;
+	bodyText: string;
+	headingEnglish: string;
+	subHeadingEnglish: string;
+	bodyTextEnglish: string;
+	doctorReferringConsent: 0 | 1;
+	isAppointmentAutoconfirm: boolean;
+	cancelAppointmentTime: number;
+	cancelAppointmentType: TimeDurationType;
+	address: string;
+	email: string;
+	telephone: number;
+	file: { file: ArrayBuffer | string | SafeResourceUrl; loading: boolean; fileBlob: Blob };
+	isSlotsCombinable: boolean;
+	reminderTime: number;
+	reminderTimeType: TimeDurationType;
+	isAppointmentAutoconfirmAdmin: boolean;
 }
 
 @Component({
@@ -146,28 +147,29 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     }
 
     this.siteManagementForm = this.fb.group({
-      name: [siteManagementData?.name ?? '', [Validators.required]],
-      file: [{ ...file }, []],
-      introductoryText: [siteManagementData?.introductoryText ?? null, []],
-      heading: [introductoryTextObj?.heading ?? '', []],
-      subHeading: [introductoryTextObj?.subHeading ?? '', []],
-      bodyText: [introductoryTextObj?.bodyText ?? '', []],
-      headingEnglish: [introductoryTextObjEnglish?.headingEnglish ?? '', []],
-      subHeadingEnglish: [introductoryTextObjEnglish?.subHeadingEnglish ?? '', []],
-      bodyTextEnglish: [introductoryTextObjEnglish?.bodyTextEnglish ?? '', []],
-      disableAppointment: [!!siteManagementData?.disableAppointment, [Validators.required]],
-      disableWarningText: [siteManagementData?.disableWarningText ?? '', []],
-      doctorReferringConsent: [siteManagementData?.doctorReferringConsent, []],
-      cancelAppointmentTime: [duration, []],
-      cancelAppointmentType: [durationType, []],
-      email: [siteManagementData?.email ?? '', [Validators.required]],
-      telephone: [siteManagementData?.telephone, [Validators.required]],
-      address: [siteManagementData?.address, [Validators.required]],
-      isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
-      reminderTime: [reminderDuration, []],
-      reminderTimeType: [reminderDurationTYpe, []],
-      isAppointmentAutoconfirm: [!!siteManagementData?.isAppointmentAutoconfirm, [Validators.required]],
-    });
+			name: [siteManagementData?.name ?? '', [Validators.required]],
+			file: [{ ...file }, []],
+			introductoryText: [siteManagementData?.introductoryText ?? null, []],
+			heading: [introductoryTextObj?.heading ?? '', []],
+			subHeading: [introductoryTextObj?.subHeading ?? '', []],
+			bodyText: [introductoryTextObj?.bodyText ?? '', []],
+			headingEnglish: [introductoryTextObjEnglish?.headingEnglish ?? '', []],
+			subHeadingEnglish: [introductoryTextObjEnglish?.subHeadingEnglish ?? '', []],
+			bodyTextEnglish: [introductoryTextObjEnglish?.bodyTextEnglish ?? '', []],
+			disableAppointment: [!!siteManagementData?.disableAppointment, [Validators.required]],
+			disableWarningText: [siteManagementData?.disableWarningText ?? '', []],
+			doctorReferringConsent: [siteManagementData?.doctorReferringConsent, []],
+			cancelAppointmentTime: [duration, []],
+			cancelAppointmentType: [durationType, []],
+			email: [siteManagementData?.email ?? '', [Validators.required]],
+			telephone: [siteManagementData?.telephone, [Validators.required]],
+			address: [siteManagementData?.address, [Validators.required]],
+			isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
+			reminderTime: [reminderDuration, []],
+			reminderTimeType: [reminderDurationTYpe, []],
+			isAppointmentAutoconfirm: [!!siteManagementData?.isAppointmentAutoconfirm, [Validators.required]],
+			isAppointmentAutoconfirmAdmin: [!!siteManagementData?.isAppointmentAutoconfirmAdmin, [Validators.required]],
+		});
 
     setTimeout(() => {
       this.siteManagementForm.patchValue({
