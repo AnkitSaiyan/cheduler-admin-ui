@@ -56,7 +56,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public downloadDropdownControl = new FormControl('', []);
 
-	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
+	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status'];
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'StartedAt', isSortable: true },
@@ -211,7 +211,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 				this.downloadSvc.downloadJsonAs(
 					value as DownloadAsType,
-					this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
+					this.tableHeaders.map(({ title }) => title),
 					this.filteredAppointments$$.value?.map((ap: Appointment) => [
 						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
 						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
@@ -264,12 +264,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe(([lang]) => {
 				this.selectedLang = lang;
-				if (this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments])) {
-					this.tableHeaders = [
-						...this.tableHeaders,
-						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
-					];
-				}
 				this.tableHeaders = this.tableHeaders.map((h, i) => ({
 					...h,
 					title: Translate[this.columns[i]][lang],
@@ -356,10 +350,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	public copyToClipboard() {
 		try {
 			let dataString = `Started At\t\t\tEnded At\t\t\t`;
-			dataString += `${this.tableHeaders
-				.map(({ title }) => title)
-				.filter((value) => value !== 'Actions')
-				.join('\t\t')}\n`;
+			dataString += `${this.tableHeaders.map(({ title }) => title).join('\t\t')}\n`;
 
 			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
 				dataString += `${ap.startedAt.toString()}\t${ap.endedAt.toString()}\t${this.titleCasePipe.transform(

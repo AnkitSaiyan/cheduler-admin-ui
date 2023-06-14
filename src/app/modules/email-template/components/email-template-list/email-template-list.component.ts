@@ -55,7 +55,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 	public downloadDropdownControl = new FormControl('', []);
 
-	public columns: string[] = ['Title', 'Subject', 'Status', 'Actions'];
+	public columns: string[] = ['Title', 'Subject', 'Status'];
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'Title', isSortable: true },
@@ -98,7 +98,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 	public ngOnInit(): void {
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (items) => (this.downloadItems = items),
+			next: (items) => (this.downloadItems = items)
 		});
 
 		this.filteredEmails$$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -107,13 +107,13 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 					items,
 					isInitialLoading: false,
 					isLoading: false,
-					isLoadingMore: false,
+					isLoadingMore: false
 				});
-			},
+			}
 		});
 
 		this.emails$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (emails) => this.filteredEmails$$.next([...emails]),
+			next: (emails) => this.filteredEmails$$.next([...emails])
 		});
 
 		this.emailTemplateApiSvc.emailTemplates$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -125,7 +125,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 				}
 				this.paginationData = emailBase.metaData?.pagination;
 			},
-			error: (e) => this.emails$$.next([]),
+			error: (e) => this.emails$$.next([])
 		});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
@@ -135,7 +135,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 				} else {
 					this.filteredEmails$$.next([...this.emails$$.value]);
 				}
-			},
+			}
 		});
 
 		this.downloadDropdownControl.valueChanges
@@ -153,7 +153,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 					this.downloadSvc.downloadJsonAs(
 						downloadAs as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).filter((value) => value !== 'Actions'),
+						this.tableHeaders.map(({ title }) => title),
 						this.filteredEmails$$.value.map((em: Email) => [em.title, em.subject?.toString(), this.translatePipe.transform(StatusToName[em.status])]),
 						'email-template',
 					);
@@ -162,7 +162,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 						this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
 					}
 					this.clearDownloadDropdown();
-				},
+				}
 			});
 
 		this.afterBannerClosed$$
@@ -187,7 +187,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 				next: () => {
 					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
 					this.clearSelected$$.next();
-				},
+				}
 			});
 
 		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
@@ -195,16 +195,8 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 			.subscribe(([lang]) => {
 				this.selectedLang = lang;
 
-				if (this.permissionSvc.isPermitted([Permission.UpdateEmailTemplate])) {
-					this.tableHeaders = [
-						...this.tableHeaders,
-						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
-					];
-				}
-
 				this.tableHeaders = this.tableHeaders.map((h, i) => ({
-					...h,
-					title: Translate[this.columns[i]][lang],
+					...h, title: Translate[this.columns[i]][lang]
 				}));
 
 				switch (lang) {
@@ -255,12 +247,10 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 	public copyToClipboard() {
 		try {
-			let dataString = `${this.tableHeaders
-				.map(({ title }) => title)
-				.filter((value) => value !== 'Actions')
-				.join('\t')}\n`;
+			let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t')}\n`;
 
 			this.filteredEmails$$.value.forEach((email: Email) => {
+
 				dataString += `${email.title}\t${email.subject}\t${StatusToName[email.status]}\n`;
 			});
 
@@ -303,9 +293,6 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		this.filteredEmails$$.next(GeneralUtils.SortArray(this.filteredEmails$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
-
-
-
 
 
 

@@ -248,7 +248,7 @@
 <!--      {{ 'NoUserFound' | translate }}-->
 <!--    </div>-->
 
-    <dfm-data-table class="remove-extra-column"[data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+    <dfm-data-table [actionsHeader]="permissionSvc.isPermitted([Permission.UpdateUser, Permission.DeleteUser]) ? ('Actions' | translate) : ''" [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                     [clearSelected$]="clearSelected$$" [stickyActions]="true"
                     noDataMessage="{{ 'NoUserFound' | translate }}" [rowClickable]="true" [stickyCheckbox]="true"
                     (rowClicked)="navigateToViewUser($event)" [stickyFirstColumn]="false" [headers]="tableHeaders"

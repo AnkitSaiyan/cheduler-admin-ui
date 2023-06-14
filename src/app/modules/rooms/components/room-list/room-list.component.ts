@@ -153,7 +153,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.columns.filter((val) => val !== 'Actions'),
+						this.columns.filter((value) => value !== 'Actions'),
 						this.filteredRooms$$.value.map((u: Room) => [
 							u.name,
 							u.description,

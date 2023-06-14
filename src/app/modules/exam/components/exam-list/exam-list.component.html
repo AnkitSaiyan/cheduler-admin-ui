@@ -192,7 +192,7 @@
 <!--      {{"NoExamsFound" | translate}}-->
 <!--    </div>-->
 
-    <dfm-data-table class="remove-extra-column"[data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+    <dfm-data-table [actionsHeader]="permissionSvc.isPermitted([Permission.UpdateExams, Permission.DeleteExams]) ? ('Actions' | translate) : ''" [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                     [clearSelected$]="clearSelected$$" [stickyActions]="true" noDataMessage="{{ 'NoExamsFound' | translate }}"
                     [rowClickable]="true" [stickyCheckbox]="true" [stickyFirstColumn]="false" [headers]="tableHeaders"
                     (rowClicked)="navigateToViewExam($event)" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
