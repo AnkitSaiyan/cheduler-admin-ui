@@ -147,7 +147,7 @@
 <!--    </dfm-table>-->
 <!--    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!emails.length">{{"NoDataFound" | translate}}</div>-->
 
-    <dfm-data-table  [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+    <dfm-data-table class="remove-extra-column"[data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                     [clearSelected$]="clearSelected$$" [stickyActions]="true" noDataMessage="{{ 'NoDataFound' | translate }}"
                     [rowClickable]="true" [stickyCheckbox]="true"  [stickyFirstColumn]="false" [headers]="tableHeaders"
                     (scrolled)="onScroll($event)" (sorted)="onSort($event)">
