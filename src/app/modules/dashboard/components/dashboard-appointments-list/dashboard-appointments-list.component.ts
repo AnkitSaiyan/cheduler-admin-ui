@@ -69,6 +69,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		{ id: '6', title: 'AppointmentNo', isSortable: true },
 		{ id: '7', title: 'AppliedOn', isSortable: true },
 		{ id: '8', title: 'Status', isSortable: true },
+		{ id: '9', title: 'Actions', isSortable: false, isAction: true },
 	];
 
 	public downloadItems: NameValue[] = [];
@@ -223,7 +224,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
+						this.tableHeaders.map(({ title }) => title).filter((value) => value !== 'Actions'),
 						this.filteredAppointments$$.value.map((ap: Appointment) => [
 							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
 							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
@@ -284,12 +285,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			.subscribe({
 				next: ([lang]) => {
 					this.selectedLang = lang;
-					if (this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments])) {
-						this.tableHeaders = [
-							...this.tableHeaders,
-							{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
-						];
-					}
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({
 						...h,
 						title: Translate[this.columns[i]][lang],
