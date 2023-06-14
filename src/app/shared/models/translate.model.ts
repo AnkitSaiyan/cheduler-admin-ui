@@ -180,7 +180,7 @@ export const Translate = Object.freeze({
 	},
 	Admin: {
 		[ENG_BE]: 'Admin',
-		[DUTCH_BE]: 'Abeheerder',
+		[DUTCH_BE]: 'Admin',
 	},
 	Reader: {
 		[ENG_BE]: 'Reader',
@@ -597,7 +597,7 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'User',
 		[DUTCH_BE]: 'Gebruiker',
 	},
-  ApplicationUser: {
+	ApplicationUser: {
 		[ENG_BE]: 'Application User',
 		[DUTCH_BE]: 'Applicatie Gebruiker',
 	},
