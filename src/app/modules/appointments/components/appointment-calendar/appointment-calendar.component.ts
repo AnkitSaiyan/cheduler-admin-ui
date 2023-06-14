@@ -143,7 +143,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		});
 
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
-			this.setPrioritySlots(prioritySlots);
+			this.setPrioritySlots(prioritySlots?.data);
 		});
 
 		this.practiceHoursApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {

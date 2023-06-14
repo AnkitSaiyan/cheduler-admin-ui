@@ -47,6 +47,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 	private readonly prioritySlots: string = `${environment.schedulerApiUrl}/priorityslot`;
 	private refreshPrioritySlots$$ = new Subject<void>();
 	private selectedLang$$ = new BehaviorSubject<string>('');
+	private pageNo$$ = new BehaviorSubject<number>(1);
 
 	constructor(
 		private shareDataSvc: ShareDataService,
@@ -63,8 +64,18 @@ export class PrioritySlotApiService extends DestroyableComponent {
 			});
 	}
 
-	public get prioritySlots$(): Observable<PrioritySlot[]> {
-		return combineLatest([this.refreshPrioritySlots$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllPrioritySlots()));
+	public set pageNo(pageNo: number) {
+		this.pageNo$$.next(pageNo);
+	}
+
+	public get pageNo(): number {
+		return this.pageNo$$.value;
+	}
+
+	public get prioritySlots$(): Observable<BaseResponse<PrioritySlot[]>> {
+		return combineLatest([this.refreshPrioritySlots$$.pipe(startWith('')), this.pageNo$$]).pipe(
+			switchMap(([_, pageNo]) => this.fetchAllPrioritySlots(pageNo)),
+		);
 	}
 
 	get fileTypes$(): Observable<any[]> {
@@ -185,10 +196,11 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		);
 	}
 
-	private fetchAllPrioritySlots(): Observable<PrioritySlot[]> {
+	private fetchAllPrioritySlots(pageNo: number): Observable<BaseResponse<PrioritySlot[]>> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<PrioritySlot[]>>(`${this.prioritySlots}`).pipe(
-			map((response) => response.data),
+		const params = new HttpParams().append('pageNo', pageNo);
+		return this.http.get<BaseResponse<PrioritySlot[]>>(`${this.prioritySlots}`, { params }).pipe(
+			map((response) => response),
 			tap(() => this.loaderSvc.deactivate()),
 			catchError((e) => {
 				this.loaderSvc.deactivate();
@@ -201,6 +213,9 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		this.refreshPrioritySlots$$.next();
 	}
 }
+
+
+
 
 
 
