@@ -32,145 +32,142 @@ const ColumnIdToKey = {
 }
 
 @Component({
-  selector: 'dfm-physician-list',
-  templateUrl: './physician-list.component.html',
-  styleUrls: ['./physician-list.component.scss'],
+	selector: 'dfm-physician-list',
+	templateUrl: './physician-list.component.html',
+	styleUrls: ['./physician-list.component.scss'],
 })
 export class PhysicianListComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  @HostListener('document:click', ['$event']) onClick() {
-    this.toggleMenu(true);
-  }
+	@HostListener('document:click', ['$event']) onClick() {
+		this.toggleMenu(true);
+	}
 
-  @ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
+	@ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
 
-  @ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
+	@ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
 
-  // @ViewChild('actionsMenuButton') private actionsMenuButton!: ButtonComponent;
+	// @ViewChild('actionsMenuButton') private actionsMenuButton!: ButtonComponent;
 
-  private physicians$$: BehaviorSubject<Physician[]>;
+	private physicians$$: BehaviorSubject<Physician[]>;
 
-  public filteredPhysicians$$: BehaviorSubject<Physician[]>;
+	public filteredPhysicians$$: BehaviorSubject<Physician[]>;
 
-  public clearSelected$$ = new Subject<void>();
+	public clearSelected$$ = new Subject<void>();
 
-  public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
+	public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
 
-  public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
-    items: [],
-    isInitialLoading: true,
-    isLoadingMore: false,
-  });
+	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
 
-  public searchControl = new FormControl('', []);
+	public searchControl = new FormControl('', []);
 
-  public downloadDropdownControl = new FormControl('', []);
+	public downloadDropdownControl = new FormControl('', []);
 
-  public columns: string[] = ['FirstName', 'LastName', 'Email', 'Status'];
+	public columns: string[] = ['FirstName', 'LastName', 'Email', 'Status', 'Actions'];
 
-  public tableHeaders: DfmTableHeader[] = [
-    { id: '1', title: 'FirstName', isSortable: true },
-    { id: '2', title: 'LastName', isSortable: true },
-    { id: '3', title: 'Email', isSortable: true },
-    { id: '4', title: 'Status', isSortable: true },
-  ];
+	public tableHeaders: DfmTableHeader[] = [
+		{ id: '1', title: 'FirstName', isSortable: true },
+		{ id: '2', title: 'LastName', isSortable: true },
+		{ id: '3', title: 'Email', isSortable: true },
+		{ id: '4', title: 'Status', isSortable: true },
+		{ id: '5', title: 'Actions', isSortable: false, isAction: true },
+	];
 
-  public downloadItems: any[] = [];
+	public downloadItems: any[] = [];
 
-  public selectedPhysicianIDs: string[] = [];
+	public selectedPhysicianIDs: string[] = [];
 
-  public statusType = getStatusEnum();
+	public statusType = getStatusEnum();
 
-  public statuses = Statuses;
+	public statuses = Statuses;
 
-  public readonly Permission = Permission;
+	public readonly Permission = Permission;
 
-  private selectedLang: string = ENG_BE;
+	private selectedLang: string = ENG_BE;
 
-  public clipboardData: string = '';
+	public clipboardData: string = '';
 
-  private paginationData: PaginationData | undefined;
+	private paginationData: PaginationData | undefined;
 
-  constructor(
-    private physicianApiSvc: PhysicianApiService,
-    private notificationSvc: NotificationDataService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private modalSvc: ModalService,
-    private downloadSvc: DownloadService,
-    private cdr: ChangeDetectorRef,
-    private shareDataSvc: ShareDataService,
-    private translatePipe: TranslatePipe,
-    private translate: TranslateService,
-    public permissionSvc: PermissionService,
-  ) {
-    super();
-    this.physicians$$ = new BehaviorSubject<any[]>([]);
-    this.filteredPhysicians$$ = new BehaviorSubject<any[]>([]);
-  }
+	constructor(
+		private physicianApiSvc: PhysicianApiService,
+		private notificationSvc: NotificationDataService,
+		private router: Router,
+		private route: ActivatedRoute,
+		private modalSvc: ModalService,
+		private downloadSvc: DownloadService,
+		private cdr: ChangeDetectorRef,
+		private shareDataSvc: ShareDataService,
+		private translatePipe: TranslatePipe,
+		private translate: TranslateService,
+		public permissionSvc: PermissionService,
+	) {
+		super();
+		this.physicians$$ = new BehaviorSubject<any[]>([]);
+		this.filteredPhysicians$$ = new BehaviorSubject<any[]>([]);
+	}
 
-  public ngOnInit(): void {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (items) => (this.downloadItems = items)
-    });
+	public ngOnInit(): void {
+		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => (this.downloadItems = items),
+		});
 
-    this.filteredPhysicians$$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (items) => {
-        this.tableData$$.next({
-          items,
-          isInitialLoading: false,
-          isLoading: false,
-          isLoadingMore: false
-        });
-      }
-    });
+		this.filteredPhysicians$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => {
+				this.tableData$$.next({
+					items,
+					isInitialLoading: false,
+					isLoading: false,
+					isLoadingMore: false,
+				});
+			},
+		});
 
-    this.physicians$$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (physicians) => this.filteredPhysicians$$.next([...physicians])
-    });
+		this.physicians$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (physicians) => this.filteredPhysicians$$.next([...physicians]),
+		});
 
-    this.physicianApiSvc.physicians$
-      .pipe(
-        takeUntil(this.destroy$$),
-      )
-      .subscribe({
-        next: (physicianBase) => {
-          if (this.paginationData && this.paginationData.pageNo < physicianBase.metaData.pagination.pageNo) {
-            this.physicians$$.next([...this.physicians$$.value, ...physicianBase.data]);
-          } else {
-            this.physicians$$.next(physicianBase.data);
-          }
-          this.paginationData = physicianBase.metaData.pagination;
-        },
-        error: (e) => this.physicians$$.next([])
-      });
+		this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (physicianBase) => {
+				if (this.paginationData && this.paginationData.pageNo < physicianBase.metaData.pagination.pageNo) {
+					this.physicians$$.next([...this.physicians$$.value, ...physicianBase.data]);
+				} else {
+					this.physicians$$.next(physicianBase.data);
+				}
+				this.paginationData = physicianBase.metaData.pagination;
+			},
+			error: (e) => this.physicians$$.next([]),
+		});
 
-    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
-      next: (searchText) => {
-        if (searchText) {
-          this.handleSearch(searchText.toLowerCase());
-        } else {
-          this.filteredPhysicians$$.next([...this.physicians$$.value]);
-        }
-      }
-    });
+		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+			next: (searchText) => {
+				if (searchText) {
+					this.handleSearch(searchText.toLowerCase());
+				} else {
+					this.filteredPhysicians$$.next([...this.physicians$$.value]);
+				}
+			},
+		});
 
-    this.downloadDropdownControl.valueChanges
-      .pipe(
-        filter((value) => !!value),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe({
-        next: (value) => {
-          if (!this.filteredPhysicians$$.value.length) {
-            this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
-            this.clearDownloadDropdown();
+		this.downloadDropdownControl.valueChanges
+			.pipe(
+				filter((value) => !!value),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (value) => {
+					if (!this.filteredPhysicians$$.value.length) {
+						this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+						this.clearDownloadDropdown();
 
-            return;
-          }
+						return;
+					}
 
-          this.downloadSvc.downloadJsonAs(
+					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title),
+						this.tableHeaders.map(({ title }) => title).slice(0, -1),
 						this.filteredPhysicians$$.value.map((p: Physician) => [
 							p.firstname,
 							p.lastname,
@@ -180,233 +177,237 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 						'physician',
 					);
 
-          if (value !== 'PRINT') {
-            this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
-          }
+					if (value !== 'PRINT') {
+						this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
+					}
 
-          this.clearDownloadDropdown();
-        }
-      });
+					this.clearDownloadDropdown();
+				},
+			});
 
-    this.afterBannerClosed$$
-      .pipe(
-        map((value) => {
-          if (value?.proceed) {
-            return [...this.selectedPhysicianIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
-          }
-          return [];
-        }),
-        filter((changes) => {
-          if (!changes.length) {
-            this.clearSelected$$.next();
-          }
-          return !!changes.length;
-        }),
-        switchMap((changes) => this.physicianApiSvc.changePhysicianStatus$(changes)),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((value) => {
-        this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`);
-        this.clearSelected$$.next();
-      });
+		this.afterBannerClosed$$
+			.pipe(
+				map((value) => {
+					if (value?.proceed) {
+						return [...this.selectedPhysicianIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
+					}
+					return [];
+				}),
+				filter((changes) => {
+					if (!changes.length) {
+						this.clearSelected$$.next();
+					}
+					return !!changes.length;
+				}),
+				switchMap((changes) => this.physicianApiSvc.changePhysicianStatus$(changes)),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((value) => {
+				this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`);
+				this.clearSelected$$.next();
+			});
 
-    interval(0)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe(() => {
-        this.closeMenus();
-      });
+		interval(0)
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe(() => {
+				this.closeMenus();
+			});
 
-    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: ([lang]) => {
-          this.selectedLang = lang;
+		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: ([lang]) => {
+					this.selectedLang = lang;
 
-          this.tableHeaders = this.tableHeaders.map((h, i) => ({
-            ...h, title: Translate[this.columns[i]][lang]
-          }));
+					this.tableHeaders = this.tableHeaders.map((h, i) => ({
+						...h,
+						title: Translate[this.columns[i]][lang],
+					}));
 
-          switch (lang) {
-            case ENG_BE:
-              this.statuses = Statuses;
-              break;
-            default:
-              this.statuses = StatusesNL;
-          }
-        }
-      });
-  }
+					switch (lang) {
+						case ENG_BE:
+							this.statuses = Statuses;
+							break;
+						default:
+							this.statuses = StatusesNL;
+					}
+				},
+			});
+	}
 
-  public override ngOnDestroy() {
-    super.ngOnDestroy();
-  }
+	public override ngOnDestroy() {
+		super.ngOnDestroy();
+	}
 
-  public handleCheckboxSelection(selected: string[]) {
-    this.toggleMenu(true);
-    this.selectedPhysicianIDs = [...selected];
-  }
+	public handleCheckboxSelection(selected: string[]) {
+		this.toggleMenu(true);
+		this.selectedPhysicianIDs = [...selected];
+	}
 
-  private handleSearch(searchText: string): void {
-    this.filteredPhysicians$$.next([
-      ...this.physicians$$.value.filter((physician) => {
-        let status: any;
-        if (physician.status) status = this.translate.instant('Active');
-        if (!physician.status) status = this.translate.instant('Inactive');
+	private handleSearch(searchText: string): void {
+		this.filteredPhysicians$$.next([
+			...this.physicians$$.value.filter((physician) => {
+				let status: any;
+				if (physician.status) status = this.translate.instant('Active');
+				if (!physician.status) status = this.translate.instant('Inactive');
 
-        return (
-          physician.firstname?.toLowerCase()?.includes(searchText) ||
-          physician.lastname?.toLowerCase()?.includes(searchText) ||
-          physician.email?.toLowerCase()?.includes(searchText) ||
-          status?.toLowerCase()?.startsWith(searchText)
-        );
-      }),
-    ]);
-  }
+				return (
+					physician.firstname?.toLowerCase()?.includes(searchText) ||
+					physician.lastname?.toLowerCase()?.includes(searchText) ||
+					physician.email?.toLowerCase()?.includes(searchText) ||
+					status?.toLowerCase()?.startsWith(searchText)
+				);
+			}),
+		]);
+	}
 
-  public changeStatus(changes: ChangeStatusRequestData[]) {
-    this.physicianApiSvc
-      .changePhysicianStatus$(changes)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`),
-        error: (err) => this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER),
-  });
-  }
+	public changeStatus(changes: ChangeStatusRequestData[]) {
+		this.physicianApiSvc
+			.changePhysicianStatus$(changes)
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`),
+				error: (err) => this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER),
+			});
+	}
 
-  public deletePhysician(id: number) {
-    const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
-      data: {
-        titleText: 'Confirmation',
-        bodyText: 'AreyousureyouwanttodeletethisPhysician',
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-      } as ConfirmActionModalData,
-    });
+	public deletePhysician(id: number) {
+		const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
+			data: {
+				titleText: 'Confirmation',
+				bodyText: 'AreyousureyouwanttodeletethisPhysician',
+				confirmButtonText: 'Delete',
+				cancelButtonText: 'Cancel',
+			} as ConfirmActionModalData,
+		});
 
-    modalRef.closed
-      .pipe(
-        filter((res: boolean) => res),
-        switchMap(() => this.physicianApiSvc.deletePhysician(id)),
-        take(1),
-      )
-      .subscribe({
-        next: (response) => {
-          this.notificationSvc.showNotification(`${Translate.SuccessMessage.PhysicianDeleted[this.selectedLang]}!`);
-          // filtering out deleted physician
-          this.physicians$$.next([...this.physicians$$.value.filter((p) => +p.id !== +id)]);
-        }
-      });
-  }
+		modalRef.closed
+			.pipe(
+				filter((res: boolean) => res),
+				switchMap(() => this.physicianApiSvc.deletePhysician(id)),
+				take(1),
+			)
+			.subscribe({
+				next: (response) => {
+					this.notificationSvc.showNotification(`${Translate.SuccessMessage.PhysicianDeleted[this.selectedLang]}!`);
+					// filtering out deleted physician
+					this.physicians$$.next([...this.physicians$$.value.filter((p) => +p.id !== +id)]);
+				},
+			});
+	}
 
-  public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
-    this.afterBannerClosed$$.next(e);
-  }
+	public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
+		this.afterBannerClosed$$.next(e);
+	}
 
-  public copyToClipboard() {
-    try {
-      let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t')}\n`;
+	public copyToClipboard() {
+		try {
+			let dataString = `${this.tableHeaders
+				.map(({ title }) => title)
+				.slice(0, -1)
+				.join('\t')}\n`;
 
-      this.filteredPhysicians$$.value.forEach((physician: Physician) => {
-        dataString += `${physician.firstname}\t${physician.lastname}\t ${physician.email}\t ${StatusToName[+physician.status]}\n`;
-      });
+			this.filteredPhysicians$$.value.forEach((physician: Physician) => {
+				dataString += `${physician.firstname}\t${physician.lastname}\t ${physician.email}\t ${StatusToName[+physician.status]}\n`;
+			});
 
-      this.clipboardData = dataString;
+			this.clipboardData = dataString;
 
-      this.cdr.detectChanges();
-      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
-    } catch (e) {
-      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
-      this.clipboardData = '';
-    }
-  }
+			this.cdr.detectChanges();
+			this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
+		} catch (e) {
+			this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
+			this.clipboardData = '';
+		}
+	}
 
-  public navigateToViewPhysician(e: TableItem) {
-    if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
-    }
-  }
+	public navigateToViewPhysician(e: TableItem) {
+		if (e?.id) {
+			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+		}
+	}
 
-  public toggleMenu(reset = false) {
-    const icon = document.querySelector('.ph-li-plus-btn-icon');
-    if (icon) {
-      if (reset) {
-        icon.classList.add('rotate-z-0');
-        icon.classList.remove('rotate-z-45');
-      } else {
-        icon.classList.toggle('rotate-z-45');
-        icon.classList.toggle('rotate-z-0');
-      }
-    }
-  }
+	public toggleMenu(reset = false) {
+		const icon = document.querySelector('.ph-li-plus-btn-icon');
+		if (icon) {
+			if (reset) {
+				icon.classList.add('rotate-z-0');
+				icon.classList.remove('rotate-z-45');
+			} else {
+				icon.classList.toggle('rotate-z-45');
+				icon.classList.toggle('rotate-z-0');
+			}
+		}
+	}
 
-  public openSearchModal() {
-    this.toggleMenu();
+	public openSearchModal() {
+		this.toggleMenu();
 
-    const modalRef = this.modalSvc.open(SearchModalComponent, {
-      options: { fullscreen: true },
-      data: {
-        items: [
-          ...this.physicians$$.value.map(({ id, firstname, lastname, email, status }) => ({
-            name: `${firstname} ${lastname}`,
-            description: email,
-            key: `${firstname} ${lastname} ${email} ${Statuses[+status]}`,
-            value: id,
-          })),
-        ],
-        placeHolder: 'Search by Physician Name, Email, Description',
-      } as SearchModalData,
-    });
+		const modalRef = this.modalSvc.open(SearchModalComponent, {
+			options: { fullscreen: true },
+			data: {
+				items: [
+					...this.physicians$$.value.map(({ id, firstname, lastname, email, status }) => ({
+						name: `${firstname} ${lastname}`,
+						description: email,
+						key: `${firstname} ${lastname} ${email} ${Statuses[+status]}`,
+						value: id,
+					})),
+				],
+				placeHolder: 'Search by Physician Name, Email, Description',
+			} as SearchModalData,
+		});
 
-    modalRef.closed.pipe(take(1)).subscribe({
-      next: (result) => this.filterPhysicians(result)
-    });
-  }
+		modalRef.closed.pipe(take(1)).subscribe({
+			next: (result) => this.filterPhysicians(result),
+		});
+	}
 
-  private filterPhysicians(result: { name: string; value: string }[]) {
-    if (!result?.length) {
-      this.filteredPhysicians$$.next([...this.physicians$$.value]);
-      return;
-    }
+	private filterPhysicians(result: { name: string; value: string }[]) {
+		if (!result?.length) {
+			this.filteredPhysicians$$.next([...this.physicians$$.value]);
+			return;
+		}
 
-    const ids = new Set<number>();
-    result.forEach((item) => ids.add(+item.value));
-    this.filteredPhysicians$$.next([...this.physicians$$.value.filter((physician: Physician) => ids.has(+physician.id))]);
-  }
+		const ids = new Set<number>();
+		result.forEach((item) => ids.add(+item.value));
+		this.filteredPhysicians$$.next([...this.physicians$$.value.filter((physician: Physician) => ids.has(+physician.id))]);
+	}
 
-  public openAddPhysicianModal(physicianDetails?: Physician) {
-    this.modalSvc.open(PhysicianAddComponent, {
-      data: { edit: !!physicianDetails?.id, physicianDetails },
-      options: {
-        size: 'lg',
-        centered: true,
-        backdropClass: 'modal-backdrop-remove-mv',
-      },
-    });
-  }
+	public openAddPhysicianModal(physicianDetails?: Physician) {
+		this.modalSvc.open(PhysicianAddComponent, {
+			data: { edit: !!physicianDetails?.id, physicianDetails },
+			options: {
+				size: 'lg',
+				centered: true,
+				backdropClass: 'modal-backdrop-remove-mv',
+			},
+		});
+	}
 
-  private closeMenus() {
-    if (window.innerWidth >= 680) {
-      if (this.optionMenu && this.optionMenu.isOpen()) {
-        this.optionMenu.close();
-        this.toggleMenu(true);
-      }
-    }
-  }
-  private clearDownloadDropdown() {
-    const timeout = setTimeout(() => {
-      this.downloadDropdownControl.setValue('');
-      clearTimeout(timeout);
-    }, 0);
-  }
+	private closeMenus() {
+		if (window.innerWidth >= 680) {
+			if (this.optionMenu && this.optionMenu.isOpen()) {
+				this.optionMenu.close();
+				this.toggleMenu(true);
+			}
+		}
+	}
+	private clearDownloadDropdown() {
+		const timeout = setTimeout(() => {
+			this.downloadDropdownControl.setValue('');
+			clearTimeout(timeout);
+		}, 0);
+	}
 
-  public onScroll(e: undefined): void {
-    if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-      this.physicianApiSvc.pageNo = this.physicianApiSvc.pageNo + 1;
-      this.tableData$$.value.isLoadingMore = true;
-    }
-  }
+	public onScroll(e: undefined): void {
+		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+			this.physicianApiSvc.pageNo = this.physicianApiSvc.pageNo + 1;
+			this.tableData$$.value.isLoadingMore = true;
+		}
+	}
 
-  public onSort(e: DfmTableHeader): void {
-    this.filteredPhysicians$$.next(GeneralUtils.SortArray(this.filteredPhysicians$$.value, e.sort, ColumnIdToKey[e.id]));
-  }
+	public onSort(e: DfmTableHeader): void {
+		this.filteredPhysicians$$.next(GeneralUtils.SortArray(this.filteredPhysicians$$.value, e.sort, ColumnIdToKey[e.id]));
+	}
 }
