@@ -130,7 +130,7 @@
 
     <section class="table-wrapper" *ngIf="filteredAppointments$$ | async as appointments">
 
-      <dfm-data-table class="remove-extra-column"[data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+      <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                       [clearSelected$]="clearSelected$$" [stickyActions]="true"  noDataMessage="{{ 'NoAppointmentsFound' | translate }}"
                       [rowClickable]="true" [stickyCheckbox]="true" (rowClicked)="navigateToView($event, appointments)"
                       [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
