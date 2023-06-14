@@ -346,7 +346,8 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	}
 
 	public onRefresh(): void {
-		this.appointmentApiSvc.refresh();
+		// this.appointmentApiSvc.refresh();
+		this.appointmentApiSvc.appointmentPageNo = 1;
 	}
 
 	public deleteAppointment(id: number) {

@@ -61,6 +61,7 @@ export class SiteManagementApiService extends DestroyableComponent {
     formData.append('cancelAppointmentTime', String(requestData.cancelAppointmentTime));
     formData.append('ReminderTime', String(requestData.reminderTime));
     formData.append('isAppointmentAutoconfirm', String(requestData.isAppointmentAutoconfirm));
+    formData.append('isAppointmentAutoconfirmAdmin', String(requestData.isAppointmentAutoconfirmAdmin));
     if (requestData.file) {
       formData.append('File', requestData.file);
     }
