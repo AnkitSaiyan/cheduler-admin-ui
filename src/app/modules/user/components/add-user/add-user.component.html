@@ -21,7 +21,7 @@
         <div class="w-fit d-flex justify-content-between dfm-gap-24">
           <dfm-radio-button
             class="font-weight-normal"
-            label="{{ 'SchedulerUser' | translate | titlecase }}"
+            label="{{ 'ApplicationUser' | translate | titlecase }}"
             *ngIf="permissionType !== UserRoleEnum.GeneralUser"
             [checkedValue]="userType.Scheduler"
             formControlName="userType"
