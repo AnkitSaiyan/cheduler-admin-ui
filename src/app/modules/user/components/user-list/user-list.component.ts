@@ -80,7 +80,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		},
 		{
 			value: UserType.Scheduler,
-			name: `Application User`,
+			name: `${UserType.Scheduler} User`,
 		},
 	]);
 
@@ -108,9 +108,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 	public columns: string[] = [];
 
-	public columnsForScheduler: string[] = ['FirstName', 'LastName', 'Email', 'Role', 'Status', 'Actions'];
+	public columnsForScheduler: string[] = ['FirstName', 'LastName', 'Email', 'Role', 'Status'];
 
-	public columnsForGeneral: string[] = ['FirstName', 'LastName', 'Email', 'Status', 'Actions'];
+	public columnsForGeneral: string[] = ['FirstName', 'LastName', 'Email', 'Status'];
 
 	public tableHeaders: DfmTableHeader[] = [];
 
@@ -171,16 +171,16 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 					items: value,
 					isInitialLoading: false,
 					isLoading: false,
-					isLoadingMore: false,
+					isLoadingMore: false
 				});
-			},
+			}
 		});
 
 		this.users$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (users) => {
 				this.filteredUsers$$.next([...users]);
 				users.forEach((user) => this.idsToObjMap.set(user.id.toString(), user));
-			},
+			}
 		});
 
 		this.userTypeDropdownControl.valueChanges
@@ -202,14 +202,18 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 					if (userType === UserType.General) {
 						return this.userApiSvc.generalUsers$;
 					}
-					return this.userManagementApiSvc.userList$.pipe(map((users) => users.items.map((user) => this.convertToUserBase(user))));
+					return this.userManagementApiSvc.userList$.pipe(
+						map((users) =>
+							users.items.map((user) => this.convertToUserBase(user)),
+						),
+					);
 				}),
-				takeUntil(this.destroy$$),
+				takeUntil(this.destroy$$)
 			)
 			.subscribe({
 				next: (userBase) => {
 					if (this.userTypeDropdownControl.value === UserType.General) {
-						const generalUserBase = userBase as BaseResponse<User[]>;
+						const generalUserBase = (userBase as BaseResponse<User[]>);
 						this.users$$.next([...this.users$$.value, ...generalUserBase.data]);
 						this.paginationData = generalUserBase.metaData.pagination;
 					} else {
@@ -221,7 +225,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				error: (err) => {
 					this.users$$.next([]);
 					this.loading$$.next(false);
-				},
+				}
 			});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
@@ -249,7 +253,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).filter((value) => value !== 'Actions'),
+						this.tableHeaders.map(({ title }) => title),
 						this.filteredUsers$$.value.map((u: UserBase) => [
 							u.firstname,
 							u.lastname,
@@ -309,17 +313,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			.subscribe({
 				next: (value) => {
 					this.selectedUserIds.map((id) => {
-						this.users$$.next([
-							...GeneralUtils.modifyListData(
-								this.users$$.value,
-								{
-									...(this.idsToObjMap.get(id.toString()) ?? {}),
-									status: this.afterBannerClosed$$.value?.newStatus,
-								},
-								'update',
-								'id',
-							),
-						]);
+						this.users$$.next([...GeneralUtils.modifyListData(this.users$$.value, {
+							...(this.idsToObjMap.get(id.toString()) ?? {}),
+							status: this.afterBannerClosed$$.value?.newStatus,
+						}, 'update', 'id')]);
 					});
 
 					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
@@ -333,16 +330,14 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				next: () => this.closeMenus(),
 			});
 
-		this.shareDataSvc
-			.getLanguage$()
+		this.shareDataSvc.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
 				next: (lang) => {
 					this.selectedLang = lang;
 
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({
-						...h,
-						title: Translate[this.columns[i]][lang] ?? this.columns[i],
+						...h, title: Translate[this.columns[i]][lang] ?? this.columns[i]
 					}));
 
 					this.userTypes$$.next([
@@ -352,7 +347,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						},
 						{
 							value: UserType.Scheduler,
-							name: `${Translate.ApplicationUser[lang]}`,
+							name: `${Translate.User[lang]}`,
 						},
 					]);
 
@@ -388,18 +383,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 		observable.pipe(take(1)).subscribe({
 			next: () => {
-				this.users$$.next([
-					...GeneralUtils.modifyListData(
-						this.users$$.value,
-						{
-							...item,
-							status: changes[0].status,
-						},
-						'update',
-						'id',
-					),
-				]);
-				this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
+				this.users$$.next([...GeneralUtils.modifyListData(this.users$$.value, {
+					...item, status: changes[0].status
+				}, 'update', 'id')]);
+				this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang])
 			},
 		});
 	}
@@ -439,10 +426,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 	public copyToClipboard() {
 		try {
-			let dataString = `${this.tableHeaders
-				.map(({ title }) => title)
-				.filter((value) => value !== 'Actions')
-				.join('\t')}\n`;
+			let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t')}\n`;
 
 			this.filteredUsers$$.value.forEach((user: UserBase) => {
 				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user?.telephone ?? '—'}\t${user.userType ?? '—'}\t${
@@ -526,11 +510,11 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						return;
 					}
 
-					const item = isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : (res as UserBase);
+					const item = isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : res as UserBase;
 					this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, item, 'add'));
 				}
-			},
-		});
+			}
+		})
 	}
 
 	private handleSearch(searchText: string): void {
@@ -586,7 +570,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			id: (i + 1).toString(),
 			title: Translate[c][this.selectedLang],
 			isSortable: true,
-			isAction: c === 'Actions',
 		}));
 	}
 
