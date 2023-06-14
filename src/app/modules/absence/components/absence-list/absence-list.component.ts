@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
@@ -18,15 +18,15 @@ import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { PaginationData } from "../../../../shared/models/base-response.model";
-import { GeneralUtils } from "../../../../shared/utils/general.utils";
+import { PaginationData } from '../../../../shared/models/base-response.model';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
 
 const ColumnIdToKey = {
-  1: 'name',
-  2: 'startedAt',
-  3: 'endedAt',
-  4: 'info'
-}
+	1: 'name',
+	2: 'startedAt',
+	3: 'endedAt',
+	4: 'info',
+};
 
 @Component({
 	selector: 'dfm-absence-list',
@@ -59,7 +59,6 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 		{ id: '2', title: 'StartDate', isSortable: true },
 		{ id: '3', title: 'EndDate', isSortable: true },
 		{ id: '4', title: 'AbsenceInfo', isSortable: true },
-		{ id: '5', title: 'Actions', isSortable: false, isAction: true },
 	];
 
 	public downloadItems: DownloadType[] = [];
@@ -149,7 +148,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 					}
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).slice(0, -1),
+						this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
 						this.filteredAbsences$$.value.map((u: Absence) => [
 							u.name,
 							u.startedAt ? `${new Date(u?.startedAt)?.toDateString()} ${new Date(u?.startedAt)?.toLocaleTimeString()}` : '',
@@ -167,12 +166,17 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 				},
 			});
 
-		this.shareDataSvc
-			.getLanguage$()
+		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: (lang) => {
+				next: ([lang]) => {
 					this.selectedLang = lang;
+					if (this.permissionSvc.isPermitted([Permission.UpdateAbsences, Permission.DeleteAbsences])) {
+						this.tableHeaders = [
+							...this.tableHeaders,
+							{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+						];
+					}
 
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({
 						...h,
@@ -235,7 +239,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 		try {
 			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
-				.slice(0, -1)
+				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
 
 			this.filteredAbsences$$.value.forEach((absence: Absence) => {

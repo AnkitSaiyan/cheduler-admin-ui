@@ -1,38 +1,35 @@
 import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil} from 'rxjs';
-import {FormControl} from '@angular/forms';
-import {DfmDatasource, DfmTableHeader, NotificationType, TableItem} from 'diflexmo-angular-design';
-import {ActivatedRoute, Router} from '@angular/router';
-import {getStatusEnum} from '../../../../shared/utils/getEnums';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {ChangeStatusRequestData, Status, StatusToName} from '../../../../shared/models/status.model';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {
-    ConfirmActionModalComponent,
-    ConfirmActionModalData
-} from '../../../../shared/components/confirm-action-modal.component';
-import {ModalService} from '../../../../core/services/modal.service';
-import {SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
-import {User} from '../../../../shared/models/user.model';
-import {DownloadAsType, DownloadService, DownloadType} from '../../../../core/services/download.service';
-import {ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
-import {Translate} from '../../../../shared/models/translate.model';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {TranslateService} from '@ngx-translate/core';
-import {Permission} from 'src/app/shared/models/permission.model';
-import {PermissionService} from 'src/app/core/services/permission.service';
-import {UserApiService} from "../../../../core/services/user-api.service";
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
+import { ActivatedRoute, Router } from '@angular/router';
+import { getStatusEnum } from '../../../../shared/utils/getEnums';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { ModalService } from '../../../../core/services/modal.service';
+import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
+import { User } from '../../../../shared/models/user.model';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
+import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserApiService } from '../../../../core/services/user-api.service';
 import { TitleCasePipe } from '@angular/common';
-import {PaginationData} from "../../../../shared/models/base-response.model";
-import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import { PaginationData } from '../../../../shared/models/base-response.model';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
 
 const ColumnIdToKey = {
 	1: 'firstname',
 	2: 'lastname',
 	3: 'userType',
 	4: 'email',
-	5: 'status'
-}
+	5: 'status',
+};
 
 @Component({
 	selector: 'dfm-staff-list',
@@ -72,7 +69,6 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		{ id: '3', title: 'Type', isSortable: true },
 		{ id: '4', title: 'Email', isSortable: true },
 		{ id: '5', title: 'Status', isSortable: true },
-		{ id: '6', title: 'Action', isSortable: false, isAction: true },
 	];
 
 	public downloadItems: DownloadType[] = [];
@@ -175,7 +171,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).slice(0, -1),
+						this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
 						this.filteredStaffs$$.value.map((u: User) => [
 							u.firstname,
 							u.lastname,
@@ -232,12 +228,17 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 				},
 			});
 
-		this.shareDataSvc
-			.getLanguage$()
+		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: (lang) => {
+				next: ([lang]) => {
 					this.selectedLang = lang;
+					if (this.permissionSvc.isPermitted([Permission.UpdateStaffs, Permission.DeleteStaffs])) {
+						this.tableHeaders = [
+							...this.tableHeaders,
+							{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+						];
+					}
 
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({
 						...h,
@@ -319,7 +320,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		try {
 			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
-				.slice(0, -1)
+				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
 
 			this.filteredStaffs$$.value.forEach((staff: User) => {

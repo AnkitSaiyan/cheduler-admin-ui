@@ -72,7 +72,6 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 		{ id: '2', title: 'LastName', isSortable: true },
 		{ id: '3', title: 'Email', isSortable: true },
 		{ id: '4', title: 'Status', isSortable: true },
-		{ id: '5', title: 'Actions', isSortable: false, isAction: true },
 	];
 
 	public downloadItems: any[] = [];
@@ -167,7 +166,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
-						this.tableHeaders.map(({ title }) => title).slice(0, -1),
+						this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
 						this.filteredPhysicians$$.value.map((p: Physician) => [
 							p.firstname,
 							p.lastname,
@@ -218,6 +217,12 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 			.subscribe({
 				next: ([lang]) => {
 					this.selectedLang = lang;
+					if (this.permissionSvc.isPermitted([Permission.UpdatePhysicians, Permission.DeletePhysicians])) {
+						this.tableHeaders = [
+							...this.tableHeaders,
+							{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+						];
+					}
 
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({
 						...h,
@@ -304,7 +309,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 		try {
 			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
-				.slice(0, -1)
+				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
 
 			this.filteredPhysicians$$.value.forEach((physician: Physician) => {
