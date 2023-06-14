@@ -80,7 +80,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		},
 		{
 			value: UserType.Scheduler,
-			name: `${UserType.Scheduler} User`,
+			name: `Application User`,
 		},
 	]);
 	public readonly Permission = Permission;
@@ -286,7 +286,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						},
 						{
 							value: UserType.Scheduler,
-							name: `${Translate.User[lang]}`,
+							name: `${Translate.ApplicationUser[lang]}`,
 						},
 					]);
 
