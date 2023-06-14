@@ -200,7 +200,7 @@
 <!--      {{'NoPhysicianFound' | translate}}-->
 <!--    </div>-->
 
-    <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+    <dfm-data-table [actionsHeader]="permissionSvc.isPermitted([Permission.UpdatePhysicians, Permission.DeletePhysicians]) ? ('Actions' | translate) : ''" [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                     [clearSelected$]="clearSelected$$" [stickyActions]="true"  noDataMessage="{{ 'NoPhysicianFound' | translate }}"
                     [rowClickable]="true" [stickyCheckbox]="true" (rowClicked)="navigateToViewPhysician($event)"
                     [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
