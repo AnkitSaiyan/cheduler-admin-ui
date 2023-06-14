@@ -171,9 +171,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 	}
 
 	public ngAfterViewInit() {
-
 		if (!this.prioritySlot$$.value?.id) {
-
 		}
 	}
 
@@ -209,7 +207,11 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 				return;
 			}
 		}
-
+		if (!this.prioritySlotForm.valid) {
+			controls['nxtSlotOpenPct'].markAsTouched();
+			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+			return;
+		}
 		controls['nxtSlotOpenPct'].markAsTouched();
 
 		this.submitting$$.next(true);
@@ -452,7 +454,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			],
 			userList: [prioritySlotDetails?.users?.length ? prioritySlotDetails.users.map(({ id }) => id.toString()) : [], []],
 			priority: [prioritySlotDetails?.priority ?? null, [Validators.required]],
-			nxtSlotOpenPct: [prioritySlotDetails?.nxtSlotOpenPct ?? null, [Validators.required, Validators.max(100), Validators.minLength(1)]],
+			nxtSlotOpenPct: [
+				prioritySlotDetails?.nxtSlotOpenPct ?? null,
+				[Validators.required, Validators.min(0), Validators.max(100), Validators.minLength(1)],
+			],
 		});
 
 		if (prioritySlotDetails?.id) {
@@ -565,7 +570,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 	}
 
 	private handleTimeChange() {
-
 		if (
 			this.formValues.slotStartTime !== '' &&
 			DateTimeUtils.TimeToNumber(this.formValues.slotStartTime) < DateTimeUtils.TimeToNumber(this.formValues.slotEndTime)
@@ -610,6 +614,16 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
