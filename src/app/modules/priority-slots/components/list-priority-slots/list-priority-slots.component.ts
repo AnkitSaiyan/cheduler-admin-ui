@@ -2,25 +2,30 @@ import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@an
 import {FormControl} from '@angular/forms';
 import {BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NotificationType, TableItem} from 'diflexmo-angular-design';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {ModalService} from '../../../../core/services/modal.service';
-import {DownloadAsType, DownloadService, DownloadType} from '../../../../core/services/download.service';
-import {
-    ConfirmActionModalComponent,
-    ConfirmActionModalData
-} from '../../../../shared/components/confirm-action-modal.component';
-import {AddPrioritySlotsComponent} from '../add-priority-slots/add-priority-slots.component';
-import {PrioritySlotApiService} from 'src/app/core/services/priority-slot-api.service';
-import {PrioritySlot} from 'src/app/shared/models/priority-slots.model';
-import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
-import {Translate} from '../../../../shared/models/translate.model';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {TranslateService} from '@ngx-translate/core';
-import {Permission} from 'src/app/shared/models/permission.model';
-import {PermissionService} from 'src/app/core/services/permission.service';
-import {UserRoleEnum} from 'src/app/shared/models/user.model';
+import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-slots.component';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
+import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
+import { PaginationData } from 'src/app/shared/models/base-response.model';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+
+const ColumnIdToKey = {
+	1: 'startedAt',
+	2: 'endedAt',
+	3: 'priority',
+};
 
 @Component({
 	selector: 'dfm-list-priority-slots',
@@ -31,7 +36,19 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 	clipboardData: string = '';
 	public searchControl = new FormControl('', []);
 	public downloadDropdownControl = new FormControl('', []);
-	public columns: string[] = ['Start', 'End', 'Priority', 'Actions'];
+	public columns: string[] = ['Start', 'End', 'Priority'];
+
+	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
+
+	public tableHeaders: DfmTableHeader[] = [
+		{ id: '1', title: 'Start', isSortable: true },
+		{ id: '2', title: 'End', isSortable: true },
+		{ id: '3', title: 'Priority', isSortable: true },
+	];
 	public downloadItems: DownloadType[] = [];
 	public filteredPrioritySlots$$: BehaviorSubject<any[]>;
 	public statuses = Statuses;
@@ -39,6 +56,8 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 	public readonly Permission = Permission;
 	private prioritySlots$$: BehaviorSubject<any[]>;
 	private selectedLang: string = ENG_BE;
+
+	private paginationData: PaginationData | undefined;
 
 	constructor(
 		private priorityApiSvc: PrioritySlotApiService,
@@ -64,6 +83,33 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 	ngOnInit(): void {
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
+		this.filteredPrioritySlots$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => {
+				this.tableData$$.next({
+					items,
+					isInitialLoading: false,
+					isLoading: false,
+					isLoadingMore: false,
+				});
+			},
+		});
+
+		this.prioritySlots$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (prioritySlot) => this.filteredPrioritySlots$$.next([...prioritySlot]),
+		});
+
+		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (prioritySlotBase) => {
+				if (this.paginationData && this.paginationData.pageNo < prioritySlotBase.metaData.pagination.pageNo) {
+					this.prioritySlots$$.next([...this.prioritySlots$$.value, ...prioritySlotBase.data]);
+				} else {
+					this.prioritySlots$$.next(prioritySlotBase.data);
+				}
+				this.paginationData = prioritySlotBase.metaData.pagination;
+			},
+			error: (e) => this.prioritySlots$$.next([]),
+		});
+
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe((params) => {
 			if (params['v']) {
 				this.calendarView$$.next(params['v'] !== 't');
@@ -76,11 +122,6 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 				});
 				this.calendarView$$.next(true);
 			}
-		});
-
-		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
-			this.prioritySlots$$.next(prioritySlots);
-			this.filteredPrioritySlots$$.next(prioritySlots);
 		});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
@@ -285,7 +326,27 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 	public onRefresh(): void {
 		this.priorityApiSvc.refresh();
 	}
+
+	public onScroll(e: any): void {
+		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+			this.priorityApiSvc.pageNo = this.priorityApiSvc.pageNo + 1;
+			this.tableData$$.value.isLoadingMore = true;
+		}
+	}
+
+	public onSort(e: DfmTableHeader): void {
+		this.filteredPrioritySlots$$.next(GeneralUtils.SortArray(this.filteredPrioritySlots$$.value, e.sort, ColumnIdToKey[e.id]));
+	}
 }
+
+
+
+
+
+
+
+
+
 
 
 

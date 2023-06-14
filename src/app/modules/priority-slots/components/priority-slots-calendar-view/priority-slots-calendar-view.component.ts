@@ -61,7 +61,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		});
 
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
-			this.setPrioritySlots(prioritySlots);
+			this.setPrioritySlots(prioritySlots?.data);
 		});
 
 		this.practiceHourMinMax$ = this.practiceHourSvc.practiceHours$.pipe(take(1)).pipe(
@@ -266,3 +266,4 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		this.prioritySlots$$.next({ ...myPrioritySlots });
 	}
 }
+
