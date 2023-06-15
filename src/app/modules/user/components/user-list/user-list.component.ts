@@ -1,63 +1,63 @@
-import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import {
-	BehaviorSubject, catchError,
+	BehaviorSubject,
+	catchError,
 	combineLatest,
 	debounceTime,
 	distinctUntilChanged,
-	filter, from,
+	filter,
+	from,
 	interval,
 	map,
 	Observable,
 	Subject,
 	switchMap,
 	take,
-	takeUntil, tap
+	takeUntil,
+	tap,
 } from 'rxjs';
-import {ActivatedRoute, Router} from '@angular/router';
-import {DfmDatasource, DfmTableHeader, NotificationType, TableItem} from 'diflexmo-angular-design';
-import {NgbDropdown} from '@ng-bootstrap/ng-bootstrap';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {ChangeStatusRequestData, Status, StatusToName} from '../../../../shared/models/status.model';
-import {getStatusEnum} from '../../../../shared/utils/getEnums';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {ModalService} from '../../../../core/services/modal.service';
-import {
-    ConfirmActionModalComponent,
-    ConfirmActionModalData
-} from '../../../../shared/components/confirm-action-modal.component';
-import {NameValue, SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
-import {SchedulerUser, User, UserBase, UserListResponse, UserType} from '../../../../shared/models/user.model';
-import {DownloadAsType, DownloadService, DownloadType} from '../../../../core/services/download.service';
-import {AddUserComponent} from '../add-user/add-user.component';
-import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
-import {Translate} from '../../../../shared/models/translate.model';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {TranslateService} from '@ngx-translate/core';
-import {UserManagementApiService} from "../../../../core/services/user-management-api.service";
-import {Permission} from 'src/app/shared/models/permission.model';
-import {PermissionService} from 'src/app/core/services/permission.service';
-import {UserApiService} from "../../../../core/services/user-api.service";
-import {RoleNamePipe} from "../../../../shared/pipes/role-name.pipe";
+import { ActivatedRoute, Router } from '@angular/router';
+import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
+import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
+import { getStatusEnum } from '../../../../shared/utils/getEnums';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
+import { SchedulerUser, User, UserBase, UserListResponse, UserType } from '../../../../shared/models/user.model';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
+import { AddUserComponent } from '../add-user/add-user.component';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService } from '@ngx-translate/core';
+import { UserManagementApiService } from '../../../../core/services/user-management-api.service';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserApiService } from '../../../../core/services/user-api.service';
+import { RoleNamePipe } from '../../../../shared/pipes/role-name.pipe';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { UserService } from 'src/app/core/services/user.service';
-import {BaseResponse, PaginationData} from "../../../../shared/models/base-response.model";
-import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import { BaseResponse, PaginationData } from '../../../../shared/models/base-response.model';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
 
 const SchedulerColumnIdToKey = {
 	1: 'firstname',
 	2: 'lastname',
 	3: 'email',
 	4: 'Role',
-	5: 'Status'
-}
+	5: 'Status',
+};
 
 const GeneralColumnIdToKey = {
 	1: 'firstname',
 	2: 'lastname',
 	3: 'email',
 	4: 'Status',
-}
+};
 
 @Component({
 	selector: 'dfm-user-list',
@@ -73,16 +73,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 	@ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
 
-	public userTypes$$: BehaviorSubject<NameValue[]> = new BehaviorSubject<NameValue[]>([
-		{
-			value: UserType.General,
-			name: `${UserType.General} User`,
-		},
-		{
-			value: UserType.Scheduler,
-			name: `${UserType.Scheduler} User`,
-		},
-	]);
+	public userTypes$$: BehaviorSubject<NameValue[]> = new BehaviorSubject<NameValue[]>([]);
 
 	private users$$: BehaviorSubject<UserBase[]>;
 
@@ -358,7 +349,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						},
 						{
 							value: UserType.Scheduler,
-							name: `${Translate.User[lang]}`,
+							name: `${Translate.ApplicationUser[lang]}`,
 						},
 					]);
 
