@@ -585,7 +585,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		this.tableHeaders = this.columns.map((c, i) => ({
 			id: (i + 1).toString(),
 			title: Translate[c][this.selectedLang],
-			isSortable: true,
+			isSortable: c !== 'Actions',
 			isAction: c === 'Actions',
 		}));
 	}
