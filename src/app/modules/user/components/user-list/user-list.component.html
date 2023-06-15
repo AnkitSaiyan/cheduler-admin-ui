@@ -258,7 +258,12 @@
         <dfm-table-row-cell [fullContent]="item.lastname">{{ item.lastname | titlecase | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-row-cell [fullContent]="item.email">{{ item.email | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-body-cell *ngIf="userTypeDropdownControl.value === UserType.Scheduler">
-          {{ item?.userRole | roleName | translate | dashIfNothing }}
+          <!-- <span *ngIf="userTypeDropdownControl.value === UserType.General">
+            {{ item?.userRole | roleName | dashIfNothing }}
+          </span> -->
+          <span *ngIf="userTypeDropdownControl.value === UserType.Scheduler">
+            {{ (item?.userRole === 'admin') ? 'Admin' : (item?.userRole | roleName | translate | dashIfNothing) }}
+          </span>
         </dfm-table-body-cell>
         <dfm-table-body-cell>
           <dfm-badge *ngIf="item.status === statusTypeEnum.Active || item.status === 2" color="success" size="sm" fontWeight="medium">
