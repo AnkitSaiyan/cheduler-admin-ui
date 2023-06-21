@@ -208,7 +208,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 					map((roleTypes) =>
 						roleTypes.map((roleType) => ({
 							...roleType,
-							name: Translate[roleType.name][lang],
+							name: roleType.name === 'Admin' ? 'Admin' : Translate[roleType.name][lang],
 						})),
 					),
 				),
