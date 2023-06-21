@@ -26,6 +26,7 @@ import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { UserApiService } from '../../../../core/services/user-api.service';
+import { DownloadService } from "../../../../core/services/download.service";
 
 interface FormValues {
 	name: string;
@@ -114,6 +115,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		private shareDataSvc: ShareDataService,
 		private loaderService: LoaderService,
 		private priorityApiSvc: PrioritySlotApiService,
+		private downloadSvc: DownloadService
 	) {
 		super();
 
@@ -138,7 +140,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	}
 
 	public ngOnInit(): void {
-		this.priorityApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
+		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
+
 		this.modalSvc.dialogData$
 			.pipe(
 				switchMap((modalData) => {
@@ -210,7 +213,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 	public closeModal(res: boolean) {
 		this.modalSvc.close(res);
-		// this.ngOnDestroy();
 	}
 
 	public saveAbsence() {

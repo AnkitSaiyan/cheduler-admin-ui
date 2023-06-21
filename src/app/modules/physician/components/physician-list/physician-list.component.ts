@@ -106,6 +106,20 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 		super();
 		this.physicians$$ = new BehaviorSubject<any[]>([]);
 		this.filteredPhysicians$$ = new BehaviorSubject<any[]>([]);
+    this.physicianApiSvc.pageNo = 1;
+    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: () => {
+				if (
+					this.permissionSvc.isPermitted([Permission.UpdatePhysicians, Permission.DeletePhysicians]) &&
+					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+				) {
+					this.tableHeaders = [
+						...this.tableHeaders,
+						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+					];
+				}
+			},
+		});
 	}
 
 	public ngOnInit(): void {
@@ -212,21 +226,12 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				this.closeMenus();
 			});
 
-		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+		this.shareDataSvc
+			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: ([lang]) => {
+				next: (lang) => {
 					this.selectedLang = lang;
-					if (
-						this.permissionSvc.isPermitted([Permission.UpdatePhysicians, Permission.DeletePhysicians]) &&
-						!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
-					) {
-						this.tableHeaders = [
-							...this.tableHeaders,
-							{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
-						];
-					}
-
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({
 						...h,
 						title: Translate[this.columns[i]][lang],

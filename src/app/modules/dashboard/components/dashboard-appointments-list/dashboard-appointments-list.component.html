@@ -1,110 +1,110 @@
 <div class="position-relative">
-  <div class="d-flex flex-column dfm-gap-24 dfm-pb-8 ap-li-main-wrapper">
-    <section class="dfm-px-16 dfm-pt-16 d-flex flex-column dfm-gap-8">
-      <header class="d-flex align-items-center dfm-gap-8">
-        <div class="dfm-button-gray-400">
-          <dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
-        </div>
-        <span class="font-weight-medium">{{ 'AppointmentsList' | translate }}</span>
-      </header>
-    </section>
+	<div class="d-flex flex-column dfm-gap-24 dfm-pb-8 ap-li-main-wrapper">
+		<section class="dfm-px-16 dfm-pt-16 d-flex flex-column dfm-gap-8">
+			<header class="d-flex align-items-center dfm-gap-8">
+				<div class="dfm-button-gray-400">
+					<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
+				</div>
+				<span class="font-weight-medium">{{ 'AppointmentsList' | translate }}</span>
+			</header>
+		</section>
 
-    <section>
-      <div class="d-flex dfm-gap-8 align-items-center flex-1 dfm-px-16 ap-li-section2-action-bar">
-        <dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" class="flex-1" [formControl]="searchControl"></dfm-input>
+		<section>
+			<div class="d-flex dfm-gap-8 align-items-center flex-1 dfm-px-16 ap-li-section2-action-bar">
+				<dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" class="flex-1" [formControl]="searchControl"></dfm-input>
 
-        <div class="d-flex align-items-center dfm-button-group-wrapper">
-          <div class="dfm-dropdown-border-none">
-            <dfm-input
-              size="md"
-              placeholder="{{ 'AdvancedSearch' | translate }}"
-              icon="search-sm"
-              class="flex-1"
-              (click)="openAdvancePopup()"
-              [readonly]="true"
-            ></dfm-input>
-          </div>
-          <div >
-            <dfm-button-icon
-              color="tertiary-gray"
-              size="md"
-              icon="x-close"
-              ngbPopover="{{ 'Reset' | translate }}"
-              triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="onRefresh()"
-            ></dfm-button-icon>
-          </div>
-        </div>
+				<div class="d-flex align-items-center dfm-button-group-wrapper">
+					<div class="dfm-dropdown-border-none">
+						<dfm-input
+							size="md"
+							placeholder="{{ 'AdvancedSearch' | translate }}"
+							icon="search-sm"
+							class="flex-1"
+							(click)="openAdvancePopup()"
+							[readonly]="true"
+						></dfm-input>
+					</div>
+					<div>
+						<dfm-button-icon
+							color="tertiary-gray"
+							size="md"
+							icon="x-close"
+							ngbPopover="{{ 'Reset' | translate }}"
+							triggers="mouseenter:mouseleave"
+							popoverClass="popover-p-8"
+							[openDelay]="200"
+							(click)="onRefresh()"
+						></dfm-button-icon>
+					</div>
+				</div>
 
-        <div class="d-flex align-items-center dfm-button-group-wrapper">
-          <div [cdkCopyToClipboard]="clipboardData">
-            <dfm-button-icon
-              color="tertiary-gray"
-              size="md"
-              icon="copy-03"
-              ngbPopover="{{ 'ClickToCopy' | translate }}"
-              triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="copyToClipboard()"
-            ></dfm-button-icon>
-          </div>
+				<div class="d-flex align-items-center dfm-button-group-wrapper">
+					<div [cdkCopyToClipboard]="clipboardData">
+						<dfm-button-icon
+							color="tertiary-gray"
+							size="md"
+							icon="copy-03"
+							ngbPopover="{{ 'ClickToCopy' | translate }}"
+							triggers="mouseenter:mouseleave"
+							popoverClass="popover-p-8"
+							[openDelay]="200"
+							(click)="copyToClipboard()"
+						></dfm-button-icon>
+					</div>
 
-          <div class="dfm-dropdown-border-none download-dropdown-max-w-152">
-            <dfm-input-dropdown
-              [items]="downloadItems"
-              [showDescription]="false"
-              [formControl]="downloadDropdownControl"
-              placeholder="{{ 'Download' | translate }}"
-              size="md"
-            ></dfm-input-dropdown>
-          </div>
-        </div>
+					<div class="dfm-dropdown-border-none max-w-152 min-w-152">
+						<dfm-input-dropdown
+							[items]="downloadItems"
+							[showDescription]="false"
+							[formControl]="downloadDropdownControl"
+							placeholder="{{ 'Download' | translate }}"
+							size="md"
+						></dfm-input-dropdown>
+					</div>
+				</div>
 
-        <!-- <dfm-button
+				<!-- <dfm-button
         color="secondary"
         size="md"
       >{{"Confirm" | translate}}
       </dfm-button> -->
 
-        <dfm-button color="primary" size="md" class="text-nowrap" routerLink="/appointment/add" [state]="{ comingFromRoute: 'dashboard' }"
-          >{{ 'AddAppointment' | translate }}
-        </dfm-button>
-      </div>
+				<dfm-button color="primary" size="md" class="text-nowrap" routerLink="/appointment/add" [state]="{ comingFromRoute: 'dashboard' }"
+					>{{ 'AddAppointment' | translate }}
+				</dfm-button>
+			</div>
 
-      <div class="hidden align-items-center dfm-gap-8 dfm-px-8 justify-content-center ap-li-section2-action-bar-mv hide-scrollbar overflow-x-auto">
-        <dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" [formControl]="searchControl"></dfm-input>
+			<div class="hidden align-items-center dfm-gap-8 dfm-px-8 justify-content-center ap-li-section2-action-bar-mv hide-scrollbar overflow-x-auto">
+				<dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" [formControl]="searchControl"></dfm-input>
 
-        <dfm-button-icon color="secondary-gray" size="md" icon="filter-funnel-01" (click)="openAdvancePopup()"></dfm-button-icon>
+				<dfm-button-icon color="secondary-gray" size="md" icon="filter-funnel-01" (click)="openAdvancePopup()"></dfm-button-icon>
 
-        <dfm-button-icon
-            color="secondary-gray"
-            size="md"
-            icon="x-close"
-            ngbPopover="{{ 'Reset' | translate }}"
-            triggers="mouseenter:mouseleave"
-            popoverClass="popover-p-8"
-            [openDelay]="200"
-            (click)="onRefresh()"
-          ></dfm-button-icon>
+				<dfm-button-icon
+					color="secondary-gray"
+					size="md"
+					icon="x-close"
+					ngbPopover="{{ 'Reset' | translate }}"
+					triggers="mouseenter:mouseleave"
+					popoverClass="popover-p-8"
+					[openDelay]="200"
+					(click)="onRefresh()"
+				></dfm-button-icon>
 
-        <div class="d-flex align-items-center dfm-button-group-wrapper">
-          <div>
-            <dfm-button-icon
-              color="tertiary-gray"
-              size="md"
-              icon="copy-03"
-              ngbPopover="{{ 'ClickToCopy' | translate }}"
-              triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="copyToClipboard()"
-            ></dfm-button-icon>
-          </div>
+				<div class="d-flex align-items-center dfm-button-group-wrapper">
+					<div>
+						<dfm-button-icon
+							color="tertiary-gray"
+							size="md"
+							icon="copy-03"
+							ngbPopover="{{ 'ClickToCopy' | translate }}"
+							triggers="mouseenter:mouseleave"
+							popoverClass="popover-p-8"
+							[openDelay]="200"
+							(click)="copyToClipboard()"
+						></dfm-button-icon>
+					</div>
 
-          <!-- <div>
+					<!-- <div>
             <dfm-button-icon color="tertiary-gray" size="md" icon="download-01"></dfm-button-icon>
           </div> -->
         </div>
@@ -130,7 +130,7 @@
 
     <section class="table-wrapper" *ngIf="filteredAppointments$$ | async as appointments">
 
-      <dfm-data-table class="remove-extra-column"[data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+      <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                       [clearSelected$]="clearSelected$$" [stickyActions]="true"  noDataMessage="{{ 'NoAppointmentsFound' | translate }}"
                       [rowClickable]="true" [stickyCheckbox]="true" (rowClicked)="navigateToView($event, appointments)"
                       [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
@@ -181,3 +181,4 @@
     (confirmationEvent)="handleConfirmation($event)"
   ></dfm-confirm-status-change-banner>
 </div>
+

@@ -146,6 +146,20 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.appointmentApiSvc.appointmentPageNo = 1;
 
+    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: () => {
+				if (
+					this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments]) &&
+					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+				) {
+					this.tableHeaders = [
+						...this.tableHeaders,
+						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+					];
+				}
+			},
+		});
+
 		// this.routerStateSvc
 		//   .listenForQueryParamsChanges$()
 		//   .pipe(debounceTime(100))
@@ -279,20 +293,12 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			},
 		});
 
-		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+		this.shareDataSvc
+			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: ([lang]) => {
+				next: (lang) => {
 					this.selectedLang = lang;
-					if (
-						this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments]) &&
-						!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
-					) {
-						this.tableHeaders = [
-							...this.tableHeaders,
-							{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
-						];
-					}
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({
 						...h,
 						title: Translate[this.columns[i]][lang],

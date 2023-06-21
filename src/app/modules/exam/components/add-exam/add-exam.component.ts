@@ -36,6 +36,7 @@ import {Translate} from '../../../../shared/models/translate.model';
 import {ShareDataService} from 'src/app/core/services/share-data.service';
 import {GeneralUtils} from "../../../../shared/utils/general.utils";
 import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 interface FormValues {
 	name: string;
@@ -119,6 +120,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		private timeInIntervalPipe: TimeInIntervalPipe,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
+		private loaderSvc: LoaderService,
 	) {
 		super();
 		const state = this.router.getCurrentNavigation()?.extras?.state;
@@ -135,6 +137,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			this.loading$$.next(true);
 			this.getStateFromLocalStorage();
 		}
+		this.loaderSvc.activate();
 	}
 
 	public get roomsForExamControls(): AbstractControl[] {

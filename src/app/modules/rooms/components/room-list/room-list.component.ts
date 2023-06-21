@@ -94,6 +94,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 		super();
 		this.rooms$$ = new BehaviorSubject<any[]>([]);
 		this.filteredRooms$$ = new BehaviorSubject<any[]>([]);
+    this.roomApiSvc.pageNo = 1;
 	}
 
 	public ngOnInit(): void {

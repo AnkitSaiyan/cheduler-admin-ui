@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import {
 	BehaviorSubject,
 	catchError,
-	combineLatest,
+	combineLatest, debounceTime,
 	forkJoin,
 	map,
 	Observable,
@@ -12,7 +12,7 @@ import {
 	Subject,
 	switchMap,
 	takeUntil,
-	tap,
+	tap, throttleTime,
 	throwError,
 } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
@@ -78,34 +78,18 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		);
 	}
 
-	get fileTypes$(): Observable<any[]> {
-		return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
-			switchMap(([lang]) => {
-				return of(this.repeatTypes).pipe(
-					map((downloadTypeItems) => {
-						if (lang) {
-							return downloadTypeItems.map((downloadType) => {
-								return {
-									...downloadType,
-									name: Translate[downloadType.name][lang],
-								};
-							});
-						}
-						return downloadTypeItems;
-					}),
-				);
-			}),
-		);
-	}
-
 	public getPriorityPercentage$(dates: string[]) {
 		const request = dates.map((date) => {
 			return this.http
 				.get<BaseResponse<NextSlotOpenPercentageData>>(`${this.prioritySlots}/getprioritypercentage?date=${date}`)
-				.pipe(map((res) => res?.data));
+				.pipe(
+					throttleTime(200),
+					map((res) => res?.data),
+					catchError((err) => of({}))
+				);
 		});
 
-		return forkJoin(request) as Observable<NextSlotOpenPercentageData[]>;
+		return combineLatest(request) as Observable<NextSlotOpenPercentageData[]>;
 	}
 
 	public deletePrioritySlot$(slotID: number): Observable<boolean> {

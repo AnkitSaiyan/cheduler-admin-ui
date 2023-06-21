@@ -88,6 +88,20 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 		super();
 		this.absences$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAbsences$$ = new BehaviorSubject<any[]>([]);
+    this.absenceApiSvc.pageNo = 1;
+    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: () => {
+				if (
+					this.permissionSvc.isPermitted([Permission.UpdateAbsences, Permission.DeleteAbsences]) &&
+					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+				) {
+					this.tableHeaders = [
+						...this.tableHeaders,
+						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+					];
+				}
+			},
+		});
 	}
 
 	public ngOnInit(): void {
@@ -166,21 +180,12 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 				},
 			});
 
-		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+		this.shareDataSvc
+			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: ([lang]) => {
+				next: (lang) => {
 					this.selectedLang = lang;
-					if (
-						this.permissionSvc.isPermitted([Permission.UpdateAbsences, Permission.DeleteAbsences]) &&
-						!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
-					) {
-						this.tableHeaders = [
-							...this.tableHeaders,
-							{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
-						];
-					}
-
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({
 						...h,
 						title: Translate[this.columns[i]][lang],

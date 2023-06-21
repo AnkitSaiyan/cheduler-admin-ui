@@ -94,6 +94,18 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		super();
 		this.emails$$ = new BehaviorSubject<any[]>([]);
 		this.filteredEmails$$ = new BehaviorSubject<any[]>([]);
+    this.emailTemplateApiSvc.pageNo = 1;
+		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe(() => {
+			if (
+				this.permissionSvc.isPermitted([Permission.UpdateEmailTemplate]) &&
+				!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+			) {
+				this.tableHeaders = [
+					...this.tableHeaders,
+					{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+				];
+			}
+		});
 	}
 
 	public ngOnInit(): void {
@@ -190,20 +202,11 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 				},
 			});
 
-		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+		this.shareDataSvc
+			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe(([lang]) => {
+			.subscribe((lang) => {
 				this.selectedLang = lang;
-
-				if (
-					this.permissionSvc.isPermitted([Permission.UpdateEmailTemplate]) &&
-					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
-				) {
-					this.tableHeaders = [
-						...this.tableHeaders,
-						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
-					];
-				}
 
 				this.tableHeaders = this.tableHeaders.map((h, i) => ({
 					...h,
@@ -306,6 +309,9 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		this.filteredEmails$$.next(GeneralUtils.SortArray(this.filteredEmails$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
+
 
 
 

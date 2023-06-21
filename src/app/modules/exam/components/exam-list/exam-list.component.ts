@@ -68,7 +68,6 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 		{ id: '1', title: 'Name', isSortable: true },
 		{ id: '2', title: 'Expensive', isSortable: true },
 		{ id: '3', title: 'Status', isSortable: true },
-		{ id: '4', title: 'Actions', isSortable: false, isAction: true },
 	];
 
 	public downloadItems: DownloadType[] = [];
@@ -102,6 +101,20 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 		super();
 		this.exams$$ = new BehaviorSubject<Exam[]>([]);
 		this.filteredExams$$ = new BehaviorSubject<Exam[]>([]);
+    this.examApiSvc.pageNo = 1;
+		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: () => {
+				if (
+					this.permissionSvc.isPermitted([Permission.UpdateExams, Permission.DeleteExams]) &&
+					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+				) {
+					this.tableHeaders = [
+						...this.tableHeaders,
+						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+					];
+				}
+			},
+		});
 	}
 
 	public ngOnInit(): void {
@@ -198,10 +211,11 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 				},
 			});
 
-		combineLatest([this.shareDataService.getLanguage$(), this.permissionSvc.permissionType$])
+		this.shareDataService
+			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: ([lang]) => {
+				next: (lang) => {
 					this.selectedLang = lang;
 
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({

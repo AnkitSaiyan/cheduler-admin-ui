@@ -74,6 +74,20 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		super();
 		this.prioritySlots$$ = new BehaviorSubject<any[]>([]);
 		this.filteredPrioritySlots$$ = new BehaviorSubject<any[]>([]);
+    this.priorityApiSvc.pageNo = 1;
+		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: () => {
+				if (
+					this.permissionSvc.isPermitted([Permission.UpdatePrioritySlots, Permission.DeletePrioritySlots]) &&
+					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+				) {
+					this.tableHeaders = [
+						...this.tableHeaders,
+						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+					];
+				}
+			},
+		});
 	}
 
 	@HostListener('document:click', ['$event']) onClick() {
@@ -161,7 +175,8 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 				this.clearDownloadDropdown();
 			});
 
-		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+		this.shareDataSvc
+			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe(([lang]) => {
 				this.selectedLang = lang;
@@ -338,6 +353,10 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		this.filteredPrioritySlots$$.next(GeneralUtils.SortArray(this.filteredPrioritySlots$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
+
+
 
 
 
