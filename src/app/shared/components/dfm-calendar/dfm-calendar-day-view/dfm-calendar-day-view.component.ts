@@ -1,51 +1,29 @@
-import {
-    Component,
-    EventEmitter,
-    HostListener,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    Output,
-    SimpleChanges,
-    ViewEncapsulation
-} from '@angular/core';
-import {BehaviorSubject, filter, lastValueFrom, switchMap, take, takeUntil, tap} from 'rxjs';
-import {DatePipe} from '@angular/common';
-import {NgbDropdown} from '@ng-bootstrap/ng-bootstrap';
-import {NotificationType} from 'diflexmo-angular-design';
-import {NameValue} from '../../search-modal.component';
-import {
-    AddAppointmentRequestData,
-    Appointment,
-    UpdateDurationRequestData,
-    UpdateRadiologistRequestData
-} from '../../../models/appointment.model';
-import {Exam} from '../../../models/exam.model';
-import {CalenderTimeSlot, getDurationMinutes, Interval} from '../../../models/calendar.model';
-import {AppointmentApiService} from '../../../../core/services/appointment-api.service';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {ModalService} from '../../../../core/services/modal.service';
-import {ConfirmActionModalComponent, ConfirmActionModalData} from '../../confirm-action-modal.component';
-import {
-    ChangeRadiologistModalComponent
-} from '../../../../modules/appointments/components/change-radiologist-modal/change-radiologist-modal.component';
-import {
-    AppointmentTimeChangeModalComponent
-} from '../../../../modules/appointments/components/appointment-time-change-modal/appointment-time-change-modal.component';
-import {ShareDataService} from '../../../../core/services/share-data.service';
-import {getAddAppointmentRequestData} from '../../../utils/getAddAppointmentRequestData';
-import {ReadStatus} from '../../../models/status.model';
-import {
-    AddAppointmentModalComponent
-} from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
-import {Translate} from '../../../models/translate.model';
-import {ENG_BE} from 'src/app/shared/utils/const';
-import {DestroyableComponent} from '../../destroyable.component';
-import {PermissionService} from 'src/app/core/services/permission.service';
-import {UserRoleEnum} from 'src/app/shared/models/user.model';
+import { Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { BehaviorSubject, filter, lastValueFrom, switchMap, take, takeUntil, tap } from 'rxjs';
+import { DatePipe } from '@angular/common';
+import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
+import { NotificationType } from 'diflexmo-angular-design';
+import { NameValue } from '../../search-modal.component';
+import { AddAppointmentRequestData, Appointment, UpdateDurationRequestData, UpdateRadiologistRequestData } from '../../../models/appointment.model';
+import { Exam } from '../../../models/exam.model';
+import { CalenderTimeSlot, getDurationMinutes, Interval } from '../../../models/calendar.model';
+import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../confirm-action-modal.component';
+import { ChangeRadiologistModalComponent } from '../../../../modules/appointments/components/change-radiologist-modal/change-radiologist-modal.component';
+import { AppointmentTimeChangeModalComponent } from '../../../../modules/appointments/components/appointment-time-change-modal/appointment-time-change-modal.component';
+import { ShareDataService } from '../../../../core/services/share-data.service';
+import { getAddAppointmentRequestData } from '../../../utils/getAddAppointmentRequestData';
+import { ReadStatus } from '../../../models/status.model';
+import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
+import { Translate } from '../../../models/translate.model';
+import { ENG_BE } from 'src/app/shared/utils/const';
+import { DestroyableComponent } from '../../destroyable.component';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
 	selector: 'dfm-calendar-day-view',
@@ -100,6 +78,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		private shareDataSvc: ShareDataService,
 		public permissionSvc: PermissionService,
 		private translatePipe: TranslatePipe,
+		private translate: TranslateService,
 	) {
 		super();
 	}
@@ -492,7 +471,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const appointmentText = document.createElement('span');
 		// const textNode = document.createTextNode('Appointment');
 
-		appointmentText.innerText = 'Appointment';
+		appointmentText.innerText = this.translate.instant('Appointment');
 
 		appointmentText.classList.add('appointment-title');
 
