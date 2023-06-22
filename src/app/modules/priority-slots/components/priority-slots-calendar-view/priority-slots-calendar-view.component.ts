@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, debounceTime, filter, map, Observable, of, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, map, mergeMap, Observable, of, switchMap, take, takeUntil, tap } from 'rxjs';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -14,6 +14,7 @@ import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { SignalrService } from 'src/app/core/services/signalr.service';
+import { merge } from 'chart.js/dist/helpers/helpers.core';
 
 @Component({
 	selector: 'dfm-priority-slots-calendar-view',
@@ -38,7 +39,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 
 	public practiceHourMinMax$: Observable<{ min: string; max: string; grayOutMin: string; grayOutMax: string } | null> = of(null);
 
-	private currentSlotPercentageData : any[] = [];
+	private currentSlotPercentageData: any[] = [];
 
 	constructor(
 		private router: Router,
@@ -46,7 +47,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		private priorityApiSvc: PrioritySlotApiService,
 		private practiceHourSvc: PracticeHoursApiService,
 		private utcToLocalPipe: UtcToLocalPipe,
-		private signalRService :SignalrService,
+		private signalRService: SignalrService,
 	) {
 		super();
 		this.prioritySlots$$ = new BehaviorSubject<any>({});
@@ -105,25 +106,30 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			}),
 		);
 
-		this.signalRService.priorityModuleData$.pipe(takeUntil(this.destroy$$)).subscribe(data => {
-			const indexOfChangedSlot = this.currentSlotPercentageData.findIndex(ele => ele.date == data.date);
+		this.signalRService.priorityModuleData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
+			const indexOfChangedSlot = this.currentSlotPercentageData.findIndex((ele) => ele.date == data.date);
 			if (indexOfChangedSlot !== -1) {
 				this.currentSlotPercentageData[indexOfChangedSlot] = data;
 				this.slotPercentage$$.next(this.currentSlotPercentageData);
 			}
 		});
 
-		this.dates$$.asObservable().pipe(
-			debounceTime(500),
-			filter((dates) => !!dates.length),
-			switchMap((dates) => this.priorityApiSvc.getPriorityPercentage$(dates)),
-			takeUntil(this.destroy$$)
-		).subscribe({
-			next: (slotPercentage) => {
-				this.slotPercentage$$.next(slotPercentage);
-				this.currentSlotPercentageData = slotPercentage;
-			}
-		})
+		this.dates$$
+			.asObservable()
+			.pipe(
+				debounceTime(500),
+				filter((dates) => !!dates.length),
+				switchMap((dates) => this.priorityApiSvc.getPriorityPercentage$(dates)),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (slotPercentage) => {
+					console.log('==========', slotPercentage);
+
+					this.slotPercentage$$.next(slotPercentage);
+					this.currentSlotPercentageData = slotPercentage;
+				},
+			});
 	}
 
 	private calculate(minutes: number, time: string, type: 'plus' | 'minus'): string {
@@ -169,6 +175,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		});
 
 		this.dates$$.next(dates);
+		this.priorityApiSvc.getOpenCloseSlotData(dates).subscribe((res) => console.log('aaaaaaaaaaaaaaaaaaaaaa', res));
 
 		// this.priorityApiSvc
 		// 	.getPriorityPercentage$(dates)
@@ -201,7 +208,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			}))
 			.forEach((prioritySlot: PrioritySlot) => {
 				let { repeatFrequency } = prioritySlot;
-				const { priority, nxtSlotOpenPct } = prioritySlot;
+				const { priority, nxtSlotOpenPct, id } = prioritySlot;
 				const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
 				let firstDate = new Date(new Date(prioritySlot.startedAt).toDateString());
 				const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
@@ -216,6 +223,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 								end: prioritySlot.slotEndTime?.slice(0, 5),
 								priority,
 								nxtSlotOpenPct,
+								id,
 							};
 							myPrioritySlots[dateString] = myPrioritySlots[dateString] ? [...myPrioritySlots[dateString], customPrioritySlot] : [customPrioritySlot];
 							if (firstDate.getTime() >= lastDate.getTime()) break;
@@ -237,6 +245,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 										end: prioritySlot.slotEndTime?.slice(0, 5),
 										priority,
 										nxtSlotOpenPct,
+										id,
 									};
 									myPrioritySlots[dateString] = myPrioritySlots[dateString]
 										? [...myPrioritySlots[dateString], customPrioritySlot]
@@ -260,6 +269,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 											end: prioritySlot.slotEndTime?.slice(0, 5),
 											priority,
 											nxtSlotOpenPct,
+											id,
 										};
 										myPrioritySlots[dateString] = myPrioritySlots[dateString]
 											? [...myPrioritySlots[dateString], customPrioritySlot]
@@ -280,6 +290,20 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		console.log({ myPrioritySlots });
 
 		this.prioritySlots$$.next({ ...myPrioritySlots });
+	}
+
+	public prioritySlotOpenAndClose(a) {
+		const { prioritySlotid, percentage, date } = a;
+		this.priorityApiSvc
+			.openAndClosePrioritySlot(
+				{
+					prioritySlotid,
+					percentage,
+					date,
+				},
+				true,
+			)
+			.subscribe((res) => console.log(res));
 	}
 }
 
