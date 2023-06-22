@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, lastValueFrom, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil, tap } from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -10,7 +10,6 @@ import { NameValue } from '../../../../shared/components/search-modal.component'
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { Exam } from '../../../../shared/models/exam.model';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterStateService } from '../../../../core/services/router-state.service';
 import { PracticeHoursApiService } from '../../../../core/services/practice-hours-api.service';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
@@ -18,16 +17,14 @@ import { PracticeAvailabilityServer } from '../../../../shared/models/practice.m
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from 'src/app/core/services/modal.service';
-import { LoaderService } from 'src/app/core/services/loader.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { UserRoleEnum } from 'src/app/shared/models/user.model';
-import { NotificationService } from 'diflexmo-angular-design';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
-import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { DUTCH_BE, ENG_BE } from '../../../../shared/utils/const';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Translate } from 'src/app/shared/models/translate.model';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { RepeatType } from 'src/app/shared/models/absence.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
@@ -106,9 +103,9 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		private route: ActivatedRoute,
 		private notificationSvc: NotificationDataService,
 		private shareDataSvc: ShareDataService,
-		private translatePipe: TranslatePipe,
 		private priorityApiSvc: PrioritySlotApiService,
 		private utcToLocalPipe: UtcToLocalPipe,
+		private translate: TranslateService,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -232,7 +229,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			)
 			.subscribe(([_, queryParams]) => {
 				const value = new Date(queryParams['d']);
-        const time = this.weekdayToPractice$$.value[value.getDay()];
+				const time = this.weekdayToPractice$$.value[value.getDay()];
 				this.selectedSlot$$.next({
 					...time,
 					timings: time.timings.filter(
@@ -582,7 +579,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		const appointmentText = document.createElement('span');
 		// const textNode = document.createTextNode('Appointment');
 
-		appointmentText.innerText = 'Appointment';
+		appointmentText.innerText = this.translate.instant('Appointment');
 
 		appointmentText.classList.add('appointment-title');
 
