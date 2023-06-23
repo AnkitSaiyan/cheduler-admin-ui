@@ -41,7 +41,7 @@
 			<div role="row" class="calendar-week-view-time-slot-container">
 				<div
 					class="calendar-week-view-time-slot text-sm"
-					*ngFor="let time of timeInterval | timeInInterval : format24Hour : false : getMinute( limit.min) : getMinute(limit.max)"
+					*ngFor="let time of timeInterval | timeInInterval : format24Hour : false : getMinute(limit.min) : getMinute(limit.max)"
 				>
 					<span>{{ time | dfmUtcToLocal : true }}</span>
 					<div class="calendar-week-view-horizontal-line"></div>
@@ -94,11 +94,13 @@
 															<ng-template ngbPanelTitle>
 																<div class="calendar-week-view-event-patients-container">
 																	<div class="d-flex flex-column dfm-p-8">
-																		<span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{ data.patientFname + ' ' + data.patientLname }}</span>
+																		<span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
+																			data.patientFname + ' ' + data.patientLname
+																		}}</span>
 																		<span class="text-sm dfm-text-main-500">
-																			{{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal: true }}
+																			{{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
 																			-
-																			{{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal: true }}
+																			{{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
 																			({{ getDurationFn(data.startedAt, data.endedAt) }} min)
 																		</span>
 																	</div>
@@ -155,7 +157,7 @@
 											<span class="calendar-week-view-event-title" *ngIf="eventHeight >= 60">{{ 'Appointments' | translate }}</span>
 											<span class="calendar-week-view-event-time" [ngClass]="{ 'dfm-ms-12': eventHeight <= 40, 'dfm-ms-16': eventHeight <= 20 }">
 												{{ (groupedData[0].startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }} -
-												{{ (groupedData | largest : 'endedAt' | dfmDefaultDate : 'time')! | dfmUtcToLocal: true }}
+												{{ (groupedData | largest : 'endedAt' | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
 											</span>
 										</div>
 									</div>
@@ -163,60 +165,65 @@
 							</ng-container>
 							<ng-container *ngIf="prioritySlots">
 								<ng-container *ngIf="prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
-									<ng-container *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
+									<ng-container *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]; let i = index">
 										<div
 											*ngIf="getPrioritySlotHeight(prioritySlot) as eventHeight"
 											[ngbPopover]="priorityCardDetail"
 											triggers="mouseenter:mouseleave"
 											triggers="mouseenter:mouseleave"
-											[class]="'priority-slots-area '+ prioritySlotsVariant"
+											[class]="'priority-slots-area ' + prioritySlotsVariant"
 											[ngClass]="prioritySlot.priority"
 											[ngStyle]="{
 												'top.px': getPrioritySlotTop(prioritySlot),
 												'height.px': eventHeight
 											}"
 										>
-											<div
-												class="priority-slot-percentage"
-												*ngIf="
-                        slotPercentage.length &&
-													prioritySlot
-														| showSlotPercentage
-															: slotPercentage[weekday]
-															: prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]
-												"
-                        [ngStyle]="{
-                          'top.px': getPrioritySlotTop(prioritySlot) < 0 && getPrioritySlotTop(prioritySlot)* (-1) < eventHeight ? getPrioritySlotTop(prioritySlot) * (-1) : '24px'
-                        }"
-											>
-                        <ng-container *ngIf="slotPercentage?.length">
-                          <span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
-                          <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
-                        </ng-container>
-											</div>
+										<div class="priority-slot-percentage">
+											<div class="txt-slot-percentage"
+											*ngIf="
+												slotPercentage.length && prioritySlot
+													| showSlotPercentage
+														: slotPercentage[weekday]
+														: prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]
+											"
+											[ngStyle]="{
+												'top.px':
+													getPrioritySlotTop(prioritySlot) < 0 && getPrioritySlotTop(prioritySlot) * -1 < eventHeight
+														? getPrioritySlotTop(prioritySlot) * -1
+														: '24px'
+											}"
+										>
+											<ng-container *ngIf="slotPercentage?.length">
+												<span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
+												<span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
+											</ng-container>
+										</div>
+										<!-- <dfm-button color="primary" size="sm" (click)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, i)">{{ 'Open' | translate }}</dfm-button> -->
+
+                    <mat-slide-toggle *ngIf="prioritySlot.isClose !== undefined" color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)"></mat-slide-toggle>
+									</div>
 
 
 											<ng-template #priorityCardDetail>
-												<span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end  }}</span>
+												<span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end }}</span>
 											</ng-template>
 										</div>
 									</ng-container>
 								</ng-container>
 							</ng-container>
 						</div>
-            <ng-container *ngIf="grayOutSlot$$.value[weekday] && grayOutSlot$$.value[weekday] as items">
-              <ng-container *ngFor="let item of items">
-                <div
-                  (dblclick)="onDblClick($event, eventsContainer, day, true, item.top)"
-                  class="gray-out-area-week"
-                  [ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
-                ></div>
-              </ng-container>
-            </ng-container>
+						<ng-container *ngIf="grayOutSlot$$.value[weekday] && grayOutSlot$$.value[weekday] as items">
+							<ng-container *ngFor="let item of items">
+								<div
+									(dblclick)="onDblClick($event, eventsContainer, day, true, item.top)"
+									class="gray-out-area-week"
+									[ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
+								></div>
+							</ng-container>
+						</ng-container>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-

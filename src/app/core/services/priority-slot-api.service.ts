@@ -3,7 +3,9 @@ import { Injectable } from '@angular/core';
 import {
 	BehaviorSubject,
 	catchError,
-	combineLatest, debounceTime,
+	combineLatest,
+	debounceTime,
+	filter,
 	forkJoin,
 	map,
 	Observable,
@@ -12,7 +14,8 @@ import {
 	Subject,
 	switchMap,
 	takeUntil,
-	tap, throttleTime,
+	tap,
+	throttleTime,
 	throwError,
 } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
@@ -80,13 +83,11 @@ export class PrioritySlotApiService extends DestroyableComponent {
 
 	public getPriorityPercentage$(dates: string[]) {
 		const request = dates.map((date) => {
-			return this.http
-				.get<BaseResponse<NextSlotOpenPercentageData>>(`${this.prioritySlots}/getprioritypercentage?date=${date}`)
-				.pipe(
-					throttleTime(200),
-					map((res) => res?.data),
-					catchError((err) => of({}))
-				);
+			return this.http.get<BaseResponse<NextSlotOpenPercentageData>>(`${this.prioritySlots}/getprioritypercentage?date=${date}`).pipe(
+				throttleTime(200),
+				map((res) => res?.data),
+				catchError((err) => of({})),
+			);
 		});
 
 		return combineLatest(request) as Observable<NextSlotOpenPercentageData[]>;
@@ -193,10 +194,50 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		);
 	}
 
+	public openAndClosePrioritySlot(requestData, isClose) {
+		this.loaderSvc.activate();
+		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}/priorityopenclose`, requestData, { params: { isClose } }).pipe(
+			tap(() => {
+				this.loaderSvc.deactivate();
+			}),
+			catchError((e) => {
+				this.loaderSvc.deactivate();
+				return throwError(e);
+			}),
+		);
+	}
+
+	getOpenCloseSlotData(dates) {
+		const request = dates.map((date) => {
+			const splitDate = date.split('-');
+			const finalDate = `${+splitDate[2]}-${+splitDate[1]}-${splitDate[0]}`;
+			return this.http.get<any>(`${this.prioritySlots}/getpriorityopencloselist?date=${date}`).pipe(
+				throttleTime(200),
+				map((res) => ({ [finalDate]: res?.data })),
+				catchError((err) => of({})),
+			);
+		});
+
+		return combineLatest(request) as Observable<[]>;
+	}
+
 	public refresh(): void {
 		this.refreshPrioritySlots$$.next();
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

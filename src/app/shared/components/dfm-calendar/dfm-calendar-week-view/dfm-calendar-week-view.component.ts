@@ -93,6 +93,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public dayViewEvent = new EventEmitter<number>();
 
 	@Output()
+	public openAndClosePrioritySlot = new EventEmitter<any>();
+
+	@Output()
 	public addAppointment = new EventEmitter<{
 		e: MouseEvent;
 		eventsContainer: HTMLDivElement;
@@ -136,6 +139,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		if (this.showGrayOutSlot) {
 			this.getGrayOutArea();
 		}
+    console.log(this.prioritySlots, 'test');
 	}
 
 	public ngOnInit(): void {
@@ -530,5 +534,16 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		date.setSeconds(0);
 		const finalDate = type === 'minus' ? new Date(date.getTime() - minutes * 60 * 1000) : new Date(date.getTime() + minutes * 60 * 1000);
 		return this.datePipe.transform(finalDate, 'HH:mm') ?? '';
+	}
+
+	public prioritySlotOpenAndClose(slotPercentage: any, prioritySlot: any, isClose: any) {
+		// console.log(slotPercentage, prioritySlot, this.slotPriorityKey[prioritySlot.priority]);
+		const obj = {
+			prioritySlotid: prioritySlot.id,
+			percentage: slotPercentage[this.slotPriorityKey[prioritySlot.priority]],
+			date: slotPercentage.date,
+			isClose,
+		};
+		this.openAndClosePrioritySlot.emit(obj);
 	}
 }

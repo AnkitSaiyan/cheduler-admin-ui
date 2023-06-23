@@ -50,6 +50,7 @@
       (selectedDateEvent)="updateDate($event.selectedDate, $event.isWeekChange)"
       [changeWeek$$]="changeWeek$$"
       (dayViewEvent)="changeToDayView($event)"
+      (openAndClosePrioritySlot)="prioritySlotOpenAndClose($event)"
       [selectedDate]="selectedDate"
       [newDate$$]="newDate$$"
       [dataGroupedByDateAndTime]="appointmentsGroupedByDateAndTIme"

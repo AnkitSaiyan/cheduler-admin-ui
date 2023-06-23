@@ -20,6 +20,7 @@ import {
 import { DesignSystemModule, NgDfmDropdownModule, TableModule } from 'diflexmo-angular-design';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { NgChartsModule } from 'ng2-charts';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ConfirmActionModalComponent } from './components/confirm-action-modal.component';
 import { ConfirmStatusChangeBannerComponent } from './components/confirm-status-change-banner.component';
 import { DestroyableComponent } from './components/destroyable.component';
@@ -62,13 +63,13 @@ import { IsPermittedDirective } from './directives/permission.directive';
 import { DefaultDatePipe } from './pipes/default-date.pipe';
 import { IsDataPipe } from './pipes/is-data.pipe';
 import { MultiDropdownPlaceholderNamePipe } from './pipes/multi-dropdown-placeholder-name.pipe';
+import { SortOrderValidation } from './pipes/remove-selected-item.pipe';
 import { RoleNamePipe } from './pipes/role-name.pipe';
 import { ShowSlotPercentagePipe } from './pipes/showSlotPercentage.pipe';
 import { UserRolePipe } from './pipes/user-role.pipe';
 import { UtcToLocalPipe } from './pipes/utc-to-local.pipe';
 import { DUTCH_BE } from './utils/const';
 import { CustomDatePickerAdapter } from './utils/date-adapter';
-import { SortOrderValidation } from './pipes/remove-selected-item.pipe';
 
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
@@ -146,6 +147,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatNativeDateModule,
 		MatDatepickerModule,
 		MatMenuModule,
+		MatSlideToggleModule,
 	],
 	exports: [
 		DesignSystemModule,
@@ -204,6 +206,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MultiDropdownPlaceholderNamePipe,
 		MatMenuModule,
 		InfiniteScrollModule,
+		MatSlideToggleModule,
 	],
 	providers: [
 		TranslatePipe,
