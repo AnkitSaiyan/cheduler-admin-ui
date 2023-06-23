@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, debounceTime, filter, map, mergeMap, Observable, of, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, mergeMap, Observable, of, switchMap, take, takeUntil, tap } from 'rxjs';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -33,6 +33,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 
 	public prioritySlots$$: BehaviorSubject<any>;
 
+	public prioritySlotsCloseOpen$$: BehaviorSubject<any>;
+
 	public slotPercentage$$: BehaviorSubject<any[]>;
 
 	private dates$$ = new BehaviorSubject<string[]>([]);
@@ -51,6 +53,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 	) {
 		super();
 		this.prioritySlots$$ = new BehaviorSubject<any>({});
+		this.prioritySlotsCloseOpen$$ = new BehaviorSubject<any>({});
 		this.slotPercentage$$ = new BehaviorSubject<any[]>([]);
 	}
 
@@ -175,7 +178,14 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		});
 
 		this.dates$$.next(dates);
-		this.priorityApiSvc.getOpenCloseSlotData(dates).subscribe((res) => console.log('aaaaaaaaaaaaaaaaaaaaaa', res));
+		this.priorityApiSvc.getOpenCloseSlotData(dates).subscribe((res) => {
+			const response = res.reduce((accumulator, currentValue) => {
+				return { ...accumulator, [Object.keys(currentValue)[0]]: currentValue[Object.keys(currentValue)[0]] };
+			}, {});
+			this.prioritySlotsCloseOpen$$.next(response);
+			this.prioritySlotOpenAndCloseMap();
+			console.log('aaaaaaaaaaaaaaaaaaaaaa', response, this.prioritySlots$$.value);
+		});
 
 		// this.priorityApiSvc
 		// 	.getPriorityPercentage$(dates)
@@ -184,6 +194,28 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		// 		this.slotPercentage$$.next(slotPercentage);
 		// 		this.currentSlotPercentageData = slotPercentage
 		// 	});
+	}
+
+	private prioritySlotOpenAndCloseMap() {
+		if (!Object.keys(this.prioritySlots$$.value).length || !Object.keys(this.prioritySlotsCloseOpen$$.value).length) return;
+		let prioritySlot = { ...this.prioritySlots$$.value };
+		const prioritySlotsCloseOpen = { ...this.prioritySlotsCloseOpen$$.value };
+		Object.keys(prioritySlotsCloseOpen).forEach((date) => {
+			if (prioritySlot[date]) {
+				if (prioritySlotsCloseOpen[date]?.length) {
+					prioritySlot = {
+						...prioritySlot,
+						[date]: prioritySlot[date]?.map((data) => ({
+							...data,
+							isClose: prioritySlotsCloseOpen[date]?.find(({ prioritySlotId }) => prioritySlotId === data.id)?.isClose,
+						})),
+					};
+				} else {
+					prioritySlot = { ...prioritySlot, [date]: prioritySlot[date].map(({ isClose, ...rest }) => ({ ...rest })) };
+				}
+			}
+		});
+		this.prioritySlots$$.next(prioritySlot);
 	}
 
 	private updateQuery(queryStr?: string, date?: Date, routeName: string = '') {
@@ -199,13 +231,12 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 	private setPrioritySlots(prioritySlots: PrioritySlot[]) {
 		const myPrioritySlots = {};
 		prioritySlots
-			.map((value, index) => ({
+			.map((value) => ({
 				...value,
 				startedAt: this.utcToLocalPipe.transform(value.startedAt, false, true),
 				endedAt: this.utcToLocalPipe.transform(value.endedAt, false, true),
 				slotStartTime: this.utcToLocalPipe.transform(value.slotStartTime, true),
 				slotEndTime: this.utcToLocalPipe.transform(value.slotEndTime, true),
-				isClose: Boolean(index % 2 === 0),
 			}))
 			.forEach((prioritySlot: PrioritySlot) => {
 				let { repeatFrequency } = prioritySlot;
@@ -291,9 +322,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 				}
 			});
 
-		console.log({ myPrioritySlots });
-
 		this.prioritySlots$$.next({ ...myPrioritySlots });
+		this.prioritySlotOpenAndCloseMap();
 	}
 
 	public prioritySlotOpenAndClose(a) {
@@ -307,9 +337,68 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 				},
 				isClose,
 			)
-			.subscribe((res) => console.log(res));
+			.subscribe((res) => {
+				let prioritySlot = { ...this.prioritySlots$$.value };
+				const formatedDate = this.datePipe.transform(date, 'd-M-yyyy')!;
+				prioritySlot = {
+					...prioritySlot,
+					[formatedDate]: prioritySlot[formatedDate]?.map((priority) => {
+						if (priority.id === prioritySlotid) {
+							return { ...priority, isClose };
+						}
+						return priority;
+					}),
+				};
+				this.prioritySlots$$.next(prioritySlot);
+			});
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

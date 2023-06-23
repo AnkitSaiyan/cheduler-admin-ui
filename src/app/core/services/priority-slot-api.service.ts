@@ -196,11 +196,8 @@ export class PrioritySlotApiService extends DestroyableComponent {
 
 	public openAndClosePrioritySlot(requestData, isClose) {
 		this.loaderSvc.activate();
-
 		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}/priorityopenclose`, requestData, { params: { isClose } }).pipe(
 			tap(() => {
-				this.refreshPrioritySlots$$.next();
-
 				this.loaderSvc.deactivate();
 			}),
 			catchError((e) => {
@@ -212,9 +209,11 @@ export class PrioritySlotApiService extends DestroyableComponent {
 
 	getOpenCloseSlotData(dates) {
 		const request = dates.map((date) => {
+			const splitDate = date.split('-');
+			const finalDate = `${+splitDate[2]}-${+splitDate[1]}-${splitDate[0]}`;
 			return this.http.get<any>(`${this.prioritySlots}/getpriorityopencloselist?date=${date}`).pipe(
 				throttleTime(200),
-				map((res) => res?.data),
+				map((res) => ({ [finalDate]: res?.data })),
 				catchError((err) => of({})),
 			);
 		});
@@ -226,6 +225,16 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		this.refreshPrioritySlots$$.next();
 	}
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
