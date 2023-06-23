@@ -200,7 +200,7 @@
 										</div>
 										<!-- <dfm-button color="primary" size="sm" (click)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, i)">{{ 'Open' | translate }}</dfm-button> -->
 
-                    <mat-slide-toggle *ngIf="prioritySlot.isClose !== undefined" color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)"></mat-slide-toggle>
+                    <mat-slide-toggle *ngIf="prioritySlot.isClose !== undefined" color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)">Open</mat-slide-toggle>
 									</div>
 
 
