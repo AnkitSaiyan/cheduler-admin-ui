@@ -199,16 +199,17 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 	private setPrioritySlots(prioritySlots: PrioritySlot[]) {
 		const myPrioritySlots = {};
 		prioritySlots
-			.map((value) => ({
+			.map((value, index) => ({
 				...value,
 				startedAt: this.utcToLocalPipe.transform(value.startedAt, false, true),
 				endedAt: this.utcToLocalPipe.transform(value.endedAt, false, true),
 				slotStartTime: this.utcToLocalPipe.transform(value.slotStartTime, true),
 				slotEndTime: this.utcToLocalPipe.transform(value.slotEndTime, true),
+				isClose: Boolean(index % 2 === 0),
 			}))
 			.forEach((prioritySlot: PrioritySlot) => {
 				let { repeatFrequency } = prioritySlot;
-				const { priority, nxtSlotOpenPct, id } = prioritySlot;
+				const { priority, nxtSlotOpenPct, id, isClose } = prioritySlot;
 				const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
 				let firstDate = new Date(new Date(prioritySlot.startedAt).toDateString());
 				const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
@@ -224,6 +225,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 								priority,
 								nxtSlotOpenPct,
 								id,
+								isClose,
 							};
 							myPrioritySlots[dateString] = myPrioritySlots[dateString] ? [...myPrioritySlots[dateString], customPrioritySlot] : [customPrioritySlot];
 							if (firstDate.getTime() >= lastDate.getTime()) break;
@@ -246,6 +248,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 										priority,
 										nxtSlotOpenPct,
 										id,
+										isClose,
 									};
 									myPrioritySlots[dateString] = myPrioritySlots[dateString]
 										? [...myPrioritySlots[dateString], customPrioritySlot]
@@ -270,6 +273,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 											priority,
 											nxtSlotOpenPct,
 											id,
+											isClose,
 										};
 										myPrioritySlots[dateString] = myPrioritySlots[dateString]
 											? [...myPrioritySlots[dateString], customPrioritySlot]
@@ -293,7 +297,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 	}
 
 	public prioritySlotOpenAndClose(a) {
-		const { prioritySlotid, percentage, date } = a;
+		const { prioritySlotid, percentage, date, isClose } = a;
 		this.priorityApiSvc
 			.openAndClosePrioritySlot(
 				{
@@ -301,9 +305,13 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 					percentage,
 					date,
 				},
-				true,
+				isClose,
 			)
 			.subscribe((res) => console.log(res));
 	}
 }
+
+
+
+
 

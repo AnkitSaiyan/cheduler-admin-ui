@@ -196,12 +196,10 @@ export class PrioritySlotApiService extends DestroyableComponent {
 
 	public openAndClosePrioritySlot(requestData, isClose) {
 		this.loaderSvc.activate();
-		let queryParams = new HttpParams();
-		queryParams.append('isClose', isClose);
 
-		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}/priorityopenclose`, requestData, { params: queryParams }).pipe(
-			tap((response) => {
-				console.log('openAndClosePrioritySlot', response);
+		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}/priorityopenclose`, requestData, { params: { isClose } }).pipe(
+			tap(() => {
+				this.refreshPrioritySlots$$.next();
 
 				this.loaderSvc.deactivate();
 			}),
@@ -228,6 +226,9 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		this.refreshPrioritySlots$$.next();
 	}
 }
+
+
+
 
 
 
