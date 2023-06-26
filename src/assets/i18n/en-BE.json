@@ -56,7 +56,7 @@
 	"Public": "Public",
 	"Private": "Private",
 	"Always": "Always",
-  "ApplicationUser": "Application User",
+	"ApplicationUser": "Application User",
 	"Openinghoursofthepractice": "corresponds to the opening hours of the practice",
 	"AlwaysOpeninghoursofthepratice": "Always corresponds to the opening hours of the practice",
 	"GetDetailed": "Get Detailed",
@@ -334,7 +334,7 @@
 	"AppointmentsList": "Appointments List",
 	"Search": "Search",
 	"AdvancedSearch": " Advanced Search",
-	"AreYouSureYouWantToDeleteThisPost": "Are you sure you want to delete this Post?",
+	"AreYouSureYouWantToDeleteThisPost": "Are you sure you want to delete this Post-it?",
 	"AreYouSureYouWantToDeleteThisExam": "Are you sure you want to delete this Exam?",
 	"EnterMessage": "Enter Message",
 	"Today": "Today",
@@ -446,6 +446,7 @@
 		}
 	}
 }
+
 
 
 
