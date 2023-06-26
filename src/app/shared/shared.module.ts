@@ -72,6 +72,7 @@ import { DUTCH_BE } from './utils/const';
 import { CustomDatePickerAdapter } from './utils/date-adapter';
 
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { IsPreviousDayPipe } from './pipes/is-previous-day.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -106,6 +107,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		NumberInputDirective,
 		IsPermittedDirective,
 		NumberArrayPipe,
+		IsPreviousDayPipe,
 		IsDataPipe,
 		TimeSlotsComponent,
 		MatSpinnerComponent,
@@ -173,6 +175,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		ApprovalTypeNamePipe,
 		SumPipe,
 		RepeatTypeToNamePipe,
+		IsPreviousDayPipe,
 		SortOrderValidation,
 		AppendTextToInputDirective,
 		DfmCalendarMonthViewComponent,

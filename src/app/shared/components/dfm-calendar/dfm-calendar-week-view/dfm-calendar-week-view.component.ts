@@ -118,6 +118,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public rendered = false;
 
+	public DateTimeUtils = DateTimeUtils;
+
 	public slotPriorityKey = {
 		High: 'highPriorityPercentage',
 		Medium: 'mediumPriorityPercentage',
@@ -139,7 +141,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		if (this.showGrayOutSlot) {
 			this.getGrayOutArea();
 		}
-    console.log(this.prioritySlots, 'test');
+		console.log(this.prioritySlots, 'test');
 	}
 
 	public ngOnInit(): void {
@@ -539,7 +541,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public prioritySlotOpenAndClose(slotPercentage: any, prioritySlot: any, isClose: any) {
-
 		// console.log(slotPercentage, prioritySlot, this.slotPriorityKey[prioritySlot.priority]);
 		const obj = {
 			prioritySlotid: prioritySlot.id,
