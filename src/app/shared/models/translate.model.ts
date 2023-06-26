@@ -126,7 +126,7 @@ export const Translate = Object.freeze({
 	},
 	StartedAt: {
 		[ENG_BE]: 'Started At',
-		[DUTCH_BE]: 'Start',
+		[DUTCH_BE]: 'Begin',
 	},
 	EndedAt: {
 		[ENG_BE]: 'Ended At',
@@ -546,8 +546,8 @@ export const Translate = Object.freeze({
 	},
 
 	sessionExp: {
-		[ENG_BE]: 'Your session has expired',
-		[DUTCH_BE]: 'Uw sessie is verlopen',
+		[ENG_BE]: 'Your session has expired. Login again',
+		[DUTCH_BE]: 'Uw sessie is verlopen. Log opnieuw in',
 	},
 
 	Profile: {
@@ -661,4 +661,6 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Kan geen afspraken toevoegen op dit tijdstip',
 	},
 });
+
+
 
