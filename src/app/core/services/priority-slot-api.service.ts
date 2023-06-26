@@ -208,15 +208,22 @@ export class PrioritySlotApiService extends DestroyableComponent {
 	}
 
 	getOpenCloseSlotData(dates) {
-		const request = dates.map((date) => {
-			const splitDate = date.split('-');
-			const finalDate = `${+splitDate[2]}-${+splitDate[1]}-${splitDate[0]}`;
-			return this.http.get<any>(`${this.prioritySlots}/getpriorityopencloselist?date=${date}`).pipe(
-				throttleTime(200),
-				map((res) => ({ [finalDate]: res?.data })),
-				catchError((err) => of({})),
-			);
-		});
+		const currentDate = new Date();
+		currentDate.setHours(0, 0, 0, 0);
+		const request = dates
+			.filter((date) => {
+				const myDate = new Date(date);
+				return myDate.getTime() >= currentDate.getTime();
+			})
+			.map((date) => {
+				const splitDate = date.split('-');
+				const finalDate = `${+splitDate[2]}-${+splitDate[1]}-${splitDate[0]}`;
+				return this.http.get<any>(`${this.prioritySlots}/getpriorityopencloselist?date=${date}`).pipe(
+					throttleTime(200),
+					map((res) => ({ [finalDate]: res?.data })),
+					catchError((err) => of({})),
+				);
+			});
 
 		return combineLatest(request) as Observable<[]>;
 	}
@@ -225,6 +232,16 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		this.refreshPrioritySlots$$.next();
 	}
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
