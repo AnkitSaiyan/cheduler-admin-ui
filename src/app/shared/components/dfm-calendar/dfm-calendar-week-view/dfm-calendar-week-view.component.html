@@ -174,7 +174,7 @@
 											[class]="'priority-slots-area ' + prioritySlotsVariant"
 											[ngClass]="prioritySlot.priority"
 											[ngStyle]="{
-												'top.px': getPrioritySlotTop(prioritySlot),
+												'top.px': getPrioritySlotTop(prioritySlot) < 0 ? 0 : getPrioritySlotTop(prioritySlot),
 												'height.px': eventHeight
 											}"
 										>
@@ -186,12 +186,6 @@
 														: slotPercentage[weekday]
 														: prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]
 											"
-											[ngStyle]="{
-												'top.px':
-													getPrioritySlotTop(prioritySlot) < 0 && getPrioritySlotTop(prioritySlot) * -1 < eventHeight
-														? getPrioritySlotTop(prioritySlot) * -1
-														: '24px'
-											}"
 										>
 											<ng-container *ngIf="slotPercentage?.length">
 												<span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
@@ -200,7 +194,13 @@
 										</div>
 										<!-- <dfm-button color="primary" size="sm" (click)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, i)">{{ 'Open' | translate }}</dfm-button> -->
 
-                    <mat-slide-toggle *ngIf="prioritySlot.isClose !== undefined" color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)">Open</mat-slide-toggle>
+                    <mat-slide-toggle *ngIf="prioritySlot.isClose !== undefined; else showAnotherToggle "  color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)">Open</mat-slide-toggle>
+                    <ng-template #showAnotherToggle>
+                      <mat-slide-toggle  color="primary" #toggle [checked]="slotPercentage.length && prioritySlot
+                      | showSlotPercentage
+                        : slotPercentage[weekday]
+                        : prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !toggle.checked)">Open</mat-slide-toggle>
+                    </ng-template>
 									</div>
 
 

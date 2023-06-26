@@ -346,7 +346,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getPrioritySlotHeight(prioritySlot: any): number {
 		const max = DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max);
-		const startDate: Date = this.myDate(prioritySlot.start);
+		let startDate: Date = this.myDate(prioritySlot.start);
+		const min = DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min));
+		startDate = startDate?.getTime() < min.getTime() ? min : startDate;
 		if (this.myDate(prioritySlot.end).getTime() <= this.myDate(this.limit.min).getTime()) {
 			return 0;
 		}
@@ -537,6 +539,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public prioritySlotOpenAndClose(slotPercentage: any, prioritySlot: any, isClose: any) {
+
 		// console.log(slotPercentage, prioritySlot, this.slotPriorityKey[prioritySlot.priority]);
 		const obj = {
 			prioritySlotid: prioritySlot.id,
