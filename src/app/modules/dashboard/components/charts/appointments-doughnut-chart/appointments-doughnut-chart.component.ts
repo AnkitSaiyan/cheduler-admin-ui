@@ -18,7 +18,7 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
 		Pending: 0,
 	};
 
-	public doughnutChartLabels = ['Total', 'New', 'Confirmed'];
+	public doughnutChartLabels: string[] = [];
 
 	public doughnutChartOptions!: ChartOptions<'doughnut'>;
 
@@ -45,6 +45,7 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
 	private createChartConfig(chartData: AppointmentChartDataType[]): void {
 		chartData.forEach((data) => {
 			this.appointmentDetails[data.label] = data.value;
+			this.doughnutChartLabels.push(data.label === 'Approved' ? 'Confirmed' : data.label);
 		});
 
 		if (this.appointmentDetails.Total === 0 && this.appointmentDetails.Pending === 0 && this.appointmentDetails.Approved === 0) {
@@ -57,11 +58,7 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
 			labels: this.doughnutChartLabels,
 			datasets: [
 				{
-					data: [
-						this.appointmentDetails.Total ? this.appointmentDetails.Total : 0,
-						this.appointmentDetails.Pending ? this.appointmentDetails.Pending : 0,
-						this.appointmentDetails.Approved ? this.appointmentDetails.Approved : 0,
-					],
+					data: [...chartData.map((item) => item.value)],
 					backgroundColor: ['#E0DDE4', '#C3B3CD', '#A589B7'],
 					hoverBackgroundColor: ['#E0DDE4', '#C3B3CD', '#A589B7'],
 					hoverBorderColor: ['#4E2267', '#4E2267', '#4E2267'],

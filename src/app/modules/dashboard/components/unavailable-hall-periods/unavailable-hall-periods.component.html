@@ -79,7 +79,7 @@
 	</section>
 
   <section class="table-wrapper" *ngIf="filteredRoomAbsence$$ | async as roomAbsence">
-    <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true"
+    <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}"
                     [stickyActions]="true"  noDataMessage="{{ 'NoDataFound' | translate }}"
                     [rowClickable]="true" [stickyCheckbox]="true"
                     [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">

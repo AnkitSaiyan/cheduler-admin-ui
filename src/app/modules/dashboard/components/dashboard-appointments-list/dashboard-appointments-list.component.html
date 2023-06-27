@@ -13,31 +13,20 @@
 			<div class="d-flex dfm-gap-8 align-items-center flex-1 dfm-px-16 ap-li-section2-action-bar">
 				<dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" class="flex-1" [formControl]="searchControl"></dfm-input>
 
-				<div class="d-flex align-items-center dfm-button-group-wrapper">
-					<div class="dfm-dropdown-border-none">
-						<dfm-input
-							size="md"
-							placeholder="{{ 'AdvancedSearch' | translate }}"
-							icon="search-sm"
-							class="flex-1"
-							(click)="openAdvancePopup()"
-							[readonly]="true"
-						></dfm-input>
-					</div>
-					<div>
-						<dfm-button-icon
-							color="tertiary-gray"
-							size="md"
-							icon="x-close"
-							ngbPopover="{{ 'Reset' | translate }}"
-							triggers="mouseenter:mouseleave"
-							popoverClass="popover-p-8"
-							[openDelay]="200"
-							(click)="onRefresh()"
-						></dfm-button-icon>
-					</div>
-				</div>
-
+        <dfm-button-icon ngbPopover="{{ 'AdvancedSearch' | translate }}"
+        triggers="mouseenter:mouseleave"
+        popoverClass="popover-p-8"
+        [openDelay]="200" color="secondary-gray" size="md" icon="filter-funnel-01" (click)="openAdvancePopup()"></dfm-button-icon>
+        <dfm-button-icon
+          color="secondary-gray"
+          size="md"
+          icon="x-close"
+          ngbPopover="{{ 'Reset' | translate }}"
+          triggers="mouseenter:mouseleave"
+          popoverClass="popover-p-8"
+          [openDelay]="200"
+          (click)="onRefresh()"
+        ></dfm-button-icon>
 				<div class="d-flex align-items-center dfm-button-group-wrapper">
 					<div [cdkCopyToClipboard]="clipboardData">
 						<dfm-button-icon
