@@ -356,6 +356,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 								elementContainer: eventsContainer,
 								startedAt: this.selectedDate,
 								startTime: this.timeSlot.timings[0],
+								isGrayOutArea,
 							},
 							options: {
 								size: 'xl',

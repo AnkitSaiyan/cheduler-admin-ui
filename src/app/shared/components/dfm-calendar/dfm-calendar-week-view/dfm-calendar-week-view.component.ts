@@ -141,7 +141,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		if (this.showGrayOutSlot) {
 			this.getGrayOutArea();
 		}
-		console.log(this.prioritySlots, 'test');
+		// console.log(this.prioritySlots, 'test');
 	}
 
 	public ngOnInit(): void {

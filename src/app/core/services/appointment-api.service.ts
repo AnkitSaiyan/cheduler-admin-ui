@@ -8,6 +8,7 @@ import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import {
 	AddAppointmentRequestData,
+	AddOutSideOperatingHoursAppointmentRequest,
 	Appointment,
 	AppointmentSlot,
 	AppointmentSlotsRequestData,
@@ -251,6 +252,30 @@ export class AppointmentApiService extends DestroyableComponent {
 			map((response) => response.data),
 			tap(() => this.refreshAppointment$$.next()),
 		);
+	}
+
+	public saveOutSideOperatingHoursAppointment$(
+		requestData: AddOutSideOperatingHoursAppointmentRequest,
+		action: 'add' | 'update',
+	): Observable<Appointment> {
+		let patientTimeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
+
+		if (patientTimeZone && patientTimeZone[0] === '+') {
+			patientTimeZone = patientTimeZone.slice(1);
+		}
+
+		if (action == 'add') {
+			return this.http.post<BaseResponse<Appointment>>(`${this.appointmentUrl}/addappointment`, { ...requestData, patientTimeZone }).pipe(
+				map((response) => response.data),
+				tap(() => this.refreshAppointment$$.next()),
+			);
+		} else {
+			const { id, ...restData } = requestData;
+			return this.http.put<BaseResponse<Appointment>>(`${this.appointmentUrl}/editappointment/${id}`, { ...restData, patientTimeZone }).pipe(
+				map((response) => response.data),
+				tap(() => this.refreshAppointment$$.next()),
+			);
+		}
 	}
 
 	public updateAppointment$(requestData: AddAppointmentRequestData): Observable<Appointment> {
