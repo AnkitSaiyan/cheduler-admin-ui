@@ -4,7 +4,7 @@ import {User} from './user.model';
 import {AppointmentStatus, ReadStatus} from './status.model';
 
 export interface Appointment {
-  action?: any;
+	action?: any;
 	id: number;
 	createdAt: Date;
 	updatedAt: string;
@@ -34,6 +34,7 @@ export interface Appointment {
 	roomsDetail: Room[];
 	usersDetail: User[];
 	patientAzureId?: string;
+	isOutside?: boolean;
 }
 
 export interface AddAppointmentRequestData {
@@ -66,6 +67,23 @@ export interface AddAppointmentRequestData {
 	endedAt?: Date | null;
 	id?: number;
 	patientTimeZone?: string;
+}
+
+export interface AddOutSideOperatingHoursAppointmentRequest {
+	doctorId?: number;
+	patientFname: string;
+	patientLname: string;
+	patientEmail: string;
+	patientTel: number;
+	comments: string;
+	examList: Array<any>;
+	userList?: Array<any>;
+	startedAt: any;
+	userId: number;
+	rejectReason: string;
+	fromPatient: boolean;
+	patientTimeZone?: string;
+	id?: number;
 }
 
 export type ExtensionType = 'shorten' | 'extend';

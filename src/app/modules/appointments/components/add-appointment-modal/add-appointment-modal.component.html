@@ -83,10 +83,11 @@
               <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">{{ 'InvalidEmail' | translate }}.</small>
             </div>
           </div>
-        </div>
+        </div> 
 
-        <div class="flex-1 dfm-mb-8 small-dropdown">
+        <div class="d-flex dfm-mb-8 dfm-gap-8 small-dropdown">
           <dfm-input-dropdown
+            class="flex-1"
             #exams
             [items]="filteredExamList"
             [multiple]="true"
@@ -97,13 +98,28 @@
             formControlName="examList"
             size="md"
             label="{{ 'Exams' | translate }} *"
+
+          >
+          </dfm-input-dropdown>
+          <dfm-input-dropdown
+          *ngIf="isGrayOutArea"
+            class="flex-1"
+            #staffDropDown
+            [items]="filteredStaffs"
+            [multiple]="true"
+            [typeToSearch]="true"
+            (searchInput)="handleDropdownSearch($event, 'staff')"
+            size="md"
+            formControlName="userList"
+            label="{{ 'Staff' | translate }}"
+            [placeholder]="((staffDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
           >
           </dfm-input-dropdown>
         </div>
 
         <span
           class="font-weight-medium text-sm dfm-my-8"
-          *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false"
+          *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false && !isGrayOutArea"
         >
           {{"NoSlotsFoundForSelectedExamsAndTime" | translate}}
         </span>
@@ -228,10 +244,10 @@
   <div class="modal-footer">
     <dfm-button color="secondary" size="md" class="cancel-btn" (click)="close(false)">{{ 'Cancel' | translate }}</dfm-button>
     <dfm-button color="secondary" size="sm" class="cancel-btn-mv" (click)="close(false)">{{ 'Cancel' | translate }}</dfm-button>
-    <dfm-button color="primary" size="md" class="add-btn" [disabled]="(submitting$$ | async) === true" (click)="saveAppointment()">{{
+    <dfm-button color="primary" size="md" class="add-btn" [disabled]="(submitting$$ | async) === true" (click)=" isGrayOutArea ? saveOutSideOperatingHoursAppointment() : saveAppointment() ">{{
       'Add' | translate
     }}</dfm-button>
-    <dfm-button color="primary" size="sm" class="add-btn-mv" [disabled]="(submitting$$ | async) === true" (click)="saveAppointment()">{{
+    <dfm-button color="primary" size="sm" class="add-btn-mv" [disabled]="(submitting$$ | async) === true" (click)="isGrayOutArea ? saveOutSideOperatingHoursAppointment() : saveAppointment() ">{{
       'Add' | translate
     }}</dfm-button>
   </div>

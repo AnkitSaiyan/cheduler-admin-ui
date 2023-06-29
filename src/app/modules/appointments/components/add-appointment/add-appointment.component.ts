@@ -19,6 +19,7 @@ import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pi
 import { PhysicianApiService } from '../../../../core/services/physician.api.service';
 import {
 	AddAppointmentRequestData,
+	AddOutSideOperatingHoursAppointmentRequest,
 	Appointment,
 	AppointmentSlotsRequestData,
 	CreateAppointmentFormValues,
@@ -36,8 +37,7 @@ import { DateDistributed } from '../../../../shared/models/calendar.model';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { UserApiService } from '../../../../core/services/user-api.service';
-import {Translate} from '../../../../shared/models/translate.model';
-
+import { Translate } from '../../../../shared/models/translate.model';
 
 @Component({
 	selector: 'dfm-add-appointment',
@@ -55,7 +55,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	public loadingSlots$$ = new BehaviorSubject<boolean>(false);
 
 	public submitting$$ = new BehaviorSubject(false);
-    private selectedLang: string = ENG_BE;
+	private selectedLang: string = ENG_BE;
 
 	public filteredUserList: NameValue[] = [];
 	public filteredExamList: NameValue[] = [];
@@ -92,8 +92,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	private physicianList: NameValue[] = [];
 
 	public dateControl = new FormControl();
-
 	public currentDate = new Date();
+
+	public isOutside: boolean | undefined = false;
+	private staffs: NameValue[] = [];
+	public filteredStaffs: NameValue[] = [];
 
 	constructor(
 		private fb: FormBuilder,
@@ -233,24 +236,31 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				},
 				error: () => this.loadingSlots$$.next(false),
 			});
-			this.shareDataSvc
-            .getLanguage$()
-            .pipe(takeUntil(this.destroy$$))
-            .subscribe({
-                next: (lang) => {
-                    this.selectedLang = lang;
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: (lang) => {
+					this.selectedLang = lang;
 
-                    // eslint-disable-next-line default-case
-                    switch (lang) {
-                        case ENG_BE:
-                            // this.statuses = Statuses;
-                            break;
-                        case DUTCH_BE:
-                            // this.statuses = StatusesNL;
-                            break;
-                    }
-                }
-            });
+					// eslint-disable-next-line default-case
+					switch (lang) {
+						case ENG_BE:
+							// this.statuses = Statuses;
+							break;
+						case DUTCH_BE:
+							// this.statuses = StatusesNL;
+							break;
+					}
+				},
+			});
+
+		this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (staffs) => {
+				this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() }))];
+				this.filteredStaffs = [...this.staffs];
+			},
+		});
 	}
 
 	public override ngOnDestroy() {
@@ -370,12 +380,62 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		}
 	}
 
+	public saveOutSideOperatingHoursAppointment() {
+		try {
+			if (this.appointmentForm.invalid) {
+				this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}.`, NotificationType.WARNING);
+				this.appointmentForm.markAllAsTouched();
+				return;
+			}
+			this.submitting$$.next(true);
+
+			const appointment = { ...(this.appointment$$.value ?? ({} as Appointment)) };
+
+			const { startedAt, startTime, ...rest } = this.formValues;
+
+			const requestData: AddOutSideOperatingHoursAppointmentRequest = {
+				...rest,
+				startedAt: appointment.exams[0].startedAt,
+				rejectReason: '',
+				fromPatient: false,
+				id: appointment.id,
+			};
+
+			this.appointmentApiSvc
+				.saveOutSideOperatingHoursAppointment$(requestData, 'update')
+				.pipe(takeUntil(this.destroy$$))
+				.subscribe({
+					next: () => {
+						this.shareDataService.getLanguage$().subscribe((language: string) => {
+							this.notificationSvc.showNotification(language === ENG_BE ? `Appointment updated successfully` : 'Afspraak succesvol geupdated');
+						});
+						this.submitting$$.next(false);
+						let route: string;
+
+						if (this.comingFromRoute === 'view') {
+							route = '../view';
+						} else {
+							route = this.edit ? '/appointment' : '/dashboard';
+						}
+						this.router.navigate([route], { relativeTo: this.route });
+					},
+					error: (err) => {
+						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+						this.submitting$$.next(false);
+					},
+				});
+		} catch (e) {
+			this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}`, NotificationType.DANGER);
+			this.submitting$$.next(false);
+			return;
+		}
+	}
+
 	public checkSlotAvailability(slot: SlotModified) {
 		return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot, this.isCombinable);
 	}
 
 	public handleSlotSelectionToggle(slots: SlotModified) {
-
 		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
 	}
 
@@ -401,7 +461,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		this.slots = [];
 	}
 
-	public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam'): void {
+	public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam' | 'staff'): void {
 		switch (type) {
 			case 'doctor':
 				this.filteredPhysicianList = [...GeneralUtils.FilterArray(this.physicianList, searchText, 'name')];
@@ -411,6 +471,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				break;
 			case 'exam':
 				this.filteredExamList = [...GeneralUtils.FilterArray(this.examList, searchText, 'name')];
+				break;
+			case 'staff':
+				this.filteredStaffs = [...GeneralUtils.FilterArray(this.staffs, searchText, 'name')];
 				break;
 		}
 	}
@@ -445,8 +508,11 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	private updateForm(appointment: Appointment | undefined) {
 		let date!: Date;
 		let dateDistributed: DateDistributed = {} as DateDistributed;
+		this.isOutside = appointment?.isOutside;
 
-
+		if (this.isOutside) {
+			this.appointmentForm.addControl('userList', new FormControl(appointment?.usersDetail.map((user) => user.id.toString())));
+		}
 		appointment?.exams?.sort((exam1, exam2) => {
 			if (exam1.startedAt < exam2.startedAt) {
 				return -1;
@@ -503,7 +569,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
 			.pipe(take(1))
 			.subscribe((slots) => {
-				this.setSlots(slots[0].slots, this.isCombinable);
+				if (!this.isOutside) this.setSlots(slots[0].slots, this.isCombinable);
 
 				this.loadingSlots$$.next(false);
 

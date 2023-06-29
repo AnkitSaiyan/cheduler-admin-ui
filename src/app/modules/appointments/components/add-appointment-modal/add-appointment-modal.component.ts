@@ -10,25 +10,26 @@ import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
 import {NameValue} from '../../../../shared/components/search-modal.component';
 import {AppointmentApiService} from '../../../../core/services/appointment-api.service';
 import {
-    AddAppointmentRequestData,
-    Appointment,
-    CreateAppointmentFormValues,
-    SelectedSlots,
-    Slot,
-    SlotModified
+	AddAppointmentRequestData,
+	AddOutSideOperatingHoursAppointmentRequest,
+	Appointment,
+	CreateAppointmentFormValues,
+	SelectedSlots,
+	Slot,
+	SlotModified,
 } from '../../../../shared/models/appointment.model';
-import {PhysicianApiService} from '../../../../core/services/physician.api.service';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {AppointmentUtils} from '../../../../shared/utils/appointment.utils';
-import {SiteManagementApiService} from '../../../../core/services/site-management-api.service';
-import {EMAIL_REGEX, ENG_BE} from '../../../../shared/utils/const';
-import {GeneralUtils} from '../../../../shared/utils/general.utils';
-import {Translate} from "../../../../shared/models/translate.model";
-import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
-import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
-import {CustomDateParserFormatter} from '../../../..//shared/utils/dateFormat';
-import {getDurationMinutes} from 'src/app/shared/models/calendar.model';
-import {UserApiService} from "../../../../core/services/user-api.service";
+import { PhysicianApiService } from '../../../../core/services/physician.api.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { AppointmentUtils } from '../../../../shared/utils/appointment.utils';
+import { SiteManagementApiService } from '../../../../core/services/site-management-api.service';
+import { EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
+import { Translate } from '../../../../shared/models/translate.model';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { CustomDateParserFormatter } from '../../../..//shared/utils/dateFormat';
+import { getDurationMinutes } from 'src/app/shared/models/calendar.model';
+import { UserApiService } from '../../../../core/services/user-api.service';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 
 @Component({
@@ -68,10 +69,14 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		startedAt: Date;
 		startTime?: string;
 		limit?: { min: string; max: string; grayOutMin: string; grayOutMax: string };
+		isGrayOutArea: boolean;
 	};
 	private pixelPerMinute = 4;
 	private selectedLang = ENG_BE;
 	private currentSlot$$ = new BehaviorSubject<any[]>([]);
+	public isGrayOutArea: boolean = false;
+	private staffs: NameValue[] = [];
+	public filteredStaffs: NameValue[] = [];
 
 	constructor(
 		private modalSvc: ModalService,
@@ -103,6 +108,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			this.modalData = data;
 
 			if (this.modalData.event.offsetY) {
+				this.isGrayOutArea = this.modalData.isGrayOutArea;
 				let minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
 				if (this.modalData?.limit) {
 					minutes += getDurationMinutes(this.myDate('00:00:00'), this.myDate(this.modalData.limit.min));
@@ -121,8 +127,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				// this.selectedTimeInUTC = this.utcToLocalPipe.transform(`${hour}:${min}`, true) + ':00';
 				this.selectedTimeInUTCOrig = `${hour}:${min}:00`;
 				this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
-
-
 			}
 		});
 
@@ -184,7 +188,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				this.loadingSlots$$.next(false);
 			});
 
-		this.appointmentForm
+		const examListSubscription = this.appointmentForm
 			.get('examList')
 			?.valueChanges.pipe(
 				debounceTime(0),
@@ -217,6 +221,20 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((lang) => (this.selectedLang = lang));
+
+		this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (staffs) => {
+				this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() }))];
+				this.filteredStaffs = [...this.staffs];
+				// this.filteredStaffs$$.next([...this.staffs]);
+				// this.cdr.detectChanges();
+			},
+		});
+
+		if (this.isGrayOutArea) {
+			this.appointmentForm.addControl('userList', new FormControl([]));
+			examListSubscription?.unsubscribe();
+		}
 	}
 
 	public override ngOnDestroy() {
@@ -233,8 +251,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	public handleSlotSelectionToggle(slots: SlotModified) {
 		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
-
-
 
 		let smallestStartTime = '';
 		Object.values(this.selectedTimeSlot).forEach((slot) => {
@@ -284,13 +300,44 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			this.isCombinable,
 		);
 
-
 		if (this.isDoctorConsentDisable$$.value) {
 			delete requestData.doctorId;
 		}
 
 		this.appointmentApiSvc
 			.saveAppointment$(requestData)
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: () => {
+					this.notificationSvc.showNotification(`${Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`);
+					this.submitting$$.next(false);
+					this.modalSvc.close(true);
+				},
+				error: (err) => {
+					this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+					this.submitting$$.next(false);
+				},
+			});
+	}
+
+	public saveOutSideOperatingHoursAppointment() {
+		if (this.appointmentForm.invalid) {
+			this.notificationSvc.showNotification(`${Translate.FormInvalidSimple[this.selectedLang]}!`, NotificationType.WARNING);
+			this.appointmentForm.markAllAsTouched();
+			return;
+		}
+		this.submitting$$.next(true);
+
+		const { startedAt, ...rest } = this.formValues;
+		const requestData: AddOutSideOperatingHoursAppointmentRequest = {
+			...rest,
+			startedAt: `${startedAt.year}-${String(startedAt.month).padStart(2, '0')}-${String(startedAt.day).padStart(2, '0')} ${this.selectedTimeInUTC}`,
+			rejectReason: '',
+			fromPatient: false,
+		};
+
+		this.appointmentApiSvc
+			.saveOutSideOperatingHoursAppointment$(requestData, 'add')
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
 				next: () => {
@@ -327,7 +374,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		}
 	}
 
-	public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam'): void {
+	public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam' | 'staff'): void {
 		switch (type) {
 			case 'doctor':
 				this.filteredPhysicianList = [...GeneralUtils.FilterArray(this.physicianList, searchText, 'name')];
@@ -337,6 +384,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				break;
 			case 'exam':
 				this.filteredExamList = [...GeneralUtils.FilterArray(this.examList, searchText, 'name')];
+				break;
+			case 'staff':
+				this.filteredStaffs = [...GeneralUtils.FilterArray(this.staffs, searchText, 'name')];
 				break;
 		}
 	}
