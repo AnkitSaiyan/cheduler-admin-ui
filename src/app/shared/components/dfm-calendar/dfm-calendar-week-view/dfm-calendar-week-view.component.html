@@ -24,7 +24,7 @@
 									((todayDate.getDate() === selectedDate.getDate() && todayDate.getMonth() !== day[1]) ||
 										selectedDate.getDate() !== todayDate.getDate())
 							}"
-							(click)="changeToDayView(day[0], day[1], day[2])"
+							(click)="changeToDayView(day[0], weekday)"
 						>
 							{{ day[0] }}
 						</div>

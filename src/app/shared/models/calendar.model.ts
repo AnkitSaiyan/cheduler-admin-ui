@@ -121,34 +121,29 @@ export function getWeekdayWiseDays(date: Date, startFromSunday = false): number[
 	return daysMatrix;
 }
 
-export function getAllDaysOfWeek(date: Date, sundayFirst: boolean = false): Array<[number, number, number]> {
-	const day = date.getDay();
-	let weekDay = day;
-	if (!sundayFirst) {
-		weekDay = day === 0 ? 6 : day - 1;
-	}
-	const dates: Date[] = [];
-	const dateDistributed: Array<[number, number, number]> = [];
-	// console.log(weekDay, date);
+export function getAllDaysOfWeek(selectedDate: Date): number[][] {
+	const weekday = new Date(selectedDate).getDay();
+	const date = new Date(selectedDate).getDate();
+	const year = new Date(selectedDate).getFullYear();
+	const month = new Date(selectedDate).getMonth();
 
-	const updateDate = (num) => {
-		const d: Date = new Date(date);
-		d.setDate(date.getDate() + num);
-		dates.push(d);
-		dateDistributed.push([d.getDate(), d.getMonth(), d.getFullYear()]);
-	};
+	const daysOfWeekArr: number[][] = [];
+	// debugger;
 
-	let w = 0;
+	let tempDate = new Date(selectedDate);
+	tempDate = new Date(tempDate.setDate(tempDate.getDate() - weekday + 1));
 
-	for (w = 0; w < weekDay; w++) {
-		updateDate(w - weekDay);
+	for (let day = weekday - 1; day > 0; day--) {
+		daysOfWeekArr.push([getDateOfMonth(year, tempDate.getMonth() + 1, date - day), tempDate.getMonth()]);
+		tempDate = new Date(tempDate.setDate(tempDate.getDate() + 1));
 	}
 
-	for (w = weekDay; w <= 6; w++) {
-		updateDate(w - weekDay);
+	for (let day = weekday; day <= 7; day++) {
+		daysOfWeekArr.push([getDateOfMonth(year, month, date + (day - weekday)), tempDate.getMonth()]);
+		tempDate = new Date(tempDate.setDate(tempDate.getDate() + 1));
 	}
 
-	return dateDistributed;
+	return daysOfWeekArr;
 }
 
 export function getDurationMinutes(start: Date, end: Date): number {

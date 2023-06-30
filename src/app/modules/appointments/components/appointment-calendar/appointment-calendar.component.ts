@@ -287,11 +287,11 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		return this.datePipe.transform(finalDate, 'HH:mm') ?? '';
 	}
 
-	public changeToDayView(date: Date) {
+	public changeToDayView(date: number) {
 		this.calendarViewFormControl.setValue('day');
-		// const newDate = new Date(this.selectedDate$$.value.setDate(date));
-		this.newDate$$.next(date);
-		this.selectedDate$$.next(date);
+		const newDate = new Date(this.selectedDate$$.value.setDate(date));
+		this.newDate$$.next(newDate);
+		this.selectedDate$$.next(new Date(newDate));
 	}
 
 	public updateToToday() {

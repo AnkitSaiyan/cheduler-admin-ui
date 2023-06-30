@@ -90,7 +90,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public selectedDateEvent = new EventEmitter<{ selectedDate: Date; isWeekChange: boolean }>();
 
 	@Output()
-	public dayViewEvent = new EventEmitter<Date>();
+	public dayViewEvent = new EventEmitter<number>();
 
 	@Output()
 	public openAndClosePrioritySlot = new EventEmitter<any>();
@@ -105,9 +105,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}>();
 
 	@Output()
-	public currentWeekDays = new EventEmitter<Array<[number, number, number]>>();
+	public currentWeekDays = new EventEmitter<any>();
 
-	public daysOfWeekArr: Array<[number, number, number]> = [];
+	public daysOfWeekArr: number[][] = [];
 
 	public todayDate = new Date();
 
@@ -217,9 +217,15 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		return +splittedDate[0] * 60 + +splittedDate[1];
 	}
 
-	public changeToDayView(day: number, month: number, year: number) {
-		const date = new Date(year, month, day);
-		this.dayViewEvent.emit(date);
+	public changeToDayView(day: number, weekday: number) {
+		// updating month if selected date is of another month's
+		if (day < this.selectedDate.getDate() && weekday > this.selectedDate.getDay()) {
+			this.updateDate(new Date(this.selectedDate.setMonth(this.selectedDate.getMonth() + 1)));
+		} else if (day > this.selectedDate.getDate() && weekday < this.selectedDate.getDay()) {
+			this.updateDate(new Date(this.selectedDate.setMonth(this.selectedDate.getMonth() - 1)));
+		}
+
+		this.dayViewEvent.emit(day);
 	}
 
 	private renderEvents(): void {
