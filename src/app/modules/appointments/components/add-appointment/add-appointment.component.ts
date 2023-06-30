@@ -324,9 +324,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 					.pipe(takeUntil(this.destroy$$))
 					.subscribe({
 						next: () => {
-							this.shareDataService.getLanguage$().subscribe((language: string) => {
-								this.notificationSvc.showNotification(language === ENG_BE ? `Appointment updated successfully` : 'Afspraak succesvol geupdated');
-							});
+							this.notificationSvc.showNotification(`${Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`);
 							this.submitting$$.next(false);
 
 							let route: string;
@@ -349,9 +347,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 					.pipe(takeUntil(this.destroy$$))
 					.subscribe({
 						next: () => {
-							this.shareDataService.getLanguage$().subscribe((language: string) => {
-								this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully` : 'Afspraak succesvol opgeslagen');
-							});
+							this.notificationSvc.showNotification(`${Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`);
 							this.submitting$$.next(false);
 
 							let route: string;
