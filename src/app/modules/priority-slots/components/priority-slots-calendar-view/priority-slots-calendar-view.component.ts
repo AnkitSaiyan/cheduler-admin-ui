@@ -156,6 +156,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 				...(date ? { d: this.datePipe.transform(date, 'yyyy-MM-dd') } : {}),
 			},
 			queryParamsHandling: 'merge',
+			replaceUrl: true,
 		});
 	}
 

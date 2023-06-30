@@ -416,6 +416,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				...(date ? { d: this.datePipe.transform(date, 'yyyy-MM-dd') } : {}),
 			},
 			queryParamsHandling: 'merge',
+			replaceUrl: true,
 		});
 	}
 
