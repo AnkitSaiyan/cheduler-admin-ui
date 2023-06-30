@@ -127,8 +127,6 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			)
 			.subscribe({
 				next: (slotPercentage) => {
-					console.log('==========', slotPercentage);
-
 					this.slotPercentage$$.next(slotPercentage);
 					this.currentSlotPercentageData = slotPercentage;
 				},
@@ -163,10 +161,9 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		this.changeWeek$$.next(offset);
 	}
 
-	public changeToDayView(date: number) {
-		const newDate = new Date(this.selectedDate$$.value.setDate(date));
-		this.newDate$$.next(newDate);
-		this.selectedDate$$.next(new Date(newDate));
+	public changeToDayView(date: Date) {
+		this.newDate$$.next(date);
+		this.selectedDate$$.next(date);
 	}
 
 	public currentWeekDays(days: any) {
@@ -353,59 +350,5 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			});
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

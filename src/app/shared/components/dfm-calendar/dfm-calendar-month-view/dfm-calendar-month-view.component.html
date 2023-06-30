@@ -91,17 +91,20 @@
           </div>
         </div>
 
-        <div
-          *ngIf="day && day <= 31"
-          class="calender-month-view-day text-sm"
-          [ngClass]="{
-            'calender-month-view-selected-day': selectedDate.getDate() === day && ((nowDate.getDate() === selectedDate.getDate() && nowDate.getMonth() !== selectedDate.getMonth()) || (selectedDate.getDate() !== nowDate.getDate())),
-            'calender-month-view-today font-weight-medium': nowDate.getDate() === day && nowDate.getMonth() === selectedDate.getMonth()
-        }"
-          (click)="changeToDayView(day)"
-        >
-          {{ day }}
-        </div>
+					<div
+						*ngIf="day && day <= 31"
+						class="calender-month-view-day text-sm"
+						[ngClass]="{
+							'calender-month-view-selected-day':
+								selectedDate.getDate() === day &&
+								((nowDate.getDate() === selectedDate.getDate() && nowDate.getMonth() !== selectedDate.getMonth()) ||
+									selectedDate.getDate() !== nowDate.getDate()),
+							'calender-month-view-today font-weight-medium': nowDate.getDate() === day && nowDate.getMonth() === selectedDate.getMonth()
+						}"
+						(click)="changeToDayView(day, selectedDate.getMonth(), selectedDate.getFullYear())"
+					>
+						{{ day }}
+					</div>
 
         <div
           *ngIf="day && day > 31"
