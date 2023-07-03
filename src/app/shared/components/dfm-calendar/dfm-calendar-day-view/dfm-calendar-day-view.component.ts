@@ -331,10 +331,10 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		if (!e.offsetY) return;
 
-		const isGrayOutArea = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
+		const isOutside = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
 		let eventCard;
 
-		if (isGrayOutArea) {
+		if (isOutside) {
 			this.modalSvc
 				.open(ConfirmActionModalComponent, {
 					data: {
@@ -356,7 +356,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 								elementContainer: eventsContainer,
 								startedAt: this.selectedDate,
 								startTime: this.timeSlot.timings[0],
-								isGrayOutArea,
+								isOutside,
 							},
 							options: {
 								size: 'xl',

@@ -216,7 +216,7 @@
             >
           </div>
 
-          <div class="flex-1 temp-element"></div>
+          <div *ngIf="!isOutside" class="flex-1 temp-element"></div>
         </div>
       </div>
 
@@ -227,7 +227,7 @@
         {{ 'NoSlotsFoundForSelectedExamsAndTime' | translate }}
       </span>
 
-      <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> {{ 'LoadingSlots' | translate }} </span>
+      <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf=" (loadingSlots$$ | async) && !isOutside"> {{ 'LoadingSlots' | translate }} </span>
 
       <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="slots?.length && !isOutside">
         <ng-container *ngIf="!isCombinable; else combinable">

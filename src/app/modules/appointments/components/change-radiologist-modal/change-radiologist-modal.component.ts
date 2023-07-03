@@ -1,13 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {take} from 'rxjs';
-import {FormControl, Validators} from '@angular/forms';
-import {ModalService} from '../../../../core/services/modal.service';
-import {NameValue} from '../../../../shared/components/search-modal.component';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {Appointment} from "../../../../shared/models/appointment.model";
-import {UserType} from "../../../../shared/models/user.model";
-import {NameValuePairPipe} from "../../../../shared/pipes/name-value-pair.pipe";
-import {UserApiService} from "../../../../core/services/user-api.service";
+import { take, takeUntil } from 'rxjs';
+import { FormControl, Validators } from '@angular/forms';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { Appointment } from '../../../../shared/models/appointment.model';
+import { UserType } from '../../../../shared/models/user.model';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { UserApiService } from '../../../../core/services/user-api.service';
 
 @Component({
 	selector: 'dfm-change-radiologist-modal',
@@ -27,35 +27,51 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 	public ngOnInit(): void {
 		this.dialogSvc.dialogData$.pipe(take(1)).subscribe((data: Appointment) => {
-			if (data.exams[0].allUsers) {
-				this.radiologists = [
-					...this.nameValuePipe.transform(
-						data.exams[0].allUsers.filter((user) => user.userType === UserType.Radiologist),
-						'firstname',
-						'id',
-					),
-				];
-			}
-
-			if (data.exams[0].users) {
-				const selected: string[] = [];
-				this.selectedRadiologists = [
-					...this.nameValuePipe.transform(
-						data.exams[0].users.filter((user) => {
-							if (user.userType === UserType.Radiologist) {
-								selected.push(user.id.toString());
-								return true;
-							}
-							return false;
-						}),
-						'firstname',
-						'id',
-					),
-				];
-
-				this.radiologistFormControl.setValue(selected);
+			const allUsers = data.exams[0].allUsers || [];
+			const users = data.exams[0].users || [];
+			if (data.isOutside) {
+				this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
+					next: (allUsers) => {
+						this.setDropDownData(allUsers, users);
+					},
+				});
+			} else {
+				this.setDropDownData(allUsers, users);
 			}
 		});
+	}
+
+	private setDropDownData(allUsers, users): void {
+		if (allUsers.length) {
+			this.radiologists = [
+				...this.nameValuePipe.transform(
+					allUsers.filter((user) => user.userType === UserType.Radiologist),
+					'firstname',
+					'id',
+				),
+			];
+		}
+
+		if (users.length) {
+			const selected: string[] = [];
+			this.selectedRadiologists = [
+				...this.nameValuePipe.transform(
+					users.filter((user) => {
+						if (user.userType === UserType.Radiologist) {
+							selected.push(user.id.toString());
+							return true;
+						}
+						return false;
+					}),
+					'firstname',
+					'id',
+				),
+			];
+
+			setTimeout(() => {
+				this.radiologistFormControl.setValue(selected);
+			}, 200);
+		}
 	}
 
 	public closeDialog(): void {

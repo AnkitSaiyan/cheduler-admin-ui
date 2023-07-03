@@ -192,7 +192,7 @@ export class AppointmentApiService extends DestroyableComponent {
 	public changeAppointmentStatus$(requestData: ChangeStatusRequestData[]): Observable<boolean> {
 		return this.http.put<BaseResponse<boolean>>(`${this.appointmentUrl}/updateappointmentstatus`, requestData).pipe(
 			map((resp) => resp?.data),
-			tap(() => this.refreshAppointment$$.next()),
+			tap(() => this.appointmentPageNo$$.next(1)),
 		);
 	}
 
@@ -200,7 +200,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		return this.http.delete<BaseResponse<boolean>>(`${this.appointmentUrl}/${appointmentID}`).pipe(
 			map((response) => response.data),
 			tap(() => {
-				this.refreshAppointment$$.next();
+				this.appointmentPageNo$$.next(1);
 				this.dashboardApiService.refreshAppointments();
 			}),
 		);
@@ -210,7 +210,8 @@ export class AppointmentApiService extends DestroyableComponent {
 		this.loaderSvc.activate();
 		this.loaderSvc.spinnerActivate();
 
-		return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
+		// return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
+		return combineLatest([this.appointmentPageNo$$]).pipe(
 			switchMap(() => this.http.get<BaseResponse<Appointment>>(`${this.appointmentUrl}/${appointmentID}`)),
 			switchMap((response) =>
 				combineLatest([
@@ -250,7 +251,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
 		return this.http.post<BaseResponse<Appointment>>(`${this.appointmentUrl}`, { ...restData, patientTimeZone }).pipe(
 			map((response) => response.data),
-			tap(() => this.refreshAppointment$$.next()),
+			tap(() => this.appointmentPageNo$$.next(1)),
 		);
 	}
 
@@ -267,13 +268,13 @@ export class AppointmentApiService extends DestroyableComponent {
 		if (action == 'add') {
 			return this.http.post<BaseResponse<Appointment>>(`${this.appointmentUrl}/addappointment`, { ...requestData, patientTimeZone }).pipe(
 				map((response) => response.data),
-				tap(() => this.refreshAppointment$$.next()),
+				tap(() => this.appointmentPageNo$$.next(1)),
 			);
 		} else {
 			const { id, ...restData } = requestData;
 			return this.http.put<BaseResponse<Appointment>>(`${this.appointmentUrl}/editappointment/${id}`, { ...restData, patientTimeZone }).pipe(
 				map((response) => response.data),
-				tap(() => this.refreshAppointment$$.next()),
+				tap(() => this.appointmentPageNo$$.next(1)),
 			);
 		}
 	}
@@ -288,14 +289,14 @@ export class AppointmentApiService extends DestroyableComponent {
 
 		return this.http.put<BaseResponse<Appointment>>(`${this.appointmentUrl}/${id}`, { ...restData, patientTimeZone }).pipe(
 			map((response) => response.data),
-			tap(() => this.refreshAppointment$$.next()),
+			tap(() => this.appointmentPageNo$$.next(1)),
 		);
 	}
 
 	public updateAppointmentDuration$(requestData: UpdateDurationRequestData): Observable<null> {
 		return this.http.put<BaseResponse<null>>(`${this.appointmentUrl}/updateappointmentduration`, requestData).pipe(
 			map((response) => response?.data),
-			tap(() => this.refreshAppointment$$.next()),
+			tap(() => this.appointmentPageNo$$.next(1)),
 		);
 	}
 
@@ -331,7 +332,7 @@ export class AppointmentApiService extends DestroyableComponent {
 	public updateRadiologist$(requestData: UpdateRadiologistRequestData): Observable<any> {
 		return this.http.put<BaseResponse<any>>(`${this.appointmentUrl}/updateradiologist`, requestData).pipe(
 			map((res) => res?.data),
-			tap(() => this.refreshAppointment$$.next()),
+			tap(() => this.appointmentPageNo$$.next(1)),
 		);
 	}
 

@@ -471,7 +471,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	public async addAppointment(event: any) {
 		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
 
-		const { e, eventsContainer, day, isGrayOutArea } = event;
+		const { e, eventsContainer, day, isOutside } = event;
 		// const currentDate = new Date();
 		// currentDate.setDate(currentDate.getDate() - 1);
 		// const selectedDate = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
@@ -505,7 +505,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		}
 		let eventCard;
 
-		if (isGrayOutArea) {
+		if (isOutside) {
 			this.modalSvc
 				.open(ConfirmActionModalComponent, {
 					data: {
@@ -527,7 +527,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 								elementContainer: eventsContainer,
 								startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
 								limit: this.practiceHourMinMax$$.value,
-								isGrayOutArea,
+								isOutside,
 							},
 							options: {
 								size: 'xl',

@@ -506,9 +506,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		let dateDistributed: DateDistributed = {} as DateDistributed;
 		this.isOutside = appointment?.isOutside;
 
-		if (this.isOutside) {
-			this.appointmentForm.addControl('userList', new FormControl(appointment?.usersDetail.map((user) => user.id.toString())));
-		}
+		if (this.isOutside) this.appointmentForm.addControl('userList', new FormControl([]));
+
 		appointment?.exams?.sort((exam1, exam2) => {
 			if (exam1.startedAt < exam2.startedAt) {
 				return -1;
@@ -541,6 +540,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				},
 				{ emitEvent: false },
 			);
+			this.appointmentForm.get('userList')?.setValue(appointment?.usersDetail.map((user) => user.id?.toString() ?? []));
 
 			if (!appointment?.exams?.length) {
 				this.appointmentForm.get('examList')?.markAsUntouched();
@@ -552,7 +552,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 					this.appointmentForm.get(key)?.disable();
 				});
 			}
-		}, 200);
+		}, 500);
 
 		const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
 
