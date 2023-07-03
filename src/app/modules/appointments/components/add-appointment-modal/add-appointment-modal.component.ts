@@ -69,12 +69,12 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		startedAt: Date;
 		startTime?: string;
 		limit?: { min: string; max: string; grayOutMin: string; grayOutMax: string };
-		isGrayOutArea: boolean;
+		isOutside: boolean;
 	};
 	private pixelPerMinute = 4;
 	private selectedLang = ENG_BE;
 	private currentSlot$$ = new BehaviorSubject<any[]>([]);
-	public isGrayOutArea: boolean = false;
+	public isOutside: boolean = false;
 	private staffs: NameValue[] = [];
 	public filteredStaffs: NameValue[] = [];
 
@@ -108,7 +108,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			this.modalData = data;
 
 			if (this.modalData.event.offsetY) {
-				this.isGrayOutArea = this.modalData.isGrayOutArea;
+				this.isOutside = this.modalData.isOutside;
 				let minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
 				if (this.modalData?.limit) {
 					minutes += getDurationMinutes(this.myDate('00:00:00'), this.myDate(this.modalData.limit.min));
@@ -231,7 +231,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			},
 		});
 
-		if (this.isGrayOutArea) {
+		if (this.isOutside) {
 			this.appointmentForm.addControl('userList', new FormControl([]));
 			examListSubscription?.unsubscribe();
 		}
@@ -263,7 +263,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	public saveAppointment(): void {
 		if (this.appointmentForm.invalid) {
-			this.notificationSvc.showNotification(`${Translate.FormInvalidSimple[this.selectedLang]}!`, NotificationType.WARNING);
+			this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}!`, NotificationType.WARNING);
 			this.appointmentForm.markAllAsTouched();
 			return;
 		}
@@ -322,7 +322,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	public saveOutSideOperatingHoursAppointment() {
 		if (this.appointmentForm.invalid) {
-			this.notificationSvc.showNotification(`${Translate.FormInvalidSimple[this.selectedLang]}!`, NotificationType.WARNING);
+			this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}!`, NotificationType.WARNING);
 			this.appointmentForm.markAllAsTouched();
 			return;
 		}

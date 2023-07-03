@@ -101,7 +101,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		eventsContainer: HTMLDivElement;
 		day: number[];
 		grayOutSlot: any;
-		isGrayOutArea: boolean;
+		isOutside: boolean;
 	}>();
 
 	@Output()
@@ -400,13 +400,13 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		return top;
 	}
 
-	public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[], isGrayOutArea: boolean = false, offsetY: number = 0) {
+	public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[], isOutside: boolean = false, offsetY: number = 0) {
 		this.addAppointment.emit({
 			e: { ...e, offsetY: e.offsetY + offsetY },
 			eventsContainer,
 			day,
 			grayOutSlot: this.grayOutSlot$$.value,
-			isGrayOutArea,
+			isOutside,
 		});
 	}
 

@@ -160,7 +160,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 		this.filteredRoomAbsence$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => {
-				console.log('filter', items);
+				// console.log('filter', items);
 				this.tableData$$.next({
 					items,
 					isInitialLoading: false,
