@@ -57,7 +57,7 @@
 	"Public": "Publiek",
 	"Private": "Privé",
 	"Always": "Altijd",
-	"ApplicationUser": "Applicatie Gebruiker",
+	"ApplicationUser": "Applicatie-Gebruiker",
 	"Openinghoursofthepractice": "overeenkomstig openingsuren van de praktijk",
 	"AlwaysOpeninghoursofthepratice": "Altijd overeenkomstig openingsuren van de praktijk",
 	"GetDetailed": "Gedetailleerd",
@@ -393,7 +393,7 @@
 	"Country": "Land",
 	"PostalCode": "Postcode",
 	"CreatedOn": "Gemaakt op",
-	"UserRole": "Gebruiker rol",
+	"UserRole": "Gebruikersrol",
 	"SelectRole": "Selecteer rol",
 	"Jan": "Jan",
 	"Feb": "Feb",
@@ -449,6 +449,8 @@
 		}
 	}
 }
+
+
 
 
 

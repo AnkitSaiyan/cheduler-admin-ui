@@ -576,7 +576,7 @@ export const Translate = Object.freeze({
 	},
 	ApplicationUser: {
 		[ENG_BE]: 'Application User',
-		[DUTCH_BE]: 'Applicatie Gebruiker',
+		[DUTCH_BE]: 'Applicatie-Gebruiker',
 	},
 	General: {
 		[ENG_BE]: 'General',
@@ -634,6 +634,7 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Kan geen afspraken toevoegen op dit tijdstip',
 	},
 });
+
 
 
 
