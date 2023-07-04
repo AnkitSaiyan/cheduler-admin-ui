@@ -56,7 +56,7 @@
 	"Public": "Public",
 	"Private": "Private",
 	"Always": "Always",
-  "ApplicationUser": "Application User",
+	"ApplicationUser": "Application User",
 	"Openinghoursofthepractice": "corresponds to the opening hours of the practice",
 	"AlwaysOpeninghoursofthepratice": "Always corresponds to the opening hours of the practice",
 	"GetDetailed": "Get Detailed",
@@ -208,6 +208,7 @@
 	"ExamName": "Exam Name",
 	"EnterExamName": "Enter Exam Name",
 	"ExpensiveMin": "Expensive (Mins)",
+	"DurationMin": "Duration (Mins)",
 	"Uncombinable": "Uncombinable",
 	"MandatoryStaffs": "Mandatory Staffs",
 	"GeneralStaff": "General Staff",
@@ -446,6 +447,7 @@
 		}
 	}
 }
+
 
 
 
