@@ -112,7 +112,7 @@
 	"RoomDetails": "Details Zaal",
 	"Exams": "Onderzoeken",
 	"ExamsInvolvingTheRoom": "Onderzoeken met betrokken zaal",
-	"ExamsInvolvingStaffMember": "Examens waarbij een medewerker betrokken is",
+	"ExamsInvolvingStaffMember": "Onderzoeken waarbij een medewerker betrokken is",
 	"RequiredEmail": "E-mail *",
 	"DeleteRoom": "Verwijder Zaal",
 	"SearchPhysician": "Zoek op Voornaam, Naam, E-mail en Status",
@@ -217,7 +217,7 @@
 	"Radiologist": "Radioloog",
 	"AddPracticeData": "Toevoegen Beschikbaarheid",
 	"EnterDuration": "Vul de Duur in",
-	"SelectRoomType": "Selecteer Zaal Type",
+	"SelectRoomType": "Selecteer Type Zaal",
 	"DurationMins": "Duur(Minuten)",
 	"PleaseSelectAtLeastOneRoom": "Gelieve minstens één zaal te selecteren",
 	"EnterInfo": "Voeg Info Toe",
@@ -252,8 +252,8 @@
 	"dateFormat": "dd/mm/jj",
 	"AbsenceDetails": "Details Afwezigheid",
 	"Assistant": "Assistent",
-	"ExamAvailabilityInfo": "Info Examen Beschikbaarheid",
-	"ExamAvailabilityData": "Gegevens Examen Beschikbaarheid",
+	"ExamAvailabilityInfo": "Info Onderzoek Beschikbaarheid",
+	"ExamAvailabilityData": "Gegevens Onderzoek Beschikbaarheid",
 	"Medium": "Medium",
 	"High": "Hoog",
 	"Low": "Laag",
@@ -280,7 +280,7 @@
 	"SelectDoctor": "Selecteer Dokter",
 	"Doctor": "Dokter",
 	"SelectGeneralUser": "Selecteer Algemene Gebruiker",
-	"NoslotsfoundforselectedExamsandDatecombination": "Geen plaatsen gevonden voor de geselecteerde combinatie van examens en datums.",
+	"NoslotsfoundforselectedExamsandDatecombination": "Geen plaatsen gevonden voor de geselecteerde combinatie van onderzoeken en datums.",
 	"SlotsLoading": "Slots Laden...",
 	"EnterComments": "Voer Opmerkingen in",
 	"AreYouSureYouWantToDeleteAppointment": "Weet u zeker dat u deze afspraak wilt verwijderen?",
@@ -374,7 +374,7 @@
 	"PracticeNotAvailableForDay": "De praktijk is deze dag niet beschikbaar",
 	"SelectedSlot": "Gekozen Uren",
 	"PleaseEnterAtLeastFiveMin": "Vul a.u.b. minimaal 5 min in",
-	"ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame": "De duur van het examen en het totale aantal minuten van de zalen moet hetzelfde zijn.",
+	"ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame": "De duur van het onderzoek en het totale aantal minuten van de zalen moet hetzelfde zijn.",
 	"NoSlotsFoundForSelectedExamsAndTime": "Geen slots gevonden voor geselecteerde onderzoek  en Tijd",
 	"Save": "Winkel",
 	"Save2": "Sevestig",
@@ -449,6 +449,8 @@
 		}
 	}
 }
+
+
 
 
 

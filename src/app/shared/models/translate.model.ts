@@ -166,7 +166,7 @@ export const Translate = Object.freeze({
 	},
 	Private: {
 		[ENG_BE]: 'Private',
-		[DUTCH_BE]: 'Privaat',
+		[DUTCH_BE]: 'Privé',
 	},
 	Admin: {
 		[ENG_BE]: 'Admin',
@@ -634,6 +634,7 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Kan geen afspraken toevoegen op dit tijdstip',
 	},
 });
+
 
 
 
