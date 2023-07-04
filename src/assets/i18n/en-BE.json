@@ -363,7 +363,7 @@
 	"Content": "Content",
 	"ContentForAdmin": "Content For Admin",
 	"AppointmentConfirmationDiflexmo": "Appointment Confirmation Diflexmo",
-	"NextSlotOpen": "Next Slot Open",
+	"NextSlotOpen": "Next Slot Open %",
 	"EnterPercentage": "Enter Percentage",
 	"Daily": "Daily",
 	"AddAppointmentConfirmation": "Add Appointment Confirmation",
@@ -448,6 +448,7 @@
 		}
 	}
 }
+
 
 
 

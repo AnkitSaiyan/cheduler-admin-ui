@@ -67,7 +67,7 @@
 	"StartTime": "Begin tijd",
 	"Start": "Begin",
 	"End": "Eind",
-	"EndTime": "Eind tijd",
+	"EndTime": "Eindtijd",
 	"ClickToAddSlot": "Klik om tijdslot toe te voegen",
 	"RequiredField": "Dit veld is verplicht",
 	"AddAvailabilityData": "Toevoegen beschikbare dagen",
@@ -170,13 +170,13 @@
 	"EnterAbsenceTitle": "Geef Titel Afwezigheid",
 	"Date": "Datum ",
 	"From": "Van",
-	"StartTimeRequired": "Begin Tijd *",
+	"StartTimeRequired": "Begintijd *",
 	"EndTimeRequired": "Eind Tijd",
 	"Until": "Tot",
 	"Repeat": "Herhaal",
 	"AllDay": "Volledige Dag",
 	"PublicHoliday": "Publieke Vakantie",
-	"RepeatType": "Herhalings Type",
+	"RepeatType": "Herhalingstype",
 	"SelectRepeatType": "Kies Herhalings Type",
 	"SelectRepeatEvery": "Kies  Herhaling Iedere...",
 	"EnterRepeatCount": "Geef Tel Herhaling",
@@ -256,7 +256,7 @@
 	"Assistant": "Assistent",
 	"ExamAvailabilityInfo": "Info Onderzoek Beschikbaarheid",
 	"ExamAvailabilityData": "Beschikbaarheid Onderzoek Gegevens",
-	"Medium": "Medium",
+	"Medium": "Gemiddeld",
 	"High": "Hoog",
 	"Low": "Laag",
 	"yyyy-mm-dd": "jj-mm-dd",
@@ -366,13 +366,13 @@
 	"Content": "Inhoud",
 	"ContentForAdmin": "Inhoud Voor Admin",
 	"AppointmentConfirmationDiflexmo": "Afspraakbevestiging Diflexmo",
-	"NextSlotOpen": "Volgende Sleuf Geopend",
+	"NextSlotOpen": "Volgend slot open bij % bezetting",
 	"EnterPercentage": "Voer Percentage toe",
 	"Daily": "Dagelijks",
 	"AddAppointmentConfirmation": "Afspraakbevestiging Toevoegen",
 	"AreYouSureWantToMakeAppointmentOutsideOperatingHours": "Weet u zeker dat u buiten openingstijden een afspraak wilt maken?",
 	"LoadingSlots": "Uren Zijn Aan Het Laden",
-	"To": "Naar",
+	"To": "Tot",
 	"PracticeNotAvailableForDay": "De praktijk is deze dag niet beschikbaar",
 	"SelectedSlot": "Gekozen Uren",
 	"PleaseEnterAtLeastFiveMin": "Vul a.u.b. minimaal 5 min in",
@@ -451,6 +451,8 @@
 		}
 	}
 }
+
+
 
 
 
