@@ -111,6 +111,7 @@
 	"RoomView": "Zaal Bekijk",
 	"RoomDetails": "Details Zaal",
 	"Exams": "Onderzoeken",
+	"ExamInstructions": "Aanwijzingen Onderzoeken",
 	"ExamsInvolvingTheRoom": "Onderzoeken met betrokken zaal",
 	"ExamsInvolvingStaffMember": "Onderzoeken waarbij een medewerker betrokken is",
 	"RequiredEmail": "E-mail *",
@@ -210,8 +211,8 @@
 	"ExpensiveMin": "Duur(Minuten)",
 	"DurationMin": "Toevoegen Beschikbaarheid",
 	"Uncombinable": "Niet combineerbaar",
-	"MandatoryStaffs": "Verplichte Medewerkers",
-	"GeneralStaff": "Algemene Medewerkers",
+	"MandatoryStaffs": "Verplichte medewerkers",
+	"GeneralStaff": "Algemene medewerkers",
 	"SelectNo": "Selecteer Nr.",
 	"Nursing": "Verpleging",
 	"Secretary": "Secretaresse",
@@ -233,7 +234,7 @@
 	"ExamView": "Onderzoek Bekijk",
 	"ExamDetails": "Details Onderzoek",
 	"RoomsInvolvingTheExam": "Zalen betrokken in het onderzoek",
-	"ExamInfo": "Onderzoek Info",
+	"ExamInfo": "Info Onderzoek",
 	"GetDetailedForException": "Gedetailleerd gebruik enkel voor uitzonderingen",
 	"AreYouSureWantToChangeStatus": "Ben je zeker dat je de status wil wijzigen?",
 	"Proceed": "Ga verder",
@@ -254,7 +255,7 @@
 	"AbsenceDetails": "Details Afwezigheid",
 	"Assistant": "Assistent",
 	"ExamAvailabilityInfo": "Info Onderzoek Beschikbaarheid",
-	"ExamAvailabilityData": "Gegevens Onderzoek Beschikbaarheid",
+	"ExamAvailabilityData": "Beschikbaarheid Onderzoek Gegevens",
 	"Medium": "Medium",
 	"High": "Hoog",
 	"Low": "Laag",
@@ -450,6 +451,7 @@
 		}
 	}
 }
+
 
 
 

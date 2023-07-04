@@ -111,6 +111,7 @@
 	"RoomView": "Room View",
 	"RoomDetails": "Room Details",
 	"Exams": "Exams",
+	"ExamInstructions": "Exam Instructions",
 	"ExamsInvolvingTheRoom": "Exams involving the room",
 	"ExamsInvolvingStaffMember": "Exams Involving Staff Member",
 	"RequiredEmail": "Email *",
@@ -447,6 +448,7 @@
 		}
 	}
 }
+
 
 
 
