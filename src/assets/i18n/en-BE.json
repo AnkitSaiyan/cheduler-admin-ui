@@ -418,6 +418,7 @@
 	"Radiologist(s)": "Radiologist(s)",
 	"Assistant(s)": "Assistant(s)",
 	"Secretary(s)": "Secretary(s)",
+	"SlotFilled%": "Slot Filled %",
 	"DESIGN_SYSTEM": {
 		"NAVIGATION_BAR": {
 			"PROFILE": "Profile",
@@ -448,6 +449,7 @@
 		}
 	}
 }
+
 
 
 
