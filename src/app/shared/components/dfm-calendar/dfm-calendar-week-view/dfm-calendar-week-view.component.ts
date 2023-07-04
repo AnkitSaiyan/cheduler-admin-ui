@@ -23,6 +23,7 @@ import { ModalService } from '../../../../core/services/modal.service';
 import { DateTimeUtils } from '../../../utils/date-time.utils';
 import { NextSlotOpenPercentageData } from 'src/app/shared/models/priority-slots.model';
 
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 // @Pipe({
 //   name: 'calendarEventHeight',
 //   standalone: true
@@ -543,5 +544,15 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			isClose,
 		};
 		this.openAndClosePrioritySlot.emit(obj);
+	}
+
+	public removeDuplicateData(data: any): Array<any> {
+		const arr: any = [];
+		data.forEach((user) => {
+			if (user?.users.length) arr.push(...user.users);
+		});
+
+		if (arr.length) return GeneralUtils.removeDuplicateData(arr, ['id']);
+		return [];
 	}
 }
