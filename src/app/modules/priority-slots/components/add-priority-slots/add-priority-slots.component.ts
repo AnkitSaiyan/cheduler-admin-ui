@@ -68,11 +68,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 	public startTimes: NameValue[];
 	public endTimes: NameValue[];
 	public statuses = Statuses;
-	public repeatEvery = {
-		// daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
-		weekly: [...this.getRepeatEveryItems(RepeatType.Weekly)],
-		monthly: [...this.getRepeatEveryItems(RepeatType.Daily)],
-	};
+	public repeatEvery!: any;
 	public repeatTypeToName = {
 		daily: 'Days',
 		weekly: 'Weeks',
@@ -110,6 +106,26 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.times = this.nameValuePairPipe.transform(this.timeInIntervalPipe.transform(5));
 		this.startTimes = [...this.times];
 		this.endTimes = [...this.times];
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe((lang) => {
+				this.selectedLang = lang;
+				this.repeatEvery = {
+					// daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
+					weekly: [...this.getRepeatEveryItems(RepeatType.Weekly)],
+					monthly: [...this.getRepeatEveryItems(RepeatType.Daily)],
+				};
+
+				switch (lang) {
+					case ENG_BE:
+						this.statuses = Statuses;
+						break;
+					case DUTCH_BE:
+						this.statuses = StatusesNL;
+						break;
+				}
+			});
 	}
 
 	public get formValues(): FormValues {
@@ -152,22 +168,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			});
 			this.radiologist$$.next(radiologist);
 		});
-
-		this.shareDataSvc
-			.getLanguage$()
-			.pipe(takeUntil(this.destroy$$))
-			.subscribe((lang) => {
-				this.selectedLang = lang;
-
-				switch (lang) {
-					case ENG_BE:
-						this.statuses = Statuses;
-						break;
-					case DUTCH_BE:
-						this.statuses = StatusesNL;
-						break;
-				}
-			});
 	}
 
 	public ngAfterViewInit() {
@@ -448,7 +448,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			repeatDays: ['', []],
 			repeatFrequency: [
 				prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
-					? `${prioritySlotDetails.repeatFrequency} ${this.repeatTypeToName[prioritySlotDetails.repeatType]}`
+					? `${prioritySlotDetails.repeatFrequency} ${Translate.RepeatType[this.repeatTypeToName[prioritySlotDetails.repeatType]][this.selectedLang]}`
 					: null,
 				[Validators.min(1)],
 			],
@@ -461,20 +461,21 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		});
 
 		if (prioritySlotDetails?.id) {
-			setTimeout(
-				() =>
-					this.prioritySlotForm.patchValue({
-						slotStartTime: startTime,
-						slotEndTime: endTime,
-						repeatType: prioritySlotDetails?.repeatType,
-						repeatFrequency:
-							prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
-								? `${prioritySlotDetails.repeatFrequency} ${this.repeatTypeToName[prioritySlotDetails.repeatType]}`
-								: null,
-						repeatDays: prioritySlotDetails?.repeatDays ? prioritySlotDetails.repeatDays.split(',') : '',
-					}),
-				0,
-			);
+			setTimeout(() => {
+				this.prioritySlotForm.patchValue({
+					slotStartTime: startTime,
+					slotEndTime: endTime,
+					repeatType: prioritySlotDetails?.repeatType,
+					repeatFrequency:
+						prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
+							? `${prioritySlotDetails.repeatFrequency} ${
+									Translate.RepeatType[this.repeatTypeToName[prioritySlotDetails.repeatType]][this.selectedLang]
+							  }`
+							: null,
+					repeatDays: prioritySlotDetails?.repeatDays ? prioritySlotDetails.repeatDays.split(',') : '',
+				});
+				this.cdr.detectChanges();
+			}, 0);
 		}
 
 		this.cdr.detectChanges();
@@ -518,8 +519,15 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			case RepeatType.Daily:
 				return getNumberArray(31).map((d) => ({ name: d.toString(), value: d.toString() }));
 			case RepeatType.Weekly:
+				console.log(
+					'test',
+					getNumberArray(6, 0).map((w) => ({
+						name: this.selectedLang,
+						value: w.toString(),
+					})),
+				);
 				return getNumberArray(6, 0).map((w) => ({
-					name: this.weekdayToNamePipe.transform(w),
+					name: Translate[this.weekdayToNamePipe.transform(w)][this.selectedLang],
 					value: w.toString(),
 				}));
 			case RepeatType.Monthly:
@@ -552,7 +560,9 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 					+repeatFrequency.toString().split(' ')[0] > 0
 				) {
 					this.prioritySlotForm.patchValue({
-						repeatFrequency: `${repeatFrequency.toString().split(' ')[0]} ${this.repeatTypeToName[this.formValues.repeatType]}`,
+						repeatFrequency: `${repeatFrequency.toString().split(' ')[0]} ${
+							Translate.RepeatType[this.repeatTypeToName[this.formValues.repeatType]][this.selectedLang]
+						}`,
 					});
 				}
 				this.cdr.detectChanges();
@@ -614,6 +624,37 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

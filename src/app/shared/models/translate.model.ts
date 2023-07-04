@@ -637,7 +637,53 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Slot exist in this range',
 		[DUTCH_BE]: 'Dit slot overlapt met een reeds bestaand slot',
 	},
+	RepeatType: {
+		Days: {
+			[ENG_BE]: 'Days',
+			[DUTCH_BE]: 'Days',
+		},
+		Weeks: {
+			[ENG_BE]: 'Weeks',
+			[DUTCH_BE]: 'we(e)ken',
+		},
+		Months: {
+			[ENG_BE]: 'Months',
+			[DUTCH_BE]: 'maand(en)',
+		},
+	},
+	Monday: {
+		[ENG_BE]: 'Monday',
+		[DUTCH_BE]: 'Maandag',
+	},
+	Tuesday: {
+		[ENG_BE]: 'Tuesday',
+		[DUTCH_BE]: 'Dinsdag',
+	},
+	Wednesday: {
+		[ENG_BE]: 'Wednesday',
+		[DUTCH_BE]: 'Woensdag',
+	},
+	Thursday: {
+		[ENG_BE]: 'Thursday',
+		[DUTCH_BE]: 'Donderdag',
+	},
+	Friday: {
+		[ENG_BE]: 'Friday',
+		[DUTCH_BE]: 'Vrijdag',
+	},
+	Saturday: {
+		[ENG_BE]: 'Saturday',
+		[DUTCH_BE]: 'Zaterdag',
+	},
+	Sunday: {
+		[ENG_BE]: 'Sunday',
+		[DUTCH_BE]: 'Zondag',
+	},
 });
+
+
+
+
 
 
 
