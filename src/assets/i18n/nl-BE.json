@@ -52,7 +52,7 @@
 	"Description": "Beschrijving",
 	"Place In Agenda": "Plaats in agenda",
 	"ChangeStatus": "Wijzig status",
-	"RoomName": "Zaal naam",
+	"RoomName": "Zaalnaam",
 	"RoomType": "Type zaal",
 	"Public": "Publiek",
 	"Private": "Privé",
@@ -449,6 +449,7 @@
 		}
 	}
 }
+
 
 
 
