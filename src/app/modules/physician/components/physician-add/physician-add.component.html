@@ -62,7 +62,7 @@
 
       <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
         <div class="d-flex flex-column w-full flex-1">
-          <dfm-input #phone [dfmNumberInput]="phone" (focusout)="handleNumberFocusOut($event)" class="flex-1" size="md" placeholder="{{'EnterTelephone' | translate}}" label="{{'Telephone' | translate}} *"
+          <dfm-input #phone [dfmNumberInput]="phone" type="number" (focusout)="handleNumberFocusOut($event)" class="flex-1" size="md" placeholder="{{'EnterTelephone' | translate}}" label="{{'Telephone' | translate}} *"
                      formControlName="telephone">
           </dfm-input>
           <div class="validation-error" *ngIf="addPhysicianForm.get('telephone')?.hasError('required') && addPhysicianForm.get('telephone')?.touched">
