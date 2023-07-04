@@ -112,7 +112,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		new NavigationItem('Configuratie', 'tool-02', undefined, false, [
 			new NavigationItem('Gebruiker', 'user-circle', '/user', false),
 			new NavigationItem('Zalen', 'building-01', '/room', false),
-			new NavigationItem('Medewerkers', 'user-01', '/staff', false),
+			new NavigationItem('Medewerker', 'user-01', '/staff', false),
 			new NavigationItem('Dokter', 'medical-circle', '/physician', false),
 			new NavigationItem('Onderzoek', 'microscope', '/exam', false),
 			new NavigationItem('Uren praktijk', 'clock', '/practice-hours', false),
@@ -128,7 +128,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		new NavigationItem('Configuratie', 'tool-02', undefined, false, [
 			new NavigationItem('Gebruiker', 'user-circle', '/user', false),
 			new NavigationItem('Zalen', 'building-01', '/room', false),
-			new NavigationItem('Medewerkers', 'user-01', '/staff', false),
+			new NavigationItem('Medewerker', 'user-01', '/staff', false),
 			new NavigationItem('Dokter', 'medical-circle', '/physician', false),
 			new NavigationItem('Onderzoek', 'microscope', '/exam', false),
 			new NavigationItem('Prioritaire slots', 'calendar-date', '/priority-slots', false),
