@@ -111,7 +111,7 @@
 	"RoomView": "Room View",
 	"RoomDetails": "Room Details",
 	"Exams": "Exams",
-	"ExamInstructions": "Exam Instructions",
+	"ExamInstructions": "Examination Instructions",
 	"ExamsInvolvingTheRoom": "Exams involving the room",
 	"ExamsInvolvingStaffMember": "Exams Involving Staff Member",
 	"RequiredEmail": "Email *",
@@ -201,13 +201,13 @@
 	"EnterSiteName": "Enter Site Name",
 	"AreyousureyouwanttodeletethisAbsence": "Are you sure you want to delete the Absence?",
 	"ExamInvolvingStaff": "Select exams involving this staff",
-	"ExamSearch": "Search By Exam Name",
+	"ExamSearch": "Search By Examination Name",
 	"AddExam": "Add Exam",
 	"Expensive": "Expensive",
-	"Exam": "Exam",
+	"Exam": "Examination",
 	"EditExam": "Edit Exam",
-	"ExamName": "Exam Name",
-	"EnterExamName": "Enter Exam Name",
+	"ExamName": "Examination Name",
+	"EnterExamName": "Enter Examination Name",
 	"ExpensiveMin": "Expensive (Mins)",
 	"DurationMin": "Duration (Mins)",
 	"Uncombinable": "Uncombinable",
@@ -230,10 +230,10 @@
 	"SelectAssistant": "Select Assistant",
 	"SelectExam": "Select Exam",
 	"DeleteExam": "Delete Exam",
-	"ExamView": "Exam View",
-	"ExamDetails": "Exam Details",
+	"ExamView": "Examination View",
+	"ExamDetails": "Examination Details",
 	"RoomsInvolvingTheExam": "Rooms involving the exam",
-	"ExamInfo": "Exam Info",
+	"ExamInfo": "Examination Info",
 	"GetDetailedForException": "Get detailed use only for exceptions",
 	"AreYouSureWantToChangeStatus": "Are you sure you want to change the status?",
 	"Proceed": "Proceed",
@@ -256,9 +256,9 @@
 	"dateFormat": "dd/mm/yyyy",
 	"AbsenceDetails": "Absence Details",
 	"Assistant": "Assistant",
-	"ExamAvailabilityInfo": "Exam Availability Info",
-	"ExamAvailabilityData": "Exam Availability Data",
-	"ExamDeletedSuccessfully": "Exam Deleted Successfully",
+	"ExamAvailabilityInfo": "Examination Availability Info",
+	"ExamAvailabilityData": "Examination Availability Data",
+	"ExamDeletedSuccessfully": "Examination Deleted Successfully",
 	"AreYouSureWantToDeleteAppointment": "Are you sure you want to delete this Appointment?",
 	"CSV": "CSV",
 	"Excel": "Excel",
@@ -448,6 +448,11 @@
 		}
 	}
 }
+
+
+
+
+
 
 
 
