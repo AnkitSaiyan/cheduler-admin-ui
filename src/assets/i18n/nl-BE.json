@@ -95,7 +95,7 @@
 	"StaffDetails": "Medewerker Details",
 	"StaffUpdatedToast": "Toevoegen Updated Successfully",
 	"StaffView": "Medewerkers Bekijk",
-	"RoomSearch": "Zoek op naam en op beschrijving kamer",
+	"RoomSearch": "Zoek op naam en op beschrijving zaal",
 	"PlaceInAgenda": "Plaats in agenda",
 	"NoDataFound": "Geen gegevens gevonden",
 	"NoRoomFound": "Geen zalen gevonden",
@@ -449,6 +449,7 @@
 		}
 	}
 }
+
 
 
 
