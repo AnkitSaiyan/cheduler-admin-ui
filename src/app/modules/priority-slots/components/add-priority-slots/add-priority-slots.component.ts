@@ -278,7 +278,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 						this.closeModal(true);
 					},
 					(err) => {
-						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+						this.notificationSvc.showNotification(Translate[err?.error?.message][this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
 					},
 				);
@@ -614,6 +614,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
+
 
 
 

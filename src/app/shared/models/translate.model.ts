@@ -633,7 +633,12 @@ export const Translate = Object.freeze({
 		[ENG_BE]: `Can't add appointment on past time`,
 		[DUTCH_BE]: 'Kan geen afspraken toevoegen op dit tijdstip',
 	},
+	'Slot exist in this range': {
+		[ENG_BE]: 'Slot exist in this range',
+		[DUTCH_BE]: 'Dit slot overlapt met een reeds bestaand slot',
+	},
 });
+
 
 
 
