@@ -90,7 +90,7 @@
 	"AreYouSureYouWantToDeleteThisStaff": "Ben je zeker dat je deze medewerker wil verwijderen?",
 	"Are you sure you want to delete this Priority Slot?": "Ben je zeker dat je deze prioritaire slot wil verwijderen?",
 	"AddStaff": "Medewerker Toevoegen",
-	"DeleteStaffToast": "Staff Deleted successfully",
+	"DeleteStaffToast": "Staff Deleted successfully NL",
 	"StaffSearch": "Zoek op Voornaam, Naam, Type en E-mail",
 	"StaffDetails": "Medewerker Details",
 	"StaffUpdatedToast": "Toevoegen Updated Successfully",
@@ -322,7 +322,7 @@
 	"SearchEmployee": "Zoek Werknemer",
 	"TopTenReferringDoctors": "Top 10 Verwijzende Dokters",
 	"Notifications": "Notificaties",
-	"NewAppointmentCreated": "New appointment created NL",
+	"NewAppointmentCreated": "Nieuwe Afspraak Ontvangen",
 	"TopTenExaminations": "Top 10 Onderzoeken",
 	"UnavailablePeriodsOfTheHalls": "Onbeschikbare Periodes Voor Zaal de Volgende 31 Dagen",
 	"SearchRoomName": "Zoek Op Zaal Naam",
@@ -359,7 +359,7 @@
 	"NoExceptionFound": "Geen Uitzonderingen Gevonden",
 	"NoMandatoryStaffFound": "Geen Verplicht Personeel Gevonden",
 	"NoGeneralStafFfound": "Geen Generale Staf Gevonden",
-	"UserDeleted": "User deleted successfully NL",
+	"UserDeleted": "Gebruiker Succesvol Verwijderd",
 	"EmailTemplate": "E-mail Sjabloon",
 	"SearchByTemplateName": "Zoek op Naam Sjabloon",
 	"Subject": "Onderwerp",
@@ -451,6 +451,9 @@
 		}
 	}
 }
+
+
+
 
 
 
