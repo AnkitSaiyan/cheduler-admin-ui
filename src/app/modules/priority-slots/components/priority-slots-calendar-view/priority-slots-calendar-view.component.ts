@@ -27,7 +27,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 
 	public changeWeek$$ = new BehaviorSubject<number>(0);
 
-	public newDate$$ = new BehaviorSubject<Date | null>(null);
+	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 
 	public prioritySlots$$: BehaviorSubject<any>;
 
@@ -52,8 +52,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 	ngOnInit() {
 		this.dataControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value: any) => {
 			const date = new Date(value.year, value.month - 1, value.day);
-			this.updateDate(date);
-			this.newDate$$.next(date);
+			this.updateDate(date, true);
+			this.newDate$$.next({ date, isWeekChange: true });
 		});
 
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
@@ -120,8 +120,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 	}
 
 	public updateToToday() {
-		this.newDate$$.next(new Date());
-		this.updateQuery('', new Date(), 'appointment');
+		this.newDate$$.next({ date: new Date(), isWeekChange: false });
+		this.updateQuery('', new Date(), '');
 	}
 
 	public changeDate(offset: number) {
@@ -129,7 +129,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 	}
 
 	public changeToDayView(date: Date) {
-		this.newDate$$.next(date);
+		this.newDate$$.next({ date, isWeekChange: false });
 		this.selectedDate$$.next(date);
 	}
 
@@ -253,6 +253,25 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		this.prioritySlots$$.next({ ...myPrioritySlots });
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -59,7 +59,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	@Input()
 	public headerList: NameValue[] = [];
 	@Input()
-	public newDate$$ = new BehaviorSubject<Date | null>(null);
+	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 	@Input()
 	public timeSlot!: CalenderTimeSlot;
 	@Input()
@@ -132,7 +132,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			.asObservable()
 			.pipe()
 			.subscribe({
-				next: (date) => {
+				next: ({ date }) => {
 					if (date) {
 						this.updateDate(date);
 					}
@@ -143,7 +143,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			.getDate$()
 			.pipe(filter((date) => !!date))
 			.subscribe({
-				next: (date) => this.newDate$$.next(new Date(date)),
+				next: (date) => this.newDate$$.next({ date: new Date(date), isWeekChange: false }),
 			});
 
 		this.shareDataSvc

@@ -60,7 +60,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public changeWeek$$ = new BehaviorSubject<number>(0);
 
 	@Input()
-	public newDate$$ = new BehaviorSubject<Date | null>(null);
+	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 
 	@Input()
 	public dataGroupedByDateAndTime!: { [key: string]: any[][] };
@@ -152,11 +152,11 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 		this.newDate$$
 			.asObservable()
-			.pipe()
+			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: (date) => {
+				next: ({ date, isWeekChange }) => {
 					if (date) {
-						this.updateDate(date);
+						this.updateDate(date, isWeekChange);
 						this.updateCalendarDays();
 					}
 				},

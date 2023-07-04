@@ -53,7 +53,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	public changeMonth$$ = new BehaviorSubject<number>(0);
 
-	public newDate$$ = new BehaviorSubject<Date | null>(null);
+	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 
 	public headerList: NameValue[] = [];
 
@@ -136,7 +136,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				const dateSplit = params['d'].split('-');
 				if (dateSplit.length === 3) {
 					const date = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2]);
-					this.newDate$$.next(date);
+					this.newDate$$.next({ date, isWeekChange: false });
 					this.selectedDate$$.next(date);
 				}
 			}
@@ -209,7 +209,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				takeUntil(this.destroy$$),
 			)
 			.subscribe((value) => {
-				this.newDate$$.next(this.selectedDate$$.value);
+				this.newDate$$.next({ date: this.selectedDate$$.value, isWeekChange: false });
 				this.updateQuery(value[0]);
 			});
 
@@ -222,7 +222,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		this.dataControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			const date = new Date(value);
 			this.updateDate(date);
-			this.newDate$$.next(date);
+			this.newDate$$.next({ date, isWeekChange: false });
 		});
 
 		combineLatest([this.weekdayToPractice$$, this.route.queryParams, this.calendarViewFormControl.valueChanges])
@@ -232,7 +232,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			)
 			.subscribe(([_, queryParams]) => {
 				const value = new Date(queryParams['d']);
-        const time = this.weekdayToPractice$$.value[value.getDay()];
+				const time = this.weekdayToPractice$$.value[value.getDay()];
 				this.selectedSlot$$.next({
 					...time,
 					timings: time.timings.filter(
@@ -293,13 +293,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	public changeToDayView(date: Date) {
 		this.calendarViewFormControl.setValue('day');
 		// const newDate = new Date(this.selectedDate$$.value.setDate(date));
-		this.newDate$$.next(date);
+		this.newDate$$.next({ date, isWeekChange: false });
 		this.selectedDate$$.next(date);
 	}
 
 	public updateToToday() {
 		if (this.selectedDate$$.value?.toDateString() !== new Date().toDateString()) {
-			this.newDate$$.next(new Date());
+			this.newDate$$.next({ date: new Date(), isWeekChange: false });
 		}
 	}
 
