@@ -115,7 +115,7 @@
 	"ExamsInvolvingStaffMember": "Examens waarbij een medewerker betrokken is",
 	"RequiredEmail": "E-mail *",
 	"DeleteRoom": "Verwijder zaal",
-	"SearchPhysician": "Zoek op Dokter Naam, Email en Status",
+	"SearchPhysician": "Zoek op Voornaam, Naam, E-mail en Status",
 	"AddPhysician": "Dokter toevoegen",
 	"NoPhysicianFound": "Geen dokter gevonden",
 	"EditPhysician": "Wijzig Dokter",
@@ -449,6 +449,8 @@
 		}
 	}
 }
+
+
 
 
 
