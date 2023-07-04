@@ -1,6 +1,6 @@
-import {ColumnSort} from "diflexmo-angular-design";
-import {isSetEqual} from "@angular/compiler-cli/src/ngtsc/incremental/semantic_graph";
-import {ensureOriginalSegmentLinks} from "@angular/compiler-cli/src/ngtsc/sourcemaps/src/source_file";
+import { ColumnSort } from 'diflexmo-angular-design';
+import { isSetEqual } from '@angular/compiler-cli/src/ngtsc/incremental/semantic_graph';
+import { ensureOriginalSegmentLinks } from '@angular/compiler-cli/src/ngtsc/sourcemaps/src/source_file';
 
 export class GeneralUtils {
 	public static FilterArray([...arr]: readonly any[], filterText: string, key?: string): any[] {
@@ -24,7 +24,7 @@ export class GeneralUtils {
 
 	public static SortArray([...arr]: readonly any[], sort: ColumnSort | undefined, key?: string): any[] {
 		switch (sort) {
-			case "Asc":
+			case 'Asc':
 				return arr.sort((a, b) => {
 					if (key) {
 						return a[key] <= b[key] ? -1 : 1;
@@ -36,7 +36,7 @@ export class GeneralUtils {
 					if (key) {
 						return a[key] >= b[key] ? -1 : 1;
 					}
-					return a >=	 b ? -1 : 1;
+					return a >= b ? -1 : 1;
 				});
 		}
 	}
@@ -50,7 +50,7 @@ export class GeneralUtils {
 			case 'add':
 				return [item, ...list];
 			case 'delete':
-				return list.filter((data) =>  {
+				return list.filter((data) => {
 					if (key) {
 						return data[key]?.toString() !== item[key]?.toString();
 					}
@@ -76,11 +76,16 @@ export class GeneralUtils {
 				});
 		}
 	}
+
+	public static removeDuplicateData(list: Array<any>, key: any): Array<any> {
+		// const filtered = list.filter(
+		// 	(
+		// 		(s) => (o) =>
+		// 			((k) => !s.has(k) && s.add(k))(key.map((k) => o[k]).join('|'))
+		// 	)(new Set()),
+		// );
+
+		const filtered = list.filter((val, index, array) => array.findIndex((v) => v[key] == val[key]) == index);
+		return filtered;
+	}
 }
-
-
-
-
-
-
-
