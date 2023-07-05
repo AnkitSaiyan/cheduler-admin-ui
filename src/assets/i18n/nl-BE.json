@@ -111,7 +111,7 @@
 	"RoomView": "Zaal Bekijk",
 	"RoomDetails": "Details Zaal",
 	"Exams": "Onderzoeken",
-	"ExamInstructions": "Aanwijzingen Onderzoeken",
+	"ExamInstructions": "Aanwijzingen Onderzoek",
 	"ExamsInvolvingTheRoom": "Onderzoeken met betrokken zaal",
 	"ExamsInvolvingStaffMember": "Onderzoeken waarbij een medewerker betrokken is",
 	"RequiredEmail": "E-mail *",
@@ -453,6 +453,7 @@
 		}
 	}
 }
+
 
 
 
