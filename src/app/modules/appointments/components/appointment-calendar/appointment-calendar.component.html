@@ -4,7 +4,7 @@
       <ng-container *ngIf="calendarViewFormControl.value === 'day'; else notDayView">
         {{ (selectedDate | date : 'EEE')! | uppercase | translate | titlecase }} {{ (selectedDate | date : 'MMM')! |translate  }} {{ selectedDate | date : 'dd, yyyy'  }}
       </ng-container>
-      <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : 'dd, yyyy' }}</ng-template></h4>
+      <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : ' yyyy' }}</ng-template></h4>
 
     <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper align-items-center">
       <div>
