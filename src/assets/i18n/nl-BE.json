@@ -22,7 +22,7 @@
 	"SaveChanges": "Bewaar Wijziging",
 	"User": "Gebruiker",
 	"Add": "Toevoegen",
-	"Edit": "Bewerk",
+	"Edit": "Bewerken",
 	"Delete": "Verwijder",
 	"Cancel": "Annuleer",
 	"EnterFirstName": "Gelieve je voornaam in te vullen",
@@ -417,6 +417,7 @@
 	"NoRoomsAreAvailable": "Er zijn geen zalen beschikbaar",
 	"CanNotAddAppointmentOnPastDate": "Kan geen afspraken toevoegen op dit tijdstip",
 	"OrderingNotValid": "Niet geldig",
+	"Order": "Volgorde",
 	"PleaseSelectAtLeast": "Selecteer ten minste",
 	"Radiologist(s)": "Radioloog(s)",
 	"Assistant(s)": "Assistent(s)",
@@ -452,3 +453,4 @@
 		}
 	}
 }
+
