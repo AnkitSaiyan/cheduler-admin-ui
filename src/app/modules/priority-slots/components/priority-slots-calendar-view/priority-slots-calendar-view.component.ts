@@ -43,6 +43,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 
 	private currentSlotPercentageData: any[] = [];
 
+	private currentDays!: any;
+
 	constructor(
 		private router: Router,
 		private datePipe: DatePipe,
@@ -175,22 +177,19 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		});
 
 		this.dates$$.next(dates);
+		this.getOpenCloseSlotData(dates);
+	}
+
+	private getOpenCloseSlotData(dates) {
 		this.priorityApiSvc.getOpenCloseSlotData(dates).subscribe((res) => {
 			const response = res.reduce((accumulator, currentValue) => {
 				return { ...accumulator, [Object.keys(currentValue)[0]]: currentValue[Object.keys(currentValue)[0]] };
 			}, {});
 			this.prioritySlotsCloseOpen$$.next(response);
+			this.currentDays = dates;
 			this.prioritySlotOpenAndCloseMap();
-			console.log('aaaaaaaaaaaaaaaaaaaaaa', response, this.prioritySlots$$.value);
+			// console.log('aaaaaaaaaaaaaaaaaaaaaa', response, this.prioritySlots$$.value);
 		});
-
-		// this.priorityApiSvc
-		// 	.getPriorityPercentage$(dates)
-		// 	.pipe(takeUntil(this.destroy$$))
-		// 	.subscribe((slotPercentage) => {
-		// 		this.slotPercentage$$.next(slotPercentage);
-		// 		this.currentSlotPercentageData = slotPercentage
-		// 	});
 	}
 
 	private prioritySlotOpenAndCloseMap() {
@@ -321,7 +320,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			});
 
 		this.prioritySlots$$.next({ ...myPrioritySlots });
-		this.prioritySlotOpenAndCloseMap();
+		// this.prioritySlotOpenAndCloseMap();
+		if (Object.keys(this.prioritySlotsCloseOpen$$.value).length) this.getOpenCloseSlotData(this.currentDays);
 	}
 
 	public prioritySlotOpenAndClose(a) {

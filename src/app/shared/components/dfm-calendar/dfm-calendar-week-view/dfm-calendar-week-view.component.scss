@@ -447,10 +447,10 @@ h3 {
 .priority-slot-percentage {
   width: 100%;
   position: absolute;
-  top: 12px;
+  // top: 12px;
   display: flex;
   flex-direction: column;
-  padding: 8px;
+  // padding: 8px;
   opacity: 1;
   align-items: center;
 }
@@ -459,4 +459,14 @@ h3 {
   align-items: center;
   display: flex;
   flex-direction: column;
+}
+
+span.mat-slide-toggle-bar {
+  width: 27px !important;
+  height: 9px !important;
+}
+
+span.mat-slide-toggle-thumb {
+  width: 13px !important;
+  height: 13px !important;
 }
