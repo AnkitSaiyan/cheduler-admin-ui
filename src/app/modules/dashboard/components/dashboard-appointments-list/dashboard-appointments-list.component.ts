@@ -315,10 +315,10 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				},
 			});
 
-		this.signalRSvc.latestAppointmentInfo$.pipe(withLatestFrom(this.filteredAppointments$$), takeUntil(this.destroy$$)).subscribe({
+		this.signalRSvc.latestAppointmentInfo$.pipe(withLatestFrom(this.appointments$$), takeUntil(this.destroy$$)).subscribe({
 			next: ([item, list]) => {
 				const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
-				this.filteredAppointments$$.next(modifiedList);
+				this.appointments$$.next(modifiedList);
 			},
 		});
 	}

@@ -470,7 +470,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					},
 					error: (err) => {
 						this.submitting$$.next(false);
-						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+						this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 					},
 				});
 		} else {
@@ -493,7 +493,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					},
 					error: (err) => {
 						this.submitting$$.next(false);
-						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+						this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 					},
 				});
 		}

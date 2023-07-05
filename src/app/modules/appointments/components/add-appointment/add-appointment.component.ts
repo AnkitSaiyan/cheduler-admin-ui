@@ -337,7 +337,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 							this.router.navigate([route], { relativeTo: this.route });
 						},
 						error: (err) => {
-							this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+							this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 							this.submitting$$.next(false);
 						},
 					});
@@ -364,7 +364,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 							this.router.navigate([route], { relativeTo: this.route });
 						},
 						error: (err) => {
-							this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+							this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 							this.submitting$$.next(false);
 						},
 					});
@@ -416,7 +416,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 						this.router.navigate([route], { relativeTo: this.route });
 					},
 					error: (err) => {
-						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+						this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
 					},
 				});
