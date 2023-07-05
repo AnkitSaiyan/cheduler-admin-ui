@@ -227,7 +227,7 @@
 	"SelectRadiologist": "Selecteer Radioloog",
 	"SelectNursing": "Selecteer Verpleging",
 	"SelectSecretary": "Selecteer Secretaresse",
-	"CorrespondsToTheOpeningHoursOfThePractice": "overeenkomstig openingsuren van de praktijk",
+	"CorrespondsToTheOpeningHoursOfThePractice": "Zelfde uren als de praktijk",
 	"SelectAssistant": "Selecteer Assistent",
 	"SelectExam": "Selecteer Onderzoek",
 	"DeleteExam": "Verwijder Onderzoek",
@@ -235,7 +235,7 @@
 	"ExamDetails": "Details Onderzoek",
 	"RoomsInvolvingTheExam": "Zalen betrokken in het onderzoek",
 	"ExamInfo": "Info Onderzoek",
-	"GetDetailedForException": "Gedetailleerd gebruik enkel voor uitzonderingen",
+	"GetDetailedForException": "Uren wijken af  van de uren van de praktijk",
 	"AreYouSureWantToChangeStatus": "Ben je zeker dat je de status wil wijzigen?",
 	"Proceed": "Ga verder",
 	"Dashboard": "Dashboard",
@@ -452,6 +452,8 @@
 		}
 	}
 }
+
+
 
 
 
