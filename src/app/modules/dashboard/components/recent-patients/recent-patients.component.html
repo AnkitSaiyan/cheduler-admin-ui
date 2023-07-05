@@ -53,34 +53,54 @@
 		</div>
 	</section>
 
-  <section class="table-wrapper" *ngIf="filteredRecentPatients$$ | async as recentPatients">
-    <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}"  [stickyActions]="true"  noDataMessage="{{ 'NoDataFound' | translate }}"
-                    [rowClickable]="true" [stickyCheckbox]="true"
-                    [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
-      <ng-template #bodyRowTemplate let-item>
-        <dfm-table-row-cell [fullContent]="item"><div class="d-flex dfm-gap-8 align-items-center">
-          <div class="rounded-circle avatar-container">
-            <img
-              *ngIf="item.avatar"
-              [src]="item.avatar"
-              class="rounded-circle border-light border-1"
-              alt="Doctor's avatar"
-              width="40"
-              height="40"
-            />
+	<section class="table-wrapper" *ngIf="filteredRecentPatients$$ | async as recentPatients">
+		<dfm-table [items]="recentPatients">
+			<ng-template #headerRowTemplate>
+				<dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
+			</ng-template>
+			<ng-template #bodyRowTemplate let-item>
+				<dfm-table-body-cell>
+					<div class="d-flex dfm-gap-8 align-items-center">
+						<div class="rounded-circle avatar-container">
+							<img
+								*ngIf="item.avatar"
+								[src]="item.avatar"
+								class="rounded-circle border-light border-1"
+								alt="Doctor's avatar"
+								width="40"
+								height="40"
+							/>
 
-            <div *ngIf="!item.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
-              {{ item?.patientFname?.toString()[0]?.toUpperCase() }}
-            </div>
+							<div *ngIf="!item.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+								{{ item?.patientFname?.toString()[0]?.toUpperCase() }}
+							</div>
+						</div>
+						<span>{{ item.patientFname | dashIfNothing }} {{ item.patientLname }}</span>
+					</div>
+				</dfm-table-body-cell>
+				<dfm-table-body-cell>{{ item.patientEmail | dashIfNothing }}</dfm-table-body-cell>
+				<dfm-table-body-cell>{{ item.doctor | titlecase | dashIfNothing }}</dfm-table-body-cell>
+				<dfm-table-body-cell>{{ item.startedAt | dfmUtcToLocal | dfmDefaultDate }}</dfm-table-body-cell>
+
+				<!-- <dfm-table-body-cell>
+          <div class="d-flex dfm-gap-16">
+            <dfm-button
+              color="link-gray"
+              size="sm"
+              trailingIcon="pencil-02"
+            ></dfm-button>
+            <dfm-button
+              color="link-gray"
+              size="sm"
+              trailingIcon="trash-01"
+              (click)="deletePatient(item.id)"
+            ></dfm-button>
           </div>
-          <span>{{ item.patientFname | dashIfNothing }} {{ item.patientLname }}</span>
-        </div></dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.patientEmail">{{ item.patientEmail | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.doctor">{{ item.doctor | titlecase | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.startedAt">{{ item.startedAt | dfmUtcToLocal | dfmDefaultDate }}</dfm-table-row-cell>
-      </ng-template>
-    </dfm-data-table>
-
-  </section>
+        </dfm-table-body-cell> -->
+			</ng-template>
+		</dfm-table>
+		<div class="no-data-found-wrapper justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!recentPatients.length">
+			{{ 'NoDataFound' | translate }}
+		</div>
+	</section>
 </div>
-

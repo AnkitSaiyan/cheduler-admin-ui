@@ -78,18 +78,28 @@
 		</div>
 	</section>
 
-  <section class="table-wrapper" *ngIf="filteredRoomAbsence$$ | async as roomAbsence">
-    <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}"
-                    [stickyActions]="true"  noDataMessage="{{ 'NoDataFound' | translate }}"
-                    [rowClickable]="true" [stickyCheckbox]="true"
-                    [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
-      <ng-template #bodyRowTemplate let-item>
-        <dfm-table-row-cell [fullContent]="item.roomName"><span class="font-weight-normal">{{ item.roomName }}</span></dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.startDate">{{ item.startDate | dfmUtcToLocal | dfmDefaultDate  }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.endDate">{{ item.endDate | dfmUtcToLocal | dfmDefaultDate  }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.absenceName"><span class="font-weight-medium">{{ item.absenceName }}</span></dfm-table-row-cell>
-      </ng-template>
-    </dfm-data-table>
-  </section>
+	<section class="table-wrapper" *ngIf="filteredRoomAbsence$$ | async as roomAbsence">
+		<dfm-data-table
+			[data]="(tableData$$ | async) ?? { items: [] }"
+			[stickyActions]="true"
+			noDataMessage="{{ 'NoDataFound' | translate }}"
+			[rowClickable]="true"
+			[stickyCheckbox]="true"
+			[stickyFirstColumn]="false"
+			[headers]="tableHeaders"
+			(scrolled)="onScroll($event)"
+			(sorted)="onSort($event)"
+		>
+			<ng-template #bodyRowTemplate let-item>
+				<dfm-table-row-cell [fullContent]="item.roomName"
+					><span class="font-weight-normal">{{ item.roomName }}</span></dfm-table-row-cell
+				>
+				<dfm-table-row-cell [fullContent]="item.startDate">{{ item.startDate | dfmUtcToLocal | dfmDefaultDate }}</dfm-table-row-cell>
+				<dfm-table-row-cell [fullContent]="item.endDate">{{ item.endDate | dfmUtcToLocal | dfmDefaultDate }}</dfm-table-row-cell>
+				<dfm-table-row-cell [fullContent]="item.absenceName"
+					><span class="font-weight-medium">{{ item.absenceName }}</span></dfm-table-row-cell
+				>
+			</ng-template>
+		</dfm-data-table>
+	</section>
 </div>
-

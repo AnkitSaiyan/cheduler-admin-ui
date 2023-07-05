@@ -8,7 +8,7 @@
 
     <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper align-items-center">
       <div>
-        <dfm-calendar-picker [selectedDate]="this.newDate$$ | async" (formControl)="dataControl = $event"></dfm-calendar-picker>
+        <dfm-calendar-picker [selectedDate]="(this.newDate$$ | async)?.date ?? null" (formControl)="dataControl = $event"></dfm-calendar-picker>
       </div>
 
       <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown">

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { BehaviorSubject, filter } from 'rxjs';
-import {getDaysOfMonth, getDurationMinutes, getWeekdayWiseDays, Weekday} from '../../../models/calendar.model';
+import { getDaysOfMonth, getDurationMinutes, getWeekdayWiseDays, Weekday } from '../../../models/calendar.model';
 
 @Component({
 	selector: 'dfm-calendar-month-view',
@@ -23,7 +23,7 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 	public changeMonth$$ = new BehaviorSubject<number>(0);
 
 	@Input()
-	public newDate$$ = new BehaviorSubject<Date | null>(null);
+	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 
 	@Input()
 	public dataGroupedByDate!: { [key: string]: any[] };
@@ -63,7 +63,7 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 			.asObservable()
 			.pipe()
 			.subscribe({
-				next: (date) => {
+				next: ({ date }) => {
 					if (date) {
 						this.updateDate(date);
 						this.updateCalendarDays();
