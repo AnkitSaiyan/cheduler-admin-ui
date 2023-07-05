@@ -165,7 +165,9 @@
 							</ng-container>
 							<ng-container *ngIf="prioritySlots">
 								<ng-container *ngIf="prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
-									<ng-container *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]; let i = index">
+									<ng-container
+										*ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]; let i = index"
+									>
 										<div
 											*ngIf="getPrioritySlotHeight(prioritySlot) as eventHeight"
 											[ngbPopover]="priorityCardDetail"
@@ -178,35 +180,30 @@
 												'height.px': eventHeight
 											}"
 										>
-                      <div class="priority-slot-percentage" [ngStyle]="{'top': eventHeight>20 ? '12px':'0', 'padding': eventHeight>20 ? '12px':'0'}" >
-                        <div class="txt-slot-percentage"*ngIf="eventHeight>99">
-                          <ng-container *ngIf="slotPercentage?.length">
-                            <span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
-                            <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
-                          </ng-container>
-                        </div>
-                      <!-- <dfm-button color="primary" size="sm" (click)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, i)">{{ 'Open' | translate }}</dfm-button> -->
+											<div
+												class="priority-slot-percentage"
+												*ngIf="
+													slotPercentage.length && prioritySlot
+														| showSlotPercentage
+															: slotPercentage[weekday]
+															: prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]
+												"
+												[ngStyle]="{
+													'top.px':
+														getPrioritySlotTop(prioritySlot) < 0 && getPrioritySlotTop(prioritySlot) * -1 < eventHeight
+															? getPrioritySlotTop(prioritySlot) * -1
+															: '24px'
+												}"
+											>
+												<ng-container *ngIf="slotPercentage?.length">
+													<span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
+													<span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
+												</ng-container>
+											</div>
 
-                        <ng-container *ngIf="!(DateTimeUtils.DateDistributedToDate({year: selectedDate.getFullYear(), month: day[1] + 1, day: day[0]}) | isPreviousDay) && slotPercentage?.length">
-                          <mat-slide-toggle class="percentageToggle" *ngIf="prioritySlot.isClose !== undefined; else showAnotherToggle "[ngStyle]="{'font-size': eventHeight>20 ? '':'12px', 'margin-top': eventHeight>20 ? '':'-2px'}"color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)">Open</mat-slide-toggle>
-                          <ng-template #showAnotherToggle>
-                            <mat-slide-toggle class="percentageToggle"  [ngStyle]="{'font-size': eventHeight>20 ? '0':'12px', 'margin-top': eventHeight>20 ? '':'-2px'}"  color="primary" #toggle [checked]="slotPercentage.length && prioritySlot
-                            | showSlotPercentage
-                              : slotPercentage[weekday]
-                              : prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !toggle.checked)">Open</mat-slide-toggle>
-                          </ng-template>
-                        </ng-container>
-
-                      </div>
-                      <ng-template #priorityCardDetail>
-						<div class="txt-slot-percentage"*ngIf="eventHeight < 99">
-							<ng-container *ngIf="slotPercentage?.length">
-							  <span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
-							  <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
-							</ng-container>
-						  </div>
-                        <span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end }}</span>
-                      </ng-template>
+											<ng-template #priorityCardDetail>
+												<span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end }}</span>
+											</ng-template>
 										</div>
 									</ng-container>
 								</ng-container>
