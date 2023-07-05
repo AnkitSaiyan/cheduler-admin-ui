@@ -188,9 +188,9 @@
                       <!-- <dfm-button color="primary" size="sm" (click)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, i)">{{ 'Open' | translate }}</dfm-button> -->
 
                         <ng-container *ngIf="!(DateTimeUtils.DateDistributedToDate({year: selectedDate.getFullYear(), month: day[1] + 1, day: day[0]}) | isPreviousDay) && slotPercentage?.length">
-                          <mat-slide-toggle class="percentageToggle" *ngIf="prioritySlot.isClose !== undefined; else showAnotherToggle "[ngStyle]="{'font-size': eventHeight>20 ? '':'12px', 'margin-top': eventHeight>20 ? '':'-2px'}"color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)">Open</mat-slide-toggle>
+                          <mat-slide-toggle class="percentageToggle" *ngIf="prioritySlot.isClose !== undefined; else showAnotherToggle "[ngStyle]="{'font-size': eventHeight>20 ? '16px':'14px', 'margin-top': eventHeight>20 ? '':'-2px'}"color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)">Open</mat-slide-toggle>
                           <ng-template #showAnotherToggle>
-                            <mat-slide-toggle class="percentageToggle"  [ngStyle]="{'font-size': eventHeight>20 ? '0':'12px', 'margin-top': eventHeight>20 ? '':'-2px'}"  color="primary" #toggle [checked]="slotPercentage.length && prioritySlot
+                            <mat-slide-toggle class="percentageToggle"  [ngStyle]="{'font-size': eventHeight>20 ? '16px':'14px', 'margin-top': eventHeight>20 ? '':'-2px'}"  color="primary" #toggle [checked]="slotPercentage.length && prioritySlot
                             | showSlotPercentage
                               : slotPercentage[weekday]
                               : prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !toggle.checked)">Open</mat-slide-toggle>
