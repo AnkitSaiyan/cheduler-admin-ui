@@ -560,4 +560,13 @@ export class DashboardApiService extends DestroyableComponent {
 	public refreshAppointments() {
 		this.refreshAppointment$$.next();
 	}
+
+	public refreshCharts() {
+		this.refreshAppointmentChart$$.next();
+		this.refreshNotification$$.next();
+		this.refreshAppointmentBarChart$$.next();
+		this.refreshPatientBarChart$$.next();
+		this.refreshCompletedBarChart$$.next();
+		this.refreshCompletedBarChart$$.next();
+	}
 }
