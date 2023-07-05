@@ -93,6 +93,26 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		return combineLatest(request) as Observable<NextSlotOpenPercentageData[]>;
 	}
 
+	get fileTypes$(): Observable<any[]> {
+		return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
+			switchMap(([lang]) => {
+				return of(this.repeatTypes).pipe(
+					map((downloadTypeItems) => {
+						if (lang) {
+							return downloadTypeItems.map((downloadType) => {
+								return {
+									...downloadType,
+									name: Translate[downloadType.name][lang],
+								};
+							});
+						}
+						return downloadTypeItems;
+					}),
+				);
+			}),
+		);
+	}
+
 	public deletePrioritySlot$(slotID: number): Observable<boolean> {
 		this.loaderSvc.activate();
 		return this.http.delete<BaseResponse<boolean>>(`${this.prioritySlots}/${slotID}`).pipe(
@@ -232,6 +252,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		this.refreshPrioritySlots$$.next();
 	}
 }
+
 
 
 
