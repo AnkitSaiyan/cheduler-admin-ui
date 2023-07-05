@@ -85,7 +85,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 			new NavigationItem('Rooms', 'building-01', '/room', false),
 			new NavigationItem('Staff', 'user-01', '/staff', false),
 			new NavigationItem('Physician', 'medical-circle', '/physician', false),
-			new NavigationItem('Exam', 'microscope', '/exam', false),
+			new NavigationItem('Examination', 'microscope', '/exam', false),
 			new NavigationItem('Practice Hours', 'clock', '/practice-hours', false),
 			new NavigationItem('Priority Slots', 'calendar-date', '/priority-slots', false),
 			new NavigationItem('E-mail Template', 'mail-05', '/email-template', false),
@@ -101,7 +101,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 			new NavigationItem('Rooms', 'building-01', '/room', false),
 			new NavigationItem('Staff', 'user-01', '/staff', false),
 			new NavigationItem('Physician', 'medical-circle', '/physician', false),
-			new NavigationItem('Exam', 'microscope', '/exam', false),
+			new NavigationItem('Examination', 'microscope', '/exam', false),
 			new NavigationItem('Priority Slots', 'calendar-date', '/priority-slots', false),
 		]),
 	];
@@ -112,7 +112,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		new NavigationItem('Configuratie', 'tool-02', undefined, false, [
 			new NavigationItem('Gebruiker', 'user-circle', '/user', false),
 			new NavigationItem('Zalen', 'building-01', '/room', false),
-			new NavigationItem('Medewerkers', 'user-01', '/staff', false),
+			new NavigationItem('Medewerker', 'user-01', '/staff', false),
 			new NavigationItem('Dokter', 'medical-circle', '/physician', false),
 			new NavigationItem('Onderzoek', 'microscope', '/exam', false),
 			new NavigationItem('Uren praktijk', 'clock', '/practice-hours', false),
@@ -128,7 +128,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		new NavigationItem('Configuratie', 'tool-02', undefined, false, [
 			new NavigationItem('Gebruiker', 'user-circle', '/user', false),
 			new NavigationItem('Zalen', 'building-01', '/room', false),
-			new NavigationItem('Medewerkers', 'user-01', '/staff', false),
+			new NavigationItem('Medewerker', 'user-01', '/staff', false),
 			new NavigationItem('Dokter', 'medical-circle', '/physician', false),
 			new NavigationItem('Onderzoek', 'microscope', '/exam', false),
 			new NavigationItem('Prioritaire slots', 'calendar-date', '/priority-slots', false),

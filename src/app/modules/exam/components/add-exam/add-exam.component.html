@@ -73,7 +73,7 @@
                           type="number"
                           size="md"
                           placeholder="{{ 'EnterDuration' | translate }}"
-                          label="{{ 'ExpensiveMin' | translate }} *"
+                          label="{{ 'DurationMin' | translate }} *"
                           formControlName="expensive"
                           (focusout)="handleExpenseInput($event, expensive, examForm.get('expensive'))"
                         >
@@ -104,7 +104,7 @@
                 </div>
 
                 <div class="d-flex dfm-gap-8 flex-column" *ngIf="!!examForm.get('roomType')?.value">
-                    <span class="text-sm font-weight-medium dfm-text-main-700">{{ formValues.roomType | titlecase }} {{ 'Rooms' | translate }}
+                    <span class="text-sm font-weight-medium dfm-text-main-700">{{ formValues.roomType | titlecase | translate }} {{ 'Rooms' | translate }}
                         *</span>
 
                     <div class="d-flex dfm-gap-24 flex-wrap" formArrayName="roomsForExam">
