@@ -417,6 +417,7 @@
 	"NoRoomsAreAvailable": "Er zijn geen zalen beschikbaar",
 	"CanNotAddAppointmentOnPastDate": "Kan geen afspraken toevoegen op dit tijdstip",
 	"OrderingNotValid": "Niet geldig",
+	"Order": "Volgorde",
 	"PleaseSelectAtLeast": "Selecteer ten minste",
 	"Radiologist(s)": "Radioloog(s)",
 	"Assistant(s)": "Assistent(s)",

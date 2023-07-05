@@ -414,6 +414,7 @@
 	"NoRoomsAreAvailable": "No rooms are availale",
 	"CanNotAddAppointmentOnPastDate": "Can't add appointment on past time",
 	"OrderingNotValid": "Ordering not valid",
+	"Order": "Order",
 	"PleaseSelectAtLeast": "Please select at least",
 	"Radiologist(s)": "Radiologist(s)",
 	"Assistant(s)": "Assistant(s)",
