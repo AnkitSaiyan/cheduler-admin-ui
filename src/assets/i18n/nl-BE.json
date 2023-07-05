@@ -90,7 +90,7 @@
 	"AreYouSureYouWantToDeleteThisStaff": "Ben je zeker dat je deze medewerker wil verwijderen?",
 	"Are you sure you want to delete this Priority Slot?": "Ben je zeker dat je deze prioritaire slot wil verwijderen?",
 	"AddStaff": "Medewerker Toevoegen",
-	"DeleteStaffToast": "Staff Deleted successfully NL",
+	"DeleteStaffToast": "Medewerker Succesvol Verwijderd",
 	"StaffSearch": "Zoek op Voornaam, Naam, Type en E-mail",
 	"StaffDetails": "Medewerker Details",
 	"StaffUpdatedToast": "Toevoegen Updated Successfully",
@@ -111,7 +111,7 @@
 	"RoomView": "Zaal Bekijk",
 	"RoomDetails": "Details Zaal",
 	"Exams": "Onderzoeken",
-	"ExamInstructions": "Aanwijzingen Onderzoeken",
+	"ExamInstructions": "Aanwijzingen Onderzoek",
 	"ExamsInvolvingTheRoom": "Onderzoeken met betrokken zaal",
 	"ExamsInvolvingStaffMember": "Onderzoeken waarbij een medewerker betrokken is",
 	"RequiredEmail": "E-mail *",
@@ -417,6 +417,7 @@
 	"NoRoomsAreAvailable": "Er zijn geen zalen beschikbaar",
 	"CanNotAddAppointmentOnPastDate": "Kan geen afspraken toevoegen op dit tijdstip",
 	"OrderingNotValid": "Niet geldig",
+	"Order": "Volgorde",
 	"PleaseSelectAtLeast": "Selecteer ten minste",
 	"Radiologist(s)": "Radioloog(s)",
 	"Assistant(s)": "Assistent(s)",
@@ -452,4 +453,58 @@
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

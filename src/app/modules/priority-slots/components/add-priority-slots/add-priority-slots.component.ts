@@ -135,7 +135,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 	}
 
 	public ngOnInit(): void {
-		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
+		this.priorityApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
 
 		this.modalSvc.dialogData$
 			.pipe(
@@ -626,3 +626,4 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
+
