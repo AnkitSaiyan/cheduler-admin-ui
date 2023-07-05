@@ -22,7 +22,7 @@
 	"SaveChanges": "Bewaar Wijziging",
 	"User": "Gebruiker",
 	"Add": "Toevoegen",
-	"Edit": "Bewerk",
+	"Edit": "Bewerken",
 	"Delete": "Verwijder",
 	"Cancel": "Annuleer",
 	"EnterFirstName": "Gelieve je voornaam in te vullen",
@@ -452,6 +452,7 @@
 		}
 	}
 }
+
 
 
 
