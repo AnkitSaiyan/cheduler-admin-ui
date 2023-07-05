@@ -90,7 +90,7 @@
 	"AreYouSureYouWantToDeleteThisStaff": "Ben je zeker dat je deze medewerker wil verwijderen?",
 	"Are you sure you want to delete this Priority Slot?": "Ben je zeker dat je deze prioritaire slot wil verwijderen?",
 	"AddStaff": "Medewerker Toevoegen",
-	"DeleteStaffToast": "Staff Deleted successfully NL",
+	"DeleteStaffToast": "Medewerker Succesvol Verwijderd",
 	"StaffSearch": "Zoek op Voornaam, Naam, Type en E-mail",
 	"StaffDetails": "Medewerker Details",
 	"StaffUpdatedToast": "Toevoegen Updated Successfully",
@@ -453,4 +453,57 @@
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
