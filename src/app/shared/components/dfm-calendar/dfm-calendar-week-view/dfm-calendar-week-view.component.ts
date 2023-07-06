@@ -552,7 +552,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			if (user?.users.length) arr.push(...user.users);
 		});
 
-		if (arr.length) return GeneralUtils.removeDuplicateData(arr, ['id']);
+		if (arr.length) return GeneralUtils.removeDuplicateData(arr, 'id');
 		return [];
 	}
 }
