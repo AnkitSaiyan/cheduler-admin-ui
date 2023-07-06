@@ -64,7 +64,7 @@
 	"OnlyForException": "gebruik enkel voor uitzonderingen",
 	"GetDetailedException": "Gedetailleerd gebruik enkel voor uitzonderingen",
 	"ChooseDay": "Kies dag",
-	"StartTime": "Begin tijd",
+	"StartTime": "Begintijd",
 	"Start": "Begin",
 	"End": "Eind",
 	"EndTime": "Eindtijd",
@@ -171,7 +171,7 @@
 	"Date": "Datum ",
 	"From": "Van",
 	"StartTimeRequired": "Begintijd *",
-	"EndTimeRequired": "Eind Tijd",
+	"EndTimeRequired": "Eindtijd *",
 	"Until": "Tot",
 	"Repeat": "Herhaal",
 	"AllDay": "Volledige Dag",
@@ -453,6 +453,7 @@
 		}
 	}
 }
+
 
 
 
