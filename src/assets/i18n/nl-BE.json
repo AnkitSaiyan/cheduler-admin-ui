@@ -39,8 +39,8 @@
 	"Name": "Naam",
 	"RizvNumber": "RIZIV Nummer",
 	"EnterRizvNumber": "Gelieve RIZIV no. in te vullen",
-	"SearchByNameEmailCategory": "Zoek op Voornaam, Naam en Email",
-	"SearchByPrioritySlots": "Zoek Op Prioritaire Slots",
+	"SearchByNameEmailCategory": "Zoek op voornaam, naam en email",
+	"SearchByPrioritySlots": "Zoek op prioritaire slots",
 	"EnterAddress": "Gelieve adres in te vullen",
 	"EnterTelephone": "Gelieve telefoonnummer in te vullen",
 	"EnterGsm": "Gelieve GSM nummer in te vullen",
@@ -160,7 +160,7 @@
 	"PhysicianDetails": "Gegevens Dokter",
 	"Absence": "Afwezigheid",
 	"AbsenceName": "Afwezigheid Naam",
-	"AbsenceSearch": "Zoek op Afwezigheid Naam, Datum",
+	"AbsenceSearch": "Zoek op afwezigheid naam, datum",
 	"AddAbsence": "Toevoegen Afwezigheid",
 	"Title": "Titel",
 	"StartDate": "Begin Datum",
@@ -254,8 +254,8 @@
 	"dateFormat": "dd/mm/jj",
 	"AbsenceDetails": "Details Afwezigheid",
 	"Assistant": "Assistent",
-	"ExamAvailabilityInfo": "Info Onderzoek Beschikbaarheid",
-	"ExamAvailabilityData": "Beschikbaarheid Onderzoek Gegevens",
+	"ExamAvailabilityInfo": "Beschikbaarheid Onderzoek Gegevens",
+	"ExamAvailabilityData": "Gedetailleerde gegevens beschikbaarheid onderzoek",
 	"Medium": "Gemiddeld",
 	"High": "Hoog",
 	"Low": "Laag",
@@ -270,7 +270,7 @@
 	"Print": "Afdrukken",
 	"PatientName": "Naam Patiënt",
 	"AddAppointment": "Afspraak Toevoegen",
-	"SearchbyPatientnameappointmentnoanddoctor": "Zoek op patiëntnaam Afspraak nr. Dokter",
+	"SearchbyPatientnameappointmentnoanddoctor": "Zoek op patiëntnaam afspraak nr. dokter",
 	"Docter": "Dokter",
 	"PatientFirstName": "Voornaam Patiënt",
 	"PatientLastName": "Naam Patiënt",
@@ -325,19 +325,19 @@
 	"NewAppointmentCreated": "Nieuwe Afspraak Ontvangen",
 	"TopTenExaminations": "Top 10 Onderzoeken",
 	"UnavailablePeriodsOfTheHalls": "Onbeschikbare Periodes Voor Zaal de Volgende 31 Dagen",
-	"SearchRoomName": "Zoek Op Zaal Naam",
+	"SearchRoomName": "Zoek op zaal naam",
 	"Patients": "Patiënten",
 	"Completed": "Voltooid",
 	"Cancelled": "Geannuleerd",
 	"OverallStatus": "Algemene Status",
 	"SortBy": "Sorteer Per",
 	"RecentPatients": "Recente Patiënten",
-	"SearchByPatientName": "Zoek Op Naam Patiënt",
+	"SearchByPatientName": "Zoek op naam atiënt",
 	"AppointmentDate": "Datum Afspraak",
 	"GetStarted": "Begin",
 	"AppointmentsList": "Afspraken Lijst",
 	"Search": "Zoek",
-	"AdvancedSearch": "Geavanceerd Zoeken",
+	"AdvancedSearch": "Geavanceerd zoeken",
 	"AreYouSureYouWantToDeleteThisPost": "Weet je zeker dat je deze post-it wilt verwijderen?",
 	"AreYouSureYouWantToDeleteThisExam": "Ben je zeker dat je dit onderzoek wil verwijderen?",
 	"EnterMessage": "Voer Bericht in",
@@ -361,7 +361,7 @@
 	"NoGeneralStafFfound": "Geen Generale Staf Gevonden",
 	"UserDeleted": "Gebruiker Succesvol Verwijderd",
 	"EmailTemplate": "E-mail Sjabloon",
-	"SearchByTemplateName": "Zoek op Naam Sjabloon",
+	"SearchByTemplateName": "Zoek op naam sjabloon",
 	"Subject": "Onderwerp",
 	"Content": "Inhoud",
 	"ContentForAdmin": "Inhoud Voor Admin",
@@ -453,6 +453,11 @@
 		}
 	}
 }
+
+
+
+
+
 
 
 
