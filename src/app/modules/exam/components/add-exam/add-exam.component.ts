@@ -302,12 +302,12 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			const total = value.reduce((acc, curr) => {
 				return acc + curr.selectRoom;
 			}, 0);
-			(this.examForm.get('roomsForExam') as FormArray).controls.forEach((control) => {
-				if (control.value?.sortOrder && control.value?.sortOrder > total) {
-					// console.log(control.value?.sortOrder, 'test', this.availableRooms$$.value[this.examForm.value.roomType].length);
-					control.get('sortOrder')?.reset();
-				}
-			});
+			// (this.examForm.get('roomsForExam') as FormArray).controls.forEach((control) => {
+			// 	if (control.value?.sortOrder && control.value?.sortOrder > total) {
+			// 		// console.log(control.value?.sortOrder, 'test', this.availableRooms$$.value[this.examForm.value.roomType].length);
+			// 		control.get('sortOrder')?.reset();
+			// 	}
+			// });
 			this.orderOption$$.next(total || 1);
 		});
 	}
@@ -727,6 +727,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					fg.get('sortOrder')?.enable();
 					this.formErrors.selectRoomErr = false;
 				} else {
+					this.updateSortOrder(fg.value?.roomId, fg.value?.sortOrder);
 					fg.patchValue({
 						duration: null,
 						sortOrder: null,
@@ -742,6 +743,19 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			.subscribe(() => this.toggleExpensiveError(+this.formValues.expensive));
 
 		return fg;
+	}
+
+	private updateSortOrder(id: number | null | undefined, sortOrder: number) {
+		if (id && sortOrder) {
+			const fa = this.examForm.get('roomsForExam') as FormArray;
+
+			fa.controls.forEach((control) => {
+				// eslint-disable-next-line no-unsafe-optional-chaining
+				if (+control.value?.roomId !== +id && control.value.sortOrder && +control.value.sortOrder > sortOrder) {
+					control.patchValue({ sortOrder: (+control.value.sortOrder - 1).toString() });
+				}
+			});
+		}
 	}
 
 	private createRoomsForExamFormArray(roomType: RoomType) {
