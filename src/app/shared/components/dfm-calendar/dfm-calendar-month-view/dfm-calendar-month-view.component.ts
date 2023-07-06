@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { BehaviorSubject, filter } from 'rxjs';
 import { getDaysOfMonth, getDurationMinutes, getWeekdayWiseDays, Weekday } from '../../../models/calendar.model';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
 @Component({
 	selector: 'dfm-calendar-month-view',
@@ -110,5 +111,14 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 	public changeToDayView(day: number, month: number, year: number) {
 		const date = new Date(year, month, day);
 		this.dayViewEvent.emit(date);
+	}
+
+	public removeDuplicateData(data: any): Array<any> {
+		const arr: any = [];
+		data.exams?.forEach((user) => {
+			if (user?.users.length) arr.push(...user.users);
+		});
+		if (arr.length) return GeneralUtils.removeDuplicateData(arr, 'id');
+		return [];
 	}
 }
