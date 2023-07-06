@@ -372,7 +372,7 @@ export const Translate = Object.freeze({
 			[DUTCH_BE]: 'Dokter succesvol verwijderd',
 		},
 		ExamDeleted: {
-			[ENG_BE]: 'Exam deleted successfully',
+			[ENG_BE]: 'Examination deleted successfully',
 			[DUTCH_BE]: 'Onderzoek succesvol verwijderd',
 		},
 		PracticeHoursUpdated: {
@@ -412,11 +412,11 @@ export const Translate = Object.freeze({
 			[DUTCH_BE]: 'Afspraak succesvol toegevoegd',
 		},
 		ExamAdded: {
-			[ENG_BE]: 'Exam Added Successfully',
+			[ENG_BE]: 'Examination Added Successfully',
 			[DUTCH_BE]: 'Onderzoek succesvol toegevoegd',
 		},
 		ExamUpdated: {
-			[ENG_BE]: 'Exam Updated Successfully',
+			[ENG_BE]: 'Examination Updated Successfully',
 			[DUTCH_BE]: 'Onderzoek succesvol geüpdated',
 		},
 		SiteAdded: {
@@ -605,7 +605,7 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Uren praktijk',
 	},
 	Exam: {
-		[ENG_BE]: 'Exam',
+		[ENG_BE]: 'Examination',
 		[DUTCH_BE]: 'Onderzoek',
 	},
 	EmailTemplate: {
