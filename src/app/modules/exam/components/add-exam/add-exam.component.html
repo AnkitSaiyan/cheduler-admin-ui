@@ -268,7 +268,7 @@
                                       (searchInput)="handleDropdownSearch($event, 'radio')"
                                       [multiple]="true"
                                       formControlName="radiologists"
-                                      [placeholder]="((radiologistDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'Select Radiologists') | async) ?? ''"
+                                      [placeholder]="((radiologistDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'Select radiologists') | async) ?? ''"
                                       [items]="filteredRadiologists$$.value"
                                     >
                                     </dfm-input-dropdown>
