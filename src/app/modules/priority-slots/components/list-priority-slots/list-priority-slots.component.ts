@@ -178,7 +178,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		this.shareDataSvc
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe(([lang]) => {
+			.subscribe((lang) => {
 				this.selectedLang = lang;
 				this.columns = [Translate.Start[lang], Translate.End[lang], Translate.Priority[lang]];
 				if (this.permissionSvc.isPermitted([Permission.UpdatePrioritySlots, Permission.DeletePrioritySlots])) {
