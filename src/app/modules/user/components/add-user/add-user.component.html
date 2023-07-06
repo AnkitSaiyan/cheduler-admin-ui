@@ -17,7 +17,7 @@
   <section class="modal-body ad-us-section2">
     <form [formGroup]="addUserForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
       <div class="d-flex flex-column dfm-gap-16 flex-1">
-        <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'SelectUserType' | translate }}*</span>
+        <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'SelectUserType' | translate | titlecase }}*</span>
         <div class="w-fit d-flex justify-content-between dfm-gap-24">
           <dfm-radio-button
             class="font-weight-normal"
