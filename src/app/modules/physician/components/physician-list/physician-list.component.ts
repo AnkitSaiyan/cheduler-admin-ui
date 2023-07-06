@@ -280,7 +280,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
 				next: () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`),
-				error: (err) => this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER),
+				error: (err) => this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER),
 			});
 	}
 

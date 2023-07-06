@@ -292,12 +292,12 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				}
 			});
 
-		this.signalRSvc.latestAppointmentInfo$.pipe(withLatestFrom(this.filteredAppointments$$), takeUntil(this.destroy$$)).subscribe({
-			next: ([item, list]) => {
-				const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
-				this.filteredAppointments$$.next(modifiedList);
-			},
-		});
+			this.signalRSvc.latestAppointmentInfo$.pipe(withLatestFrom(this.appointments$$), takeUntil(this.destroy$$)).subscribe({
+				next: ([item, list]) => {
+					const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
+					this.appointments$$.next(modifiedList);
+				},
+			});
 	}
 
 	public override ngOnDestroy() {
