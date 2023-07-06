@@ -32,6 +32,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { SignalrService } from 'src/app/core/services/signalr.service';
+import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -140,13 +141,14 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		private joinWithAndPipe: JoinWithAndPipe,
 		private translatePipe: TranslatePipe,
 		private signalRSvc: SignalrService,
+		private dashBoardSvc: DashboardApiService,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.appointmentApiSvc.appointmentPageNo = 1;
 
-    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: () => {
 				if (
 					this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments]) &&
@@ -315,10 +317,12 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				},
 			});
 
-		this.signalRSvc.latestAppointmentInfo$.pipe(withLatestFrom(this.filteredAppointments$$), takeUntil(this.destroy$$)).subscribe({
+		this.signalRSvc.latestAppointmentInfo$.pipe(withLatestFrom(this.appointments$$), takeUntil(this.destroy$$)).subscribe({
 			next: ([item, list]) => {
 				const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
-				this.filteredAppointments$$.next(modifiedList);
+				this.appointments$$.next(modifiedList);
+				this.dashBoardSvc.refreshCharts();
+				this.appointmentApiSvc.pageNo = 1;
 			},
 		});
 	}

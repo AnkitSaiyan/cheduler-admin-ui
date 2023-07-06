@@ -291,7 +291,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 					]);
 					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
 				},
-				error: (err) => this.notificationSvc.showNotification(err, NotificationType.DANGER),
+				error: (err) => this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER),
 			});
 	}
 
