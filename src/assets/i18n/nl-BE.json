@@ -161,7 +161,7 @@
 	"Absence": "Afwezigheid",
 	"AbsenceName": "Afwezigheid Naam",
 	"AbsenceSearch": "Zoek op afwezigheid naam, datum",
-	"AddAbsence": "Toevoegen Afwezigheid",
+	"AddAbsence": "Afwezigheid Toevoegen",
 	"Title": "Titel",
 	"StartDate": "Begin Datum",
 	"EndDate": "Eind Datum",
@@ -453,6 +453,7 @@
 		}
 	}
 }
+
 
 
 
