@@ -141,7 +141,10 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		this.shareDataSvc
 			.getDate$()
-			.pipe(filter((date) => !!date))
+			.pipe(
+				filter((date) => !!date),
+				takeUntil(this.destroy$$),
+			)
 			.subscribe({
 				next: (date) => this.newDate$$.next({ date: new Date(date), isWeekChange: false }),
 			});

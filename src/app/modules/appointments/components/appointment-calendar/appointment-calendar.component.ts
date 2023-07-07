@@ -119,7 +119,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			next: (items) => {
 				//
 				this.calendarViewType = items;
-				this.ngOnInit();
+				// this.ngOnInit();
 			},
 		});
 	}
