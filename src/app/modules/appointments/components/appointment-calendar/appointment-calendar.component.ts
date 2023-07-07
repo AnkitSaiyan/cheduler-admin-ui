@@ -116,7 +116,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			next: (items) => {
 				//
 				this.calendarViewType = items;
-				this.ngOnInit();
+				// this.ngOnInit();
 			},
 		});
 	}
@@ -171,7 +171,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				minMaxValue = { ...minMaxValue, min: this.calculate(120, min, 'minus') };
 			}
 			if (
-				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) < DateTimeUtils.TimeToNumber(max) ||
+				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) < DateTimeUtils.TimeToNumber(max) / 100 ||
 				DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)
 			) {
 				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };

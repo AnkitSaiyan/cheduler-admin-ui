@@ -106,7 +106,7 @@
 	"InvalidTime": "Invalid Time",
 	"StartTimeLessThanEndTime": "Start time should be smaller than End time",
 	"SlotOverlapsOtherSlots": "Slot overlaps other slots",
-	"AddPrioritySlots": "Add Priority Slots",
+	"AddPrioritySlots": "Add Priority Slot",
 	"PrioritySlots": "Priority Slots",
 	"RoomView": "Room View",
 	"RoomDetails": "Room Details",
