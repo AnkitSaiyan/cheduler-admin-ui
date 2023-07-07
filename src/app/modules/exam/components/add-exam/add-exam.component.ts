@@ -296,6 +296,19 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					this.examDetails$$.next(examDetails);
 				},
 			});
+
+		this.examForm.get('roomsForExam')?.valueChanges.subscribe((value) => {
+			const total = value.reduce((acc, curr) => {
+				return acc + curr.selectRoom;
+			}, 0);
+			// (this.examForm.get('roomsForExam') as FormArray).controls.forEach((control) => {
+			// 	if (control.value?.sortOrder && control.value?.sortOrder > total) {
+			// 		// console.log(control.value?.sortOrder, 'test', this.availableRooms$$.value[this.examForm.value.roomType].length);
+			// 		control.get('sortOrder')?.reset();
+			// 	}
+			// });
+			this.orderOption$$.next(total || 1);
+		});
 	}
 
 	public override ngOnDestroy() {
@@ -713,6 +726,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					fg.get('sortOrder')?.enable();
 					this.formErrors.selectRoomErr = false;
 				} else {
+					this.updateSortOrder(fg.value?.roomId, fg.value?.sortOrder);
 					fg.patchValue({
 						duration: null,
 						sortOrder: null,
@@ -730,6 +744,19 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		return fg;
 	}
 
+	private updateSortOrder(id: number | null | undefined, sortOrder: number) {
+		if (id && sortOrder) {
+			const fa = this.examForm.get('roomsForExam') as FormArray;
+
+			fa.controls.forEach((control) => {
+				// eslint-disable-next-line no-unsafe-optional-chaining
+				if (+control.value?.roomId !== +id && control.value.sortOrder && +control.value.sortOrder > sortOrder) {
+					control.patchValue({ sortOrder: (+control.value.sortOrder - 1).toString() });
+				}
+			});
+		}
+	}
+
 	private createRoomsForExamFormArray(roomType: RoomType) {
 		const fa = this.examForm.get('roomsForExam') as FormArray;
 
@@ -737,7 +764,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		if (this.availableRooms$$.value[roomType]?.length) {
 			this.availableRooms$$.value[roomType].forEach((room) => fa.push(this.getRoomsForExamFormGroup(room)));
-			this.orderOption$$.next(this.availableRooms$$.value[roomType].length);
+			// this.orderOption$$.next(this.availableRooms$$.value[roomType].length);
 
 			setTimeout(() => {
 				fa.controls.forEach((control) => {

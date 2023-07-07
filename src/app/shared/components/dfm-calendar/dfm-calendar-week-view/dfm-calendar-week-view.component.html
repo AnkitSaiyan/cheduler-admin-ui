@@ -190,7 +190,7 @@
                         }"
 											>
                         <ng-container *ngIf="slotPercentage?.length">
-                          <span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
+                          <span style="font-size: 14px; font-weight: 500; color: black">{{'SlotFilled%'| translate}}: </span>
                           <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
                         </ng-container>
 											</div>

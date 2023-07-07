@@ -50,7 +50,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	public changeMonth$$ = new BehaviorSubject<number>(0);
 
-	public newDate$$ = new BehaviorSubject<Date | null>(null);
+	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 
 	public headerList: NameValue[] = [];
 
@@ -116,7 +116,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			next: (items) => {
 				//
 				this.calendarViewType = items;
-				this.ngOnInit();
+				// this.ngOnInit();
 			},
 		});
 	}
@@ -133,7 +133,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				const dateSplit = params['d'].split('-');
 				if (dateSplit.length === 3) {
 					const date = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2]);
-					this.newDate$$.next(date);
+					this.newDate$$.next({ date, isWeekChange: false });
 					this.selectedDate$$.next(date);
 				}
 			}
@@ -171,7 +171,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				minMaxValue = { ...minMaxValue, min: this.calculate(120, min, 'minus') };
 			}
 			if (
-				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) < DateTimeUtils.TimeToNumber(max) ||
+				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) < DateTimeUtils.TimeToNumber(max) / 100 ||
 				DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)
 			) {
 				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
@@ -206,7 +206,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				takeUntil(this.destroy$$),
 			)
 			.subscribe((value) => {
-				this.newDate$$.next(this.selectedDate$$.value);
+				this.newDate$$.next({ date: this.selectedDate$$.value, isWeekChange: false });
 				this.updateQuery(value[0]);
 			});
 
@@ -219,7 +219,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		this.dataControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			const date = new Date(value);
 			this.updateDate(date);
-			this.newDate$$.next(date);
+			this.newDate$$.next({ date, isWeekChange: false });
 		});
 
 		combineLatest([this.weekdayToPractice$$, this.route.queryParams, this.calendarViewFormControl.valueChanges])
@@ -290,13 +290,13 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	public changeToDayView(date: Date) {
 		this.calendarViewFormControl.setValue('day');
 		// const newDate = new Date(this.selectedDate$$.value.setDate(date));
-		this.newDate$$.next(date);
+		this.newDate$$.next({ date, isWeekChange: false });
 		this.selectedDate$$.next(date);
 	}
 
 	public updateToToday() {
 		if (this.selectedDate$$.value?.toDateString() !== new Date().toDateString()) {
-			this.newDate$$.next(new Date());
+			this.newDate$$.next({ date: new Date(), isWeekChange: false });
 		}
 	}
 
@@ -413,6 +413,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				...(date ? { d: this.datePipe.transform(date, 'yyyy-MM-dd') } : {}),
 			},
 			queryParamsHandling: 'merge',
+			replaceUrl: true,
 		});
 	}
 
