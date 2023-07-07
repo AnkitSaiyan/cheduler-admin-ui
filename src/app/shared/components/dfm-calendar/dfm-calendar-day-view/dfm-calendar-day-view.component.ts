@@ -248,7 +248,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			.subscribe({
 				next: (res) => {},
 				error: (err) => {
-					this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 					if (eventContainer && top && height) {
 						// eslint-disable-next-line no-param-reassign
 						eventContainer.style.top = top;
