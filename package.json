@@ -49,6 +49,7 @@
 		"@storybook/builder-webpack5": "^6.5.14",
 		"@storybook/manager-webpack5": "^6.5.14",
 		"@storybook/testing-library": "0.0.13",
+		"angular": "^1.8.3",
 		"bootstrap": "^5.2.1",
 		"chart.js": "^4.2.0",
 		"chartjs-plugin-datalabels": "^2.2.0",
