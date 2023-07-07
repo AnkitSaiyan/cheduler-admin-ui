@@ -52,7 +52,7 @@
       <div class="calender-day-view-body-container hide-scrollbar">
         <div role="presentation" class="calender-day-view-body" >
           <div role="row" class="calender-day-view-time-slot-container" *ngIf="timeSlot?.timings?.length">
-            <div class="calender-day-view-time-slot text-sm" *ngFor="let time of timeSlot.timings" >
+            <div class="calender-day-view-time-slot text-sm" *ngFor="let time of timeSlot?.timings" >
               <span>{{ time | dfmUtcToLocal: true }}</span>
               <div class="calender-day-view-horizontal-line"></div>
             </div>
@@ -62,7 +62,7 @@
             <div role="row" class="calender-day-view-events-container" *ngIf="timeSlot?.timings?.length">
               <div class="gray-out-area"  *ngFor="let item of grayOutSlot$$ | async" [ngStyle]="{'top.px': item.top, 'height.px': item.height, 'width': bodyMain.style.width }" ></div>
               <div>
-                <ng-container *ngFor="let i of timeSlot.timings">
+                <ng-container *ngFor="let i of timeSlot?.timings">
                   <div class="calender-day-view-horizontal-line"></div>
                   <div class="calender-day-view-horizontal-line-light"></div>
                 </ng-container>
