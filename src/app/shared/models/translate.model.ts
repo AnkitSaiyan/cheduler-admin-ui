@@ -64,6 +64,14 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'PDF',
 		[DUTCH_BE]: 'PDF',
 	},
+	AppointmentUpdatedSuccessfully: {
+		[ENG_BE]: 'Appointment updated successfully',
+		[DUTCH_BE]: 'Afspraak succesvol geupdated',
+	},
+	AppointmentSavedSuccessfully: {
+		[ENG_BE]: 'Appointment saved successfully',
+		[DUTCH_BE]: 'Afspraak succesvol opgeslagen',
+	},
 	Print: {
 		[ENG_BE]: 'Print',
 		[DUTCH_BE]: 'Afdrukken',
