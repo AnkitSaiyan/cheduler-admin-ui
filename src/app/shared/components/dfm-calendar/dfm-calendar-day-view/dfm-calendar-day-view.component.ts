@@ -111,7 +111,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		const currentValue = changes['dataGroupedByDateAndRoom']?.currentValue;
 		const previousValue = changes['dataGroupedByDateAndRoom']?.previousValue;
-
 		if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
 			this.dataGroupedByDateAndRoom = currentValue;
 		}
