@@ -679,21 +679,35 @@ button:disabled {
 	right: 16px;
 }
 
+.carousel-control-prev-icon, .carousel-control-next-icon {
+	width: 24px;
+	height: 24px;
+	filter: invert(1) grayscale(100);
+	border-radius: 50%;
+  
+	&:hover {
+	  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+	}
+  }
+
+.carousel-item {
+  height: 92% !important;
+}
+
 .carousel-indicators {
 	display: flex;
-	column-gap: 8px;
+	column-gap: -8px;
 
-	.active {
-		background: var(--dfm-primary);
-	}
+  .active {
+    background: var(--dfm-primary)!important;
+  }
 
-	button {
-		background: var(--bs-gray-400);
-		width: 8px;
-		height: 8px;
-		border: none;
-		border-radius: 50%;
-		box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  button {
+    background: darkgray!important;
+    width: 8px !important;
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+    transform: scale(1.0, 0.4);
+    border-radius: 50%;
 
 		&:hover {
 			background: rgba(var(--dfm-primary), 0.5);

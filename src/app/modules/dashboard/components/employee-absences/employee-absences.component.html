@@ -45,9 +45,9 @@
         <span class="text-xs dfm-text-main-500">{{ employee?.startedAt | dfmUtcToLocal | dfmDefaultDate }} - {{ employee?.endedAt | dfmUtcToLocal | dfmDefaultDate }}</span>
       </div>
 
-      <div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!employeeAbsences.length">
-        {{ 'NoDataFound' | translate }}
-      </div>
+    </div>
+    <div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!employeeAbsences.length">
+      {{ 'NoDataFound' | translate }}
     </div>
   </section>
 </div>
