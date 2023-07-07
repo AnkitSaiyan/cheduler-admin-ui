@@ -85,9 +85,10 @@
           </div>
         </div> 
 
-        <div class="d-flex dfm-mb-8 dfm-gap-8 small-dropdown">
-          <dfm-input-dropdown
-            class="flex-1"
+        <div class="d-flex dfm-mb-8 dfm-gap-8 flex-wrap flex-column">
+          <div class="flex-1 small-dropdown">
+            <dfm-input-dropdown
+            class=""
             #exams
             [items]="filteredExamList"
             [multiple]="true"
@@ -97,16 +98,18 @@
             (searchInput)="handleDropdownSearch($event, 'exam')"
             formControlName="examList"
             size="md"
-            label="{{ 'Exams' | translate }} *"
-
-          >
+            label="{{ 'Exams' | translate }} *">
           </dfm-input-dropdown>
-          <dfm-input            
-              class="flex-1 min-w-228"
-              size="md"
-              [placeholder]="'Enter Social Security Number' | translate"
-              [label]="('Social Security Number' | translate)"
-            ></dfm-input>
+          </div>
+
+          <div class="flex-1">
+            <dfm-input            
+            class=" min-w-228"
+            size="md"
+            [placeholder]="'Enter Social Security Number' | translate"
+            [label]="('Social Security Number' | translate)"
+          ></dfm-input>
+          </div>
         </div>
 
         <span
@@ -211,7 +214,7 @@
 
 
 
-        <div class="d-flex dfm-gap-16 dfm-mt-8">
+        <div class="d-flex dfm-gap-16 dfm-mt-8 flex-wrap">
           <div class="flex-1 w-full min-w-228" *ngIf="(isDoctorConsentDisable$$ | async) === false">
             <dfm-input-dropdown
               [items]="filteredPhysicianList"
