@@ -123,7 +123,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
 			.subscribe({
 				next: () => {
 					this.notificationSvc.showNotification(Translate.SuccessMessage.UserDeleted[this.selectedLang]);
-					this.router.navigate(['/', 'user']);
+					this.router.navigate(['/', 'user'], { queryParamsHandling: 'merge', relativeTo: this.route });
 				},
 			});
 	}

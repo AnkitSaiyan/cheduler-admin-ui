@@ -113,7 +113,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 			)
 			.subscribe(() => {
 				this.notificationSvc.showNotification(Translate.DeleteAppointment[this.selectedLang]);
-				this.router.navigate(['/', 'appointment']);
+				this.router.navigate(['/', 'appointment'], { queryParamsHandling: 'merge', relativeTo: this.route });
 			});
 	}
 }

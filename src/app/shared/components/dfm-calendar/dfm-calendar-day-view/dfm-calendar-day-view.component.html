@@ -123,7 +123,7 @@
 
                               <div class="calender-day-view-event-details-container" (click)="$event.stopPropagation()"
                                    [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto ': +eventHeight <= 40, 'center': +eventHeight >20 && +eventHeight <=40 }"
-                                   [routerLink]="['/', 'appointment', data.appointment.id, 'view']">
+                                   [routerLink]="['/', 'appointment', data.appointment.id, 'view']" queryParamsHandling="merge">
                                 <div class="d-flex dfm-gap-4" triggers="hover" [ngbPopover]="eventDetails"
                                      [autoClose]="'outside'" container="body">
                                   <!-- <div class="circle-gray-200-24" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname?.length">
@@ -199,6 +199,7 @@
 
                                   <button mat-menu-item
                                           [routerLink]="['/', 'appointment', data.appointment.id, 'edit']"
+                                          queryParamsHandling="merge"
                                           [state]="{ edit: true, comingFromRoute: 'appointment' }">
                                     <div class="icon-20">
                                       <dfm-icon name="pencil-02"></dfm-icon>

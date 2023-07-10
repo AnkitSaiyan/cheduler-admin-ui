@@ -181,7 +181,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 		this.users$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (users) => {
-				this.filteredUsers$$.next([...users]);
+				this.handleSearch(this.searchControl.value ?? '');
 				users.forEach((user) => this.idsToObjMap.set(user.id.toString(), user));
 			},
 		});
@@ -190,12 +190,12 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			.pipe(
 				filter((userType) => !!userType),
 				debounceTime(0),
-				distinctUntilChanged(),
+				distinctUntilChanged((pre, curr) => pre?.[0] === curr?.[0]),
 				tap(([userType]) => {
 					if (userType === UserType.General) {
 						this.userApiSvc.pageNoUser = 1;
 					}
-
+					this.router.navigate([], { queryParams: { userType }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
 					this.users$$.next([]);
 				}),
 				switchMap(([userType]) => {
@@ -224,15 +224,22 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				},
 			});
 
-		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
-			next: (searchText) => {
-				if (searchText) {
-					this.handleSearch(searchText.toLowerCase());
-				} else {
-					this.filteredUsers$$.next([...this.users$$.value]);
-				}
-			},
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search, userType }) => {
+			this.searchControl.setValue(search);
+			this.userTypeDropdownControl.setValue(userType, { onlySelf: true, emitEvent: false });
+			if (search) {
+				this.handleSearch(search.toLowerCase());
+			} else {
+				this.filteredUsers$$.next([...this.users$$.value]);
+			}
 		});
+
+			this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+				next: (searchText) => {
+					this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
+				},
+			});
+
 
 		this.downloadDropdownControl.valueChanges
 			.pipe(
@@ -470,7 +477,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		if (e?.id) {
 			let route = `./${e.id}`;
 			route += this.userTypeDropdownControl.value === UserType.Scheduler ? '/s/view' : '/g/view';
-			this.router.navigate([route], { relativeTo: this.route });
+			this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 		}
 	}
 
