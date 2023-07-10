@@ -479,7 +479,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 						this.submitting$$.next(false);
 
-						this.router.navigate([route], { relativeTo: this.route });
+						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 					},
 					error: (err) => {
 						this.submitting$$.next(false);
@@ -502,7 +502,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 						this.submitting$$.next(false);
 
-						this.router.navigate([route], { relativeTo: this.route });
+						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 					},
 					error: (err) => {
 						this.submitting$$.next(false);

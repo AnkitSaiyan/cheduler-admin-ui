@@ -132,7 +132,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 		});
 
 		this.exams$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (exams) => this.filteredExams$$.next([...exams]),
+			next: (exams) => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -149,13 +149,18 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 			},
 		});
 
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+			this.searchControl.setValue(search);
+			if (search) {
+				this.handleSearch(search.toLowerCase());
+			} else {
+				this.filteredExams$$.next([...this.exams$$.value]);
+			}
+		});
+
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
 			next: (searchText) => {
-				if (searchText) {
-					this.handleSearch(searchText.toLowerCase());
-				} else {
-					this.filteredExams$$.next([...this.exams$$.value]);
-				}
+				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
 			},
 		});
 
@@ -320,7 +325,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
 	public navigateToViewExam(e: TableItem) {
 		if (e?.id) {
-			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route, queryParamsHandling: 'preserve' });
 		}
 	}
 

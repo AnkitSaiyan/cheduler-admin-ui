@@ -18,12 +18,13 @@ import { PermissionService } from 'src/app/core/services/permission.service';
 import { Permission } from 'src/app/shared/models/permission.model';
 import {PaginationData} from "../../../../shared/models/base-response.model";
 import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import { ActivatedRoute, Router } from '@angular/router';
 
 const ColumnIdToKey = {
 	1: 'title',
 	2: 'subject',
-	3: 'status'
-}
+	3: 'status',
+};
 
 @Component({
 	selector: 'dfm-email-template-list',
@@ -90,11 +91,13 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		private translate: TranslateService,
 		public permissionSvc: PermissionService,
 		private translatePipe: TranslatePipe,
+		private route: ActivatedRoute,
+		private router: Router,
 	) {
 		super();
 		this.emails$$ = new BehaviorSubject<any[]>([]);
 		this.filteredEmails$$ = new BehaviorSubject<any[]>([]);
-    this.emailTemplateApiSvc.pageNo = 1;
+		this.emailTemplateApiSvc.pageNo = 1;
 		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe(() => {
 			if (
 				this.permissionSvc.isPermitted([Permission.UpdateEmailTemplate]) &&
@@ -125,7 +128,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		});
 
 		this.emails$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (emails) => this.filteredEmails$$.next([...emails]),
+			next: (emails) => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.emailTemplateApiSvc.emailTemplates$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -140,13 +143,18 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 			error: (e) => this.emails$$.next([]),
 		});
 
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+			this.searchControl.setValue(search);
+			if (search) {
+				this.handleSearch(search.toLowerCase());
+			} else {
+				this.filteredEmails$$.next([...this.emails$$.value]);
+			}
+		});
+
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
 			next: (searchText) => {
-				if (searchText) {
-					this.handleSearch(searchText.toLowerCase());
-				} else {
-					this.filteredEmails$$.next([...this.emails$$.value]);
-				}
+				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
 			},
 		});
 
@@ -309,6 +317,8 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		this.filteredEmails$$.next(GeneralUtils.SortArray(this.filteredEmails$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
 
 
 
