@@ -8,13 +8,15 @@ import {
     startWith,
     Subject,
     switchMap,
-    tap
+    tap,
+	  timer
 } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { CreateExamRequestData, Exam } from '../../shared/models/exam.model';
 import { ChangeStatusRequestData } from '../../shared/models/status.model';
 import { LoaderService } from './loader.service';
+import { AsyncValidatorFn, AbstractControl } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root',
@@ -130,4 +132,28 @@ export class ExamApiService {
       }),
     );
   }
+
+  private searchExam(value) {
+	// debounce
+	return timer(1000).pipe(
+		switchMap(() => {
+			const params = new HttpParams().append('examName', value);
+			return this.http.get<any>(`${this.examUrl}/isexamexist`, { params });
+		}),
+	);
+}
+
+public examValidator(): AsyncValidatorFn {
+	return (control: AbstractControl): Observable<any> => {
+		return this.searchExam(control.value).pipe(
+			map((res) => {
+				if (res.data === '') {
+					// return error
+					return { userNameExists: true };
+				}
+				return null;
+			}),
+		);
+	};
+}
 }

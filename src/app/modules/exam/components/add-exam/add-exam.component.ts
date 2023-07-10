@@ -548,7 +548,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 	private createForm(): void {
 		this.examForm = this.fb.group({
-			name: [null, [Validators.required]],
+			name: [null, [Validators.required], [this.examApiSvc.examValidator()]],
+			// name: [null, [Validators.required]],
 			expensive: [null, [Validators.required, Validators.min(5)]],
 			roomType: [null, [Validators.required]],
 			roomsForExam: this.fb.array([]),
