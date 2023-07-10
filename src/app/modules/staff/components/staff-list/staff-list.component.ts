@@ -139,7 +139,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 		this.staffs$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (staffs) => {
-				this.filteredStaffs$$.next([...staffs]);
+				this.handleSearch(this.searchControl.value ?? '');
 				staffs.forEach((staff) => this.idsToObjMap.set(staff.id.toString(), staff));
 			},
 		});
@@ -159,15 +159,21 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 			},
 		});
 
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+			this.searchControl.setValue(search);
+			if (search) {
+				this.handleSearch(search.toLowerCase());
+			} else {
+				this.filteredStaffs$$.next([...this.staffs$$.value]);
+			}
+		});
+
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
 			next: (searchText) => {
-				if (searchText) {
-					this.handleSearch(searchText.toLowerCase());
-				} else {
-					this.filteredStaffs$$.next([...this.staffs$$.value]);
-				}
+				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
 			},
 		});
+
 
 		this.downloadDropdownControl.valueChanges
 			.pipe(
@@ -346,7 +352,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 	public navigateToViewStaff(e: TableItem) {
 		if (e?.id) {
-			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route, queryParamsHandling: 'preserve' });
 		}
 	}
 

@@ -363,7 +363,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
                     route = this.edit ? '/staff' : '../';
                 }
 
-                this.router.navigate([route], {relativeTo: this.route});
+                this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
             });
     }
 

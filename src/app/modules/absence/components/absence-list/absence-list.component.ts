@@ -121,7 +121,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 		});
 
 		this.absences$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (absences) => this.filteredAbsences$$.next([...absences]),
+			next: (absences) => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -138,13 +138,18 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 			},
 		});
 
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+			this.searchControl.setValue(search);
+			if (search) {
+				this.handleSearch(search.toLowerCase());
+			} else {
+				this.filteredAbsences$$.next([...this.absences$$.value]);
+			}
+		});
+
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
 			next: (searchText) => {
-				if (searchText) {
-					this.handleSearch(searchText.toLowerCase());
-				} else {
-					this.filteredAbsences$$.next([...this.absences$$.value]);
-				}
+				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
 			},
 		});
 
@@ -266,7 +271,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
 	public navigateToViewAbsence(e: TableItem) {
 		if (e?.id) {
-			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route, queryParamsHandling: 'preserve' });
 		}
 	}
 

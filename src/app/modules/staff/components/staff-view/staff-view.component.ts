@@ -113,7 +113,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 			)
 			.subscribe(() => {
 				this.notificationSvc.showNotification(Translate.SuccessMessage.StaffDeleted[this.selectedLang]);
-				this.router.navigate(['/', 'staff']);
+				this.router.navigate(['/', 'staff'], { queryParamsHandling: 'merge' });
 			});
 	}
 

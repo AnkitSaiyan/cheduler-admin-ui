@@ -103,7 +103,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 		});
 
 		this.rooms$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (rooms) => this.filteredRooms$$.next([...rooms])
+			next: (rooms) => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.roomApiSvc.rooms$
@@ -129,15 +129,22 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 				},
 			});
 
-		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
-			next: (searchText) => {
-				if (searchText) {
-					this.handleSearch(searchText.toLowerCase());
+
+      this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+				this.searchControl.setValue(search);
+				if (search) {
+					this.handleSearch(search.toLowerCase());
 				} else {
 					this.filteredRooms$$.next([...this.rooms$$.value]);
 				}
-			}
-		});
+			});
+
+			this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+				next: (searchText) => {
+					this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
+				},
+			});
+
 
 		this.downloadDropdownControl.valueChanges
 			.pipe(
@@ -338,7 +345,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 
 	public navigateToViewRoom(e: TableItem) {
 		if (e?.id) {
-			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route, queryParamsHandling: 'preserve' });
 		}
 	}
 
