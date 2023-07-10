@@ -302,7 +302,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 							this.router.navigate([route], { relativeTo: this.route });
 						},
 						error: (err) => {
-							this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+							// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 							this.submitting$$.next(false);
 						},
 					});
@@ -331,7 +331,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 							this.router.navigate([route], { relativeTo: this.route });
 						},
 						error: (err) => {
-							this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+							// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 							this.submitting$$.next(false);
 						},
 					});

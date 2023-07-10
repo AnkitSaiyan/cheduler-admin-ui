@@ -314,7 +314,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 					this.modalSvc.close(true);
 				},
 				error: (err) => {
-					this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 					this.submitting$$.next(false);
 				},
 			});
@@ -346,7 +346,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 					this.modalSvc.close(true);
 				},
 				error: (err) => {
-					this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 					this.submitting$$.next(false);
 				},
 			});
