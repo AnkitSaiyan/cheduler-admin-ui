@@ -314,8 +314,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		// In case if calendar start time is not 00:00 then adding extra minutes
 		if (this.timeSlot?.timings?.[0]) {
-			const startTime = this.timeSlot.timings?.[0].split(':');
-			minutes += DateTimeUtils.DurationInMinFromHour(+startTime?.[0], +startTime?.[1]);
+			const startTime = this.timeSlot?.timings?.[0].split(':');
+			minutes += DateTimeUtils.DurationInMinFromHour(+startTime[0], +startTime[1]);
 		}
 		const roundedMin = minutes - (minutes % 5);
 		const hour = Math.floor(minutes / 60);
@@ -490,8 +490,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		if (!timings?.length) return;
 		const grayOutSlot: any = [];
 		grayOutSlot.push({
-			dayStart: timings[0],
-			dayEnd: timings[0],
+			dayStart: timings?.[0],
+			dayEnd: timings?.[0],
 			top: 0,
 			height: 120 * this.pixelsPerMin,
 		});
