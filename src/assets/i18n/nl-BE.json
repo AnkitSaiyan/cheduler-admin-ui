@@ -134,7 +134,7 @@
 	"AddPracticeDataInfo": "Toevoegen Uren Beschikbaarheid Info",
 	"PracticeHours": "Praktijkuren",
 	"PracticeAvailabilityData": "Uren Beschikbaarheid Dagen",
-	"SiteManagement": "Praktijkbeheer",
+	"SiteManagement": "Site Beheer",
 	"SiteName": "Naam Praktijk",
 	"SiteLogo": "Logo Praktijk",
 	"ChooseFile": "Kies Bestand",
@@ -453,6 +453,7 @@
 		}
 	}
 }
+
 
 
 
