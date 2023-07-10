@@ -144,6 +144,18 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		this.users$$ = new BehaviorSubject<any[]>([]);
 		this.filteredUsers$$ = new BehaviorSubject<any[]>([]);
 		this.userApiSvc.pageNoUser = 1;
+    this.updateColumns(this.columnsForGeneral);
+
+		this.userTypeDropdownControl.valueChanges.pipe(filter(Boolean), debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$)).subscribe({
+			next: (userType) => {
+				if (userType === UserType.Scheduler) {
+					this.updateColumns(this.columnsForScheduler);
+				} else {
+					this.userApiSvc.pageNoUser = 1;
+					this.updateColumns(this.columnsForGeneral);
+				}
+			},
+		});
 	}
 
 	public ngOnInit(): void {
@@ -182,9 +194,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				tap(([userType]) => {
 					if (userType === UserType.General) {
 						this.userApiSvc.pageNoUser = 1;
-						this.updateColumns(this.columnsForGeneral);
-					} else {
-						this.updateColumns(this.columnsForScheduler);
 					}
 
 					this.users$$.next([]);
@@ -334,7 +343,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						!this.permissionSvc.isPermitted([Permission.UpdateUser, Permission.DeleteUser]) &&
 						!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
 					) {
-						this.tableHeaders = this.tableHeaders.filter((value) => value.title !== 'Actions');
+						this.tableHeaders = this.tableHeaders.filter((value) => value.title !== 'Actions' && value.title !== 'Acties');
 					}
 
 					this.tableHeaders = this.tableHeaders.map((h, i) => ({

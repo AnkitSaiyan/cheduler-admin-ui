@@ -170,7 +170,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
 			)
 			.subscribe(() => {
 				this.notificationSvc.showNotification(Translate.SuccessMessage.RoomsDeleted[this.selectedLang]);
-				this.router.navigate(['/', 'room']);
+				this.router.navigate(['/', 'room'], { queryParamsHandling: 'merge' });
 			});
 	}
 

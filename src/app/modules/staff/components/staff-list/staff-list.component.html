@@ -55,6 +55,7 @@
         class="text-nowrap"
         [disabled]="false"
         routerLink="./add"
+        queryParamsHandling="preserve"
         *dfmPermitted="Permission.CreateStaffs"
       >{{'AddStaff' | translate}}
       </dfm-button>
@@ -234,7 +235,7 @@
           <ng-template #actionCellTemplate>
             <dfm-data-table-action *ngIf="item.status === statusType.Inactive" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }], item)" ></dfm-data-table-action>
             <dfm-data-table-action *ngIf="item.status === statusType.Active" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }], item)"></dfm-data-table-action>
-            <dfm-data-table-action *dfmPermitted="Permission.UpdateStaffs" icon="pencil-02" tooltip="{{ 'Edit' | translate }}" (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']" [state]="{ comingFromRoute: 'staff', edit: true }"></dfm-data-table-action>
+            <dfm-data-table-action *dfmPermitted="Permission.UpdateStaffs" icon="pencil-02" tooltip="{{ 'Edit' | translate }}" (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']" queryParamsHandling="preserve" [state]="{ comingFromRoute: 'staff', edit: true }"></dfm-data-table-action>
             <dfm-data-table-action *dfmPermitted="Permission.DeleteStaffs" icon="trash-01" tooltip="{{ 'Delete' | translate }}" (click)="$event.stopPropagation(); deleteStaff(item.id)"></dfm-data-table-action>
           </ng-template>
         </dfm-data-table-action-cell>
