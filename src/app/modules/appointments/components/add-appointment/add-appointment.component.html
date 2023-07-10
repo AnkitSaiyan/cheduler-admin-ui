@@ -147,8 +147,8 @@
         </div>
       </div>
 
-      <div class="exam-date d-flex flex-row">
-        <div class="ad-ab-from-date flex-wrap-reverse dfm-gap-32 d-flex flex-1">
+      <div class="exam-date d-flex flex-row flex-column">
+        <div class="ad-ab-from-date flex-wrap-reverse flex-column dfm-gap-32 d-flex flex-1">
           <div class="flex-1">
           <div class="min-w-256 ad-ap-multi-dropdown extra-small-dropdown">
             <dfm-input-dropdown
@@ -216,7 +216,18 @@
             >
           </div>
 
-          <div *ngIf="!isOutside" class="flex-1 temp-element"></div>
+          <div class="flex-1">
+        <dfm-input
+          size="md"
+          placeholder="{{ 'Enter Social Security Number' | translate }}"
+          label="{{ 'Social Security Number' | translate | titlecase }}"
+        >
+        </dfm-input>
+        <!-- <span class="validation-error" *ngIf="appointmentForm.controls['patientTel'].hasError('required') && appointmentForm.controls['patientTel'].touched">
+          {{ 'RequiredField' | translate }}</span> -->
+        </div>
+
+          <!-- <div *ngIf="!isOutside" class="flex-1 temp-element"></div> -->
         </div>
       </div>
 

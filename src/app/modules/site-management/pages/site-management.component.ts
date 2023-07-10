@@ -256,9 +256,9 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
           }
         },
         (err) => {
-          this.submitting$$.next(false);
-          this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
-        },
+					this.submitting$$.next(false);
+					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+				},
       );
   }
 

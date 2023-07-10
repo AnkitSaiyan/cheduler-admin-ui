@@ -304,7 +304,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 							this.closeModal(true);
 						},
 					error: (err) => {
-						this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
 					},
 				});
@@ -319,7 +319,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 						this.closeModal(true);
 					},
 					error: (err) => {
-						this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
 					},
 				});
