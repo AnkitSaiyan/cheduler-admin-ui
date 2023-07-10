@@ -127,8 +127,8 @@
           </dfm-input-dropdown>
         </div>
 
-        <div class="flex-1">
-        <div class="w-full small-dropdown">
+        <div class="flex-1 ">
+        <div class="w-full min-w-128">
           <dfm-input-dropdown
             #generalUser
             [items]="filteredUserList"
@@ -148,7 +148,7 @@
       </div>
 
       <div class="exam-date d-flex flex-row flex-column">
-        <div class="ad-ab-from-date flex-wrap-reverse flex-column dfm-gap-32 d-flex flex-1">
+        <div class="ad-ab-from-date flex-wrap-reverse dfm-gap-32 d-flex flex-1">
           <div class="flex-1">
           <div class="min-w-256 ad-ap-multi-dropdown extra-small-dropdown">
             <dfm-input-dropdown
@@ -216,11 +216,13 @@
             >
           </div>
 
-          <div class="flex-1">
+          <div class="flex-1 min-w-256">
         <dfm-input
+          type="number"
           size="md"
-          placeholder="{{ 'Enter Social Security Number' | translate }}"
-          label="{{ 'Social Security Number' | translate | titlecase }}"
+          placeholder="{{ 'enterSocialSecurityNumber' | translate }}"
+          label="{{ 'socialSecurityNumber' | translate | titlecase }}"
+          formControlName = "socialSecurityNumber"
         >
         </dfm-input>
         <!-- <span class="validation-error" *ngIf="appointmentForm.controls['patientTel'].hasError('required') && appointmentForm.controls['patientTel'].touched">

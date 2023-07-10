@@ -499,6 +499,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			userId: [null, [Validators.required]],
 			comments: ['', []],
 			approval: [AppointmentStatus.Pending, []],
+			socialSecurityNumber: [null, []],
 		});
 	}
 
@@ -538,6 +539,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 					userId: appointment?.userId?.toString() ?? null,
 					comments: appointment?.comments ?? null,
 					approval: appointment?.approval ?? AppointmentStatus.Pending,
+					socialSecurityNumber: appointment?.socialSecurityNumber ?? null,
 				},
 				{ emitEvent: false },
 			);

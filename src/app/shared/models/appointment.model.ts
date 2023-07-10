@@ -35,6 +35,7 @@ export interface Appointment {
 	usersDetail: User[];
 	patientAzureId?: string;
 	isOutside?: boolean;
+	socialSecurityNumber: number;
 }
 
 export interface AddAppointmentRequestData {
@@ -67,6 +68,7 @@ export interface AddAppointmentRequestData {
 	endedAt?: Date | null;
 	id?: number;
 	patientTimeZone?: string;
+	socialSecurityNumber: number;
 }
 
 export interface AddOutSideOperatingHoursAppointmentRequest {
@@ -84,6 +86,7 @@ export interface AddOutSideOperatingHoursAppointmentRequest {
 	fromPatient: boolean;
 	patientTimeZone?: string;
 	id?: number;
+	socialSecurityNumber: number;
 }
 
 export type ExtensionType = 'shorten' | 'extend';
@@ -162,17 +165,18 @@ export interface SelectedSlots {
 }
 
 export interface CreateAppointmentFormValues {
-  patientFname: string;
-  patientLname: string;
-  patientEmail: string;
-  patientTel: number;
-  startedAt: any;
-  startTime: string;
-  doctorId: number;
-  userId: number;
-  // roomType: RoomType;
-  examList: number[];
-  comments: string;
+	patientFname: string;
+	patientLname: string;
+	patientEmail: string;
+	patientTel: number;
+	startedAt: any;
+	startTime: string;
+	doctorId: number;
+	userId: number;
+	// roomType: RoomType;
+	examList: number[];
+	comments: string;
+	socialSecurityNumber: number;
 }
 
 export interface UpdateRadiologistRequestData {
