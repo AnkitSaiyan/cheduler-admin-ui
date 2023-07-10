@@ -235,7 +235,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				const time = this.weekdayToPractice$$.value[value.getDay()];
 				this.selectedSlot$$.next({
 					...time,
-					timings: time.timings.filter(
+					timings: time?.timings?.filter(
 						(timing: any) => DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(timing)) > DateTimeUtils.TimeToNumber(timing),
 					),
 				});
