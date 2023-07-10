@@ -437,7 +437,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			});
 		});
 
-		getNumberArray(6).forEach((weekday) => {
+		getNumberArray(6, 0).forEach((weekday) => {
 			const practiceData = weekdayToPractice[weekday];
 
 			if (practiceData && practiceData.intervals.length) {
