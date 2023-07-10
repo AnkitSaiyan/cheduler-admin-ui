@@ -394,6 +394,8 @@
 	"CreatedOn": "Created on",
 	"UserRole": "User Role",
 	"SelectRole": "Select role",
+	"socialSecurityNumber": "Social Security Number",
+    "enterSocialSecurityNumber": "Enter Social Security Number",
 	"Jan": "Jan",
 	"Feb": "Feb",
 	"Mar": "Mar",

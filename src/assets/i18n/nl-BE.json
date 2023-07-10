@@ -397,6 +397,8 @@
 	"CreatedOn": "Gemaakt op",
 	"UserRole": "Gebruikersrol",
 	"SelectRole": "Selecteer rol",
+	"socialSecurityNumber": "Sociaal Zekerheidsnummer",
+    "enterSocialSecurityNumber": "Geef Sociaal Zekerheidsnummer",
 	"Jan": "Jan",
 	"Feb": "Feb",
 	"Mar": "Mar",

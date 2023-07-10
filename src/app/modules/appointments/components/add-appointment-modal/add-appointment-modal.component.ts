@@ -420,6 +420,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			examList: [[], [Validators.required]],
 			userId: [null, [Validators.required]],
 			comments: [null, []],
+			socialSecurityNumber: [null, []],
 		});
 
 		if (this.modalData?.startedAt) {
