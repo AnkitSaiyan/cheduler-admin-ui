@@ -113,6 +113,17 @@
           <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">{{ 'InvalidEmail' | translate }}</small>
         </div>
 
+        <div class="flex-1 min-w-256 w-full">
+          <dfm-input
+            type="number"
+            size="md"
+            placeholder="{{ 'enterSocialSecurityNumber' | translate }}"
+            label="{{ 'socialSecurityNumber' | translate | titlecase }}"
+            formControlName = "socialSecurityNumber"
+          >
+          </dfm-input>
+          </div>
+
         <div class="flex-1 w-full min-w-128" *ngIf="(isDoctorConsentDisable$$ | async) === false">
           <dfm-input-dropdown
             [items]="filteredPhysicianList"
@@ -125,25 +136,6 @@
             formControlName="doctorId"
           >
           </dfm-input-dropdown>
-        </div>
-
-        <div class="flex-1 ">
-        <div class="w-full min-w-128">
-          <dfm-input-dropdown
-            #generalUser
-            [items]="filteredUserList"
-            [typeToSearch]="true"
-            (searchInput)="handleDropdownSearch($event, 'user')"
-            placeholder="{{ 'SelectGeneralUser' | translate }}"
-            formControlName="userId"
-            size="md"
-            label="{{ 'GeneralUser' | translate }} *"
-          >
-          </dfm-input-dropdown>
-        </div>
-        <span class="validation-error" *ngIf="appointmentForm.controls['userId'].hasError('required') && appointmentForm.controls['userId'].touched">
-          {{ 'RequiredField' | translate }}</span>
-
         </div>
       </div>
 
@@ -216,18 +208,24 @@
             >
           </div>
 
-          <div class="flex-1 min-w-256">
-        <dfm-input
-          type="number"
-          size="md"
-          placeholder="{{ 'enterSocialSecurityNumber' | translate }}"
-          label="{{ 'socialSecurityNumber' | translate | titlecase }}"
-          formControlName = "socialSecurityNumber"
-        >
-        </dfm-input>
-        <!-- <span class="validation-error" *ngIf="appointmentForm.controls['patientTel'].hasError('required') && appointmentForm.controls['patientTel'].touched">
-          {{ 'RequiredField' | translate }}</span> -->
-        </div>
+          <div class="flex-1 ">
+            <div class="w-full min-w-256">
+              <dfm-input-dropdown
+                #generalUser
+                [items]="filteredUserList"
+                [typeToSearch]="true"
+                (searchInput)="handleDropdownSearch($event, 'user')"
+                placeholder="{{ 'SelectGeneralUser' | translate }}"
+                formControlName="userId"
+                size="md"
+                label="{{ 'GeneralUser' | translate }} *"
+              >
+              </dfm-input-dropdown>
+            </div>
+            <span class="validation-error" *ngIf="appointmentForm.controls['userId'].hasError('required') && appointmentForm.controls['userId'].touched">
+              {{ 'RequiredField' | translate }}</span>
+    
+            </div>
 
           <!-- <div *ngIf="!isOutside" class="flex-1 temp-element"></div> -->
         </div>
