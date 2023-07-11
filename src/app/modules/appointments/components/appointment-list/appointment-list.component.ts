@@ -153,6 +153,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 					queryParams: {
 						v: 'w',
 					},
+					queryParamsHandling: 'merge',
 				});
 				this.calendarView$$.next(true);
 			}
@@ -186,7 +187,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		});
 
 		this.appointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointment) => this.filteredAppointments$$.next([...appointment]),
+			next: (appointment) => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -201,13 +202,21 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			error: () => this.filteredAppointments$$.next([]),
 		});
 
-		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-			if (searchText) {
-				this.handleSearch(searchText.toLowerCase());
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+			this.searchControl.setValue(search);
+			if (search) {
+				this.handleSearch(search.toLowerCase());
 			} else {
 				this.filteredAppointments$$.next([...this.appointments$$.value]);
 			}
 		});
+
+		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+			next: (searchText) => {
+				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
+			},
+		});
+
 
 		this.downloadDropdownControl.valueChanges
 			.pipe(
@@ -388,7 +397,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public navigateToView(e: TableItem) {
 		if (e?.id) {
-			this.router.navigate([`./${e.id}/view`], { replaceUrl: true, relativeTo: this.route });
+			this.router.navigate([`./${e.id}/view`], { replaceUrl: true, relativeTo: this.route, queryParamsHandling: 'merge' });
 		}
 	}
 
@@ -444,6 +453,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			queryParams: {
 				v: !this.calendarView$$.value ? 'w' : 't',
 			},
+			queryParamsHandling: 'merge',
 		});
 	}
 

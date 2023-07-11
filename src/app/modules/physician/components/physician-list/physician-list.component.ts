@@ -139,7 +139,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 		});
 
 		this.physicians$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (physicians) => this.filteredPhysicians$$.next([...physicians]),
+			next: (physicians) => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -154,15 +154,21 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 			error: (e) => this.physicians$$.next([]),
 		});
 
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+			this.searchControl.setValue(search);
+			if (search) {
+				this.handleSearch(search.toLowerCase());
+			} else {
+				this.filteredPhysicians$$.next([...this.physicians$$.value]);
+			}
+		});
+
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
 			next: (searchText) => {
-				if (searchText) {
-					this.handleSearch(searchText.toLowerCase());
-				} else {
-					this.filteredPhysicians$$.next([...this.physicians$$.value]);
-				}
+				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
 			},
 		});
+
 
 		this.downloadDropdownControl.valueChanges
 			.pipe(
@@ -336,7 +342,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
 	public navigateToViewPhysician(e: TableItem) {
 		if (e?.id) {
-			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route, queryParamsHandling: 'preserve' });
 		}
 	}
 

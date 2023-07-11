@@ -78,7 +78,7 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
 			)
 			.subscribe(() => {
 				this.notificationSvc.showNotification(Translate.SuccessMessage.PrioritySlotsDeleted[this.selectedLang]);
-				this.router.navigate(['/', 'priority-slots']);
+				this.router.navigate(['/', 'priority-slots'], { queryParamsHandling: 'merge' });
 			});
 	}
 
@@ -103,6 +103,7 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
 		}).result;
 	}
 }
+
 
 
 

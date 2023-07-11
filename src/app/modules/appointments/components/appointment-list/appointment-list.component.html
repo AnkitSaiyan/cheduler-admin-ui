@@ -4,7 +4,7 @@
   </button>
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 ap-li-section-1" *ngIf="(calendarView$$ | async) === false">
-      <dfm-button class="hidden ap-li-title-buttons" color="link" size="lg" routerLink="./">{{ 'Appointment' | translate }} </dfm-button>
+      <dfm-button class="hidden ap-li-title-buttons" color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{ 'Appointment' | translate }} </dfm-button>
 
       <dfm-input
         class="flex-1 ap-li-search"
@@ -57,7 +57,7 @@
           ></dfm-button-icon>
         </div>
 
-        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap" [disabled]="false" routerLink="./add"
+        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
           >{{ 'AddAppointment' | translate }}
         </dfm-button>
       </div>
@@ -81,12 +81,12 @@
           ></dfm-button-icon>
 
 
-        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap header-buttons" [disabled]="false" routerLink="./add"
+        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap header-buttons" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
           >{{ 'AddAppointment' | translate }}
         </dfm-button>
 
 
-        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="add-app-btn-mv hidden" [disabled]="false" routerLink="./add"
+        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="add-app-btn-mv hidden" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
           >{{ 'Add' | translate }}
         </dfm-button>
       </div>
@@ -138,7 +138,7 @@
             <ng-template #actionCellTemplate *dfmPermitted="[Permission.UpdateAppointments, Permission.DeleteAppointments]">
               <!-- <dfm-data-table-action *ngIf="!item.confirm" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()" ></dfm-data-table-action>
               <dfm-data-table-action *ngIf="item.confirm" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()"></dfm-data-table-action> -->
-              <dfm-data-table-action icon="pencil-02" tooltip="{{ 'Edit' | translate }}" *dfmPermitted="Permission.UpdateAppointments" (click)="$event.stopPropagation()" [routerLink]="['/appointment', item.id, 'edit']"
+              <dfm-data-table-action icon="pencil-02" tooltip="{{ 'Edit' | translate }}" *dfmPermitted="Permission.UpdateAppointments" (click)="$event.stopPropagation()" [routerLink]="['/appointment', item.id, 'edit']" queryParamsHandling="merge"
               [state]="{ comingFromRoute: 'dashboard', edit: true }" ></dfm-data-table-action>
               <dfm-data-table-action icon="trash-01" *dfmPermitted="Permission.DeleteAppointments" tooltip="{{ 'Delete' | translate }}" (click)="$event.stopPropagation(); deleteAppointment(item.id)"></dfm-data-table-action>
             </ng-template>

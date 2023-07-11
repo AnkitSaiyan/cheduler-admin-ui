@@ -335,7 +335,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 							} else {
 								route = this.edit ? '/appointment' : '/dashboard';
 							}
-							this.router.navigate([route], { relativeTo: this.route });
+							this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 						},
 						error: (err) => {
 							// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
@@ -362,7 +362,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 								default:
 									route = this.edit ? '/appointment' : '../';
 							}
-							this.router.navigate([route], { relativeTo: this.route });
+							this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 						},
 						error: (err) => {
 							// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
@@ -414,7 +414,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 						} else {
 							route = this.edit ? '/appointment' : '/dashboard';
 						}
-						this.router.navigate([route], { relativeTo: this.route });
+						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 					},
 					error: (err) => {
 						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);

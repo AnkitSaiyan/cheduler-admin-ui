@@ -75,7 +75,7 @@ export class PhysicianViewComponent extends DestroyableComponent implements OnIn
 			)
 			.subscribe(() => {
 				this.notificationSvc.showNotification(Translate.SuccessMessage.PhysicianDeleted[this.selectedLanguage]);
-				this.router.navigate(['/', 'physician']);
+				this.router.navigate(['/', 'physician'], { queryParamsHandling: 'merge', relativeTo: this.route });
 			});
 	}
 

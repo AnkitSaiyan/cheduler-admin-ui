@@ -1,6 +1,6 @@
 <div class="d-flex flex-column dfm-gap-16">
   <section class="list-page-section-1">
-    <dfm-button class="hidden et-ls-title-buttons" color="link" size="lg" routerLink="./">{{ 'EmailTemplate' | translate }}</dfm-button>
+    <dfm-button class="hidden et-ls-title-buttons" color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{ 'EmailTemplate' | translate }}</dfm-button>
 
     <dfm-input
       class="flex-1 et-ls-search"
@@ -167,7 +167,7 @@
           <ng-template #actionCellTemplate>
             <dfm-data-table-action *ngIf="item.status === statusType.Inactive" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }])" ></dfm-data-table-action>
             <dfm-data-table-action *ngIf="item.status === statusType.Active" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }])"></dfm-data-table-action>
-            <dfm-data-table-action icon="pencil-02" tooltip="{{ 'Edit' | translate }}" (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"></dfm-data-table-action>
+            <dfm-data-table-action icon="pencil-02" tooltip="{{ 'Edit' | translate }}" (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']" queryParamsHandling="merge"></dfm-data-table-action>
           </ng-template>
         </dfm-data-table-action-cell>
       </ng-template>

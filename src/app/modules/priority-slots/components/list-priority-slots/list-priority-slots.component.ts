@@ -74,7 +74,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		super();
 		this.prioritySlots$$ = new BehaviorSubject<any[]>([]);
 		this.filteredPrioritySlots$$ = new BehaviorSubject<any[]>([]);
-    this.priorityApiSvc.pageNo = 1;
+		this.priorityApiSvc.pageNo = 1;
 		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: () => {
 				if (
@@ -109,7 +109,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		});
 
 		this.prioritySlots$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (prioritySlot) => this.filteredPrioritySlots$$.next([...prioritySlot]),
+			next: (prioritySlot) => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -133,17 +133,25 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 					queryParams: {
 						v: 'w',
 					},
+					queryParamsHandling: 'merge',
 				});
 				this.calendarView$$.next(true);
 			}
 		});
 
-		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-			if (searchText) {
-				this.handleSearch(searchText.toLowerCase());
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+			this.searchControl.setValue(search);
+			if (search) {
+				this.handleSearch(search.toLowerCase());
 			} else {
 				this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value]);
 			}
+		});
+
+		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+			next: (searchText) => {
+				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
+			},
 		});
 
 		this.downloadDropdownControl.valueChanges
@@ -246,7 +254,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
 	public navigateToViewAbsence(e: TableItem) {
 		if (e?.id) {
-			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route, queryParamsHandling: 'merge' });
 		}
 	}
 
@@ -312,6 +320,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 			queryParams: {
 				v: !this.calendarView$$.value ? 'w' : 't',
 			},
+			queryParamsHandling: 'merge',
 		});
 	}
 
@@ -353,6 +362,8 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		this.filteredPrioritySlots$$.next(GeneralUtils.SortArray(this.filteredPrioritySlots$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
 
 
 
