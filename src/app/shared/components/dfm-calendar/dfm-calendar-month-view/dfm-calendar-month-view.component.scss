@@ -60,6 +60,7 @@ table, th, tr, td {
         }
 
         .calender-month-view-day-exam-event-title {
+          min-height: 16px;
           font-weight: 600;
           color: var(--dfm-blue);
         }
@@ -139,7 +140,7 @@ table, th, tr, td {
         display: flex;
         flex-direction: column;
         width: 100%;
-        padding: 8px;
+        padding: 2px 8px;
         font-size: 0.9rem;
         cursor: pointer;
       }
