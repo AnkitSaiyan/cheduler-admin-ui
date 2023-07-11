@@ -110,10 +110,10 @@
 	"AddPrioritySlots": "Prioritair Slot Toevoegen",
 	"RoomView": "Zaal Bekijk",
 	"RoomDetails": "Details Zaal",
-	"Exams": "Examens",
+	"Exams": "Onderzoek",
 	"ExamInstructions": "Aanwijzingen Onderzoek",
-	"ExamsInvolvingTheRoom": "Examens met betrokken zaal",
-	"ExamsInvolvingStaffMember": "Examens waarbij een medewerkers betrokken is",
+	"ExamsInvolvingTheRoom": "Onderzoek met betrokken zaal",
+	"ExamsInvolvingStaffMember": "Onderzoek waarbij een medewerkers betrokken is",
 	"RequiredEmail": "E-mail *",
 	"DeleteRoom": "Verwijder Zaal",
 	"SearchPhysician": "Zoek op voornaam, naam, e-mail en status",
@@ -152,7 +152,7 @@
 	"No": "Nee",
 	"CombineSlots": "Combineer Tijdslots",
 	"ReminderMailDuration": "Duur herinneringsbericht e-mail",
-	"NoExamsFound": "Geen Examens Gevonden",
+	"NoExamsFound": "Geen Onderzoek Gevonden",
 	"RoomAvailabilityInfo": "Info Zaal Beschikbaarheid",
 	"RoomAvailabilityData": "Gegevens Zaal Beschikbaarheid",
 	"SlotNo": "Nr.",
@@ -200,7 +200,7 @@
 	"HH:MM": "uur:min",
 	"EnterSiteName": "Geef naam site",
 	"AreyousureyouwanttodeletethisAbsence": "Ben je zeker dat je de afwezigheid wil verwijderen?",
-	"ExamInvolvingStaff": "Selecteer Examens met wil medewerkers",
+	"ExamInvolvingStaff": "Selecteer Onderzoek met wil medewerkers",
 	"ExamSearch": "Zoek op naam onderzoek",
 	"AddExam": "Onderzoek toevoegen",
 	"Expensive": "Duur",
@@ -282,7 +282,7 @@
 	"SelectDoctor": "Selecteer dokter",
 	"Doctor": "Dokter",
 	"SelectGeneralUser": "Selecteer algemene gebruiker",
-	"NoslotsfoundforselectedExamsandDatecombination": "Geen plaatsen gevonden voor de geselecteerde combinatie van Examens en datums.",
+	"NoslotsfoundforselectedExamsandDatecombination": "Geen plaatsen gevonden voor de geselecteerde combinatie van Onderzoek en datums.",
 	"SlotsLoading": "Slots Laden...",
 	"EnterComments": "Voer opmerkingen in",
 	"AreYouSureYouWantToDeleteAppointment": "Weet u zeker dat u deze afspraak wilt verwijderen?",
@@ -323,7 +323,7 @@
 	"TopTenReferringDoctors": "Top 10 Verwijzende Dokters",
 	"Notifications": "Notificaties",
 	"NewAppointmentCreated": "Nieuwe Afspraak Ontvangen",
-	"TopTenExaminations": "Top 10 Examens",
+	"TopTenExaminations": "Top 10 Onderzoek",
 	"UnavailablePeriodsOfTheHalls": "Onbeschikbare Periodes Voor Zaal de Volgende 31 Dagen",
 	"SearchRoomName": "Zoek op zaal naam",
 	"Patients": "Patiënten",
@@ -397,6 +397,8 @@
 	"CreatedOn": "Gemaakt op",
 	"UserRole": "Gebruikersrol",
 	"SelectRole": "Selecteer rol",
+	"socialSecurityNumber": "Sociaal Zekerheidsnummer",
+	"enterSocialSecurityNumber": "Geef Sociaal Zekerheidsnummer",
 	"Jan": "Jan",
 	"Feb": "Feb",
 	"Mar": "Mar",
@@ -453,6 +455,7 @@
 		}
 	}
 }
+
 
 
 
