@@ -489,11 +489,12 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const timings = timeSlot?.timings;
 		if (!timings?.length) return;
 		const grayOutSlot: any = [];
+    const timeDuration = getDurationMinutes(this.myDate(timings?.[0]), this.myDate(intervals?.[0].dayStart));
 		grayOutSlot.push({
 			dayStart: timings?.[0],
 			dayEnd: timings?.[0],
 			top: 0,
-			height: 120 * this.pixelsPerMin,
+			height: (timeDuration > 120 ? 120 : timeDuration) * this.pixelsPerMin,
 		});
 		const dayStart = this.subtractMinutes(105, timings[timings?.length - 1]);
 		const startTime = this.myDate(this.timeSlot?.timings?.[0]);
@@ -506,6 +507,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			top: lastMinutes * this.pixelsPerMin,
 			height: 120 * this.pixelsPerMin,
 		});
+
 
 		if (intervals?.length > 1) {
 			for (let i = 0; i < intervals.length - 1; i++) {
