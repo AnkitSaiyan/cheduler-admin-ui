@@ -232,7 +232,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				const time = this.weekdayToPractice$$.value[value.getDay()];
 				this.selectedSlot$$.next({
 					...time,
-					timings: time.timings.filter(
+					timings: time?.timings?.filter(
 						(timing: any) => DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(timing)) > DateTimeUtils.TimeToNumber(timing),
 					),
 				});
@@ -437,7 +437,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			});
 		});
 
-		getNumberArray(6).forEach((weekday) => {
+		getNumberArray(6, 0).forEach((weekday) => {
 			const practiceData = weekdayToPractice[weekday];
 
 			if (practiceData && practiceData.intervals.length) {

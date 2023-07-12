@@ -90,7 +90,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		const currentValue = changes['dataGroupedByDateAndRoom']?.currentValue;
 		const previousValue = changes['dataGroupedByDateAndRoom']?.previousValue;
-
 		if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
 			this.dataGroupedByDateAndRoom = currentValue;
 		}
@@ -161,7 +160,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		// const barHeight = 1;
 		// const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 		// const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
-		const start = this.myDate(this.timeSlot.timings[0]);
+		const start = this.myDate(this.timeSlot?.timings[0]);
 		const end = new Date(groupedData[0].startedAt);
 		const minutes = getDurationMinutes(start, end);
 		return minutes * this.pixelsPerMin;
@@ -314,8 +313,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		let minutes = Math.round(+e.offsetY / this.pixelPerMinute);
 
 		// In case if calendar start time is not 00:00 then adding extra minutes
-		if (this.timeSlot.timings[0]) {
-			const startTime = this.timeSlot.timings[0].split(':');
+		if (this.timeSlot?.timings?.[0]) {
+			const startTime = this.timeSlot?.timings?.[0].split(':');
 			minutes += DateTimeUtils.DurationInMinFromHour(+startTime[0], +startTime[1]);
 		}
 		const roundedMin = minutes - (minutes % 5);
@@ -358,7 +357,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 								element: eventCard,
 								elementContainer: eventsContainer,
 								startedAt: this.selectedDate,
-								startTime: this.timeSlot.timings[0],
+								startTime: this.timeSlot?.timings?.[0],
 							},
 							options: {
 								size: 'xl',
@@ -388,7 +387,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 						element: eventCard,
 						elementContainer: eventsContainer,
 						startedAt: this.selectedDate,
-						startTime: this.timeSlot.timings[0],
+						startTime: this.timeSlot?.timings?.[0],
 					},
 					options: {
 						size: 'xl',
@@ -489,27 +488,29 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const timings = timeSlot?.timings;
 		if (!timings?.length) return;
 		const grayOutSlot: any = [];
+    const timeDuration = getDurationMinutes(this.myDate(timings?.[0]), this.myDate(intervals?.[0].dayStart));
 		grayOutSlot.push({
-			dayStart: timings[0],
-			dayEnd: timings[0],
+			dayStart: timings?.[0],
+			dayEnd: timings?.[0],
 			top: 0,
-			height: 120 * this.pixelsPerMin,
+			height: (timeDuration > 120 ? 120 : timeDuration) * this.pixelsPerMin,
 		});
-		const dayStart = this.subtractMinutes(105, timings[timings.length - 1]);
-		const startTime = this.myDate(this.timeSlot.timings[0]);
+		const dayStart = this.subtractMinutes(105, timings[timings?.length - 1]);
+		const startTime = this.myDate(this.timeSlot?.timings?.[0]);
 		const endTime = this.myDate(dayStart);
 		const lastMinutes = getDurationMinutes(startTime, endTime);
 
 		grayOutSlot.push({
 			dayStart,
-			dayEnd: timings[timings.length - 1],
+			dayEnd: timings[timings?.length - 1],
 			top: lastMinutes * this.pixelsPerMin,
 			height: 120 * this.pixelsPerMin,
 		});
 
+
 		if (intervals?.length > 1) {
 			for (let i = 0; i < intervals.length - 1; i++) {
-				const start = this.myDate(this.timeSlot.timings[0]);
+				const start = this.myDate(this.timeSlot?.timings?.[0]);
 				const end = this.myDate(intervals[i].dayEnd);
 				const minutes = getDurationMinutes(start, end);
 				const timeInterval = getDurationMinutes(end, this.myDate(intervals[i + 1].dayStart));
