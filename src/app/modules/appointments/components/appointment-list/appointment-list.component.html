@@ -14,6 +14,31 @@
         [formControl]="searchControl"
       ></dfm-input>
 
+      <div class="d-flex align-items-center dfm-button-group-wrapper max-w-20 ap-li-button-dropdown-group">
+        <div class="dfm-dropdown-border-none">
+          <dfm-input
+            size="sm"
+            placeholder="{{ 'AdvancedSearch' | translate }}"
+            icon="search-sm"
+            class="flex-1"
+            (click)="openAdvancePopup()"
+            [readonly]="true"
+          ></dfm-input>
+        </div>
+        <div>
+          <dfm-button-icon
+            color="tertiary-gray"
+            size="md"
+            icon="x-close"
+            ngbPopover="{{ 'Reset' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
+            (click)="onRefresh()"
+          ></dfm-button-icon>
+        </div>
+      </div>
+
       <div class="d-flex align-items-center dfm-button-group-wrapper ap-li-button-dropdown-group bg-white">
         <div class="dfm-button-icon-bg-transparent" [cdkCopyToClipboard]="clipboardData">
           <dfm-button-icon
