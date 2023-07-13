@@ -133,19 +133,21 @@ export class ExamApiService {
     );
   }
 
-  private searchExam(value) {
+  private searchExam(value:string, id:number) {
 	// debounce
 	return timer(1000).pipe(
 		switchMap(() => {
-			const params = new HttpParams().append('examName', value);
-			return this.http.get<any>(`${this.examUrl}/isexamexist`, { params });
+      		let queryParams = new HttpParams();
+    		queryParams = queryParams.append('examName', value);
+    		queryParams = queryParams.append('examId', id);
+			return this.http.get<any>(`${this.examUrl}/isexamexist`, { params:queryParams});
 		}),
 	);
 }
 
-public examValidator(): AsyncValidatorFn {
+public examValidator(id): AsyncValidatorFn {
 	return (control: AbstractControl): Observable<any> => {
-		return this.searchExam(control.value).pipe(
+		return this.searchExam(control.value, id).pipe(
 			map((res) => {
 				if (res.data === '') {
 					// return error
