@@ -179,7 +179,11 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			) {
 				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 			} else {
-				minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
+        if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
+					minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
+				} else {
+					minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
+				}
 			}
 			minMaxValue = { ...minMaxValue, grayOutMin: min, grayOutMax: max };
 			this.practiceHourMinMax$$.next(minMaxValue);
