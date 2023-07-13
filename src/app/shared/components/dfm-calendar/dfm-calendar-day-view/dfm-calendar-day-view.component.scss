@@ -465,6 +465,36 @@ h3 {
   min-width:50px;
 }
 
+.resizable {
+  // background: white;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  // top: 100px;
+  // left: 100px;
+}
+
+.resizable .resizers .resizer {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  /*magic to turn square into circle*/
+  background: white;
+  border: 3px solid #4286f4;
+  position: absolute;
+}
+
+.resizable .resizers .resizer.top {
+  right: 15px;
+  top: -4px;
+  cursor: nesw-resize;
+}
+
+.resizable .resizers .resizer.bottom {
+  left: 15px;
+  bottom: -4px;
+  cursor: nesw-resize;
+}
 @media (max-width: 680px) {
   .calender-day-view-event-details-expanded {
     min-width: auto !important;

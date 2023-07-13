@@ -1,4 +1,16 @@
-import { Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import {
+	Component,
+	EventEmitter,
+	HostListener,
+	Input,
+	OnChanges,
+	OnDestroy,
+	OnInit,
+	Output,
+	Renderer2,
+	SimpleChanges,
+	ViewEncapsulation,
+} from '@angular/core';
 import { BehaviorSubject, filter, lastValueFrom, switchMap, take, takeUntil, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
@@ -70,6 +82,13 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 	private pixelPerMinute = 4;
 
+	private minimum_size = 20;
+	private original_height = 0;
+	private original_y = 0;
+	private original_mouse_y = 0;
+	private currentResizer: any;
+	private element: any;
+
 	constructor(
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,
@@ -79,6 +98,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		public permissionSvc: PermissionService,
 		private translatePipe: TranslatePipe,
 		private translate: TranslateService,
+		private renderer: Renderer2,
 	) {
 		super();
 	}
@@ -202,12 +222,17 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});
 	}
 
-	public openChangeTimeModal(appointment: Appointment, extend = true, eventContainer?: HTMLDivElement) {
-		const top = eventContainer?.style.top;
-		const height = eventContainer?.style.height;
+	public openChangeTimeModal(appointment: Appointment, extend = true, eventContainer: HTMLDivElement, position?: boolean, time?:number, divHieght?:number, divTop?:number) {		
+		const top =  eventContainer?.style.top;
+		const height =  eventContainer?.style.height;
 		const modalRef = this.modalSvc.open(AppointmentTimeChangeModalComponent, {
-			data: { extend, eventContainer },
+			data: { extend, eventContainer,  position, time },
 		});
+
+		if(divHieght){
+			eventContainer.style.top = divTop + "px";
+			eventContainer.style.height = divHieght + "px";
+		}
 
 		modalRef.closed
 			.pipe(
@@ -249,11 +274,11 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				next: (res) => {},
 				error: (err) => {
 					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
-					if (eventContainer && top && height) {
+					if (eventContainer) {
 						// eslint-disable-next-line no-param-reassign
-						eventContainer.style.top = top;
+						eventContainer.style.top = divTop ? divTop + "px" : top;
 						// eslint-disable-next-line no-param-reassign
-						eventContainer.style.height = height;
+						eventContainer.style.height = divHieght ? divHieght + "px" : height;
 					}
 				},
 			});
@@ -543,5 +568,42 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		date.setSeconds(0);
 		const subtractedDate = new Date(date.getTime() - minutes * 60 * 1000);
 		return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
+	}
+
+	public resize(e: any, resizer:HTMLDivElement, appointment: Appointment, container:HTMLDivElement) {
+		this.element = container;
+		this.currentResizer = resizer;
+		e.preventDefault();
+		this.original_height = parseInt(container?.style.height);
+		this.original_y = parseInt(container?.style.top);
+		this.original_mouse_y = e.pageY;
+		const isTopResizer= resizer.classList.contains('top');
+		let resizeListener = this.renderer.listen(window, 'mousemove', (e: any) => {
+			if (!isTopResizer) {
+				const height = this.original_height + (e.pageY - this.original_mouse_y);
+				if (height > this.minimum_size) {
+					this.element.style.height = height + 'px';
+				}
+			} else if (isTopResizer) {
+				const height = this.original_height - (e.pageY - this.original_mouse_y);
+				if (height > this.minimum_size && this.element.getBoundingClientRect().height != height) {
+					this.element.style.height = height + 'px';
+					this.element.style.top = this.original_y + (e.pageY - this.original_mouse_y) + 'px';
+				}
+			}
+		});
+
+		let mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
+			if(parseInt(container?.style.height) != this.original_height){
+				const minutes =  Math.round((Math.abs(parseInt(container?.style.height)-this.original_height)/this.pixelPerMinute)/5)*5;
+				const isExtend = parseInt(container?.style.height)>this.original_height;
+				
+				this.openChangeTimeModal(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
+			}
+			resizeListener();
+			resizeListener = () => {};
+			mouseUpEve();
+			mouseUpEve = () => {};
+		});
 	}
 }

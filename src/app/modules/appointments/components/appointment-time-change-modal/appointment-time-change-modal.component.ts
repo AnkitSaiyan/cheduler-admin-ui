@@ -36,6 +36,10 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
 
   private eventHeight!: number;
 
+  private positon! : boolean;
+
+  private time! :number;
+
   constructor(private fb: FormBuilder, private modalSvc: ModalService, private shareDataSvc: ShareDataService) {
     super();
   }
@@ -46,6 +50,8 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
     this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
       this.extend = data?.extend;
       this.eventContainer = data?.eventContainer;
+      this.positon = data.position;
+      this.time = data?.time;
 
       if (this.eventContainer) {
         this.eventTop = +this.eventContainer.style.top.slice(0, -2);
@@ -61,6 +67,14 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
         this.adjustEventCard(+formValues.minutes, formValues.top);
       }
     });
+    if(this.time)
+      setTimeout(() => {
+        this.timeChangeForm.patchValue({
+          minutes: this.time ?? "",
+          top: this.positon,
+        })
+      }, 0); 
+    
   }
 
   public override ngOnDestroy() {
