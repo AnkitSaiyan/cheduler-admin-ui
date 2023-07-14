@@ -181,6 +181,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 					case prioritySlot.repeatType === RepeatType.Daily: {
 						repeatFrequency = prioritySlot.isRepeat ? repeatFrequency : 1;
 						while (true) {
+							if (firstDate.getTime() > lastDate.getTime()) break;
 							const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
 							const customPrioritySlot = {
 								start: prioritySlot.slotStartTime.slice(0, 5),
@@ -189,7 +190,6 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 								nxtSlotOpenPct,
 							};
 							myPrioritySlots[dateString] = myPrioritySlots[dateString] ? [...myPrioritySlots[dateString], customPrioritySlot] : [customPrioritySlot];
-							if (firstDate.getTime() >= lastDate.getTime()) break;
 							firstDate.setDate(firstDate.getDate() + repeatFrequency);
 						}
 						break;
