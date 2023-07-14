@@ -79,7 +79,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private lastScrollTime: number = 0;
 	private requestId: number | null = null;
 	private selectedLang: string = ENG_BE;
-
 	private pixelPerMinute = 4;
 
 	private minimum_size = 20;
@@ -170,7 +169,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		// debugger;
 		const durationMinutes = getDurationMinutes(groupedData[0].startedAt, endDate);
-
 		return durationMinutes * this.pixelsPerMin;
 	}
 
@@ -514,25 +512,26 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const timings = timeSlot?.timings;
 		if (!timings?.length) return;
 		const grayOutSlot: any = [];
-    const timeDuration = getDurationMinutes(this.myDate(timings?.[0]), this.myDate(intervals?.[0].dayStart));
+		const timeDuration = getDurationMinutes(this.myDate(timings?.[0]), this.myDate(intervals?.[0].dayStart));
 		grayOutSlot.push({
 			dayStart: timings?.[0],
 			dayEnd: timings?.[0],
 			top: 0,
 			height: (timeDuration > 120 ? 120 : timeDuration) * this.pixelsPerMin,
 		});
-		const dayStart = this.subtractMinutes(105, timings[timings?.length - 1]);
+		console.log(this.subtractMinutes(105, timings[timings?.length - 1]), 'test');
+		const dayStart = intervals[intervals.length - 1].dayEnd;
 		const startTime = this.myDate(this.timeSlot?.timings?.[0]);
-		const endTime = this.myDate(dayStart);
-		const lastMinutes = getDurationMinutes(startTime, endTime);
+		const dayStartTime = this.myDate(dayStart);
+		const lastMinutes = getDurationMinutes(startTime, dayStartTime);
+		const dayEnd = this.addMinutes(15, timings[timings?.length - 1]);
 
 		grayOutSlot.push({
-			dayStart,
-			dayEnd: timings[timings?.length - 1],
+			dayStart: intervals[intervals.length - 1].dayEnd,
+			dayEnd,
 			top: lastMinutes * this.pixelsPerMin,
-			height: 120 * this.pixelsPerMin,
+			height: getDurationMinutes(dayStartTime, this.myDate(dayEnd)) * this.pixelsPerMin,
 		});
-
 
 		if (intervals?.length > 1) {
 			for (let i = 0; i < intervals.length - 1; i++) {
@@ -570,14 +569,14 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
 	}
 
-	public resize(e: any, resizer:HTMLDivElement, appointment: Appointment, container:HTMLDivElement) {
+	public resize(e: any, resizer: HTMLDivElement, appointment: Appointment, container: HTMLDivElement) {
 		this.element = container;
 		this.currentResizer = resizer;
 		e.preventDefault();
 		this.original_height = parseInt(container?.style.height);
 		this.original_y = parseInt(container?.style.top);
 		this.original_mouse_y = e.pageY;
-		const isTopResizer= resizer.classList.contains('top');
+		const isTopResizer = resizer.classList.contains('top');
 		let resizeListener = this.renderer.listen(window, 'mousemove', (e: any) => {
 			if (!isTopResizer) {
 				const height = this.original_height + (e.pageY - this.original_mouse_y);
@@ -594,16 +593,25 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		});
 
 		let mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
-			if(parseInt(container?.style.height) != this.original_height){
-				const minutes =  Math.round((Math.abs(parseInt(container?.style.height)-this.original_height)/this.pixelPerMinute)/5)*5;
-				const isExtend = parseInt(container?.style.height)>this.original_height;
+			if (parseInt(container?.style.height) != this.original_height) {
+				const minutes = Math.round((Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute) / 5) * 5;
+				const isExtend = parseInt(container?.style.height) > this.original_height;
 				
 				this.openChangeTimeModal(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
 			}
 			resizeListener();
-			resizeListener = () => {};
+			resizeListener = () => { };
 			mouseUpEve();
-			mouseUpEve = () => {};
+			mouseUpEve = () => { };
 		});
+	}
+	private addMinutes(minutes: number, time: string): string {
+		const date = new Date();
+		const [hour, minute] = time.split(':');
+		date.setHours(+hour);
+		date.setMinutes(+minute);
+		date.setSeconds(0);
+		const subtractedDate = new Date(date.getTime() + minutes * 60 * 1000);
+		return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
 	}
 }

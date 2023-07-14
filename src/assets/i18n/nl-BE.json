@@ -124,8 +124,8 @@
 	"DeletePhysician": "Verwijder Dokter",
 	"DeletePrioritySlots": "Verwijder Prioritaire Slots",
 	"PrioritySlotsView": "Prioritaire Slots Bekijk",
-	"PriorityDetails": "Prioritaire Dokter",
-	"PriorityRepeatDetails": "Prioritaire Herhaal Dokter",
+	"PriorityDetails": "Algemene informatie prioritair slot",
+	"PriorityRepeatDetails": "Herhalingsinfo prioritair slot",
 	"EmailTheDoctor": "E-mail de dokter als een patient een afpraak maakt die hij/zij voorschreef",
 	"StatusChangesSuccesfully": "Status succesvol veranderd!",
 	"Physician": "Dokter",
@@ -163,8 +163,8 @@
 	"AbsenceSearch": "Zoek op afwezigheid naam, datum",
 	"AddAbsence": "Afwezigheid Toevoegen",
 	"Title": "Titel",
-	"StartDate": "Begin Datum",
-	"EndDate": "Eind Datum",
+	"StartDate": "Begindatum",
+	"EndDate": "Einddatum",
 	"AbsenceInfo": "Info Afwezigheid",
 	"EditAbsence": "Bewerk Afwezigheid",
 	"EnterAbsenceTitle": "Geef titel afwezigheid",
@@ -455,6 +455,9 @@
 		}
 	}
 }
+
+
+
 
 
 
