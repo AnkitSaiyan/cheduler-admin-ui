@@ -264,7 +264,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		this.route.params
 			.pipe(
-				filter((params) => params[EXAM_ID]),
+				filter((params) => {
+					this.examForm.get('name')?.addAsyncValidators(this.examApiSvc.examValidator(+params[EXAM_ID] || '0'));
+					this.examForm.updateValueAndValidity();
+					return params[EXAM_ID];
+				}),
 				map((params) => params[EXAM_ID]),
 				switchMap((examID) => {
 					if (examID) {
@@ -351,7 +355,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public saveForm(timeSlotFormValues?: { isValid: boolean; values: TimeSlot[] }) {
 		let valid = true;
 
-		if (this.examForm.invalid) {
+		if (!this.examForm.valid) {
 			['name', 'expensive', 'roomType'].forEach((value) => {
 				this.examForm.controls[value].markAsTouched();
 			});
@@ -384,7 +388,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			});
 		}
 
-		if (valid && this.formValues.practiceAvailabilityToggle && timeSlotFormValues && !timeSlotFormValues.isValid) {
+		if (valid && this.formValues.practiceAvailabilityToggle && timeSlotFormValues && !timeSlotFormValues?.isValid) {
 			valid = false;
 		}
 
@@ -450,9 +454,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					})),
 			].sort((a, b) => (+a.sortOrder < +b.sortOrder ? -1 : 1)),
 			status: this.formValues.status,
-			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues.values?.length : 0,
+			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues?.values?.length : 0,
 			uncombinables: this.formValues.uncombinables ?? [],
-			practiceAvailability: timeSlotFormValues ? timeSlotFormValues.values : [],
+			practiceAvailability: timeSlotFormValues?.values || [],
 		};
 
 		if (this.examDetails$$.value?.id) {
@@ -548,7 +552,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 	private createForm(): void {
 		this.examForm = this.fb.group({
-			name: [null, [Validators.required], [this.examApiSvc.examValidator()]],
+			name: [null, [Validators.required]],
 			// name: [null, [Validators.required]],
 			expensive: [null, [Validators.required, Validators.min(5)]],
 			roomType: [null, [Validators.required]],

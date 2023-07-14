@@ -79,10 +79,11 @@
                         *ngIf="dataGroupedByRoom && dataGroupedByRoom[h.value] as roomData">
                         <ng-container
                           *ngFor="let data of roomData; let eventNo = index;">
-
-                          <div *ngIf="getHeight([data.appointment]) as eventHeight" #eventContainer class="calender-day-view-event-container" (dblclick)="$event.preventDefault()"
+                          <div *ngIf="getHeight([data.appointment]) as eventHeight" #eventContainer class="calender-day-view-event-container resizable" (dblclick)="$event.preventDefault()"
                                [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
                           >
+                          <div class='resizers' id="resizers">
+                            <div class='resizer top' #topResizer (mousedown)="resize($event, topResizer, data.appointment, eventContainer)"></div>
                             <div class="overflow-hidden">
                               <!-- POP OVER -->
                               <ng-template #eventDetails>
@@ -218,6 +219,8 @@
                                   </button>
                               </mat-menu>
                             </div>
+                            <div class='resizer bottom' #bottomResizer (mousedown)="resize($event, bottomResizer, data.appointment, eventContainer)" ></div>
+                          </div>
                           </div>
                         </ng-container>
                       </ng-container>

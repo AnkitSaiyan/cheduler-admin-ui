@@ -7,6 +7,10 @@
   <div class="modal-body dfm-mb-16 d-flex flex-column dfm-gap-16" [formGroup]="timeChangeForm">
     <dfm-input type="number" size="md" label="{{ 'AmountOfMinutes' | translate }} *" placeholder="{{ 'EnterMinutes' | translate }}"
                formControlName="minutes" #minutes (focusout)="handleExpenseInput($event, minutes, timeChangeForm.get('minutes'))"></dfm-input>
+     <span class="validation-error" *ngIf="isExtendOutside">
+     <p>{{ 'The time should not excced calendar time' | translate }}</p>
+     <p>{{ 'Limit left' | translate }}: {{eventTop/4}} minutes</p>
+    </span>
 
     <div class="d-flex flex-column dfm-gap-8 flex-1">
       <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">
@@ -23,6 +27,6 @@
 
   <div class="modal-footer">
     <dfm-button color="secondary" size="md" (click)="close(false)">{{'Cancel' | translate}}</dfm-button>
-    <dfm-button color="primary" size="md" (click)="close(true)">{{'Save2' | translate}}</dfm-button>
+    <dfm-button color="primary" size="md" [disabled]="isExtendOutside" (click)="close(true)">{{'Save2' | translate}}</dfm-button>
   </div>
 </div>

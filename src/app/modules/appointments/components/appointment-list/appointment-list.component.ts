@@ -30,6 +30,7 @@ import { DefaultDatePipe } from '../../../../shared/pipes/default-date.pipe';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
 import { SignalrService } from 'src/app/core/services/signalr.service';
+import { AppointmentAdvanceSearchComponent } from 'src/app/modules/dashboard/components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -569,6 +570,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public onRefresh(): void {
 		this.appointmentApiSvc.refresh();
+		this.appointmentApiSvc.appointmentPageNo = 1;
 	}
 
 	public onScroll(e: any): void {
@@ -580,5 +582,42 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public onSort(e: DfmTableHeader): void {
 		this.filteredAppointments$$.next(GeneralUtils.SortArray(this.filteredAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
+	}
+
+	openAdvancePopup() {
+		const modalRef = this.modalSvc.open(AppointmentAdvanceSearchComponent, {
+			data: {
+				titleText: 'AdvancedSearch',
+				confirmButtonText: 'Search',
+				cancelButtonText: 'Reset',
+				items: [
+					...this.appointments$$.value.map(({ id, patientLname, patientFname }) => {
+						return {
+							name: `${patientFname} ${patientLname}`,
+							key: `${patientFname} ${patientLname} ${id}`,
+							value: id,
+						};
+					}),
+				],
+			},
+			options: {
+				size: 'xl',
+				centered: true,
+				backdropClass: 'modal-backdrop-remove-mv',
+			},
+		});
+
+		modalRef.closed
+			.pipe(
+				filter((res) => !!res),
+				switchMap((result) => this.appointmentApiSvc.fetchAllAppointments$(1, result)),
+				take(1),
+			)
+			.subscribe({
+				next: (appointments) => {
+					this.appointments$$.next(appointments?.data);
+					this.filteredAppointments$$.next(appointments?.data);
+				},
+			});
 	}
 }
