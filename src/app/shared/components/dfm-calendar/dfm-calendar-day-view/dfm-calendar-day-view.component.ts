@@ -225,6 +225,10 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const height =  eventContainer?.style.height;
 		const modalRef = this.modalSvc.open(AppointmentTimeChangeModalComponent, {
 			data: { extend, eventContainer,  position, time },
+      options: {
+				backdrop: false,
+				centered: true,
+			},
 		});
 
 		if(divHieght){
