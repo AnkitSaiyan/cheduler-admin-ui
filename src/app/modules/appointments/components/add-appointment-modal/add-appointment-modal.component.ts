@@ -412,7 +412,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			patientFname: [null, [Validators.required]],
 			patientLname: [null, [Validators.required]],
 			patientTel: [null, [Validators.required]],
-			patientEmail: [null, []],
+			patientEmail: [null, [Validators.required]],
 			doctorId: [null, []],
 			startedAt: [null, [Validators.required]],
 			// startTime: [null, [Validators.required]],

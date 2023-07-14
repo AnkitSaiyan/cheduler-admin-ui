@@ -75,12 +75,14 @@
                 class="flex-1 "
                 size="md"
                 [placeholder]="'EnterEmail' | translate"
-                [label]="'PatientEmail' | translate"
+                label="{{ 'PatientEmail' | translate }}*"
                 formControlName="patientEmail"
                 (focusout)="handleEmailInput($event)"
               >
               </dfm-input>
               <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">{{ 'InvalidEmail' | translate }}.</small>
+              <span class="validation-error" *ngIf="appointmentForm.controls['patientEmail'].hasError('required') && appointmentForm.controls['patientEmail'].touched">
+                {{ 'RequiredField' | translate }}</span>
             </div>
           </div>
         </div> 
