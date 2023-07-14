@@ -32,13 +32,15 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
 
   private readonly pixelPerMin = 4;
 
-  private eventTop!: number;
+  public eventTop!: number;
 
   private eventHeight!: number;
 
   private positon! : boolean;
 
   private time! :number;
+  
+  public isExtendOutside: boolean = false;
 
   constructor(private fb: FormBuilder, private modalSvc: ModalService, private shareDataSvc: ShareDataService) {
     super();
@@ -109,8 +111,10 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
   }
 
   private adjustEventCard(minutes: number, isTop: boolean) {
+    this.isExtendOutside = false;    
     if (this.extend) {
       if (isTop) {
+        this.isExtendOutside = (this.eventTop - +minutes * this.pixelPerMin) < 0;   
         this.eventContainer.style.top = `${Math.abs(this.eventTop - +minutes * this.pixelPerMin)}px`;
         this.eventContainer.style.height = `${Math.abs(this.eventHeight + +minutes * this.pixelPerMin)}px`;
       } else {
