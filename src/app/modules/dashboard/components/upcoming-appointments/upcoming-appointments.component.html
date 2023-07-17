@@ -31,7 +31,7 @@
 					<th class="text-start mx-1">{{"Room" | translate}}</th>
 				</thead>
 				<tbody>
-					<tr *ngFor="let appointment of upcomingAppointments" class="position-relative text-xs">
+					<tr *ngFor="let appointment of sortAppointment(upcomingAppointments)" class="position-relative text-xs">
 						<div class="circle-icon"></div>
 						<td class="mx-3">
 							<span>{{ appointment?.exam?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
