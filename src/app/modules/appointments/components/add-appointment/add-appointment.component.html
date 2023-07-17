@@ -94,8 +94,8 @@
           [dfmNumberInput]="phone"
         >
         </dfm-input>
-        <span class="validation-error" *ngIf="appointmentForm.controls['patientTel'].hasError('required') && appointmentForm.controls['patientTel'].touched">
-          {{ 'RequiredField' | translate }}</span>
+        <span class="validation-error" *ngIf="!appointmentForm.controls['patientTel'].valid && appointmentForm.controls['patientTel'].touched">
+          {{ 'Please Enter Valid Mobile Number' | translate }}</span>
         </div>
       </div>
 

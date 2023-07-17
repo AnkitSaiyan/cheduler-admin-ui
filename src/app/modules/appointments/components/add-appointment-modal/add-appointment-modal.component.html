@@ -60,15 +60,18 @@
           </div>
 
           <div class="d-flex dfm-gap-8 flex-wrap">
+            <div class="flex-1 min-w-228" >
             <dfm-input
               #phone
               [dfmNumberInput]="phone"
-              class="flex-1 min-w-228"
               size="md"
               [placeholder]="'EnterTelephone' | translate"
               [label]="('PatientTelephone' | translate) + ' *'"
               formControlName="patientTel"
             ></dfm-input>
+            <span class="validation-error" *ngIf="!appointmentForm.controls['patientTel'].valid && appointmentForm.controls['patientTel'].touched">
+              {{ 'Please Enter Valid Mobile Number' | translate }}</span>
+          </div>
 
             <div class="d-flex flex-column flex-1 min-w-228">
               <dfm-input
