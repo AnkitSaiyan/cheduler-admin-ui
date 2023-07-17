@@ -9,7 +9,7 @@
                formControlName="minutes" #minutes (focusout)="handleExpenseInput($event, minutes, timeChangeForm.get('minutes'))"></dfm-input>
      <span class="validation-error" *ngIf="isExtendOutside">
      <p>{{ 'The time should not excced calendar time' | translate }}</p>
-     <p>{{ 'Limit left' | translate }}: {{eventTop/4}} minutes</p>
+     <p>{{ 'Limit left' | translate }}: {{extend && !isTop ? minutesInBottom : eventTop/4}} minutes</p>
     </span>
 
     <div class="d-flex flex-column dfm-gap-8 flex-1">
