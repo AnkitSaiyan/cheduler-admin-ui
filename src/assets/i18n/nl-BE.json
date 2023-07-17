@@ -315,7 +315,7 @@
 	"New": "Nieuw",
 	"Confirm": "Bevestig",
 	"Confirmed": "Bevestigd",
-	"UpcomingAppointmentsInFourHours": " Komende Afspraken in 4 Hren",
+	"UpcomingAppointmentsInFourHours": " Komende Afspraken in 4 Uren",
 	"PostIt": "Post-it",
 	"SearchPostIt": "Zoek post-it",
 	"EmployeeAbsences": "Afwezigheden Medewerkers",
@@ -455,6 +455,7 @@
 		}
 	}
 }
+
 
 
 
