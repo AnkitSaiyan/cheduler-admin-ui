@@ -684,7 +684,7 @@ button:disabled {
 	height: 24px;
 	filter: invert(1) grayscale(100);
 	border-radius: 50%;
-  
+
 	&:hover {
 	  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
 	}
@@ -1283,3 +1283,8 @@ body {
 	}
 }
 
+angular-editor-toolbar button i {
+  font-family: FontAwesome !important;
+  color: #474d6d !important;
+
+}
