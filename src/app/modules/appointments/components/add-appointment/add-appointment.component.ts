@@ -490,8 +490,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		this.appointmentForm = this.fb.group({
 			patientFname: ['', [Validators.required]],
 			patientLname: ['', [Validators.required]],
-			patientTel: [null, [Validators.required]],
-			patientEmail: ['', []],
+			patientTel: [null, [Validators.required, Validators.minLength(10)]],
+			patientEmail: ['', [Validators.required]],
 			doctorId: [null, []],
 			startedAt: ['', [Validators.required]],
 			startTime: [null, []],

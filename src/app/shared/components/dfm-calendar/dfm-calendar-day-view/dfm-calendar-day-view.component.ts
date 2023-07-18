@@ -85,8 +85,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private original_height = 0;
 	private original_y = 0;
 	private original_mouse_y = 0;
-	private currentResizer: any;
-	private element: any;
+	private currentResizer!: HTMLDivElement;
+	private element!: HTMLDivElement;
+	private minutesInBottom!: number;
 
 	constructor(
 		private datePipe: DatePipe,
@@ -224,7 +225,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const top =  eventContainer?.style.top;
 		const height =  eventContainer?.style.height;
 		const modalRef = this.modalSvc.open(AppointmentTimeChangeModalComponent, {
-			data: { extend, eventContainer,  position, time },
+			data: { extend, eventContainer,  position, time, minutesInBottom:this.minutesInBottom },
       options: {
 				backdrop: false,
 				centered: true,
@@ -523,7 +524,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			top: 0,
 			height: (timeDuration > 120 ? 120 : timeDuration) * this.pixelsPerMin,
 		});
-		console.log(this.subtractMinutes(105, timings[timings?.length - 1]), 'test');
+		// console.log(this.subtractMinutes(105, timings[timings?.length - 1]), 'test');
 		const dayStart = intervals[intervals.length - 1].dayEnd;
 		const startTime = this.myDate(this.timeSlot?.timings?.[0]);
 		const dayStartTime = this.myDate(dayStart);
@@ -573,7 +574,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
 	}
 
-	public resize(e: any, resizer: HTMLDivElement, appointment: Appointment, container: HTMLDivElement) {
+	public resize(e: any, resizer: HTMLDivElement, appointment: Appointment, container: HTMLDivElement) {	
+		this.minutesInBottom = this.extendMinutesInBottom(appointment)
 		this.element = container;
 		this.currentResizer = resizer;
 		e.preventDefault();
@@ -617,5 +619,14 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		date.setSeconds(0);
 		const subtractedDate = new Date(date.getTime() + minutes * 60 * 1000);
 		return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
+	}
+
+	private extendMinutesInBottom(appointment: Appointment): number {
+		const appointmentEnd = DateTimeUtils.UTCTimeToLocalTimeString(appointment.endedAt.toString().split(' ')[1]).split(':');
+		const calendarEnd = DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot.intervals[0].dayEnd).split(':');
+		const appointmentEndInMin = DateTimeUtils.DurationInMinFromHour(+appointmentEnd[0], +appointmentEnd[1]);
+		let calendarEndInMin = DateTimeUtils.DurationInMinFromHour(+calendarEnd[0], +calendarEnd[1]);
+		calendarEndInMin = calendarEndInMin + 120 > 1440 ? 1440 : calendarEndInMin + 120;			
+		return calendarEndInMin - appointmentEndInMin;
 	}
 }

@@ -82,6 +82,14 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 			this.appointmentApiService.pageNo = this.appointmentApiService.pageNo + 1;
 		}
 	}
+
+	public sortAppointment([...appointment]:any):Array<any> {
+		return appointment.sort(
+			(a: any, b: any) =>
+				new Date(b.startedAt) ? -1
+					: new Date(a.startedAt) ? 1 : 0
+		)
+	}
 }
 
 

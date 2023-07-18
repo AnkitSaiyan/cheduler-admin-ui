@@ -401,6 +401,12 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t\t')}\n`;
+			
+			if (!this.filteredAppointments$$.value.length) {
+				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.clipboardData = '';
+				return;
+			}
 
 			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
 				dataString += `${ap?.startedAt?.toString()}\t${ap?.endedAt?.toString()}\t${this.titleCasePipe.transform(

@@ -489,7 +489,7 @@ export const Translate = Object.freeze({
 	},
 
 	SelectStaffOrRoom: {
-		[ENG_BE]: 'Select a room or staff first',
+		[ENG_BE]: 'Please select room or staff',
 		[DUTCH_BE]: 'Selecteer eerst een zaal of personeel',
 	},
 	FormInvalidSimple: {

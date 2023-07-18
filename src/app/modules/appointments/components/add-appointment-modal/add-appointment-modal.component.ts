@@ -411,8 +411,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		this.appointmentForm = this.fb.group({
 			patientFname: [null, [Validators.required]],
 			patientLname: [null, [Validators.required]],
-			patientTel: [null, [Validators.required]],
-			patientEmail: [null, []],
+			patientTel: [null, [Validators.required, Validators.minLength(10)]],
+			patientEmail: [null, [Validators.required]],
 			doctorId: [null, []],
 			startedAt: [null, [Validators.required]],
 			// startTime: [null, [Validators.required]],
