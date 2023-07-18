@@ -256,6 +256,12 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 				.map(({ title }) => title)
 				.slice(2)
 				.join('\t\t')}\n`;
+			
+				if (!this.filteredRoomAbsence$$.value.length) {
+					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+					this.clipboardData = '';
+					return;
+				}
 
 
 			this.filteredRoomAbsence$$.value.forEach((ap: any) => {

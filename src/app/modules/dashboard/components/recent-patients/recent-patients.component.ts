@@ -262,6 +262,12 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 				.map(({ title }) => title)
 				.slice(2)
 				.join('\t\t')}\n`;
+			
+			if (!this.filteredRecentPatients$$.value.length) {
+				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.clipboardData = '';
+				return;
+			}
 
 			this.filteredRecentPatients$$.value.forEach((ap: any) => {
 				dataString += `${ap?.patientFname?.toString()}\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${ap.startedAt.toString()}\n`;

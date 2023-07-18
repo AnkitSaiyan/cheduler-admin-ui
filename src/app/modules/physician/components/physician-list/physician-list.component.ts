@@ -325,6 +325,12 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
+			
+				if (!this.filteredPhysicians$$.value.length) {
+					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+					this.clipboardData = '';
+					return;
+				}
 
 			this.filteredPhysicians$$.value.forEach((physician: Physician) => {
 				dataString += `${physician.firstname}\t${physician.lastname}\t ${physician.email}\t ${StatusToName[+physician.status]}\n`;
