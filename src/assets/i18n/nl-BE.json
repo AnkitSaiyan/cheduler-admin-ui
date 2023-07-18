@@ -135,14 +135,14 @@
 	"PracticeHours": "Praktijkuren",
 	"PracticeAvailabilityData": "Uren Beschikbaarheid Dagen",
 	"SiteManagement": "Site Beheer",
-	"SiteName": "Naam Praktijk",
-	"SiteLogo": "Logo Praktijk",
+	"SiteName": "Naam praktijk",
+	"SiteLogo": "Logo praktijk",
 	"ChooseFile": "Kies Bestand",
-	"SiteIntroductionText": "Praktijk Introductie tekst",
+	"SiteIntroductionText": "Tekst webpagina patiënt",
 	"DisableAppointmentBooking": "Uitzetten boeken afspraak",
-	"DisableReferringDoctorconsent": "Uitzetten toestemming verwijzende dokter",
+	"DisableReferringDoctorconsent": "Uitzetten verplichting verwijzende dokter",
 	"WarningText": "Waarschuwingstekst",
-	"AppointmentCancellationDuration": "Duur afspraak annulatie",
+	"AppointmentCancellationDuration": "Laatste tijdstip annulatie",
 	"Info": "Info",
 	"EnterHeading": "Geef hoofding",
 	"EnterSubHeading": "Geef sub-hoofding",
@@ -150,8 +150,8 @@
 	"EnterWarningText": "Geef waarschuwingstekst",
 	"Yes": "Ja",
 	"No": "Nee",
-	"CombineSlots": "Combineer Tijdslots",
-	"ReminderMailDuration": "Duur herinneringsbericht e-mail",
+	"CombineSlots": "Combineeer tijdssloten",
+	"ReminderMailDuration": "Tijdstip uitsturen herinneringsbericht e-mail",
 	"NoExamsFound": "Geen Onderzoek Gevonden",
 	"RoomAvailabilityInfo": "Info Zaal Beschikbaarheid",
 	"RoomAvailabilityData": "Gegevens Zaal Beschikbaarheid",
@@ -162,7 +162,7 @@
 	"AbsenceName": "Afwezigheid Naam",
 	"AbsenceSearch": "Zoek op afwezigheid naam, datum",
 	"AddAbsence": "Afwezigheid Toevoegen",
-	"Title": "Titel",
+	"Title": "Naam",
 	"StartDate": "Begindatum",
 	"EndDate": "Einddatum",
 	"AbsenceInfo": "Info Afwezigheid",
@@ -361,7 +361,7 @@
 	"NoGeneralStafFfound": "Geen Generale Staf Gevonden",
 	"UserDeleted": "Gebruiker Succesvol Verwijderd",
 	"EmailTemplate": "E-mail Sjablonen",
-	"SearchByTemplateName": "Zoek op naam sjablonen",
+	"SearchByTemplateName": " Zoeken op naam, onderwerp en status sjablonen",
 	"Subject": "Onderwerp",
 	"Content": "Inhoud",
 	"ContentForAdmin": "Inhoud Voor Admin",
@@ -382,8 +382,8 @@
 	"Save2": "Sevestig",
 	"SelectPhysician": "Selecteer dokter",
 	"Heading": "Hoofding",
-	"SubHeading": "Sub-Hoofding",
-	"BodyText": "Kerntekst",
+	"SubHeading": "Subhoofding",
+	"BodyText": "Boodschap",
 	"CompleteYourProfile": "Voltooi Uw Profiel",
 	"Logout": "Uitloggen",
 	"EnterStreet": "Voer straat in",
@@ -455,6 +455,9 @@
 		}
 	}
 }
+
+
+
 
 
 
