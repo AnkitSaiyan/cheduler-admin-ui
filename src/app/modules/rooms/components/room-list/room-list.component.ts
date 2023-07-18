@@ -329,6 +329,12 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 		try {
 			let dataString = `${this.columns.filter((value) => value !== 'Actions').join('\t')}\n`;
 
+			if (!this.filteredRooms$$.value.length) {
+				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.clipboardData = '';
+				return;
+			}
+
 			this.filteredRooms$$.value.forEach((room: Room) => {
 				dataString += `${room.name}\t${room.description}\t${room.placeInAgenda}\t ${room.type}\t ${StatusToName[+room.status]}\n`;
 			});

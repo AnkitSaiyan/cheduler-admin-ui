@@ -273,6 +273,12 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 				.map(({ title }) => title)
 				.slice(0, -1)
 				.join('\t')}\n`;
+			
+			if (!this.filteredEmails$$.value.length) {
+				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.clipboardData = '';
+				return;
+			}
 
 			this.filteredEmails$$.value.forEach((email: Email) => {
 				dataString += `${email.title}\t${email.subject}\t${StatusToName[email.status]}\n`;

@@ -254,6 +254,12 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
+			
+				if (!this.filteredAbsences$$.value.length) {
+					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+					this.clipboardData = '';
+					return;
+				}
 
 			this.filteredAbsences$$.value.forEach((absence: Absence) => {
 				dataString += `${absence.name}\t${absence?.startedAt}\t${absence.endedAt}\t${absence.info}\n`;

@@ -456,6 +456,12 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
+			
+				if (!this.filteredUsers$$.value.length) {
+					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+					this.clipboardData = '';
+					return;
+				}
 
 			this.filteredUsers$$.value.forEach((user: UserBase) => {
 				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user?.telephone ?? '—'}\t${user.userType ?? '—'}\t${

@@ -308,6 +308,12 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 				.map(({ title }) => title)
 				.slice(0, -1)
 				.join('\t')}\n`;
+			
+				if (!this.filteredExams$$.value.length) {
+					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+					this.clipboardData = '';
+					return;
+				}
 
 			this.filteredExams$$.value.forEach((exam: Exam) => {
 				dataString += `${exam.name}\t${exam.expensive}\t${StatusToName[exam.status]}\n`;
