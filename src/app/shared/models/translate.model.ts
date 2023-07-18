@@ -78,7 +78,7 @@ export const Translate = Object.freeze({
 	},
 	Title: {
 		[ENG_BE]: 'Title',
-		[DUTCH_BE]: 'Titel',
+		[DUTCH_BE]: 'Naam',
 	},
 	StartDate: {
 		[ENG_BE]: 'Start Date',
@@ -715,4 +715,29 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Zondag',
 	},
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
