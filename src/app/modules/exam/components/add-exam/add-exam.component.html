@@ -65,26 +65,66 @@
                         </div>
                     </div>
 
+
                     <div class="exam-form-mv">
-                        <dfm-input
-                          #expensive
-                          [dfmNumberInput]="expensive"
-                          class="ad-ex-duration"
-                          type="number"
-                          size="md"
-                          placeholder="{{ 'EnterDuration' | translate }}"
-                          label="{{ 'DurationMin' | translate }} *"
-                          formControlName="expensive"
-                          (focusout)="handleExpenseInput($event, expensive, examForm.get('expensive'))"
-                        >
-                        </dfm-input>
+                        <div class="">
+                            <dfm-input-dropdown
+                                    class="flex-1"
+                                    size="md"
+                                    placeholder="{{ 'SelectGender' }}"
+                                    label="{{ 'Gender' | translate }} *"
+                                    formControlName="gender"
+                                    [items]="genderType"
+                            ></dfm-input-dropdown>
+                        </div>
                         <div class="validation-error"
-                             *ngIf="examForm.get('expensive')?.hasError('required') && examForm.get('expensive')?.touched">
+                             *ngIf="examForm.get('roomType')?.hasError('required') && examForm.get('roomType')?.touched">
                             {{ 'RequiredField' | translate }}
                         </div>
-                        <small class="validation-error"
-                               *ngIf="expensive.control.hasError('min')">{{"PleaseEnterAtLeastFiveMin" | translate}}</small>
                     </div>
+                    <div class="exam-form-mv">
+                      <div class="">
+                          <dfm-input-dropdown
+                                  class="flex-1"
+                                  #bodyPartDropdown
+                                  size="md"
+                                  placeholder="{{ 'SelectBodyPart' | translate }}"
+                                  label="{{ 'BodyPart' | translate }} *"
+                                  formControlName="bodyPart"
+                                  [typeToSearch]="true"
+                                  (searchInput)="handleDropdownSearch($event, 'bodyPart')"
+                                  [items]="(filteredBodyPart$$ | async) ?? []"
+                          ></dfm-input-dropdown>
+                      </div>
+                      <div class="validation-error"
+                           *ngIf="examForm.get('roomType')?.hasError('required') && examForm.get('roomType')?.touched">
+                          {{ 'RequiredField' | translate }}
+                      </div>
+                  </div>
+                </div>
+                <div class="d-flex dfm-gap-24 flex-wrap ad-ex-name-expense-room">
+
+                  <div class="exam-form-mv">
+                    <dfm-input
+                      #expensive
+                      [dfmNumberInput]="expensive"
+                      class="ad-ex-duration"
+                      type="number"
+                      size="md"
+                      placeholder="{{ 'EnterDuration' | translate }}"
+                      label="{{ 'DurationMin' | translate }} *"
+                      formControlName="expensive"
+                      (focusout)="handleExpenseInput($event, expensive, examForm.get('expensive'))"
+                    >
+                    </dfm-input>
+                    <div class="validation-error"
+                         *ngIf="examForm.get('expensive')?.hasError('required') && examForm.get('expensive')?.touched">
+                        {{ 'RequiredField' | translate }}
+                    </div>
+                    <small class="validation-error"
+                           *ngIf="expensive.control.hasError('min')">{{"PleaseEnterAtLeastFiveMin" | translate}}</small>
+                </div>
+
                     <div class="exam-form-mv">
                         <div class="">
                             <dfm-input-dropdown

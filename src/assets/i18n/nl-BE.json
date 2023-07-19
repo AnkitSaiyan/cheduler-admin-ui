@@ -453,8 +453,18 @@
 			"NO_ITEMS": "Geen items gevonden",
 			"LOADING": "Loaden"
 		}
-	}
+	},
+	"Gender": "Gender",
+	"SelectGender": "Select gender",
+	"BodyPart": "Body part",
+	"SelectBodyPart": "Select body part",
+	"Male": "Male",
+	"Female": "Female"
 }
+
+
+
+
 
 
 

@@ -714,7 +714,29 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Sunday',
 		[DUTCH_BE]: 'Zondag',
 	},
+	Male: {
+		[ENG_BE]: 'Male',
+		[DUTCH_BE]: 'Male',
+	},
+	Female: {
+		[ENG_BE]: 'Female',
+		[DUTCH_BE]: 'Female',
+	},
+	Gender: {
+		[ENG_BE]: 'Gender',
+		[DUTCH_BE]: 'Gender',
+	},
+	BodyPart: {
+		[ENG_BE]: 'BodyPart',
+		[DUTCH_BE]: 'BodyPart',
+	},
 });
+
+
+
+
+
+
 
 
 

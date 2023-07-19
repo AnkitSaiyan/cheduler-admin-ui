@@ -62,12 +62,14 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
 	public downloadDropdownControl = new FormControl('', []);
 
-	private columns: string[] = ['Name', 'Expensive', 'Status', 'Actions'];
+	private columns: string[] = ['Name', 'Expensive', 'Gender', 'BodyPart', 'Status', 'Actions'];
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'Name', isSortable: true },
 		{ id: '2', title: 'Expensive', isSortable: true },
-		{ id: '3', title: 'Status', isSortable: true },
+		{ id: '3', title: 'Gender', isSortable: true },
+		{ id: '4', title: 'BodyPart', isSortable: true },
+		{ id: '5', title: 'Status', isSortable: true },
 	];
 
 	public downloadItems: DownloadType[] = [];
@@ -101,7 +103,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 		super();
 		this.exams$$ = new BehaviorSubject<Exam[]>([]);
 		this.filteredExams$$ = new BehaviorSubject<Exam[]>([]);
-    this.examApiSvc.pageNo = 1;
+		this.examApiSvc.pageNo = 1;
 		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: () => {
 				if (
