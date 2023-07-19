@@ -150,7 +150,7 @@
 	"EnterWarningText": "Geef waarschuwingstekst",
 	"Yes": "Ja",
 	"No": "Nee",
-	"CombineSlots": "Combineeer tijdssloten",
+	"CombineSlots": "Combineer tijdssloten",
 	"ReminderMailDuration": "Tijdstip uitsturen herinneringsbericht e-mail",
 	"NoExamsFound": "Geen Onderzoek Gevonden",
 	"RoomAvailabilityInfo": "Info Zaal Beschikbaarheid",
@@ -455,6 +455,7 @@
 		}
 	}
 }
+
 
 
 
