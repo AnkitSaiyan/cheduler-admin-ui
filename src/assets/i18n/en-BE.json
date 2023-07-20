@@ -457,8 +457,10 @@
 	"SelectBodyPart": "Select body part",
 	"Male": "Male",
 	"Female": "Female",
-	"Skeleton": "Skeleton"
+	"Skeleton": "Skeleton",
+	"Body": "Body"
 }
+
 
 
 

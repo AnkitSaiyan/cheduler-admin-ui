@@ -71,24 +71,19 @@ export class ShareDataService {
 				switch (gender) {
 					case BodyType.Male:
 						return of(
-							[...value.skeletonParts, ...value.maleBodyParts.front, ...value.maleBodyParts.back].sort().map((value) => ({ name: value, value })),
+							[ ...value.maleBodyParts.front, ...value.maleBodyParts.back].sort().map((value) => ({ name: value, value })),
 						);
 					case BodyType.Female:
 						return of(
-							[...value.skeletonParts, ...value.femaleBodyParts.front, ...value.femaleBodyParts.back].sort().map((value) => ({ name: value, value })),
+							[ ...value.femaleBodyParts.front, ...value.femaleBodyParts.back].sort().map((value) => ({ name: value, value })),
+						);
+
+					case BodyType.Skeleton:
+						return of(
+							[...value.skeletonParts].sort().map((value) => ({ name: value, value })),
 						);
 					default:
-						return of(
-							[
-								...value.skeletonParts,
-								...value.femaleBodyParts.front,
-								...value.femaleBodyParts.back,
-								...value.maleBodyParts.front,
-								...value.maleBodyParts.back,
-							]
-								.sort()
-								.map((value) => ({ name: value, value })),
-						);
+						return of([]);
 				}
 			}),
 		);
