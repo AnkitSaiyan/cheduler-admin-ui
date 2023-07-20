@@ -57,3 +57,8 @@ export const ErrLoginFailed: string = 'Failed to login user';
 // Info messages
 
 export const LoggingYouOut = 'Logging you out';
+
+export enum Gender {
+	Male = 'male',
+	Female = 'female',
+}

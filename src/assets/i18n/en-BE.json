@@ -395,7 +395,7 @@
 	"UserRole": "User Role",
 	"SelectRole": "Select role",
 	"socialSecurityNumber": "Social Security Number",
-    "enterSocialSecurityNumber": "Enter Social Security Number",
+	"enterSocialSecurityNumber": "Enter Social Security Number",
 	"Jan": "Jan",
 	"Feb": "Feb",
 	"Mar": "Mar",
@@ -450,5 +450,13 @@
 			"NO_ITEMS": "No items found",
 			"LOADING": "Loading"
 		}
-	}
+	},
+	"Gender": "Gender",
+	"SelectGender": "Select gender",
+	"BodyPart": "Body part",
+	"SelectBodyPart": "Select body part",
+	"Male": "Male",
+	"Female": "Female"
 }
+
+
