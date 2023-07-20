@@ -102,7 +102,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public readonly interval: number = 5;
 	public examID!: string;
 	public roomTypes: any[] = [];
-	public genderType: any[] = [];
+	public bodyType: any[] = [];
 	public bodyPart: any[] = [];
 	public timings: NameValue[] = [];
 	public filteredTimings: NameValue[] = [];
@@ -169,8 +169,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			next: (items) => (this.roomTypes = items),
 		});
 
-		this.shareDataSvc.genderType$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (items) => (this.genderType = items),
+		this.shareDataSvc.bodyType$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => (this.bodyType = items),
 		});
 
 		this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];

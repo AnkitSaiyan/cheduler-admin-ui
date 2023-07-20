@@ -20,14 +20,18 @@ export class ShareDataService {
 
 	private readonly patientsUrl = `${environment.schedulerApiUrl}/common/getpatients`;
 
-	private gender: { name: string; value: string }[] = [
+	private bodyType: { name: string; value: string }[] = [
 		{
-			name: 'Male',
+			name: 'Male Body',
 			value: Gender.Male,
 		},
 		{
-			name: 'Female',
+			name: 'Female Body',
 			value: Gender.Female,
+		},
+		{
+			name: 'Skeleton',
+			value: 'skeleton',
 		},
 	];
 
@@ -41,10 +45,10 @@ export class ShareDataService {
 		return this.changeTimeModalData$$.asObservable();
 	}
 
-	get genderType$(): Observable<any[]> {
+	get bodyType$(): Observable<any[]> {
 		return combineLatest([this.language$$.pipe(startWith(''))]).pipe(
 			switchMap(([lang]) => {
-				return of(this.gender).pipe(
+				return of(this.bodyType).pipe(
 					map((downloadTypeItems) => {
 						if (lang) {
 							return downloadTypeItems.map((downloadType) => {
