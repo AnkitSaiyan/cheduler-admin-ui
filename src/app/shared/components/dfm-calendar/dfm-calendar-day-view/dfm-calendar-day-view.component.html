@@ -79,7 +79,8 @@
                         *ngIf="dataGroupedByRoom && dataGroupedByRoom[h.value] as roomData">
                         <ng-container
                           *ngFor="let data of roomData;">
-                          <div *ngIf="calendarView.offsetHeight > getTop([data.appointment]) && getHeight([data.appointment]) as eventHeight" #eventContainer class="calender-day-view-event-container resizable" (dblclick)="$event.preventDefault()"
+                          <ng-container *ngIf="getHeight([data.appointment]) as eventHeight" >
+                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight" #eventContainer class="calender-day-view-event-container resizable" (dblclick)="$event.preventDefault()"
                                [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
                           >
                           <div class='resizers' id="resizers">
@@ -226,6 +227,7 @@
                             <div class='resizer bottom' #bottomResizer (mousedown)="resize($event, bottomResizer, data.appointment, eventContainer)" ></div>
                           </div>
                           </div>
+                        </ng-container>
                         </ng-container>
                       </ng-container>
                     </ng-container>
