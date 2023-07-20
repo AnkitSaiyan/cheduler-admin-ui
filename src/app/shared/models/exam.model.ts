@@ -3,14 +3,14 @@ import { Status } from './status.model';
 import { Room, RoomType } from './rooms.model';
 import {TimeSlot, Weekday} from './calendar.model';
 import { PracticeAvailability } from './practice.model';
-import { Gender } from '../utils/const';
+import { BodyType } from '../utils/const';
 
 export interface Exam {
 	id: number;
 	name: string;
 	expensive: number;
 	bodyPart: string;
-	gender: Gender;
+	gender: BodyType;
 	info: string;
 	assistantCount: number;
 	radiologistCount: number;
@@ -45,7 +45,7 @@ export interface Uncombinables {
 export interface CreateExamRequestData {
 	name: string;
 	expensive: number;
-	gender: Gender;
+	gender: BodyType;
 	bodyPart: string;
 	roomsForExam: {
 		roomId: number;

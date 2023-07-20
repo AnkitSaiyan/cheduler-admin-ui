@@ -3,7 +3,7 @@ import { combineLatest, BehaviorSubject, map, Observable, of, startWith, Subject
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { DUTCH_BE, Gender } from 'src/app/shared/utils/const';
+import { DUTCH_BE, BodyType } from 'src/app/shared/utils/const';
 import { Translate } from 'src/app/shared/models/translate.model';
 
 @Injectable({
@@ -20,14 +20,18 @@ export class ShareDataService {
 
 	private readonly patientsUrl = `${environment.schedulerApiUrl}/common/getpatients`;
 
-	private gender: { name: string; value: string }[] = [
+	private bodyType: { name: string; value: string }[] = [
 		{
-			name: 'Male',
-			value: Gender.Male,
+			name: 'Male Body',
+			value: BodyType.Male,
 		},
 		{
-			name: 'Female',
-			value: Gender.Female,
+			name: 'Female Body',
+			value: BodyType.Female,
+		},
+		{
+			name: 'Skeleton',
+			value: BodyType.Skeleton,
 		},
 	];
 
@@ -41,10 +45,10 @@ export class ShareDataService {
 		return this.changeTimeModalData$$.asObservable();
 	}
 
-	get genderType$(): Observable<any[]> {
+	get bodyType$(): Observable<any[]> {
 		return combineLatest([this.language$$.pipe(startWith(''))]).pipe(
 			switchMap(([lang]) => {
-				return of(this.gender).pipe(
+				return of(this.bodyType).pipe(
 					map((downloadTypeItems) => {
 						if (lang) {
 							return downloadTypeItems.map((downloadType) => {
@@ -61,30 +65,25 @@ export class ShareDataService {
 		);
 	}
 
-	public bodyPart$(gender?: Gender): Observable<any[]> {
+	public bodyPart$(gender?: BodyType): Observable<any[]> {
 		return this.http.get('assets/json/category.json').pipe(
 			switchMap((value: any) => {
 				switch (gender) {
-					case Gender.Male:
+					case BodyType.Male:
 						return of(
-							[...value.skeletonParts, ...value.maleBodyParts.front, ...value.maleBodyParts.back].sort().map((value) => ({ name: value, value })),
+							[ ...value.maleBodyParts.front, ...value.maleBodyParts.back].sort().map((value) => ({ name: value, value })),
 						);
-					case Gender.Female:
+					case BodyType.Female:
 						return of(
-							[...value.skeletonParts, ...value.femaleBodyParts.front, ...value.femaleBodyParts.back].sort().map((value) => ({ name: value, value })),
+							[ ...value.femaleBodyParts.front, ...value.femaleBodyParts.back].sort().map((value) => ({ name: value, value })),
+						);
+
+					case BodyType.Skeleton:
+						return of(
+							[...value.skeletonParts].sort().map((value) => ({ name: value, value })),
 						);
 					default:
-						return of(
-							[
-								...value.skeletonParts,
-								...value.femaleBodyParts.front,
-								...value.femaleBodyParts.back,
-								...value.maleBodyParts.front,
-								...value.maleBodyParts.back,
-							]
-								.sort()
-								.map((value) => ({ name: value, value })),
-						);
+						return of([]);
 				}
 			}),
 		);

@@ -451,12 +451,17 @@
 			"LOADING": "Loading"
 		}
 	},
-	"Gender": "Gender",
-	"SelectGender": "Select gender",
+	"BodyType": "Body type",
+	"SelectBodyType": "Select body type",
 	"BodyPart": "Body part",
 	"SelectBodyPart": "Select body part",
 	"Male": "Male",
-	"Female": "Female"
+	"Female": "Female",
+	"Skeleton": "Skeleton",
+	"Body": "Body"
 }
+
+
+
 
 

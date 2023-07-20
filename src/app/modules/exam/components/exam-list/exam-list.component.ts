@@ -62,12 +62,12 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
 	public downloadDropdownControl = new FormControl('', []);
 
-	private columns: string[] = ['Name', 'Expensive', 'Gender', 'BodyPart', 'Status', 'Actions'];
+	private columns: string[] = ['Name', 'Expensive', 'BodyType', 'BodyPart', 'Status', 'Actions'];
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'Name', isSortable: true },
 		{ id: '2', title: 'Expensive', isSortable: true },
-		{ id: '3', title: 'Gender', isSortable: true },
+		{ id: '3', title: 'BodyType', isSortable: true },
 		{ id: '4', title: 'BodyPart', isSortable: true },
 		{ id: '5', title: 'Status', isSortable: true },
 	];
