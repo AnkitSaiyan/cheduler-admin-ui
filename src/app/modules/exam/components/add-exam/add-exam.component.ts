@@ -23,7 +23,7 @@ import { UserApiService } from '../../../../core/services/user-api.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
-import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, Gender, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, BodyType, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
 import { Room, RoomsGroupedByType, RoomType } from '../../../../shared/models/rooms.model';
 import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
@@ -43,7 +43,7 @@ import { LoaderService } from 'src/app/core/services/loader.service';
 interface FormValues {
 	name: string;
 	expensive: number;
-	gender: Gender;
+	gender: BodyType;
 	bodyPart: string;
 	roomType: RoomType;
 	roomsForExam: {

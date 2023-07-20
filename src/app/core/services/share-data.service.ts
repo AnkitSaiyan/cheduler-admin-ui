@@ -3,7 +3,7 @@ import { combineLatest, BehaviorSubject, map, Observable, of, startWith, Subject
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { DUTCH_BE, Gender } from 'src/app/shared/utils/const';
+import { DUTCH_BE, BodyType } from 'src/app/shared/utils/const';
 import { Translate } from 'src/app/shared/models/translate.model';
 
 @Injectable({
@@ -23,15 +23,15 @@ export class ShareDataService {
 	private bodyType: { name: string; value: string }[] = [
 		{
 			name: 'Male Body',
-			value: Gender.Male,
+			value: BodyType.Male,
 		},
 		{
 			name: 'Female Body',
-			value: Gender.Female,
+			value: BodyType.Female,
 		},
 		{
 			name: 'Skeleton',
-			value: 'skeleton',
+			value: BodyType.Skeleton,
 		},
 	];
 
@@ -65,15 +65,15 @@ export class ShareDataService {
 		);
 	}
 
-	public bodyPart$(gender?: Gender): Observable<any[]> {
+	public bodyPart$(gender?: BodyType): Observable<any[]> {
 		return this.http.get('assets/json/category.json').pipe(
 			switchMap((value: any) => {
 				switch (gender) {
-					case Gender.Male:
+					case BodyType.Male:
 						return of(
 							[...value.skeletonParts, ...value.maleBodyParts.front, ...value.maleBodyParts.back].sort().map((value) => ({ name: value, value })),
 						);
-					case Gender.Female:
+					case BodyType.Female:
 						return of(
 							[...value.skeletonParts, ...value.femaleBodyParts.front, ...value.femaleBodyParts.back].sort().map((value) => ({ name: value, value })),
 						);
