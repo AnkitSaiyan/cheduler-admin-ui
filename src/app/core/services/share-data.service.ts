@@ -22,11 +22,11 @@ export class ShareDataService {
 
 	private bodyType: { name: string; value: string }[] = [
 		{
-			name: 'Male Body',
+			name: 'MaleBody',
 			value: BodyType.Male,
 		},
 		{
-			name: 'Female Body',
+			name: 'FemaleBody',
 			value: BodyType.Female,
 		},
 		{
@@ -49,16 +49,16 @@ export class ShareDataService {
 		return combineLatest([this.language$$.pipe(startWith(''))]).pipe(
 			switchMap(([lang]) => {
 				return of(this.bodyType).pipe(
-					map((downloadTypeItems) => {
+					map((bodyTypes) => {
 						if (lang) {
-							return downloadTypeItems.map((downloadType) => {
+							return bodyTypes.map((bodyType) => {
 								return {
-									...downloadType,
-									name: Translate[downloadType.name][lang],
+									...bodyType,
+									name: Translate[bodyType.name][lang],
 								};
 							});
 						}
-						return downloadTypeItems;
+						return bodyTypes;
 					}),
 				);
 			}),
