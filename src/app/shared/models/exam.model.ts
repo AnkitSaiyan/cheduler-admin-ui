@@ -10,7 +10,7 @@ export interface Exam {
 	name: string;
 	expensive: number;
 	bodyPart: string;
-	gender: BodyType;
+	bodyType: BodyType;
 	info: string;
 	assistantCount: number;
 	radiologistCount: number;
@@ -45,7 +45,7 @@ export interface Uncombinables {
 export interface CreateExamRequestData {
 	name: string;
 	expensive: number;
-	gender: BodyType;
+	bodyType: BodyType;
 	bodyPart: string;
 	roomsForExam: {
 		roomId: number;

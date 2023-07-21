@@ -65,23 +65,17 @@ export class ShareDataService {
 		);
 	}
 
-	public bodyPart$(gender?: BodyType): Observable<any[]> {
+	public bodyPart$(bodyType?: BodyType): Observable<any[]> {
 		return this.http.get('assets/json/category.json').pipe(
 			switchMap((value: any) => {
-				switch (gender) {
+				switch (bodyType) {
 					case BodyType.Male:
-						return of(
-							[ ...value.maleBodyParts.front, ...value.maleBodyParts.back].sort().map((value) => ({ name: value, value })),
-						);
+						return of([...value.maleBodyParts.front, ...value.maleBodyParts.back].sort().map((value) => ({ name: value, value })));
 					case BodyType.Female:
-						return of(
-							[ ...value.femaleBodyParts.front, ...value.femaleBodyParts.back].sort().map((value) => ({ name: value, value })),
-						);
+						return of([...value.femaleBodyParts.front, ...value.femaleBodyParts.back].sort().map((value) => ({ name: value, value })));
 
 					case BodyType.Skeleton:
-						return of(
-							[...value.skeletonParts].sort().map((value) => ({ name: value, value })),
-						);
+						return of([...value.skeletonParts].sort().map((value) => ({ name: value, value })));
 					default:
 						return of([]);
 				}

@@ -43,7 +43,7 @@ import { LoaderService } from 'src/app/core/services/loader.service';
 interface FormValues {
 	name: string;
 	expensive: number;
-	gender: BodyType;
+	bodyType: BodyType;
 	bodyPart: string;
 	roomType: RoomType;
 	roomsForExam: {
@@ -450,7 +450,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		const createExamRequestData: CreateExamRequestData = {
 			name: this.formValues.name,
-			gender: this.formValues.gender,
+			bodyType: this.formValues.bodyType,
 			bodyPart: this.formValues.bodyPart,
 			expensive: this.formValues.expensive,
 			info: this.formValues.info ?? null,
@@ -580,7 +580,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			name: [null, [Validators.required]],
 			// name: [null, [Validators.required]],
 			expensive: [null, [Validators.required, Validators.min(5)]],
-			gender: [null, [Validators.required]],
+			bodyType: [null, [Validators.required]],
 			bodyPart: [null, [Validators.required]],
 			roomType: [null, [Validators.required]],
 			roomsForExam: this.fb.array([]),
@@ -606,10 +606,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			.subscribe((roomType) => this.createRoomsForExamFormArray(roomType));
 
 		this.examForm
-			.get('gender')
+			.get('bodyType')
 			?.valueChanges.pipe(
 				debounceTime(0),
-				switchMap((gender) => this.shareDataSvc.bodyPart$(gender)),
+				switchMap((bodyType) => this.shareDataSvc.bodyPart$(bodyType)),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
@@ -707,7 +707,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			mandatoryStaffs: mandatory,
 			uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
 		});
-		this.examForm.patchValue({ gender: examDetails?.gender }, { onlySelf: true, emitEvent: false });
+		this.examForm.patchValue({ bodyType: examDetails?.bodyType }, { onlySelf: true, emitEvent: false });
 
 		if (examDetails?.roomsForExam?.length) {
 			this.roomApiSvc
