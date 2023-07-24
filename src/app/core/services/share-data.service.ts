@@ -77,7 +77,15 @@ export class ShareDataService {
 					case BodyType.Skeleton:
 						return of([...value.skeletonParts].sort().map((value) => ({ name: value, value })));
 					default:
-						return of([]);
+						return of(
+							[
+								...value.maleBodyParts.front,
+								...value.maleBodyParts.back,
+								...value.femaleBodyParts.front,
+								...value.femaleBodyParts.back,
+								...value.skeletonParts,
+							].map((value) => ({ name: value, value })),
+						);
 				}
 			}),
 		);

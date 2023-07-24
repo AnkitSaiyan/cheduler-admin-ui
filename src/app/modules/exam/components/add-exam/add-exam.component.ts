@@ -158,7 +158,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public ngOnInit(): void {
 		this.shareDataSvc
 			.bodyPart$()
-			.pipe(take(1))
+			.pipe(
+				filter(() => this.edit),
+				take(1),
+			)
 			.subscribe({
 				next: (items) => {
 					this.bodyPart = items;
