@@ -47,7 +47,7 @@ export class SiteManagementApiService extends DestroyableComponent {
 
   public saveSiteManagementData$(requestData: SiteManagementRequestData): Observable<SiteManagement> {
     this.loaderSvc.activate();
-    const formData = new FormData();
+    const formData = new FormData();  
     formData.append('Name', requestData.name);
     formData.append('DisableAppointment', String(requestData.disableAppointment));
     formData.append('DisableWarningText', String(requestData.disableWarningText));
@@ -62,6 +62,8 @@ export class SiteManagementApiService extends DestroyableComponent {
     formData.append('ReminderTime', String(requestData.reminderTime));
     formData.append('isAppointmentAutoconfirm', String(requestData.isAppointmentAutoconfirm));
     formData.append('isAppointmentAutoconfirmAdmin', String(requestData.isAppointmentAutoconfirmAdmin));
+    formData.append('editUploadedDocument', String(requestData.editUploadedDocument));
+    formData.append('documentSizeInKb', String(requestData.documentSize*1024));
     if (requestData.file) {
       formData.append('File', requestData.file);
     }
