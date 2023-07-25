@@ -80,7 +80,7 @@
                         <ng-container
                           *ngFor="let data of roomData;">
                           <ng-container *ngIf="getHeight([data.appointment]) as eventHeight" >
-                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight" #eventContainer class="calender-day-view-event-container resizable" (dblclick)="$event.preventDefault()"
+                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight && getTop([data.appointment]) >= 0" #eventContainer class="calender-day-view-event-container resizable" (dblclick)="$event.preventDefault()"
                                [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
                           >
                           <div class='resizers' id="resizers">
