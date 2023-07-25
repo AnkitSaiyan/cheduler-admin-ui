@@ -477,24 +477,24 @@ h3 {
 }
 
 .resizable .resizers .resizer {
-  width: 4px;
-  height: 4px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   /*magic to turn square into circle*/
-  background: white;
+  background: #4286f4;
   border: 3px solid #4286f4;
   position: absolute;
 }
 
 .resizable .resizers .resizer.top {
   right: 15px;
-  top: -2px;
+  top: -4px;
   cursor: nesw-resize;
 }
 
 .resizable .resizers .resizer.bottom {
   left: 15px;
-  bottom: -2px;
+  bottom: -4px;
   cursor: nesw-resize;
 }
 @media (max-width: 680px) {

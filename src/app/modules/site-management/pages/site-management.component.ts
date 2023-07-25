@@ -35,7 +35,9 @@ interface FormValues {
 	isSlotsCombinable: boolean;
 	reminderTime: number;
 	reminderTimeType: TimeDurationType;
-	isAppointmentAutoconfirmAdmin: boolean;
+  isAppointmentAutoconfirmAdmin: boolean;
+  documentSize: number,
+  editUploadedDocument: boolean,
 }
 
 @Component({
@@ -54,6 +56,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
   private selectedLang: string = ENG_BE;
 
+  public documentSize: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private notificationSvc: NotificationDataService,
@@ -66,6 +70,9 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
   }
 
   public ngOnInit(): void {
+
+    for (let i = 1; i < 11; i++) this.documentSize.push({ name: i + ' MB', value: i });   
+
     this.siteManagementApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.timeDurations = items));
 
     this.siteManagementApiSvc.siteManagementData$.pipe(takeUntil(this.destroy$$)).subscribe((siteManagementData) => {
@@ -168,13 +175,16 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			reminderTime: [reminderDuration, []],
 			reminderTimeType: [reminderDurationTYpe, []],
 			isAppointmentAutoconfirm: [!!siteManagementData?.isAppointmentAutoconfirm, [Validators.required]],
-			isAppointmentAutoconfirmAdmin: [!!siteManagementData?.isAppointmentAutoconfirmAdmin, [Validators.required]],
+      isAppointmentAutoconfirmAdmin: [!!siteManagementData?.isAppointmentAutoconfirmAdmin, [Validators.required]],
+      documentSize: [ 5,  [Validators.required]],
+      editUploadedDocument: [!!siteManagementData?.editUploadedDocument, [Validators.required]],
 		});
 
     setTimeout(() => {
       this.siteManagementForm.patchValue({
         reminderTimeType: reminderDurationTYpe,
         cancelAppointmentType: durationType,
+        documentSize: siteManagementData?.documentSizeInKb ? siteManagementData?.documentSizeInKb / 1024 : 5,
       });
     }, 0);
 
