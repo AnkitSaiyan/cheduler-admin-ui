@@ -36,6 +36,7 @@ export interface Appointment {
 	patientAzureId?: string;
 	isOutside?: boolean;
 	socialSecurityNumber: number;
+	documentCount?: number;
 }
 
 export interface AddAppointmentRequestData {

@@ -31,6 +31,7 @@ import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
 import { SignalrService } from 'src/app/core/services/signalr.service';
 import { AppointmentAdvanceSearchComponent } from 'src/app/modules/dashboard/components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
+import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -57,7 +58,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public downloadDropdownControl = new FormControl('', []);
 
-	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
+	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'Referral Note', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'StartedAt', isSortable: true },
@@ -65,9 +66,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		{ id: '3', title: 'PatientName', isSortable: true },
 		{ id: '4', title: 'Exam', isSortable: true },
 		{ id: '5', title: 'Physician', isSortable: true },
-		{ id: '6', title: 'AppointmentNo', isSortable: true },
-		{ id: '7', title: 'AppliedOn', isSortable: true },
-		{ id: '8', title: 'Status', isSortable: true },
+		{ id: '6', title: 'Referral Note', isSortable: true },
+		{ id: '7', title: 'AppointmentNo', isSortable: true },
+		{ id: '8', title: 'AppliedOn', isSortable: true },
+		{ id: '9', title: 'Status', isSortable: true },
 	];
 
 	public downloadItems: NameValue[] = [];
@@ -625,5 +627,20 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 					this.filteredAppointments$$.next(appointments?.data);
 				},
 			});
+	}
+
+	public openDocumentModal(id: number) {
+		this.modalSvc.open(DocumentViewModalComponent, {
+			  data: {
+				id
+			  },
+			  options: {
+			    size: 'xl',
+			    backdrop: true,
+			    centered: true,
+			    modalDialogClass: 'ad-ap-modal-shadow',
+			  },
+			})
+		// this.appointmentApiSvc.getDocumentById$(id).subscribe(res => console.log(res));
 	}
 }

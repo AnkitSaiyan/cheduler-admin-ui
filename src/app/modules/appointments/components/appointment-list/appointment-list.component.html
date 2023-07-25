@@ -144,6 +144,7 @@
           <dfm-table-row-cell [fullContent]="item.patientFname">{{ item?.patientFname | titlecase }} {{ item?.patientLname  }}</dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item.exams">{{ item?.exams | joinWithAnd : 'name'  | dashIfNothing }}</dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item.doctor">{{ item?.doctor | titlecase | dashIfNothing }}</dfm-table-row-cell>
+          <dfm-table-body-cell>{{!item.documentCount ? '—':''}}  <span *ngIf="item.documentCount" class="view-link" (click)="openDocumentModal(item.id)" >View</span></dfm-table-body-cell>
           <dfm-table-row-cell [fullContent]="item.id">{{ item?.id }}</dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item.createdAt">{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item.status">

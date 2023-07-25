@@ -33,6 +33,7 @@ import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { SignalrService } from 'src/app/core/services/signalr.service';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
+import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -59,7 +60,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public downloadDropdownControl = new FormControl('', []);
 
-	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
+	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'Referral Note', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'StartedAt', isSortable: true },
@@ -67,9 +68,10 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		{ id: '3', title: 'PatientName', isSortable: true },
 		{ id: '4', title: 'Exam', isSortable: true },
 		{ id: '5', title: 'Physician', isSortable: true },
-		{ id: '6', title: 'AppointmentNo', isSortable: true },
-		{ id: '7', title: 'AppliedOn', isSortable: true },
-		{ id: '8', title: 'Status', isSortable: true },
+		{ id: '6', title: 'Referral Note', isSortable: true },
+		{ id: '7', title: 'AppointmentNo', isSortable: true },
+		{ id: '8', title: 'AppliedOn', isSortable: true },
+		{ id: '9', title: 'Status', isSortable: true },
 	];
 
 	public downloadItems: NameValue[] = [];
@@ -557,5 +559,20 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public onSort(e: DfmTableHeader): void {
 		this.filteredAppointments$$.next(GeneralUtils.SortArray(this.filteredAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
+	}
+
+	public openDocumentModal(id: number) {
+		this.modalSvc.open(DocumentViewModalComponent, {
+			  data: {
+				id
+			  },
+			  options: {
+			    size: 'xl',
+			    backdrop: true,
+			    centered: true,
+			    modalDialogClass: 'ad-ap-modal-shadow',
+			  },
+			})
+		// this.appointmentApiSvc.getDocumentById$(id).subscribe(res => console.log(res));
 	}
 }
