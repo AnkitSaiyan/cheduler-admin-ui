@@ -180,7 +180,13 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		// const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 		// const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
 		const start = this.myDate(this.timeSlot?.timings?.[0]);
+		start.setFullYear(this.selectedDate.getFullYear());
+		start.setMonth(this.selectedDate.getMonth());
+		start.setDate(this.selectedDate.getDate());
 		const end = new Date(groupedData[0].startedAt);
+		if (start.getTime() > end.getTime()) {
+			return -1;
+		}
 		const minutes = getDurationMinutes(start, end);
 		return minutes * this.pixelsPerMin;
 	}
@@ -221,20 +227,28 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});
 	}
 
-	public openChangeTimeModal(appointment: Appointment, extend = true, eventContainer: HTMLDivElement, position?: boolean, time?:number, divHieght?:number, divTop?:number) {		
-		const top =  eventContainer?.style.top;
-		const height =  eventContainer?.style.height;
+	public openChangeTimeModal(
+		appointment: Appointment,
+		extend = true,
+		eventContainer: HTMLDivElement,
+		position?: boolean,
+		time?: number,
+		divHieght?: number,
+		divTop?: number,
+	) {
+		const top = eventContainer?.style.top;
+		const height = eventContainer?.style.height;
 		const modalRef = this.modalSvc.open(AppointmentTimeChangeModalComponent, {
-			data: { extend, eventContainer,  position, time, minutesInBottom:this.minutesInBottom },
-      options: {
+			data: { extend, eventContainer, position, time, minutesInBottom: this.minutesInBottom },
+			options: {
 				backdrop: false,
 				centered: true,
 			},
 		});
 
-		if(divHieght){
-			eventContainer.style.top = divTop + "px";
-			eventContainer.style.height = divHieght + "px";
+		if (divHieght) {
+			eventContainer.style.top = divTop + 'px';
+			eventContainer.style.height = divHieght + 'px';
 		}
 
 		modalRef.closed
@@ -279,9 +293,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 					if (eventContainer) {
 						// eslint-disable-next-line no-param-reassign
-						eventContainer.style.top = divTop ? divTop + "px" : top;
+						eventContainer.style.top = divTop ? divTop + 'px' : top;
 						// eslint-disable-next-line no-param-reassign
-						eventContainer.style.height = divHieght ? divHieght + "px" : height;
+						eventContainer.style.height = divHieght ? divHieght + 'px' : height;
 					}
 				},
 			});
@@ -574,8 +588,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
 	}
 
-	public resize(e: any, resizer: HTMLDivElement, appointment: Appointment, container: HTMLDivElement) {	
-		this.minutesInBottom = this.extendMinutesInBottom(appointment)
+	public resize(e: any, resizer: HTMLDivElement, appointment: Appointment, container: HTMLDivElement) {
+		this.minutesInBottom = this.extendMinutesInBottom(appointment);
 		this.element = container;
 		this.currentResizer = resizer;
 		e.preventDefault();
@@ -600,15 +614,15 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		let mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
 			if (parseInt(container?.style.height) != this.original_height) {
-				const minutes = Math.round((Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute) / 5) * 5;
+				const minutes = Math.round(Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute / 5) * 5;
 				const isExtend = parseInt(container?.style.height) > this.original_height;
-				
+
 				this.openChangeTimeModal(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
 			}
 			resizeListener();
-			resizeListener = () => { };
+			resizeListener = () => {};
 			mouseUpEve();
-			mouseUpEve = () => { };
+			mouseUpEve = () => {};
 		});
 	}
 	private addMinutes(minutes: number, time: string): string {
@@ -626,7 +640,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const calendarEnd = DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot.intervals[0].dayEnd).split(':');
 		const appointmentEndInMin = DateTimeUtils.DurationInMinFromHour(+appointmentEnd[0], +appointmentEnd[1]);
 		let calendarEndInMin = DateTimeUtils.DurationInMinFromHour(+calendarEnd[0], +calendarEnd[1]);
-		calendarEndInMin = calendarEndInMin + 120 > 1440 ? 1440 : calendarEndInMin + 120;			
+		calendarEndInMin = calendarEndInMin + 120 > 1440 ? 1440 : calendarEndInMin + 120;
 		return calendarEndInMin - appointmentEndInMin;
 	}
 }
