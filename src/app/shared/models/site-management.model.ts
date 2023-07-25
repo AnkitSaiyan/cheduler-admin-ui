@@ -16,6 +16,8 @@ export interface SiteManagement {
 	reminderTime: number;
 	isAppointmentAutoconfirm: boolean;
 	isAppointmentAutoconfirmAdmin: boolean;
+	editUploadedDocument: boolean;
+	documentSizeInKb: number;
 }
 
 export interface SiteManagementRequestData {
@@ -35,4 +37,6 @@ export interface SiteManagementRequestData {
 	reminderTime: number;
 	isAppointmentAutoconfirm: boolean;
 	isAppointmentAutoconfirmAdmin: boolean;
+	editUploadedDocument: boolean;
+	documentSize: number;
 }
