@@ -722,15 +722,33 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Female',
 		[DUTCH_BE]: 'Female',
 	},
+	MaleBody: {
+		[ENG_BE]: 'Male Body',
+		[DUTCH_BE]: 'Male Body',
+	},
+	FemaleBody: {
+		[ENG_BE]: 'Female Body',
+		[DUTCH_BE]: 'Female Body',
+	},
+	Skeleton: {
+		[ENG_BE]: 'Skeleton',
+		[DUTCH_BE]: 'Skeleton',
+	},
 	Gender: {
 		[ENG_BE]: 'Gender',
 		[DUTCH_BE]: 'Gender',
+	},
+	BodyType: {
+		[ENG_BE]: 'Body type',
+		[DUTCH_BE]: 'Body type',
 	},
 	BodyPart: {
 		[ENG_BE]: 'BodyPart',
 		[DUTCH_BE]: 'BodyPart',
 	},
 });
+
+
 
 
 

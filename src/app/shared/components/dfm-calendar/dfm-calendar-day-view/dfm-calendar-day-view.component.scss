@@ -393,15 +393,17 @@ h3 {
   }
 
   .calender-day-view-event-more-button {
-    top: calc(50% - 20px);
-    width: 40px;
-    height: 40px;
-    padding: 8px;
+    // top: calc(50% - 20px);
+    top : 2px;
+    width: 1px;
+    height: 1px;
+    // margin-top: 10px;
+    // padding: 8px;
     border-radius: 50%;
     color: var(--dfm-primary) !important;
     position: absolute;
     bottom: 2px;
-    right: 2px;
+    right: 25px;
     //align-self: end;
 
     svg {

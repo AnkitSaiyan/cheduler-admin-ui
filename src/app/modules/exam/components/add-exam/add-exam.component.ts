@@ -23,7 +23,7 @@ import { UserApiService } from '../../../../core/services/user-api.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RouterStateService } from '../../../../core/services/router-state.service';
-import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, Gender, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, BodyType, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
 import { Room, RoomsGroupedByType, RoomType } from '../../../../shared/models/rooms.model';
 import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
@@ -43,7 +43,7 @@ import { LoaderService } from 'src/app/core/services/loader.service';
 interface FormValues {
 	name: string;
 	expensive: number;
-	gender: Gender;
+	bodyType: BodyType;
 	bodyPart: string;
 	roomType: RoomType;
 	roomsForExam: {
@@ -102,7 +102,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public readonly interval: number = 5;
 	public examID!: string;
 	public roomTypes: any[] = [];
-	public genderType: any[] = [];
+	public bodyType: any[] = [];
 	public bodyPart: any[] = [];
 	public timings: NameValue[] = [];
 	public filteredTimings: NameValue[] = [];
@@ -158,7 +158,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public ngOnInit(): void {
 		this.shareDataSvc
 			.bodyPart$()
-			.pipe(take(1))
+			.pipe(
+				filter(() => this.edit),
+				take(1),
+			)
 			.subscribe({
 				next: (items) => {
 					this.bodyPart = items;
@@ -169,8 +172,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			next: (items) => (this.roomTypes = items),
 		});
 
-		this.shareDataSvc.genderType$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (items) => (this.genderType = items),
+		this.shareDataSvc.bodyType$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => (this.bodyType = items),
 		});
 
 		this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
@@ -450,7 +453,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		const createExamRequestData: CreateExamRequestData = {
 			name: this.formValues.name,
-			gender: this.formValues.gender,
+			bodyType: this.formValues.bodyType,
 			bodyPart: this.formValues.bodyPart,
 			expensive: this.formValues.expensive,
 			info: this.formValues.info ?? null,
@@ -580,7 +583,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			name: [null, [Validators.required]],
 			// name: [null, [Validators.required]],
 			expensive: [null, [Validators.required, Validators.min(5)]],
-			gender: [null, [Validators.required]],
+			bodyType: [null, [Validators.required]],
 			bodyPart: [null, [Validators.required]],
 			roomType: [null, [Validators.required]],
 			roomsForExam: this.fb.array([]),
@@ -606,10 +609,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			.subscribe((roomType) => this.createRoomsForExamFormArray(roomType));
 
 		this.examForm
-			.get('gender')
+			.get('bodyType')
 			?.valueChanges.pipe(
 				debounceTime(0),
-				switchMap((gender) => this.shareDataSvc.bodyPart$(gender)),
+				switchMap((bodyType) => this.shareDataSvc.bodyPart$(bodyType)),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
@@ -707,7 +710,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			mandatoryStaffs: mandatory,
 			uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
 		});
-		this.examForm.patchValue({ gender: examDetails?.gender }, { onlySelf: true, emitEvent: false });
+		this.examForm.patchValue({ bodyType: examDetails?.bodyType }, { onlySelf: true, emitEvent: false });
 
 		if (examDetails?.roomsForExam?.length) {
 			this.roomApiSvc

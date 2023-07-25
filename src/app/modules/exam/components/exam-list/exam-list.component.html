@@ -200,7 +200,7 @@
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-row-cell [fullContent]="item.name">{{ item.name | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-row-cell [fullContent]="item.expensive">{{ item.expensive | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.gender">{{ item.gender | titlecase | dashIfNothing | translate }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.bodyType">{{ item.bodyType?.split('_')?.[0] | titlecase | dashIfNothing | translate }} {{(item.bodyType?.split('_')?.[1] ?? '') | titlecase | translate}}</dfm-table-row-cell>
         <dfm-table-row-cell [fullContent]="item.bodyPart">{{ item.bodyPart | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-row-cell [fullContent]="item.status">
           <dfm-badge *ngIf="item.status === statusType.Active"

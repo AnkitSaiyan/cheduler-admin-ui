@@ -97,6 +97,8 @@
 			"Hamstring [Lt]",
 			"Knee [Back] [Rt]",
 			"Knee [Back] [Lt]",
+			"Leg [Back] [Rt]",
+			"Leg [Back] [Lt]",
 			"Calf [Rt]",
 			"Calf [Lt]",
 			"Ankle [Back] [Rt]",
@@ -161,6 +163,8 @@
 			"Hamstring [Lt]",
 			"Knee [Back] [Rt]",
 			"Knee [Back] [Lt]",
+			"Leg [Back] [Rt]",
+			"Leg [Back] [Lt]",
 			"Calf [Rt]",
 			"Calf [Lt]",
 			"Ankle [Back] [Rt]",
@@ -172,4 +176,5 @@
 		]
 	}
 }
+
 
