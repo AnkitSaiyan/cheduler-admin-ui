@@ -2,6 +2,12 @@
   min-width: 336px;
 }
 
+.view-link{
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 @media (max-width: 1440px) {
   section.vw-ap-section2 > div {
     flex-wrap: wrap;
