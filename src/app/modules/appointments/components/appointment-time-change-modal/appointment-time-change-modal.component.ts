@@ -114,6 +114,8 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
   }
 
   private adjustEventCard(minutes: number, isTop: boolean) {
+    this.minutes = minutes;
+    this.isTop = isTop;
     this.isExtendOutside = false;    
     if (this.extend) {
       if (isTop) {
@@ -121,7 +123,7 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
         this.eventContainer.style.top = `${Math.abs(this.eventTop - +minutes * this.pixelPerMin)}px`;
         this.eventContainer.style.height = `${Math.abs(this.eventHeight + +minutes * this.pixelPerMin)}px`;
       } else {
-      this.isExtendOutside = +minutes > this.extendableTimeInBottom;
+        this.isExtendOutside = +minutes > this.extendableTimeInBottom;
         this.resetEventCard();
         this.eventContainer.style.height = `${Math.abs(this.eventHeight + +minutes * this.pixelPerMin)}px`;
       }
