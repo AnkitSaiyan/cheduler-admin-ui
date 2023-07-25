@@ -73,6 +73,7 @@ import { CustomDatePickerAdapter } from './utils/date-adapter';
 
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { IsPreviousDayPipe } from './pipes/is-previous-day.pipe';
+import { DocumentViewModalComponent } from './components/document-view-modal/document-view-modal.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -121,6 +122,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DfmCalendarPickerComponent,
 		MultiDropdownPlaceholderNamePipe,
 		SortOrderValidation,
+  DocumentViewModalComponent,
 	],
 	imports: [
 		CommonModule,
