@@ -179,8 +179,14 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		// const barHeight = 1;
 		// const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 		// const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
-		const start = this.myDate(this.timeSlot?.timings[0]);
+		const start = this.myDate(this.timeSlot?.timings?.[0]);
+		start.setFullYear(this.selectedDate.getFullYear());
+		start.setMonth(this.selectedDate.getMonth());
+		start.setDate(this.selectedDate.getDate());
 		const end = new Date(groupedData[0].startedAt);
+		if (start.getTime() > end.getTime()) {
+			return -1;
+		}
 		const minutes = getDurationMinutes(start, end);
 		return minutes * this.pixelsPerMin;
 	}

@@ -80,7 +80,7 @@
                         <ng-container
                           *ngFor="let data of roomData; let eventNo = index;">
 
-                          <div *ngIf="getHeight([data.appointment]) as eventHeight" #eventContainer class="calender-day-view-event-container" (dblclick)="$event.preventDefault()"
+                          <div *ngIf="getTop([data.appointment]) >= 0 && getHeight([data.appointment]) as eventHeight" #eventContainer class="calender-day-view-event-container" (dblclick)="$event.preventDefault()"
                                [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
                           >
                             <div class="overflow-hidden">
