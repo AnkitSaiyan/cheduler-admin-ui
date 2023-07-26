@@ -1288,3 +1288,12 @@ angular-editor-toolbar button i {
   color: #474d6d !important;
 
 }
+
+.drag-area {
+  border: 1px dashed var(--dfm-primary) !important;
+  width: 100%;
+  position: absolute;
+  background: var(--dfm-secondary);
+  opacity: .3;
+  z-index: 1;
+}

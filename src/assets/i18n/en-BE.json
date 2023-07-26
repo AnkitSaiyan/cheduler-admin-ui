@@ -367,7 +367,9 @@
 	"EnterPercentage": "Enter percentage",
 	"Daily": "Daily",
 	"AddAppointmentConfirmation": "Add Appointment Confirmation",
+	"MoveAppointmentConfirmation": "Move Appointment Confirmation",
 	"AreYouSureWantToMakeAppointmentOutsideOperatingHours": "Are you sure you want to make an appointment outside the operating hours?",
+	"AreYouSureWantToMoveAppointmentOutsideOperatingHours": "Are you sure you want to move this appointment outside the operating hours?",
 	"LoadingSlots": "Loading Slots",
 	"To": "To",
 	"PracticeNotAvailableForDay": "Practice is not available for this day",
@@ -460,6 +462,8 @@
 	"Skeleton": "Skeleton",
 	"Body": "Body"
 }
+
+
 
 
 

@@ -70,6 +70,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		startTime?: string;
 		limit?: { min: string; max: string; grayOutMin: string; grayOutMax: string };
 		isOutside: boolean;
+		appointment?: Appointment;
 	};
 	private pixelPerMinute = 4;
 	private selectedLang = ENG_BE;
@@ -408,20 +409,39 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	private createForm() {
-		this.appointmentForm = this.fb.group({
-			patientFname: [null, [Validators.required]],
-			patientLname: [null, [Validators.required]],
-			patientTel: [null, [Validators.required, Validators.minLength(10)]],
-			patientEmail: [null, [Validators.required]],
-			doctorId: [null, []],
-			startedAt: [null, [Validators.required]],
-			// startTime: [null, [Validators.required]],
-			// roomType: [null, [Validators.required]],
-			examList: [[], [Validators.required]],
-			userId: [null, [Validators.required]],
-			comments: [null, []],
-			socialSecurityNumber: [null, []],
-		});
+		console.log(this.modalData.appointment, 'data');
+		if (this.modalData?.appointment?.id) {
+			const { patientFname, patientLname, doctorId, comments, socialSecurityNumber, exams } = this.modalData.appointment;
+			this.appointmentForm = this.fb.group({
+				patientFname: [patientFname ?? null, [Validators.required]],
+				patientLname: [patientLname ?? null, [Validators.required]],
+				patientTel: [null, [Validators.required, Validators.minLength(10)]],
+				patientEmail: [null, [Validators.required]],
+				doctorId: [doctorId ?? null, []],
+				startedAt: [null, [Validators.required]],
+				// startTime: [null, [Validators.required]],
+				// roomType: [null, [Validators.required]],
+				examList: [[...exams.map(({ id }) => id)], [Validators.required]],
+				userId: [null, [Validators.required]],
+				comments: [comments ?? null, []],
+				socialSecurityNumber: [socialSecurityNumber ?? null, []],
+			});
+		} else {
+			this.appointmentForm = this.fb.group({
+				patientFname: [null, [Validators.required]],
+				patientLname: [null, [Validators.required]],
+				patientTel: [null, [Validators.required, Validators.minLength(10)]],
+				patientEmail: [null, [Validators.required]],
+				doctorId: [null, []],
+				startedAt: [null, [Validators.required]],
+				// startTime: [null, [Validators.required]],
+				// roomType: [null, [Validators.required]],
+				examList: [[], [Validators.required]],
+				userId: [null, [Validators.required]],
+				comments: [null, []],
+				socialSecurityNumber: [null, []],
+			});
+		}
 
 		if (this.modalData?.startedAt) {
 			const date = new Date(this.modalData.startedAt);
@@ -444,6 +464,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	private updateEventCard(slot?: Slot) {
 		const { element } = this.modalData;
+		if (!element) return;
 		let totalExpense = 0;
 
 		this.formValues.examList.forEach((examID) => {
@@ -472,6 +493,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	private scrollIntoView() {
+		if (!this.modalData?.element) return;
 		this.modalData.element.scrollIntoView({
 			behavior: 'smooth',
 			block: 'center',

@@ -74,6 +74,8 @@ import { CustomDatePickerAdapter } from './utils/date-adapter';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { IsPreviousDayPipe } from './pipes/is-previous-day.pipe';
 import { DocumentViewModalComponent } from './components/document-view-modal/document-view-modal.component';
+import { DfmDragEventDirective } from './directives/dfm-drag-event.directive';
+import { DfmDragAreaEventDirective } from './directives/dfm-drag-area-event.directive';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -107,6 +109,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		EmailInputDirective,
 		NumberInputDirective,
 		IsPermittedDirective,
+		DfmDragEventDirective,
+		DfmDragAreaEventDirective,
 		NumberArrayPipe,
 		IsPreviousDayPipe,
 		IsDataPipe,
@@ -122,7 +126,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DfmCalendarPickerComponent,
 		MultiDropdownPlaceholderNamePipe,
 		SortOrderValidation,
-  DocumentViewModalComponent,
+		DocumentViewModalComponent,
 	],
 	imports: [
 		CommonModule,
@@ -192,6 +196,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		EmailInputDirective,
 		NumberInputDirective,
 		IsPermittedDirective,
+		DfmDragEventDirective,
+		DfmDragAreaEventDirective,
 		NumberArrayPipe,
 		ClipboardModule,
 		TranslateModule,

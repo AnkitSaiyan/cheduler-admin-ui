@@ -475,7 +475,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	public async addAppointment(event: any) {
 		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
 
-		const { e, eventsContainer, day, isOutside } = event;
+		const { e, eventsContainer, day, isOutside, appointment } = event;
 		// const currentDate = new Date();
 		// currentDate.setDate(currentDate.getDate() - 1);
 		// const selectedDate = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
@@ -500,7 +500,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		const currentSelectedTime = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
 		currentSelectedTime.setHours(hour);
 		currentSelectedTime.setMinutes(min);
-
 		const currentTimeInLocal = DateTimeUtils.UTCDateToLocalDate(currentSelectedTime);
 
 		if (currentTimeInLocal.getTime() < currentDate.getTime()) {
@@ -520,27 +519,28 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				})
 				.closed.pipe(
 					tap((value) => {
-						if (value) eventCard = this.createAppointmentCard(e, eventsContainer);
+						if (value && eventsContainer) eventCard = this.createAppointmentCard(e, eventsContainer);
 					}),
-					filter(Boolean),
-					switchMap(() => {
-						return this.modalSvc.open(AddAppointmentModalComponent, {
-							data: {
-								event: e,
-								element: eventCard,
-								elementContainer: eventsContainer,
-								startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
-								limit: this.practiceHourMinMax$$.value,
-								isOutside,
-							},
-							options: {
-								size: 'xl',
-								backdrop: false,
-								centered: true,
-								modalDialogClass: 'ad-ap-modal-shadow',
-							},
-						}).closed;
-					}),
+						filter(Boolean),
+						switchMap(() => {
+							return this.modalSvc.open(AddAppointmentModalComponent, {
+								data: {
+									event: e,
+									element: eventCard,
+									elementContainer: eventsContainer,
+									startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
+									limit: this.practiceHourMinMax$$.value,
+									isOutside,
+									appointment,
+								},
+								options: {
+									size: 'xl',
+									backdrop: false,
+									centered: true,
+									modalDialogClass: 'ad-ap-modal-shadow',
+								},
+							}).closed;
+						}),
 					take(1),
 				)
 				.subscribe(() => {
@@ -549,7 +549,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					// }
 				});
 		} else {
-			eventCard = this.createAppointmentCard(e, eventsContainer);
+			if (eventsContainer) eventCard = this.createAppointmentCard(e, eventsContainer);
 			this.modalSvc
 				.open(AddAppointmentModalComponent, {
 					data: {
@@ -558,6 +558,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 						elementContainer: eventsContainer,
 						startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
 						limit: this.practiceHourMinMax$$.value,
+						appointment,
 					},
 					options: {
 						size: 'xl',
@@ -568,7 +569,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				})
 				.closed.pipe(take(1))
 				.subscribe((res) => {
-					eventCard.remove();
+					eventCard?.remove();
 					// if (!res) {
 					// }
 				});
