@@ -128,7 +128,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MultiDropdownPlaceholderNamePipe,
 		SortOrderValidation,
 		DocumentViewModalComponent,
-  		SafePipe,
+  	SafePipe,
 	],
 	imports: [
 		CommonModule,
