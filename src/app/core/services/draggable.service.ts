@@ -8,6 +8,8 @@ export class DraggableService {
 	private renderer: Renderer2;
 	private draggableContainer!: any;
 	private dragStartElementRefData!: any;
+	private dragStartElementDeepCopy!: any;
+	private dragStartElementHeight!: number;
 	private dragStartElementParentReference!: any;
 	private dragEndElementReference!: any;
 
@@ -17,6 +19,8 @@ export class DraggableService {
 
 	public set dragStartElement(element: { event: any; data: Appointment }) {
 		this.dragStartElementRefData = element;
+		this.dragStartElementDeepCopy = element?.event?.target?.cloneNode(true);
+		this.dragStartElementHeight = element?.event?.target?.clientHeight;
 	}
 
 	public get dragStartElement() {
@@ -42,6 +46,8 @@ export class DraggableService {
 	public removeRef() {
 		this.dragStartElementRefData = undefined;
 		this.dragStartElementParentReference = undefined;
+		this.dragStartElementDeepCopy = undefined;
+		this.dragStartElementHeight = 0;
 	}
 
 	public dragComplete(event: any) {
@@ -55,7 +61,7 @@ export class DraggableService {
 	}
 
 	public revertDrag() {
-		if (!this.dragStartElementParentReference || !this.dragEndElementRef) return;
+		if (!this.dragStartElementParentReference || !this.dragEndElementRef || !this.dragStartElementDeepCopy) return;
 		this.renderer?.appendChild(this.dragStartElementParentReference, this.dragStartElement?.event?.target);
 		this.dragEndElementRef?.nativeElement?.lastChild?.remove();
 		this.removeRef();
@@ -63,13 +69,13 @@ export class DraggableService {
 
 	public createDragShadow(event: any, elementRef: ElementRef) {
 		this.removeDragShadow(elementRef);
+		if (!this.dragStartElementHeight) return;
 		this.draggableContainer = this.renderer.createElement('span');
 		const dragElement = this.dragStartElementRefData.event;
 		const calculatedOffsetY: number = event.offsetY - dragElement.offsetY;
-		const height = dragElement?.target?.clientHeight;
 		const top: number = calculatedOffsetY - (calculatedOffsetY % 20);
 		this.draggableContainer.classList.add('drag-shadow');
-		this.draggableContainer.style.height = `${height}px`;
+		this.draggableContainer.style.height = `${this.dragStartElementHeight}px`;
 		this.draggableContainer.style.top = `${top}px`;
 		this.renderer.insertBefore(elementRef.nativeElement, this.draggableContainer, elementRef.nativeElement.firstChild);
 	}
@@ -81,6 +87,14 @@ export class DraggableService {
 		element?.remove();
 	}
 }
+
+
+
+
+
+
+
+
 
 
 

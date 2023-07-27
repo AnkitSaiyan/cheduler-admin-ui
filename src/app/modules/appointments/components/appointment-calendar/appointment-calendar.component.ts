@@ -513,21 +513,28 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		}
 
 		if (isOutside) {
-			const res = await firstValueFrom(this.modalSvc.open(ConfirmActionModalComponent, {
-				data: {
-					titleText: 'AddAppointmentConfirmation',
-					bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
-					confirmButtonText: 'Yes',
-				} as ConfirmActionModalData,
-			}).closed)
+			const res = await firstValueFrom(
+				this.modalSvc.open(ConfirmActionModalComponent, {
+					data: {
+						titleText: 'AddAppointmentConfirmation',
+						bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
+						confirmButtonText: 'Yes',
+					} as ConfirmActionModalData,
+					options: {
+						backdrop: false,
+						centered: true,
+					},
+				}).closed,
+			);
 
 			if (!res) {
+				this.draggableSvc.revertDrag();
 				return;
 			}
 		}
 
-		const eventCard: HTMLDivElement | undefined = eventsContainer ? this.createAppointmentCard(e, eventsContainer) : undefined; 
-				
+		const eventCard: HTMLDivElement | undefined = eventsContainer ? this.createAppointmentCard(e, eventsContainer) : undefined;
+
 		this.modalSvc.open(AddAppointmentModalComponent, {
 			data: {
 				event: e,

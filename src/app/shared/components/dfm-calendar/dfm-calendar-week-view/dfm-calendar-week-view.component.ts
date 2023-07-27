@@ -15,7 +15,7 @@ import {
 	ViewChildren,
 	ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, filter, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, debounceTime, filter, takeUntil } from 'rxjs';
 import { ModalService } from '../../../../core/services/modal.service';
 import { getAllDaysOfWeek, getDurationMinutes } from '../../../models/calendar.model';
 import { DateTimeUtils } from '../../../utils/date-time.utils';
@@ -109,6 +109,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	@Output()
 	public currentWeekDays = new EventEmitter<Array<[number, number, number]>>();
 
+	@Output()
+	private dateChange = new EventEmitter<number>();
+
 	public daysOfWeekArr: Array<[number, number, number]> = [];
 
 	public todayDate = new Date();
@@ -132,6 +135,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getDurationFn = (s, e) => getDurationMinutes(s, e);
 
+	private changeDateDebounce$$ = new Subject<number>();
+
 	constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private modalSvc: ModalService, private draggableSvc: DraggableService) {
 		super();
 	}
@@ -148,6 +153,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public ngOnInit(): void {
 		this.updateCalendarDays();
+
+		this.changeDateDebounce$$.pipe(debounceTime(500), takeUntil(this.destroy$$)).subscribe((value) => this.dateChange.emit(value));
 
 		this.changeWeek$$
 			.pipe(
@@ -549,6 +556,10 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		this.grayOutSlot$$.next(grayOutSlot);
 	}
 
+	public changeDate(offset) {
+		this.changeDateDebounce$$.next(offset);
+	}
+
 	private calculate(minutes: number, time: string, type: 'plus' | 'minus'): string {
 		const date = new Date();
 		const [hour, minute] = time.split(':');
@@ -578,5 +589,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 		if (arr.length) return GeneralUtils.removeDuplicateData(arr, 'id');
 		return [];
+	}
+
+	public test(item: any) {
+		console.log(item);
 	}
 }

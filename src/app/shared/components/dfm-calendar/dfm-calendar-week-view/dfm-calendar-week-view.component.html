@@ -1,52 +1,54 @@
-<div role="grid">
-	<div role="presentation" class="calendar-week-view-header">
-		<div class="text-xs calendar-week-view-time-format">
-			<div>
-				{{ (selectedDate | date : 'OOOO')?.split('+')?.join(' +') }}
-			</div>
-		</div>
+<div class="container">
+  <div class="left" (dragover)="changeDate(-1)"></div>
+  <div role="grid" class="role-container">
+    <div role="presentation" class="calendar-week-view-header">
+      <div class="text-xs calendar-week-view-time-format">
+        <div>
+          {{ (selectedDate | date : 'OOOO')?.split('+')?.join(' +') }}
+        </div>
+      </div>
 
-		<div role="presentation" class="calendar-week-view-weekday-header" (scroll)="scrollTwo.scrollLeft = scrollOne.scrollLeft" #scrollOne>
-			<div role="row" class="calendar-week-view-weekdays">
-				<div class="calendar-week-view-weekday-header-left-vertical-line"></div>
-				<div *ngFor="let day of daysOfWeekArr; let weekday = index" role="columnheader" class="calendar-week-view-weekday">
-					<div class="calendar-week-view-header-cell-left-line"></div>
-					<h3 class="d-flex align-items-center flex-column">
-						<div class="text-xs font-weight-medium w-fit calendar-week-view-day-name">
-							{{ weekday + 1 | weekdayToName : true : true | uppercase | translate }}
-						</div>
-						<div
-							class="w-fit calendar-week-view-date"
-							[ngClass]="{
-								'calendar-week-view-date-today': todayDate.getDate() === day[0] && todayDate.getMonth() === day[1],
-								'calendar-month-view-selected-day':
-									selectedDate.getDate() === day[0] &&
-									((todayDate.getDate() === selectedDate.getDate() && todayDate.getMonth() !== day[1]) ||
-										selectedDate.getDate() !== todayDate.getDate())
-							}"
-							(click)="changeToDayView(day[0], day[1], day[2])"
-						>
-							{{ day[0] }}
-						</div>
-					</h3>
-				</div>
-			</div>
+      <div role="presentation" class="calendar-week-view-weekday-header" (scroll)="scrollTwo.scrollLeft = scrollOne.scrollLeft" #scrollOne>
+        <div role="row" class="calendar-week-view-weekdays">
+          <div class="calendar-week-view-weekday-header-left-vertical-line"></div>
+          <div *ngFor="let day of daysOfWeekArr; let weekday = index" role="columnheader" class="calendar-week-view-weekday">
+            <div class="calendar-week-view-header-cell-left-line"></div>
+            <h3 class="d-flex align-items-center flex-column">
+              <div class="text-xs font-weight-medium w-fit calendar-week-view-day-name">
+                {{ weekday + 1 | weekdayToName : true : true | uppercase | translate }}
+              </div>
+              <div
+                class="w-fit calendar-week-view-date"
+                [ngClass]="{
+                  'calendar-week-view-date-today': todayDate.getDate() === day[0] && todayDate.getMonth() === day[1],
+                  'calendar-month-view-selected-day':
+                    selectedDate.getDate() === day[0] &&
+                    ((todayDate.getDate() === selectedDate.getDate() && todayDate.getMonth() !== day[1]) ||
+                      selectedDate.getDate() !== todayDate.getDate())
+                }"
+                (click)="changeToDayView(day[0], day[1], day[2])"
+              >
+                {{ day[0] }}
+              </div>
+            </h3>
+          </div>
+        </div>
 
-			<div class=""></div>
-		</div>
-	</div>
+        <div class=""></div>
+      </div>
+    </div>
 
-	<div class="calendar-week-view-body-container">
-		<div role="presentation" class="calendar-week-view-body">
-			<div role="row" class="calendar-week-view-time-slot-container">
-				<div
-					class="calendar-week-view-time-slot text-sm"
-					*ngFor="let time of timeInterval | timeInInterval : format24Hour : false : getMinute(limit.min) : getMinute(limit.max)"
-				>
-					<span>{{ time | dfmUtcToLocal : true }}</span>
-					<div class="calendar-week-view-horizontal-line"></div>
-				</div>
-			</div>
+    <div class="calendar-week-view-body-container">
+      <div role="presentation" class="calendar-week-view-body">
+        <div role="row" class="calendar-week-view-time-slot-container">
+          <div
+            class="calendar-week-view-time-slot text-sm"
+            *ngFor="let time of timeInterval | timeInInterval : format24Hour : false : getMinute(limit.min) : getMinute(limit.max)"
+          >
+            <span>{{ time | dfmUtcToLocal : true }}</span>
+            <div class="calendar-week-view-horizontal-line"></div>
+          </div>
+        </div>
 
 			<div
 				role="presentation"
@@ -91,114 +93,114 @@
 													{{ 'Appointments' | translate }} ({{ groupedData.length }})
 												</span>
 
-												<div class="calendar-week-view-event-patients-container accordion-content">
-													<ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0" *ngFor="let data of groupedData; let i = index">
-														<ngb-panel>
-															<ng-template ngbPanelTitle>
-																<div class="calendar-week-view-event-patients-container">
-																	<div class="d-flex flex-column dfm-p-8">
-																		<span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
-																			data.patientFname + ' ' + data.patientLname
-																		}}</span>
-																		<span class="text-sm dfm-text-main-500">
-																			{{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
-																			-
-																			{{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
-																			({{ getDurationFn(data.startedAt, data.endedAt) }} min)
-																		</span>
-																	</div>
-																	<div class="calendar-week-view-event-patient-details-divider" *ngIf="i < groupedData.length - 1"></div>
-																</div>
-															</ng-template>
+                          <div class="calendar-week-view-event-patients-container accordion-content">
+                            <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0" *ngFor="let data of groupedData; let i = index">
+                              <ngb-panel>
+                                <ng-template ngbPanelTitle>
+                                  <div class="calendar-week-view-event-patients-container">
+                                    <div class="d-flex flex-column dfm-p-8">
+                                      <span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
+                                        data.patientFname + ' ' + data.patientLname
+                                      }}</span>
+                                      <span class="text-sm dfm-text-main-500">
+                                        {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
+                                        -
+                                        {{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
+                                        ({{ getDurationFn(data.startedAt, data.endedAt) }} min)
+                                      </span>
+                                    </div>
+                                    <div class="calendar-week-view-event-patient-details-divider" *ngIf="i < groupedData.length - 1"></div>
+                                  </div>
+                                </ng-template>
 
-															<ng-template ngbPanelContent>
-																<div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-																	<span class="font-weight-medium"> {{ 'Exam' | translate }} </span>
-																	<span *ngIf="data.exams?.length">{{ data.exams | joinWithAnd : 'name' }}</span>
-																	<span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
-																	<span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
-																	<span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
+                                <ng-template ngbPanelContent>
+                                  <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
+                                    <span class="font-weight-medium"> {{ 'Exam' | translate }} </span>
+                                    <span *ngIf="data.exams?.length">{{ data.exams | joinWithAnd : 'name' }}</span>
+                                    <span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
+                                    <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
+                                    <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
 
-																	<ng-container *ngIf="data.exams | isData : 'users'; else dash">
-																		<div *ngFor="let user of removeDuplicateData(data.exams)" class="dfm-ps-4 dfm-pt-4">
-																			<div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
-																				<div class="circle-gray-200-40">
-																					{{ user?.firstname[0] | uppercase }}
-																				</div>
-																				<div class="d-flex flex-column">
-																					<span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
-																					<span class="dfm-text-main-500">{{ user?.userType | titlecase | translate }}</span>
-																				</div>
-																			</div>
-																		</div>
-																	</ng-container>
+                                    <ng-container *ngIf="data.exams | isData : 'users'; else dash">
+                                      <div *ngFor="let user of removeDuplicateData(data.exams)" class="dfm-ps-4 dfm-pt-4">
+                                        <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
+                                          <div class="circle-gray-200-40">
+                                            {{ user?.firstname[0] | uppercase }}
+                                          </div>
+                                          <div class="d-flex flex-column">
+                                            <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
+                                            <span class="dfm-text-main-500">{{ user?.userType | titlecase | translate }}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </ng-container>
 
-																	<ng-template #dash>
-																		<span>{{ '' | dashIfNothing }}</span>
-																	</ng-template>
-																</div>
-															</ng-template>
-														</ngb-panel>
-													</ngb-accordion>
-												</div>
-											</div>
-										</ng-template>
-										<!-- POP OVER ENDS -->
-
-										<div class="calendar-week-view-event-circle-icon" [ngClass]="{ 'calendar-week-view-event-circle-icon-sm': eventHeight <= 20 }">
-											{{ groupedData.length }}
-										</div>
-
-										<div
-											class="calendar-week-view-event-details-container"
-											[ngClass]="{ 'justify-content-center p-0': eventHeight <= 40 }"
-											triggers="click"
-											container="body"
-											[ngbPopover]="eventDetails"
-											[autoClose]="'outside'"
-										>
-											<span class="calendar-week-view-event-title" *ngIf="eventHeight >= 60">{{ 'Appointments' | translate }}</span>
-											<span class="calendar-week-view-event-time" [ngClass]="{ 'dfm-ms-12': eventHeight <= 40, 'dfm-ms-16': eventHeight <= 20 }">
-												{{ (groupedData[0].startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }} -
-												{{ (groupedData | largest : 'endedAt' | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
-											</span>
-										</div>
-									</div>
-								</ng-container>
-							</ng-container>
-							<ng-container *ngIf="prioritySlots">
-								<ng-container *ngIf="prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
-									<ng-container *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]; let i = index">
-										<div
-											*ngIf="getPrioritySlotHeight(prioritySlot) as eventHeight"
-											[ngbPopover]="priorityCardDetail"
-											triggers="mouseenter:mouseleave"
-											triggers="mouseenter:mouseleave"
-											[class]="'priority-slots-area ' + prioritySlotsVariant"
-											[ngClass]="prioritySlot.priority"
-											[ngStyle]="{
-												'top.px': getPrioritySlotTop(prioritySlot) < 0 ? 0 : getPrioritySlotTop(prioritySlot),
-												'height.px': eventHeight
-											}"
-										>
-                      <div class="priority-slot-percentage" [ngStyle]="{'top': eventHeight>20 ? '12px':'0', 'padding': eventHeight>20 ? '12px':'0'}" >
-                        <div class="txt-slot-percentage"*ngIf="eventHeight>99">
-                          <ng-container *ngIf="slotPercentage?.length">
-                            <span style="font-size: 14px; font-weight: 500; color: black">{{'SlotFilled%' | translate}}:</span>
-                            <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
-                          </ng-container>
+                                    <ng-template #dash>
+                                      <span>{{ '' | dashIfNothing }}</span>
+                                    </ng-template>
+                                  </div>
+                                </ng-template>
+                              </ngb-panel>
+                            </ngb-accordion>
+                          </div>
                         </div>
-                      <!-- <dfm-button color="primary" size="sm" (click)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, i)">{{ 'Open' | translate }}</dfm-button> -->
+                      </ng-template>
+                      <!-- POP OVER ENDS -->
 
-                        <ng-container *ngIf="!(DateTimeUtils.DateDistributedToDate({year: selectedDate.getFullYear(), month: day[1] + 1, day: day[0]}) | isPreviousDay) && slotPercentage?.length">
-                          <mat-slide-toggle class="percentageToggle" *ngIf="prioritySlot.isClose !== undefined; else showAnotherToggle "[ngStyle]="{'font-size': eventHeight>20 ? '16px':'14px', 'margin-top': eventHeight>20 ? '':'-2px'}"color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)">Open</mat-slide-toggle>
-                          <ng-template #showAnotherToggle>
-                            <mat-slide-toggle class="percentageToggle"  [ngStyle]="{'font-size': eventHeight>20 ? '16px':'14px', 'margin-top': eventHeight>20 ? '':'-2px'}"  color="primary" #toggle [checked]="slotPercentage.length && prioritySlot
-                            | showSlotPercentage
-                              : slotPercentage[weekday]
-                              : prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !toggle.checked)">Open</mat-slide-toggle>
-                          </ng-template>
-                        </ng-container>
+                      <div class="calendar-week-view-event-circle-icon" [ngClass]="{ 'calendar-week-view-event-circle-icon-sm': eventHeight <= 20 }">
+                        {{ groupedData.length }}
+                      </div>
+
+                      <div
+                        class="calendar-week-view-event-details-container"
+                        [ngClass]="{ 'justify-content-center p-0': eventHeight <= 40 }"
+                        triggers="click"
+                        container="body"
+                        [ngbPopover]="eventDetails"
+                        [autoClose]="'outside'"
+                      >
+                        <span class="calendar-week-view-event-title" *ngIf="eventHeight >= 60">{{ 'Appointments' | translate }}</span>
+                        <span class="calendar-week-view-event-time" [ngClass]="{ 'dfm-ms-12': eventHeight <= 40, 'dfm-ms-16': eventHeight <= 20 }">
+                          {{ (groupedData[0].startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }} -
+                          {{ (groupedData | largest : 'endedAt' | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
+                        </span>
+                      </div>
+                    </div>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="prioritySlots">
+                  <ng-container *ngIf="prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
+                    <ng-container *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]; let i = index">
+                      <div
+                        *ngIf="getPrioritySlotHeight(prioritySlot) as eventHeight"
+                        [ngbPopover]="priorityCardDetail"
+                        triggers="mouseenter:mouseleave"
+                        triggers="mouseenter:mouseleave"
+                        [class]="'priority-slots-area ' + prioritySlotsVariant"
+                        [ngClass]="prioritySlot.priority"
+                        [ngStyle]="{
+                          'top.px': getPrioritySlotTop(prioritySlot) < 0 ? 0 : getPrioritySlotTop(prioritySlot),
+                          'height.px': eventHeight
+                        }"
+                      >
+                        <div class="priority-slot-percentage" [ngStyle]="{'top': eventHeight>20 ? '12px':'0', 'padding': eventHeight>20 ? '12px':'0'}" >
+                          <div class="txt-slot-percentage"*ngIf="eventHeight>99">
+                            <ng-container *ngIf="slotPercentage?.length">
+                              <span style="font-size: 14px; font-weight: 500; color: black">{{'SlotFilled%' | translate}}:</span>
+                              <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
+                            </ng-container>
+                          </div>
+                        <!-- <dfm-button color="primary" size="sm" (click)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, i)">{{ 'Open' | translate }}</dfm-button> -->
+
+                          <ng-container *ngIf="!(DateTimeUtils.DateDistributedToDate({year: selectedDate.getFullYear(), month: day[1] + 1, day: day[0]}) | isPreviousDay) && slotPercentage?.length">
+                            <mat-slide-toggle class="percentageToggle" *ngIf="prioritySlot.isClose !== undefined; else showAnotherToggle "[ngStyle]="{'font-size': eventHeight>20 ? '16px':'14px', 'margin-top': eventHeight>20 ? '':'-2px'}"color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)">Open</mat-slide-toggle>
+                            <ng-template #showAnotherToggle>
+                              <mat-slide-toggle class="percentageToggle"  [ngStyle]="{'font-size': eventHeight>20 ? '16px':'14px', 'margin-top': eventHeight>20 ? '':'-2px'}"  color="primary" #toggle [checked]="slotPercentage.length && prioritySlot
+                              | showSlotPercentage
+                                : slotPercentage[weekday]
+                                : prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !toggle.checked)">Open</mat-slide-toggle>
+                            </ng-template>
+                          </ng-container>
 
                       </div>
                       <ng-template #priorityCardDetail>
@@ -230,5 +232,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	  </div>
+  </div>
+  <div class="right" (dragover)="changeDate(1)"></div>
 </div>
