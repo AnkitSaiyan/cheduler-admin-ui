@@ -151,7 +151,7 @@
 					<dfm-table-body-cell>{{ item?.patientFname | titlecase }} {{ item?.patientLname }}</dfm-table-body-cell>
 					<dfm-table-body-cell>{{ item?.exams | joinWithAnd : 'name' | dashIfNothing }}</dfm-table-body-cell>
 					<dfm-table-body-cell>{{ item?.doctor | titlecase | dashIfNothing }}</dfm-table-body-cell>
-					<dfm-table-body-cell>{{!item.documentCount ? '—':''}}  <span *ngIf="item.documentCount" class="view-link"(click)="openDocumentModal(item.id)" >View</span></dfm-table-body-cell>
+					<dfm-table-body-cell>{{!item.documentCount ? '—':''}}  <span *ngIf="item.documentCount" class="view-link"(click)="$event.stopPropagation(); openDocumentModal(item.id)" >View</span></dfm-table-body-cell>
 					<dfm-table-body-cell>{{ item?.id }}</dfm-table-body-cell>
 					<dfm-table-body-cell>{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
 					<!-- <dfm-table-body-cell>

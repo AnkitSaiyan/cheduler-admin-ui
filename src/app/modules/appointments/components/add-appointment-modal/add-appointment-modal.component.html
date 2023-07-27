@@ -21,6 +21,7 @@
                 required [value]="currentDate" [min]="currentDate"  [matDatepicker]="picker" readonly class="w-full min-w-128">
               </div>
               <dfm-button-icon
+                *ngIf="!isOutside"
                 color="secondary-gray"
                 size="md"
                 icon="calendar-date"

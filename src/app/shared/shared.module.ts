@@ -76,6 +76,7 @@ import { IsPreviousDayPipe } from './pipes/is-previous-day.pipe';
 import { DocumentViewModalComponent } from './components/document-view-modal/document-view-modal.component';
 import { DfmDragEventDirective } from './directives/dfm-drag-event.directive';
 import { DfmDragAreaEventDirective } from './directives/dfm-drag-area-event.directive';
+import { SafePipe } from './pipes/safe.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -127,6 +128,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MultiDropdownPlaceholderNamePipe,
 		SortOrderValidation,
 		DocumentViewModalComponent,
+  		SafePipe,
 	],
 	imports: [
 		CommonModule,

@@ -57,3 +57,22 @@
         }
     }
 }
+
+.top-pdf{
+    height: 50vh !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bottom-pdf{
+    height: 10vh !important;
+}
+
+.loader{
+    height: 50vh;
+    background-color: white;
+    border-radius: 5px;
+}
