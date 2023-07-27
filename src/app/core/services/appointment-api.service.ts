@@ -481,11 +481,11 @@ export class AppointmentApiService extends DestroyableComponent {
 	public getDocumentById$(appointmentId: number): Observable<any> {
 		let params = new HttpParams();
 		params = params.append('appointmentId', appointmentId);
-		return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, {params}).pipe(
-		  map((response) => response.data),
-		  tap(() => {}),
+		return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, { params }).pipe(
+			map((response) => response.data),
+			tap(() => {}),
 		);
-	  }
+	}
 
 	public refresh(): void {
 		this.refreshAppointment$$.next();

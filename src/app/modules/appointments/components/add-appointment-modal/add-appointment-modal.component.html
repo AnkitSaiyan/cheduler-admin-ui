@@ -1,8 +1,12 @@
 <div #content class="bg-white rounded-4 add-appointment-modal">
+  <div class="loading-overlay" *ngIf="(loading$$ | async) === true">
+  </div>
+
   <div class="modal-header">
     <h5 class="modal-title">{{ 'AddAppointment' | translate }}</h5>
     <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
   </div>
+
 
   <div class="modal-body">
     <form [formGroup]="appointmentForm">
@@ -261,11 +265,11 @@
   <div class="modal-footer">
     <dfm-button color="secondary" size="md" class="cancel-btn" (click)="close(false)">{{ 'Cancel' | translate }}</dfm-button>
     <dfm-button color="secondary" size="sm" class="cancel-btn-mv" (click)="close(false)">{{ 'Cancel' | translate }}</dfm-button>
-    <dfm-button color="primary" size="md" class="add-btn" [disabled]="(submitting$$ | async) === true" (click)=" isOutside ? saveOutSideOperatingHoursAppointment() : saveAppointment() ">{{
-      'Add' | translate
-    }}</dfm-button>
-    <dfm-button color="primary" size="sm" class="add-btn-mv" [disabled]="(submitting$$ | async) === true" (click)="isOutside ? saveOutSideOperatingHoursAppointment() : saveAppointment() ">{{
-      'Add' | translate
-    }}</dfm-button>
+    <dfm-button color="primary" size="md" class="add-btn" [disabled]="(submitting$$ | async) === true" (click)=" isOutside ? saveOutSideOperatingHoursAppointment() : saveAppointment() ">
+      {{ (modalData?.appointment?.id ? 'Update' : 'Add') | translate }}
+    </dfm-button>
+    <dfm-button color="primary" size="sm" class="add-btn-mv" [disabled]="(submitting$$ | async) === true" (click)="isOutside ? saveOutSideOperatingHoursAppointment() : saveAppointment() ">
+      {{ (modalData?.appointment?.id ? 'Update' : 'Add') | translate }}
+    </dfm-button>
   </div>
 </div>
