@@ -460,3 +460,18 @@ h3 {
   display: flex;
   flex-direction: column;
 }
+
+.container {
+  display: flex;
+
+  .role-container {
+    width: 100%;
+  }
+
+  .left,
+  .right {
+    min-width: 12px;
+    height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
+    margin-top: auto;
+  }
+}

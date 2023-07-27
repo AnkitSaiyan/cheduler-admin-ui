@@ -4,10 +4,12 @@ import { Pipe, PipeTransform } from '@angular/core';
 	name: 'isPreviousDay',
 })
 export class IsPreviousDayPipe implements PipeTransform {
-	transform(value: Date): boolean {
+	transform(value: Date, compareWithTime: boolean = false): boolean {
 		const currentDate = new Date();
-		currentDate.setHours(0, 0, 0, 0);
+		if (!compareWithTime) currentDate.setHours(0, 0, 0, 0);
 		return value.getTime() < currentDate.getTime();
 	}
 }
+
+
 
