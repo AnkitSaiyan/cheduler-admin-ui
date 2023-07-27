@@ -339,7 +339,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 						const currSD = new Date(appointment.startedAt);
 						const currED = new Date(appointment.endedAt);
 
-						if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
+						if (currSD > startDate && currSD < endDate) {
 							sameGroup = true;
 							if (currED > endDate) {
 								endDate = currED;
