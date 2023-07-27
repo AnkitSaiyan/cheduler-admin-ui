@@ -180,16 +180,12 @@
                                     <span>{{ 'ChangeRadiologist' | translate }}</span>
                                   </button>
 
-                                  <button mat-menu-item [matMenuTriggerFor]="subMenu"
+                                  <!-- <button mat-menu-item [matMenuTriggerFor]="subMenu"
                                           (click)="$event.stopPropagation()">
                                     <div class="icon-20">
                                       <dfm-icon name="arrow-right"></dfm-icon>
                                     </div>
                                     <span>{{ 'Move' | translate }}</span>
-                                    <!-- <div class="icon-20 ml-auto">
-                                      <dfm-icon name="chevron-right"></dfm-icon>
-                                    </div> -->
-
                                     <mat-menu #subMenu="matMenu">
                                       <button mat-menu-item
                                                 (click)="openChangeTimeModal(data.appointment, false, eventContainer)">
@@ -201,7 +197,7 @@
                                           <span>{{ 'Extend' | translate }}</span>
                                         </button>
                                     </mat-menu>
-                                  </button>
+                                  </button> -->
 
                                   <button mat-menu-item
                                           [routerLink]="['/', 'appointment', data.appointment.id, 'edit']"
