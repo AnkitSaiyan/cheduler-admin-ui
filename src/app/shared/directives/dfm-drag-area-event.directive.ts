@@ -11,24 +11,27 @@ export class DfmDragAreaEventDirective {
 	@Output() private editAppointment = new EventEmitter<any>();
 
 	@HostListener('dragover', ['$event'])
-	onDragOver(event: DragEvent) {
+	onDragOver(event: DragEvent | any) {
 		event.preventDefault();
-    if(!this.draggableSvc.dragStartElement)return
+		if (!this.draggableSvc.dragStartElement) return;
 		this.draggableSvc.createDragShadow(event, this.elementRef);
+		event.target.classList.add('drag-area-border');
 	}
 
 	@HostListener('dragleave', ['$event'])
 	onDragLeave(event: DragEvent | any) {
-    if(!this.draggableSvc.dragStartElement)return
+		if (!this.draggableSvc.dragStartElement) return;
 		this.draggableSvc.removeDragShadow(this.elementRef);
+		event.target.classList.remove('drag-area-border');
 		event.stopPropagation();
 	}
 
 	@HostListener('drop', ['$event'])
 	onDragDrop(event: DragEvent | any) {
-    if (!this.draggableSvc.dragStartElement) return;
+		if (!this.draggableSvc.dragStartElement) return;
 		this.draggableSvc.dragEndElementRef = this.elementRef;
 		this.draggableSvc.removeDragShadow(this.elementRef);
+		event.target.classList.remove('drag-area-border');
 		if (this.draggableSvc.dragStartElement) {
 			this.draggableSvc.dragComplete(event);
 			this.editAppointment.emit({
@@ -39,5 +42,7 @@ export class DfmDragAreaEventDirective {
 		}
 	}
 }
+
+
 
 
