@@ -471,6 +471,6 @@ h3 {
   .left,
   .right {
     min-width: 12px;
-    height: 100vh;
+    height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
   }
 }
