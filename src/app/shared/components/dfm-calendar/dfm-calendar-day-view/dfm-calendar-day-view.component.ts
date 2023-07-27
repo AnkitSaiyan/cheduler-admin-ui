@@ -288,7 +288,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				take(1),
 			)
 			.subscribe({
-				next: (res) => {},
+				next: (res) => {
+					this.notificationSvc.showSuccess(Translate.AppointmentUpdatedSuccessfully[this.selectedLang]);
+				},
 				error: (err) => {
 					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 					if (eventContainer) {
@@ -613,11 +615,14 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		});
 
 		let mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
-			if (parseInt(container?.style.height) != this.original_height) {
-				const minutes = Math.round(Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute / 5) * 5;
-				const isExtend = parseInt(container?.style.height) > this.original_height;
-
+			const minutes = Math.round(Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute / 5) * 5;
+			const isExtend = parseInt(container?.style.height) > this.original_height;
+			
+			if (parseInt(container?.style.height) != this.original_height && minutes) {
 				this.openChangeTimeModal(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
+			} else {
+				this.element.style.height = this.original_height + 'px';
+				this.element.style.top = this.original_y + 'px';
 			}
 			resizeListener();
 			resizeListener = () => {};
