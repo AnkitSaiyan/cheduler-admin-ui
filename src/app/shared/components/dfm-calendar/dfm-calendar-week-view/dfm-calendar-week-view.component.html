@@ -80,9 +80,9 @@
 											'top.px': getTop(groupedData),
 											'height.px': eventHeight
 										}"
-                    draggable="true"
-                    dfmDragEvent
-                    [appointmentData]="groupedData[0]"
+										draggable="true"
+										dfmDragEvent
+										[draggedElData]="groupedData[0]"
 									>
 										<!-- POP OVER -->
 										<ng-template #eventDetails>
@@ -202,27 +202,27 @@
 
                       </div>
                       <ng-template #priorityCardDetail>
-                <div class="txt-slot-percentage"*ngIf="eventHeight < 99">
-                <ng-container *ngIf="slotPercentage?.length">
-                  <span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
-                  <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
-                </ng-container>
-                </div>
-                          <span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end }}</span>
-                        </ng-template>
-                      </div>
-                    </ng-container>
-                  </ng-container>
-                </ng-container>
-              </div>
+						<div class="txt-slot-percentage"*ngIf="eventHeight < 99">
+							<ng-container *ngIf="slotPercentage?.length">
+							  <span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
+							  <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
+							</ng-container>
+						  </div>
+                        <span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end }}</span>
+                      </ng-template>
+										</div>
+									</ng-container>
+								</ng-container>
+							</ng-container>
+						</div>
 						<ng-container *ngIf="grayOutSlot$$.value[weekday] && grayOutSlot$$.value[weekday] as items">
 							<ng-container *ngFor="let item of items">
 								<div
 									(dblclick)="onDblClick($event, eventsContainer, day, true, item.top)"
 									class="gray-out-area-week"
-                  #grayOutArea
+									#grayOutArea
 									[ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
-                  (drop)="dropOnGrayOutArea($event, day, grayOutArea)"
+                  					(drop)="dropOnGrayOutArea($event, day, grayOutArea)"
 								></div>
 							</ng-container>
 						</ng-container>
