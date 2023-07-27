@@ -19,8 +19,6 @@ export class ShareDataService {
 	private refreshRooms$$ = new Subject<void>();
 
 	private readonly patientsUrl = `${environment.schedulerApiUrl}/common/getpatients`;
-	//test
-	public dragStartElementRef!: any;
 
 	private bodyType: { name: string; value: string }[] = [
 		{

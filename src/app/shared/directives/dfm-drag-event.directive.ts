@@ -1,16 +1,17 @@
-import { Directive, HostListener, Input } from '@angular/core';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+import { DraggableService } from 'src/app/core/services/draggable.service';
 
 @Directive({
 	selector: '[dfmDragEvent]',
 })
 export class DfmDragEventDirective {
-	constructor(private shareSvc: ShareDataService) {}
+	constructor(private draggableSvc: DraggableService, private elementRef: ElementRef) {}
 	@Input() appointmentData!: any;
 
 	@HostListener('dragstart', ['$event'])
 	onDragStart(event: DragEvent | any) {
-		this.shareSvc.dragStartElementRef = { event, data: this.appointmentData };
+		this.draggableSvc.dragStartElement = { event, data: this.appointmentData };
+		this.draggableSvc.dragStartElementParentRef = this.elementRef;
 		event.stopPropagation();
 	}
 	@HostListener('dragover', ['$event'])
@@ -26,7 +27,6 @@ export class DfmDragEventDirective {
 	@HostListener('drop', ['$event'])
 	onDragDrop(event: DragEvent) {
 		event.stopPropagation();
-		this.shareSvc.dragStartElementRef = undefined;
 	}
 }
 

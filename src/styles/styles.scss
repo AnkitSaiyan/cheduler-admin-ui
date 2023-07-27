@@ -1289,11 +1289,11 @@ angular-editor-toolbar button i {
 
 }
 
-.drag-area {
+.drag-shadow {
   border: 1px dashed var(--dfm-primary) !important;
   width: 100%;
   position: absolute;
   background: var(--dfm-secondary);
   opacity: .3;
-  z-index: 1;
+  z-index: 0;
 }

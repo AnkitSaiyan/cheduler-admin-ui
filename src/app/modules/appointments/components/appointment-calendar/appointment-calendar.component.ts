@@ -29,6 +29,7 @@ import { RepeatType } from 'src/app/shared/models/absence.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { DraggableService } from 'src/app/core/services/draggable.service';
 
 @Component({
 	selector: 'dfm-appointment-calendar',
@@ -106,6 +107,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		private priorityApiSvc: PrioritySlotApiService,
 		private utcToLocalPipe: UtcToLocalPipe,
 		private translate: TranslateService,
+		private draggableSvc: DraggableService,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -176,7 +178,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			) {
 				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 			} else {
-        if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
+				if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
 					minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 				} else {
 					minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
@@ -504,6 +506,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 		if (currentTimeInLocal.getTime() < currentDate.getTime()) {
 			this.notificationSvc.showWarning(Translate.CanNotAddAppointmentOnPastDate[this.selectedLang]);
+			this.draggableSvc.revertDrag();
 			return;
 		}
 		let eventCard;
@@ -519,34 +522,39 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				})
 				.closed.pipe(
 					tap((value) => {
-						if (value && eventsContainer) eventCard = this.createAppointmentCard(e, eventsContainer);
+						if (value && eventsContainer) {
+							eventCard = this.createAppointmentCard(e, eventsContainer);
+						} else {
+							this.draggableSvc.revertDrag();
+						}
 					}),
-						filter(Boolean),
-						switchMap(() => {
-							return this.modalSvc.open(AddAppointmentModalComponent, {
-								data: {
-									event: e,
-									element: eventCard,
-									elementContainer: eventsContainer,
-									startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
-									limit: this.practiceHourMinMax$$.value,
-									isOutside,
-									appointment,
-								},
-								options: {
-									size: 'xl',
-									backdrop: false,
-									centered: true,
-									modalDialogClass: 'ad-ap-modal-shadow',
-								},
-							}).closed;
-						}),
+					filter(Boolean),
+					switchMap(() => {
+						return this.modalSvc.open(AddAppointmentModalComponent, {
+							data: {
+								event: e,
+								element: eventCard,
+								elementContainer: eventsContainer,
+								startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
+								limit: this.practiceHourMinMax$$.value,
+								isOutside,
+								appointment,
+							},
+							options: {
+								size: 'xl',
+								backdrop: false,
+								centered: true,
+								modalDialogClass: 'ad-ap-modal-shadow',
+							},
+						}).closed;
+					}),
 					take(1),
 				)
-				.subscribe(() => {
+				.subscribe((res) => {
 					eventCard.remove();
-					// if (!res) {
-					// }
+					if (!res) {
+						this.draggableSvc.revertDrag();
+					}
 				});
 		} else {
 			if (eventsContainer) eventCard = this.createAppointmentCard(e, eventsContainer);
@@ -570,8 +578,9 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				.closed.pipe(take(1))
 				.subscribe((res) => {
 					eventCard?.remove();
-					// if (!res) {
-					// }
+					if (!res) {
+						this.draggableSvc.revertDrag();
+					}
 				});
 		}
 	}

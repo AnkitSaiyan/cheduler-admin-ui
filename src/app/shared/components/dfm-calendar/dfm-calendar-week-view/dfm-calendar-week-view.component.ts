@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import {
 	AfterViewChecked,
 	AfterViewInit,
@@ -11,23 +12,18 @@ import {
 	OnInit,
 	Output,
 	QueryList,
-	Renderer2,
 	ViewChildren,
 	ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
-import { DatePipe } from '@angular/common';
-import { getAllDaysOfWeek, getDurationMinutes, Interval } from '../../../models/calendar.model';
-import { DestroyableComponent } from '../../destroyable.component';
+import { BehaviorSubject, filter, takeUntil } from 'rxjs';
 import { ModalService } from '../../../../core/services/modal.service';
+import { getAllDaysOfWeek, getDurationMinutes } from '../../../models/calendar.model';
 import { DateTimeUtils } from '../../../utils/date-time.utils';
-import { NextSlotOpenPercentageData } from 'src/app/shared/models/priority-slots.model';
+import { DestroyableComponent } from '../../destroyable.component';
 
-import { GeneralUtils } from 'src/app/shared/utils/general.utils';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../confirm-action-modal.component';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { AddAppointmentModalComponent } from 'src/app/modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { Appointment } from 'src/app/core/models/appointment.model';
+import { DraggableService } from 'src/app/core/services/draggable.service';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 // @Pipe({
 //   name: 'calendarEventHeight',
 //   standalone: true
@@ -136,13 +132,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getDurationFn = (s, e) => getDurationMinutes(s, e);
 
-	constructor(
-		private datePipe: DatePipe,
-		private cdr: ChangeDetectorRef,
-		private renderer: Renderer2,
-		private modalSvc: ModalService,
-		private shareSvc: ShareDataService,
-	) {
+	constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private modalSvc: ModalService, private draggableSvc: DraggableService) {
 		super();
 	}
 
@@ -431,16 +421,18 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		});
 	}
 
-	public dropOnGrayOutArea(event: any, day: any) {
+	public dropOnGrayOutArea(event: any, day: any, grayOutArea: any) {
 		event.stopPropagation();
+		this.draggableSvc.dragEndElementRef = { nativeElement: grayOutArea?.parentElement };
+		this.draggableSvc.dragComplete(event);
+		this.draggableSvc.removeDragShadow({ nativeElement: grayOutArea?.parentElement });
 		this.addAppointment.emit({
-			e: { ...event, offsetY: event.offsetY - this.shareSvc.dragStartElementRef.event.offsetY },
+			e: { ...event, offsetY: event.offsetY - this.draggableSvc.dragStartElement.event.offsetY },
 			day,
 			grayOutSlot: this.grayOutSlot$$.value,
 			isOutside: true,
-			appointment: this.shareSvc.dragStartElementRef.data,
+			appointment: this.draggableSvc.dragStartElement.data,
 		});
-		this.shareSvc.dragStartElementRef = undefined;
 	}
 
 	private myDate(date: string): Date {
