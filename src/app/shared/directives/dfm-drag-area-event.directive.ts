@@ -13,17 +13,20 @@ export class DfmDragAreaEventDirective {
 	@HostListener('dragover', ['$event'])
 	onDragOver(event: DragEvent) {
 		event.preventDefault();
+    if(!this.draggableSvc.dragStartElement)return
 		this.draggableSvc.createDragShadow(event, this.elementRef);
 	}
 
 	@HostListener('dragleave', ['$event'])
 	onDragLeave(event: DragEvent | any) {
+    if(!this.draggableSvc.dragStartElement)return
 		this.draggableSvc.removeDragShadow(this.elementRef);
 		event.stopPropagation();
 	}
 
 	@HostListener('drop', ['$event'])
 	onDragDrop(event: DragEvent | any) {
+    if (!this.draggableSvc.dragStartElement) return;
 		this.draggableSvc.dragEndElementRef = this.elementRef;
 		this.draggableSvc.removeDragShadow(this.elementRef);
 		if (this.draggableSvc.dragStartElement) {
@@ -36,4 +39,5 @@ export class DfmDragAreaEventDirective {
 		}
 	}
 }
+
 

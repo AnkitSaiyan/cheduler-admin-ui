@@ -28,8 +28,10 @@ export class DfmDragEventDirective {
 
 	@HostListener('drop', ['$event'])
 	onDragDrop(event: DragEvent) {
+    if (!this.draggableSvc.dragStartElement) return;
 		event.stopPropagation();
 	}
 }
+
 
 

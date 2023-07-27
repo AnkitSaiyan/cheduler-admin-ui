@@ -82,10 +82,11 @@
 											'top.px': getTop(groupedData),
 											'height.px': eventHeight
 										}"
-										draggable="true"
+										[draggable]="!(DateTimeUtils.DateDistributedToDate({year: day[2], month: day[1] + 1, day: day[0]}) | isPreviousDay : true)"
 										dfmDragEvent
 										[draggedElData]="groupedData[0]"
 									>
+
 										<!-- POP OVER -->
 										<ng-template #eventDetails>
 											<div class="calendar-week-view-event-details-expanded">

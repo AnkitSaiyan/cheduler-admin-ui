@@ -430,6 +430,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public dropOnGrayOutArea(event: any, day: any, grayOutArea: any) {
 		event.stopPropagation();
+    if (!this.draggableSvc.dragStartElement) return;
 		this.draggableSvc.dragEndElementRef = { nativeElement: grayOutArea?.parentElement };
 		this.draggableSvc.dragComplete(event);
 		this.draggableSvc.removeDragShadow({ nativeElement: grayOutArea?.parentElement });
@@ -557,6 +558,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public changeDate(offset) {
+    if (!this.draggableSvc.dragStartElement) return;
 		this.changeDateDebounce$$.next(offset);
 	}
 
