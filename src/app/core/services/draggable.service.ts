@@ -1,5 +1,5 @@
 import { ElementRef, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
-import { Appointment } from '../models/appointment.model';
+import { Appointment } from 'src/app/shared/models/appointment.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -98,6 +98,7 @@ export class DraggableService {
 		element?.remove();
 	}
 }
+
 
 
 

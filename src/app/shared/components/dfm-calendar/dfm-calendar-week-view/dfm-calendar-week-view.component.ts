@@ -21,9 +21,9 @@ import { getAllDaysOfWeek, getDurationMinutes } from '../../../models/calendar.m
 import { DateTimeUtils } from '../../../utils/date-time.utils';
 import { DestroyableComponent } from '../../destroyable.component';
 
-import { Appointment } from 'src/app/core/models/appointment.model';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { Appointment } from 'src/app/shared/models/appointment.model';
 // @Pipe({
 //   name: 'calendarEventHeight',
 //   standalone: true
