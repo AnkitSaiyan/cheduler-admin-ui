@@ -82,11 +82,11 @@ export const Translate = Object.freeze({
 	},
 	StartDate: {
 		[ENG_BE]: 'Start Date',
-		[DUTCH_BE]: 'Begin Datum',
+		[DUTCH_BE]: 'Begindatum',
 	},
 	EndDate: {
 		[ENG_BE]: 'End Date',
-		[DUTCH_BE]: 'Eind Datum',
+		[DUTCH_BE]: 'Einddatum',
 	},
 	AbsenceInfo: {
 		[ENG_BE]: 'Absence Info',
