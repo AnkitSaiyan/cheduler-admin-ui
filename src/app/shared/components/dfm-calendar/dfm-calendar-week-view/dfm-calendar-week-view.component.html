@@ -111,7 +111,7 @@
                       <ng-template #eventDetails>
                         <div class="calendar-week-view-event-details-expanded">
                           <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
-                            {{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}
+                            <b>{{data.id}}</b> - {{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}
                           </span>
 
                             <div class="calendar-week-view-event-patients-container accordion-content">
@@ -169,7 +169,7 @@
                       <ng-container *ngIf="getHeight([data]) as childEventHeight">
                         <span class="calendar-week-view-event-title" *ngIf="childEventHeight >= 60">{{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}</span>
                         <span class="calendar-week-view-event-time" [ngClass]="{ 'dfm-ms-12': childEventHeight <= 40, 'dfm-ms-16': childEventHeight <= 20 }">
-                          {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }} -
+                          <b>{{data.id}}</b> - {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }} -
                           {{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
                         </span>
                       </ng-container>
