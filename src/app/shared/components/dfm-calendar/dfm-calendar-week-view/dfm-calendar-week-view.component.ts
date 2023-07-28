@@ -435,7 +435,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		if (!this.draggableSvc.dragStartElement) return;
 		event.target.classList.remove('drag-area-border');
 		this.draggableSvc.dragEndElementRef = { nativeElement: grayOutArea?.parentElement };
-		this.draggableSvc.dragComplete(event);
+		this.draggableSvc.weekViewDragComplete(event);
 		this.draggableSvc.removeDragShadow({ nativeElement: grayOutArea?.parentElement });
 		this.addAppointment.emit({
 			e: { ...event, offsetY: event.offsetY - this.draggableSvc.dragStartElement.event.offsetY },

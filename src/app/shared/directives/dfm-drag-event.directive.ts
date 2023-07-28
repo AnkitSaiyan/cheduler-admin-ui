@@ -7,6 +7,7 @@ export class DfmDragEventDirective {
 	constructor(private draggableSvc: DraggableService, private elementRef: ElementRef) {}
 
 	@Input() draggedElData!: any;
+	@Input() calendarType: 'day' | 'week' | 'month' = 'week';
 
 	@HostListener('dragstart', ['$event'])
 	onDragStart(event: DragEvent | any) {
@@ -28,10 +29,15 @@ export class DfmDragEventDirective {
 
 	@HostListener('drop', ['$event'])
 	onDragDrop(event: DragEvent) {
-    if (!this.draggableSvc.dragStartElement) return;
+		if (!this.draggableSvc.dragStartElement) return;
 		event.stopPropagation();
 	}
 }
+
+
+
+
+
 
 
 

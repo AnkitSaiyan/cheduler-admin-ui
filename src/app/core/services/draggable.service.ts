@@ -50,7 +50,7 @@ export class DraggableService {
 		this.dragStartElementHeight = 0;
 	}
 
-	public dragComplete(event: any) {
+	public weekViewDragComplete(event: any) {
 		if (!this.dragStartElement || !this.dragEndElementRef) return;
 		const cloneElement = this.dragStartElement?.event?.target?.cloneNode(true);
 		const cloneParentElement = (this.dragStartElementParentRef as any)?.cloneNode(true);
@@ -63,6 +63,12 @@ export class DraggableService {
 		const top: number = calculatedOffsetY - (calculatedOffsetY % 20);
 		cloneParentElement.style.top = `${top}px`;
 		this.renderer.appendChild(this.dragEndElementRef?.nativeElement, cloneParentElement);
+	}
+	public monthViewDragComplete(event: any) {
+		if (!this.dragStartElement || !this.dragEndElementRef) return;
+		const cloneElement = this.dragStartElement?.event?.target?.cloneNode(true);
+		this.renderer.appendChild(this.dragEndElementRef?.nativeElement, cloneElement);
+		this.renderer?.removeChild(this.dragStartElementParentRef, this.dragStartElement?.event?.target);
 	}
 
 	public revertDrag() {
@@ -92,6 +98,10 @@ export class DraggableService {
 		element?.remove();
 	}
 }
+
+
+
+
 
 
 
