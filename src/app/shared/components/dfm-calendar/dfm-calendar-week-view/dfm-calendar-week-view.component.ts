@@ -116,6 +116,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public todayDate = new Date();
 
+	public getDurationMinutes = getDurationMinutes;
+
 	// In minutes
 	public readonly timeInterval: number = 15;
 
@@ -431,7 +433,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public dropOnGrayOutArea(event: any, day: any, grayOutArea: any) {
 		event.stopPropagation();
 		if (!this.draggableSvc.dragStartElement) return;
-    event.target.classList.remove('drag-area-border');
+		event.target.classList.remove('drag-area-border');
 		this.draggableSvc.dragEndElementRef = { nativeElement: grayOutArea?.parentElement };
 		this.draggableSvc.dragComplete(event);
 		this.draggableSvc.removeDragShadow({ nativeElement: grayOutArea?.parentElement });
@@ -594,7 +596,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		return [];
 	}
 
-	public test(item: any) {
-		console.log(item);
+	public test(item: any[]) {
+		return [...item, ...item, ...item];
 	}
 }

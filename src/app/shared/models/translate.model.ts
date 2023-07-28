@@ -156,6 +156,10 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Physician',
 		[DUTCH_BE]: 'Dokter',
 	},
+	ReferralNote: {
+		[ENG_BE]: 'Referral Note',
+		[DUTCH_BE]: 'Referral Note',
+	},
 	AppointmentNo: {
 		[ENG_BE]: 'Appointment No.',
 		[DUTCH_BE]: 'Afspraak nr.',
@@ -747,6 +751,7 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'BodyPart',
 	},
 });
+
 
 
 

@@ -249,17 +249,11 @@ h3 {
   left: 0px;
   right: 0px;
   display: flex;
-  border-left: 4px solid var(--dfm-blue);
   border-bottom-left-radius: 4px;
   z-index: 1;
-  background: var(--dfm-blue-light);
-  box-shadow: 0 0.125rem 0.25rem rgb(30 30 28 / 8%);
-  transition: 200ms all linear;
+  gap: 4px;
+    overflow: hidden;
 
-  &:hover {
-    z-index: 2;
-    box-shadow: 0 0.125rem 1.25rem rgb(30 30 28 / 10%);
-  }
 
   .calendar-week-view-event-details-expanded {
     min-width: 300px;
@@ -327,10 +321,20 @@ h3 {
     flex-direction: column;
     //justify-content: center;
     width: 100%;
-    padding: 12px 8px 12px 12px;
+    padding: 12px 8px;
     font-size: 0.9rem;
+    border-left: 2px solid var(--dfm-blue);
+      background: var(--dfm-blue-light);
+      box-shadow: 0 0.125rem 0.25rem rgb(30 30 28 / 8%);
+      transition: 200ms all linear;
+      min-width: 32px;
     cursor: pointer;
     overflow: hidden;
+
+    &:hover {
+        z-index: 2;
+        box-shadow: 0 0.125rem 1.25rem rgb(30 30 28 / 10%);
+      }
 
     .calendar-week-view-event-title {
       font-weight: 600;
@@ -474,4 +478,7 @@ h3 {
     height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
     margin-top: auto;
   }
+}
+.dfm-instruction {
+  max-width: 180px;
 }
