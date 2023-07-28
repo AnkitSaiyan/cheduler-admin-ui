@@ -155,7 +155,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 		if (this.modalData.appointment?.id) {
 			this.loading$$.next(true);
-			
+
 			this.appointmentApiSvc
 				.getAppointmentByID$(this.modalData.appointment.id)
 				.pipe(take(1))
@@ -339,8 +339,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		let observable: Observable<Appointment>;
 		if (this.modalData?.appointment?.id) {
 			observable = this.appointmentApiSvc.updateAppointment$({ ...requestData, id: this.modalData.appointment.id });
-		}
-		{
+		} else {
 			observable = this.appointmentApiSvc.saveAppointment$(requestData);
 		}
 

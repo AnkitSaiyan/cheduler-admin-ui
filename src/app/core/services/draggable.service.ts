@@ -53,11 +53,16 @@ export class DraggableService {
 	public dragComplete(event: any) {
 		if (!this.dragStartElement || !this.dragEndElementRef) return;
 		const cloneElement = this.dragStartElement?.event?.target?.cloneNode(true);
+		const cloneParentElement = (this.dragStartElementParentRef as any)?.cloneNode(true);
+		while (cloneParentElement.lastElementChild) {
+			cloneParentElement.removeChild(cloneParentElement.lastElementChild);
+		}
+		this.renderer.appendChild(cloneParentElement, cloneElement);
 		this.renderer?.removeChild(this.dragStartElementParentRef, this.dragStartElement?.event?.target);
 		const calculatedOffsetY: number = event?.offsetY - this.dragStartElement?.event?.offsetY;
 		const top: number = calculatedOffsetY - (calculatedOffsetY % 20);
-		cloneElement.style.top = `${top}px`;
-		this.renderer.appendChild(this.dragEndElementRef?.nativeElement, cloneElement);
+		cloneParentElement.style.top = `${top}px`;
+		this.renderer.appendChild(this.dragEndElementRef?.nativeElement, cloneParentElement);
 	}
 
 	public revertDrag() {
@@ -87,6 +92,19 @@ export class DraggableService {
 		element?.remove();
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
