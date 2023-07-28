@@ -110,8 +110,8 @@
                       <!-- POP OVER -->
                       <ng-template #eventDetails>
                         <div class="calendar-week-view-event-details-expanded">
-                          <span class="calendar-week-view-event-details-expanded-title">
-                            {{ 'Appointments' | translate }} ({{ groupedData.length }})
+                          <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
+                            {{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}
                           </span>
 
                             <div class="calendar-week-view-event-patients-container accordion-content">
@@ -121,7 +121,7 @@
                                     <div class="calendar-week-view-event-patients-container">
                                       <div class="d-flex flex-column dfm-p-8">
                                         <span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
-                                          data.patientFname + ' ' + data.patientLname
+                                          data.exams | joinWithAnd : 'name'
                                         }}</span>
                                         <span class="text-sm dfm-text-main-500">
                                           {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
@@ -135,8 +135,8 @@
 
                                   <ng-template ngbPanelContent>
                                     <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                                      <span class="font-weight-medium"> {{ 'Exam' | translate }} </span>
-                                      <span *ngIf="data.exams?.length">{{ data.exams | joinWithAnd : 'name' }}</span>
+                                      <span class="font-weight-medium"> {{ 'Instructions' | translate }} </span>
+                                      <span *ngIf="data.exams?.length" class="dfm-instruction">{{ data.exams?.[0].instruction | dashIfNothing}}</span>
                                       <span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
                                       <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
                                       <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
@@ -167,7 +167,7 @@
                       </ng-template>
                       <!-- POP OVER ENDS -->
                       <ng-container *ngIf="getHeight([data]) as childEventHeight">
-                        <span class="calendar-week-view-event-title" *ngIf="childEventHeight >= 60">{{ 'Appointments' | translate }}</span>
+                        <span class="calendar-week-view-event-title" *ngIf="childEventHeight >= 60">{{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}</span>
                         <span class="calendar-week-view-event-time" [ngClass]="{ 'dfm-ms-12': childEventHeight <= 40, 'dfm-ms-16': childEventHeight <= 20 }">
                           {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }} -
                           {{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}

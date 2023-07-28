@@ -58,7 +58,18 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public downloadDropdownControl = new FormControl('', []);
 
-	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'Referral Note', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
+	public columns: string[] = [
+		'StartedAt',
+		'EndedAt',
+		'PatientName',
+		'Exam',
+		'Physician',
+		'ReferralNote',
+		'AppointmentNo',
+		'AppliedOn',
+		'Status',
+		'Actions',
+	];
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'StartedAt', isSortable: true },
@@ -66,7 +77,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		{ id: '3', title: 'PatientName', isSortable: true },
 		{ id: '4', title: 'Exam', isSortable: true },
 		{ id: '5', title: 'Physician', isSortable: true },
-		{ id: '6', title: 'Referral Note', isSortable: true },
+		{ id: '6', title: 'ReferralNote', isSortable: true },
 		{ id: '7', title: 'AppointmentNo', isSortable: true },
 		{ id: '8', title: 'AppliedOn', isSortable: true },
 		{ id: '9', title: 'Status', isSortable: true },
@@ -162,7 +173,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			}
 		});
 
-    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe(() => {
+		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe(() => {
 			if (
 				this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments]) &&
 				!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
@@ -219,7 +230,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
 			},
 		});
-
 
 		this.downloadDropdownControl.valueChanges
 			.pipe(
@@ -304,12 +314,12 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				}
 			});
 
-			this.signalRSvc.latestAppointmentInfo$.pipe(withLatestFrom(this.appointments$$), takeUntil(this.destroy$$)).subscribe({
-				next: ([item, list]) => {
-					const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
-					this.appointments$$.next(modifiedList);
-				},
-			});
+		this.signalRSvc.latestAppointmentInfo$.pipe(withLatestFrom(this.appointments$$), takeUntil(this.destroy$$)).subscribe({
+			next: ([item, list]) => {
+				const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
+				this.appointments$$.next(modifiedList);
+			},
+		});
 	}
 
 	public override ngOnDestroy() {
@@ -379,12 +389,12 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t\t')}\n`;
-			
-				if (!this.filteredAppointments$$.value.length) {
-					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
-					this.clipboardData = '';
-					return;
-				}
+
+			if (!this.filteredAppointments$$.value.length) {
+				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.clipboardData = '';
+				return;
+			}
 
 			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
 				dataString += `${ap.startedAt.toString()}\t${ap.endedAt.toString()}\t${this.titleCasePipe.transform(
@@ -631,16 +641,16 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public openDocumentModal(id: number) {
 		this.modalSvc.open(DocumentViewModalComponent, {
-			  data: {
-				id
-			  },
-			  options: {
-			    size: 'xl',
-			    backdrop: true,
-			    centered: true,
-			    modalDialogClass: 'ad-ap-modal-shadow',
-			  },
-			})
+			data: {
+				id,
+			},
+			options: {
+				size: 'xl',
+				backdrop: true,
+				centered: true,
+				modalDialogClass: 'ad-ap-modal-shadow',
+			},
+		});
 		// this.appointmentApiSvc.getDocumentById$(id).subscribe(res => console.log(res));
 	}
 }
