@@ -1,16 +1,23 @@
 import { ElementRef, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { Appointment } from 'src/app/shared/models/appointment.model';
 
+
 @Injectable({
 	providedIn: 'root',
 })
 export class DraggableService {
 	private renderer: Renderer2;
+
 	private draggableContainer!: any;
+
 	private dragStartElementRefData!: any;
+
 	private dragStartElementDeepCopy!: any;
+	
 	private dragStartElementHeight!: number;
+	
 	private dragStartElementParentReference!: any;
+	
 	private dragEndElementReference!: any;
 
 	constructor(rendererFactory: RendererFactory2) {
@@ -64,6 +71,7 @@ export class DraggableService {
 		cloneParentElement.style.top = `${top}px`;
 		this.renderer.appendChild(this.dragEndElementRef?.nativeElement, cloneParentElement);
 	}
+
 	public monthViewDragComplete(event: any) {
 		if (!this.dragStartElement || !this.dragEndElementRef) return;
 		const cloneElement = this.dragStartElement?.event?.target?.cloneNode(true);
@@ -94,11 +102,11 @@ export class DraggableService {
 	public removeDragShadow(elementRef: ElementRef) {
 		elementRef?.nativeElement?.querySelectorAll('.drag-shadow')?.forEach(this.removeEl);
 	}
+
 	private removeEl(element: any) {
 		element?.remove();
 	}
 }
-
 
 
 

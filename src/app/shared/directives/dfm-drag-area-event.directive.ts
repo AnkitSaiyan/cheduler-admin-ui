@@ -7,6 +7,7 @@ export class DfmDragAreaEventDirective {
 	constructor(private elementRef: ElementRef, private draggableSvc: DraggableService, private renderer: Renderer2) {}
 
 	@Input() day!: any;
+    
 	@Input() calendarType: 'day' | 'week' | 'month' = 'week';
 
 	@Output() private editAppointment = new EventEmitter<any>();
