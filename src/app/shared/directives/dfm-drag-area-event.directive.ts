@@ -7,7 +7,7 @@ export class DfmDragAreaEventDirective {
 	constructor(private elementRef: ElementRef, private draggableSvc: DraggableService, private renderer: Renderer2) {}
 
 	@Input() day!: any;
-    
+
 	@Input() calendarType: 'day' | 'week' | 'month' = 'week';
 
 	@Output() private editAppointment = new EventEmitter<any>();
@@ -45,6 +45,7 @@ export class DfmDragAreaEventDirective {
 					day: this.day,
 				});
 			}
+
 			if (this.calendarType === 'month') {
 				const currentDate = new Date(this.day[2], this.day[1], this.day[0]);
 				currentDate.setHours(0, 0, 0, 0);
@@ -63,29 +64,3 @@ export class DfmDragAreaEventDirective {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

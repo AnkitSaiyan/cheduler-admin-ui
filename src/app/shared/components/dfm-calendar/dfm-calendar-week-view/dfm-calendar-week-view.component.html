@@ -66,7 +66,7 @@
 					</div>
 					<div class="calendar-week-view-events-left-vertical-line"></div>
 					<div *ngFor="let day of daysOfWeekArr; let weekday = index" role="gridcell" class="calendar-week-view-body-grid-column" dfmDragAreaEvent [day]="day" (editAppointment)="editAppointment($event)">
-						<div class="calendar-week-view-body-grid-absolute"></div>
+						<!-- <div class="calendar-week-view-body-grid-absolute"></div> -->
 						<div
 							#eventsContainer
 							(dblclick)="onDblClick($event, eventsContainer, day)"
