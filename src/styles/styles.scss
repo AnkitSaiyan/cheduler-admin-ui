@@ -1290,13 +1290,14 @@ angular-editor-toolbar button i {
 }
 
 .drag-shadow {
-  border: 1px dashed var(--dfm-primary) !important;
+  border: 1px dashed var(--dfm-blue) !important;
   width: calc(100% - 12px);
   position: absolute;
-  background: var(--dfm-secondary);
-  opacity: .3;
+  background: var(--dfm-blue-light);
+  opacity: .5;
   z-index: 0;
 }
+
 .drag-area-border {
-  border: 1px dashed var(--dfm-primary) !important;
+  border: 1px dashed var(--dfm-blue) !important;
 }
