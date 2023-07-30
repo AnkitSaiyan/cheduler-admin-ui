@@ -484,7 +484,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	private updateForm(appointment: Appointment) {
 		if (this.isOutside) this.appointmentForm.addControl('userList', new FormControl([]));
-
 		appointment?.exams?.sort((exam1, exam2) => {
 			if (exam1.startedAt < exam2.startedAt) {
 				return -1;

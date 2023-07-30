@@ -12,6 +12,7 @@ export class DraggableService {
 	private dragStartElementHeight!: number;
 	private dragStartElementParentReference!: any;
 	private dragEndElementReference!: any;
+	private headerTypeValue!: string | undefined;
 
 	constructor(rendererFactory: RendererFactory2) {
 		this.renderer = rendererFactory.createRenderer(null, null);
@@ -43,13 +44,31 @@ export class DraggableService {
 		return this.dragStartElementParentReference;
 	}
 
+	public set headerType(value: string) {
+		this.headerTypeValue = value;
+	}
+
+	public get headerType() {
+		return this.headerTypeValue!;
+	}
+
 	public removeRef() {
 		this.dragStartElementRefData = undefined;
 		this.dragStartElementParentReference = undefined;
 		this.dragStartElementDeepCopy = undefined;
 		this.dragStartElementHeight = 0;
+		this.headerTypeValue = undefined;
 	}
 
+	public dayViewDragComplete(event: any) {
+		if (!this.dragStartElement || !this.dragEndElementRef) return;
+		const cloneElement = this.dragStartElement?.event?.target?.cloneNode(true);
+		const calculatedOffsetY: number = event?.offsetY - this.dragStartElement?.event?.offsetY;
+		const top: number = calculatedOffsetY - (calculatedOffsetY % 20);
+		cloneElement.style.top = `${top}px`;
+		this.renderer.appendChild(this.dragEndElementRef?.nativeElement, cloneElement);
+		this.renderer?.removeChild(this.dragStartElementParentRef, this.dragStartElement?.event?.target);
+	}
 	public weekViewDragComplete(event: any) {
 		if (!this.dragStartElement || !this.dragEndElementRef) return;
 		const cloneElement = this.dragStartElement?.event?.target?.cloneNode(true);
@@ -98,6 +117,13 @@ export class DraggableService {
 		element?.remove();
 	}
 }
+
+
+
+
+
+
+
 
 
 

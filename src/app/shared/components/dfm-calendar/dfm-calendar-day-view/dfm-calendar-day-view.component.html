@@ -70,17 +70,17 @@
 
               <div class="calender-day-view-events-left-vertical-line"></div>
               <ng-container *ngIf="headerList.length; else singleGridCol;">
-                <div *ngFor="let h of headerList" role="gridcell" class="calender-day-view-body-grid-column">
+                <div *ngFor="let h of headerList" role="gridcell" class="calender-day-view-body-grid-column" dfmDragAreaEvent [calendarType]="calendarType.Day" [headerType]="h.name" (editAppointment)="addAppointment($event.event, undefined, $event.data)">
                   <div class="calender-day-view-body-grid-absolute"></div>
 
-                  <div class="calender-day-view-body-events-container" role="presentation" #eventsContainer (dblclick)="addAppointment($event, eventsContainer)">
+                  <div class="calender-day-view-body-events-container" role="presentation" #eventsContainer (dblclick)="addAppointment($event, eventsContainer)" >
                     <ng-container *ngIf="dataGroupedByDateAndRoom[dateString] as dataGroupedByRoom">
                       <ng-container
                         *ngIf="dataGroupedByRoom && dataGroupedByRoom[h.value] as roomData">
                         <ng-container
                           *ngFor="let data of roomData;">
                           <ng-container *ngIf="getHeight([data.appointment]) as eventHeight" >
-                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight && getTop([data.appointment]) >= 0" #eventContainer class="calender-day-view-event-container resizable" (dblclick)="$event.preventDefault()"
+                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight && getTop([data.appointment]) >= 0" #eventContainer class="calender-day-view-event-container resizable" draggable="true" dfmDragEvent [calendarType]="calendarType.Day" [draggedElData]="data.appointment" [headerType]="h.name" (dblclick)="$event.preventDefault()"
                                [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
                           >
                           <div class='resizers' id="resizers">

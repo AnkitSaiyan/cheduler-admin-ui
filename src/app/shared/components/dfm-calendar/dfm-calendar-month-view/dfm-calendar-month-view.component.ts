@@ -5,6 +5,7 @@ import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { AddAppointmentModalComponent } from 'src/app/modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { DraggableService } from 'src/app/core/services/draggable.service';
+import { CalendarType } from 'src/app/shared/utils/const';
 
 @Component({
 	selector: 'dfm-calendar-month-view',
@@ -37,6 +38,8 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 
 	@Output()
 	public dayViewEvent = new EventEmitter<Date>();
+
+	public calendarType = CalendarType;
 
 	constructor(private modalSvc: ModalService, private draggableSvc: DraggableService) {}
 

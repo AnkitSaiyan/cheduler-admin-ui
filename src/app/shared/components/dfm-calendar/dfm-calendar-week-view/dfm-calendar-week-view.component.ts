@@ -24,6 +24,7 @@ import { DestroyableComponent } from '../../destroyable.component';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { Appointment } from 'src/app/shared/models/appointment.model';
+import { CalendarType } from 'src/app/shared/utils/const';
 // @Pipe({
 //   name: 'calendarEventHeight',
 //   standalone: true
