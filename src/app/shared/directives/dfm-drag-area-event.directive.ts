@@ -53,6 +53,11 @@ export class DfmDragAreaEventDirective {
 			case CalendarType.Week:
 				this.draggableSvc.removeDragShadow(this.elementRef);
 				this.draggableSvc.weekViewDragComplete(event);
+        this.editAppointment.emit({
+					event: { ...event, offsetY: event.offsetY - this.draggableSvc.dragStartElement.event.offsetY },
+					data: { ...this.draggableSvc.dragStartElement.data },
+					day: this.day,
+				});
 				return;
 			case CalendarType.Month:
 				const currentDate = new Date(this.day[2], this.day[1], this.day[0]);
@@ -72,6 +77,7 @@ export class DfmDragAreaEventDirective {
 		}
 	}
 }
+
 
 
 
