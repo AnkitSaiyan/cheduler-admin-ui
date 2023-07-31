@@ -12,83 +12,51 @@
     <tbody class="calendar-month-view-body">
   <tr *ngFor="let days of daysInMonthMatrix;">
     <td class="calender-month-view-day-cell" *ngFor="let day of days">
-      <div class="calender-month-view-day-cell-content">
-        <div
-          *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length"
-          class="calender-month-view-day-exam-event-container">
+      <div class="calender-month-view-day-cell-content" >
+        <div class="calender-month-view-day-exam-event-container" #parentElement dfmDragAreaEvent [calendarType]="calendarType.Month" (editAppointment)="editAppointment($event)" [day]="[day,+selectedDate.getMonth(),selectedDate.getFullYear()]">
 
           <ng-template #eventDetails>
             <div class="calender-month-view-day-exam-details-expanded">
-                <span class="calender-month-view-day-exam-details-expanded-title">
-                  {{"Appointments" | translate}} ({{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length }})
+                <span class="calender-month-view-day-exam-details-expanded-title text-center">
+                  <b>{{selectedDate | date : 'EEE'}}</b>
                 </span>
-              <div class="calender-month-view-day-exam-details-expanded-patients-container accordion-content">
-                <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0"
-                               *ngFor="let ap of dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]; let i = index">
-                  <ngb-panel>
-                    <ng-template ngbPanelTitle>
-                      <div
-                        class="calender-month-view-day-exam-details-expanded-patient-details-container">
-                        <div class="dfm-p-8 d-flex flex-column">
-                          <span class="font-weight-medium">{{ ap.patientFname + ' ' + ap.patientLname }}</span>
-                          <span class="text-sm dfm-text-main-500">
-                            {{ (ap.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal: true) + ' - ' + (ap.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true) }} ({{getDurationFn(ap.startedAt, ap.endedAt)}} min)
-                          </span>
-                        </div>
-                        <div class="calender-month-view-day-exam-details-expanded-patient-details-divider"
-                             *ngIf="i < dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length - 1"></div>
-                      </div>
-                    </ng-template>
+                <span class="calender-month-view-day-exam-details-expanded-title text-center date">
+                  <b>{{day}}</b>
+                </span>
+                <div class="dfm-card-container">
+                  <div class="calender-month-view-day-exam-event-details" *ngFor="let data of dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" draggable="true" dfmDragEvent [draggedElData]="data" [calendarType]="calendarType.Month">
+                    <span class="calender-month-view-day-exam-event-title text-truncate ">
+                      {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
+                      -
+                      {{ data?.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}
 
-                    <ng-template ngbPanelContent>
-                     <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                       <span class="font-weight-medium"> {{"Exam" | translate}} </span>
-                       <span *ngIf="ap.exams?.length">{{ ap.exams | joinWithAnd : 'name'}}</span>
-                       <span class="font-weight-medium dfm-mt-8"> {{"Comments" | translate}} </span>
-                       <span class="calendar-comments-text"> {{ ap?.comments | dashIfNothing }} </span>
-                       <span class="font-weight-medium dfm-mt-8">{{"Staff" | translate}}</span>
-
-                       <ng-container *ngIf="ap.exams | isData : 'users'; else dash">
-                         <div *ngFor="let u of removeDuplicateData(ap)" class="dfm-ps-4 dfm-pt-4">
-                           <div  class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
-                             <div class="circle-gray-200-40">
-                               {{ u?.firstname[0] | uppercase }}
-                             </div>
-                             <div class="d-flex flex-column">
-                               <span>{{ u?.firstname | titlecase }} {{ u?.lastname | titlecase }}</span>
-                               <span class="dfm-text-main-500">{{ u?.userType | titlecase | translate }}</span>
-                             </div>
-                           </div>
-                         </div>
-                       </ng-container>
-                       <ng-template #dash>
-                         <span>{{ '' | dashIfNothing }}</span>
-                       </ng-template>
-                     </div>
-                    </ng-template>
-                  </ngb-panel>
-                </ngb-accordion>
-              </div>
+                      <b>{{(data?.patientFname | titlecase) + ' ' + data?.patientLname | titlecase }}</b>
+                    </span>
+                  </div>
+                </div>
             </div>
           </ng-template>
 
-          <div class="calender-month-view-event-circle-icon">
-            {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length }}
-          </div>
-
-          <div class="calender-month-view-day-exam-event-details" [ngbPopover]="eventDetails" triggers="click" [autoClose]="'outside'" container="body">
-            <span class="calender-month-view-day-exam-event-title text-truncate">{{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length === 1 ? ('Appointment' | translate) : ('Appointments' | translate) }}</span>
-            <span class="calender-month-view-day-exam-event-time"
-                  *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length === 1">
-              {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()][0]?.startedAt | dfmDefaultDate : 'time' }}
+          <!-- <div class="calender-month-view-event-circle-icon">
+            {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length}}
+          </div> -->
+          <div class="calender-month-view-day-exam-event-details" *ngFor="let data of dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" draggable="true" dfmDragEvent [draggedElData]="data" [calendarType]="calendarType.Month">
+            <span class="calender-month-view-day-exam-event-title text-truncate ">
+              {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
               -
-              {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()][0]?.endedAt | dfmDefaultDate : 'time' }}
+              {{ data?.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
+
+              <b>{{(data?.patientFname | titlecase) + ' ' + data?.patientLname | titlecase }}</b>
             </span>
-            <span class="calender-month-view-day-exam-event-time"
+            <!-- <span class="calender-month-view-day-exam-event-time"
                   *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length !== 1">
               Multiple timings
-            </span>
+            </span> -->
           </div>
+          <div class="calender-month-view-day-exam-event-details more-btn" [ngbPopover]="eventDetails" triggers="click" [autoClose]="'outside'" container="body" *ngIf="parentElement.scrollHeight > parentElement.clientHeight">
+            <span class="calender-month-view-day-exam-event-title text-truncate ">View more</span>
+          </div>
+
         </div>
 
 					<div
