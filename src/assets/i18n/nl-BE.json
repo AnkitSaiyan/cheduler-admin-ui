@@ -124,8 +124,8 @@
 	"DeletePhysician": "Verwijder Dokter",
 	"DeletePrioritySlots": "Verwijder Prioritaire Slots",
 	"PrioritySlotsView": "Prioritaire Slots Bekijk",
-	"PriorityDetails": "Prioritaire Dokter",
-	"PriorityRepeatDetails": "Prioritaire Herhaal Dokter",
+	"PriorityDetails": "Algemene informatie prioritair slot",
+	"PriorityRepeatDetails": "Herhalingsinfo prioritair slot",
 	"EmailTheDoctor": "E-mail de dokter als een patient een afpraak maakt die hij/zij voorschreef",
 	"StatusChangesSuccesfully": "Status succesvol veranderd!",
 	"Physician": "Dokter",
@@ -135,14 +135,14 @@
 	"PracticeHours": "Praktijkuren",
 	"PracticeAvailabilityData": "Uren Beschikbaarheid Dagen",
 	"SiteManagement": "Site Beheer",
-	"SiteName": "Naam Praktijk",
-	"SiteLogo": "Logo Praktijk",
+	"SiteName": "Naam praktijk",
+	"SiteLogo": "Logo praktijk",
 	"ChooseFile": "Kies Bestand",
-	"SiteIntroductionText": "Praktijk Introductie tekst",
+	"SiteIntroductionText": "Tekst webpagina patiënt",
 	"DisableAppointmentBooking": "Uitzetten boeken afspraak",
-	"DisableReferringDoctorconsent": "Uitzetten toestemming verwijzende dokter",
+	"DisableReferringDoctorconsent": "Uitzetten verplichting verwijzende dokter",
 	"WarningText": "Waarschuwingstekst",
-	"AppointmentCancellationDuration": "Duur afspraak annulatie",
+	"AppointmentCancellationDuration": "Laatste tijdstip annulatie",
 	"Info": "Info",
 	"EnterHeading": "Geef hoofding",
 	"EnterSubHeading": "Geef sub-hoofding",
@@ -150,8 +150,8 @@
 	"EnterWarningText": "Geef waarschuwingstekst",
 	"Yes": "Ja",
 	"No": "Nee",
-	"CombineSlots": "Combineer Tijdslots",
-	"ReminderMailDuration": "Duur herinneringsbericht e-mail",
+	"CombineSlots": "Combineer tijdssloten",
+	"ReminderMailDuration": "Tijdstip uitsturen herinneringsbericht e-mail",
 	"NoExamsFound": "Geen Onderzoek Gevonden",
 	"RoomAvailabilityInfo": "Info Zaal Beschikbaarheid",
 	"RoomAvailabilityData": "Gegevens Zaal Beschikbaarheid",
@@ -162,9 +162,9 @@
 	"AbsenceName": "Afwezigheid Naam",
 	"AbsenceSearch": "Zoek op afwezigheid naam, datum",
 	"AddAbsence": "Afwezigheid Toevoegen",
-	"Title": "Titel",
-	"StartDate": "Begin Datum",
-	"EndDate": "Eind Datum",
+	"Title": "Naam",
+	"StartDate": "Begindatum",
+	"EndDate": "Einddatum",
 	"AbsenceInfo": "Info Afwezigheid",
 	"EditAbsence": "Bewerk Afwezigheid",
 	"EnterAbsenceTitle": "Geef titel afwezigheid",
@@ -315,7 +315,7 @@
 	"New": "Nieuw",
 	"Confirm": "Bevestig",
 	"Confirmed": "Bevestigd",
-	"UpcomingAppointmentsInFourHours": " Komende Afspraken in 4 Hren",
+	"UpcomingAppointmentsInFourHours": " Komende Afspraken in 4 Uren",
 	"PostIt": "Post-it",
 	"SearchPostIt": "Zoek post-it",
 	"EmployeeAbsences": "Afwezigheden Medewerkers",
@@ -361,7 +361,7 @@
 	"NoGeneralStafFfound": "Geen Generale Staf Gevonden",
 	"UserDeleted": "Gebruiker Succesvol Verwijderd",
 	"EmailTemplate": "E-mail Sjablonen",
-	"SearchByTemplateName": "Zoek op naam sjablonen",
+	"SearchByTemplateName": " Zoeken op naam, onderwerp en status sjablonen",
 	"Subject": "Onderwerp",
 	"Content": "Inhoud",
 	"ContentForAdmin": "Inhoud Voor Admin",
@@ -382,8 +382,8 @@
 	"Save2": "Sevestig",
 	"SelectPhysician": "Selecteer dokter",
 	"Heading": "Hoofding",
-	"SubHeading": "Sub-Hoofding",
-	"BodyText": "Kerntekst",
+	"SubHeading": "Subhoofding",
+	"BodyText": "Boodschap",
 	"CompleteYourProfile": "Voltooi Uw Profiel",
 	"Logout": "Uitloggen",
 	"EnterStreet": "Voer straat in",
@@ -455,6 +455,14 @@
 		}
 	}
 }
+
+
+
+
+
+
+
+
 
 
 
