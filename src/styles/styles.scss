@@ -1301,3 +1301,8 @@ angular-editor-toolbar button i {
 .drag-area-border {
   border: 1px dashed var(--dfm-blue) !important;
 }
+
+angular-editor-toolbar button i {
+  font-family: FontAwesome !important;
+  color: #474d6d !important;
+}
