@@ -535,28 +535,31 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 		const eventCard: HTMLDivElement | undefined = eventsContainer ? this.createAppointmentCard(e, eventsContainer) : undefined;
 
-		this.modalSvc.open(AddAppointmentModalComponent, {
-			data: {
-				event: e,
-				element: eventCard,
-				elementContainer: eventsContainer,
-				startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
-				limit: this.practiceHourMinMax$$.value,
-				isOutside,
-				appointment,
-			},
-			options: {
-				size: 'xl',
-				backdrop: false,
-				centered: true,
-				modalDialogClass: 'ad-ap-modal-shadow',
-			},
-		}).closed.pipe(take(1)).subscribe({
-			next: () => {
-				eventCard?.remove();
-				this.draggableSvc.revertDrag();
-			}
-		});
+		this.modalSvc
+			.open(AddAppointmentModalComponent, {
+				data: {
+					event: e,
+					element: eventCard,
+					elementContainer: eventsContainer,
+					startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
+					limit: this.practiceHourMinMax$$.value,
+					isOutside,
+					appointment,
+				},
+				options: {
+					size: 'xl',
+					backdrop: false,
+					centered: true,
+					modalDialogClass: 'ad-ap-modal-shadow',
+				},
+			})
+			.closed.pipe(take(1))
+			.subscribe({
+				next: () => {
+					eventCard?.remove();
+					this.draggableSvc.revertDrag();
+				},
+			});
 	}
 
 	private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {

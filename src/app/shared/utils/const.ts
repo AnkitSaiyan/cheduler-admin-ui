@@ -63,3 +63,9 @@ export enum BodyType {
 	Female = 'female_body',
 	Skeleton = 'skeleton',
 }
+
+export enum CalendarType {
+	Day = 'day',
+	Week = 'week',
+	Month = 'month',
+}

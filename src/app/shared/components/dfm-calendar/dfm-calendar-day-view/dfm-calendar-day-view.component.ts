@@ -11,7 +11,7 @@ import {
 	SimpleChanges,
 	ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, filter, lastValueFrom, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, lastValueFrom, switchMap, take, takeUntil, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationType } from 'diflexmo-angular-design';
@@ -30,12 +30,13 @@ import { getAddAppointmentRequestData } from '../../../utils/getAddAppointmentRe
 import { ReadStatus } from '../../../models/status.model';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { Translate } from '../../../models/translate.model';
-import { ENG_BE } from 'src/app/shared/utils/const';
+import { CalendarType, ENG_BE } from 'src/app/shared/utils/const';
 import { DestroyableComponent } from '../../destroyable.component';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { DraggableService } from 'src/app/core/services/draggable.service';
 
 @Component({
 	selector: 'dfm-calendar-day-view',
@@ -67,6 +68,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	public selectedDateEvent = new EventEmitter<Date>();
 	@Output()
 	public deleteAppointmentEvent = new EventEmitter<number>();
+	public calendarType = CalendarType;
 	public selectedDate!: Date;
 	public selectedDateOnly!: number;
 	public todayDate = new Date();
@@ -99,6 +101,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		private translatePipe: TranslatePipe,
 		private translate: TranslateService,
 		private renderer: Renderer2,
+		private draggableSvc: DraggableService,
 	) {
 		super();
 	}
@@ -350,11 +353,11 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});
 	}
 
-	public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement) {
+	public async addAppointment(e: MouseEvent, eventsContainer?: HTMLDivElement, appointment?: Appointment) {
 		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
 		const currentDate = new Date();
 
-		let minutes = Math.round(+e.offsetY / this.pixelPerMinute);
+		let minutes = Math.round(+e?.offsetY / this.pixelPerMinute);
 
 		// In case if calendar start time is not 00:00 then adding extra minutes
 		if (this.timeSlot?.timings?.[0]) {
@@ -372,86 +375,60 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		if (currentTimeInLocal.getTime() < currentDate.getTime()) {
 			this.notificationSvc.showWarning(this.translatePipe.transform(`CanNotAddAppointmentOnPastDate`));
+			this.draggableSvc.revertDrag();
 			return;
 		}
 
 		if (!e.offsetY) return;
 
 		const isOutside = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
-		let eventCard;
 
 		if (isOutside) {
-			this.modalSvc
-				.open(ConfirmActionModalComponent, {
+			const res = await firstValueFrom(
+				this.modalSvc.open(ConfirmActionModalComponent, {
 					data: {
 						titleText: 'AddAppointmentConfirmation',
 						bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
 						confirmButtonText: 'Yes',
 					} as ConfirmActionModalData,
-				})
-				.closed.pipe(
-					tap((value) => {
-						if (value) eventCard = this.createAppointmentCard(e, eventsContainer);
-					}),
-					filter(Boolean),
-					switchMap(() => {
-						return this.modalSvc.open(AddAppointmentModalComponent, {
-							data: {
-								event: e,
-								element: eventCard,
-								elementContainer: eventsContainer,
-								startedAt: this.selectedDate,
-								startTime: this.timeSlot?.timings?.[0],
-								isOutside,
-							},
-							options: {
-								size: 'xl',
-								backdrop: false,
-								centered: true,
-								modalDialogClass: 'ad-ap-modal-shadow',
-							},
-						}).closed;
-					}),
-					take(1),
-				)
-				.subscribe({
-					next: (res) => {
-						eventCard.remove();
-						if (res) {
-							// show the created card
-							// In progress
-						}
-					},
-				});
-		} else {
-			eventCard = this.createAppointmentCard(e, eventsContainer);
-			this.modalSvc
-				.open(AddAppointmentModalComponent, {
-					data: {
-						event: e,
-						element: eventCard,
-						elementContainer: eventsContainer,
-						startedAt: this.selectedDate,
-						startTime: this.timeSlot?.timings?.[0],
-					},
 					options: {
-						size: 'xl',
 						backdrop: false,
 						centered: true,
-						modalDialogClass: 'ad-ap-modal-shadow',
 					},
-				})
-				.closed.pipe(take(1))
-				.subscribe({
-					next: (res) => {
-						eventCard.remove();
-						if (res) {
-							// show the created card
-							// In progress
-						}
-					},
-				});
+				}).closed,
+			);
+			if (!res) {
+				this.draggableSvc.revertDrag();
+				return;
+			}
 		}
+		const eventCard: HTMLDivElement | undefined = eventsContainer ? this.createAppointmentCard(e, eventsContainer) : undefined;
+
+		this.modalSvc
+			.open(AddAppointmentModalComponent, {
+				data: {
+					event: e,
+					element: eventCard,
+					elementContainer: eventsContainer,
+					startedAt: this.selectedDate,
+					startTime: this.timeSlot?.timings?.[0],
+					isOutside,
+					appointment,
+				},
+				options: {
+					size: 'xl',
+					backdrop: false,
+					centered: true,
+					modalDialogClass: 'ad-ap-modal-shadow',
+				},
+			})
+			.closed.pipe(take(1))
+			.subscribe({
+				next: () => {
+					eventCard?.remove();
+					this.draggableSvc.revertDrag();
+				},
+			});
 	}
 
 	public onScroll(scrolledElement: HTMLElement, targetElement: HTMLElement) {
@@ -617,7 +594,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		let mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
 			const minutes = Math.round(Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute / 5) * 5;
 			const isExtend = parseInt(container?.style.height) > this.original_height;
-			
+
 			if (parseInt(container?.style.height) != this.original_height && minutes) {
 				this.openChangeTimeModal(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
 			} else {

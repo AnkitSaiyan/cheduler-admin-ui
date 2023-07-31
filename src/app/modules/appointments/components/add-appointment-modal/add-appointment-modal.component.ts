@@ -31,6 +31,7 @@ import { CustomDateParserFormatter } from '../../../..//shared/utils/dateFormat'
 import { DateDistributed, getDurationMinutes } from 'src/app/shared/models/calendar.model';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { DatePipe } from '@angular/common';
 
 @Component({
 	selector: 'dfm-add-appointment-modal',
@@ -111,6 +112,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		private userApiService: UserApiService,
 		private notificationSvc: NotificationDataService,
 		private siteManagementApiSvc: SiteManagementApiService,
+		private datePipe: DatePipe,
 	) {
 		super();
 	}
@@ -128,7 +130,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
 			this.modalData = data;
 
-			if (this.modalData.event.offsetY) {
+			if (this.modalData?.event?.offsetY) {
 				this.isOutside = this.modalData.isOutside;
 				let minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
 				if (this.modalData?.limit) {
@@ -147,6 +149,11 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				const min = `0${roundedMin % 60}`.slice(-2);
 				// this.selectedTimeInUTC = this.utcToLocalPipe.transform(`${hour}:${min}`, true) + ':00';
 				this.selectedTimeInUTCOrig = `${hour}:${min}:00`;
+				this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
+			} else if (this.modalData?.appointment?.startedAt) {
+				const date = new Date(this.modalData?.appointment?.startedAt);
+				const time = this.datePipe.transform(date, 'hh:mm');
+				this.selectedTimeInUTCOrig = time as string;
 				this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
 			}
 		});
@@ -477,7 +484,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	private updateForm(appointment: Appointment) {
 		if (this.isOutside) this.appointmentForm.addControl('userList', new FormControl([]));
-
 		appointment?.exams?.sort((exam1, exam2) => {
 			if (exam1.startedAt < exam2.startedAt) {
 				return -1;
