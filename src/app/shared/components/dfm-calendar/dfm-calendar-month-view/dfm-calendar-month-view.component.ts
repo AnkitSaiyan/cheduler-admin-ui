@@ -1,4 +1,15 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import {
+	AfterContentChecked,
+	ChangeDetectorRef,
+	Component,
+	EventEmitter,
+	Input,
+	OnChanges,
+	OnInit,
+	Output,
+	SimpleChanges,
+	ViewChild,
+} from '@angular/core';
 import { BehaviorSubject, filter, take } from 'rxjs';
 import { getDaysOfMonth, getDurationMinutes, getWeekdayWiseDays, Weekday } from '../../../models/calendar.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
@@ -13,7 +24,7 @@ import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 	templateUrl: './dfm-calendar-month-view.component.html',
 	styleUrls: ['./dfm-calendar-month-view.component.scss'],
 })
-export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
+export class DfmCalendarMonthViewComponent implements OnInit, OnChanges, AfterContentChecked {
 	public weekDayEnum = Weekday;
 
 	public nowDate = new Date();
@@ -44,7 +55,7 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 
 	public calendarType = CalendarType;
 
-	constructor(private modalSvc: ModalService, private draggableSvc: DraggableService) {}
+	constructor(private modalSvc: ModalService, private draggableSvc: DraggableService, private cdr: ChangeDetectorRef) {}
 
 	public ngOnChanges(changes: SimpleChanges) {
 		if (!this.selectedDate) {
@@ -80,6 +91,10 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 					}
 				},
 			});
+	}
+
+	public ngAfterContentChecked(): void {
+		this.cdr.detectChanges();
 	}
 
 	public changeMonth(offset: number) {
