@@ -254,3 +254,9 @@ table, th, tr, td {
     font-size: 0.6rem !important;
   }
 }
+
+.left,
+.right {
+  min-width: 12px;
+  min-height: 528px;
+}
