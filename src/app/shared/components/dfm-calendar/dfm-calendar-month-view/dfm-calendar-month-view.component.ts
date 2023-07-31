@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { BehaviorSubject, filter, take } from 'rxjs';
 import { getDaysOfMonth, getDurationMinutes, getWeekdayWiseDays, Weekday } from '../../../models/calendar.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
@@ -6,6 +6,7 @@ import { AddAppointmentModalComponent } from 'src/app/modules/appointments/compo
 import { ModalService } from 'src/app/core/services/modal.service';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { CalendarType } from 'src/app/shared/utils/const';
+import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
 	selector: 'dfm-calendar-month-view',
@@ -38,6 +39,8 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 
 	@Output()
 	public dayViewEvent = new EventEmitter<Date>();
+
+	@ViewChild('popOver') public popover!: NgbPopover;
 
 	public calendarType = CalendarType;
 

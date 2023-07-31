@@ -80,7 +80,8 @@
                         <ng-container
                           *ngFor="let data of roomData;">
                           <ng-container *ngIf="getHeight([data.appointment]) as eventHeight" >
-                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight && getTop([data.appointment]) >= 0" #eventContainer class="calender-day-view-event-container resizable" draggable="true" dfmDragEvent [calendarType]="calendarType.Day" [draggedElData]="data.appointment" [headerType]="h.name" (dblclick)="$event.preventDefault()"
+                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight && getTop([data.appointment]) >= 0" #eventContainer class="calender-day-view-event-container resizable" triggers="hover" [ngbPopover]="eventDetails"
+                                     [autoClose]="'outside'" container="body" #popover="ngbPopover" [ngbPopoverDrag]="popover"   [draggable]="!((data.appointment.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [calendarType]="calendarType.Day" [draggedElData]="data.appointment" [headerType]="h.name" (dblclick)="$event.preventDefault()"
                                [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
                           >
                           <div class='resizers' id="resizers">
@@ -90,7 +91,7 @@
                               <ng-template #eventDetails>
                                 <div class="calender-day-view-event-details-expanded">
                                   <div class="d-flex flex-column dfm-gap-4">
-                                    <span class="font-weight-medium"> {{"Exam" | translate}} </span>
+                                    <span class="font-weight-medium"> {{"Exam" | translate}}</span>
                                     <span *ngIf="data.exams?.length">{{ data.exams | joinWithAnd : 'name'}}</span>
                                   </div>
 
@@ -130,8 +131,7 @@
                               <div class="calender-day-view-event-details-container" (click)="$event.stopPropagation()"
                                    [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto ': +eventHeight <= 40, 'center': +eventHeight >20 && +eventHeight <=40 }"
                                    [routerLink]="['/', 'appointment', data.appointment.id, 'view']" queryParamsHandling="merge">
-                                <div class="d-flex dfm-gap-4" triggers="hover" [ngbPopover]="eventDetails"
-                                     [autoClose]="'outside'" container="body">
+                                <div class="d-flex dfm-gap-4" >
                                   <!-- <div class="circle-gray-200-24" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname?.length">
                                     {{ (data.appointment.patientFname[0] | uppercase)}}
                                   </div> -->
