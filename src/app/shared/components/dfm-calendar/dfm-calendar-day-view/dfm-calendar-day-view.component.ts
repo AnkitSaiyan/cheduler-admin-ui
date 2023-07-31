@@ -67,7 +67,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private lastScrollTime: number = 0;
 	private requestId: number | null = null;
 	private selectedLang: string = ENG_BE;
-
 	private pixelPerMinute = 4;
 
 	constructor(
@@ -150,7 +149,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		// debugger;
 		const durationMinutes = getDurationMinutes(groupedData[0].startedAt, endDate);
-
 		return durationMinutes * this.pixelsPerMin;
 	}
 
@@ -160,8 +158,14 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		// const barHeight = 1;
 		// const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 		// const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
-		const start = this.myDate(this.timeSlot?.timings[0]);
+		const start = this.myDate(this.timeSlot?.timings?.[0]);
+		start.setFullYear(this.selectedDate.getFullYear());
+		start.setMonth(this.selectedDate.getMonth());
+		start.setDate(this.selectedDate.getDate());
 		const end = new Date(groupedData[0].startedAt);
+		if (start.getTime() > end.getTime()) {
+			return -1;
+		}
 		const minutes = getDurationMinutes(start, end);
 		return minutes * this.pixelsPerMin;
 	}
@@ -207,6 +211,10 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const height = eventContainer?.style.height;
 		const modalRef = this.modalSvc.open(AppointmentTimeChangeModalComponent, {
 			data: { extend, eventContainer },
+			options: {
+				backdrop: false,
+				centered: true,
+			},
 		});
 
 		modalRef.closed
@@ -488,25 +496,26 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const timings = timeSlot?.timings;
 		if (!timings?.length) return;
 		const grayOutSlot: any = [];
-    const timeDuration = getDurationMinutes(this.myDate(timings?.[0]), this.myDate(intervals?.[0].dayStart));
+		const timeDuration = getDurationMinutes(this.myDate(timings?.[0]), this.myDate(intervals?.[0].dayStart));
 		grayOutSlot.push({
 			dayStart: timings?.[0],
 			dayEnd: timings?.[0],
 			top: 0,
 			height: (timeDuration > 120 ? 120 : timeDuration) * this.pixelsPerMin,
 		});
-		const dayStart = this.subtractMinutes(105, timings[timings?.length - 1]);
+		console.log(this.subtractMinutes(105, timings[timings?.length - 1]), 'test');
+		const dayStart = intervals[intervals.length - 1].dayEnd;
 		const startTime = this.myDate(this.timeSlot?.timings?.[0]);
-		const endTime = this.myDate(dayStart);
-		const lastMinutes = getDurationMinutes(startTime, endTime);
+		const dayStartTime = this.myDate(dayStart);
+		const lastMinutes = getDurationMinutes(startTime, dayStartTime);
+		const dayEnd = this.addMinutes(15, timings[timings?.length - 1]);
 
 		grayOutSlot.push({
-			dayStart,
-			dayEnd: timings[timings?.length - 1],
+			dayStart: intervals[intervals.length - 1].dayEnd,
+			dayEnd,
 			top: lastMinutes * this.pixelsPerMin,
-			height: 120 * this.pixelsPerMin,
+			height: getDurationMinutes(dayStartTime, this.myDate(dayEnd)) * this.pixelsPerMin,
 		});
-
 
 		if (intervals?.length > 1) {
 			for (let i = 0; i < intervals.length - 1; i++) {
@@ -541,6 +550,15 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		date.setMinutes(+minute);
 		date.setSeconds(0);
 		const subtractedDate = new Date(date.getTime() - minutes * 60 * 1000);
+		return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
+	}
+	private addMinutes(minutes: number, time: string): string {
+		const date = new Date();
+		const [hour, minute] = time.split(':');
+		date.setHours(+hour);
+		date.setMinutes(+minute);
+		date.setSeconds(0);
+		const subtractedDate = new Date(date.getTime() + minutes * 60 * 1000);
 		return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
 	}
 }
