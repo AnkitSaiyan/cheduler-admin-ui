@@ -1302,6 +1302,10 @@ angular-editor-toolbar button i {
   border: 1px dashed var(--dfm-blue) !important;
 }
 
+.dfm-cursor-grabbing {
+	cursor: grabbing !important;
+}
+
 angular-editor-toolbar button i {
   font-family: FontAwesome !important;
   color: #474d6d !important;

@@ -153,7 +153,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			} else if (this.modalData?.appointment?.startedAt) {
 				const date = new Date(this.modalData?.appointment?.startedAt);
 				const time = this.datePipe.transform(date, 'hh:mm');
-				this.selectedTimeInUTCOrig = time as string;
+				this.selectedTimeInUTCOrig = time + ':00';
 				this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
 			}
 		});

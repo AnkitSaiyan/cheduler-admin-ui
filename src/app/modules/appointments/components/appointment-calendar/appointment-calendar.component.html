@@ -50,6 +50,7 @@
           [selectedDate]="selectedDate"
           [newDate$$]="newDate$$"
           [dataGroupedByDate]="appointmentsGroupedByDate"
+          (dateChange)="changeDate($event)"
         >
         </dfm-calendar-month-view>
       </ng-container>

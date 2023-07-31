@@ -173,7 +173,6 @@ table, th, tr, td {
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
   background: var(--dfm-blue-light);
-  cursor: grabbing;
 
     &.more-btn {
     position: absolute;
@@ -197,9 +196,9 @@ table, th, tr, td {
   display: flex;
   flex-direction: column;
   margin: -8px;
-  
+
   }
-  
+
   .dfm-card-container {
     max-height: 40vh;
     overflow: scroll;
@@ -254,4 +253,10 @@ table, th, tr, td {
   .calender-month-view-day-exam-event-title {
     font-size: 0.6rem !important;
   }
+}
+
+.left,
+.right {
+  min-width: 12px;
+  min-height: 528px;
 }

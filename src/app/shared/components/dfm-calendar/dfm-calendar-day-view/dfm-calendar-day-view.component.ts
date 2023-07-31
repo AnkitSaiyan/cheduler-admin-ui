@@ -90,7 +90,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private currentResizer!: HTMLDivElement;
 	private element!: HTMLDivElement;
 	private minutesInBottom!: number;
-
 	constructor(
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,

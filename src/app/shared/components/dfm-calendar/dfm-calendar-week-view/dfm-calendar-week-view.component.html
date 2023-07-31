@@ -82,6 +82,7 @@
 											'top.px': getTop(groupedData),
 											'height.px': eventHeight
 										}"
+                    (dblclick)="onDblClick($event, eventsContainer, day, false, getTop(groupedData)); $event.stopPropagation()"
 									>
 
 
@@ -99,12 +100,14 @@
                       triggers="click"
                       container="body"
                       *ngFor="let data of groupedData"
-                      [draggable]="!(DateTimeUtils.UTCDateToLocalDate(data.startedAt) | isPreviousDay : true)"
+                      [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)"
                       dfmDragEvent
                       [draggedElData]="data"
                       triggers="click"
                       container="body"
                       [ngbPopover]="eventDetails"
+                      #popover="ngbPopover"
+                      [ngbPopoverDrag]="popover"
                       [autoClose]="'outside'"
                     >
                       <!-- POP OVER -->
