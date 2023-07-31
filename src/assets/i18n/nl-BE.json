@@ -456,14 +456,14 @@
 			"LOADING": "Loaden"
 		}
 	},
-	"BodyType": "Body type",
-	"SelectBodyType": "Select body type",
-	"BodyPart": "Body part",
-	"SelectBodyPart": "Select body part",
-	"Male": "Male",
-	"Female": "Female",
+	"BodyType": "Lichaamstype",
+	"SelectBodyType": "Selecteer lichaamstype",
+	"BodyPart": "Lichaamsdeel",
+	"SelectBodyPart": "Seclecteer lichaamsdeel",
+	"Male": "Mannelijk",
+	"Female": "Vrouwelijk",
 	"Skeleton": "Skeleton",
-	"Body": "Body"
+	"Body": "Lichaam"
 }
 
 
