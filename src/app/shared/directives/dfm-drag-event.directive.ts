@@ -1,18 +1,25 @@
-import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { CalendarType } from '../utils/const';
 @Directive({
 	selector: '[dfmDragEvent]',
 })
-export class DfmDragEventDirective {
+export class DfmDragEventDirective implements OnChanges {
 	constructor(private draggableSvc: DraggableService, private elementRef: ElementRef) {}
 
 	@Input() draggedElData!: any;
 	@Input() calendarType: CalendarType = CalendarType.Week;
 	@Input() headerType!: string;
 
+	ngOnChanges(changes: SimpleChanges): void {
+		if (this.elementRef.nativeElement.draggable) {
+			this.elementRef.nativeElement.classList.add('dfm-cursor-grabbing');
+		}
+	}
+
 	@HostListener('dragstart', ['$event'])
 	onDragStart(event: DragEvent | any) {
+		if (event.currentTarget !== event.target) return;
 		if (this.calendarType === 'day') this.draggableSvc.headerType = this.headerType;
 		this.draggableSvc.dragStartElement = { event, data: this.draggedElData };
 		this.draggableSvc.dragStartElementParentRef = this.elementRef;
@@ -36,15 +43,4 @@ export class DfmDragEventDirective {
 		event.stopPropagation();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
 
