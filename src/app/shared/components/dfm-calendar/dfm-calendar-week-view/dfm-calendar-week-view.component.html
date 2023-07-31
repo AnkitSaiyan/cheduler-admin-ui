@@ -82,6 +82,7 @@
 											'top.px': getTop(groupedData),
 											'height.px': eventHeight
 										}"
+                    (dblclick)="onDblClick($event, eventsContainer, day, false, getTop(groupedData)); $event.stopPropagation()"
 									>
 
 
