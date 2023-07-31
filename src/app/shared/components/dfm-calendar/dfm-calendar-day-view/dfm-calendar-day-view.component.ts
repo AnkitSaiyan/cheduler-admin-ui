@@ -619,7 +619,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 	private extendMinutesInBottom(appointment: Appointment): number {
 		const appointmentEnd = DateTimeUtils.UTCTimeToLocalTimeString(appointment.endedAt.toString().split(' ')[1]).split(':');
-		const calendarEnd = DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot.intervals[0].dayEnd).split(':');
+		const calendarEnd = DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot?.intervals[this.timeSlot.intervals.length - 1].dayEnd).split(':');
 		const appointmentEndInMin = DateTimeUtils.DurationInMinFromHour(+appointmentEnd[0], +appointmentEnd[1]);
 		let calendarEndInMin = DateTimeUtils.DurationInMinFromHour(+calendarEnd[0], +calendarEnd[1]);
 		calendarEndInMin = calendarEndInMin + 120 > 1440 ? 1440 : calendarEndInMin + 120;
