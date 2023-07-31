@@ -443,8 +443,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		setTimeout(() => {
 			this.absenceForm.patchValue({
-				startTime,
-				endTime,
+				startTime: startTime || '00:00',
+				endTime: endTime || '23:55',
 				repeatType: absenceDetails?.repeatType,
 				repeatFrequency:
 					absenceDetails?.isRepeat && absenceDetails?.repeatFrequency && absenceDetails.repeatType

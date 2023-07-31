@@ -60,7 +60,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public downloadDropdownControl = new FormControl('', []);
 
-	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'Referral Note', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
+	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'ReferralNote', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'StartedAt', isSortable: true },
@@ -68,7 +68,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		{ id: '3', title: 'PatientName', isSortable: true },
 		{ id: '4', title: 'Exam', isSortable: true },
 		{ id: '5', title: 'Physician', isSortable: true },
-		{ id: '6', title: 'Referral Note', isSortable: true },
+		{ id: '6', title: 'ReferralNote', isSortable: true },
 		{ id: '7', title: 'AppointmentNo', isSortable: true },
 		{ id: '8', title: 'AppliedOn', isSortable: true },
 		{ id: '9', title: 'Status', isSortable: true },
