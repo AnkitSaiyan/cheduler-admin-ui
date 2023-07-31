@@ -21,9 +21,10 @@ import { getAllDaysOfWeek, getDurationMinutes } from '../../../models/calendar.m
 import { DateTimeUtils } from '../../../utils/date-time.utils';
 import { DestroyableComponent } from '../../destroyable.component';
 
-import { Appointment } from 'src/app/core/models/appointment.model';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { Appointment } from 'src/app/shared/models/appointment.model';
+import { CalendarType } from 'src/app/shared/utils/const';
 // @Pipe({
 //   name: 'calendarEventHeight',
 //   standalone: true
@@ -435,7 +436,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		if (!this.draggableSvc.dragStartElement) return;
 		event.target.classList.remove('drag-area-border');
 		this.draggableSvc.dragEndElementRef = { nativeElement: grayOutArea?.parentElement };
-		this.draggableSvc.dragComplete(event);
+		this.draggableSvc.weekViewDragComplete(event);
 		this.draggableSvc.removeDragShadow({ nativeElement: grayOutArea?.parentElement });
 		this.addAppointment.emit({
 			e: { ...event, offsetY: event.offsetY - this.draggableSvc.dragStartElement.event.offsetY },
