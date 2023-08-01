@@ -370,6 +370,7 @@
 	"EnterPercentage": "Voer percentage toe",
 	"Daily": "Dagelijks",
 	"AddAppointmentConfirmation": "Afspraakbevestiging Toevoegen",
+	"EditAppointmentConfirmation": "Afspraakbevestiging Bewerk",
 	"MoveAppointmentConfirmation": "Afspraakbevestiging Toevoegen",
 	"AreYouSureWantToMakeAppointmentOutsideOperatingHours": "Weet u zeker dat u buiten openingstijden een afspraak wilt maken?",
 	"AreYouSureWantToMoveAppointmentOutsideOperatingHours": "Weet u zeker dat u buiten openingstijden een afspraak wilt maken?",
@@ -465,6 +466,7 @@
 	"Skeleton": "Skeleton",
 	"Body": "Lichaam"
 }
+
 
 
 

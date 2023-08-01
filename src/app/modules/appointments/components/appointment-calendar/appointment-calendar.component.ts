@@ -513,11 +513,12 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		}
 
 		if (isOutside) {
+      const appointmentId = appointment?.id;
 			const res = await firstValueFrom(
 				this.modalSvc.open(ConfirmActionModalComponent, {
 					data: {
-						titleText: 'AddAppointmentConfirmation',
-						bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
+						titleText: appointmentId ? 'EditAppointmentConfirmation' : 'AddAppointmentConfirmation',
+						bodyText: appointmentId ? 'AreYouSureWantToMakeAppointmentOutsideOperatingHours' : 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
 						confirmButtonText: 'Yes',
 					} as ConfirmActionModalData,
 					options: {

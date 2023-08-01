@@ -96,6 +96,12 @@
                                   </div>
 
                                   <div class="d-flex flex-column dfm-gap-4">
+                                    <span class="font-weight-medium dfm-mt-8"> {{"SelectedSlot" | translate}} </span>
+                                    <span class="calendar-comments-text">{{ data.appointment.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }} -
+                                      {{ data.appointment.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
+                                  </div>
+
+                                  <div class="d-flex flex-column dfm-gap-4">
                                     <span class="font-weight-medium dfm-mt-8"> {{"Comments" | translate}} </span>
                                     <span class="calendar-comments-text"> {{ data.appointment?.comments | dashIfNothing }}</span>
                                   </div>
