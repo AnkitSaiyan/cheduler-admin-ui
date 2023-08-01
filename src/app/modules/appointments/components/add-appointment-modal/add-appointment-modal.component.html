@@ -181,7 +181,7 @@
                     'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === slot.start + '-' + slot.end
                   }"
                 >
-                  {{selectedTimeSlot | json }}->  {{ slot.start + '-' + slot.end}} -> {{ slot.start?.slice(0, -3) | dfmUtcToLocal: true }} - {{ slot.end?.slice(0, -3) | dfmUtcToLocal: true }}
+                  {{selectedTimeSlot | json }} -> {{exams?.value | json}}->  {{ slot.start + '-' + slot.end}} -> {{ slot.start?.slice(0, -3) | dfmUtcToLocal: true }} - {{ slot.end?.slice(0, -3) | dfmUtcToLocal: true }}
                 </div>
               </div>
             </div>
