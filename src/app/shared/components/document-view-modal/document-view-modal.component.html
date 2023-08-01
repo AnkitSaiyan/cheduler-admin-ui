@@ -39,10 +39,10 @@
 		</div>
 		<!-- <embed *ngIf="!isImage" class="img-fluid top-pdf" [src]="img | safe : 'resourceUrl'" type="application/pdf" /> -->
 	</div>
-	<div class="bottom-img">
+	<!-- <div class="bottom-img">
 		<div class="bottom-img-item">
-			<img *ngIf="isImage" [src]="img" class="img-fluid" />
-			<span class="img-fluid" *ngIf="!isImage">
+			<img *ngIf="isImage" [src]="img" class="img-fluid" /> -->
+			<!-- <span class="img-fluid" *ngIf="!isImage">
 				<svg
 					width="5vw"
 					version="1.1"
@@ -73,14 +73,14 @@
 						/>
 					</g>
 				</svg>
-			</span>
+			</span> -->
 			<!-- <embed *ngIf="!isImage" class="img-fluid bottom-pdf" [src]="img | safe : 'resourceUrl'" type="application/pdf" /> -->
-			<div class="btns">
+			<!-- <div class="btns"> -->
 				<!-- <span>&#x2913;</span>
 		  <span>&#9654; </span> -->
-			</div>
+			<!-- </div>
 		</div>
-	</div>
+	</div> -->
 	<div class="d-flex dfm-gap-6 justify-content-end">
 	  <dfm-button color="secondary" size="lg" (click)="closeModal()">Close</dfm-button>
 	  <dfm-button color="primary" size="lg" (click)="downloadDocument()">Download</dfm-button>

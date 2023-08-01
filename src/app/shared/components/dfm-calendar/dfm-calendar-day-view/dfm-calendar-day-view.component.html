@@ -129,7 +129,7 @@
                               </div> -->
                               <!-- circle for alert end -->
                               <div class="calender-day-view-event-details-container" (click)="$event.stopPropagation()"
-                                   [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto ': +eventHeight <= 40, 'center': +eventHeight >20 && +eventHeight <=40 }"
+                                   [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto ': +eventHeight <= 40, 'center': +eventContainer.offsetHeight >20 && +eventContainer.offsetHeight <=40 }"
                                    [routerLink]="['/', 'appointment', data.appointment.id, 'view']" queryParamsHandling="merge">
                                 <div class="d-flex dfm-gap-4" >
                                   <!-- <div class="circle-gray-200-24" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname?.length">
@@ -147,7 +147,7 @@
                                       </span>
                                     </ng-template>
 
-                                    <span class="calender-day-view-event-time" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname">
+                                    <span class="calender-day-view-event-time" *ngIf="+eventContainer.offsetHeight > 40 && data?.appointment?.patientFname">
                                       {{ data.appointment.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }} -
                                       {{ data.appointment.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal: true }}
                                     </span>
