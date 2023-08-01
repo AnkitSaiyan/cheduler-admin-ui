@@ -4,7 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'joinWithAnd',
 })
 export class JoinWithAndPipe implements PipeTransform {
-  public transform(value: any[] | undefined, key?: string): string {
+  public transform(value: any[] | undefined, key?: string, key2?: string): string {
     if (!Array.isArray(value)) {
       return '';
     }
@@ -13,23 +13,36 @@ export class JoinWithAndPipe implements PipeTransform {
       return '';
     }
 
-    return this.joinWithAnd(value, key ?? '');
+    return this.joinWithAnd(value, key ?? '', key2 ?? '');
   }
 
-  private joinWithAnd(arr: any[], key: string) {
-    if (arr.length === 1) {
-      return key ? arr[0][key] : arr[0];
-    }
+  private joinWithAnd(arr: any[], key: string, key2?: string) {
     let firsts;
     let last;
-    if (key) {
-      firsts = arr.map((value) => value[key]).slice(0, arr.length - 1);
-      last = arr[arr.length - 1][key];
-    } else {
-      firsts = arr.slice(0, arr.length - 1);
-      last = arr[arr.length - 1];
+    if (key2) {
+      if (arr.length === 1) {
+        return key ? arr[0][key]+' '+arr[0][key2] : arr[0];
+      }
+      if (key) {
+        firsts = arr.map((value) => value[key]+' '+arr[0][key2]).slice(0, arr.length - 1);
+        last = arr[arr.length - 1][key]+' '+arr[0][key2];
+      } else {
+        firsts = arr.slice(0, arr.length - 1);
+        last = arr[arr.length - 1];
+      }
     }
-
+    else {
+      if (arr.length === 1) {
+        return key ? arr[0][key] : arr[0];
+      }
+      if (key) {
+        firsts = arr.map((value) => value[key]).slice(0, arr.length - 1);
+        last = arr[arr.length - 1][key];
+      } else {
+        firsts = arr.slice(0, arr.length - 1);
+        last = arr[arr.length - 1];
+      }
+    }
     return `${firsts.join(', ')} & ${last}`;
   }
 }
