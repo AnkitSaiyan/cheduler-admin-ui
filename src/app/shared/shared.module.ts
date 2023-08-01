@@ -77,6 +77,7 @@ import { DocumentViewModalComponent } from './components/document-view-modal/doc
 import { DfmDragEventDirective } from './directives/dfm-drag-event.directive';
 import { DfmDragAreaEventDirective } from './directives/dfm-drag-area-event.directive';
 import { SafePipe } from './pipes/safe.pipe';
+import { FindSelectedSlotPipe } from './pipes/find-selected-slot.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -128,7 +129,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MultiDropdownPlaceholderNamePipe,
 		SortOrderValidation,
 		DocumentViewModalComponent,
-  	SafePipe,
+		SafePipe,
+		FindSelectedSlotPipe,
 	],
 	imports: [
 		CommonModule,
@@ -181,6 +183,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		JoinWithAndPipe,
 		NameValuePairPipe,
 		ApprovalTypeNamePipe,
+		FindSelectedSlotPipe,
 		SumPipe,
 		RepeatTypeToNamePipe,
 		IsPreviousDayPipe,
