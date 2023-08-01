@@ -375,28 +375,33 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		}
 		this.submitting$$.next(true);
 
-		const { startedAt, ...rest } = this.formValues;
+		const { startedAt, userList, ...rest } = this.formValues;
 		const requestData: AddOutSideOperatingHoursAppointmentRequest = {
 			...rest,
 			startedAt: `${startedAt.year}-${String(startedAt.month).padStart(2, '0')}-${String(startedAt.day).padStart(2, '0')} ${this.selectedTimeInUTC}`,
 			rejectReason: '',
 			fromPatient: false,
+			userList: userList?.length ? userList : [],
 		};
 
-		this.appointmentApiSvc
-			.saveOutSideOperatingHoursAppointment$(requestData, 'add')
-			.pipe(takeUntil(this.destroy$$))
-			.subscribe({
-				next: () => {
-					this.notificationSvc.showNotification(`${Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`);
-					this.submitting$$.next(false);
-					this.modalSvc.close(true);
-				},
-				error: (err) => {
-					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
-					this.submitting$$.next(false);
-				},
-			});
+		let observable: Observable<Appointment>;
+		if (this.modalData?.appointment?.id) {
+			observable = this.appointmentApiSvc.saveOutSideOperatingHoursAppointment$({ ...requestData, id: this.modalData.appointment.id }, 'update');
+		} else {
+			observable = this.appointmentApiSvc.saveOutSideOperatingHoursAppointment$(requestData, 'add');
+		}
+
+		observable.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: () => {
+				this.notificationSvc.showNotification(`${Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`);
+				this.submitting$$.next(false);
+				this.modalSvc.close(true);
+			},
+			error: (err) => {
+				// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+				this.submitting$$.next(false);
+			},
+		});
 	}
 
 	public clearSlotDetails() {
