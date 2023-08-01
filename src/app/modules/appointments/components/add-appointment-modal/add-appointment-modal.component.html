@@ -93,11 +93,11 @@
                 {{ 'RequiredField' | translate }}</span>
             </div>
           </div>
-        </div> 
+        </div>
 
         <div class="d-flex dfm-mb-8 dfm-gap-8 flex-wrap">
           <div class="flex-1 min-w-256">
-            <dfm-input            
+            <dfm-input
             size="md"
             type="number"
             [placeholder]="'enterSocialSecurityNumber' | translate"
@@ -181,7 +181,7 @@
                     'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === slot.start + '-' + slot.end
                   }"
                 >
-                  {{ slot.start?.slice(0, -3) | dfmUtcToLocal: true }} - {{ slot.end?.slice(0, -3) | dfmUtcToLocal: true }}
+                  {{selectedTimeSlot[exams.value[0]]?.slot }}->  {{ slot.start + '-' + slot.end}} -> {{ slot.start?.slice(0, -3) | dfmUtcToLocal: true }} - {{ slot.end?.slice(0, -3) | dfmUtcToLocal: true }}
                 </div>
               </div>
             </div>
