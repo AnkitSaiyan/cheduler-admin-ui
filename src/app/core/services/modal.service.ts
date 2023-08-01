@@ -18,7 +18,7 @@ export class ModalService {
     if (extras?.data) {
       this.dialogData$$.next(extras.data);
     }
-    this.dialogRef = this.ngbModal.open(dialogBox, { keyboard: false, ...extras?.options } ?? { keyboard: false, centered: true });
+    this.dialogRef = this.ngbModal.open(dialogBox, { centered: true, keyboard: false, ...extras?.options });
     return this.dialogRef;
   }
 
