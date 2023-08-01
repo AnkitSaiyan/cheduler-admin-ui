@@ -178,6 +178,7 @@ export interface CreateAppointmentFormValues {
 	examList: number[];
 	comments: string;
 	socialSecurityNumber: number;
+	userList?: string[];
 }
 
 export interface UpdateRadiologistRequestData {
