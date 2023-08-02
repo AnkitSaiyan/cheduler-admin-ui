@@ -130,8 +130,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
 			this.modalData = data;
 
+      this.isOutside = this.modalData.isOutside;
 			if (this.modalData?.event?.offsetY) {
-				this.isOutside = this.modalData.isOutside;
 				let minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
 				if (this.modalData?.limit) {
 					minutes += getDurationMinutes(this.myDate('00:00:00'), this.myDate(this.modalData.limit.min));

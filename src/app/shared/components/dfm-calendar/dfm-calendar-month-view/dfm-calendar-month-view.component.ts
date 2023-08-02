@@ -152,6 +152,7 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 			.open(AddAppointmentModalComponent, {
 				data: {
 					startedAt: new Date(day[2], day[1], day[0]),
+					isOutside: appointment.isOutside,
 					appointment,
 				},
 				options: {

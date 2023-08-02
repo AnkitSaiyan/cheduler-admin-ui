@@ -557,9 +557,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			.closed.pipe(take(1))
 			.subscribe({
 				next: (value) => {
-					if (!value) {
-						this.draggableSvc.revertDrag();
-					}
+          this.draggableSvc.revertDrag(!!value);
 					eventCard?.remove();
 				},
 			});
