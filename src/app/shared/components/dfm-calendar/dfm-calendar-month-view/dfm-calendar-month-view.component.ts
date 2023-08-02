@@ -163,10 +163,8 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 			})
 			.closed.pipe(take(1))
 			.subscribe({
-				next: (value) => {
-					if (!value) {
-						this.draggableSvc.revertDrag();
-					}
+				next: (res) => {
+					this.draggableSvc.revertDrag(!!res);
 				},
 			});
 	}

@@ -1,5 +1,6 @@
 <div #content class="bg-white rounded-4 add-appointment-modal">
   <div class="loading-overlay" *ngIf="(loading$$ | async) === true">
+    <mat-spinner diameter="48"></mat-spinner>
   </div>
 
   <div class="modal-header">

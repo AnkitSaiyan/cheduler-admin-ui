@@ -383,11 +383,10 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const isOutside = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
 
 		if (isOutside) {
-      const appointmentId = appointment?.id;
 			const res = await firstValueFrom(
 				this.modalSvc.open(ConfirmActionModalComponent, {
 					data: {
-						titleText: appointmentId ? 'EditAppointmentConfirmation' : 'AddAppointmentConfirmation',
+						titleText: 'AddAppointmentConfirmation',
 						bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
 						confirmButtonText: 'Yes',
 					} as ConfirmActionModalData,
@@ -424,11 +423,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			})
 			.closed.pipe(take(1))
 			.subscribe({
-				next: (value) => {
-					if (!value) {
-						this.draggableSvc.revertDrag();
-					}
+				next: (res) => {
 					eventCard?.remove();
+					this.draggableSvc.revertDrag(res);
 				},
 			});
 	}
@@ -609,6 +606,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			mouseUpEve = () => {};
 		});
 	}
+
 	private addMinutes(minutes: number, time: string): string {
 		const date = new Date();
 		const [hour, minute] = time.split(':');
