@@ -383,10 +383,11 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const isOutside = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
 
 		if (isOutside) {
+      const appointmentId = appointment?.id;
 			const res = await firstValueFrom(
 				this.modalSvc.open(ConfirmActionModalComponent, {
 					data: {
-						titleText: 'AddAppointmentConfirmation',
+						titleText: appointmentId ? 'EditAppointmentConfirmation' : 'AddAppointmentConfirmation',
 						bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
 						confirmButtonText: 'Yes',
 					} as ConfirmActionModalData,
@@ -423,9 +424,11 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			})
 			.closed.pipe(take(1))
 			.subscribe({
-				next: () => {
+				next: (value) => {
+					if (!value) {
+						this.draggableSvc.revertDrag();
+					}
 					eventCard?.remove();
-					this.draggableSvc.revertDrag();
 				},
 			});
 	}

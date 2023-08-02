@@ -518,7 +518,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				this.modalSvc.open(ConfirmActionModalComponent, {
 					data: {
 						titleText: appointmentId ? 'EditAppointmentConfirmation' : 'AddAppointmentConfirmation',
-						bodyText: appointmentId ? 'AreYouSureWantToMakeAppointmentOutsideOperatingHours' : 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
+						bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
 						confirmButtonText: 'Yes',
 					} as ConfirmActionModalData,
 					options: {
@@ -556,9 +556,11 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			})
 			.closed.pipe(take(1))
 			.subscribe({
-				next: () => {
+				next: (value) => {
+					if (!value) {
+						this.draggableSvc.revertDrag();
+					}
 					eventCard?.remove();
-					this.draggableSvc.revertDrag();
 				},
 			});
 	}

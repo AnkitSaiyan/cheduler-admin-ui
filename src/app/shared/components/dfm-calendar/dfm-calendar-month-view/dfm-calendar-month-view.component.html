@@ -75,7 +75,8 @@
                             </div>
                           </div>
                       </ng-template>
-                      <div class="calender-month-view-day-exam-event-details" [ngbPopover]="appointmentDetails"  triggers="click" [autoClose]="'outside'" container="body"  [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [draggedElData]="data" [ngbPopoverDrag]="popover"  [calendarType]="calendarType.Month">
+                      <div class="calender-month-view-day-exam-event-details" [ngbPopover]="appointmentDetails"  triggers="click" [autoClose]="'outside'" container="body"  [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [draggedElData]="data" [ngbPopoverDrag]="popover" #popover="ngbPopover"
+                        [calendarType]="calendarType.Month">
                         <span class="calender-month-view-day-exam-event-title text-truncate ">
                           {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
                           -
@@ -153,7 +154,8 @@
                   </div>
               </ng-template>
 
-              <div class="calender-month-view-day-exam-event-details" [ngbPopover]="appointmentDetails"  triggers="click" [autoClose]="'outside'" container="body" [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [draggedElData]="data" [calendarType]="calendarType.Month" [ngbPopoverDrag]="popover">
+              <div class="calender-month-view-day-exam-event-details" [ngbPopover]="appointmentDetails"  triggers="click" [autoClose]="'outside'" container="body" [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [draggedElData]="data" [calendarType]="calendarType.Month" #popover="ngbPopover"
+               [ngbPopoverDrag]="popover">
                 <span class="calender-month-view-day-exam-event-title text-truncate ">
                   {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
                   -
