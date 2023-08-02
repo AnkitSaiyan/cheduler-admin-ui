@@ -192,7 +192,7 @@
                         [ngClass]="prioritySlot.priority"
                         [ngStyle]="{
                           'top.px': getPrioritySlotTop(prioritySlot) < 0 ? 0 : getPrioritySlotTop(prioritySlot),
-                          'height.px': eventHeight
+                          'height.px': getPrioritySlotTop(prioritySlot) < 0 ? 0 : eventHeight
                         }"
                       >
                         <div class="priority-slot-percentage" [ngStyle]="{'top': eventHeight>20 ? '12px':'0', 'padding': eventHeight>20 ? '12px':'0'}" >

@@ -367,6 +367,7 @@ h3 {
 	display: flex;
 	z-index: 1;
 	transition: 200ms all linear;
+  overflow: hidden;
 
 	&.small {
 		width: 4px;
@@ -376,7 +377,7 @@ h3 {
 	&.large {
 		left: 0px;
 		right: 0px;
-		width: calc(100% + 12px);
+    width: 100%;
 	}
 
 	&.High {
