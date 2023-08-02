@@ -182,7 +182,7 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 
 	public removeDuplicateData(data: any): Array<any> {
 		const arr: any = [];
-		data.exams?.forEach((user) => {
+		data?.forEach((user) => {
 			if (user?.users.length) arr.push(...user.users);
 		});
 		if (arr.length) return GeneralUtils.removeDuplicateData(arr, 'id');
