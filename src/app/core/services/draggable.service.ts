@@ -98,8 +98,17 @@ export class DraggableService {
 		this.renderer?.removeChild(this.dragStartElementParentRef, this.dragStartElement?.event?.target);
 	}
 
-	public revertDrag() {
-		if (!this.dragStartElementParentReference || !this.dragEndElementRef || !this.dragStartElementDeepCopy) return;
+	public revertDrag(forceRevert = false) {
+		if (forceRevert) {
+			this.dragEndElementRef?.nativeElement?.lastChild?.remove();
+			this.removeRef();
+			return;
+		}
+
+		if (!this.dragStartElementParentReference || !this.dragEndElementRef || !this.dragStartElementDeepCopy) {
+			return;
+		}
+		
 		this.renderer?.appendChild(this.dragStartElementParentReference, this.dragStartElement?.event?.target);
 		this.dragEndElementRef?.nativeElement?.lastChild?.remove();
 		this.removeRef();

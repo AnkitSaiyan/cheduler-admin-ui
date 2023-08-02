@@ -421,6 +421,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			isOutside,
 		});
 	}
+	
 	public editAppointment(event: any) {
 		this.addAppointment.emit({
 			e: { offsetY: event.event.offsetY },

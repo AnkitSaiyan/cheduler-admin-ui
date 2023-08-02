@@ -423,9 +423,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			})
 			.closed.pipe(take(1))
 			.subscribe({
-				next: () => {
+				next: (res) => {
 					eventCard?.remove();
-					this.draggableSvc.revertDrag();
+					this.draggableSvc.revertDrag(res);
 				},
 			});
 	}
@@ -606,6 +606,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			mouseUpEve = () => {};
 		});
 	}
+
 	private addMinutes(minutes: number, time: string): string {
 		const date = new Date();
 		const [hour, minute] = time.split(':');

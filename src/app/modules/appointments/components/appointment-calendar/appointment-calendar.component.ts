@@ -513,7 +513,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		}
 
 		if (isOutside) {
-      const appointmentId = appointment?.id;
+      		const appointmentId = appointment?.id;
 			const res = await firstValueFrom(
 				this.modalSvc.open(ConfirmActionModalComponent, {
 					data: {
