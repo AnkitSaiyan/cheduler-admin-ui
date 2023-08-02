@@ -48,8 +48,8 @@
                                 </div>
                               </div>
                               <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                                <span class="font-weight-medium"> {{ 'Instructions' | translate }} </span>
-                                <span *ngIf="data.exams?.length" class="dfm-instruction">{{ data.exams?.[0].instruction | dashIfNothing}}</span>
+                                <!-- <span class="font-weight-medium"> {{ 'Instructions' | translate }} </span>
+                                <span *ngIf="data.exams?.length" class="dfm-instruction">{{ data.exams?.[0].instruction | dashIfNothing}}</span> -->
                                 <span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
                                 <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
                                 <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
@@ -123,8 +123,8 @@
 
                           <ng-template ngbPanelContent>
                             <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                              <span class="font-weight-medium"> {{ 'Instructions' | translate }} </span>
-                              <span *ngIf="data.exams?.length" class="dfm-instruction">{{ data.exams?.[0].instruction | dashIfNothing}}</span>
+                              <!-- <span class="font-weight-medium"> {{ 'Instructions' | translate }} </span>
+                              <span *ngIf="data.exams?.length" class="dfm-instruction">{{ data.exams?.[0].instruction | dashIfNothing}}</span> -->
                               <span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
                               <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
                               <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
