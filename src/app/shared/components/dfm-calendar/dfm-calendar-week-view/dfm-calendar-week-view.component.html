@@ -236,7 +236,7 @@
 									class="gray-out-area-week"
 									#grayOutArea
 									[ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
-                  					(drop)="dropOnGrayOutArea($event, day, grayOutArea)"
+                  					(drop)="dropOnGrayOutArea($event, day, grayOutArea, item.top)"
 								></div>
 							</ng-container>
 						</ng-container>

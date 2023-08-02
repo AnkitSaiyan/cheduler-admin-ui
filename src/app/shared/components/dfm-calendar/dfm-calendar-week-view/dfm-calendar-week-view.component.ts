@@ -431,7 +431,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		});
 	}
 
-	public dropOnGrayOutArea(event: any, day: any, grayOutArea: any) {
+	public dropOnGrayOutArea(event: any, day: any, grayOutArea: any, top: any) {
 		event.stopPropagation();
 		if (!this.draggableSvc.dragStartElement) return;
 		event.target.classList.remove('drag-area-border');
@@ -439,7 +439,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		this.draggableSvc.weekViewDragComplete(event);
 		this.draggableSvc.removeDragShadow({ nativeElement: grayOutArea?.parentElement });
 		this.addAppointment.emit({
-			e: { ...event, offsetY: event.offsetY - this.draggableSvc.dragStartElement.event.offsetY },
+			e: { ...event, offsetY: event.offsetY - this.draggableSvc.dragStartElement.event.offsetY + top },
 			day,
 			grayOutSlot: this.grayOutSlot$$.value,
 			isOutside: true,
