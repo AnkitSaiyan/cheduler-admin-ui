@@ -478,9 +478,10 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public getDocumentById$(appointmentId: number): Observable<any> {
+	public getDocumentById$(appointmentId: number, isPreview:boolean): Observable<any> {
 		let params = new HttpParams();
 		params = params.append('appointmentId', appointmentId);
+		params = params.append('isPreview', isPreview);
 		return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, { params }).pipe(
 			map((response) => response.data),
 			tap(() => {}),
