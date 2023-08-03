@@ -1,7 +1,7 @@
 <div class="d-flex flex-column dfm-gap-16">
     <section class="content-section-1">
         <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-ex-title-buttons">
-            <dfm-button color="link" size="lg" routerLink="/exam">{{ 'Exam' | translate }} </dfm-button>
+            <dfm-button color="link" size="lg" routerLink="/exam" queryParamsHandling="merge">{{ 'Exam' | translate }} </dfm-button>
 
             <div style="width: 16px; height: 16px" class="h-fit">
                 <dfm-icon name="chevron-right"></dfm-icon>
@@ -9,7 +9,7 @@
 
             <div class="d-flex align-items-center dfm-gap-8"
                  *ngIf="comingFromRoute === 'view' && examDetails$$.value?.id">
-                <dfm-button color="link" size="lg" [routerLink]="['../', 'view']">{{ 'View' | translate }} </dfm-button>
+                <dfm-button color="link" size="lg" [routerLink]="['../', 'view']" queryParamsHandling="merge">{{ 'View' | translate }} </dfm-button>
 
                 <div style="width: 16px; height: 16px" class="h-fit">
                     <dfm-icon name="chevron-right"></dfm-icon>
@@ -17,11 +17,11 @@
             </div>
 
             <dfm-button color="link-gray"
-                        size="lg">{{ comingFromRoute ? ('EditExam' | translate) : ('AddExam' | translate) }} </dfm-button>
+                        size="lg">{{ edit ? ('EditExam' | translate) : ('AddExam' | translate) }} </dfm-button>
         </div>
 
         <div class="dfm-gap-16 ad-ex-action-buttons">
-            <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/exam']"
+            <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/exam']" queryParamsHandling="merge"
             >{{ 'Cancel' | translate }}
             </dfm-button>
             <dfm-button color="primary" size="md" class="text-nowrap" [disabled]="(submitting$$ | async) === true"
@@ -34,12 +34,12 @@
         <div class="hidden dfm-gap-8 align-items-center ad-ex-title-buttons-mv">
             <div class="rounded-circle overflow-hidden">
                 <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left"
-                                 [routerLink]="comingFromRoute === 'view' ? '../view' : '/exam'">
+                                 [routerLink]="comingFromRoute === 'view' ? '../view' : '/exam'" queryParamsHandling="merge">
                 </dfm-button-icon>
             </div>
 
             <dfm-button color="link" size="lg"
-                        routerLink="./"> {{ edit ? ('EditExam' | translate) : ('AddExam' | translate) }} </dfm-button>
+                        routerLink="./" queryParamsHandling="merge"> {{ edit ? ('EditExam' | translate) : ('AddExam' | translate) }} </dfm-button>
         </div>
         <!--  **  -->
     </section>
@@ -65,26 +65,66 @@
                         </div>
                     </div>
 
+
                     <div class="exam-form-mv">
-                        <dfm-input
-                          #expensive
-                          [dfmNumberInput]="expensive"
-                          class="ad-ex-duration"
-                          type="number"
-                          size="md"
-                          placeholder="{{ 'EnterDuration' | translate }}"
-                          label="{{ 'DurationMin' | translate }} *"
-                          formControlName="expensive"
-                          (focusout)="handleExpenseInput($event, expensive, examForm.get('expensive'))"
-                        >
-                        </dfm-input>
+                        <div class="">
+                            <dfm-input-dropdown
+                                    class="flex-1"
+                                    size="md"
+                                    placeholder="{{ 'SelectBodyType'| translate }}"
+                                    label="{{ 'BodyType' | translate }} *"
+                                    formControlName="bodyType"
+                                    [items]="bodyType"
+                            ></dfm-input-dropdown>
+                        </div>
                         <div class="validation-error"
-                             *ngIf="examForm.get('expensive')?.hasError('required') && examForm.get('expensive')?.touched">
+                             *ngIf="examForm.get('roomType')?.hasError('required') && examForm.get('roomType')?.touched">
                             {{ 'RequiredField' | translate }}
                         </div>
-                        <small class="validation-error"
-                               *ngIf="expensive.control.hasError('min')">{{"PleaseEnterAtLeastFiveMin" | translate}}</small>
                     </div>
+                    <div class="exam-form-mv">
+                      <div class="">
+                          <dfm-input-dropdown
+                                  class="flex-1"
+                                  #bodyPartDropdown
+                                  size="md"
+                                  placeholder="{{ 'SelectBodyPart' | translate }}"
+                                  label="{{ 'BodyPart' | translate }} *"
+                                  formControlName="bodyPart"
+                                  [typeToSearch]="true"
+                                  (searchInput)="handleDropdownSearch($event, 'bodyPart')"
+                                  [items]="(filteredBodyPart$$ | async) ?? []"
+                          ></dfm-input-dropdown>
+                      </div>
+                      <div class="validation-error"
+                           *ngIf="examForm.get('roomType')?.hasError('required') && examForm.get('roomType')?.touched">
+                          {{ 'RequiredField' | translate }}
+                      </div>
+                  </div>
+                </div>
+                <div class="d-flex dfm-gap-24 flex-wrap ad-ex-name-expense-room">
+
+                  <div class="exam-form-mv">
+                    <dfm-input
+                      #expensive
+                      [dfmNumberInput]="expensive"
+                      class="ad-ex-duration"
+                      type="number"
+                      size="md"
+                      placeholder="{{ 'EnterDuration' | translate }}"
+                      label="{{ 'DurationMin' | translate }} *"
+                      formControlName="expensive"
+                      (focusout)="handleExpenseInput($event, expensive, examForm.get('expensive'))"
+                    >
+                    </dfm-input>
+                    <div class="validation-error"
+                         *ngIf="examForm.get('expensive')?.hasError('required') && examForm.get('expensive')?.touched">
+                        {{ 'RequiredField' | translate }}
+                    </div>
+                    <small class="validation-error"
+                           *ngIf="expensive.control.hasError('min')">{{"PleaseEnterAtLeastFiveMin" | translate}}</small>
+                </div>
+
                     <div class="exam-form-mv">
                         <div class="">
                             <dfm-input-dropdown

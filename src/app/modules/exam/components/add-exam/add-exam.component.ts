@@ -1,46 +1,50 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {InputComponent, NotificationType} from 'diflexmo-angular-design';
 import {
-    BehaviorSubject,
-    combineLatest,
-    debounceTime,
-    filter,
-    map,
-    of,
-    startWith,
-    Subject,
-    switchMap,
-    take,
-    takeUntil
+	BehaviorSubject,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	first,
+	map,
+	of,
+	startWith,
+	Subject,
+	switchMap,
+	take,
+	takeUntil,
 } from 'rxjs';
-import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {TimeSlot} from '../../../../shared/models/calendar.model';
-import {UserApiService} from '../../../../core/services/user-api.service';
-import {ExamApiService} from '../../../../core/services/exam-api.service';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {RouterStateService} from '../../../../core/services/router-state.service';
-import {COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, Statuses, StatusesNL} from '../../../../shared/utils/const';
-import {PracticeAvailabilityServer} from '../../../../shared/models/practice.model';
-import {Room, RoomsGroupedByType, RoomType} from '../../../../shared/models/rooms.model';
-import {CreateExamRequestData, Exam} from '../../../../shared/models/exam.model';
-import {RoomsApiService} from '../../../../core/services/rooms-api.service';
-import {AvailabilityType, UserType} from '../../../../shared/models/user.model';
-import {toggleControlError} from '../../../../shared/utils/toggleControlError';
-import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
-import {TimeInIntervalPipe} from '../../../../shared/pipes/time-in-interval.pipe';
-import {NameValue} from '../../../../shared/components/search-modal.component';
-import {Status} from '../../../../shared/models/status.model';
-import {Translate} from '../../../../shared/models/translate.model';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {GeneralUtils} from "../../../../shared/utils/general.utils";
-import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { TimeSlot } from '../../../../shared/models/calendar.model';
+import { UserApiService } from '../../../../core/services/user-api.service';
+import { ExamApiService } from '../../../../core/services/exam-api.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { RouterStateService } from '../../../../core/services/router-state.service';
+import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, BodyType, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
+import { Room, RoomsGroupedByType, RoomType } from '../../../../shared/models/rooms.model';
+import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
+import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { AvailabilityType, UserType } from '../../../../shared/models/user.model';
+import { toggleControlError } from '../../../../shared/utils/toggleControlError';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { Status } from '../../../../shared/models/status.model';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { LoaderService } from 'src/app/core/services/loader.service';
 
 interface FormValues {
 	name: string;
 	expensive: number;
+	bodyType: BodyType;
+	bodyPart: string;
 	roomType: RoomType;
 	roomsForExam: {
 		roomId: number;
@@ -83,6 +87,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public filteredSecretaries$$ = new BehaviorSubject<NameValue[]>([]);
 	public filteredMandatoryStaffs$$ = new BehaviorSubject<NameValue[]>([]);
 	public filteredExams$$ = new BehaviorSubject<NameValue[]>([]);
+	public filteredBodyPart$$ = new BehaviorSubject<NameValue[]>([]);
 	public examAvailabilityData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
 	public emitEvents$$ = new Subject<void>();
 	public orderOption$$ = new BehaviorSubject<number>(0);
@@ -97,6 +102,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public readonly interval: number = 5;
 	public examID!: string;
 	public roomTypes: any[] = [];
+	public bodyType: any[] = [];
+	public bodyPart: any[] = [];
 	public timings: NameValue[] = [];
 	public filteredTimings: NameValue[] = [];
 	private selectedLang: string = ENG_BE;
@@ -149,8 +156,24 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	}
 
 	public ngOnInit(): void {
+		this.shareDataSvc
+			.bodyPart$()
+			.pipe(
+				filter(() => this.edit),
+				take(1),
+			)
+			.subscribe({
+				next: (items) => {
+					this.bodyPart = items;
+					this.filteredBodyPart$$.next(items);
+				},
+			});
 		this.roomApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => (this.roomTypes = items),
+		});
+
+		this.shareDataSvc.bodyType$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => (this.bodyType = items),
 		});
 
 		this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
@@ -160,9 +183,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		// this.examForm.valueChanges.subscribe(
 
-		this.examApiSvc.exams$
+		this.examApiSvc.allExams$
 			.pipe(
-				map((exams) => exams.filter((exam) => exam?.status && +exam.id !== (+this.examID ?? 0))),
+				first(),
+				map((exams) => exams.filter((exam) => +exam.id !== (+this.examID ?? 0))),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
@@ -263,7 +287,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		this.route.params
 			.pipe(
-				filter((params) => params[EXAM_ID]),
+				filter((params) => {
+					this.examForm.get('name')?.addAsyncValidators(this.examApiSvc.examValidator(+params[EXAM_ID] || '0'));
+					this.examForm.updateValueAndValidity();
+					return params[EXAM_ID];
+				}),
 				map((params) => params[EXAM_ID]),
 				switchMap((examID) => {
 					if (examID) {
@@ -350,7 +378,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public saveForm(timeSlotFormValues?: { isValid: boolean; values: TimeSlot[] }) {
 		let valid = true;
 
-		if (this.examForm.invalid) {
+		if (!this.examForm.valid) {
 			['name', 'expensive', 'roomType'].forEach((value) => {
 				this.examForm.controls[value].markAsTouched();
 			});
@@ -383,7 +411,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			});
 		}
 
-		if (valid && this.formValues.practiceAvailabilityToggle && timeSlotFormValues && !timeSlotFormValues.isValid) {
+		if (valid && this.formValues.practiceAvailabilityToggle && timeSlotFormValues && !timeSlotFormValues?.isValid) {
 			valid = false;
 		}
 
@@ -425,6 +453,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		const createExamRequestData: CreateExamRequestData = {
 			name: this.formValues.name,
+			bodyType: this.formValues.bodyType,
+			bodyPart: this.formValues.bodyPart,
 			expensive: this.formValues.expensive,
 			info: this.formValues.info ?? null,
 			instructions: this.formValues?.instructions ?? null,
@@ -449,9 +479,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					})),
 			].sort((a, b) => (+a.sortOrder < +b.sortOrder ? -1 : 1)),
 			status: this.formValues.status,
-			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues.values?.length : 0,
+			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues?.values?.length : 0,
 			uncombinables: this.formValues.uncombinables ?? [],
-			practiceAvailability: timeSlotFormValues ? timeSlotFormValues.values : [],
+			practiceAvailability: timeSlotFormValues?.values || [],
 		};
 
 		if (this.examDetails$$.value?.id) {
@@ -478,11 +508,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 						this.submitting$$.next(false);
 
-						this.router.navigate([route], { relativeTo: this.route });
+						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 					},
 					error: (err) => {
 						this.submitting$$.next(false);
-						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 					},
 				});
 		} else {
@@ -501,17 +531,17 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 						this.submitting$$.next(false);
 
-						this.router.navigate([route], { relativeTo: this.route });
+						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 					},
 					error: (err) => {
 						this.submitting$$.next(false);
-						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 					},
 				});
 		}
 	}
 
-	public handleDropdownSearch(searchText: string, type: 'mandatory' | 'radio' | 'nursing' | 'assistant' | 'secretary' | 'exam'): void {
+	public handleDropdownSearch(searchText: string, type: 'mandatory' | 'radio' | 'nursing' | 'assistant' | 'secretary' | 'exam' | 'bodyPart'): void {
 		switch (type) {
 			case 'mandatory':
 				this.filteredMandatoryStaffs$$.next(GeneralUtils.FilterArray(this.mandatoryStaffs, searchText, 'name'));
@@ -531,6 +561,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			case 'exam':
 				this.filteredExams$$.next(GeneralUtils.FilterArray(this.exams, searchText, 'name'));
 				break;
+			case 'bodyPart':
+				this.filteredBodyPart$$.next(GeneralUtils.FilterArray(this.bodyPart, searchText, 'name'));
+				break;
 		}
 	}
 
@@ -548,7 +581,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	private createForm(): void {
 		this.examForm = this.fb.group({
 			name: [null, [Validators.required]],
+			// name: [null, [Validators.required]],
 			expensive: [null, [Validators.required, Validators.min(5)]],
+			bodyType: [null, [Validators.required]],
+			bodyPart: [null, [Validators.required]],
 			roomType: [null, [Validators.required]],
 			roomsForExam: this.fb.array([]),
 			info: [null, []],
@@ -571,6 +607,24 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			.get('roomType')
 			?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
 			.subscribe((roomType) => this.createRoomsForExamFormArray(roomType));
+
+		this.examForm
+			.get('bodyType')
+			?.valueChanges.pipe(
+				debounceTime(0),
+				switchMap((bodyType) => this.shareDataSvc.bodyPart$(bodyType)),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (items) => {
+					this.bodyPart = items;
+					this.filteredBodyPart$$.next(items);
+				},
+			});
+
+		// this.examDetails$$.pipe(filter(Boolean), takeUntil(this.destroy$$)).subscribe((value) => {
+		// 	this.examForm.patchValue({ bodyPart: value.bodyPart });
+		// });
 
 		this.examForm
 			.get('expensive')
@@ -640,6 +694,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		this.examForm.patchValue({
 			name: examDetails?.name,
 			expensive: examDetails?.expensive,
+			bodyPart: examDetails?.bodyPart,
 			practiceAvailabilityToggle: !!examDetails?.practiceAvailability?.length,
 			status: this.edit ? +!!examDetails?.status : Status.Active,
 			info: examDetails?.info,
@@ -655,6 +710,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			mandatoryStaffs: mandatory,
 			uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
 		});
+		this.examForm.patchValue({ bodyType: examDetails?.bodyType }, { onlySelf: true, emitEvent: false });
 
 		if (examDetails?.roomsForExam?.length) {
 			this.roomApiSvc

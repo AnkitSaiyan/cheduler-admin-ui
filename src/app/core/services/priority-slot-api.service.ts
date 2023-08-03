@@ -4,6 +4,8 @@ import {
 	BehaviorSubject,
 	catchError,
 	combineLatest,
+	debounceTime,
+	filter,
 	forkJoin,
 	map,
 	Observable,
@@ -13,6 +15,7 @@ import {
 	switchMap,
 	takeUntil,
 	tap,
+	throttleTime,
 	throwError,
 } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
@@ -47,6 +50,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 	private readonly prioritySlots: string = `${environment.schedulerApiUrl}/priorityslot`;
 	private refreshPrioritySlots$$ = new Subject<void>();
 	private selectedLang$$ = new BehaviorSubject<string>('');
+	private pageNo$$ = new BehaviorSubject<number>(1);
 
 	constructor(
 		private shareDataSvc: ShareDataService,
@@ -63,8 +67,30 @@ export class PrioritySlotApiService extends DestroyableComponent {
 			});
 	}
 
-	public get prioritySlots$(): Observable<PrioritySlot[]> {
-		return combineLatest([this.refreshPrioritySlots$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllPrioritySlots()));
+	public set pageNo(pageNo: number) {
+		this.pageNo$$.next(pageNo);
+	}
+
+	public get pageNo(): number {
+		return this.pageNo$$.value;
+	}
+
+	public get prioritySlots$(): Observable<BaseResponse<PrioritySlot[]>> {
+		return combineLatest([this.refreshPrioritySlots$$.pipe(startWith('')), this.pageNo$$]).pipe(
+			switchMap(([_, pageNo]) => this.fetchAllPrioritySlots(pageNo)),
+		);
+	}
+
+	public getPriorityPercentage$(dates: string[]) {
+		const request = dates.map((date) => {
+			return this.http.get<BaseResponse<NextSlotOpenPercentageData>>(`${this.prioritySlots}/getprioritypercentage?date=${date}`).pipe(
+				throttleTime(200),
+				map((res) => res?.data),
+				catchError((err) => of({})),
+			);
+		});
+
+		return combineLatest(request) as Observable<NextSlotOpenPercentageData[]>;
 	}
 
 	get fileTypes$(): Observable<any[]> {
@@ -85,16 +111,6 @@ export class PrioritySlotApiService extends DestroyableComponent {
 				);
 			}),
 		);
-	}
-
-	public getPriorityPercentage$(dates: string[]) {
-		const request = dates.map((date) => {
-			return this.http
-				.get<BaseResponse<NextSlotOpenPercentageData>>(`${this.prioritySlots}/getprioritypercentage?date=${date}`)
-				.pipe(map((res) => res?.data));
-		});
-
-		return forkJoin(request) as Observable<NextSlotOpenPercentageData[]>;
 	}
 
 	public deletePrioritySlot$(slotID: number): Observable<boolean> {
@@ -185,10 +201,11 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		);
 	}
 
-	private fetchAllPrioritySlots(): Observable<PrioritySlot[]> {
+	private fetchAllPrioritySlots(pageNo: number): Observable<BaseResponse<PrioritySlot[]>> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<PrioritySlot[]>>(`${this.prioritySlots}`).pipe(
-			map((response) => response.data),
+		const params = new HttpParams().append('pageNo', pageNo);
+		return this.http.get<BaseResponse<PrioritySlot[]>>(`${this.prioritySlots}`, { params }).pipe(
+			map((response) => response),
 			tap(() => this.loaderSvc.deactivate()),
 			catchError((e) => {
 				this.loaderSvc.deactivate();
@@ -197,10 +214,71 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		);
 	}
 
+	public openAndClosePrioritySlot(requestData, isClose) {
+		this.loaderSvc.activate();
+		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}/priorityopenclose`, requestData, { params: { isClose } }).pipe(
+			tap(() => {
+				this.loaderSvc.deactivate();
+			}),
+			catchError((e) => {
+				this.loaderSvc.deactivate();
+				return throwError(e);
+			}),
+		);
+	}
+
+	getOpenCloseSlotData(dates) {
+		const currentDate = new Date();
+		currentDate.setHours(0, 0, 0, 0);
+		const request = dates
+			.filter((date) => {
+				const myDate = new Date(date);
+				return myDate.getTime() >= currentDate.getTime();
+			})
+			.map((date) => {
+				const splitDate = date.split('-');
+				const finalDate = `${+splitDate[2]}-${+splitDate[1]}-${splitDate[0]}`;
+				return this.http.get<any>(`${this.prioritySlots}/getpriorityopencloselist?date=${date}`).pipe(
+					throttleTime(200),
+					map((res) => ({ [finalDate]: res?.data })),
+					catchError((err) => of({})),
+				);
+			});
+
+		return combineLatest(request) as Observable<[]>;
+	}
+
 	public refresh(): void {
 		this.refreshPrioritySlots$$.next();
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

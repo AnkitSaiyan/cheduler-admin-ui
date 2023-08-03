@@ -32,9 +32,17 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
 
   private readonly pixelPerMin = 4;
 
-  private eventTop!: number;
+  public eventTop!: number;
 
   private eventHeight!: number;
+
+  public isTop : boolean = true;;
+
+  private minutes! :number;
+  
+  public isExtendOutside: boolean = false;
+
+  public extendableTimeInBottom!: number;
 
   constructor(private fb: FormBuilder, private modalSvc: ModalService, private shareDataSvc: ShareDataService) {
     super();
@@ -46,6 +54,9 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
     this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
       this.extend = data?.extend;
       this.eventContainer = data?.eventContainer;
+      this.isTop = data.position;
+      this.minutes = data?.time;
+      this.extendableTimeInBottom = data?.minutesInBottom
 
       if (this.eventContainer) {
         this.eventTop = +this.eventContainer.style.top.slice(0, -2);
@@ -61,6 +72,14 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
         this.adjustEventCard(+formValues.minutes, formValues.top);
       }
     });
+    if(this.minutes)
+      setTimeout(() => {
+        this.timeChangeForm.patchValue({
+          minutes: this.minutes ?? "",
+          top: this.isTop,
+        })
+      }, 0); 
+    
   }
 
   public override ngOnDestroy() {
@@ -95,17 +114,21 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
   }
 
   private adjustEventCard(minutes: number, isTop: boolean) {
+    this.minutes = minutes;
+    this.isTop = isTop;
+    this.isExtendOutside = false;    
     if (this.extend) {
       if (isTop) {
+        this.isExtendOutside = (this.eventTop - +minutes * this.pixelPerMin) < 0;   
         this.eventContainer.style.top = `${Math.abs(this.eventTop - +minutes * this.pixelPerMin)}px`;
         this.eventContainer.style.height = `${Math.abs(this.eventHeight + +minutes * this.pixelPerMin)}px`;
       } else {
+        this.isExtendOutside = +minutes > this.extendableTimeInBottom;
         this.resetEventCard();
         this.eventContainer.style.height = `${Math.abs(this.eventHeight + +minutes * this.pixelPerMin)}px`;
       }
     } else {
       const calculatedHeight = this.eventHeight - +minutes * this.pixelPerMin;
-
       if (calculatedHeight <= 0) {
         this.timeChangeForm.patchValue({ minutes: this.eventHeight / this.pixelPerMin }, { emitEvent: false });
       }

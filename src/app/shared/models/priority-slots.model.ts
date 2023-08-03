@@ -15,6 +15,7 @@ export interface PrioritySlot {
 	slotStartTime: string;
 	slotEndTime: string;
 	nxtSlotOpenPct: number | null;
+	isClose?: boolean;
 }
 
 export interface NextSlotOpenPercentageData {
@@ -22,5 +23,7 @@ export interface NextSlotOpenPercentageData {
 	mediumPriorityPercentage: number;
 	lowPriorityPercentage: number;
 }
+
+
 
 

@@ -1,8 +1,13 @@
 <div #content class="bg-white rounded-4 add-appointment-modal">
+  <div class="loading-overlay" *ngIf="(loading$$ | async) === true">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
   <div class="modal-header">
     <h5 class="modal-title">{{ 'AddAppointment' | translate }}</h5>
     <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
   </div>
+
 
   <div class="modal-body">
     <form [formGroup]="appointmentForm">
@@ -17,6 +22,7 @@
                 required [value]="currentDate" [min]="currentDate"  [matDatepicker]="picker" readonly class="w-full min-w-128">
               </div>
               <dfm-button-icon
+                *ngIf="!isOutside"
                 color="secondary-gray"
                 size="md"
                 icon="calendar-date"
@@ -60,33 +66,49 @@
           </div>
 
           <div class="d-flex dfm-gap-8 flex-wrap">
+            <div class="flex-1 min-w-228" >
             <dfm-input
               #phone
               [dfmNumberInput]="phone"
-              class="flex-1 min-w-228"
               size="md"
               [placeholder]="'EnterTelephone' | translate"
               [label]="('PatientTelephone' | translate) + ' *'"
               formControlName="patientTel"
             ></dfm-input>
+            <span class="validation-error" *ngIf="!appointmentForm.controls['patientTel'].valid && appointmentForm.controls['patientTel'].touched">
+              {{ 'Please Enter Valid Mobile Number' | translate }}</span>
+          </div>
 
             <div class="d-flex flex-column flex-1 min-w-228">
               <dfm-input
                 class="flex-1 "
                 size="md"
                 [placeholder]="'EnterEmail' | translate"
-                [label]="'PatientEmail' | translate"
+                label="{{ 'PatientEmail' | translate }}*"
                 formControlName="patientEmail"
                 (focusout)="handleEmailInput($event)"
               >
               </dfm-input>
               <small *ngIf="appointmentForm.get('patientEmail')?.hasError('email')" class="validation-error">{{ 'InvalidEmail' | translate }}.</small>
+              <span class="validation-error" *ngIf="appointmentForm.controls['patientEmail'].hasError('required') && appointmentForm.controls['patientEmail'].touched">
+                {{ 'RequiredField' | translate }}</span>
             </div>
           </div>
         </div>
 
-        <div class="flex-1 dfm-mb-8 small-dropdown">
-          <dfm-input-dropdown
+        <div class="d-flex dfm-mb-8 dfm-gap-8 flex-wrap">
+          <div class="flex-1 min-w-256">
+            <dfm-input
+            size="md"
+            type="number"
+            [placeholder]="'enterSocialSecurityNumber' | translate"
+            [label]="('socialSecurityNumber' | translate)"
+            formControlName = "socialSecurityNumber"
+          ></dfm-input>
+          </div>
+          <div class="flex-1 small-dropdown min-w-256">
+            <dfm-input-dropdown
+            class=""
             #exams
             [items]="filteredExamList"
             [multiple]="true"
@@ -96,19 +118,19 @@
             (searchInput)="handleDropdownSearch($event, 'exam')"
             formControlName="examList"
             size="md"
-            label="{{ 'Exams' | translate }} *"
-          >
+            label="{{ 'Exams' | translate }} *">
           </dfm-input-dropdown>
+          </div>
         </div>
 
         <span
           class="font-weight-medium text-sm dfm-my-8"
-          *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false"
+          *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false && !isOutside"
         >
           {{"NoSlotsFoundForSelectedExamsAndTime" | translate}}
         </span>
 
-        <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="loadingSlots$$ | async"> {{"LoadingSlots" | translate}}... </span>
+        <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf="(loadingSlots$$ | async) && !isOutside"> {{"LoadingSlots" | translate}}... </span>
 
         <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="slots?.length">
           <ng-container *ngIf="!isCombinable; else combinable">
@@ -157,7 +179,7 @@
                   *ngFor="let slot of examIdToAppointmentSlots[+exams.value[0]]"
                   (click)="handleSlotSelectionToggle(slot)"
                   [ngClass]="{
-                    'time-slot-selected-text': selectedTimeSlot[exams.value[0]]?.slot === slot.start + '-' + slot.end
+                    'time-slot-selected-text': (selectedTimeSlot | findSelectedSlot : exams.value )?.slot === slot.start + '-' + slot.end
                   }"
                 >
                   {{ slot.start?.slice(0, -3) | dfmUtcToLocal: true }} - {{ slot.end?.slice(0, -3) | dfmUtcToLocal: true }}
@@ -165,6 +187,22 @@
               </div>
             </div>
           </ng-template>
+        </div>
+
+        <div *ngIf="isOutside" class="d-flex dfm-mb-8 dfm-gap-8 small-dropdown">
+          <dfm-input-dropdown
+            class="flex-1"
+            #staffDropDown
+            [items]="filteredStaffs"
+            [multiple]="true"
+            [typeToSearch]="true"
+            (searchInput)="handleDropdownSearch($event, 'staff')"
+            size="md"
+            formControlName="userList"
+            label="{{ 'Staff' | translate }}"
+            [placeholder]="((staffDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
+          >
+          </dfm-input-dropdown>
         </div>
 
         <!--          <div class="d-flex flex-column align-items-center gap-3 overflow-x-auto max-h-128 dfm-mt-12 flex-wrap"-->
@@ -186,7 +224,7 @@
 
 
 
-        <div class="d-flex dfm-gap-16 dfm-mt-8">
+        <div class="d-flex dfm-gap-16 dfm-mt-8 flex-wrap">
           <div class="flex-1 w-full min-w-228" *ngIf="(isDoctorConsentDisable$$ | async) === false">
             <dfm-input-dropdown
               [items]="filteredPhysicianList"
@@ -228,11 +266,11 @@
   <div class="modal-footer">
     <dfm-button color="secondary" size="md" class="cancel-btn" (click)="close(false)">{{ 'Cancel' | translate }}</dfm-button>
     <dfm-button color="secondary" size="sm" class="cancel-btn-mv" (click)="close(false)">{{ 'Cancel' | translate }}</dfm-button>
-    <dfm-button color="primary" size="md" class="add-btn" [disabled]="(submitting$$ | async) === true" (click)="saveAppointment()">{{
-      'Add' | translate
-    }}</dfm-button>
-    <dfm-button color="primary" size="sm" class="add-btn-mv" [disabled]="(submitting$$ | async) === true" (click)="saveAppointment()">{{
-      'Add' | translate
-    }}</dfm-button>
+    <dfm-button color="primary" size="md" class="add-btn" [disabled]="(submitting$$ | async) === true" (click)=" isOutside ? saveOutSideOperatingHoursAppointment() : saveAppointment() ">
+      {{ (modalData?.appointment?.id ? 'Update' : 'Add') | translate }}
+    </dfm-button>
+    <dfm-button color="primary" size="sm" class="add-btn-mv" [disabled]="(submitting$$ | async) === true" (click)="isOutside ? saveOutSideOperatingHoursAppointment() : saveAppointment() ">
+      {{ (modalData?.appointment?.id ? 'Update' : 'Add') | translate }}
+    </dfm-button>
   </div>
 </div>

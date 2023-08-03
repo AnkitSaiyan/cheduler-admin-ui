@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
@@ -26,6 +26,7 @@ import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { UserApiService } from '../../../../core/services/user-api.service';
+import { DownloadService } from "../../../../core/services/download.service";
 
 interface FormValues {
 	name: string;
@@ -114,6 +115,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		private shareDataSvc: ShareDataService,
 		private loaderService: LoaderService,
 		private priorityApiSvc: PrioritySlotApiService,
+		private downloadSvc: DownloadService
 	) {
 		super();
 
@@ -138,7 +140,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	}
 
 	public ngOnInit(): void {
-		this.priorityApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
+		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
+
 		this.modalSvc.dialogData$
 			.pipe(
 				switchMap((modalData) => {
@@ -150,51 +153,56 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				}),
 				take(1),
 			)
-			.subscribe((absence) => {
-				this.absence$$.next(absence);
-				this.createForm(absence);
+			.subscribe({
+				next: (absence) => {
+					this.absence$$.next(absence);
+					this.createForm(absence);
+				}
 			});
 
-		this.roomApiSvc.rooms$
-			.pipe(
-				map((rooms) => rooms.filter((room) => !!room.status)),
-				takeUntil(this.destroy$$),
-			)
-			.subscribe((rooms) => {
-				this.roomList = [...rooms.map((room) => ({ name: room.name, value: room.id.toString() }))];
-				this.filteredRoomList$$.next([...this.roomList]);
+		this.roomApiSvc.allRooms$
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: (rooms) => {
+					this.roomList = [...rooms.map((room) => ({ name: room.name, value: room.id.toString() }))];
+					this.filteredRoomList$$.next([...this.roomList]);
+					this.cdr.detectChanges();
+				}
+			});
+
+		this.userApiSvc.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (staffs) => {
+				this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() }))];
+				this.filteredStaffs$$.next([...this.staffs]);
 				this.cdr.detectChanges();
-			});
-
-		this.userApiSvc.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
-			this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() }))];
-			this.filteredStaffs$$.next([...this.staffs]);
-			this.cdr.detectChanges();
+			}
 		});
 
 		this.shareDataSvc
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe((lang) => {
-				this.selectedLang = lang;
-				// this.columns = [
-				//   Translate.FirstName[lang],
-				//   Translate.LastName[lang],
-				//   Translate.Email[lang],
-				//   Translate.Telephone[lang],
-				//   Translate.Category[lang],
-				//   Translate.Status[lang],
-				//   Translate.Actions[lang],
-				// ];
+			.subscribe({
+				next: (lang) => {
+					this.selectedLang = lang;
+					// this.columns = [
+					//   Translate.FirstName[lang],
+					//   Translate.LastName[lang],
+					//   Translate.Email[lang],
+					//   Translate.Telephone[lang],
+					//   Translate.Category[lang],
+					//   Translate.Status[lang],
+					//   Translate.Actions[lang],
+					// ];
 
-				// eslint-disable-next-line default-case
-				switch (lang) {
-					case ENG_BE:
-						this.statuses = Statuses;
-						break;
-					case DUTCH_BE:
-						this.statuses = StatusesNL;
-						break;
+					// eslint-disable-next-line default-case
+					switch (lang) {
+						case ENG_BE:
+							this.statuses = Statuses;
+							break;
+						case DUTCH_BE:
+							this.statuses = StatusesNL;
+							break;
+					}
 				}
 			});
 	}
@@ -205,7 +213,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 	public closeModal(res: boolean) {
 		this.modalSvc.close(res);
-		// this.ngOnDestroy();
 	}
 
 	public saveAbsence() {
@@ -289,32 +296,33 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			this.absenceApiSvc
 				.updateAbsence(addAbsenceReqData)
 				.pipe(takeUntil(this.destroy$$))
-				.subscribe(
-					() => {
-						this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceUpdated[this.selectedLang]);
+				.subscribe({
+					next:
+						() => {
+							this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceUpdated[this.selectedLang]);
+							this.submitting$$.next(false);
+							this.closeModal(true);
+						},
+					error: (err) => {
+						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
-						this.closeModal(true);
 					},
-					(err) => {
-						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-						this.submitting$$.next(false);
-					},
-				);
+				});
 		} else {
 			this.absenceApiSvc
 				.addNewAbsence$(addAbsenceReqData)
 				.pipe(takeUntil(this.destroy$$))
-				.subscribe(
-					() => {
+				.subscribe({
+					next: () => {
 						this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceAdded[this.selectedLang]);
 						this.submitting$$.next(false);
 						this.closeModal(true);
 					},
-					(err) => {
-						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+					error: (err) => {
+						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
 					},
-				);
+				});
 		}
 	}
 
@@ -435,8 +443,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		setTimeout(() => {
 			this.absenceForm.patchValue({
-				startTime,
-				endTime,
+				startTime: startTime || '00:00',
+				endTime: endTime || '23:55',
 				repeatType: absenceDetails?.repeatType,
 				repeatFrequency:
 					absenceDetails?.isRepeat && absenceDetails?.repeatFrequency && absenceDetails.repeatType
@@ -453,13 +461,15 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		this.absenceForm
 			.get('repeatType')
 			?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
-			.subscribe(() => {
-				if (!absenceDetails) {
-					this.absenceForm.get('repeatDays')?.setValue(null);
-				}
-				this.updateRepeatFrequency();
-				if (this.repeatFrequency && (!this.absence$$.value || !Object.keys(this.absence$$.value)?.length)) {
-					this.repeatFrequency.type = 'number';
+			.subscribe({
+				next: () => {
+					if (!absenceDetails) {
+						this.absenceForm.get('repeatDays')?.setValue(null);
+					}
+					this.updateRepeatFrequency();
+					if (this.repeatFrequency && (!this.absence$$.value || !Object.keys(this.absence$$.value)?.length)) {
+						this.repeatFrequency.type = 'number';
+					}
 				}
 			});
 
@@ -468,8 +478,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			this.absenceForm.get('roomList')?.valueChanges.pipe(startWith('')),
 		])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
-			.subscribe(() => {
-				this.isAbsenceStaffRoomInvalid.next(false);
+			.subscribe({
+				next: () => {
+					this.isAbsenceStaffRoomInvalid.next(false);
+				}
 			});
 
 		combineLatest([
@@ -479,8 +491,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			this.absenceForm.get('endedAt')?.valueChanges.pipe(startWith('')),
 		])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
-			.subscribe(() => {
-				this.handleTimeChange();
+			.subscribe({
+				next: () => {
+					this.handleTimeChange();
+				}
 			});
 	}
 

@@ -78,7 +78,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
 			});
 		});
 
-		this.examApiSvc.exams$
+		this.examApiSvc.allExams$
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((exams) => exams.forEach((exam) => this.examIdToNameMap.set(+exam.id, exam.name)));
 
@@ -170,7 +170,7 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
 			)
 			.subscribe(() => {
 				this.notificationSvc.showNotification(Translate.SuccessMessage.RoomsDeleted[this.selectedLang]);
-				this.router.navigate(['/', 'room']);
+				this.router.navigate(['/', 'room'], { queryParamsHandling: 'merge' });
 			});
 	}
 

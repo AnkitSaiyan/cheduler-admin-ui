@@ -1,46 +1,51 @@
 <div class="dfm-p-16 d-flex flex-column h-100">
-  <section class="d-flex align-items-center dfm-mb-16">
-    <header class="d-flex align-items-center dfm-gap-8">
-      <div class="dfm-button-gray-400">
-        <dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
-      </div>
-      <span class="font-weight-medium">{{ 'TodaysAppointments' | translate }}</span>
-    </header>
-  </section>
+	<section class="d-flex align-items-center dfm-mb-16">
+		<header class="d-flex align-items-center dfm-gap-8">
+			<div class="dfm-button-gray-400">
+				<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
+			</div>
+			<span class="font-weight-medium">{{ 'TodaysAppointments' | translate }}</span>
+		</header>
+	</section>
 
-  <section class="chart-wrapper align-self-center dfm-mb-16" *ngIf="noDataFound">
-    <canvas
-      baseChart
-      [type]="'doughnut'"
-      [data]="doughnutChartConfig"
-      [labels]="doughnutChartLabels"
-      [options]="doughnutChartOptions"
-      [plugins]="doughnutChartPlugins"
-      [legend]="doughnutChartLegend"
-    >
-    </canvas>
-  </section>
+	<section class="chart-wrapper align-self-center dfm-mb-16" *ngIf="noDataFound">
+		<canvas
+			baseChart
+			[type]="'doughnut'"
+			[data]="doughnutChartConfig"
+			[labels]="doughnutChartLabels"
+			[options]="doughnutChartOptions"
+			[plugins]="doughnutChartPlugins"
+			[legend]="doughnutChartLegend"
+		>
+		</canvas>
+	</section>
 
-  <section class="d-flex flex-column text-sm dfm-gap-4 dfm-ms-4" *ngIf="noDataFound">
-    <div class="d-flex dfm-gap-8">
-      <span class="font-weight-medium">{{ appointmentDetails['Total'] ? appointmentDetails['Total'] : 0 }}</span>
-      <span class="dfm-text-main-400">{{ 'Total' | translate }}</span>
-    </div>
-    <div class="d-flex dfm-gap-8">
-      <span class="font-weight-medium">{{ appointmentDetails['Pending'] ? appointmentDetails['Pending'] : 0 }}</span>
-      <span class="dfm-text-main-400">{{ 'New' | translate }}</span>
-    </div>
-    <div class="d-flex dfm-gap-8">
-      <span class="font-weight-medium">{{ appointmentDetails['Approved'] ? appointmentDetails['Approved'] : 0 }}</span>
-      <span class="dfm-text-main-400">{{ 'Confirmed' | translate }}</span>
-    </div>
-  </section>
+	<section class="d-flex flex-column text-sm dfm-gap-4 dfm-ms-4" *ngIf="noDataFound">
+		<div class="d-flex dfm-gap-8" *ngIf="appointmentDetails['Total']">
+			<span class="font-weight-medium">{{ appointmentDetails['Total'] ? appointmentDetails['Total'] : 0 }}</span>
+			<span class="dfm-text-main-400">{{ 'Total' | translate }}</span>
+		</div>
+		<div class="d-flex dfm-gap-8" *ngIf="appointmentDetails['Pending']">
+			<span class="font-weight-medium">{{ appointmentDetails['Pending'] ? appointmentDetails['Pending'] : 0 }}</span>
+			<span class="dfm-text-main-400">{{ 'New' | translate }}</span>
+		</div>
+		<div class="d-flex dfm-gap-8" *ngIf="appointmentDetails['Approved']">
+			<span class="font-weight-medium">{{ appointmentDetails['Approved'] ? appointmentDetails['Approved'] : 0 }}</span>
+			<span class="dfm-text-main-400">{{ 'Confirmed' | translate }}</span>
+		</div>
+		<div class="d-flex dfm-gap-8" *ngIf="appointmentDetails['Cancelled']">
+			<span class="font-weight-medium">{{ appointmentDetails['Cancelled'] ? appointmentDetails['Cancelled'] : 0 }}</span>
+			<span class="dfm-text-main-400">{{ 'Cancelled' | translate }}</span>
+		</div>
+	</section>
 
-  <section class="chart-wrapper align-self-center dfm-mb-16 no-data-found" *ngIf="!noDataFound">
-    <div class="d-flex dfm-gap-8">
-      <span class="dfm-text-main-400">{{'NoAppointmentFound'| translate }}</span>
-    </div>
-  </section>
+	<section class="chart-wrapper align-self-center dfm-mb-16 no-data-found" *ngIf="!noDataFound">
+		<div class="d-flex dfm-gap-8">
+			<span class="dfm-text-main-400">{{ 'NoAppointmentFound' | translate }}</span>
+		</div>
+	</section>
 
-  <div class="d-flex flex-column align-items-center dfm-gap-4"></div>
+	<div class="d-flex flex-column align-items-center dfm-gap-4"></div>
 </div>
+

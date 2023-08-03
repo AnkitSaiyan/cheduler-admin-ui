@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnIn
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
@@ -14,302 +14,388 @@ import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../..
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { Exam } from '../../../../shared/models/exam.model';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { TranslateService } from '@ngx-translate/core';
 import { Permission } from 'src/app/shared/models/permission.model';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
-// import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { PaginationData } from "../../../../shared/models/base-response.model";
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
+
+const ColumnIdToKey = {
+  1: 'name',
+  2: 'expensive',
+  3: 'status'
+}
 
 @Component({
-  selector: 'dfm-exam-list',
-  templateUrl: './exam-list.component.html',
-  styleUrls: ['./exam-list.component.scss'],
+	selector: 'dfm-exam-list',
+	templateUrl: './exam-list.component.html',
+	styleUrls: ['./exam-list.component.scss'],
 })
 export class ExamListComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  @HostListener('document:click', ['$event']) onClick() {
-    this.toggleMenu(true);
-  }
+	@HostListener('document:click', ['$event']) onClick() {
+		this.toggleMenu(true);
+	}
 
-  @ViewChild('showMoreButtonIcon')
-  private showMoreBtn!: ElementRef;
+	@ViewChild('showMoreButtonIcon')
+	private showMoreBtn!: ElementRef;
 
-  @ViewChild('tableWrapper')
-  private tableWrapper!: ElementRef;
+	@ViewChild('tableWrapper')
+	private tableWrapper!: ElementRef;
 
-  public searchControl = new FormControl('', []);
+	private exams$$: BehaviorSubject<Exam[]>;
 
-  public downloadDropdownControl = new FormControl('', []);
+	public filteredExams$$: BehaviorSubject<Exam[]>;
 
-  public columns: string[] = ['Name', 'Expensive', 'Status', 'Actions'];
+	public clearSelected$$ = new Subject<void>();
 
-  public downloadItems: DownloadType[] = [];
+	public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
 
-  private exams$$: BehaviorSubject<any[]>;
+	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
 
-  public filteredExams$$: BehaviorSubject<any[]>;
+	public searchControl = new FormControl('', []);
 
-  public clearSelected$$ = new Subject<void>();
+	public downloadDropdownControl = new FormControl('', []);
 
-  public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
+	private columns: string[] = ['Name', 'Expensive', 'BodyType', 'BodyPart', 'Status', 'Actions'];
 
-  public selectedExamIDs: string[] = [];
+	public tableHeaders: DfmTableHeader[] = [
+		{ id: '1', title: 'Name', isSortable: true },
+		{ id: '2', title: 'Expensive', isSortable: true },
+		{ id: '3', title: 'BodyType', isSortable: true },
+		{ id: '4', title: 'BodyPart', isSortable: true },
+		{ id: '5', title: 'Status', isSortable: true },
+	];
 
-  public statusType = getStatusEnum();
+	public downloadItems: DownloadType[] = [];
 
-  public clipboardData: string = '';
+	public selectedExamIDs: string[] = [];
 
-  private selectedLang: string = ENG_BE;
+	public statusType = getStatusEnum();
 
-  public statuses = Statuses;
+	public clipboardData: string = '';
 
-  public readonly Permission = Permission;
+	private selectedLang: string = ENG_BE;
 
-  constructor(
-    private examApiSvc: ExamApiService,
-    private notificationSvc: NotificationDataService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private modalSvc: ModalService,
-    private downloadSvc: DownloadService,
-    private cdr: ChangeDetectorRef,
-    private shareDataService: ShareDataService,
-    private translate: TranslateService,
-    public permissionSvc: PermissionService,
-  ) {
-    super();
-    this.exams$$ = new BehaviorSubject<any[]>([]);
-    this.filteredExams$$ = new BehaviorSubject<any[]>([]);
-  }
+	public statuses = Statuses;
 
-  public ngOnInit(): void {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (items) => (this.downloadItems = items)
-    });
+	public readonly Permission = Permission;
 
-    this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (exams) => {
-        this.exams$$.next(exams);
-        this.filteredExams$$.next(exams);
-      }
-    });
+	private paginationData: PaginationData | undefined;
 
-    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
-      next: (searchText) => {
-        if (searchText) {
-          this.handleSearch(searchText.toLowerCase());
-        } else {
-          this.filteredExams$$.next([...this.exams$$.value]);
-        }
-      }
-    });
+	constructor(
+		private examApiSvc: ExamApiService,
+		private notificationSvc: NotificationDataService,
+		private router: Router,
+		private route: ActivatedRoute,
+		private modalSvc: ModalService,
+		private downloadSvc: DownloadService,
+		private cdr: ChangeDetectorRef,
+		private shareDataService: ShareDataService,
+		private translate: TranslateService,
+		public permissionSvc: PermissionService,
+	) {
+		super();
+		this.exams$$ = new BehaviorSubject<Exam[]>([]);
+		this.filteredExams$$ = new BehaviorSubject<Exam[]>([]);
+		this.examApiSvc.pageNo = 1;
+		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: () => {
+				if (
+					this.permissionSvc.isPermitted([Permission.UpdateExams, Permission.DeleteExams]) &&
+					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+				) {
+					this.tableHeaders = [
+						...this.tableHeaders,
+						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+					];
+				}
+			},
+		});
+	}
 
-    this.downloadDropdownControl.valueChanges
-      .pipe(
-        filter((value) => !!value),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe({
-        next: (downloadAs) => {
-          if (!this.filteredExams$$.value.length) {
-            this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
-            this.clearDownloadDropdown();
-            return;
-          }
+	public ngOnInit(): void {
+		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => (this.downloadItems = items),
+		});
 
-          this.downloadSvc.downloadJsonAs(
-            downloadAs as DownloadAsType,
-            this.columns.slice(0, -1),
-            this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), Translate[StatusToName[+ex.status]][this.selectedLang]]),
-            'exams',
-          );
+		this.filteredExams$$.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
+			this.tableData$$.next({
+				items: value,
+				isInitialLoading: false,
+				isLoading: false,
+				isLoadingMore: false,
+			});
+		});
 
-          if (downloadAs !== 'PRINT') {
-            this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
-          }
-          this.clearDownloadDropdown();
-        }
-      });
+		this.exams$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (exams) => this.handleSearch(this.searchControl.value ?? ''),
+		});
 
-    this.afterBannerClosed$$
-      .pipe(
-        map((value) => {
-          if (value?.proceed) {
-            return [...this.selectedExamIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
-          }
+		this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (examsBase) => {
+				if (this.paginationData && this.paginationData.pageNo < examsBase.metaData.pagination.pageNo) {
+					this.exams$$.next([...this.exams$$.value, ...examsBase.data]);
+				} else {
+					this.exams$$.next(examsBase.data);
+				}
+				this.paginationData = examsBase.metaData.pagination;
+			},
+			error: (e) => {
+				this.exams$$.next([]);
+			},
+		});
 
-          return [];
-        }),
-        filter((changes) => {
-          if (!changes.length) {
-            this.clearSelected$$.next();
-          }
-          return !!changes.length;
-        }),
-        switchMap((changes) => this.examApiSvc.changeExamStatus$(changes)),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe({
-        next: () => {
-          this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
-          this.clearSelected$$.next();
-        }
-      });
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+			this.searchControl.setValue(search);
+			if (search) {
+				this.handleSearch(search.toLowerCase());
+			} else {
+				this.filteredExams$$.next([...this.exams$$.value]);
+			}
+		});
 
-    combineLatest([this.shareDataService.getLanguage$(), this.permissionSvc.permissionType$])
-			.pipe(takeUntil(this.destroy$$))
+		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+			next: (searchText) => {
+				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
+			},
+		});
+
+		this.downloadDropdownControl.valueChanges
+			.pipe(
+				filter((value) => !!value),
+				takeUntil(this.destroy$$),
+			)
 			.subscribe({
-				next: ([lang]) => {
-					this.selectedLang = lang;
-					this.columns = [Translate.Name[lang], Translate.Expensive[lang], Translate.Status[lang]];
-					if (this.permissionSvc.isPermitted([Permission.UpdateExams, Permission.DeleteExams])) {
-						this.columns = [...this.columns, Translate.Actions[lang]];
+				next: (downloadAs) => {
+					if (!this.filteredExams$$.value.length) {
+						this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+						this.clearDownloadDropdown();
+						return;
 					}
 
-					// eslint-disable-next-line default-case
+					this.downloadSvc.downloadJsonAs(
+						downloadAs as DownloadAsType,
+						this.tableHeaders.map(({ title }) => title).slice(0, -1),
+						this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), Translate[StatusToName[+ex.status]][this.selectedLang]]),
+						'exams',
+					);
+
+					if (downloadAs !== 'PRINT') {
+						this.notificationSvc.showNotification(`${Translate.DownloadSuccess(downloadAs)[this.selectedLang]}`);
+					}
+					this.clearDownloadDropdown();
+				},
+			});
+
+		this.afterBannerClosed$$
+			.pipe(
+				map((value) => {
+					if (value?.proceed) {
+						return [...this.selectedExamIDs.map((id) => ({ id: +id, status: value.newStatus as number }))];
+					}
+
+					return [];
+				}),
+				filter((changes) => {
+					if (!changes.length) {
+						this.clearSelected$$.next();
+					}
+					return !!changes.length;
+				}),
+				switchMap((changes) => this.examApiSvc.changeExamStatus$(changes)),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: () => {
+					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
+					this.clearSelected$$.next();
+				},
+			});
+
+		this.shareDataService
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: (lang) => {
+					this.selectedLang = lang;
+
+					this.tableHeaders = this.tableHeaders.map((h, i) => ({
+						...h,
+						title: Translate[this.columns[i]][lang],
+					}));
+
 					switch (lang) {
 						case ENG_BE:
 							this.statuses = Statuses;
 							break;
-						case DUTCH_BE:
+						default:
 							this.statuses = StatusesNL;
-							break;
 					}
 				},
 			});
-  }
+	}
 
-  public override ngOnDestroy() {
-    super.ngOnDestroy();
-  }
+	public override ngOnDestroy() {
+		super.ngOnDestroy();
+	}
 
-  public handleCheckboxSelection(selected: string[]) {
-    this.toggleMenu(true);
-    this.selectedExamIDs = [...selected];
-  }
+	public handleCheckboxSelection(selected: string[]) {
+		this.toggleMenu(true);
+		this.selectedExamIDs = [...selected];
+	}
 
-  private handleSearch(searchText: string): void {
-    this.filteredExams$$.next([
-      ...this.exams$$.value.filter((exam) => {
-        let status: any;
-        if (exam.status === 1) status = this.translate.instant('Active');
-        if (exam.status === 0) status = this.translate.instant('Inactive');
-        return (
-          exam.name?.toLowerCase()?.includes(searchText) ||
-          exam.lastname?.toLowerCase()?.includes(searchText) ||
-          exam.email?.toLowerCase()?.includes(searchText) ||
-          status?.toLowerCase()?.startsWith(searchText)
-        );
-      }),
-    ]);
-  }
+	private handleSearch(searchText: string): void {
+		this.filteredExams$$.next([
+			...this.exams$$.value.filter((exam) => {
+				let status: string;
 
-  public changeStatus(changes: ChangeStatusRequestData[]) {
-    this.examApiSvc
-      .changeExamStatus$(changes)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang])
-      });
-  }
+				if (exam.status === 1) {
+					status = this.translate.instant('Active');
+				} else {
+					status = this.translate.instant('Inactive');
+				}
 
-  public deleteExam(id: number) {
-    const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
-      data: {
-        titleText: 'Confirmation',
-        bodyText: 'AreYouSureYouWantToDeleteThisExam',
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-      } as ConfirmActionModalData,
-    });
+				return exam.name?.toLowerCase()?.includes(searchText) || status?.toLowerCase()?.startsWith(searchText);
+			}),
+		]);
+	}
 
-    modalRef.closed
-      .pipe(
-        filter((res: boolean) => res),
-        switchMap(() => this.examApiSvc.deleteExam(id)),
-        take(1),
-      )
-      .subscribe({
-        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang])
-      });
-  }
+	public changeStatus(changes: ChangeStatusRequestData[]) {
+		this.examApiSvc
+			.changeExamStatus$(changes)
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
+			});
+	}
 
-  public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
-    this.afterBannerClosed$$.next(e);
-  }
+	public deleteExam(id: number) {
+		const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
+			data: {
+				titleText: 'Confirmation',
+				bodyText: 'AreYouSureYouWantToDeleteThisExam',
+				confirmButtonText: 'Delete',
+				cancelButtonText: 'Cancel',
+			} as ConfirmActionModalData,
+		});
 
-  public copyToClipboard() {
-    try {
-      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+		modalRef.closed
+			.pipe(
+				filter((res: boolean) => res),
+				switchMap(() => this.examApiSvc.deleteExam(id)),
+				take(1),
+			)
+			.subscribe({
+				next: () => {
+					this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang]);
+					// filtering out deleted exam
+					this.exams$$.next([...this.exams$$.value.filter((exam) => +exam.id !== +id)]);
+				},
+			});
+	}
 
-      this.filteredExams$$.value.forEach((exam: Exam) => {
-        dataString += `${exam.name}\t${exam.expensive}\t${StatusToName[exam.status]}\n`;
-      });
+	public handleConfirmation(e: { proceed: boolean; newStatus: Status | null }) {
+		this.afterBannerClosed$$.next(e);
+	}
 
-      this.clipboardData = dataString;
+	public copyToClipboard() {
+		try {
+			let dataString = `${this.tableHeaders
+				.map(({ title }) => title)
+				.slice(0, -1)
+				.join('\t')}\n`;
+			
+				if (!this.filteredExams$$.value.length) {
+					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+					this.clipboardData = '';
+					return;
+				}
 
-      this.cdr.detectChanges();
-      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
-    } catch (e) {
-      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
-      this.clipboardData = '';
-    }
-  }
+			this.filteredExams$$.value.forEach((exam: Exam) => {
+				dataString += `${exam.name}\t${exam.expensive}\t${StatusToName[exam.status]}\n`;
+			});
 
-  public navigateToViewExam(e: TableItem) {
-    if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
-    }
-  }
+			this.clipboardData = dataString;
 
-  public toggleMenu(reset = false) {
-    const icon = document.querySelector('.ex-li-plus-btn-icon');
-    if (icon) {
-      if (reset) {
-        icon.classList.add('rotate-z-0');
-        icon.classList.remove('rotate-z-45');
-      } else {
-        icon.classList.toggle('rotate-z-45');
-        icon.classList.toggle('rotate-z-0');
-      }
-    }
-  }
+			this.cdr.detectChanges();
+			this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
+		} catch (e) {
+			this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
+			this.clipboardData = '';
+		}
+	}
 
-  public openSearchModal() {
-    this.toggleMenu();
+	public navigateToViewExam(e: TableItem) {
+		if (e?.id) {
+			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route, queryParamsHandling: 'preserve' });
+		}
+	}
 
-    const modalRef = this.modalSvc.open(SearchModalComponent, {
-      options: { fullscreen: true },
-      data: {
-        items: [
-          ...this.exams$$.value.map(({ id, firstname, lastname, email, status }) => ({
-            name: `${firstname} ${lastname}`,
-            description: email,
-            key: `${firstname} ${lastname} ${email} ${Statuses[+status]}`,
-            value: id,
-          })),
-        ],
-        placeHolder: 'Search by Exam Name',
-      } as SearchModalData,
-    });
+	public toggleMenu(reset = false) {
+		const icon = document.querySelector('.ex-li-plus-btn-icon');
+		if (icon) {
+			if (reset) {
+				icon.classList.add('rotate-z-0');
+				icon.classList.remove('rotate-z-45');
+			} else {
+				icon.classList.toggle('rotate-z-45');
+				icon.classList.toggle('rotate-z-0');
+			}
+		}
+	}
 
-    modalRef.closed.pipe(take(1)).subscribe((result) => this.filterExams(result));
-  }
+	public openSearchModal() {
+		this.toggleMenu();
 
-  private filterExams(result: { name: string; value: string }[]) {
-    if (!result?.length) {
-      this.filteredExams$$.next([...this.exams$$.value]);
-      return;
-    }
+		const modalRef = this.modalSvc.open(SearchModalComponent, {
+			options: { fullscreen: true },
+			data: {
+				items: [
+					...this.exams$$.value.map(({ id, name, status }) => ({
+						name: `${name}`,
+						key: `${name} ${Statuses[+status]}`,
+						value: id,
+					})),
+				],
+				placeHolder: 'Search by Exam Name',
+			} as SearchModalData,
+		});
 
-    const ids = new Set<number>();
-    result.forEach((item) => ids.add(+item.value));
-    this.filteredExams$$.next([...this.exams$$.value.filter((exam: Exam) => ids.has(+exam.id))]);
-  }
-  private clearDownloadDropdown() {
-    setTimeout(() => {
-      this.downloadDropdownControl.setValue('');
-    }, 0);
-  }
+		modalRef.closed.pipe(take(1)).subscribe((result) => this.filterExams(result));
+	}
+
+	private filterExams(result: { name: string; value: string }[]) {
+		if (!result?.length) {
+			this.filteredExams$$.next([...this.exams$$.value]);
+			return;
+		}
+
+		const ids = new Set<number>();
+		result.forEach((item) => ids.add(+item.value));
+		this.filteredExams$$.next([...this.exams$$.value.filter((exam: Exam) => ids.has(+exam.id))]);
+	}
+
+	private clearDownloadDropdown(): void {
+		const timeout = setTimeout(() => {
+			this.downloadDropdownControl.setValue('');
+			clearTimeout(timeout);
+		}, 0);
+	}
+
+	public onScroll(e: undefined): void {
+		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+			this.examApiSvc.pageNo = this.paginationData.pageNo + 1;
+			this.tableData$$.value.isLoadingMore = true;
+		}
+	}
+
+	public onSort(e: DfmTableHeader): void {
+		this.filteredExams$$.next(GeneralUtils.SortArray(this.filteredExams$$.value, e.sort, ColumnIdToKey[e.id]));
+	}
 }

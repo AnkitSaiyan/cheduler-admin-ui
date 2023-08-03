@@ -52,7 +52,7 @@
 						></dfm-button-icon>
 					</div>
 
-					<div class="dfm-dropdown-border-none max-w-152 min-w-152">
+					<div class="dfm-dropdown-border-none download-dropdown-max-w-152">
 						<dfm-input-dropdown
 							[items]="downloadItems"
 							[showDescription]="false"
@@ -109,13 +109,13 @@
           </div> -->
 				</div>
 
-				<dfm-button-icon
+				<!-- <dfm-button-icon
 					color="secondary-gray"
 					size="md"
 					icon="calendar-date"
 					routerLink="/appointment"
 					[state]="{ comingFromRoute: 'dashboard' }"
-				></dfm-button-icon>
+				></dfm-button-icon> -->
 				<dfm-button
 					color="primary"
 					size="md"
@@ -151,6 +151,7 @@
 					<dfm-table-body-cell>{{ item?.patientFname | titlecase }} {{ item?.patientLname }}</dfm-table-body-cell>
 					<dfm-table-body-cell>{{ item?.exams | joinWithAnd : 'name' | dashIfNothing }}</dfm-table-body-cell>
 					<dfm-table-body-cell>{{ item?.doctor | titlecase | dashIfNothing }}</dfm-table-body-cell>
+					<dfm-table-body-cell>{{!item.documentCount ? '—':''}}  <span *ngIf="item.documentCount" class="view-link"(click)="$event.stopPropagation(); openDocumentModal(item.id)" >View</span></dfm-table-body-cell>
 					<dfm-table-body-cell>{{ item?.id }}</dfm-table-body-cell>
 					<dfm-table-body-cell>{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
 					<!-- <dfm-table-body-cell>
@@ -228,4 +229,3 @@
 		(confirmationEvent)="handleConfirmation($event)"
 	></dfm-confirm-status-change-banner>
 </div>
-

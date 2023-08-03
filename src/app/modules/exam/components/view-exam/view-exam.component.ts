@@ -115,7 +115,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 			.subscribe({
 				next: () => {
 					this.notificationSvc.showNotification(Translate.SuccessMessage.ExamDeleted[this.selectedLang]);
-					this.router.navigate(['/', 'exam']);
+					this.router.navigate(['/', 'exam'], { queryParamsHandling: 'merge', relativeTo: this.route });
 				},
 			});
 	}

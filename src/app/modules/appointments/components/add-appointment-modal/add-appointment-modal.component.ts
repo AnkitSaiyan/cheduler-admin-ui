@@ -1,35 +1,37 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import {BehaviorSubject, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap} from 'rxjs';
-import {NotificationType} from 'diflexmo-angular-design';
-import {ModalService} from '../../../../core/services/modal.service';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {ShareDataService} from '../../../../core/services/share-data.service';
-import {ExamApiService} from '../../../../core/services/exam-api.service';
-import {NameValuePairPipe} from '../../../../shared/pipes/name-value-pair.pipe';
-import {NameValue} from '../../../../shared/components/search-modal.component';
-import {AppointmentApiService} from '../../../../core/services/appointment-api.service';
+import { BehaviorSubject, Observable, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
+import { NotificationType } from 'diflexmo-angular-design';
+import { ModalService } from '../../../../core/services/modal.service';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { ShareDataService } from '../../../../core/services/share-data.service';
+import { ExamApiService } from '../../../../core/services/exam-api.service';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import {
-    AddAppointmentRequestData,
-    Appointment,
-    CreateAppointmentFormValues,
-    SelectedSlots,
-    Slot,
-    SlotModified
+	AddAppointmentRequestData,
+	AddOutSideOperatingHoursAppointmentRequest,
+	Appointment,
+	CreateAppointmentFormValues,
+	SelectedSlots,
+	Slot,
+	SlotModified,
 } from '../../../../shared/models/appointment.model';
-import {PhysicianApiService} from '../../../../core/services/physician.api.service';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {AppointmentUtils} from '../../../../shared/utils/appointment.utils';
-import {SiteManagementApiService} from '../../../../core/services/site-management-api.service';
-import {EMAIL_REGEX, ENG_BE} from '../../../../shared/utils/const';
-import {GeneralUtils} from '../../../../shared/utils/general.utils';
-import {Translate} from "../../../../shared/models/translate.model";
-import {DateTimeUtils} from "../../../../shared/utils/date-time.utils";
-import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
-import {CustomDateParserFormatter} from '../../../..//shared/utils/dateFormat';
-import {getDurationMinutes} from 'src/app/shared/models/calendar.model';
-import {UserApiService} from "../../../../core/services/user-api.service";
+import { PhysicianApiService } from '../../../../core/services/physician.api.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { AppointmentUtils } from '../../../../shared/utils/appointment.utils';
+import { SiteManagementApiService } from '../../../../core/services/site-management-api.service';
+import { EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
+import { Translate } from '../../../../shared/models/translate.model';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { CustomDateParserFormatter } from '../../../..//shared/utils/dateFormat';
+import { DateDistributed, getDurationMinutes } from 'src/app/shared/models/calendar.model';
+import { UserApiService } from '../../../../core/services/user-api.service';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { DatePipe } from '@angular/common';
 
 @Component({
 	selector: 'dfm-add-appointment-modal',
@@ -39,17 +41,31 @@ import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 })
 export class AddAppointmentModalComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public appointmentForm!: FormGroup;
+
 	public submitting$$ = new BehaviorSubject(false);
+
 	public loadingSlots$$ = new BehaviorSubject(false);
+
+	public loading$$ = new BehaviorSubject<boolean>(false);
+
 	public filteredExamList: NameValue[] = [];
+
 	public filteredPhysicianList: NameValue[] = [];
+
 	public filteredUserList: NameValue[] = [];
+
 	public slots: SlotModified[] = [];
+
 	public selectedTimeSlot: SelectedSlots = {};
+
 	public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
+
 	public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
+
 	public selectedTimeInUTC!: string;
+
 	public selectedTimeInUTCOrig!: string;
+
 	public isCombinable: boolean = false;
 
 	public currentDate = new Date();
@@ -59,19 +75,31 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	public dateControl = new FormControl();
 
 	private examList: NameValue[] = [];
+
 	private physicianList: NameValue[] = [];
+
 	private userList: NameValue[] = [];
-	private modalData!: {
+
+	public modalData!: {
 		event: MouseEvent;
 		element: HTMLDivElement;
 		elementContainer: HTMLDivElement;
 		startedAt: Date;
 		startTime?: string;
 		limit?: { min: string; max: string; grayOutMin: string; grayOutMax: string };
+		isOutside: boolean;
+		appointment?: Appointment;
 	};
+
 	private pixelPerMinute = 4;
+
 	private selectedLang = ENG_BE;
-	private currentSlot$$ = new BehaviorSubject<any[]>([]);
+
+	public isOutside: boolean = false;
+
+	private staffs: NameValue[] = [];
+
+	public filteredStaffs: NameValue[] = [];
 
 	constructor(
 		private modalSvc: ModalService,
@@ -84,7 +112,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		private userApiService: UserApiService,
 		private notificationSvc: NotificationDataService,
 		private siteManagementApiSvc: SiteManagementApiService,
-		private utcToLocalPipe: UtcToLocalPipe,
+		private datePipe: DatePipe,
 	) {
 		super();
 	}
@@ -102,7 +130,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
 			this.modalData = data;
 
-			if (this.modalData.event.offsetY) {
+      this.isOutside = this.modalData.isOutside;
+			if (this.modalData?.event?.offsetY) {
 				let minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
 				if (this.modalData?.limit) {
 					minutes += getDurationMinutes(this.myDate('00:00:00'), this.myDate(this.modalData.limit.min));
@@ -121,12 +150,26 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				// this.selectedTimeInUTC = this.utcToLocalPipe.transform(`${hour}:${min}`, true) + ':00';
 				this.selectedTimeInUTCOrig = `${hour}:${min}:00`;
 				this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
-
-
+			} else if (this.modalData?.appointment?.startedAt) {
+				const date = new Date(this.modalData?.appointment?.startedAt);
+				const time = this.datePipe.transform(date, 'hh:mm');
+				this.selectedTimeInUTCOrig = time + ':00';
+				this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
 			}
 		});
 
 		this.createForm();
+
+		if (this.modalData.appointment?.id) {
+			this.loading$$.next(true);
+
+			this.appointmentApiSvc
+				.getAppointmentByID$(this.modalData.appointment.id)
+				.pipe(take(1))
+				.subscribe({
+					next: (appointment) => this.updateForm(appointment as Appointment),
+				});
+		}
 
 		combineLatest([this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length))])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
@@ -155,7 +198,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			});
 		});
 
-		this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
+		this.physicianApiSvc.allPhysicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
 			const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
 			this.filteredPhysicianList = [...keyValuePhysicians];
 			this.physicianList = [...keyValuePhysicians];
@@ -184,7 +227,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				this.loadingSlots$$.next(false);
 			});
 
-		this.appointmentForm
+		const examListSubscription = this.appointmentForm
 			.get('examList')
 			?.valueChanges.pipe(
 				debounceTime(0),
@@ -217,6 +260,20 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((lang) => (this.selectedLang = lang));
+
+		this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (staffs) => {
+				this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() }))];
+				this.filteredStaffs = [...this.staffs];
+				// this.filteredStaffs$$.next([...this.staffs]);
+				// this.cdr.detectChanges();
+			},
+		});
+
+		if (this.isOutside) {
+			this.appointmentForm.addControl('userList', new FormControl([]));
+			examListSubscription?.unsubscribe();
+		}
 	}
 
 	public override ngOnDestroy() {
@@ -232,10 +289,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	public handleSlotSelectionToggle(slots: SlotModified) {
+
 		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
-
-
-
 		let smallestStartTime = '';
 		Object.values(this.selectedTimeSlot).forEach((slot) => {
 			if (!smallestStartTime || DateTimeUtils.TimeToNumber(slot.start) < DateTimeUtils.TimeToNumber(smallestStartTime)) {
@@ -247,7 +302,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	public saveAppointment(): void {
 		if (this.appointmentForm.invalid) {
-			this.notificationSvc.showNotification(`${Translate.FormInvalidSimple[this.selectedLang]}!`, NotificationType.WARNING);
+			this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}!`, NotificationType.WARNING);
 			this.appointmentForm.markAllAsTouched();
 			return;
 		}
@@ -284,25 +339,69 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			this.isCombinable,
 		);
 
-
 		if (this.isDoctorConsentDisable$$.value) {
 			delete requestData.doctorId;
 		}
 
-		this.appointmentApiSvc
-			.saveAppointment$(requestData)
-			.pipe(takeUntil(this.destroy$$))
-			.subscribe({
-				next: () => {
-					this.notificationSvc.showNotification(`${Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`);
-					this.submitting$$.next(false);
-					this.modalSvc.close(true);
-				},
-				error: (err) => {
-					this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-					this.submitting$$.next(false);
-				},
-			});
+		let observable: Observable<Appointment>;
+		if (this.modalData?.appointment?.id) {
+			observable = this.appointmentApiSvc.updateAppointment$({ ...requestData, id: this.modalData.appointment.id });
+		} else {
+			observable = this.appointmentApiSvc.saveAppointment$(requestData);
+		}
+
+		observable.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: () => {
+				this.notificationSvc.showNotification(
+					this.modalData.appointment?.id
+						? `${Translate.SuccessMessage.AppointmentUpdate[this.selectedLang]}!`
+						: `${Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`,
+				);
+				this.submitting$$.next(false);
+				this.modalSvc.close(true);
+			},
+			error: (err) => {
+				// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+				this.submitting$$.next(false);
+			},
+		});
+	}
+
+	public saveOutSideOperatingHoursAppointment() {
+		if (this.appointmentForm.invalid) {
+			this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}!`, NotificationType.WARNING);
+			this.appointmentForm.markAllAsTouched();
+			return;
+		}
+		this.submitting$$.next(true);
+
+		const { startedAt, userList, ...rest } = this.formValues;
+		const requestData: AddOutSideOperatingHoursAppointmentRequest = {
+			...rest,
+			startedAt: `${startedAt.year}-${String(startedAt.month).padStart(2, '0')}-${String(startedAt.day).padStart(2, '0')} ${this.selectedTimeInUTC}`,
+			rejectReason: '',
+			fromPatient: false,
+			userList: userList?.length ? userList : [],
+		};
+
+		let observable: Observable<Appointment>;
+		if (this.modalData?.appointment?.id) {
+			observable = this.appointmentApiSvc.saveOutSideOperatingHoursAppointment$({ ...requestData, id: this.modalData.appointment.id }, 'update');
+		} else {
+			observable = this.appointmentApiSvc.saveOutSideOperatingHoursAppointment$(requestData, 'add');
+		}
+
+		observable.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: () => {
+				this.notificationSvc.showNotification(`${Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`);
+				this.submitting$$.next(false);
+				this.modalSvc.close(true);
+			},
+			error: (err) => {
+				// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+				this.submitting$$.next(false);
+			},
+		});
 	}
 
 	public clearSlotDetails() {
@@ -327,7 +426,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		}
 	}
 
-	public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam'): void {
+	public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam' | 'staff'): void {
 		switch (type) {
 			case 'doctor':
 				this.filteredPhysicianList = [...GeneralUtils.FilterArray(this.physicianList, searchText, 'name')];
@@ -337,6 +436,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				break;
 			case 'exam':
 				this.filteredExamList = [...GeneralUtils.FilterArray(this.examList, searchText, 'name')];
+				break;
+			case 'staff':
+				this.filteredStaffs = [...GeneralUtils.FilterArray(this.staffs, searchText, 'name')];
 				break;
 		}
 	}
@@ -358,18 +460,19 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	private createForm() {
+		console.log(this.modalData.appointment, 'data');
+
 		this.appointmentForm = this.fb.group({
 			patientFname: [null, [Validators.required]],
 			patientLname: [null, [Validators.required]],
-			patientTel: [null, [Validators.required]],
-			patientEmail: [null, []],
+			patientTel: [null, [Validators.required, Validators.minLength(10)]],
+			patientEmail: [null, [Validators.required]],
 			doctorId: [null, []],
 			startedAt: [null, [Validators.required]],
-			// startTime: [null, [Validators.required]],
-			// roomType: [null, [Validators.required]],
 			examList: [[], [Validators.required]],
 			userId: [null, [Validators.required]],
 			comments: [null, []],
+			socialSecurityNumber: [null, []],
 		});
 
 		if (this.modalData?.startedAt) {
@@ -384,6 +487,56 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		}
 	}
 
+	private updateForm(appointment: Appointment) {
+		if (this.isOutside) this.appointmentForm.addControl('userList', new FormControl([]));
+		appointment?.exams?.sort((exam1, exam2) => {
+			if (exam1.startedAt < exam2.startedAt) {
+				return -1;
+			}
+			return 1;
+		});
+
+		let date!: Date;
+
+		if (appointment?.startedAt) {
+			date = new Date(appointment.startedAt);
+		} else if (appointment?.exams[0]?.startedAt) {
+			date = new Date(appointment?.exams[0]?.startedAt);
+		}
+
+		const dateDistributed = DateTimeUtils.DateToDateDistributed(date);
+
+		setTimeout(() => {
+			this.appointmentForm.patchValue(
+				{
+					patientFname: appointment?.patientFname ?? null,
+					patientLname: appointment?.patientLname ?? null,
+					patientTel: appointment?.patientTel ?? null,
+					patientEmail: appointment?.patientEmail ?? null,
+					doctorId: appointment?.doctorId?.toString() ?? null,
+					examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
+					userId: appointment?.userId?.toString() ?? null,
+					comments: appointment?.comments ?? null,
+					socialSecurityNumber: appointment?.socialSecurityNumber ?? null,
+				},
+				{ emitEvent: false },
+			);
+			this.appointmentForm.get('userList')?.setValue(appointment?.usersDetail.map((user) => user.id?.toString() ?? []));
+
+			if (!appointment?.exams?.length) {
+				this.appointmentForm.get('examList')?.markAsUntouched();
+			}
+
+			if (!!appointment?.patientAzureId) {
+				['patientFname', 'patientLname', 'patientTel', 'patientEmail'].forEach((key) => {
+					this.appointmentForm.get(key)?.disable();
+				});
+			}
+
+			this.loading$$.next(false);
+		}, 700);
+	}
+
 	private setSlots(slots: Slot[], isCombinable: boolean) {
 		const { examIdToSlots, newSlots } = AppointmentUtils.GetModifiedSlotData(slots, isCombinable);
 
@@ -393,6 +546,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	private updateEventCard(slot?: Slot) {
 		const { element } = this.modalData;
+		if (!element) return;
 		let totalExpense = 0;
 
 		this.formValues.examList.forEach((examID) => {
@@ -421,6 +575,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	private scrollIntoView() {
+		if (!this.modalData?.element) return;
 		this.modalData.element.scrollIntoView({
 			behavior: 'smooth',
 			block: 'center',

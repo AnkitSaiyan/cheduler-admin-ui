@@ -79,7 +79,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 			)
 			.subscribe(() => {
 				this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang]);
-				this.router.navigate(['/', 'absence']);
+				this.router.navigate(['/', 'absence'], { queryParamsHandling: 'merge' });
 			});
 	}
 

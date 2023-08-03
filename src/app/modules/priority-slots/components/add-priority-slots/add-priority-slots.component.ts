@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
@@ -25,6 +25,7 @@ import { Translate } from '../../../../shared/models/translate.model';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { UserApiService } from '../../../../core/services/user-api.service';
+import { DownloadService } from '../../../../core/services/download.service';
 
 interface FormValues {
 	name: string;
@@ -100,6 +101,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		private nameValuePairPipe: NameValuePairPipe,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
+		private downloadSvc: DownloadService,
 	) {
 		super();
 
@@ -153,7 +155,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 				this.createForm(prioritySlot);
 			});
 
-		this.userApiService.staffs$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
+		this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
 			this.staffDetails = staffs;
 
 			const radiologist: NameValue[] = [];
@@ -263,7 +265,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 						this.closeModal(true);
 					},
 					(err) => {
-						this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
 					},
 				);
@@ -278,7 +280,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 						this.closeModal(true);
 					},
 					(err) => {
-						this.notificationSvc.showNotification(Translate[err?.error?.message][this.selectedLang], NotificationType.DANGER);
+						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
 					},
 				);
@@ -624,53 +626,4 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

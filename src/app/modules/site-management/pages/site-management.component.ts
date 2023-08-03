@@ -14,24 +14,30 @@ import { Translate } from '../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
-  name: string;
-  introductoryText: string;
-  disableAppointment: boolean;
-  disableWarningText: string;
-  heading: string;
-  subHeading: string;
-  bodyText: string;
-  doctorReferringConsent: 0 | 1;
-  isAppointmentAutoconfirm: boolean;
-  cancelAppointmentTime: number;
-  cancelAppointmentType: TimeDurationType;
-  address: string;
-  email: string;
-  telephone: number;
-  file: { file: ArrayBuffer | string | SafeResourceUrl; loading: boolean; fileBlob: Blob };
-  isSlotsCombinable: boolean;
-  reminderTime: number;
-  reminderTimeType: TimeDurationType;
+	name: string;
+	introductoryText: string;
+	disableAppointment: boolean;
+	disableWarningText: string;
+	heading: string;
+	subHeading: string;
+	bodyText: string;
+	headingEnglish: string;
+	subHeadingEnglish: string;
+	bodyTextEnglish: string;
+	doctorReferringConsent: 0 | 1;
+	isAppointmentAutoconfirm: boolean;
+	cancelAppointmentTime: number;
+	cancelAppointmentType: TimeDurationType;
+	address: string;
+	email: string;
+	telephone: number;
+	file: { file: ArrayBuffer | string | SafeResourceUrl; loading: boolean; fileBlob: Blob };
+	isSlotsCombinable: boolean;
+	reminderTime: number;
+	reminderTimeType: TimeDurationType;
+  isAppointmentAutoconfirmAdmin: boolean;
+  documentSize: number,
+  editUploadedDocument: boolean,
 }
 
 @Component({
@@ -50,6 +56,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
   private selectedLang: string = ENG_BE;
 
+  public documentSize: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private notificationSvc: NotificationDataService,
@@ -62,6 +70,9 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
   }
 
   public ngOnInit(): void {
+
+    for (let i = 1; i < 11; i++) this.documentSize.push({ name: i + ' MB', value: i });   
+
     this.siteManagementApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.timeDurations = items));
 
     this.siteManagementApiSvc.siteManagementData$.pipe(takeUntil(this.destroy$$)).subscribe((siteManagementData) => {
@@ -91,6 +102,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     let durationType: TimeDurationType = 'Minutes';
     let reminderDurationTYpe: TimeDurationType = 'Minutes';
     let introductoryTextObj;
+    let introductoryTextObjEnglish;
+
     const file: {
       loading: boolean;
       fileBlob: Blob | null;
@@ -127,6 +140,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
       if (siteManagementData.introductoryText) {
         try {
           introductoryTextObj = JSON.parse(siteManagementData.introductoryText);
+          introductoryTextObjEnglish = JSON.parse(siteManagementData.introductoryTextEnglish);
         } catch (e) {}
       }
 
@@ -140,30 +154,37 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
     }
 
     this.siteManagementForm = this.fb.group({
-      name: [siteManagementData?.name ?? '', [Validators.required]],
-      file: [{ ...file }, []],
-      introductoryText: [siteManagementData?.introductoryText ?? null, []],
-      heading: [introductoryTextObj?.heading ?? '', []],
-      subHeading: [introductoryTextObj?.subHeading ?? '', []],
-      bodyText: [introductoryTextObj?.bodyText ?? '', []],
-      disableAppointment: [!!siteManagementData?.disableAppointment, [Validators.required]],
-      disableWarningText: [siteManagementData?.disableWarningText ?? '', []],
-      doctorReferringConsent: [siteManagementData?.doctorReferringConsent, []],
-      cancelAppointmentTime: [duration, []],
-      cancelAppointmentType: [durationType, []],
-      email: [siteManagementData?.email ?? '', [Validators.required]],
-      telephone: [siteManagementData?.telephone, [Validators.required]],
-      address: [siteManagementData?.address, [Validators.required]],
-      isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
-      reminderTime: [reminderDuration, []],
-      reminderTimeType: [reminderDurationTYpe, []],
-      isAppointmentAutoconfirm: [!!siteManagementData?.isAppointmentAutoconfirm, [Validators.required]],
-    });
+			name: [siteManagementData?.name ?? '', [Validators.required]],
+			file: [{ ...file }, []],
+			introductoryText: [siteManagementData?.introductoryText ?? null, []],
+			heading: [introductoryTextObj?.heading ?? '', []],
+			subHeading: [introductoryTextObj?.subHeading ?? '', []],
+			bodyText: [introductoryTextObj?.bodyText ?? '', []],
+			headingEnglish: [introductoryTextObjEnglish?.headingEnglish ?? '', []],
+			subHeadingEnglish: [introductoryTextObjEnglish?.subHeadingEnglish ?? '', []],
+			bodyTextEnglish: [introductoryTextObjEnglish?.bodyTextEnglish ?? '', []],
+			disableAppointment: [!!siteManagementData?.disableAppointment, [Validators.required]],
+			disableWarningText: [siteManagementData?.disableWarningText ?? '', []],
+			doctorReferringConsent: [siteManagementData?.doctorReferringConsent, []],
+			cancelAppointmentTime: [duration, []],
+			cancelAppointmentType: [durationType, []],
+			email: [siteManagementData?.email ?? '', [Validators.required]],
+			telephone: [siteManagementData?.telephone, [Validators.required]],
+			address: [siteManagementData?.address, [Validators.required]],
+			isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
+			reminderTime: [reminderDuration, []],
+			reminderTimeType: [reminderDurationTYpe, []],
+			isAppointmentAutoconfirm: [!!siteManagementData?.isAppointmentAutoconfirm, [Validators.required]],
+      isAppointmentAutoconfirmAdmin: [!!siteManagementData?.isAppointmentAutoconfirmAdmin, [Validators.required]],
+      documentSize: [ 5,  [Validators.required]],
+      editUploadedDocument: [!!siteManagementData?.editUploadedDocument, [Validators.required]],
+		});
 
     setTimeout(() => {
       this.siteManagementForm.patchValue({
         reminderTimeType: reminderDurationTYpe,
         cancelAppointmentType: durationType,
+        documentSize: siteManagementData?.documentSizeInKb ? siteManagementData?.documentSizeInKb / 1024 : 5,
       });
     }, 0);
 
@@ -188,7 +209,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
     this.submitting$$.next(true);
 
-    const { heading, subHeading, bodyText, file, cancelAppointmentType, reminderTimeType, ...rest } = this.formValues;
+    const { heading, subHeading, bodyText, headingEnglish, subHeadingEnglish, bodyTextEnglish,  file, cancelAppointmentType, reminderTimeType, ...rest } = this.formValues;
 
     const requestData: SiteManagementRequestData = {
       ...rest,
@@ -214,12 +235,18 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
             return rest.reminderTime;
         }
       })(),
+      introductoryTextEnglish: ''
     };
 
     requestData.introductoryText = JSON.stringify({
       heading,
       subHeading,
       bodyText,
+    });
+    requestData.introductoryTextEnglish = JSON.stringify({
+      headingEnglish,
+      subHeadingEnglish,
+      bodyTextEnglish,
     });
 
     if (this.siteManagementData$$.value && this.siteManagementData$$.value?.id) {
@@ -239,9 +266,9 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
           }
         },
         (err) => {
-          this.submitting$$.next(false);
-          this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-        },
+					this.submitting$$.next(false);
+					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+				},
       );
   }
 

@@ -1,13 +1,32 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { BehaviorSubject, filter } from 'rxjs';
-import {getDaysOfMonth, getDurationMinutes, getWeekdayWiseDays, Weekday} from '../../../models/calendar.model';
+import {
+	AfterContentChecked,
+	ChangeDetectorRef,
+	Component,
+	EventEmitter,
+	Input,
+	OnChanges,
+	OnDestroy,
+	OnInit,
+	Output,
+	SimpleChanges,
+	ViewChild,
+} from '@angular/core';
+import { BehaviorSubject, Subject, debounceTime, filter, startWith, take, takeUntil, throttleTime } from 'rxjs';
+import { getDaysOfMonth, getDurationMinutes, getWeekdayWiseDays, Weekday } from '../../../models/calendar.model';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { AddAppointmentModalComponent } from 'src/app/modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
+import { ModalService } from 'src/app/core/services/modal.service';
+import { DraggableService } from 'src/app/core/services/draggable.service';
+import { CalendarType } from 'src/app/shared/utils/const';
+import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
+import { DestroyableComponent } from '../../destroyable.component';
 
 @Component({
 	selector: 'dfm-calendar-month-view',
 	templateUrl: './dfm-calendar-month-view.component.html',
 	styleUrls: ['./dfm-calendar-month-view.component.scss'],
 })
-export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
+export class DfmCalendarMonthViewComponent extends DestroyableComponent implements OnInit, OnDestroy, OnChanges, AfterContentChecked {
 	public weekDayEnum = Weekday;
 
 	public nowDate = new Date();
@@ -34,7 +53,18 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 	@Output()
 	public dayViewEvent = new EventEmitter<Date>();
 
-	constructor() {}
+	@Output()
+	private dateChange = new EventEmitter<number>();
+
+	@ViewChild('popOver') public popover!: NgbPopover;
+
+	private changeDateDebounce$$ = new Subject<number>();
+
+	public calendarType = CalendarType;
+
+	constructor(private modalSvc: ModalService, private draggableSvc: DraggableService, private cdr: ChangeDetectorRef) {
+		super();
+	}
 
 	public ngOnChanges(changes: SimpleChanges) {
 		if (!this.selectedDate) {
@@ -51,6 +81,8 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 
 	public ngOnInit(): void {
 		this.updateCalendarDays();
+
+		this.changeDateDebounce$$.pipe(startWith(), throttleTime(700), takeUntil(this.destroy$$)).subscribe((value) => this.dateChange.emit(value));
 
 		this.changeMonth$$
 			.asObservable()
@@ -70,6 +102,14 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 					}
 				},
 			});
+	}
+
+	public override ngOnDestroy(): void {
+		super.ngOnDestroy();
+	}
+
+	public ngAfterContentChecked(): void {
+		this.cdr.detectChanges();
 	}
 
 	public changeMonth(offset: number) {
@@ -107,8 +147,45 @@ export class DfmCalendarMonthViewComponent implements OnInit, OnChanges {
 		this.selectedDateEvent.emit(this.selectedDate);
 	}
 
+	public editAppointment({ day, data: appointment }) {
+		this.modalSvc
+			.open(AddAppointmentModalComponent, {
+				data: {
+					startedAt: new Date(day[2], day[1], day[0]),
+					isOutside: appointment.isOutside,
+					appointment,
+				},
+				options: {
+					size: 'xl',
+					backdrop: false,
+					centered: true,
+					modalDialogClass: 'ad-ap-modal-shadow',
+				},
+			})
+			.closed.pipe(take(1))
+			.subscribe({
+				next: (res) => {
+					this.draggableSvc.revertDrag(!!res);
+				},
+			});
+	}
+
 	public changeToDayView(day: number, month: number, year: number) {
 		const date = new Date(year, month, day);
 		this.dayViewEvent.emit(date);
+	}
+
+	public changeDate(offset: number) {
+		if (!this.draggableSvc.dragStartElement) return;
+		this.changeDateDebounce$$.next(offset);
+	}
+
+	public removeDuplicateData(data: any): Array<any> {
+		const arr: any = [];
+		data?.forEach((user) => {
+			if (user?.users.length) arr.push(...user.users);
+		});
+		if (arr.length) return GeneralUtils.removeDuplicateData(arr, 'id');
+		return [];
 	}
 }

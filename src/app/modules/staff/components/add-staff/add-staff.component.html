@@ -1,14 +1,14 @@
 <div class="d-flex flex-column dfm-gap-24">
     <section class="content-section-1">
         <div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ad-sf-title-buttons">
-            <dfm-button color="link" size="lg" routerLink="/staff">{{ 'Staff' | translate }}</dfm-button>
+            <dfm-button color="link" size="lg" routerLink="/staff" queryParamsHandling="merge">{{ 'Staff' | translate }}</dfm-button>
 
             <div style="width: 16px; height: 16px" class="h-fit">
                 <dfm-icon name="chevron-right"></dfm-icon>
             </div>
 
             <div class="d-flex align-items-center dfm-gap-8" *ngIf="comingFromRoute === 'view' && staffID">
-                <dfm-button color="link" size="lg" [routerLink]="['../', 'view']">{{ 'View' | translate }}</dfm-button>
+                <dfm-button color="link" size="lg" [routerLink]="['../', 'view']" queryParamsHandling="merge">{{ 'View' | translate }}</dfm-button>
 
                 <div style="width: 16px; height: 16px" class="h-fit">
                     <dfm-icon name="chevron-right"></dfm-icon>
@@ -20,7 +20,7 @@
         </div>
 
         <div class="dfm-gap-16 ad-sf-action-buttons">
-            <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/staff']">
+            <dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/staff']" queryParamsHandling="merge">
                 {{ 'Cancel' | translate }}
             </dfm-button>
             <dfm-button [disabled]="(submitting$$ | async) === true" color="primary" size="md" class="text-nowrap"
@@ -33,12 +33,12 @@
         <div class="hidden dfm-gap-8 align-items-center ad-sf-title-buttons-mv">
             <div class="rounded-circle overflow-hidden">
                 <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left"
-                                 [routerLink]="comingFromRoute === 'view' ? '../view' : '/staff'">
+                                 [routerLink]="comingFromRoute === 'view' ? '../view' : '/staff'" queryParamsHandling="merge">
                 </dfm-button-icon>
             </div>
 
             <dfm-button color="link" size="lg"
-                        routerLink="./"> {{ edit ? ('EditStaff' | translate) : ('AddStaff' | translate) }} </dfm-button>
+                        routerLink="./" queryParamsHandling="merge"> {{ edit ? ('EditStaff' | translate) : ('AddStaff' | translate) }} </dfm-button>
         </div>
         <!--  **  -->
     </section>

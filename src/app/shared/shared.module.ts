@@ -20,6 +20,7 @@ import {
 import { DesignSystemModule, NgDfmDropdownModule, TableModule } from 'diflexmo-angular-design';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { NgChartsModule } from 'ng2-charts';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ConfirmActionModalComponent } from './components/confirm-action-modal.component';
 import { ConfirmStatusChangeBannerComponent } from './components/confirm-status-change-banner.component';
 import { DestroyableComponent } from './components/destroyable.component';
@@ -49,26 +50,34 @@ import { WeekdayToNamePipe } from './pipes/weekday-to-name.pipe';
 // eslint-disable-next-line import/order
 import { TranslateLoader, TranslateModule, TranslatePipe } from '@ngx-translate/core';
 // eslint-disable-next-line import/order
+import { DateAdapter, MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatMenuModule } from '@angular/material/menu';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
+import { DfmCalendarPickerComponent } from './components/dfm-calendar/dfm-calendar-picker/dfm-calendar-picker.component';
 import { LoginFailedComponent } from './components/login-failed/login-failed.component';
 import { MatSpinnerComponent } from './components/mat-spinner/mat-spinner.component';
 import { TimeSlotsComponent } from './components/time-slots/time-slots.component';
 import { IsPermittedDirective } from './directives/permission.directive';
 import { DefaultDatePipe } from './pipes/default-date.pipe';
 import { IsDataPipe } from './pipes/is-data.pipe';
+import { MultiDropdownPlaceholderNamePipe } from './pipes/multi-dropdown-placeholder-name.pipe';
+import { SortOrderValidation } from './pipes/remove-selected-item.pipe';
 import { RoleNamePipe } from './pipes/role-name.pipe';
 import { ShowSlotPercentagePipe } from './pipes/showSlotPercentage.pipe';
 import { UserRolePipe } from './pipes/user-role.pipe';
 import { UtcToLocalPipe } from './pipes/utc-to-local.pipe';
-import { DateAdapter, MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatMenuModule } from '@angular/material/menu';
-import { DfmCalendarPickerComponent } from './components/dfm-calendar/dfm-calendar-picker/dfm-calendar-picker.component';
-import { MultiDropdownPlaceholderNamePipe } from './pipes/multi-dropdown-placeholder-name.pipe';
 import { DUTCH_BE } from './utils/const';
 import { CustomDatePickerAdapter } from './utils/date-adapter';
-import { SortOrderValidation } from './pipes/remove-selected-item.pipe';
+
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { IsPreviousDayPipe } from './pipes/is-previous-day.pipe';
+import { DocumentViewModalComponent } from './components/document-view-modal/document-view-modal.component';
+import { DfmDragEventDirective } from './directives/dfm-drag-event.directive';
+import { DfmDragAreaEventDirective } from './directives/dfm-drag-area-event.directive';
+import { SafePipe } from './pipes/safe.pipe';
+import { FindSelectedSlotPipe } from './pipes/find-selected-slot.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -102,7 +111,10 @@ export function HttpLoaderFactory(http: HttpClient) {
 		EmailInputDirective,
 		NumberInputDirective,
 		IsPermittedDirective,
+		DfmDragEventDirective,
+		DfmDragAreaEventDirective,
 		NumberArrayPipe,
+		IsPreviousDayPipe,
 		IsDataPipe,
 		TimeSlotsComponent,
 		MatSpinnerComponent,
@@ -116,6 +128,9 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DfmCalendarPickerComponent,
 		MultiDropdownPlaceholderNamePipe,
 		SortOrderValidation,
+		DocumentViewModalComponent,
+		SafePipe,
+		FindSelectedSlotPipe,
 	],
 	imports: [
 		CommonModule,
@@ -127,6 +142,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		NgbAccordionModule,
 		MatProgressSpinnerModule,
 		RouterLink,
+		InfiniteScrollModule,
 		TranslateModule.forChild({
 			loader: {
 				provide: TranslateLoader,
@@ -143,6 +159,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatNativeDateModule,
 		MatDatepickerModule,
 		MatMenuModule,
+		MatSlideToggleModule,
 	],
 	exports: [
 		DesignSystemModule,
@@ -166,8 +183,10 @@ export function HttpLoaderFactory(http: HttpClient) {
 		JoinWithAndPipe,
 		NameValuePairPipe,
 		ApprovalTypeNamePipe,
+		FindSelectedSlotPipe,
 		SumPipe,
 		RepeatTypeToNamePipe,
+		IsPreviousDayPipe,
 		SortOrderValidation,
 		AppendTextToInputDirective,
 		DfmCalendarMonthViewComponent,
@@ -182,6 +201,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		EmailInputDirective,
 		NumberInputDirective,
 		IsPermittedDirective,
+		DfmDragEventDirective,
+		DfmDragAreaEventDirective,
 		NumberArrayPipe,
 		ClipboardModule,
 		TranslateModule,
@@ -200,6 +221,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatDatepickerModule,
 		MultiDropdownPlaceholderNamePipe,
 		MatMenuModule,
+		InfiniteScrollModule,
+		MatSlideToggleModule,
 	],
 	providers: [
 		TranslatePipe,

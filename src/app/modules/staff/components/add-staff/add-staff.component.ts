@@ -65,8 +65,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
     public emitEvents$$ = new Subject<void>();
 
-    public weekdayEnum = Weekday;
-
     public comingFromRoute = '';
 
     public staffID!: number;
@@ -80,6 +78,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
     public readonly interval: number = 5;
 
     public statuses = Statuses;
+
     private selectedLang: string = ENG_BE;
 
     constructor(
@@ -161,9 +160,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
         this.userApiSvc.staffTypes$.pipe(takeUntil(this.destroy$$)).subscribe((staffTypes) => this.staffTypes$$.next(staffTypes));
 
-        this.examApiSvc.exams$
+        this.examApiSvc.allExams$
             .pipe(
-                map((exams) => exams.filter((exam) => !!exam.status).map(({name, id}) => ({
+                map((exams) => exams.map(({name, id}) => ({
                     name,
                     value: id.toString()
                 }))),
@@ -356,6 +355,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
                 } else {
                     this.notificationSvc.showNotification(Translate.SuccessMessage.StaffAdded[this.selectedLang]);
                 }
+
                 let route: string;
                 if (this.comingFromRoute === 'view') {
                     route = '../view';
@@ -363,7 +363,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
                     route = this.edit ? '/staff' : '../';
                 }
 
-                this.router.navigate([route], {relativeTo: this.route});
+                this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
             });
     }
 

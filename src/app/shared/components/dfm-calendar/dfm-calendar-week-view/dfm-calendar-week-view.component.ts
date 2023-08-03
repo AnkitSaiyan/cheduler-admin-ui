@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import {
 	AfterViewChecked,
 	AfterViewInit,
@@ -11,18 +12,19 @@ import {
 	OnInit,
 	Output,
 	QueryList,
-	Renderer2,
 	ViewChildren,
 	ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, filter, takeUntil } from 'rxjs';
-import { DatePipe } from '@angular/common';
-import { getAllDaysOfWeek, getDurationMinutes, Interval } from '../../../models/calendar.model';
-import { DestroyableComponent } from '../../destroyable.component';
+import { BehaviorSubject, Subject, debounceTime, filter, takeUntil } from 'rxjs';
 import { ModalService } from '../../../../core/services/modal.service';
+import { getAllDaysOfWeek, getDurationMinutes } from '../../../models/calendar.model';
 import { DateTimeUtils } from '../../../utils/date-time.utils';
-import { NextSlotOpenPercentageData } from 'src/app/shared/models/priority-slots.model';
+import { DestroyableComponent } from '../../destroyable.component';
 
+import { DraggableService } from 'src/app/core/services/draggable.service';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { Appointment } from 'src/app/shared/models/appointment.model';
+import { CalendarType } from 'src/app/shared/utils/const';
 // @Pipe({
 //   name: 'calendarEventHeight',
 //   standalone: true
@@ -93,20 +95,29 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public dayViewEvent = new EventEmitter<Date>();
 
 	@Output()
+	public openAndClosePrioritySlot = new EventEmitter<any>();
+
+	@Output()
 	public addAppointment = new EventEmitter<{
-		e: MouseEvent;
-		eventsContainer: HTMLDivElement;
-		day: number[];
+		e: MouseEvent | { offsetY: string };
+		eventsContainer?: HTMLDivElement;
+		day?: number[];
 		grayOutSlot: any;
-		isGrayOutArea: boolean;
+		isOutside: boolean;
+		appointment?: Appointment;
 	}>();
 
 	@Output()
 	public currentWeekDays = new EventEmitter<Array<[number, number, number]>>();
 
+	@Output()
+	private dateChange = new EventEmitter<number>();
+
 	public daysOfWeekArr: Array<[number, number, number]> = [];
 
 	public todayDate = new Date();
+
+	public getDurationMinutes = getDurationMinutes;
 
 	// In minutes
 	public readonly timeInterval: number = 15;
@@ -114,6 +125,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public readonly pixelsPerMin: number = 4;
 
 	public rendered = false;
+
+	public DateTimeUtils = DateTimeUtils;
 
 	public slotPriorityKey = {
 		High: 'highPriorityPercentage',
@@ -125,7 +138,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getDurationFn = (s, e) => getDurationMinutes(s, e);
 
-	constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private renderer: Renderer2, private modalSvc: ModalService) {
+	private changeDateDebounce$$ = new Subject<number>();
+
+	constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private modalSvc: ModalService, private draggableSvc: DraggableService) {
 		super();
 	}
 
@@ -136,10 +151,13 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		if (this.showGrayOutSlot) {
 			this.getGrayOutArea();
 		}
+		// console.log(this.prioritySlots, 'test');
 	}
 
 	public ngOnInit(): void {
 		this.updateCalendarDays();
+
+		this.changeDateDebounce$$.pipe(debounceTime(500), takeUntil(this.destroy$$)).subscribe((value) => this.dateChange.emit(value));
 
 		this.changeWeek$$
 			.pipe(
@@ -336,7 +354,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getPrioritySlotHeight(prioritySlot: any): number {
 		const max = DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max);
-		const startDate: Date = this.myDate(prioritySlot.start);
+		let startDate: Date = this.myDate(prioritySlot.start);
+		const min = DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min));
+		startDate = startDate?.getTime() < min.getTime() ? min : startDate;
 		if (this.myDate(prioritySlot.end).getTime() <= this.myDate(this.limit.min).getTime()) {
 			return 0;
 		}
@@ -392,13 +412,39 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		return top;
 	}
 
-	public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[], isGrayOutArea: boolean = false, offsetY: number = 0) {
+	public onDblClick(e: MouseEvent, eventsContainer: HTMLDivElement, day: number[], isOutside: boolean = false, offsetY: number = 0) {
 		this.addAppointment.emit({
 			e: { ...e, offsetY: e.offsetY + offsetY },
 			eventsContainer,
 			day,
 			grayOutSlot: this.grayOutSlot$$.value,
-			isGrayOutArea,
+			isOutside,
+		});
+	}
+	
+	public editAppointment(event: any) {
+		this.addAppointment.emit({
+			e: { offsetY: event.event.offsetY },
+			day: event.day,
+			grayOutSlot: this.grayOutSlot$$.value,
+			isOutside: false,
+			appointment: event.data,
+		});
+	}
+
+	public dropOnGrayOutArea(event: any, day: any, grayOutArea: any, top: any) {
+		event.stopPropagation();
+		if (!this.draggableSvc.dragStartElement) return;
+		event.target.classList.remove('drag-area-border');
+		this.draggableSvc.dragEndElementRef = { nativeElement: grayOutArea?.parentElement };
+		this.draggableSvc.weekViewDragComplete(event);
+		this.draggableSvc.removeDragShadow({ nativeElement: grayOutArea?.parentElement });
+		this.addAppointment.emit({
+			e: { ...event, offsetY: event.offsetY - this.draggableSvc.dragStartElement.event.offsetY + top },
+			day,
+			grayOutSlot: this.grayOutSlot$$.value,
+			isOutside: true,
+			appointment: this.draggableSvc.dragStartElement.data,
 		});
 	}
 
@@ -516,6 +562,11 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		this.grayOutSlot$$.next(grayOutSlot);
 	}
 
+	public changeDate(offset: number) {
+		if (!this.draggableSvc.dragStartElement) return;
+		this.changeDateDebounce$$.next(offset);
+	}
+
 	private calculate(minutes: number, time: string, type: 'plus' | 'minus'): string {
 		const date = new Date();
 		const [hour, minute] = time.split(':');
@@ -524,5 +575,30 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		date.setSeconds(0);
 		const finalDate = type === 'minus' ? new Date(date.getTime() - minutes * 60 * 1000) : new Date(date.getTime() + minutes * 60 * 1000);
 		return this.datePipe.transform(finalDate, 'HH:mm') ?? '';
+	}
+
+	public prioritySlotOpenAndClose(slotPercentage: any, prioritySlot: any, isClose: any) {
+		// console.log(slotPercentage, prioritySlot, this.slotPriorityKey[prioritySlot.priority]);
+		const obj = {
+			prioritySlotid: prioritySlot.id,
+			percentage: slotPercentage[this.slotPriorityKey[prioritySlot.priority]],
+			date: slotPercentage.date,
+			isClose,
+		};
+		this.openAndClosePrioritySlot.emit(obj);
+	}
+
+	public removeDuplicateData(data: any): Array<any> {
+		const arr: any = [];
+		data.forEach((user) => {
+			if (user?.users.length) arr.push(...user.users);
+		});
+
+		if (arr.length) return GeneralUtils.removeDuplicateData(arr, 'id');
+		return [];
+	}
+
+	public test(item: any[]) {
+		return [...item, ...item, ...item];
 	}
 }

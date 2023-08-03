@@ -63,7 +63,7 @@ export class DownloadService extends DestroyableComponent implements OnDestroy {
     super.ngOnDestroy();
   }
 
-  get fileTypes$(): Observable<any[]> {
+  get fileTypes$(): Observable<DownloadType[]> {
     return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
       switchMap(([lang]) => {
         return of(this.downloadItems).pipe(

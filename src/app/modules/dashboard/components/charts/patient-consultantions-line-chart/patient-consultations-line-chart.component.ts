@@ -3,118 +3,113 @@ import { ChartConfiguration, ChartOptions } from 'chart.js/dist/types';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
-import { takeUntil } from 'rxjs';
+import { debounceTime, forkJoin, map, switchMap, takeUntil } from 'rxjs';
+import { Month, MonthFull } from 'src/app/shared/models/calendar.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'dfm-patient-consultations-line-chart',
-  templateUrl: './patient-consultations-line-chart.component.html',
-  styleUrls: ['./patient-consultations-line-chart.component.scss'],
+	selector: 'dfm-patient-consultations-line-chart',
+	templateUrl: './patient-consultations-line-chart.component.html',
+	styleUrls: ['./patient-consultations-line-chart.component.scss'],
 })
 export class PatientConsultationsLineChartComponent extends DestroyableComponent implements OnInit {
-  public lineChartLabels = ['Total', 'New', 'Unconfirmed'];
+	public lineChartLabels = ['Total', 'New', 'Unconfirmed'];
 
-  public lineChartOptions!: ChartOptions<'line'>;
+	public lineChartOptions!: ChartOptions<'line'>;
 
-  public lineChartConfig!: ChartConfiguration<'line'>['data'];
+	public lineChartConfig!: ChartConfiguration<'line'>['data'];
 
-  public lineChartLegend = false;
+	public lineChartLegend = false;
 
-  public labels: any[] = [];
+	public labels: string[] = [];
 
-  constructor(private dashboardApiService: DashboardApiService) {
-    super();
-    this.dashboardApiService.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => {
-      this.labels = [];
-      this.labels = items;
-      this.ngOnInit();
-    });
-  }
+	constructor(
+		private dashboardApiService: DashboardApiService,
+		private translateService: TranslateService,
+		private shareDataService: ShareDataService,
+	) {
+		super();
+	}
 
-  public ngOnInit(): void {
-    this.dashboardApiService.overallStatusBarChart$.pipe(takeUntil(this.destroy$$)).subscribe((appointment) => {
-      const dataset: any = Array(12).fill(0);
+	public ngOnInit(): void {
+		this.shareDataService
+			.getLanguage$()
+			.pipe(
+				debounceTime(0),
+				map(() => Object.keys(Month).filter((key) => isNaN(+key))),
+				switchMap((months) => {
+					const observables = months.map((month) => this.translateService.get(month));
+					return forkJoin(observables);
+				}),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (months) => (this.labels = months),
+			});
 
-      appointment.yearlyappointments.forEach((element) => {
-        if (element?.label === 'January') dataset[0] = element?.value ?? 0;
-        else dataset[0] = 0;
-        if (element?.label === 'February') dataset[1] = element?.value ?? 0;
-        else dataset[1] = 0;
-        if (element?.label === 'March') dataset[2] = element?.value ?? 0;
-        else dataset[2] = 0;
-        if (element?.label === 'April') dataset[3] = element?.value ?? 0;
-        else dataset[3] = 0;
-        if (element?.label === 'May') dataset[4] = element?.value ?? 0;
-        else dataset[4] = 0;
-        if (element?.label === 'June') dataset[5] = element?.value ?? 0;
-        else dataset[5] = 0;
-        if (element?.label === 'July') dataset[6] = element?.value ?? 0;
-        else dataset[6] = 0;
-        if (element?.label === 'August') dataset[7] = element?.value ?? 0;
-        else dataset[7] = 0;
-        if (element?.label === 'September') dataset[8] = element?.value ?? 0;
-        else dataset[8] = 0;
-        if (element?.label === 'October') dataset[9] = element?.value ?? 0;
-        else dataset[9] = 0;
-        if (element?.label === 'November') dataset[10] = element?.value ?? 0;
-        else dataset[10] = 0;
-        if (element?.label === 'December') dataset[11] = element?.value ?? 0;
-        else dataset[11] = 0;
-      });
+		this.dashboardApiService.yearlyAppointmentsChartData$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (yearlyAppointmentsData) => {
+				const dataset: number[] = Array(12).fill(0);
 
-      this.lineChartConfig = {
-        labels: this.labels,
-        datasets: [
-          {
-            data: dataset,
-            label: 'Patients',
-            pointBorderColor: 'white',
-            pointBackgroundColor: '#6172F3',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: '#6172F3',
-            pointStyle: 'circle',
-            pointRadius: 6,
-            borderColor: '#6172F3',
-          },
-        ],
-      };
+				yearlyAppointmentsData.forEach((data) => {
+					dataset[MonthFull[data.label.toLocaleUpperCase()] - 1] = data.value ?? 0;
+				});
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const data = {
-        data: [],
-        backgroundColor: ['#FDF8F2', '#F4E3CF', '#F1D2AE'],
-        hoverBackgroundColor: ['#FDF8F2', '#F4E3CF', '#F1D2AE'],
-        hoverBorderColor: ['#531422', '#531422', '#531422'],
-        hoverOffset: 0,
-      };
-    });
+				this.lineChartConfig = {
+					labels: this.labels,
+					datasets: [
+						{
+							data: dataset,
+							label: 'Patients',
+							pointBorderColor: 'white',
+							pointBackgroundColor: '#6172F3',
+							pointHoverBackgroundColor: '#fff',
+							pointHoverBorderColor: '#6172F3',
+							pointStyle: 'circle',
+							pointRadius: 6,
+							borderColor: '#6172F3',
+						},
+					],
+				};
 
-    // this.lineChartOptions = {
-    //   elements: {
-    //     line: {
-    //       tension: 0.5,
-    //     },
-    //   },
-    //   scales: {
-    //     // We use this empty structure as a placeholder for dynamic theming.
-    //     y: {
-    //       position: 'left',
-    //     },
-    //     y1: {
-    //       position: 'right',
-    //       grid: {
-    //         color: 'rgba(255,0,0,0.3)',
-    //       },
-    //       ticks: {
-    //         color: 'red',
-    //       },
-    //     },
-    //   },
-    //
-    //   plugins: {
-    //     legend: {
-    //       display: true,
-    //     },
-    //   },
-    // };
-  }
+				const data = {
+					data: [],
+					backgroundColor: ['#FDF8F2', '#F4E3CF', '#F1D2AE'],
+					hoverBackgroundColor: ['#FDF8F2', '#F4E3CF', '#F1D2AE'],
+					hoverBorderColor: ['#531422', '#531422', '#531422'],
+					hoverOffset: 0,
+				};
+			},
+		});
+
+		// this.lineChartOptions = {
+		//   elements: {
+		//     line: {
+		//       tension: 0.5,
+		//     },
+		//   },
+		//   scales: {
+		//     // We use this empty structure as a placeholder for dynamic theming.
+		//     y: {
+		//       position: 'left',
+		//     },
+		//     y1: {
+		//       position: 'right',
+		//       grid: {
+		//         color: 'rgba(255,0,0,0.3)',
+		//       },
+		//       ticks: {
+		//         color: 'red',
+		//       },
+		//     },
+		//   },
+		//
+		//   plugins: {
+		//     legend: {
+		//       display: true,
+		//     },
+		//   },
+		// };
+	}
 }

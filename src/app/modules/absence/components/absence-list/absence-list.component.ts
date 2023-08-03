@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
@@ -13,257 +13,343 @@ import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../..
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { Absence } from '../../../../shared/models/absence.model';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
+import { PaginationData } from '../../../../shared/models/base-response.model';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
+
+const ColumnIdToKey = {
+	1: 'name',
+	2: 'startedAt',
+	3: 'endedAt',
+	4: 'info',
+};
 
 @Component({
-  selector: 'dfm-absence-list',
-  templateUrl: './absence-list.component.html',
-  styleUrls: ['./absence-list.component.scss'],
+	selector: 'dfm-absence-list',
+	templateUrl: './absence-list.component.html',
+	styleUrls: ['./absence-list.component.scss'],
 })
 export class AbsenceListComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  clipboardData: string = '';
+	@HostListener('document:click', ['$event']) onClick() {
+		this.toggleMenu(true);
+	}
 
-  @HostListener('document:click', ['$event']) onClick() {
-    this.toggleMenu(true);
-  }
+	private absences$$: BehaviorSubject<Absence[]>;
 
-  public searchControl = new FormControl('', []);
+	public filteredAbsences$$: BehaviorSubject<Absence[]>;
 
-  public downloadDropdownControl = new FormControl('', []);
+	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
 
-  public columns: string[] = ['Title', 'StartDate', 'EndDate', 'AbsenceInfo', 'Actions'];
+	public searchControl = new FormControl('', []);
 
-  public downloadItems: DownloadType[] = [];
+	public downloadDropdownControl = new FormControl('', []);
 
-  private absences$$: BehaviorSubject<any[]>;
+	public columns: string[] = ['Title', 'StartDate', 'EndDate', 'AbsenceInfo', 'Actions'];
 
-  public filteredAbsences$$: BehaviorSubject<any[]>;
+	public tableHeaders: DfmTableHeader[] = [
+		{ id: '1', title: 'Title', isSortable: true },
+		{ id: '2', title: 'StartDate', isSortable: true },
+		{ id: '3', title: 'EndDate', isSortable: true },
+		{ id: '4', title: 'AbsenceInfo', isSortable: true },
+	];
 
-  private selectedLang: string = ENG_BE;
+	public downloadItems: DownloadType[] = [];
 
-  public statuses = Statuses;
+	private selectedLang: string = ENG_BE;
 
-  public readonly Permission = Permission;
+	public statuses = Statuses;
 
-  constructor(
-    private absenceApiSvc: AbsenceApiService,
-    private notificationSvc: NotificationDataService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private modalSvc: ModalService,
-    private downloadSvc: DownloadService,
-    private datePipe: DatePipe,
-    private cdr: ChangeDetectorRef,
-    private shareDataSvc: ShareDataService,
-    public permissionSvc: PermissionService,
-  ) {
-    super();
-    this.absences$$ = new BehaviorSubject<any[]>([]);
-    this.filteredAbsences$$ = new BehaviorSubject<any[]>([]);
-  }
+	public readonly Permission = Permission;
 
-  public ngOnInit(): void {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (items) => (this.downloadItems = items)
-    });
+	public clipboardData: string = '';
 
-    this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe({
-      next: (absences) => {
-        this.absences$$.next(absences);
-        this.filteredAbsences$$.next(absences);
-      }
-    });
+	private paginationData: PaginationData | undefined;
 
-    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
-      next: (searchText) => {
-        if (searchText) {
-          this.handleSearch(searchText.toLowerCase());
-        } else {
-          this.filteredAbsences$$.next([...this.absences$$.value]);
-        }
-      }
-    });
+	constructor(
+		private absenceApiSvc: AbsenceApiService,
+		private notificationSvc: NotificationDataService,
+		private router: Router,
+		private route: ActivatedRoute,
+		private modalSvc: ModalService,
+		private downloadSvc: DownloadService,
+		private datePipe: DatePipe,
+		private cdr: ChangeDetectorRef,
+		private shareDataSvc: ShareDataService,
+		public permissionSvc: PermissionService,
+	) {
+		super();
+		this.absences$$ = new BehaviorSubject<any[]>([]);
+		this.filteredAbsences$$ = new BehaviorSubject<any[]>([]);
+    this.absenceApiSvc.pageNo = 1;
+    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: () => {
+				if (
+					this.permissionSvc.isPermitted([Permission.UpdateAbsences, Permission.DeleteAbsences]) &&
+					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+				) {
+					this.tableHeaders = [
+						...this.tableHeaders,
+						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+					];
+				}
+			},
+		});
+	}
 
-    this.downloadDropdownControl.valueChanges
-      .pipe(
-        filter((value) => !!value),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe({
-        next: (value) => {
-          if (!this.filteredAbsences$$.value.length) {
-            this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
-            this.clearDownloadDropdown();
-            return;
-          }
-          this.downloadSvc.downloadJsonAs(
-            value as DownloadAsType,
-            this.columns.slice(0, -1),
-            this.filteredAbsences$$.value.map((u: Absence) => [
-              u.name,
-              u.startedAt ? `${new Date(u?.startedAt)?.toDateString()} ${new Date(u?.startedAt)?.toLocaleTimeString()}` : '',
-              u.endedAt ? `${new Date(u?.endedAt)?.toDateString()} ${new Date(u?.endedAt)?.toLocaleTimeString()}` : '',
-              u.info,
-            ]),
-            'absences',
-          );
+	public ngOnInit(): void {
+		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => (this.downloadItems = items),
+		});
 
-          if (value !== 'PRINT') {
-            this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
-          }
+		this.filteredAbsences$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (value) => {
+				this.tableData$$.next({
+					items: value,
+					isInitialLoading: false,
+					isLoading: false,
+					isLoadingMore: false,
+				});
+			},
+		});
 
-          this.clearDownloadDropdown();
-        }
-      });
+		this.absences$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (absences) => this.handleSearch(this.searchControl.value ?? ''),
+		});
 
-    combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: ([lang, permissionType]) => {
-          this.selectedLang = lang;
+		this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (absencesBase) => {
+				if (this.paginationData && this.paginationData.pageNo < absencesBase.metaData.pagination.pageNo) {
+					this.absences$$.next([...this.absences$$.value, ...absencesBase.data]);
+				} else {
+					this.absences$$.next(absencesBase.data);
+				}
+				this.paginationData = absencesBase.metaData.pagination;
+			},
+			error: (e) => {
+				this.absences$$.next([]);
+			},
+		});
 
-          this.columns = [Translate.Title[lang], Translate.StartDate[lang], Translate.EndDate[lang], Translate.AbsenceInfo[lang]];
-          if (permissionType === UserRoleEnum.Admin) {
-						this.columns = [...this.columns, Translate.Actions[lang]];
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+			this.searchControl.setValue(search);
+			if (search) {
+				this.handleSearch(search.toLowerCase());
+			} else {
+				this.filteredAbsences$$.next([...this.absences$$.value]);
+			}
+		});
+
+		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+			next: (searchText) => {
+				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
+			},
+		});
+
+		this.downloadDropdownControl.valueChanges
+			.pipe(
+				filter((value) => !!value),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (value) => {
+					if (!this.filteredAbsences$$.value.length) {
+						this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+						this.clearDownloadDropdown();
+						return;
+					}
+					this.downloadSvc.downloadJsonAs(
+						value as DownloadAsType,
+						this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
+						this.filteredAbsences$$.value.map((u: Absence) => [
+							u.name,
+							u.startedAt ? `${new Date(u?.startedAt)?.toDateString()} ${new Date(u?.startedAt)?.toLocaleTimeString()}` : '',
+							u.endedAt ? `${new Date(u?.endedAt)?.toDateString()} ${new Date(u?.endedAt)?.toLocaleTimeString()}` : '',
+							u.info,
+						]),
+						'absences',
+					);
+
+					if (value !== 'PRINT') {
+						this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
 					}
 
-          // eslint-disable-next-line default-case
-          switch (lang) {
-            case ENG_BE:
-              this.statuses = Statuses;
-              break;
-            case DUTCH_BE:
-              this.statuses = StatusesNL;
-              break;
-          }
-        }
-      });
-  }
+					this.clearDownloadDropdown();
+				},
+			});
 
-  public override ngOnDestroy() {
-    super.ngOnDestroy();
-  }
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: (lang) => {
+					this.selectedLang = lang;
+					this.tableHeaders = this.tableHeaders.map((h, i) => ({
+						...h,
+						title: Translate[this.columns[i]][lang],
+					}));
 
-  private handleSearch(searchText: string): void {
-    this.filteredAbsences$$.next([
-      ...this.absences$$.value.filter((absence: Absence) => {
-        return (
-          absence.name?.toLowerCase()?.includes(searchText) ||
-          this.datePipe.transform(absence?.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ||
-          this.datePipe.transform(absence?.endedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText)
-        );
-      }),
-    ]);
-  }
+					switch (lang) {
+						case ENG_BE:
+							this.statuses = Statuses;
+							break;
+						default:
+							this.statuses = StatusesNL;
+					}
+				},
+			});
+	}
 
-  public deleteAbsence(id: number) {
-    const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
-      data: {
-        titleText: 'Confirmation',
-        bodyText: 'AreyousureyouwanttodeletethisAbsence',
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-      } as ConfirmActionModalData,
-    });
+	public override ngOnDestroy() {
+		super.ngOnDestroy();
+	}
 
-    modalRef.closed
-      .pipe(
-        filter((res: boolean) => res),
-        switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),
-        take(1),
-      )
-      .subscribe({
-        next: () => this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang])
-      });
-  }
+	private handleSearch(searchText: string): void {
+		this.filteredAbsences$$.next([
+			...this.absences$$.value.filter((absence: Absence) => {
+				return (
+					absence.name?.toLowerCase()?.includes(searchText) ||
+					this.datePipe.transform(absence?.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ||
+					this.datePipe.transform(absence?.endedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText)
+				);
+			}),
+		]);
+	}
 
-  public copyToClipboard() {
-    try {
-      let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+	public deleteAbsence(id: number) {
+		const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
+			data: {
+				titleText: 'Confirmation',
+				bodyText: 'AreyousureyouwanttodeletethisAbsence',
+				confirmButtonText: 'Delete',
+				cancelButtonText: 'Cancel',
+			} as ConfirmActionModalData,
+		});
 
-      this.filteredAbsences$$.value.forEach((absence: Absence) => {
-        dataString += `${absence.name}\t${absence?.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
-      });
+		modalRef.closed
+			.pipe(
+				filter((res: boolean) => res),
+				switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),
+				take(1),
+			)
+			.subscribe({
+				next: () => {
+					this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang]);
+					// filtering out deleted absence
+					this.absences$$.next([...this.absences$$.value.filter((a) => +a.id !== +id)]);
+				},
+			});
+	}
 
-      this.clipboardData = dataString;
+	public copyToClipboard() {
+		try {
+			let dataString = `${this.tableHeaders
+				.map(({ title }) => title)
+				.filter((value) => value !== 'Actions')
+				.join('\t')}\n`;
+			
+				if (!this.filteredAbsences$$.value.length) {
+					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+					this.clipboardData = '';
+					return;
+				}
 
-      this.cdr.detectChanges();
-      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
-    } catch (e) {
-      this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
-      this.clipboardData = '';
-    }
-  }
+			this.filteredAbsences$$.value.forEach((absence: Absence) => {
+				dataString += `${absence.name}\t${absence?.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
+			});
 
-  public navigateToViewAbsence(e: TableItem) {
-    if (e?.id) {
-      this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
-    }
-  }
+			this.clipboardData = dataString;
 
-  public toggleMenu(reset = false) {
-    const icon = document.querySelector('.ph-li-plus-btn-icon');
-    if (icon) {
-      if (reset) {
-        icon.classList.add('rotate-z-0');
-        icon.classList.remove('rotate-z-45');
-      } else {
-        icon.classList.toggle('rotate-z-45');
-        icon.classList.toggle('rotate-z-0');
-      }
-    }
-  }
+			this.cdr.detectChanges();
+			this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
+		} catch (e) {
+			this.notificationSvc.showNotification(Translate.ErrorMessage.CopyToClipboard[this.selectedLang], NotificationType.DANGER);
+			this.clipboardData = '';
+		}
+	}
 
-  public openSearchModal() {
-    this.toggleMenu();
+	public navigateToViewAbsence(e: TableItem) {
+		if (e?.id) {
+			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route, queryParamsHandling: 'preserve' });
+		}
+	}
 
-    const modalRef = this.modalSvc.open(SearchModalComponent, {
-      options: { fullscreen: true },
-      data: {
-        items: [
-          ...this.absences$$.value.map(({ id, name }) => ({
-            name: `${name}`,
-            key: `${name}`,
-            value: id,
-          })),
-        ],
-        placeHolder: 'Search by Absence Name',
-      } as SearchModalData,
-    });
+	public toggleMenu(reset = false) {
+		const icon = document.querySelector('.ph-li-plus-btn-icon');
+		if (icon) {
+			if (reset) {
+				icon.classList.add('rotate-z-0');
+				icon.classList.remove('rotate-z-45');
+			} else {
+				icon.classList.toggle('rotate-z-45');
+				icon.classList.toggle('rotate-z-0');
+			}
+		}
+	}
 
-    modalRef.closed.pipe(take(1)).subscribe((result) => this.filterAbsence(result));
-  }
+	public openSearchModal() {
+		this.toggleMenu();
 
-  private filterAbsence(result: { name: string; value: string }[]) {
-    if (!result?.length) {
-      this.filteredAbsences$$.next([...this.absences$$.value]);
-      return;
-    }
+		const modalRef = this.modalSvc.open(SearchModalComponent, {
+			options: { fullscreen: true },
+			data: {
+				items: [
+					...this.absences$$.value.map(({ id, name }) => ({
+						name: `${name}`,
+						key: `${name}`,
+						value: id,
+					})),
+				],
+				placeHolder: 'Search by Absence Name',
+			} as SearchModalData,
+		});
 
-    const ids = new Set<number>();
-    result.forEach((item) => ids.add(+item.value));
-    this.filteredAbsences$$.next([...this.absences$$.value.filter((absence: Absence) => ids.has(+absence.id))]);
-  }
+		modalRef.closed.pipe(take(1)).subscribe((result) => this.filterAbsence(result));
+	}
 
-  public openAddAbsenceModal(absenceDetails?: Absence) {
-    this.modalSvc.open(AddAbsenceComponent, {
-      data: { edit: !!absenceDetails?.id, absenceID: absenceDetails?.id },
-      options: {
-        size: 'xl',
-        centered: true,
-        backdropClass: 'modal-backdrop-remove-mv',
-        keyboard: false,
-      },
-    });
-  }
-  private clearDownloadDropdown() {
-    setTimeout(() => {
-      this.downloadDropdownControl.setValue('');
-    }, 0);
-  }
+	private filterAbsence(result: { name: string; value: string }[]) {
+		if (!result?.length) {
+			this.filteredAbsences$$.next([...this.absences$$.value]);
+			return;
+		}
+
+		const ids = new Set<number>();
+		result.forEach((item) => ids.add(+item.value));
+		this.filteredAbsences$$.next([...this.absences$$.value.filter((absence: Absence) => ids.has(+absence.id))]);
+	}
+
+	public openAddAbsenceModal(absenceDetails?: Absence) {
+		this.modalSvc.open(AddAbsenceComponent, {
+			data: { edit: !!absenceDetails?.id, absenceID: absenceDetails?.id },
+			options: {
+				size: 'xl',
+				centered: true,
+				backdropClass: 'modal-backdrop-remove-mv',
+				keyboard: false,
+			},
+		});
+	}
+	private clearDownloadDropdown() {
+		setTimeout(() => {
+			this.downloadDropdownControl.setValue('');
+		}, 0);
+	}
+
+	public onScroll(e: undefined): void {
+		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+			this.absenceApiSvc.pageNo = this.paginationData.pageNo + 1;
+			this.tableData$$.value.isLoadingMore = true;
+		}
+	}
+
+	public onSort(e: DfmTableHeader): void {
+		this.filteredAbsences$$.next(GeneralUtils.SortArray(this.filteredAbsences$$.value, e.sort, ColumnIdToKey[e.id]));
+	}
 }

@@ -169,7 +169,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			this.roomList = [...keyValueExams];
 		});
 
-		this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
+		this.physicianApiSvc.allPhysicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
 			const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
 			this.filteredPhysicianList = [...keyValuePhysicians];
 			this.physicianList = [...keyValuePhysicians];
@@ -302,7 +302,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 							this.router.navigate([route], { relativeTo: this.route });
 						},
 						error: (err) => {
-							this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+							// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 							this.submitting$$.next(false);
 						},
 					});
@@ -331,7 +331,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 							this.router.navigate([route], { relativeTo: this.route });
 						},
 						error: (err) => {
-							this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
+							// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 							this.submitting$$.next(false);
 						},
 					});
