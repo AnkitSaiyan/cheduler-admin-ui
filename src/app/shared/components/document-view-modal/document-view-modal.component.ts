@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { DestroyableComponent } from '../destroyable.component';
-import { Subject, map, takeUntil } from 'rxjs';
+import { Subject, map, take, takeUntil } from 'rxjs';
+import { NotificationDataService } from 'src/app/core/services/notification-data.service';
 
 @Component({
 	selector: 'dfm-document-view-modal',
@@ -16,15 +17,17 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 
 	public image = new Subject<any>();
 
-	private downloadableImage!: string;
+	private downloadableDoc!: string;
 
 	public fileName!: string;
 
  	public isImage: boolean = true;
 
-	constructor(private modalSvc: ModalService, private appointmentApiSvc: AppointmentApiService) {
-		super();
-	}
+	 private isDownloadClick: boolean = false;
+
+	 constructor(private modalSvc: ModalService, private appointmentApiSvc: AppointmentApiService, private notificationService : NotificationDataService) {
+	   super();
+	 }
 
 	ngOnInit(): void {
 		this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
@@ -33,34 +36,36 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 	}
 
 	public getDocument(id) {
-		this.appointmentApiSvc.getDocumentById$(id).subscribe((res) => {
-      this.isImage = !res.fileName.includes('.pdf');
-			this.setFile(res, this.isImage);
+		this.appointmentApiSvc.getDocumentById$(id, true).pipe(takeUntil(this.destroy$$)).subscribe((res) => {
+		  this.isImage = !res.fileName.includes('.pdf');
+		  if(!this.downloadableDoc)
+		  this.image.next((this.isImage ? this.base64ImageStart : this.base64PdfStart) + res.fileData);
+		  this.fileName = res.fileName;
 		});
-	}
-
-	public downloadDocument() {
-		const linkSource = this.downloadableImage;
+		this.appointmentApiSvc.getDocumentById$(id, false).pipe(take(1)).subscribe((res) => {
+		  this.image.next((!res.fileName.includes('.pdf') ? this.base64ImageStart : this.base64PdfStart) + res.fileData);
+		  this.downloadableDoc = (res.fileName.includes('.pdf') ? this.base64PdfStart : this.base64ImageStart) + res.fileData;
+		  if (this.isDownloadClick) this.downloadDocument();
+		});
+	  }
+	
+	  public downloadDocument() {
+		if (!this.downloadableDoc) {
+		  this.isDownloadClick = true;
+		  this.notificationService.showNotification('Downloading in progress...');
+		  return;
+		}
+		const linkSource = this.downloadableDoc;
 		const downloadLink = document.createElement('a');
 		const fileName = this.fileName;
 		downloadLink.href = linkSource;
 		downloadLink.download = fileName;
 		downloadLink.click();
+		this.isDownloadClick = false;
+	  }
+	
+	  public closeModal() {
+		this.modalSvc.close();
+	  }
 	}
-
-	private setFile(docData, isImg: boolean) {
-    if (!isImg) {
-			this.image.next(this.base64PdfStart + docData.fileData);
-      this.downloadableImage = this.base64PdfStart + docData.fileData;
-		} else {
-			this.image.next(this.base64ImageStart + docData.fileData);
-			this.downloadableImage = this.base64ImageStart + docData.fileData;
-		}
-		this.fileName = docData.fileName;
-	}
-
-  public closeModal() {
-    this.modalSvc.close();
-  }
-
-}
+	
