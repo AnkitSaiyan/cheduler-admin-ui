@@ -6,6 +6,7 @@ import { AppointmentApiService } from './appointment-api.service';
 import { NotificationDataService } from './notification-data.service';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { ShareDataService } from './share-data.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
 	providedIn: 'root',
@@ -51,7 +52,7 @@ export class SignalrService {
 		};
 
 		this.hubConnection = new signalR.HubConnectionBuilder()
-			.withUrl(`https://diflexmo-scheduler-api-dev.azurewebsites.net/informhub`, options)
+			.withUrl(`${environment.schedulerApiUrl.slice(0, -3)}informhub`, options)
 			.configureLogging(signalR.LogLevel.Debug)
 			.build();
 	}
