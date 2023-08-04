@@ -383,7 +383,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
             firstname: [null, [Validators.required]],
             lastname: [null, [Validators.required]],
             email: [null, [Validators.required]],
-            telephone: [null, []],
+            telephone: [null, [Validators.minLength(10)]],
             userType: [null, [Validators.required]],
             info: [null, []],
             // examList: [null, []],

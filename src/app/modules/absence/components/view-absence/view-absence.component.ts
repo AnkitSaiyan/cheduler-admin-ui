@@ -29,6 +29,10 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
 	public readonly Permission = Permission;
 
+	public columns = ['AppointmentNo', 'Exam', 'StartDate', 'EndDate', 'PatientName', 'Edit'];
+
+	effectedAppointments$$:BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
+
 	constructor(
 		private absenceApiSvc: AbsenceApiService,
 		private routerStateSvc: RouterStateService,

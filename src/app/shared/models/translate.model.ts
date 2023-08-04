@@ -588,6 +588,24 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'Failed to save the appointment',
 			[DUTCH_BE]: 'Afspraak werd niet weerhouden',
 		},
+		BackendCodes: {
+			[ENG_BE]: {
+				MSG_400_APMT_EXISTS: 'Appointment already exist between this range.',
+				MSG_400_APMT_EXCEEDS: 'Appointment exceeds normal time.',
+				MSG_400_DOC_NOT_EDITABLE: 'You can not edit this document',
+				MSG_400_SLOT_EXISTS: 'Slote exist in this range',
+				MSG_400_APMT_START_BIGGER: 'Duration of minutes is greater than the end time',
+				MSG_400_EXAM_EXIST: 'Exam name is already exist.',
+			},
+			[DUTCH_BE]: {
+				MSG_400_APMT_EXISTS: '(NL) Appointment already exist between this range.',
+				MSG_400_APMT_EXCEEDS: '(NL) Appointment exceeds normal time.',
+				MSG_400_DOC_NOT_EDITABLE: '(NL) You can not edit this document',
+				MSG_400_SLOT_EXISTS: '(NL) Slote exist in this range',
+				MSG_400_APMT_START_BIGGER: '(NL) Duration of minutes is greater than the end time',
+				MSG_400_EXAM_EXIST: '(NL) Exam name is already exist.',
+			},
+		},
 	},
 
 	//title

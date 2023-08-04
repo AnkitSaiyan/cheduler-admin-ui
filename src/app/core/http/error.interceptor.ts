@@ -17,29 +17,12 @@ export class ErrorInterceptor implements HttpInterceptor {
 		return next.handle(req).pipe(
 			catchError((err) => {
 				// lang hardcoded to english for now
-				this.generateErrorMessage(err, ENG_BE);
+				this.generateErrorMessage(err, localStorage.getItem('lang') || ENG_BE);
 				this.stopLoaders();
 
 				return throwError(err);
 			}),
 		);
-		// return this.shareDataSvc.getLanguage$().pipe(
-		//     switchMap((lang) => next.handle(req).pipe(
-		//         catchError((err) => {
-		//
-		//
-		//           this.generateErrorMessage(err, lang);
-		//           this.stopLoaders();
-		//
-		//           return throwError(err);
-		//           // return of(new HttpResponse({
-		//           //   body: {
-		//           //     data: null
-		//           //   }
-		//           // }));
-		//         })
-		//     ))
-		// );
 	}
 
   private generateErrorMessage(err: any, lang: string) {
@@ -58,25 +41,22 @@ export class ErrorInterceptor implements HttpInterceptor {
         break;
         default: {
           if (err?.error?.errors) {
-            const errObj = err.error.errors;
-            if (errObj?.GeneralErrors) {
-              if (Array.isArray(errObj.GeneralErrors)) {
-                errorMessage = '';
-                errObj.GeneralErrors.forEach((msg) => {
-                  errorMessage += `${msg} `;
-                });
-              } else if (typeof errObj?.GeneralErrors === 'string') {
-                errorMessage = errObj.GeneralErrors
-              }
-            } else if (typeof errObj === 'string') {
-              errorMessage = errObj;
-            }
-
-          } else if (err?.error?.message && typeof err.error.message === 'string') {
-            errorMessage = err.error.message;
-          } else if (err?.message && typeof err?.message === 'string') {
-            errorMessage = err.message;
-          }
+						const errObj = err.error.errors;
+						if (errObj?.GeneralErrors) {
+							if (Array.isArray(errObj.GeneralErrors)) {
+								errorMessage = '';
+								errObj.GeneralErrors.forEach((msg) => {
+									errorMessage += `${msg} `;
+								});
+							} else if (typeof errObj?.GeneralErrors === 'string') {
+								errorMessage = errObj.GeneralErrors;
+							}
+						} else if (typeof errObj === 'string') {
+							errorMessage = errObj;
+						}
+					} else {
+						errorMessage = Translate.Error.BackendCodes[lang][err.error.message] || Translate.Error.SomethingWrong[lang];
+					} 
         }
       }
     }
