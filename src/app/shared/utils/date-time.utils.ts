@@ -19,6 +19,10 @@ export class DateTimeUtils {
 		};
 	}
 
+	public static DateDistributedToDate(date: DateDistributed): Date {
+		return new Date(this.DateDistributedToString(date));
+	}
+
 	public static DateTo24TimeString(date: Date): string {
 		if (!date) {
 			return '';
@@ -209,6 +213,12 @@ export class DateTimeUtils {
 		return `${localHour}:${localMin}`;
 	}
 }
+
+
+
+
+
+
 
 
 

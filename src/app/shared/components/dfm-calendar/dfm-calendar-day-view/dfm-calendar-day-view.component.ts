@@ -1,5 +1,17 @@
-import { Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject, filter, lastValueFrom, switchMap, take, takeUntil, tap } from 'rxjs';
+import {
+	Component,
+	EventEmitter,
+	HostListener,
+	Input,
+	OnChanges,
+	OnDestroy,
+	OnInit,
+	Output,
+	Renderer2,
+	SimpleChanges,
+	ViewEncapsulation,
+} from '@angular/core';
+import { BehaviorSubject, filter, firstValueFrom, lastValueFrom, switchMap, take, takeUntil, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationType } from 'diflexmo-angular-design';
@@ -18,12 +30,13 @@ import { getAddAppointmentRequestData } from '../../../utils/getAddAppointmentRe
 import { ReadStatus } from '../../../models/status.model';
 import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { Translate } from '../../../models/translate.model';
-import { ENG_BE } from 'src/app/shared/utils/const';
+import { CalendarType, ENG_BE } from 'src/app/shared/utils/const';
 import { DestroyableComponent } from '../../destroyable.component';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { DraggableService } from 'src/app/core/services/draggable.service';
 
 @Component({
 	selector: 'dfm-calendar-day-view',
@@ -55,6 +68,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	public selectedDateEvent = new EventEmitter<Date>();
 	@Output()
 	public deleteAppointmentEvent = new EventEmitter<number>();
+	public calendarType = CalendarType;
 	public selectedDate!: Date;
 	public selectedDateOnly!: number;
 	public todayDate = new Date();
@@ -69,6 +83,13 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private selectedLang: string = ENG_BE;
 	private pixelPerMinute = 4;
 
+	private minimum_size = 20;
+	private original_height = 0;
+	private original_y = 0;
+	private original_mouse_y = 0;
+	private currentResizer!: HTMLDivElement;
+	private element!: HTMLDivElement;
+	private minutesInBottom!: number;
 	constructor(
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,
@@ -78,6 +99,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		public permissionSvc: PermissionService,
 		private translatePipe: TranslatePipe,
 		private translate: TranslateService,
+		private renderer: Renderer2,
+		private draggableSvc: DraggableService,
 	) {
 		super();
 	}
@@ -206,16 +229,29 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});
 	}
 
-	public openChangeTimeModal(appointment: Appointment, extend = true, eventContainer?: HTMLDivElement) {
+	public openChangeTimeModal(
+		appointment: Appointment,
+		extend = true,
+		eventContainer: HTMLDivElement,
+		position?: boolean,
+		time?: number,
+		divHieght?: number,
+		divTop?: number,
+	) {
 		const top = eventContainer?.style.top;
 		const height = eventContainer?.style.height;
 		const modalRef = this.modalSvc.open(AppointmentTimeChangeModalComponent, {
-			data: { extend, eventContainer },
+			data: { extend, eventContainer, position, time, minutesInBottom: this.minutesInBottom },
 			options: {
 				backdrop: false,
 				centered: true,
 			},
 		});
+
+		if (divHieght) {
+			eventContainer.style.top = divTop + 'px';
+			eventContainer.style.height = divHieght + 'px';
+		}
 
 		modalRef.closed
 			.pipe(
@@ -254,14 +290,16 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				take(1),
 			)
 			.subscribe({
-				next: (res) => {},
+				next: (res) => {
+					this.notificationSvc.showSuccess(Translate.AppointmentUpdatedSuccessfully[this.selectedLang]);
+				},
 				error: (err) => {
-					this.notificationSvc.showNotification(err?.error?.message, NotificationType.DANGER);
-					if (eventContainer && top && height) {
+					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+					if (eventContainer) {
 						// eslint-disable-next-line no-param-reassign
-						eventContainer.style.top = top;
+						eventContainer.style.top = divTop ? divTop + 'px' : top;
 						// eslint-disable-next-line no-param-reassign
-						eventContainer.style.height = height;
+						eventContainer.style.height = divHieght ? divHieght + 'px' : height;
 					}
 				},
 			});
@@ -314,11 +352,11 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});
 	}
 
-	public addAppointment(e: MouseEvent, eventsContainer: HTMLDivElement) {
+	public async addAppointment(e: MouseEvent, eventsContainer?: HTMLDivElement, appointment?: Appointment) {
 		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
 		const currentDate = new Date();
 
-		let minutes = Math.round(+e.offsetY / this.pixelPerMinute);
+		let minutes = Math.round(+e?.offsetY / this.pixelPerMinute);
 
 		// In case if calendar start time is not 00:00 then adding extra minutes
 		if (this.timeSlot?.timings?.[0]) {
@@ -336,85 +374,60 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		if (currentTimeInLocal.getTime() < currentDate.getTime()) {
 			this.notificationSvc.showWarning(this.translatePipe.transform(`CanNotAddAppointmentOnPastDate`));
+			this.draggableSvc.revertDrag();
 			return;
 		}
 
 		if (!e.offsetY) return;
 
-		const isGrayOutArea = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
-		let eventCard;
+		const isOutside = this.grayOutSlot$$.value.some((value) => e.offsetY >= value.top && e.offsetY <= value.top + value.height);
 
-		if (isGrayOutArea) {
-			this.modalSvc
-				.open(ConfirmActionModalComponent, {
+		if (isOutside) {
+			const res = await firstValueFrom(
+				this.modalSvc.open(ConfirmActionModalComponent, {
 					data: {
 						titleText: 'AddAppointmentConfirmation',
 						bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
 						confirmButtonText: 'Yes',
 					} as ConfirmActionModalData,
-				})
-				.closed.pipe(
-					tap((value) => {
-						if (value) eventCard = this.createAppointmentCard(e, eventsContainer);
-					}),
-					filter(Boolean),
-					switchMap(() => {
-						return this.modalSvc.open(AddAppointmentModalComponent, {
-							data: {
-								event: e,
-								element: eventCard,
-								elementContainer: eventsContainer,
-								startedAt: this.selectedDate,
-								startTime: this.timeSlot?.timings?.[0],
-							},
-							options: {
-								size: 'xl',
-								backdrop: false,
-								centered: true,
-								modalDialogClass: 'ad-ap-modal-shadow',
-							},
-						}).closed;
-					}),
-					take(1),
-				)
-				.subscribe({
-					next: (res) => {
-						eventCard.remove();
-						if (res) {
-							// show the created card
-							// In progress
-						}
-					},
-				});
-		} else {
-			eventCard = this.createAppointmentCard(e, eventsContainer);
-			this.modalSvc
-				.open(AddAppointmentModalComponent, {
-					data: {
-						event: e,
-						element: eventCard,
-						elementContainer: eventsContainer,
-						startedAt: this.selectedDate,
-						startTime: this.timeSlot?.timings?.[0],
-					},
 					options: {
-						size: 'xl',
 						backdrop: false,
 						centered: true,
-						modalDialogClass: 'ad-ap-modal-shadow',
 					},
-				})
-				.closed.pipe(take(1))
-				.subscribe({
-					next: (res) => {
-						eventCard.remove();
-						if (res) {
-							// show the created card
-							// In progress
-						}
-					},
-				});
+				}).closed,
+			);
+			if (!res) {
+				this.draggableSvc.revertDrag();
+				return;
+			}
 		}
+		const eventCard: HTMLDivElement | undefined = eventsContainer ? this.createAppointmentCard(e, eventsContainer) : undefined;
+
+		this.modalSvc
+			.open(AddAppointmentModalComponent, {
+				data: {
+					event: e,
+					element: eventCard,
+					elementContainer: eventsContainer,
+					startedAt: this.selectedDate,
+					startTime: this.timeSlot?.timings?.[0],
+					isOutside,
+					appointment,
+				},
+				options: {
+					size: 'xl',
+					backdrop: false,
+					centered: true,
+					modalDialogClass: 'ad-ap-modal-shadow',
+				},
+			})
+			.closed.pipe(take(1))
+			.subscribe({
+				next: (res) => {
+					eventCard?.remove();
+					this.draggableSvc.revertDrag(res);
+				},
+			});
 	}
 
 	public onScroll(scrolledElement: HTMLElement, targetElement: HTMLElement) {
@@ -503,7 +516,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			top: 0,
 			height: (timeDuration > 120 ? 120 : timeDuration) * this.pixelsPerMin,
 		});
-		console.log(this.subtractMinutes(105, timings[timings?.length - 1]), 'test');
+		// console.log(this.subtractMinutes(105, timings[timings?.length - 1]), 'test');
 		const dayStart = intervals[intervals.length - 1].dayEnd;
 		const startTime = this.myDate(this.timeSlot?.timings?.[0]);
 		const dayStartTime = this.myDate(dayStart);
@@ -552,6 +565,48 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const subtractedDate = new Date(date.getTime() - minutes * 60 * 1000);
 		return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
 	}
+
+	public resize(e: any, resizer: HTMLDivElement, appointment: Appointment, container: HTMLDivElement) {
+		this.minutesInBottom = this.extendMinutesInBottom(appointment);
+		this.element = container;
+		this.currentResizer = resizer;
+		e.preventDefault();
+		this.original_height = parseInt(container?.style.height);
+		this.original_y = parseInt(container?.style.top);
+		this.original_mouse_y = e.pageY;
+		const isTopResizer = resizer.classList.contains('top');
+		let resizeListener = this.renderer.listen(window, 'mousemove', (e: any) => {
+			if (!isTopResizer) {
+				const height = this.original_height + (e.pageY - this.original_mouse_y);
+				if (height > this.minimum_size) {
+					this.element.style.height = height + 'px';
+				}
+			} else if (isTopResizer) {
+				const height = this.original_height - (e.pageY - this.original_mouse_y);
+				if (height > this.minimum_size && this.element.getBoundingClientRect().height != height) {
+					this.element.style.height = height + 'px';
+					this.element.style.top = this.original_y + (e.pageY - this.original_mouse_y) + 'px';
+				}
+			}
+		});
+
+		let mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
+			const minutes = Math.round(Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute / 5) * 5;
+			const isExtend = parseInt(container?.style.height) > this.original_height;
+
+			if (parseInt(container?.style.height) != this.original_height && minutes) {
+				this.openChangeTimeModal(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
+			} else {
+				this.element.style.height = this.original_height + 'px';
+				this.element.style.top = this.original_y + 'px';
+			}
+			resizeListener();
+			resizeListener = () => {};
+			mouseUpEve();
+			mouseUpEve = () => {};
+		});
+	}
+
 	private addMinutes(minutes: number, time: string): string {
 		const date = new Date();
 		const [hour, minute] = time.split(':');
@@ -560,5 +615,14 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		date.setSeconds(0);
 		const subtractedDate = new Date(date.getTime() + minutes * 60 * 1000);
 		return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
+	}
+
+	private extendMinutesInBottom(appointment: Appointment): number {
+		const appointmentEnd = DateTimeUtils.UTCTimeToLocalTimeString(appointment.endedAt.toString().split(' ')[1]).split(':');
+		const calendarEnd = DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot?.intervals[this.timeSlot.intervals.length - 1].dayEnd).split(':');
+		const appointmentEndInMin = DateTimeUtils.DurationInMinFromHour(+appointmentEnd[0], +appointmentEnd[1]);
+		let calendarEndInMin = DateTimeUtils.DurationInMinFromHour(+calendarEnd[0], +calendarEnd[1]);
+		calendarEndInMin = calendarEndInMin + 120 > 1440 ? 1440 : calendarEndInMin + 120;
+		return calendarEndInMin - appointmentEndInMin;
 	}
 }

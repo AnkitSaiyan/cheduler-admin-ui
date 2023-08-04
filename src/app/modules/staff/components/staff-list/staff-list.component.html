@@ -55,6 +55,7 @@
         class="text-nowrap"
         [disabled]="false"
         routerLink="./add"
+        queryParamsHandling="preserve"
         *dfmPermitted="Permission.CreateStaffs"
       >{{'AddStaff' | translate}}
       </dfm-button>
@@ -70,22 +71,153 @@
   ></dfm-input>
 
   <section class="list-page-content-height" *ngIf="filteredStaffs$$ | async as staffs">
-    <dfm-table [items]="staffs" [selectable]="permissionSvc.isNotReader" (selected)="handleCheckboxSelection($event)"
-               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewStaff($event)"
-               class="dfm-table-wrapper">
-      <ng-template #headerRowTemplate>
-        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
-      </ng-template>
+<!--    <dfm-table [items]="staffs" [selectable]="permissionSvc.isNotReader" (selected)="handleCheckboxSelection($event)"-->
+<!--               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewStaff($event)"-->
+<!--               class="dfm-table-wrapper">-->
+<!--      <ng-template #headerRowTemplate>-->
+<!--        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>-->
+<!--      </ng-template>-->
 
+<!--      <ng-template #bodyRowTemplate let-item>-->
+<!--        <dfm-table-body-cell>{{ item.firstname | titlecase | dashIfNothing }}</dfm-table-body-cell>-->
+<!--        <dfm-table-body-cell>{{ item.lastname | titlecase | dashIfNothing }}</dfm-table-body-cell>-->
+<!--        <dfm-table-body-cell>{{ item.userType | titlecase | dashIfNothing | translate }}</dfm-table-body-cell>-->
+<!--        <dfm-table-body-cell>-->
+<!--          <div class="text-truncate">{{ item.email | dashIfNothing }}</div>-->
+<!--        </dfm-table-body-cell>-->
+
+<!--        <dfm-table-body-cell>-->
+<!--          <dfm-badge *ngIf="item.status === statusType.Active"-->
+<!--                     color="success"-->
+<!--                     size="sm"-->
+<!--                     fontWeight="medium">-->
+<!--            {{ item.status | statusName | dashIfNothing | translate }}-->
+<!--          </dfm-badge>-->
+
+<!--          <dfm-badge *ngIf="item.status === statusType.Inactive"-->
+<!--                     color="primary"-->
+<!--                     size="sm">-->
+<!--            {{ item.status | statusName | dashIfNothing | translate}}-->
+<!--          </dfm-badge>-->
+<!--        </dfm-table-body-cell>-->
+
+<!--        <dfm-table-body-cell *dfmPermitted="[Permission.UpdateStaffs, Permission.DeleteStaffs]">-->
+<!--          <div class="d-flex dfm-gap-16 align-items-center sf-li-action-buttons">-->
+<!--            <ng-container *dfmPermitted="Permission.UpdateStaffs">-->
+<!--              <dfm-button-->
+<!--                *ngIf="item.status === statusType.Inactive"-->
+<!--                color="link-gray"-->
+<!--                size="sm"-->
+<!--                trailingIcon="check-circle"-->
+<!--                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"-->
+<!--                popoverClass="popover-p-8"-->
+<!--                [openDelay]="200"-->
+<!--                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"-->
+<!--              ></dfm-button>-->
+
+<!--              <dfm-button-->
+<!--                *ngIf="item.status === statusType.Active"-->
+<!--                color="link-gray"-->
+<!--                size="sm"-->
+<!--                trailingIcon="x-circle"-->
+<!--                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"-->
+<!--                popoverClass="popover-p-8"-->
+<!--                [openDelay]="200"-->
+<!--                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"-->
+<!--              ></dfm-button>-->
+<!--            </ng-container>-->
+
+<!--            <dfm-button-->
+<!--              color="link-gray"-->
+<!--              size="sm"-->
+<!--              trailingIcon="pencil-02"-->
+<!--              ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave"-->
+<!--              popoverClass="popover-p-8"-->
+<!--              [openDelay]="200"-->
+<!--              (click)="$event.stopPropagation()"-->
+<!--              [routerLink]="['./', item.id, 'edit']"-->
+<!--              [state]="{ comingFromRoute: 'staff', edit: true }"-->
+<!--              *dfmPermitted="Permission.UpdateStaffs"-->
+<!--            ></dfm-button>-->
+
+<!--            <dfm-button-->
+<!--              color="link-gray"-->
+<!--              size="sm"-->
+<!--              trailingIcon="trash-01"-->
+<!--              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave"-->
+<!--              popoverClass="popover-p-8"-->
+<!--              [openDelay]="200"-->
+<!--              (click)="$event.stopPropagation(); deleteStaff(item.id)"-->
+<!--              *dfmPermitted="Permission.DeleteStaffs"-->
+<!--            ></dfm-button>-->
+<!--          </div>-->
+
+<!--          &lt;!&ndash; Action Menu &ndash;&gt;-->
+<!--          <dfm-button-->
+<!--            [ngbPopover]="actionMenu"-->
+<!--            autoClose="autoClose"-->
+<!--            triggers="click"-->
+<!--            container="body"-->
+<!--            placement="left"-->
+<!--            popoverClass="popover-p-0"-->
+<!--            class="hidden sf-li-vertical-dots-btn"-->
+<!--            color="link-gray"-->
+<!--            size="sm"-->
+<!--            trailingIcon="dots-vertical"-->
+<!--            (click)="$event.stopPropagation(); toggleMenu(true)"-->
+<!--          ></dfm-button>-->
+
+<!--          <ng-template #actionMenu>-->
+<!--            <div class="sf-li-menus"-->
+<!--                 aria-labelledby="dropdownManual">-->
+<!--              <ng-container *dfmPermitted="Permission.UpdateStaffs">-->
+<!--                <div *ngIf="!item.status"-->
+<!--                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"-->
+<!--                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"-->
+<!--                     [openDelay]="200">-->
+<!--                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>-->
+<!--                </div>-->
+
+<!--                <div *ngIf="item.status"-->
+<!--                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"-->
+<!--                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"-->
+<!--                     [openDelay]="200">-->
+<!--                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>-->
+<!--                </div>-->
+<!--              </ng-container>-->
+
+<!--              <div (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"-->
+<!--                   [state]="{ comingFromRoute: 'staff', edit: true }" ngbPopover="{{'Edit' | translate}}"-->
+<!--                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.UpdateStaffs">-->
+<!--                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>-->
+<!--              </div>-->
+
+<!--              <div (click)="$event.stopPropagation(); deleteStaff(item.id)" ngbPopover="{{'Delete' | translate}}"-->
+<!--                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.DeleteStaffs">-->
+<!--                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </ng-template>-->
+<!--          &lt;!&ndash; Action Menu ends &ndash;&gt;-->
+
+<!--        </dfm-table-body-cell>-->
+<!--      </ng-template>-->
+<!--    </dfm-table>-->
+<!--    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!staffs.length">-->
+<!--      {{"NoStaffFound" | translate}}-->
+<!--    </div>-->
+
+    <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+                    [clearSelected$]="clearSelected$$" [stickyActions]="true"
+                    noDataMessage="{{ 'NoStaffFound' | translate }}" [rowClickable]="true" [stickyCheckbox]="true"
+                    (rowClicked)="navigateToViewStaff($event)" [stickyFirstColumn]="false" [headers]="tableHeaders"
+                    (scrolled)="onScroll($event)" (sorted)="onSort($event)">
       <ng-template #bodyRowTemplate let-item>
-        <dfm-table-body-cell>{{ item.firstname | titlecase | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.lastname | titlecase | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.userType | titlecase | dashIfNothing | translate }}</dfm-table-body-cell>
-        <dfm-table-body-cell>
-          <div class="text-truncate">{{ item.email | dashIfNothing }}</div>
-        </dfm-table-body-cell>
-
-        <dfm-table-body-cell>
+        <dfm-table-row-cell [fullContent]="item.firstname">{{ item.firstname | titlecase | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.lastname">{{ item.lastname | titlecase | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.userType">{{ item.userType | titlecase | dashIfNothing | translate }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.email">{{ item.email | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.status">
           <dfm-badge *ngIf="item.status === statusType.Active"
                      color="success"
                      size="sm"
@@ -98,113 +230,17 @@
                      size="sm">
             {{ item.status | statusName | dashIfNothing | translate}}
           </dfm-badge>
-        </dfm-table-body-cell>
-
-        <dfm-table-body-cell *dfmPermitted="[Permission.UpdateStaffs, Permission.DeleteStaffs]">
-          <div class="d-flex dfm-gap-16 align-items-center sf-li-action-buttons">
-            <ng-container *dfmPermitted="Permission.UpdateStaffs">
-              <dfm-button
-                *ngIf="item.status === statusType.Inactive"
-                color="link-gray"
-                size="sm"
-                trailingIcon="check-circle"
-                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8"
-                [openDelay]="200"
-                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-              ></dfm-button>
-
-              <dfm-button
-                *ngIf="item.status === statusType.Active"
-                color="link-gray"
-                size="sm"
-                trailingIcon="x-circle"
-                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8"
-                [openDelay]="200"
-                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-              ></dfm-button>
-            </ng-container>
-
-            <dfm-button
-              color="link-gray"
-              size="sm"
-              trailingIcon="pencil-02"
-              ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="$event.stopPropagation()"
-              [routerLink]="['./', item.id, 'edit']"
-              [state]="{ comingFromRoute: 'staff', edit: true }"
-              *dfmPermitted="Permission.UpdateStaffs"
-            ></dfm-button>
-
-            <dfm-button
-              color="link-gray"
-              size="sm"
-              trailingIcon="trash-01"
-              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="$event.stopPropagation(); deleteStaff(item.id)"
-              *dfmPermitted="Permission.DeleteStaffs"
-            ></dfm-button>
-          </div>
-
-          <!-- Action Menu -->
-          <dfm-button
-            [ngbPopover]="actionMenu"
-            autoClose="autoClose"
-            triggers="click"
-            container="body"
-            placement="left"
-            popoverClass="popover-p-0"
-            class="hidden sf-li-vertical-dots-btn"
-            color="link-gray"
-            size="sm"
-            trailingIcon="dots-vertical"
-            (click)="$event.stopPropagation(); toggleMenu(true)"
-          ></dfm-button>
-
-          <ng-template #actionMenu>
-            <div class="sf-li-menus"
-                 aria-labelledby="dropdownManual">
-              <ng-container *dfmPermitted="Permission.UpdateStaffs">
-                <div *ngIf="!item.status"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
-                     [openDelay]="200">
-                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-                </div>
-
-                <div *ngIf="item.status"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
-                     [openDelay]="200">
-                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-                </div>
-              </ng-container>
-
-              <div (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"
-                   [state]="{ comingFromRoute: 'staff', edit: true }" ngbPopover="{{'Edit' | translate}}"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.UpdateStaffs">
-                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
-              </div>
-
-              <div (click)="$event.stopPropagation(); deleteStaff(item.id)" ngbPopover="{{'Delete' | translate}}"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.DeleteStaffs">
-                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
-              </div>
-            </div>
+        </dfm-table-row-cell>
+        <dfm-data-table-action-cell *dfmPermitted="[Permission.UpdateStaffs, Permission.DeleteStaffs]">
+          <ng-template #actionCellTemplate>
+            <dfm-data-table-action *ngIf="item.status === statusType.Inactive" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }], item)" ></dfm-data-table-action>
+            <dfm-data-table-action *ngIf="item.status === statusType.Active" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }], item)"></dfm-data-table-action>
+            <dfm-data-table-action *dfmPermitted="Permission.UpdateStaffs" icon="pencil-02" tooltip="{{ 'Edit' | translate }}" (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']" queryParamsHandling="preserve" [state]="{ comingFromRoute: 'staff', edit: true }"></dfm-data-table-action>
+            <dfm-data-table-action *dfmPermitted="Permission.DeleteStaffs" icon="trash-01" tooltip="{{ 'Delete' | translate }}" (click)="$event.stopPropagation(); deleteStaff(item.id)"></dfm-data-table-action>
           </ng-template>
-          <!-- Action Menu ends -->
-
-        </dfm-table-body-cell>
+        </dfm-data-table-action-cell>
       </ng-template>
-    </dfm-table>
-    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!staffs.length">
-      {{"NoStaffFound" | translate}}
-    </div>
+    </dfm-data-table>
   </section>
 
   <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->

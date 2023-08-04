@@ -184,12 +184,13 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
 				next: () => {
 					this.notificationSvc.showNotification(Translate.SuccessMessage.EmailTemplateUpdated[this.selectedLang]);
 					this.submitting$$.next(false);
-					this.router.navigate(['../../'], { relativeTo: this.route });
+					this.router.navigate(['../../'], { relativeTo: this.route, queryParamsHandling: 'merge' });
 				},
 				error: () => this.submitting$$.next(false),
 			});
 	}
 }
+
 
 
 

@@ -50,7 +50,7 @@
       </div>
 
       <div class="calender-day-view-body-container hide-scrollbar">
-        <div role="presentation" class="calender-day-view-body" >
+        <div role="presentation" class="calender-day-view-body" #calendarView>
           <div role="row" class="calender-day-view-time-slot-container" *ngIf="timeSlot?.timings?.length">
             <div class="calender-day-view-time-slot text-sm" *ngFor="let time of timeSlot?.timings" >
               <span>{{ time | dfmUtcToLocal: true }}</span>
@@ -70,26 +70,35 @@
 
               <div class="calender-day-view-events-left-vertical-line"></div>
               <ng-container *ngIf="headerList.length; else singleGridCol;">
-                <div *ngFor="let h of headerList" role="gridcell" class="calender-day-view-body-grid-column">
+                <div *ngFor="let h of headerList" role="gridcell" class="calender-day-view-body-grid-column" dfmDragAreaEvent [calendarType]="calendarType.Day" [headerType]="h.name" (editAppointment)="addAppointment($event.event, undefined, $event.data)">
                   <div class="calender-day-view-body-grid-absolute"></div>
 
-                  <div class="calender-day-view-body-events-container" role="presentation" #eventsContainer (dblclick)="addAppointment($event, eventsContainer)">
+                  <div class="calender-day-view-body-events-container" role="presentation" #eventsContainer (dblclick)="addAppointment($event, eventsContainer)" >
                     <ng-container *ngIf="dataGroupedByDateAndRoom[dateString] as dataGroupedByRoom">
                       <ng-container
                         *ngIf="dataGroupedByRoom && dataGroupedByRoom[h.value] as roomData">
                         <ng-container
-                          *ngFor="let data of roomData; let eventNo = index;">
-
-                          <div *ngIf="getTop([data.appointment]) >= 0 && getHeight([data.appointment]) as eventHeight" #eventContainer class="calender-day-view-event-container" (dblclick)="$event.preventDefault()"
+                          *ngFor="let data of roomData;">
+                          <ng-container *ngIf="getHeight([data.appointment]) as eventHeight" >
+                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight && getTop([data.appointment]) >= 0" #eventContainer class="calender-day-view-event-container resizable" triggers="hover" [ngbPopover]="eventDetails"
+                                     [autoClose]="'outside'" container="body" #popover="ngbPopover" [ngbPopoverDrag]="popover"   [draggable]="!((data.appointment.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [calendarType]="calendarType.Day" [draggedElData]="data.appointment" [headerType]="h.name" (dblclick)="$event.preventDefault()"
                                [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
                           >
+                          <div class='resizers' id="resizers">
+                            <div class='resizer top' #topResizer (mousedown)="resize($event, topResizer, data.appointment, eventContainer)"></div>
                             <div class="overflow-hidden">
                               <!-- POP OVER -->
                               <ng-template #eventDetails>
                                 <div class="calender-day-view-event-details-expanded">
                                   <div class="d-flex flex-column dfm-gap-4">
-                                    <span class="font-weight-medium"> {{"Exam" | translate}} </span>
+                                    <span class="font-weight-medium"> {{"Exam" | translate}}</span>
                                     <span *ngIf="data.exams?.length">{{ data.exams | joinWithAnd : 'name'}}</span>
+                                  </div>
+
+                                  <div class="d-flex flex-column dfm-gap-4">
+                                    <span class="font-weight-medium dfm-mt-8"> {{"SelectedSlot" | translate}} </span>
+                                    <span class="calendar-comments-text">{{ data.appointment.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }} -
+                                      {{ data.appointment.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
                                   </div>
 
                                   <div class="d-flex flex-column dfm-gap-4">
@@ -121,11 +130,14 @@
                               </ng-template>
                               <!-- POP OVER ENDS -->
 
+                              <!-- circle for alert start -->
+                              <!-- <div class="calendar-week-view-event-circle-icon" [ngClass]="{ 'calendar-week-view-event-circle-icon-sm': eventHeight <= 20 }">
+                              </div> -->
+                              <!-- circle for alert end -->
                               <div class="calender-day-view-event-details-container" (click)="$event.stopPropagation()"
-                                   [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto ': +eventHeight <= 40, 'center': +eventHeight >20 && +eventHeight <=40 }"
-                                   [routerLink]="['/', 'appointment', data.appointment.id, 'view']">
-                                <div class="d-flex dfm-gap-4" triggers="hover" [ngbPopover]="eventDetails"
-                                     [autoClose]="'outside'" container="body">
+                                   [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto ': +eventHeight <= 40, 'center': +eventContainer.offsetHeight >20 && +eventContainer.offsetHeight <=40 }"
+                                   [routerLink]="['/', 'appointment', data.appointment.id, 'view']" queryParamsHandling="merge">
+                                <div class="d-flex dfm-gap-4" >
                                   <!-- <div class="circle-gray-200-24" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname?.length">
                                     {{ (data.appointment.patientFname[0] | uppercase)}}
                                   </div> -->
@@ -141,7 +153,7 @@
                                       </span>
                                     </ng-template>
 
-                                    <span class="calender-day-view-event-time" *ngIf="+eventHeight > 40 && data?.appointment?.patientFname">
+                                    <span class="calender-day-view-event-time" *ngIf="+eventContainer.offsetHeight > 40 && data?.appointment?.patientFname">
                                       {{ data.appointment.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }} -
                                       {{ data.appointment.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal: true }}
                                     </span>
@@ -174,16 +186,12 @@
                                     <span>{{ 'ChangeRadiologist' | translate }}</span>
                                   </button>
 
-                                  <button mat-menu-item [matMenuTriggerFor]="subMenu"
+                                  <!-- <button mat-menu-item [matMenuTriggerFor]="subMenu"
                                           (click)="$event.stopPropagation()">
                                     <div class="icon-20">
                                       <dfm-icon name="arrow-right"></dfm-icon>
                                     </div>
                                     <span>{{ 'Move' | translate }}</span>
-                                    <!-- <div class="icon-20 ml-auto">
-                                      <dfm-icon name="chevron-right"></dfm-icon>
-                                    </div> -->
-
                                     <mat-menu #subMenu="matMenu">
                                       <button mat-menu-item
                                                 (click)="openChangeTimeModal(data.appointment, false, eventContainer)">
@@ -195,10 +203,11 @@
                                           <span>{{ 'Extend' | translate }}</span>
                                         </button>
                                     </mat-menu>
-                                  </button>
+                                  </button> -->
 
                                   <button mat-menu-item
                                           [routerLink]="['/', 'appointment', data.appointment.id, 'edit']"
+                                          queryParamsHandling="merge"
                                           [state]="{ edit: true, comingFromRoute: 'appointment' }">
                                     <div class="icon-20">
                                       <dfm-icon name="pencil-02"></dfm-icon>
@@ -217,7 +226,10 @@
                                   </button>
                               </mat-menu>
                             </div>
+                            <div class='resizer bottom' #bottomResizer (mousedown)="resize($event, bottomResizer, data.appointment, eventContainer)" ></div>
                           </div>
+                          </div>
+                        </ng-container>
                         </ng-container>
                       </ng-container>
                     </ng-container>

@@ -336,7 +336,7 @@
 	"AppointmentsList": "Appointments List",
 	"Search": "Search",
 	"AdvancedSearch": " Advanced search",
-	"AreYouSureYouWantToDeleteThisPost": "Are you sure you want to delete this Post?",
+	"AreYouSureYouWantToDeleteThisPost": "Are you sure you want to delete this Post-it?",
 	"AreYouSureYouWantToDeleteThisExam": "Are you sure you want to delete this Examination?",
 	"EnterMessage": "Enter message",
 	"Today": "Today",
@@ -367,7 +367,10 @@
 	"EnterPercentage": "Enter percentage",
 	"Daily": "Daily",
 	"AddAppointmentConfirmation": "Add Appointment Confirmation",
+	"EditAppointmentConfirmation": "Edit Appointment Confirmation",
+	"MoveAppointmentConfirmation": "Move Appointment Confirmation",
 	"AreYouSureWantToMakeAppointmentOutsideOperatingHours": "Are you sure you want to make an appointment outside the operating hours?",
+	"AreYouSureWantToMoveAppointmentOutsideOperatingHours": "Are you sure you want to move this appointment outside the operating hours?",
 	"LoadingSlots": "Loading Slots",
 	"To": "To",
 	"PracticeNotAvailableForDay": "Practice is not available for this day",
@@ -394,6 +397,8 @@
 	"CreatedOn": "Created on",
 	"UserRole": "User Role",
 	"SelectRole": "Select role",
+	"socialSecurityNumber": "Social Security Number",
+	"enterSocialSecurityNumber": "Enter Social Security Number",
 	"Jan": "Jan",
 	"Feb": "Feb",
 	"Mar": "Mar",
@@ -448,36 +453,16 @@
 			"NO_ITEMS": "No items found",
 			"LOADING": "Loading"
 		}
-	}
+	},
+	"BodyType": "Body type",
+	"SelectBodyType": "Select body type",
+	"BodyPart": "Body part",
+	"SelectBodyPart": "Select body part",
+	"Male": "Male",
+	"Female": "Female",
+	"Skeleton": "Skeleton",
+	"Body": "Body"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

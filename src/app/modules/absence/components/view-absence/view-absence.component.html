@@ -1,7 +1,7 @@
 <div *ngIf="absenceDetails$$ | async as absenceDetails" class="d-flex flex-column dfm-gap-24">
 	<section class="content-section-1 ab-vw-section1">
 		<div class="d-flex dfm-gap-8 align-items-center dfm-text-primary ab-vw-title-buttons">
-			<dfm-button color="link" size="lg" routerLink="/absence">{{ 'Absence' | translate }} </dfm-button>
+			<dfm-button color="link" size="lg" routerLink="/absence"  queryParamsHandling="merge">{{ 'Absence' | translate }} </dfm-button>
 			<div style="width: 16px; height: 16px" class="h-fit">
 				<dfm-icon name="chevron-right"></dfm-icon>
 			</div>
@@ -28,10 +28,10 @@
 		<!-- Mobile View -->
 		<div class="hidden dfm-gap-8 align-items-center ab-vw-title-buttons-mv">
 			<div class="rounded-circle overflow-hidden">
-				<dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" routerLink="/absence"> </dfm-button-icon>
+				<dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" routerLink="/absence" queryParamsHandling="merge"> </dfm-button-icon>
 			</div>
 
-			<dfm-button color="link" size="lg" routerLink="./">{{ 'AbsenceView' | translate }} </dfm-button>
+			<dfm-button color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{ 'AbsenceView' | translate }} </dfm-button>
 		</div>
 		<!-- ** -->
 	</section>

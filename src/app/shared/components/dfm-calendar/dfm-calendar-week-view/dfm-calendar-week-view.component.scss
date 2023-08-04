@@ -1,446 +1,484 @@
 h3 {
-  margin: 0;
+	margin: 0;
 }
 
 .calendar-week-view-header {
-  box-sizing: border-box;
-  display: flex;
+	box-sizing: border-box;
+	display: flex;
 
-  .calendar-week-view-time-format {
-    display: flex;
-    flex-direction: column;
-    justify-content: end;
-    vertical-align: middle;
-    min-width: 64px;
-    //max-width: 80px;
-    font-size: 0.7rem;
+	.calendar-week-view-time-format {
+		display: flex;
+		flex-direction: column;
+		justify-content: end;
+		vertical-align: middle;
+		min-width: 64px;
+		//max-width: 80px;
+		font-size: 0.7rem;
 
-    div {
-      white-space: nowrap;
-      height: 24px;
-    }
-  }
+		div {
+			white-space: nowrap;
+			height: 24px;
+		}
+	}
 
-  .calendar-week-view-weekday-header {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    // padding-right: 16px;
-    overflow: auto;
+	.calendar-week-view-weekday-header {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		// padding-right: 16px;
+		overflow: auto;
 
-    &::-webkit-scrollbar {
-      display: none;
-    }
+		&::-webkit-scrollbar {
+			display: none;
+		}
 
-    .calendar-week-view-weekdays {
-      display: flex;
-      width: 100%;
+		.calendar-week-view-weekdays {
+			display: flex;
+			width: 100%;
 
-      .calendar-week-view-weekday-header-left-vertical-line {
-        width: 8px;
-        min-width: 8px;
-        height: 100%;
-        align-self: end;
-        -webkit-align-self: flex-end;
-        //border-right: 1px solid var(--dfm-main-200);;
-      }
+			.calendar-week-view-weekday-header-left-vertical-line {
+				width: 8px;
+				min-width: 8px;
+				height: 100%;
+				align-self: end;
+				-webkit-align-self: flex-end;
+				//border-right: 1px solid var(--dfm-main-200);;
+			}
 
-      .calendar-week-view-weekday {
-        text-align: center;
-        text-align: -webkit-center;
-        min-width: 128px;
-        width: 128px;
-        flex: 1;
-        color: var(--dfm-main-500);
-        padding: 8px 0;
-        position: relative;
-        background: var(--dfm-table-odd-cell-bg);
+			.calendar-week-view-weekday {
+				text-align: center;
+				text-align: -webkit-center;
+				min-width: 128px;
+				width: 128px;
+				flex: 1;
+				color: var(--dfm-main-500);
+				padding: 8px 0;
+				position: relative;
+				background: var(--dfm-table-odd-cell-bg);
 
-        .calendar-week-view-day-name {
-          height: 28px;
-          line-height: 32px;
-        }
+				.calendar-week-view-day-name {
+					height: 28px;
+					line-height: 32px;
+				}
 
-        .calendar-week-view-header-cell-left-line {
-          border-left: 1px solid var(--dfm-main-200);
-          bottom: 0;
-          height: 100%;
-          //margin-left: -8px;
-          position: absolute;
-        }
+				.calendar-week-view-header-cell-left-line {
+					border-left: 1px solid var(--dfm-main-200);
+					bottom: 0;
+					height: 100%;
+					//margin-left: -8px;
+					position: absolute;
+				}
 
-        .calendar-week-view-date {
-          transition: all 150ms linear;
-          border-radius: 50%;
-          height: 40px;
-          width: 40px;
-          line-height: 40px;
-          font-size: 1.5rem;
+				.calendar-week-view-date {
+					transition: all 150ms linear;
+					border-radius: 50%;
+					height: 40px;
+					width: 40px;
+					line-height: 40px;
+					font-size: 1.5rem;
 
-          &:hover {
-            cursor: pointer;
-            background: var(--dfm-main-200);
-            color: var(--dfm-main-500);
-          }
-        }
+					&:hover {
+						cursor: pointer;
+						background: var(--dfm-main-200);
+						color: var(--dfm-main-500);
+					}
+				}
 
-        .calendar-week-view-date-today {
-          background: coral;
-          color: white;
-        }
+				.calendar-week-view-date-today {
+					background: coral;
+					color: white;
+				}
 
-        .calendar-month-view-selected-day {
-          background: var(--dfm-main-200);
-          color: var(--dfm-main-500);
-        }
-      }
-    }
-  }
+				.calendar-month-view-selected-day {
+					background: var(--dfm-main-200);
+					color: var(--dfm-main-500);
+				}
+			}
+		}
+	}
 }
 
 .calendar-week-view-body-container {
-  //max-height: calc(100vh - 368px);
-  overflow: auto;
-    height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
-    max-height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
-  overflow-y: auto;
-  overflow-x: hidden;
+	//max-height: calc(100vh - 368px);
+	overflow: auto;
+	height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
+	max-height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
+	overflow-y: auto;
+	overflow-x: hidden;
 
-  &::-webkit-scrollbar {
-      display: none;
-      }
+	&::-webkit-scrollbar {
+		display: none;
+	}
 
-  .calendar-week-view-body {
-    display: flex;
-    width: 100%;
-    position: relative;
+	.calendar-week-view-body {
+		display: flex;
+		width: 100%;
+		position: relative;
 
-    &::before {
-      content: "";
-      height: 2px;
-      position: absolute;
-      width: 100%;
-      border-bottom: 1px solid var(--dfm-main-300);
-      //left: 96px;
-    }
+		&::before {
+			content: '';
+			height: 2px;
+			position: absolute;
+			width: 100%;
+			border-bottom: 1px solid var(--dfm-main-300);
+			//left: 96px;
+		}
 
-    .calendar-week-view-time-slot-container {
-      height: auto;
-      overflow-y: hidden;
-      min-width: 64px;
-      display: flex;
-      flex-direction: column;
-      margin-top: 4px;
+		.calendar-week-view-time-slot-container {
+			height: auto;
+			overflow-y: hidden;
+			min-width: 64px;
+			display: flex;
+			flex-direction: column;
+			margin-top: 4px;
 
-      .calendar-week-view-time-slot {
-        min-height: 60px;
-        padding-right: 8px;
-        text-align: right;
-        position: relative;
+			.calendar-week-view-time-slot {
+				min-height: 60px;
+				padding-right: 8px;
+				text-align: right;
+				position: relative;
 
-        span {
-          position: relative;
-          top: -16px;
-          font-size: 10px;
-        }
-      }
-    }
+				span {
+					position: relative;
+					top: -16px;
+					font-size: 10px;
+				}
+			}
+		}
 
-    .calendar-week-view-events-container-main {
-      overflow-x: auto;
-      //overflow-y: scroll;
-      display: flex;
-      align-items: flex-start;
-      -webkit-align-items: flex-start;
-      flex: 1;
+		.calendar-week-view-events-container-main {
+			overflow-x: auto;
+			//overflow-y: scroll;
+			display: flex;
+			align-items: flex-start;
+			-webkit-align-items: flex-start;
+			flex: 1;
 
-      .calendar-week-view-events-container {
-        min-width: 100%;
-        display: inline-flex;
-        vertical-align: top;
-        cursor: pointer;
-        //position: relative;
+			.calendar-week-view-events-container {
+				min-width: 100%;
+				display: inline-flex;
+				vertical-align: top;
+				cursor: pointer;
+				//position: relative;
 
-        .calendar-week-view-horizontal-line {
-          //position: absolute;
-          //width: calc(100vw - 128px);
-          height: 60px;
-          cursor: pointer;
-          //top: -12px;
-          //left: 64px;
+				.calendar-week-view-horizontal-line {
+					//position: absolute;
+					//width: calc(100vw - 128px);
+					height: 60px;
+					cursor: pointer;
+					//top: -12px;
+					//left: 64px;
 
-          &:first-child::after {
-              content: "";
-              margin-top: -4px;
-            }
-          &::after {
-            content: "";
-            position: absolute;
-            width: 100%;
-            // margin-top: -4px;
-            z-index: 1;
-            pointer-events: none;
-            border-bottom: 1px solid var(--dfm-main-300);
-          }
-        }
+					&:first-child::after {
+						content: '';
+						margin-top: -4px;
+					}
 
-        .calendar-week-view-horizontal-line-light {
-          cursor: pointer !important;
+					&::after {
+						content: '';
+						position: absolute;
+						width: 100%;
+						// margin-top: -4px;
+						z-index: 1;
+						pointer-events: none;
+						border-bottom: 1px solid var(--dfm-main-300);
+					}
+				}
 
-          &::after {
-            content: "";
-            position: absolute;
-            width: 100%;
-            margin-top: -20px;
-            z-index: 1;
-            pointer-events: none;
-            border-bottom: 1px solid var(--dfm-main-100);
-            cursor: pointer !important;
-          }
+				.calendar-week-view-horizontal-line-light {
+					cursor: pointer !important;
 
-          &::before {
-            content: "";
-            position: absolute;
-            width: 100%;
-            margin-top: -40px;
-            z-index: 1;
-            pointer-events: none;
-            border-bottom: 1px solid var(--dfm-main-100);
-            cursor: pointer !important;
-          }
-        }
+					&::after {
+						content: '';
+						position: absolute;
+						width: 100%;
+						margin-top: -20px;
+						z-index: 1;
+						pointer-events: none;
+						border-bottom: 1px solid var(--dfm-main-100);
+						cursor: pointer !important;
+					}
 
-        .calendar-week-view-events-left-vertical-line {
-          width: 8px;
-          min-width: 8px;
-          //border-right: 1px solid var(--dfm-main-200);
-        }
+					&::before {
+						content: '';
+						position: absolute;
+						width: 100%;
+						margin-top: -40px;
+						z-index: 1;
+						pointer-events: none;
+						border-bottom: 1px solid var(--dfm-main-100);
+						cursor: pointer !important;
+					}
+				}
 
-        .calendar-week-view-body-grid-column {
-          min-width: 128px;
-          width: 128px;
-          flex: 1;
-          border-left: 1px solid var(--dfm-main-200);
-          padding-right: 12px;
-          position: relative;
+				.calendar-week-view-events-left-vertical-line {
+					width: 8px;
+					min-width: 8px;
+					//border-right: 1px solid var(--dfm-main-200);
+				}
 
-          .calendar-week-view-body-grid-absolute {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-          }
+				.calendar-week-view-body-grid-column {
+					min-width: 128px;
+					width: 100%;
+					flex: 1;
+					border-left: 1px solid var(--dfm-main-200);
+					// padding-right: 12px;
+					position: relative;
 
-          .calendar-week-view-body-events-container {
-            position: relative;
-            height: 100%;
-            width: 100%;
-          }
-        }
-      }
-    }
-  }
+					.calendar-week-view-body-grid-absolute {
+						position: absolute;
+						top: 0;
+						bottom: 0;
+						left: 0;
+						right: 0;
+					}
+
+					.calendar-week-view-body-events-container {
+						position: relative;
+						height: 100%;
+						width: 100%;
+					}
+				}
+			}
+		}
+	}
 }
 
 .calendar-week-view-event-container {
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  display: flex;
-  border-left: 4px solid var(--dfm-blue);
-  border-bottom-left-radius: 4px;
-  z-index: 1;
-  background: var(--dfm-blue-light);
-  box-shadow: 0 0.125rem 0.25rem rgb(30 30 28 / 8%);
-  transition: 200ms all linear;
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	display: flex;
+	border-bottom-left-radius: 4px;
+	z-index: 1;
+	gap: 4px;
+	overflow: hidden;
 
-  &:hover {
-    z-index: 2;
-    box-shadow: 0 0.125rem 1.25rem rgb(30 30 28 / 10%);
-  }
+	.calendar-week-view-event-details-expanded {
+		min-width: 300px;
+		display: flex;
+		flex-direction: column;
+		row-gap: 8px;
 
-  .calendar-week-view-event-details-expanded {
-    min-width: 300px;
-    display: flex;
-    flex-direction: column;
-    row-gap: 8px;
+		.calendar-week-view-event-details-expanded-title {
+			font-weight: 600;
+		}
 
-    .calendar-week-view-event-details-expanded-title {
-      font-weight: 600;
-    }
+		.calendar-week-view-event-patients-container {
+			display: flex;
+			flex-direction: column;
+			overflow-y: auto;
+			max-height: 40vh;
 
-    .calendar-week-view-event-patients-container {
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      max-height: 40vh;
+			&::-webkit-scrollbar {
+				width: 12px;
+			}
 
-      &::-webkit-scrollbar {
-        width: 12px;
-      }
+			.calendar-week-view-event-patients-container {
+				display: flex;
+				flex-direction: column;
 
-      .calendar-week-view-event-patients-container {
-        display: flex;
-        flex-direction: column;
+				//.calendar-week-view-e vent-patient-details {
+				//  display: flex;
+				//  flex-direction: column;
+				//  padding: 8px;
+				//  //&:hover {
+				//  //  background: var(--dfm-main-100);
+				//  //}
+				//}
 
-        //.calendar-week-view-e vent-patient-details {
-        //  display: flex;
-        //  flex-direction: column;
-        //  padding: 8px;
-        //  //&:hover {
-        //  //  background: var(--dfm-main-100);
-        //  //}
-        //}
+				.calendar-week-view-event-patient-details-divider {
+					border-bottom: 1px solid var(--dfm-main-200);
+					margin: 0 8px;
+					position: absolute;
+					bottom: 0;
+					left: 0;
+					right: 0;
+					z-index: 1;
+				}
+			}
+		}
+	}
 
-        .calendar-week-view-event-patient-details-divider {
-          border-bottom: 1px solid var(--dfm-main-200);
-          margin: 0 8px;
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          z-index: 1;
-        }
-      }
-    }
-  }
+	.calendar-week-view-event-circle-icon {
+		position: absolute;
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		left: -13px;
+		top: -8px;
+		background: var(--dfm-blue);
+		color: white;
+		text-align: center;
+		font-size: 0.8rem;
+		font-weight: 600;
+		line-height: 22px;
+	}
 
-  .calendar-week-view-event-circle-icon {
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    left: -13px;
-    top: -8px;
-    background: var(--dfm-blue);
-    color: white;
-    text-align: center;
-    font-size: 0.8rem;
-    font-weight: 600;
-    line-height: 22px;
-  }
+	.calendar-week-view-event-details-container {
+		display: flex;
+		flex-direction: column;
+		//justify-content: center;
+		width: calc(100% - 12px);
+		padding: 12px 8px;
+		font-size: 0.9rem;
+		border-left: 2px solid var(--dfm-blue);
+		background: var(--dfm-blue-light);
+		box-shadow: 0 0.125rem 0.25rem rgb(30 30 28 / 8%);
+		transition: 200ms all linear;
+		min-width: 32px;
+		cursor: pointer;
+		overflow: hidden;
 
-  .calendar-week-view-event-details-container {
-    display: flex;
-    flex-direction: column;
-    //justify-content: center;
-    width: 100%;
-    padding: 12px 8px 12px 12px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    overflow: hidden;
+		&:hover {
+			z-index: 2;
+			box-shadow: 0 0.125rem 1.25rem rgb(30 30 28 / 10%);
+		}
 
-    .calendar-week-view-event-title {
-      font-weight: 600;
-      color: var(--dfm-blue);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+		.calendar-week-view-event-title {
+			font-weight: 600;
+			color: var(--dfm-blue);
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
 
-    .calendar-week-view-event-time {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--dfm-main-500);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
+		.calendar-week-view-event-time {
+			font-size: 0.8rem;
+			font-weight: 500;
+			color: var(--dfm-main-500);
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
 }
 
 .gray-out-area-week {
-  background: var(--dfm-main-200);
-  width: 100%;
-  position: absolute;
-  opacity: .5;
+	background: var(--dfm-main-200);
+	width: 100%;
+	position: absolute;
+	opacity: 0.5;
 }
+
 .priority-slots-area {
-  position: absolute;
+	position: absolute;
 
-  display: flex;
-  z-index: 1;
-  transition: 200ms all linear;
-  &.small {
-      width: 4px;
-      right: -12px;
-    }
+	display: flex;
+	z-index: 1;
+	transition: 200ms all linear;
+  overflow: hidden;
 
-    &.large {
-      left: 0px;
-      right: 0px;
-    width: calc(100% + 12px);
+	&.small {
+		width: 4px;
+		right: 0;
+	}
+
+	&.large {
+		left: 0px;
+		right: 0px;
+    width: 100%;
+	}
+
+	&.High {
+		background: var(--dfm-priority-slot-high-color);
+	}
+
+	&.Medium {
+		background: var(--dfm-priority-slot-medium-color);
+	}
+
+	&.Low {
+		background: var(--dfm-priority-slot-low-color);
+	}
 }
 
-  &.High {
-    background: var(--dfm-priority-slot-high-color);
-  }
-
-  &.Medium {
-    background: var(--dfm-priority-slot-medium-color);
-  }
-
-  &.Low {
-    background: var(--dfm-priority-slot-low-color);
-  }
-}
 .appointment-title {
-  font-weight: 500;
-  font-size: 0.6rem;
-  line-height: 20px;
-  color: black;
-  background: transparent;
-  pointer-events: none;
-  margin-left: 8px;
+	font-weight: 500;
+	font-size: 0.6rem;
+	line-height: 20px;
+	color: black;
+	background: transparent;
+	pointer-events: none;
+	margin-left: 8px;
 }
 
 .ad-ap-modal-shadow {
-  .modal-content {
-    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-  }
+	.modal-content {
+		box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+	}
 }
 
 .calendar-week-view-event-circle-icon-sm {
-  width: 20px !important;
-  height: 20px !important;
-  left: -12px !important;
-  top: unset !important;
-  font-size: 0.7rem !important;
-  line-height: 20px !important;
+	width: 20px !important;
+	height: 20px !important;
+	left: -12px !important;
+	top: unset !important;
+	font-size: 0.7rem !important;
+	line-height: 20px !important;
 }
-.calendar-comments-text{
-  word-wrap: break-word;
-  max-width:200px;
-  min-width:50px;
+
+.calendar-comments-text {
+	word-wrap: break-word;
+	max-width: 200px;
+	min-width: 50px;
 }
+
 .accordion-content {
-  max-height: calc(90vh - 72px);
-  overflow: auto;
+	max-height: calc(90vh - 72px);
+	overflow: auto;
 }
 
 @media (max-width: 680px) {
-  .calendar-week-view-event-details-expanded {
-    min-width: auto;
-  }
+	.calendar-week-view-event-details-expanded {
+		min-width: auto;
+	}
 
-  .calendar-week-view-event-patients-container {
-    overflow-y: auto;
-    max-height: 256px;
+	.calendar-week-view-event-patients-container {
+		overflow-y: auto;
+		max-height: 256px;
 
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
 }
-.priority-slot-percentage{
-  width: 100%;
-  position: absolute;
-  top: 24px;
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-  opacity: 1;
-  align-items: center;
+.percentageToggle {
+	font-weight: 600;
+}
+
+.priority-slot-percentage {
+	width: 100%;
+	position: absolute;
+	// top: 12px;
+	display: flex;
+	flex-direction: column;
+	// padding: 8px;
+	opacity: 1;
+	align-items: center;
+}
+
+.txt-slot-percentage {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+}
+
+.dfm-container {
+	display: flex;
+
+	.role-container {
+		width: 100%;
+	}
+
+	.left,
+	.right {
+		min-width: 12px;
+		height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
+		margin-top: auto;
+	}
+}
+.dfm-instruction {
+	max-width: 180px;
 }
 

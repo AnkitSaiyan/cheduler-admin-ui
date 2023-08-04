@@ -197,7 +197,7 @@ h3 {
 
     .calender-day-view-events-container-main {
       overflow-x: auto;
-      //overflow-y: scroll;
+      overflow-y: hidden;
       display: flex;
       align-items: flex-start;
       -webkit-align-items: flex-start;
@@ -393,15 +393,17 @@ h3 {
   }
 
   .calender-day-view-event-more-button {
-    top: calc(50% - 20px);
-    width: 40px;
-    height: 40px;
-    padding: 8px;
+    // top: calc(50% - 20px);
+    top : 2px;
+    width: 1px;
+    height: 1px;
+    // margin-top: 10px;
+    // padding: 8px;
     border-radius: 50%;
     color: var(--dfm-primary) !important;
     position: absolute;
     bottom: 2px;
-    right: 2px;
+    right: 25px;
     //align-self: end;
 
     svg {
@@ -465,6 +467,35 @@ h3 {
   min-width:50px;
 }
 
+.resizable {
+  // background: white;
+  height: 100px;
+  position: absolute;
+  // top: 100px;
+  // left: 100px;
+}
+
+.resizable .resizers .resizer {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  /*magic to turn square into circle*/
+  background: #4286f4;
+  border: 3px solid #4286f4;
+  position: absolute;
+}
+
+.resizable .resizers .resizer.top {
+  right: 15px;
+  top: -4px;
+  cursor: nesw-resize;
+}
+
+.resizable .resizers .resizer.bottom {
+  left: 15px;
+  bottom: -4px;
+  cursor: nesw-resize;
+}
 @media (max-width: 680px) {
   .calender-day-view-event-details-expanded {
     min-width: auto !important;
@@ -485,3 +516,31 @@ h3 {
   gap: 12px;
   max-height: 40px;
 }
+
+// start css for alert circle on appointment
+
+// .calendar-week-view-event-circle-icon-sm {
+//   width: 20px !important;
+//   height: 20px !important;
+//   left: -12px !important;
+//   top: unset !important;
+//   font-size: 0.7rem !important;
+//   line-height: 20px !important;
+// }
+
+// .calendar-week-view-event-circle-icon {
+//   position: absolute;
+//   width: 22px;
+//   height: 22px;
+//   border-radius: 50%;
+//   left: -13px;
+//   top: -8px;
+//   background: var(--dfm-blue);
+//   color: white;
+//   text-align: center;
+//   font-size: 0.8rem;
+//   font-weight: 600;
+//   line-height: 22px;
+// }
+
+// end css for alert circle on appointment

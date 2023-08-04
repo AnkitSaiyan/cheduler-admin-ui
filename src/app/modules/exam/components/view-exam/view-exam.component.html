@@ -1,7 +1,7 @@
 <div *ngIf="examDetails$$ | async as examDetails" class="d-flex flex-column dfm-gap-24">
 	<section class="d-flex align-items-center justify-content-between dfm-gap-16 vw-ex-section1">
 		<div class="d-flex dfm-gap-8 align-items-center dfm-text-primary vw-ex-title-buttons">
-			<dfm-button color="link" size="lg" routerLink="/exam">{{ 'Exam' | translate }} </dfm-button>
+			<dfm-button color="link" size="lg" routerLink="/exam" queryParamsHandling="merge">{{ 'Exam' | translate }} </dfm-button>
 			<div style="width: 16px; height: 16px" class="h-fit">
 				<dfm-icon name="chevron-right"></dfm-icon>
 			</div>
@@ -14,6 +14,7 @@
 				size="md"
 				leadingIcon="pencil-02"
 				[routerLink]="['../', 'edit']"
+        queryParamsHandling="merge"
 				[state]="{ comingFromRoute: 'view', edit: true }"
 				*dfmPermitted="Permission.UpdateExams"
 				>{{ 'EditExam' | translate }}
@@ -34,10 +35,10 @@
 		<!-- Mobile View -->
 		<div class="hidden dfm-gap-8 align-items-center vw-ex-title-buttons-mv">
 			<div class="rounded-circle overflow-hidden">
-				<dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" routerLink="/exam"> </dfm-button-icon>
+				<dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" routerLink="/exam" queryParamsHandling="merge"> </dfm-button-icon>
 			</div>
 
-			<dfm-button color="link" size="lg" routerLink="./">{{ 'ExamView' | translate }} </dfm-button>
+			<dfm-button color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{ 'ExamView' | translate }} </dfm-button>
 		</div>
 		<!-- ** -->
 	</section>
@@ -57,6 +58,14 @@
 						<div class="d-flex dfm-gap-8 justify-content-between">
 							<span class="flex-1">{{ 'Name' | translate }}</span>
 							<span class="font-weight-medium flex-1">{{ examDetails.name  }}</span>
+						</div>
+            <div class="d-flex dfm-gap-8 justify-content-between">
+							<span class="flex-1">{{ 'BodyType' | translate }}</span>
+							<span class="font-weight-medium flex-1">{{ examDetails?.bodyType?.split('_')?.[0] | titlecase | dashIfNothing | translate }} {{(examDetails?.bodyType?.split('_')?.[1] ?? '') | titlecase | translate}}</span>
+						</div>
+            <div class="d-flex dfm-gap-8 justify-content-between">
+							<span class="flex-1">{{ 'BodyPart' | translate }}</span>
+							<span class="font-weight-medium flex-1">{{ examDetails?.bodyPart | dashIfNothing | translate  }}</span>
 						</div>
 
 						<div class="d-flex dfm-gap-8 justify-content-between">
@@ -297,6 +306,7 @@
 			color="primary"
 			size="sm"
 			[routerLink]="['../', 'edit']"
+      queryParamsHandling="merge"
 			[state]="{ comingFromRoute: 'view', edit: true }"
 			*dfmPermitted="Permission.UpdateExams"
 			>{{ 'Edit' | translate }}

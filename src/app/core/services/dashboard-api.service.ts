@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, startWith, Subject, switchMap, tap, takeUntil, of } from 'rxjs';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -13,14 +13,15 @@ import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
 import { Translate } from '../../shared/models/translate.model';
 import { Notification } from '../../shared/models/notification.model';
-import {AppointmentApiService} from "./appointment-api.service";
-import {UserManagementApiService} from "./user-management-api.service";
-import {SchedulerUser} from "../../shared/models/user.model";
+import { AppointmentApiService } from './appointment-api.service';
+import { UserManagementApiService } from './user-management-api.service';
+import { SchedulerUser } from '../../shared/models/user.model';
+import { AppointmentChartDataType } from 'src/app/shared/models/dashboard.model';
 
 export interface PostIt {
-  id: number,
-  message: string;
-  createdAt: Date;
+	id: number;
+	message: string;
+	createdAt: Date;
 }
 
 @Injectable({
@@ -94,30 +95,28 @@ export class DashboardApiService extends DestroyableComponent {
 
 	private selectedLang$$ = new BehaviorSubject<string>('');
 
-	repeatTypes = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	private notificationPageNo$$ = new BehaviorSubject<number>(1);
 
-	trnalsatedRepeatedTypes: any[] = [];
+	public set notificationPageNo(pageNo: number) {
+		this.notificationPageNo$$.next(pageNo);
+	}
+
+	public get notificationPageNo(): number {
+		return this.notificationPageNo$$.value;
+	}
+
+	private roomAbsencePageNo$$ = new BehaviorSubject<number>(1);
+
+	public set roomAbsencePageNo(pageNo: number) {
+		this.roomAbsencePageNo$$.next(pageNo);
+	}
+
+	public get roomAbsencePageNo(): number {
+		return this.roomAbsencePageNo$$.value;
+	}
 
 	public get appointment$(): Observable<Appointment[]> {
 		return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllAppointments()));
-	}
-
-	get fileTypes$(): Observable<any[]> {
-		return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
-			switchMap(([lang]) => {
-				return of(this.repeatTypes).pipe(
-					map((downloadTypeItems) => {
-						if (lang) {
-							this.trnalsatedRepeatedTypes = [];
-							downloadTypeItems.map((downloadType) => {
-								return this.trnalsatedRepeatedTypes.push(Translate[downloadType][lang]);
-							});
-						}
-						return this.trnalsatedRepeatedTypes;
-					}),
-				);
-			}),
-		);
 	}
 
 	private fetchAllAppointments(): Observable<Appointment[]> {
@@ -133,18 +132,21 @@ export class DashboardApiService extends DestroyableComponent {
 		);
 	}
 
-	public get notification$(): Observable<Notification[]> {
-		return combineLatest([this.refreshNotification$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAllNotifications()));
+	public get notification$(): Observable<BaseResponse<Notification[]>> {
+		return combineLatest([this.refreshNotification$$.pipe(startWith('')), this.notificationPageNo$$]).pipe(
+			switchMap(([_, pageNo]) => this.fetchAllNotifications(pageNo)),
+		);
 	}
 
-	private fetchAllNotifications(): Observable<Notification[]> {
+	private fetchAllNotifications(pageNo: number): Observable<BaseResponse<Notification[]>> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<{ notifications: Notification[] }>>(`${environment.schedulerApiUrl}/dashboard/notifications`).pipe(
+		const params = new HttpParams().append('pageNo', pageNo);
+		return this.http.get<BaseResponse<{ notifications: Notification[] }>>(`${environment.schedulerApiUrl}/dashboard/notifications`, { params }).pipe(
 			switchMap((response) => {
 				const notifications = response?.data?.notifications;
 
 				if (!notifications || !notifications.length) {
-					return of([]);
+					return of({ ...response, data: [] });
 				}
 
 				const patientIds = new Set<string>();
@@ -155,7 +157,7 @@ export class DashboardApiService extends DestroyableComponent {
 				});
 
 				if (!patientIds.size) {
-					return of(notifications);
+					return of({ ...response, data: notifications });
 				}
 
 				return this.userManagementApiSvc.getPatientByIds$([...patientIds]).pipe(
@@ -170,7 +172,8 @@ export class DashboardApiService extends DestroyableComponent {
 								: {}),
 						}));
 					}),
-				) as Observable<Notification[]>;
+					map((data) => ({ ...response, data })),
+				) as Observable<BaseResponse<Notification[]>>;
 			}),
 			tap(() => this.loaderSvc.deactivate()),
 		);
@@ -188,14 +191,17 @@ export class DashboardApiService extends DestroyableComponent {
 		);
 	}
 
-	public get roomAbsence$(): Observable<Room[]> {
-		return combineLatest([this.refreshRoomAbsence$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchRoomAbsence()));
+	public get roomAbsence$(): Observable<BaseResponse<Room[]>> {
+		return combineLatest([this.refreshRoomAbsence$$.pipe(startWith('')), this.roomAbsencePageNo$$]).pipe(
+			switchMap(([_, pageNo]) => this.fetchRoomAbsence(pageNo)),
+		);
 	}
 
-	private fetchRoomAbsence(): Observable<Room[]> {
+	private fetchRoomAbsence(pageNo: number): Observable<BaseResponse<Room[]>> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<Room[]>>(`${environment.schedulerApiUrl}/dashboard/roomabsences`).pipe(
-			map((response) => response.data),
+		const params = new HttpParams().append('pageNo', pageNo);
+		return this.http.get<BaseResponse<{ roomAbsence: Room[] }>>(`${environment.schedulerApiUrl}/dashboard/roomabsences`, { params }).pipe(
+			map((response) => ({ ...response, data: response.data?.roomAbsence })),
 			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
@@ -224,16 +230,18 @@ export class DashboardApiService extends DestroyableComponent {
 		);
 	}
 
-	public get appointmentChart$(): Observable<any> {
-		return combineLatest([this.refreshAppointmentChart$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAppointmentChart()));
+	public get appointmentDoughnutChartData$$(): Observable<AppointmentChartDataType[]> {
+		return combineLatest([this.refreshAppointmentChart$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchAppointmentDoughnutChartData$()));
 	}
 
-	private fetchAppointmentChart(): Observable<any> {
+	private fetchAppointmentDoughnutChartData$(): Observable<AppointmentChartDataType[]> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/appointmentsstatus`).pipe(
-			map((response) => response.data),
-			tap(() => this.loaderSvc.deactivate()),
-		);
+		return this.http
+			.get<BaseResponse<{ appointments: AppointmentChartDataType[] }>>(`${environment.schedulerApiUrl}/dashboard/appointmentsstatus`)
+			.pipe(
+				map((response) => response?.data?.appointments ?? []),
+				tap(() => this.loaderSvc.deactivate()),
+			);
 	}
 
 	public get appointmentBarChart$(): Observable<any> {
@@ -290,14 +298,14 @@ export class DashboardApiService extends DestroyableComponent {
 		);
 	}
 
-	public get overallStatusBarChart$(): Observable<any> {
-		return combineLatest([this.refreshOverallLineChart$$.pipe(startWith(''))]).pipe(switchMap(() => this.overallStatusBarChart()));
+	public get yearlyAppointmentsChartData$(): Observable<AppointmentChartDataType[]> {
+		return combineLatest([this.refreshOverallLineChart$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchYearlyAppointmentsChartData$()));
 	}
 
-	private overallStatusBarChart(): Observable<any> {
+	private fetchYearlyAppointmentsChartData$(): Observable<AppointmentChartDataType[]> {
 		return this.http
-			.get<BaseResponse<PostIt[]>>(`${environment.schedulerApiUrl}/dashboard/yearlyappointments`)
-			.pipe(map((response) => response.data));
+			.get<BaseResponse<{ yearlyappointments: AppointmentChartDataType[] }>>(`${environment.schedulerApiUrl}/dashboard/yearlyappointments`)
+			.pipe(map((response) => response?.data?.yearlyappointments ?? []));
 	}
 
 	// public upsertAppointment$(requestData: AddAppointmentRequestData): Observable<string> {
@@ -551,5 +559,14 @@ export class DashboardApiService extends DestroyableComponent {
 
 	public refreshAppointments() {
 		this.refreshAppointment$$.next();
+	}
+
+	public refreshCharts() {
+		this.refreshAppointmentChart$$.next();
+		this.refreshNotification$$.next();
+		this.refreshAppointmentBarChart$$.next();
+		this.refreshPatientBarChart$$.next();
+		this.refreshCompletedBarChart$$.next();
+		this.refreshCancelledBarChart$$.next();
 	}
 }

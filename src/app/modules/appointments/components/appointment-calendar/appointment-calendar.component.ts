@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, firstValueFrom, switchMap, take, takeUntil, tap } from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -29,6 +29,7 @@ import { RepeatType } from 'src/app/shared/models/absence.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { DraggableService } from 'src/app/core/services/draggable.service';
 
 @Component({
 	selector: 'dfm-appointment-calendar',
@@ -106,6 +107,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		private priorityApiSvc: PrioritySlotApiService,
 		private utcToLocalPipe: UtcToLocalPipe,
 		private translate: TranslateService,
+		private draggableSvc: DraggableService,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -140,7 +142,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		});
 
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
-			this.setPrioritySlots(prioritySlots);
+			this.setPrioritySlots(prioritySlots?.data);
 		});
 
 		this.practiceHoursApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
@@ -176,7 +178,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			) {
 				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 			} else {
-        if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
+				if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
 					minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 				} else {
 					minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
@@ -337,7 +339,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 						const currSD = new Date(appointment.startedAt);
 						const currED = new Date(appointment.endedAt);
 
-						if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
+						if (currSD >= startDate && currSD <= endDate) {
 							sameGroup = true;
 							if (currED > endDate) {
 								endDate = currED;
@@ -473,9 +475,11 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	public async addAppointment(event: any) {
-		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
+		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) {
+			return;
+		}
 
-		const { e, eventsContainer, day, isGrayOutArea } = event;
+		const { e, eventsContainer, day, isOutside, appointment } = event;
 		// const currentDate = new Date();
 		// currentDate.setDate(currentDate.getDate() - 1);
 		// const selectedDate = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
@@ -500,78 +504,63 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		const currentSelectedTime = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
 		currentSelectedTime.setHours(hour);
 		currentSelectedTime.setMinutes(min);
-
 		const currentTimeInLocal = DateTimeUtils.UTCDateToLocalDate(currentSelectedTime);
 
 		if (currentTimeInLocal.getTime() < currentDate.getTime()) {
 			this.notificationSvc.showWarning(Translate.CanNotAddAppointmentOnPastDate[this.selectedLang]);
+			this.draggableSvc.revertDrag();
 			return;
 		}
-		let eventCard;
 
-		if (isGrayOutArea) {
-			this.modalSvc
-				.open(ConfirmActionModalComponent, {
+		if (isOutside) {
+      		const appointmentId = appointment?.id;
+			const res = await firstValueFrom(
+				this.modalSvc.open(ConfirmActionModalComponent, {
 					data: {
-						titleText: 'AddAppointmentConfirmation',
+						titleText: appointmentId ? 'EditAppointmentConfirmation' : 'AddAppointmentConfirmation',
 						bodyText: 'AreYouSureWantToMakeAppointmentOutsideOperatingHours',
 						confirmButtonText: 'Yes',
 					} as ConfirmActionModalData,
-				})
-				.closed.pipe(
-					tap((value) => {
-						if (value) eventCard = this.createAppointmentCard(e, eventsContainer);
-					}),
-					filter(Boolean),
-					switchMap(() => {
-						return this.modalSvc.open(AddAppointmentModalComponent, {
-							data: {
-								event: e,
-								element: eventCard,
-								elementContainer: eventsContainer,
-								startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
-								limit: this.practiceHourMinMax$$.value,
-							},
-							options: {
-								size: 'xl',
-								backdrop: false,
-								centered: true,
-								modalDialogClass: 'ad-ap-modal-shadow',
-							},
-						}).closed;
-					}),
-					take(1),
-				)
-				.subscribe(() => {
-					eventCard.remove();
-					// if (!res) {
-					// }
-				});
-		} else {
-			eventCard = this.createAppointmentCard(e, eventsContainer);
-			this.modalSvc
-				.open(AddAppointmentModalComponent, {
-					data: {
-						event: e,
-						element: eventCard,
-						elementContainer: eventsContainer,
-						startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
-						limit: this.practiceHourMinMax$$.value,
-					},
 					options: {
-						size: 'xl',
 						backdrop: false,
 						centered: true,
-						modalDialogClass: 'ad-ap-modal-shadow',
 					},
-				})
-				.closed.pipe(take(1))
-				.subscribe((res) => {
-					eventCard.remove();
-					// if (!res) {
-					// }
-				});
+				}).closed,
+			);
+
+			if (!res) {
+				this.draggableSvc.revertDrag();
+				return;
+			}
 		}
+
+		const eventCard: HTMLDivElement | undefined = eventsContainer ? this.createAppointmentCard(e, eventsContainer) : undefined;
+
+		this.modalSvc
+			.open(AddAppointmentModalComponent, {
+				data: {
+					event: e,
+					element: eventCard,
+					elementContainer: eventsContainer,
+					startedAt: new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]),
+					limit: this.practiceHourMinMax$$.value,
+					isOutside,
+					appointment,
+				},
+				options: {
+					size: 'xl',
+					backdrop: false,
+					centered: true,
+					modalDialogClass: 'ad-ap-modal-shadow',
+				},
+			})
+			.closed.pipe(take(1))
+			.subscribe({
+				next: (value) => {
+          this.draggableSvc.revertDrag(!!value);
+					eventCard?.remove();
+				},
+			});
 	}
 
 	private createAppointmentCard(e: MouseEvent, eventsContainer: HTMLDivElement): HTMLDivElement {

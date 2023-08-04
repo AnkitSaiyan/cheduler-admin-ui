@@ -69,7 +69,7 @@
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section class="list-page-content-height" *ngIf="filteredRooms$$ | async as rooms">
+  <section class="list-page-content-height" *ngIf="filteredRooms$$ | async as rooms" infiniteScroll [scrollWindow]="false" (scrolled)="onScroll($event)">
     <div class="room-table-wrapper">
       <table class="room-table">
         <thead class="room-table-header">
@@ -86,6 +86,7 @@
         <tr *ngFor="let room of (filteredRooms$$ | async)" class="room-table-row"
             [ngClass]="{ 'room-table-row-disabled': (loading$$ | async) === true }"
             [routerLink]="['./', room.id, 'view']"
+            queryParamsHandling="preserve"
             cdkDrag [cdkDragDisabled]="(loading$$ | async) === true || (permissionSvc.permissionType$ | async) === UserRole.Reader " [cdkDragStartDelay]="100">
           <td class="room-table-td checkbox" *ngIf="permissionSvc.isNotReader">
             <dfm-checkbox class="w-fit d-flex dfm-me-0" #rowCheckbox

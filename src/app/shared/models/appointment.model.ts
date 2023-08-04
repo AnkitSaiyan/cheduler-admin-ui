@@ -4,6 +4,7 @@ import {User} from './user.model';
 import {AppointmentStatus, ReadStatus} from './status.model';
 
 export interface Appointment {
+	action?: any;
 	id: number;
 	createdAt: Date;
 	updatedAt: string;
@@ -33,6 +34,9 @@ export interface Appointment {
 	roomsDetail: Room[];
 	usersDetail: User[];
 	patientAzureId?: string;
+	isOutside?: boolean;
+	socialSecurityNumber: number;
+	documentCount?: number;
 }
 
 export interface AddAppointmentRequestData {
@@ -65,6 +69,25 @@ export interface AddAppointmentRequestData {
 	endedAt?: Date | null;
 	id?: number;
 	patientTimeZone?: string;
+	socialSecurityNumber: number;
+}
+
+export interface AddOutSideOperatingHoursAppointmentRequest {
+	doctorId?: number;
+	patientFname: string;
+	patientLname: string;
+	patientEmail: string;
+	patientTel: number;
+	comments: string;
+	examList: Array<any>;
+	userList?: Array<any>;
+	startedAt: any;
+	userId: number;
+	rejectReason: string;
+	fromPatient: boolean;
+	patientTimeZone?: string;
+	id?: number;
+	socialSecurityNumber: number;
 }
 
 export type ExtensionType = 'shorten' | 'extend';
@@ -143,17 +166,19 @@ export interface SelectedSlots {
 }
 
 export interface CreateAppointmentFormValues {
-  patientFname: string;
-  patientLname: string;
-  patientEmail: string;
-  patientTel: number;
-  startedAt: any;
-  startTime: string;
-  doctorId: number;
-  userId: number;
-  // roomType: RoomType;
-  examList: number[];
-  comments: string;
+	patientFname: string;
+	patientLname: string;
+	patientEmail: string;
+	patientTel: number;
+	startedAt: any;
+	startTime: string;
+	doctorId: number;
+	userId: number;
+	// roomType: RoomType;
+	examList: number[];
+	comments: string;
+	socialSecurityNumber: number;
+	userList?: string[];
 }
 
 export interface UpdateRadiologistRequestData {

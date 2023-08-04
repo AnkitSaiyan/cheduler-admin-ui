@@ -3,9 +3,8 @@
     <mat-icon>refresh</mat-icon>
   </button>
   <section class="list-page-section-1">
-    <dfm-button class="hidden pr-li-title-buttons" color="link" size="lg" routerLink="./">{{"PrioritySlots" | translate}} </dfm-button>
+    <!-- <dfm-button class="pr-li-title-buttons" color="link" size="lg" routerLink="./">{{"PrioritySlots" | translate}} </dfm-button> -->
     <ng-container *ngIf="(calendarView$$ | async) === false; else space">
-      <!-- <dfm-button class="pr-li-title-buttons" color="link" size="lg" routerLink="./">{{ 'PrioritySlots' | translate }} </dfm-button> -->
       <dfm-input
         class="flex-1 pr-li-search"
         size="md"
@@ -39,7 +38,9 @@
       </div>
     </ng-container>
     <ng-template #space>
-      <span class="d-flex flex-1"></span>
+      <span class="d-flex flex-1">
+        <dfm-button class="pr-li-title-buttons" color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{"PrioritySlots" | translate}} </dfm-button>
+      </span>
     </ng-template>
 
     <div class="d-flex dfm-gap-8 align-items-center">
@@ -82,98 +83,27 @@
     ></dfm-input>
 
     <section class="list-page-content-height" *ngIf="filteredPrioritySlots$$ | async as prioritySlots">
-      <dfm-table [items]="prioritySlots" [rowClickable]="true" (rowClicked)="navigateToViewAbsence($event)" class="dfm-table-wrapper">
-        <ng-template #headerRowTemplate>
-          <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
-        </ng-template>
-
-        <ng-template #bodyRowTemplate let-item>
-          <dfm-table-body-cell>{{ item.startedAt  | dfmUtcToLocal : false : true | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
-          <dfm-table-body-cell>{{ item.endedAt  | dfmUtcToLocal : false : true | dfmDefaultDate | dashIfNothing }}</dfm-table-body-cell>
-          <dfm-table-body-cell>
-            <div [ngClass]="item.priority">
-              <dfm-badge color="success" size="sm" fontWeight="medium">
-                {{ item.priority | dashIfNothing | translate }}
-              </dfm-badge>
-            </div>
-          </dfm-table-body-cell>
-
-          <dfm-table-body-cell *dfmPermitted="[Permission.UpdatePrioritySlots, Permission.DeletePrioritySlots]">
-            <div class="d-flex dfm-gap-16 align-items-center pr-li-action-buttons">
-              <dfm-button
-                color="link-gray"
-                size="sm"
-                trailingIcon="pencil-02"
-                ngbPopover="{{ 'Edit' | translate }}"
-                triggers="mouseenter:mouseleave"
-                triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8"
-                [openDelay]="200"
-                (click)="$event.stopPropagation(); openAddPriorityModal(item)"
-                *dfmPermitted="Permission.UpdatePrioritySlots"
-              ></dfm-button>
-
-              <dfm-button
-                color="link-gray"
-                size="sm"
-                trailingIcon="trash-01"
-                ngbPopover="{{ 'Delete' | translate }}"
-                triggers="mouseenter:mouseleave"
-                triggers="mouseenter:mouseleave"
-                popoverClass="popover-p-8"
-                [openDelay]="200"
-                (click)="$event.stopPropagation(); deletePrioritySlot(item.id)"
-                *dfmPermitted="Permission.DeletePrioritySlots"
-              ></dfm-button>
-            </div>
-
-            <!-- Action Menu -->
-            <dfm-button
-              [ngbPopover]="actionMenu"
-              autoClose="autoClose"
-              triggers="click"
-              container="body"
-              placement="left"
-              popoverClass="popover-p-0"
-              class="hidden pr-li-vertical-dots-btn"
-              color="link-gray"
-              size="sm"
-              trailingIcon="dots-vertical"
-              (click)="$event.stopPropagation(); toggleMenu(true)"
-            ></dfm-button>
-
-            <ng-template #actionMenu>
-              <div class="pr-li-menus" aria-labelledby="dropdownManual">
-                <div
-                  (click)="$event.stopPropagation(); openAddPriorityModal(item)"
-                  ngbPopover="{{ 'Edit' | translate }}"
-                  triggers="mouseenter:mouseleave"
-                  popoverClass="popover-p-8"
-                  [openDelay]="200"
-                  *dfmPermitted="Permission.UpdatePrioritySlots"
-                >
-                  <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
-                </div>
-
-                <div
-                  (click)="$event.stopPropagation(); deletePrioritySlot(item.id)"
-                  ngbPopover="{{ 'Delete' | translate }}"
-                  triggers="mouseenter:mouseleave"
-                  popoverClass="popover-p-8"
-                  [openDelay]="200"
-                  *dfmPermitted="Permission.DeletePrioritySlots"
-                >
-                  <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
-                </div>
-              </div>
-            </ng-template>
-            <!-- Action Menu End-->
-          </dfm-table-body-cell>
-        </ng-template>
-      </dfm-table>
-      <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!prioritySlots.length">
-        {{ 'NoPrioritySlotFound' | translate }}
-      </div>
+      <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}"  [stickyActions]="true"  noDataMessage="{{ 'NoPrioritySlotFound' | translate }}"
+                    [rowClickable]="true" [stickyCheckbox]="true" (rowClicked)="navigateToViewAbsence($event)"
+                    [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
+      <ng-template #bodyRowTemplate let-item>
+        <dfm-table-row-cell [fullContent]="item.startedAt">{{ item.startedAt  | dfmUtcToLocal : false : true | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.endedAt">{{ item.endedAt  | dfmUtcToLocal : false : true | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.priority">
+          <div [ngClass]="item.priority">
+            <dfm-badge color="success" size="sm" fontWeight="medium">
+              {{ item.priority | dashIfNothing | translate }}
+            </dfm-badge>
+          </div>
+        </dfm-table-row-cell>
+        <dfm-data-table-action-cell *dfmPermitted="[Permission.UpdatePrioritySlots, Permission.DeletePrioritySlots]">
+          <ng-template #actionCellTemplate>
+            <dfm-data-table-action icon="pencil-02" tooltip="{{ 'Edit' | translate }}" (click)="$event.stopPropagation(); openAddPriorityModal(item)" *dfmPermitted="Permission.UpdatePrioritySlots"></dfm-data-table-action>
+            <dfm-data-table-action icon="trash-01" tooltip="{{ 'Delete' | translate }}" (click)="$event.stopPropagation(); deletePrioritySlot(item.id)" *dfmPermitted="Permission.DeletePrioritySlots"></dfm-data-table-action>
+          </ng-template>
+        </dfm-data-table-action-cell>
+      </ng-template>
+    </dfm-data-table>
     </section>
   </ng-container>
   <ng-template #calendarView>

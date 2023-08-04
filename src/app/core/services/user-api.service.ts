@@ -1,33 +1,20 @@
-import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {
-    BehaviorSubject,
-    catchError,
-    combineLatest,
-    filter,
-    map,
-    Observable,
-    of,
-    startWith,
-    Subject,
-    switchMap,
-    takeUntil,
-    tap
-} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
-import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from '@azure/msal-angular';
-import {User, UserRoleEnum, UserType} from '../../shared/models/user.model';
-import {NameValue} from "../../shared/components/search-modal.component";
-import {PermissionService} from "./permission.service";
-import {environment} from "../../../environments/environment";
-import {LoaderService} from "./loader.service";
-import {BaseResponse} from "../../shared/models/base-response.model";
-import {ChangeStatusRequestData} from "../../shared/models/status.model";
-import {AddStaffRequestData, StaffType} from "../../shared/models/staff.model";
-import {Translate} from "../../shared/models/translate.model";
-import {ShareDataService} from "./share-data.service";
-import {DestroyableComponent} from "../../shared/components/destroyable.component";
-import {Router} from "@angular/router";
-import {HttpUtils} from "../../shared/utils/http.utils";
+import { Inject, Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, catchError, combineLatest, filter, map, Observable, of, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
+import { User, UserRoleEnum } from '../../shared/models/user.model';
+import { NameValue } from '../../shared/components/search-modal.component';
+import { PermissionService } from './permission.service';
+import { environment } from '../../../environments/environment';
+import { LoaderService } from './loader.service';
+import { BaseResponse } from '../../shared/models/base-response.model';
+import { ChangeStatusRequestData } from '../../shared/models/status.model';
+import { AddStaffRequestData, StaffType } from '../../shared/models/staff.model';
+import { Translate } from '../../shared/models/translate.model';
+import { ShareDataService } from './share-data.service';
+import { DestroyableComponent } from '../../shared/components/destroyable.component';
+import { Router } from '@angular/router';
+import { HttpUtils } from '../../shared/utils/http.utils';
 
 @Injectable({
 	providedIn: 'root',
@@ -36,22 +23,10 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 	private readonly userUrl = `${environment.schedulerApiUrl}/user`;
 
 	private selectedLang$$: BehaviorSubject<string> = new BehaviorSubject<string>('');
-	private refreshUsers$$: Subject<void> = new Subject<void>();
 
-	private readonly userRoles$$ = new BehaviorSubject<NameValue[]>([
-		{
-			name: 'Admin',
-			value: UserRoleEnum.Admin,
-		},
-		{
-			name: 'General User',
-			value: UserRoleEnum.GeneralUser,
-		},
-		{
-			name: 'Reader',
-			value: UserRoleEnum.Reader,
-		},
-	]);
+	private pageNoUser$$ = new BehaviorSubject<number>(1);
+
+	private pageNoStaff$$ = new BehaviorSubject<number>(1);
 
 	private readonly staffTypes$$ = new BehaviorSubject<NameValue[]>([
 		{
@@ -69,6 +44,21 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 		{
 			name: StaffType.Secretary,
 			value: StaffType.Secretary,
+		},
+	]);
+
+	private readonly userRoles$$ = new BehaviorSubject<NameValue[]>([
+		{
+			name: 'Admin',
+			value: UserRoleEnum.Admin,
+		},
+		{
+			name: 'General User',
+			value: UserRoleEnum.GeneralUser,
+		},
+		{
+			name: 'Reader',
+			value: UserRoleEnum.Reader,
 		},
 	]);
 
@@ -93,34 +83,51 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 			});
 	}
 
-	public get generalUsers$(): Observable<User[]> {
-		return this.getUsersByType(UserType.General);
+	public set pageNoStaff(pageNo: number) {
+		this.pageNoStaff$$.next(pageNo);
+	}
+
+	public get pageNoStaff(): number {
+		return this.pageNoStaff$$.value;
+	}
+
+	public set pageNoUser(pageNo: number) {
+		this.pageNoUser$$.next(pageNo);
+	}
+
+	public get pageNoUser(): number {
+		return this.pageNoUser$$.value;
+	}
+
+	public get generalUsers$(): Observable<BaseResponse<User[]>> {
+		return combineLatest([this.pageNoUser$$]).pipe(switchMap(([pageNo]) => this.fetchUsers$(pageNo)));
 	}
 
 	public get allGeneralUsers$(): Observable<User[]> {
-		return this.fetchAllUsers$.pipe(
-			map((users) => {
-				return users.filter((user) => user.userType === UserType.General);
+		this.loaderSvc.activate();
+		this.loaderSvc.spinnerActivate();
+
+		return this.http.get<BaseResponse<User[]>>(`${environment.schedulerApiUrl}/common/getusers`).pipe(
+			map((res) => res?.data?.map((u) => ({ ...u, fullName: `${u.firstname} ${u.lastname}` }))),
+			tap(() => {
+				this.loaderSvc.deactivate();
+				this.loaderSvc.spinnerDeactivate();
 			}),
 		);
 	}
 
-	public get staffs$(): Observable<User[]> {
-		return this.getUsersByType(UserType.Assistant, UserType.Radiologist, UserType.Secretary, UserType.Nursing);
+	public get staffs$(): Observable<BaseResponse<User[]>> {
+		return combineLatest([this.pageNoStaff$$]).pipe(switchMap(([pageNo]) => this.fetchStaffs$(pageNo)));
 	}
 
 	public get allStaffs$(): Observable<User[]> {
-		return this.fetchAllUsers$.pipe(
-			map((users) => {
-				return users.filter((user) => [UserType.Nursing, UserType.Assistant, UserType.Radiologist, UserType.Secretary].includes(user.userType));
-			}),
-		);
-	}
+		this.loaderSvc.activate();
 
-	public getUsersByType(...userTypes: UserType[]): Observable<User[]> {
-		return this.users$.pipe(
-			map((users) => {
-				return users.filter((user) => userTypes.includes(user.userType));
+		return this.http.get<BaseResponse<User[]>>(`${environment.schedulerApiUrl}/common/getstaff`).pipe(
+			map((res) => res?.data?.map((u) => ({ ...u, fullName: `${u.firstname} ${u.lastname}` }))),
+			tap(() => {
+				this.loaderSvc.deactivate();
+				this.loaderSvc.spinnerDeactivate();
 			}),
 		);
 	}
@@ -129,17 +136,13 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 		this.loaderSvc.activate();
 		this.loaderSvc.spinnerActivate();
 
-		return combineLatest([this.refreshUsers$$.pipe(startWith(''))]).pipe(
-			switchMap(() =>
-				this.http.get<BaseResponse<User>>(`${this.userUrl}/${userID}`).pipe(
-					map((res) => res?.data),
-					tap(() => {
-						this.loaderSvc.deactivate();
-						this.loaderSvc.spinnerDeactivate();
-					}),
-					catchError((e) => of({} as User)),
-				),
-			),
+		return this.http.get<BaseResponse<User>>(`${this.userUrl}/${userID}`).pipe(
+			map((res) => res?.data),
+			tap(() => {
+				this.loaderSvc.deactivate();
+				this.loaderSvc.spinnerDeactivate();
+			}),
+			catchError((e) => of({} as User)),
 		);
 	}
 
@@ -155,10 +158,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 
 		return this.http.post<BaseResponse<User>>(url, restData).pipe(
 			map((res) => res?.data),
-			tap(() => {
-				this.refreshUsers$$.next();
-				this.loaderSvc.deactivate();
-			}),
+			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
 
@@ -166,10 +166,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 		this.loaderSvc.activate();
 		return this.http.delete<BaseResponse<Boolean>>(`${this.userUrl}/${userID}`).pipe(
 			map((res) => res?.data),
-			tap(() => {
-				this.refreshUsers$$.next();
-				this.loaderSvc.deactivate();
-			}),
+			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
 
@@ -177,10 +174,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 		this.loaderSvc.activate();
 		return this.http.put<BaseResponse<any>>(`${this.userUrl}/updateuserstatus`, requestData).pipe(
 			map((res) => res?.data),
-			tap(() => {
-				this.refreshUsers$$.next();
-				this.loaderSvc.deactivate();
-			}),
+			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
 
@@ -234,39 +228,41 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 		return this.http.post<any>(`${environment.schedulerApiUrl}/userroles?userId=${userId}`, JSON.stringify(roleName), { headers });
 	}
 
-	private get fetchAllUsers$(): Observable<User[]> {
+	private fetchUsers$(pageNo: number): Observable<BaseResponse<User[]>> {
 		this.loaderSvc.activate();
-		this.loaderSvc.spinnerActivate();
 
-		return combineLatest([this.refreshUsers$$.pipe(startWith(''))]).pipe(
-			switchMap(() => {
-				return this.http.get<BaseResponse<User[]>>(`${environment.schedulerApiUrl}/common/getusers`).pipe(
-					map((res) => res?.data?.map((u) => ({ ...u, fullName: `${u.firstname} ${u.lastname}` }))),
-					tap(() => {
-						this.loaderSvc.deactivate();
-						this.loaderSvc.spinnerDeactivate();
-					}),
-				);
+		const params = new HttpParams().append('pageNo', pageNo);
+
+		return this.http.get<BaseResponse<User[]>>(this.userUrl, { params }).pipe(
+			map((res) => {
+				return {
+					...res,
+					data: res?.data?.map((user) => ({
+						...user,
+						fullName: `${user.firstname} ${user.lastname}`,
+					})),
+				};
 			}),
+			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
 
-	private get users$(): Observable<User[]> {
+	private fetchStaffs$(pageNo: number): Observable<BaseResponse<User[]>> {
 		this.loaderSvc.activate();
 
-		return combineLatest([this.refreshUsers$$.pipe(startWith(''))]).pipe(
-			switchMap(() => {
-				return this.http.get<BaseResponse<User[]>>(this.userUrl).pipe(
-					map((res) => {
-						return res?.data?.map((user) => ({
-							...user,
-							fullName: `${user.firstname} ${user.lastname}`,
-						}));
-					}),
-					tap(() => this.loaderSvc.deactivate()),
-					catchError(() => of([])),
-				);
+		const params = new HttpParams().append('pageNo', pageNo);
+
+		return this.http.get<BaseResponse<User[]>>(`${this.userUrl}/getstaff`, { params }).pipe(
+			map((res) => {
+				return {
+					...res,
+					data: res?.data?.map((user) => ({
+						...user,
+						fullName: `${user.firstname} ${user.lastname}`,
+					})),
+				};
 			}),
+			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
 }

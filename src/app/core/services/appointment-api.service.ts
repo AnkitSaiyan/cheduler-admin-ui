@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -8,6 +8,7 @@ import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import {
 	AddAppointmentRequestData,
+	AddOutSideOperatingHoursAppointmentRequest,
 	Appointment,
 	AppointmentSlot,
 	AppointmentSlotsRequestData,
@@ -23,6 +24,7 @@ import { LoaderService } from './loader.service';
 import { PhysicianApiService } from './physician.api.service';
 import { ShareDataService } from './share-data.service';
 import { UserManagementApiService } from './user-management-api.service';
+import { SignalrService } from './signalr.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -47,7 +49,38 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	private selectedLang$$ = new BehaviorSubject<string>('');
 
+	private signalData!: Appointment[];
 	private appointmentUrl = `${environment.schedulerApiUrl}/appointment`;
+
+	private pageNo$$ = new BehaviorSubject<number>(1);
+
+	public set pageNo(pageNo: number) {
+		this.pageNo$$.next(pageNo);
+	}
+
+	public get pageNo(): number {
+		return this.pageNo$$.value;
+	}
+
+	private appointmentPageNo$$ = new BehaviorSubject<number>(1);
+
+	public set appointmentPageNo(pageNo: number) {
+		this.appointmentPageNo$$.next(pageNo);
+	}
+
+	public get appointmentPageNo(): number {
+		return this.appointmentPageNo$$.value;
+	}
+
+	private recentPatientPageNo$$ = new BehaviorSubject<number>(1);
+
+	public set recentPatientPageNo(pageNo: number) {
+		this.recentPatientPageNo$$.next(pageNo);
+	}
+
+	public get recentPatientPageNo(): number {
+		return this.recentPatientPageNo$$.value;
+	}
 
 	constructor(
 		private physicianApiSvc: PhysicianApiService,
@@ -67,10 +100,12 @@ export class AppointmentApiService extends DestroyableComponent {
 			});
 	}
 
-	public get appointment$(): Observable<Appointment[]> {
-		return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
-			switchMap(() => {
-				return this.fetchAllAppointments$().pipe(switchMap((appointments) => this.AttachPatientDetails(appointments)));
+	public get appointment$(): Observable<BaseResponse<Appointment[]>> {
+		return combineLatest([this.appointmentPageNo$$]).pipe(
+			switchMap(([pageNo]) => {
+				return this.fetchAllAppointments$(pageNo).pipe(
+					switchMap((appointments) => this.AttachPatientDetails(appointments.data).pipe(map((data) => ({ ...appointments, data })))),
+				);
 			}),
 		);
 	}
@@ -95,11 +130,11 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public fetchAllAppointments$(data?: any): Observable<Appointment[]> {
+	public fetchAllAppointments$(pageNo: number, data?: any): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
 
 		if (data) {
-			const queryParams = {};
+			const queryParams = { pageNo: 1 };
 			if (data?.appointmentNumber) queryParams['id'] = data.appointmentNumber;
 			if (data?.roomsId) queryParams['roomId'] = data.roomsId;
 			// if (data?.roomsId) queryParams['roomId'] = data.roomsId;
@@ -115,16 +150,16 @@ export class AppointmentApiService extends DestroyableComponent {
 			return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
 				map((response) => {
 					if (!response?.data?.length) {
-						return [];
+						return { ...response, data: [] };
 					}
 
 					const appointments = response.data;
 
 					if (!appointments?.length) {
-						return [];
+						return { ...response, data: [] };
 					}
 
-					return appointments.map((appointment) => this.getAppointmentModified(appointment));
+					return { ...response, data: appointments.map((appointment) => this.getAppointmentModified(appointment)) };
 				}),
 				tap(() => {
 					this.loaderSvc.deactivate();
@@ -132,19 +167,21 @@ export class AppointmentApiService extends DestroyableComponent {
 			);
 		}
 
-		return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`).pipe(
+		const params = new HttpParams().append('pageNo', pageNo);
+
+		return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params }).pipe(
 			map((response) => {
 				if (!response?.data?.length) {
-					return [];
+					return { ...response, data: [] };
 				}
 
 				const appointments = response.data;
 
 				if (!appointments?.length) {
-					return [];
+					return { ...response, data: [] };
 				}
 
-				return appointments.map((appointment) => this.getAppointmentModified(appointment));
+				return { ...response, data: appointments.map((appointment) => this.getAppointmentModified(appointment)) };
 			}),
 			tap(() => {
 				this.loaderSvc.deactivate();
@@ -155,7 +192,7 @@ export class AppointmentApiService extends DestroyableComponent {
 	public changeAppointmentStatus$(requestData: ChangeStatusRequestData[]): Observable<boolean> {
 		return this.http.put<BaseResponse<boolean>>(`${this.appointmentUrl}/updateappointmentstatus`, requestData).pipe(
 			map((resp) => resp?.data),
-			tap(() => this.refreshAppointment$$.next()),
+			tap(() => this.appointmentPageNo$$.next(1)),
 		);
 	}
 
@@ -163,7 +200,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		return this.http.delete<BaseResponse<boolean>>(`${this.appointmentUrl}/${appointmentID}`).pipe(
 			map((response) => response.data),
 			tap(() => {
-				this.refreshAppointment$$.next();
+				this.appointmentPageNo$$.next(1);
 				this.dashboardApiService.refreshAppointments();
 			}),
 		);
@@ -173,7 +210,8 @@ export class AppointmentApiService extends DestroyableComponent {
 		this.loaderSvc.activate();
 		this.loaderSvc.spinnerActivate();
 
-		return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
+		// return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
+		return combineLatest([this.appointmentPageNo$$]).pipe(
 			switchMap(() => this.http.get<BaseResponse<Appointment>>(`${this.appointmentUrl}/${appointmentID}`)),
 			switchMap((response) =>
 				combineLatest([
@@ -213,8 +251,32 @@ export class AppointmentApiService extends DestroyableComponent {
 
 		return this.http.post<BaseResponse<Appointment>>(`${this.appointmentUrl}`, { ...restData, patientTimeZone }).pipe(
 			map((response) => response.data),
-			tap(() => this.refreshAppointment$$.next()),
+			tap(() => this.appointmentPageNo$$.next(1)),
 		);
+	}
+
+	public saveOutSideOperatingHoursAppointment$(
+		requestData: AddOutSideOperatingHoursAppointmentRequest,
+		action: 'add' | 'update',
+	): Observable<Appointment> {
+		let patientTimeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
+
+		if (patientTimeZone && patientTimeZone[0] === '+') {
+			patientTimeZone = patientTimeZone.slice(1);
+		}
+
+		if (action == 'add') {
+			return this.http.post<BaseResponse<Appointment>>(`${this.appointmentUrl}/addappointment`, { ...requestData, patientTimeZone }).pipe(
+				map((response) => response.data),
+				tap(() => this.appointmentPageNo$$.next(1)),
+			);
+		} else {
+			const { id, ...restData } = requestData;
+			return this.http.put<BaseResponse<Appointment>>(`${this.appointmentUrl}/editappointment/${id}`, { ...restData, patientTimeZone }).pipe(
+				map((response) => response.data),
+				tap(() => this.appointmentPageNo$$.next(1)),
+			);
+		}
 	}
 
 	public updateAppointment$(requestData: AddAppointmentRequestData): Observable<Appointment> {
@@ -227,14 +289,14 @@ export class AppointmentApiService extends DestroyableComponent {
 
 		return this.http.put<BaseResponse<Appointment>>(`${this.appointmentUrl}/${id}`, { ...restData, patientTimeZone }).pipe(
 			map((response) => response.data),
-			tap(() => this.refreshAppointment$$.next()),
+			tap(() => this.appointmentPageNo$$.next(1)),
 		);
 	}
 
 	public updateAppointmentDuration$(requestData: UpdateDurationRequestData): Observable<null> {
 		return this.http.put<BaseResponse<null>>(`${this.appointmentUrl}/updateappointmentduration`, requestData).pipe(
 			map((response) => response?.data),
-			tap(() => this.refreshAppointment$$.next()),
+			tap(() => this.appointmentPageNo$$.next(1)),
 		);
 	}
 
@@ -270,11 +332,11 @@ export class AppointmentApiService extends DestroyableComponent {
 	public updateRadiologist$(requestData: UpdateRadiologistRequestData): Observable<any> {
 		return this.http.put<BaseResponse<any>>(`${this.appointmentUrl}/updateradiologist`, requestData).pipe(
 			map((res) => res?.data),
-			tap(() => this.refreshAppointment$$.next()),
+			tap(() => this.appointmentPageNo$$.next(1)),
 		);
 	}
 
-	private getAppointmentModified(appointment: Appointment): Appointment {
+	public getAppointmentModified(appointment: Appointment): Appointment {
 		const examIdToRooms: { [key: number]: Room[] } = {};
 		const examIdToUsers: { [key: number]: User[] } = {};
 
@@ -380,25 +442,49 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public get upcomingAppointment$(): Observable<Appointment[]> {
+	public get upcomingAppointment$(): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
 
-		return this.http.get<BaseResponse<{ upcomingAppointments: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`).pipe(
+		return combineLatest([this.pageNo$$]).pipe(
+			switchMap(([pageNo]) => {
+				const params = new HttpParams().append('pageNo', pageNo);
+				return this.http.get<BaseResponse<{ upcomingAppointments: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/upcomingappointments`, {
+					params,
+				});
+			}),
 			switchMap((response) => {
 				const upcoming = response.data?.upcomingAppointments;
-				return !upcoming || !upcoming.length ? of([]) : this.AttachPatientDetails(upcoming);
+				return !upcoming || !upcoming.length
+					? of({ ...response, data: [] })
+					: this.AttachPatientDetails(upcoming).pipe(map((data) => ({ ...response, data })));
 			}),
 			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
 
-	public get recentPatients$(): Observable<Appointment[]> {
+	public get recentPatients$(): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
-		return this.http.get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/recentpatients`).pipe(
+		return combineLatest([this.recentPatientPageNo$$]).pipe(
+			switchMap(([pageNo]) => {
+				const params = new HttpParams().append('pageNo', pageNo);
+				return this.http.get<BaseResponse<{ appointment: Appointment[] }>>(`${environment.schedulerApiUrl}/dashboard/recentpatients`, { params });
+			}),
 			switchMap((response) => {
 				const recentAppointments = response.data?.appointment;
-				return !recentAppointments || !recentAppointments.length ? of([]) : this.AttachPatientDetails(recentAppointments);
+				return !recentAppointments || !recentAppointments.length
+					? of({ ...response, data: [] })
+					: this.AttachPatientDetails(recentAppointments).pipe(map((data) => ({ ...response, data })));
 			}),
+		);
+	}
+
+	public getDocumentById$(appointmentId: number, isPreview:boolean): Observable<any> {
+		let params = new HttpParams();
+		params = params.append('appointmentId', appointmentId);
+		params = params.append('isPreview', isPreview);
+		return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, { params }).pipe(
+			map((response) => response.data),
+			tap(() => {}),
 		);
 	}
 

@@ -1,28 +1,35 @@
 import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil} from 'rxjs';
-import {FormControl} from '@angular/forms';
-import {NotificationType, TableItem} from 'diflexmo-angular-design';
-import {ActivatedRoute, Router} from '@angular/router';
-import {getStatusEnum} from '../../../../shared/utils/getEnums';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {ChangeStatusRequestData, Status, StatusToName} from '../../../../shared/models/status.model';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {
-    ConfirmActionModalComponent,
-    ConfirmActionModalData
-} from '../../../../shared/components/confirm-action-modal.component';
-import {ModalService} from '../../../../core/services/modal.service';
-import {SearchModalComponent, SearchModalData} from '../../../../shared/components/search-modal.component';
-import {User, UserRoleEnum} from '../../../../shared/models/user.model';
-import {DownloadAsType, DownloadService, DownloadType} from '../../../../core/services/download.service';
-import {DUTCH_BE, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
-import {Translate} from '../../../../shared/models/translate.model';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {TranslateService} from '@ngx-translate/core';
-import {Permission} from 'src/app/shared/models/permission.model';
-import {PermissionService} from 'src/app/core/services/permission.service';
-import {UserApiService} from "../../../../core/services/user-api.service";
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
+import { ActivatedRoute, Router } from '@angular/router';
+import { getStatusEnum } from '../../../../shared/utils/getEnums';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { ModalService } from '../../../../core/services/modal.service';
+import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
+import { User } from '../../../../shared/models/user.model';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
+import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserApiService } from '../../../../core/services/user-api.service';
 import { TitleCasePipe } from '@angular/common';
+import { PaginationData } from '../../../../shared/models/base-response.model';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
+
+const ColumnIdToKey = {
+	1: 'firstname',
+	2: 'lastname',
+	3: 'userType',
+	4: 'email',
+	5: 'status',
+};
 
 @Component({
 	selector: 'dfm-staff-list',
@@ -30,21 +37,57 @@ import { TitleCasePipe } from '@angular/common';
 	styleUrls: ['./staff-list.component.scss'],
 })
 export class StaffListComponent extends DestroyableComponent implements OnInit, OnDestroy {
-	clipboardData: string = '';
-	public searchControl = new FormControl('', []);
-	public downloadDropdownControl = new FormControl('', []);
-	public columns: string[] = ['FirstName', 'LastName', 'Type', 'Email', 'Status', 'Actions'];
-	public downloadItems: DownloadType[] = [];
-	public filteredStaffs$$: BehaviorSubject<any[]>;
-	public clearSelected$$ = new Subject<void>();
-	public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
-	public selectedStaffIds: string[] = [];
-	public statusType = getStatusEnum();
-	public statuses = Statuses;
-	public readonly Permission = Permission;
+	@HostListener('document:click', ['$event']) onClick() {
+		this.toggleMenu(true);
+	}
+
 	@ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
-	private staffs$$: BehaviorSubject<any[]>;
+
+	private staffs$$: BehaviorSubject<User[]>;
+
+	public filteredStaffs$$: BehaviorSubject<User[]>;
+
+	public clearSelected$$ = new Subject<void>();
+
+	public afterBannerClosed$$ = new BehaviorSubject<{ proceed: boolean; newStatus: Status | null } | null>(null);
+
+	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
+
+	public searchControl = new FormControl('', []);
+
+	public downloadDropdownControl = new FormControl('', []);
+
+	public columns: string[] = ['FirstName', 'LastName', 'Type', 'Email', 'Status', 'Actions'];
+
+	public tableHeaders: DfmTableHeader[] = [
+		{ id: '1', title: 'FirstName', isSortable: true },
+		{ id: '2', title: 'LastName', isSortable: true },
+		{ id: '3', title: 'Type', isSortable: true },
+		{ id: '4', title: 'Email', isSortable: true },
+		{ id: '5', title: 'Status', isSortable: true },
+	];
+
+	public downloadItems: DownloadType[] = [];
+
+	public selectedStaffIds: string[] = [];
+
+	public statusType = getStatusEnum();
+
+	public statuses = Statuses;
+
+	public readonly Permission = Permission;
+
 	private selectedLang: string = ENG_BE;
+
+	public clipboardData: string = '';
+
+	private paginationData: PaginationData | undefined;
+
+	private idsToObjMap: Map<string, any> = new Map<string, any>();
 
 	constructor(
 		private userApiSvc: UserApiService,
@@ -62,61 +105,108 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		super();
 		this.staffs$$ = new BehaviorSubject<any[]>([]);
 		this.filteredStaffs$$ = new BehaviorSubject<any[]>([]);
-	}
-
-	@HostListener('document:click', ['$event']) onClick() {
-		this.toggleMenu(true);
+		this.userApiSvc.pageNoStaff = 1;
+    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: () => {
+				if (
+					this.permissionSvc.isPermitted([Permission.UpdateStaffs, Permission.DeleteStaffs]) &&
+					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
+				) {
+					this.tableHeaders = [
+						...this.tableHeaders,
+						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
+					];
+				}
+			},
+		});
 	}
 
 	public ngOnInit(): void {
-		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((types) => {
-			this.downloadItems = types;
+		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => (this.downloadItems = items),
 		});
 
-		this.userApiSvc.staffs$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
-			this.staffs$$.next(staffs);
-			this.filteredStaffs$$.next(staffs);
+		this.filteredStaffs$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (value) => {
+				this.tableData$$.next({
+					items: value,
+					isInitialLoading: false,
+					isLoading: false,
+					isLoadingMore: false,
+				});
+			},
 		});
 
-		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-			if (searchText) {
-				this.handleSearch(searchText.toLowerCase());
+		this.staffs$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (staffs) => {
+				this.handleSearch(this.searchControl.value ?? '');
+				staffs.forEach((staff) => this.idsToObjMap.set(staff.id.toString(), staff));
+			},
+		});
+
+		this.userApiSvc.staffs$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (staffBase) => {
+				// if (this.paginationData && this.paginationData.pageNo < staffBase.metaData.pagination.pageNo) {
+				// } else {
+				// 	this.staffs$$.next(staffBase.data);
+				// }
+
+				this.staffs$$.next([...this.staffs$$.value, ...staffBase.data]);
+				this.paginationData = staffBase.metaData.pagination;
+			},
+			error: (e) => {
+				this.staffs$$.next([]);
+			},
+		});
+
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+			this.searchControl.setValue(search);
+			if (search) {
+				this.handleSearch(search.toLowerCase());
 			} else {
 				this.filteredStaffs$$.next([...this.staffs$$.value]);
 			}
 		});
+
+		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+			next: (searchText) => {
+				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
+			},
+		});
+
 
 		this.downloadDropdownControl.valueChanges
 			.pipe(
 				filter((value) => !!value),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe((value) => {
-				if (!this.filteredStaffs$$.value.length) {
-					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+			.subscribe({
+				next: (value) => {
+					if (!this.filteredStaffs$$.value.length) {
+						this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
+						this.clearDownloadDropdown();
+						return;
+					}
+
+					this.downloadSvc.downloadJsonAs(
+						value as DownloadAsType,
+						this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
+						this.filteredStaffs$$.value.map((u: User) => [
+							u.firstname,
+							u.lastname,
+							Translate.StaffTypes[this.titleCasePipe.transform(u.userType)][this.selectedLang],
+							u.email,
+							Translate[StatusToName[+u.status]][this.selectedLang],
+						]),
+						'staffs',
+					);
+
+					if (value !== 'PRINT') {
+						this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
+					}
+
 					this.clearDownloadDropdown();
-					return;
-				}
-
-
-
-				this.downloadSvc.downloadJsonAs(
-					value as DownloadAsType,
-					this.columns.slice(0, -1),
-					this.filteredStaffs$$.value.map((u: User) => [
-						u.firstname,
-						u.lastname,
-						Translate.StaffTypes[this.titleCasePipe.transform(u.userType)][this.selectedLang],
-						u.email,
-						Translate[StatusToName[+u.status]][this.selectedLang],
-					]),
-					'staffs',
-				);
-
-				if (value !== 'PRINT') {
-					this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
-				}
-				this.clearDownloadDropdown();
+				},
 			});
 
 		this.afterBannerClosed$$
@@ -137,29 +227,45 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 				switchMap((changes) => this.userApiSvc.changeUserStatus$(changes)),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe((value) => {
-				this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
-				this.clearSelected$$.next();
+			.subscribe({
+				next: () => {
+					this.selectedStaffIds.map((id) => {
+						this.staffs$$.next([
+							...GeneralUtils.modifyListData(
+								this.staffs$$.value,
+								{
+									...(this.idsToObjMap.get(id.toString()) ?? {}),
+									status: this.afterBannerClosed$$.value?.newStatus,
+								},
+								'update',
+								'id',
+							),
+						]);
+					});
+					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
+					this.clearSelected$$.next();
+				},
 			});
 
-		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
+		this.shareDataSvc
+			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe(([lang]) => {
-				this.selectedLang = lang;
-				this.columns = [Translate.FirstName[lang], Translate.LastName[lang], Translate.Type[lang], Translate.Email[lang], Translate.Status[lang]];
-				if (this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments])) {
-					this.columns = [...this.columns, Translate.Actions[lang]];
-				}
+			.subscribe({
+				next: (lang) => {
+					this.selectedLang = lang;
+					this.tableHeaders = this.tableHeaders.map((h, i) => ({
+						...h,
+						title: Translate[this.columns[i]][lang],
+					}));
 
-				// eslint-disable-next-line default-case
-				switch (lang) {
-					case ENG_BE:
-						this.statuses = Statuses;
-						break;
-					case DUTCH_BE:
-						this.statuses = StatusesNL;
-						break;
-				}
+					switch (lang) {
+						case ENG_BE:
+							this.statuses = Statuses;
+							break;
+						default:
+							this.statuses = StatusesNL;
+					}
+				},
 			});
 	}
 
@@ -172,14 +278,27 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		this.selectedStaffIds = [...selected];
 	}
 
-	public changeStatus(changes: ChangeStatusRequestData[]) {
+	public changeStatus(changes: ChangeStatusRequestData[], item: any) {
 		this.userApiSvc
 			.changeUserStatus$(changes)
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe(
-				() => this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]),
-				(err) => this.notificationSvc.showNotification(err, NotificationType.DANGER),
-			);
+			.subscribe({
+				next: () => {
+					this.staffs$$.next([
+						...GeneralUtils.modifyListData(
+							this.staffs$$.value,
+							{
+								...item,
+								status: changes[0].status,
+							},
+							'update',
+							'id',
+						),
+					]);
+					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
+				},
+				error: (err) => this.notificationSvc.showNotification(err, NotificationType.DANGER),
+			});
 	}
 
 	public deleteStaff(id: number) {
@@ -198,10 +317,11 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 				switchMap(() => this.userApiSvc.deleteUser(id)),
 				take(1),
 			)
-			.subscribe((response) => {
-				if (response) {
+			.subscribe({
+				next: (response) => {
+					this.staffs$$.next(GeneralUtils.modifyListData(this.staffs$$.value, { id }, 'delete', 'id'));
 					this.notificationSvc.showNotification(Translate.SuccessMessage.StaffDeleted[this.selectedLang]);
-				}
+				},
 			});
 	}
 
@@ -211,7 +331,16 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 	public copyToClipboard() {
 		try {
-			let dataString = `${this.columns.slice(0, -1).join('\t')}\n`;
+			let dataString = `${this.tableHeaders
+				.map(({ title }) => title)
+				.filter((value) => value !== 'Actions')
+				.join('\t')}\n`;
+			
+				if (!this.filteredStaffs$$.value.length) {
+					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+					this.clipboardData = '';
+					return;
+				}
 
 			this.filteredStaffs$$.value.forEach((staff: User) => {
 				dataString += `${staff.firstname}\t${staff.lastname}\t ${staff.userType}\t ${staff.email}\t${StatusToName[+staff.status]}\n`;
@@ -229,7 +358,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 	public navigateToViewStaff(e: TableItem) {
 		if (e?.id) {
-			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route });
+			this.router.navigate([`./${e.id}/view`], { relativeTo: this.route, queryParamsHandling: 'preserve' });
 		}
 	}
 
@@ -266,7 +395,9 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 			} as SearchModalData,
 		});
 
-		modalRef.closed.pipe(take(1)).subscribe((result) => this.filterStaffList(result));
+		modalRef.closed.pipe(take(1)).subscribe({
+			next: (result) => this.filterStaffList(result),
+		});
 	}
 
 	private handleSearch(searchText: string): void {
@@ -306,5 +437,16 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		setTimeout(() => {
 			this.downloadDropdownControl.setValue('');
 		}, 0);
+	}
+
+	public onScroll(e: undefined): void {
+		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+			this.userApiSvc.pageNoStaff = this.userApiSvc.pageNoStaff + 1;
+			this.tableData$$.value.isLoadingMore = true;
+		}
+	}
+
+	public onSort(e: DfmTableHeader): void {
+		this.filteredStaffs$$.next(GeneralUtils.SortArray(this.filteredStaffs$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }

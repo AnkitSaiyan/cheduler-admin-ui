@@ -13,210 +13,295 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { NameValue } from 'src/app/shared/components/search-modal.component';
 import { Appointment } from 'src/app/shared/models/appointment.model';
-import { NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from 'src/app/shared/utils/const';
+import { PaginationData } from 'src/app/shared/models/base-response.model';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+
+const ColumnIdToKey = {
+	1: 'roomName',
+	2: 'startDate',
+	3: 'endDate',
+	4: 'absenceName',
+};
 
 @Component({
-  selector: 'dfm-unavailable-hall-periods',
-  templateUrl: './unavailable-hall-periods.component.html',
-  styleUrls: ['./unavailable-hall-periods.component.scss'],
+	selector: 'dfm-unavailable-hall-periods',
+	templateUrl: './unavailable-hall-periods.component.html',
+	styleUrls: ['./unavailable-hall-periods.component.scss'],
 })
 export class UnavailableHallPeriodsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public columns: string[] = ['RoomName', 'StartedAt', 'End', 'AbsenceTitle'];
+	public columns: string[] = ['RoomName', 'StartedAt', 'End', 'AbsenceTitle'];
 
-  private roomAbsence$$: BehaviorSubject<any[]>;
+	public tableHeaders: DfmTableHeader[] = [
+		{ id: '1', title: 'Room Name', isSortable: true },
+		{ id: '2', title: 'Started At', isSortable: true },
+		{ id: '3', title: 'End', isSortable: true },
+		{ id: '4', title: 'Absence Title', isSortable: true },
+	];
 
-  public filteredRoomAbsence$$: BehaviorSubject<any[]>;
+	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
 
-  public searchControl = new FormControl('', []);
+	private roomAbsence$$: BehaviorSubject<any[]>;
 
-  public downloadDropdownControl = new FormControl('', []);
-  private selectedLang: string = ENG_BE;
+	public filteredRoomAbsence$$: BehaviorSubject<any[]>;
 
-  public statuses = Statuses;
+	public searchControl = new FormControl('', []);
 
-  // public downloadItems: NameValue[] = [];
+	public downloadDropdownControl = new FormControl('', []);
 
-  // public recentPatients: any = [
-  //   {
-  //     roomName: 'Maaike',
-  //     absenceName: 'Hannibal Smith',
-  //     end: new Date(),
-  //     getStarted: new Date(),
-  //   },
-  //   {
-  //     roomName: 'Maaike',
-  //     absenceName: 'Bannie Smith',
-  //     end: new Date(),
-  //     getStarted: new Date(),
-  //   },
-  //   {
-  //     roomName: 'Maaike',
-  //     absenceName: 'Kate Smith',
-  //     end: new Date(),
-  //     getStarted: new Date(),
-  //   },
-  //   {
-  //     roomName: 'Maaike',
-  //     absenceName: 'Hannibal Smith',
-  //     end: new Date(),
-  //     getStarted: new Date(),
-  //   },
-  //   {
-  //     roomName: 'Maaike',
-  //     absenceName: 'Hannibal Smith',
-  //     end: new Date(),
-  //     getStarted: new Date(),
-  //   },
-  //   {
-  //     roomName: 'Maaike',
-  //     absenceName: 'Hannibal Smith',
-  //     end: new Date(),
-  //     getStarted: new Date(),
-  //   },
-  //   {
-  //     roomName: 'Maaike',
-  //     absenceName: 'Hannibal Smith',
-  //     end: new Date(),
-  //     getStarted: new Date(),
-  //   },
-  // ];
+	private selectedLang: string = ENG_BE;
 
-  public clipboardData: string = '';
+	public statuses = Statuses;
 
-  public downloadItems: NameValue[] = [];
+	private paginationData: PaginationData | undefined;
 
-  // public downloadItems: any[] = [
-  //   {
-  //     name: 'Excel',
-  //     value: 'xls',
-  //     description: 'Download as Excel',
-  //   },
-  //   {
-  //     name: 'PDF',
-  //     value: 'pdf',
-  //     description: 'Download as PDF',
-  //   },
-  //   {
-  //     name: 'CSV',
-  //     value: 'csv',
-  //     description: 'Download as CSV',
-  //   },
-  //   {
-  //     name: 'Print',
-  //     value: 'print',
-  //     description: 'Print appointments',
-  //   },
-  // ];
+	// public downloadItems: NameValue[] = [];
 
-  constructor(
-    private dashboardApiService: DashboardApiService,
-    private downloadSvc: DownloadService,
-    private notificationSvc: NotificationDataService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private modalSvc: ModalService,
-    private roomApiSvc: RoomsApiService,
-    private datePipe: DatePipe,
-    private cdr: ChangeDetectorRef,
-    private titleCasePipe: TitleCasePipe,
-    private routerStateSvc: RouterStateService,
-    private shareDataSvc: ShareDataService,
-  ) {
-    super();
-    this.roomAbsence$$ = new BehaviorSubject<any[]>([]);
-    this.filteredRoomAbsence$$ = new BehaviorSubject<any[]>([]);
-  }
+	// public recentPatients: any = [
+	//   {
+	//     roomName: 'Maaike',
+	//     absenceName: 'Hannibal Smith',
+	//     end: new Date(),
+	//     getStarted: new Date(),
+	//   },
+	//   {
+	//     roomName: 'Maaike',
+	//     absenceName: 'Bannie Smith',
+	//     end: new Date(),
+	//     getStarted: new Date(),
+	//   },
+	//   {
+	//     roomName: 'Maaike',
+	//     absenceName: 'Kate Smith',
+	//     end: new Date(),
+	//     getStarted: new Date(),
+	//   },
+	//   {
+	//     roomName: 'Maaike',
+	//     absenceName: 'Hannibal Smith',
+	//     end: new Date(),
+	//     getStarted: new Date(),
+	//   },
+	//   {
+	//     roomName: 'Maaike',
+	//     absenceName: 'Hannibal Smith',
+	//     end: new Date(),
+	//     getStarted: new Date(),
+	//   },
+	//   {
+	//     roomName: 'Maaike',
+	//     absenceName: 'Hannibal Smith',
+	//     end: new Date(),
+	//     getStarted: new Date(),
+	//   },
+	//   {
+	//     roomName: 'Maaike',
+	//     absenceName: 'Hannibal Smith',
+	//     end: new Date(),
+	//     getStarted: new Date(),
+	//   },
+	// ];
 
-  ngOnInit(): void {
-    this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
-    this.dashboardApiService.roomAbsence$.pipe(takeUntil(this.destroy$$)).subscribe((roomAbsence) => {
-      this.roomAbsence$$.next(roomAbsence['roomAbsence']);
-      this.filteredRoomAbsence$$.next(roomAbsence['roomAbsence']);
-    });
+	public clipboardData: string = '';
 
-    this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
-      if (searchText) {
-        this.handleSearch(searchText.toLowerCase());
-      } else {
-        this.filteredRoomAbsence$$.next([...this.roomAbsence$$.value]);
-      }
-    });
+	public downloadItems: NameValue[] = [];
 
-    this.downloadDropdownControl.valueChanges
-      .pipe(
-        filter((value) => !!value),
-        takeUntil(this.destroy$$),
-      )
-      .subscribe((value) => {
-        if (!this.filteredRoomAbsence$$.value.length) {
-          return;
-        }
+	// public downloadItems: any[] = [
+	//   {
+	//     name: 'Excel',
+	//     value: 'xls',
+	//     description: 'Download as Excel',
+	//   },
+	//   {
+	//     name: 'PDF',
+	//     value: 'pdf',
+	//     description: 'Download as PDF',
+	//   },
+	//   {
+	//     name: 'CSV',
+	//     value: 'csv',
+	//     description: 'Download as CSV',
+	//   },
+	//   {
+	//     name: 'Print',
+	//     value: 'print',
+	//     description: 'Print appointments',
+	//   },
+	// ];
 
-        this.downloadSvc.downloadJsonAs(
-          value as DownloadAsType,
-          this.columns.slice(0),
-          this.filteredRoomAbsence$$.value.map((ap: any) => [
-            ap?.roomName?.toString(),
-            ap?.absenceName?.toString(),
-            ap.startDate.toString(),
-            ap.endDate.toString(),
-          ]),
-          'unavailable-hall-period',
-        );
+	constructor(
+		private dashboardApiService: DashboardApiService,
+		private downloadSvc: DownloadService,
+		private notificationSvc: NotificationDataService,
+		private router: Router,
+		private route: ActivatedRoute,
+		private modalSvc: ModalService,
+		private roomApiSvc: RoomsApiService,
+		private datePipe: DatePipe,
+		private cdr: ChangeDetectorRef,
+		private titleCasePipe: TitleCasePipe,
+		private routerStateSvc: RouterStateService,
+		private shareDataSvc: ShareDataService,
+	) {
+		super();
+		this.roomAbsence$$ = new BehaviorSubject<any[]>([]);
+		this.filteredRoomAbsence$$ = new BehaviorSubject<any[]>([]);
+		this.dashboardApiService.roomAbsencePageNo = 1;
+	}
 
-        if (value !== 'PRINT') {
-          this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
-        }
+	ngOnInit(): void {
+		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
-        this.downloadDropdownControl.setValue(null);
+		this.filteredRoomAbsence$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => {
+				// console.log('filter', items);
+				this.tableData$$.next({
+					items,
+					isInitialLoading: false,
+					isLoading: false,
+					isLoadingMore: false,
+				});
+			},
+		});
 
-        this.cdr.detectChanges();
-      });
-    this.shareDataSvc
-      .getLanguage$()
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => {
-        this.selectedLang = lang;
-        this.columns = [
-          // Translate.Read[lang],
-          Translate.RoomName[lang],
-          Translate.StartDate[lang],
-          Translate.EndDate[lang],
-          Translate.AbsenceName[lang],
-        ];
-      });
-  }
+		this.roomAbsence$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (roomAbsence) => this.filteredRoomAbsence$$.next([...roomAbsence]),
+		});
 
-  private handleSearch(searchText: string): void {
-    this.filteredRoomAbsence$$.next([
-      ...this.roomAbsence$$.value.filter((appointment) => {
-        return (
-          appointment.roomName?.toLowerCase()?.includes(searchText) ||
-          appointment.absenceName?.toLowerCase()?.includes(searchText) ||
-          appointment.endDate?.toLowerCase()?.includes(searchText) ||
-          appointment.startDate?.toString()?.includes(searchText)
-        );
-      }),
-    ]);
-  }
+		this.dashboardApiService.roomAbsence$.pipe(takeUntil(this.destroy$$)).subscribe(
+			(roomAbsenceBase) => {
+				if (this.paginationData && this.paginationData.pageNo < roomAbsenceBase.metaData.pagination.pageNo) {
+					this.roomAbsence$$.next([...this.roomAbsence$$.value, ...roomAbsenceBase.data]);
+				} else {
+					this.roomAbsence$$.next([...roomAbsenceBase.data]);
+				}
+				this.paginationData = roomAbsenceBase.metaData.pagination;
+			},
+			() => this.filteredRoomAbsence$$.next([]),
+		);
 
-  public copyToClipboard() {
-    try {
-      let dataString = `Room Name\t\t\tStarted At\t\t\t`;
-      dataString += `${this.columns.slice(2).join('\t\t')}\n`;
+		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
+			if (searchText) {
+				this.handleSearch(searchText.toLowerCase());
+			} else {
+				this.filteredRoomAbsence$$.next([...this.roomAbsence$$.value]);
+			}
+		});
 
-      this.filteredRoomAbsence$$.value.forEach((ap: any) => {
-        dataString += `${ap?.roomName?.toString()}\t${ap?.startDate?.toString()}\t\t${ap.endDate.toString()}\t\t${ap.absenceName.toString()}\n`;
-      });
+		this.downloadDropdownControl.valueChanges
+			.pipe(
+				filter((value) => !!value),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((value) => {
+				if (!this.filteredRoomAbsence$$.value.length) {
+					return;
+				}
 
-      this.clipboardData = dataString;
-      this.cdr.detectChanges();
-      this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
-    } catch (e) {
-      this.notificationSvc.showNotification(Translate.ErrorMessage.FailedToCopyData[this.selectedLang], NotificationType.DANGER);
-      this.clipboardData = '';
-    }
-  }
+				this.downloadSvc.downloadJsonAs(
+					value as DownloadAsType,
+					this.tableHeaders.map(({ title }) => title),
+					this.filteredRoomAbsence$$.value.map((ap: any) => [
+						ap?.roomName?.toString(),
+						ap.startDate.toString(),
+						ap.endDate.toString(),
+						ap?.absenceName?.toString(),
+					]),
+					'unavailable-hall-period',
+				);
+
+				if (value !== 'PRINT') {
+					this.notificationSvc.showNotification(`${Translate.DownloadSuccess(value)[this.selectedLang]}`);
+				}
+
+				this.downloadDropdownControl.setValue(null);
+
+				this.cdr.detectChanges();
+			});
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe((lang) => {
+				this.selectedLang = lang;
+				this.tableHeaders = this.tableHeaders.map((h, i) => ({
+          ...h,
+          title: Translate[this.columns[i]][lang],
+        }));
+			});
+	}
+
+	private handleSearch(searchText: string): void {
+		this.filteredRoomAbsence$$.next([
+			...this.roomAbsence$$.value.filter((appointment) => {
+				return (
+					appointment.roomName?.toLowerCase()?.includes(searchText) ||
+					appointment.absenceName?.toLowerCase()?.includes(searchText) ||
+					appointment.endDate?.toLowerCase()?.includes(searchText) ||
+					appointment.startDate?.toString()?.includes(searchText)
+				);
+			}),
+		]);
+	}
+
+	public copyToClipboard() {
+		try {
+			let dataString = `Room Name\t\t\tStarted At\t\t\t`;
+			dataString += `${this.tableHeaders
+				.map(({ title }) => title)
+				.slice(2)
+				.join('\t\t')}\n`;
+			
+				if (!this.filteredRoomAbsence$$.value.length) {
+					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+					this.clipboardData = '';
+					return;
+				}
+
+
+			this.filteredRoomAbsence$$.value.forEach((ap: any) => {
+				dataString += `${ap?.roomName?.toString()}\t${ap?.startDate?.toString()}\t\t${ap.endDate.toString()}\t\t${ap.absenceName.toString()}\n`;
+			});
+
+			this.clipboardData = dataString;
+			this.cdr.detectChanges();
+			this.notificationSvc.showNotification(Translate.SuccessMessage.CopyToClipboard[this.selectedLang]);
+		} catch (e) {
+			this.notificationSvc.showNotification(Translate.ErrorMessage.FailedToCopyData[this.selectedLang], NotificationType.DANGER);
+			this.clipboardData = '';
+		}
+	}
+
+	public onScroll(e: undefined): void {
+		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+			this.dashboardApiService.roomAbsencePageNo = this.dashboardApiService.roomAbsencePageNo + 1;
+			this.tableData$$.value.isLoadingMore = true;
+		}
+	}
+
+	public onSort(e: DfmTableHeader): void {
+		this.filteredRoomAbsence$$.next(GeneralUtils.SortArray(this.filteredRoomAbsence$$.value, e.sort, ColumnIdToKey[e.id]));
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -12,6 +12,7 @@ import { AppointmentApiService } from '../../../../core/services/appointment-api
 import { Translate } from 'src/app/shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 
 @Component({
 	selector: 'dfm-view-appointment',
@@ -113,7 +114,22 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 			)
 			.subscribe(() => {
 				this.notificationSvc.showNotification(Translate.DeleteAppointment[this.selectedLang]);
-				this.router.navigate(['/', 'appointment']);
+				this.router.navigate(['/', 'appointment'], { queryParamsHandling: 'merge', relativeTo: this.route });
 			});
+	}
+
+	public openDocumentModal(id: number) {
+		this.modalSvc.open(DocumentViewModalComponent, {
+			  data: {
+				id
+			  },
+			  options: {
+			    size: 'xl',
+			    backdrop: true,
+			    centered: true,
+			    modalDialogClass: 'ad-ap-modal-shadow',
+			  },
+			})
+		// this.appointmentApiSvc.getDocumentById$(id).subscribe(res => console.log(res));
 	}
 }

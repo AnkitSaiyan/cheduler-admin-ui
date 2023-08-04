@@ -71,19 +71,144 @@
 
   <section class="list-page-content-height"
            *ngIf="filteredPhysicians$$ | async as physicians">
-    <dfm-table [items]="physicians" [selectable]="permissionSvc.isNotReader" (selected)="handleCheckboxSelection($event)"
-               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewPhysician($event)"
-               class="dfm-table-wrapper">
-      <ng-template #headerRowTemplate>
-        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate}}</dfm-table-header-cell>
-      </ng-template>
+<!--    <dfm-table [items]="physicians" [selectable]="permissionSvc.isNotReader" (selected)="handleCheckboxSelection($event)"-->
+<!--               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewPhysician($event)"-->
+<!--               class="dfm-table-wrapper">-->
+<!--      <ng-template #headerRowTemplate>-->
+<!--        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate}}</dfm-table-header-cell>-->
+<!--      </ng-template>-->
 
+<!--      <ng-template #bodyRowTemplate let-item>-->
+<!--        <dfm-table-body-cell>{{ item.firstname | titlecase | dashIfNothing }}</dfm-table-body-cell>-->
+<!--        <dfm-table-body-cell>{{ item.lastname | titlecase | dashIfNothing }}</dfm-table-body-cell>-->
+<!--        <dfm-table-body-cell>{{ item.email | dashIfNothing }}</dfm-table-body-cell>-->
+
+<!--        <dfm-table-body-cell>-->
+<!--          <dfm-badge *ngIf="item.status"-->
+<!--                     color="success"-->
+<!--                     size="sm"-->
+<!--                     fontWeight="medium">-->
+<!--            {{ +item.status | statusName | dashIfNothing | translate}}-->
+<!--          </dfm-badge>-->
+
+<!--          <dfm-badge *ngIf="!item.status"-->
+<!--                     color="primary"-->
+<!--                     size="sm">-->
+<!--            {{ +item.status | statusName | dashIfNothing |translate}}-->
+<!--          </dfm-badge>-->
+<!--        </dfm-table-body-cell>-->
+
+<!--        <dfm-table-body-cell class="" *dfmPermitted="[Permission.UpdatePhysicians, Permission.DeletePhysicians]">-->
+<!--          <div class="d-flex dfm-gap-16 align-items-center ph-li-action-buttons">-->
+<!--            <ng-container *dfmPermitted="Permission.UpdatePhysicians">-->
+<!--              <dfm-button-->
+<!--                *ngIf="!item.status"-->
+<!--                color="link-gray"-->
+<!--                size="sm"-->
+<!--                trailingIcon="check-circle"-->
+<!--                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"-->
+<!--                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"-->
+<!--              ></dfm-button>-->
+
+<!--              <dfm-button-->
+<!--                *ngIf="item.status"-->
+<!--                color="link-gray"-->
+<!--                size="sm"-->
+<!--                trailingIcon="x-circle"-->
+<!--                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"-->
+<!--                [openDelay]="200"-->
+<!--                popoverClass="popover-p-8"-->
+<!--                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"-->
+<!--              ></dfm-button>-->
+<!--            </ng-container>-->
+
+<!--            <dfm-button-->
+<!--              color="link-gray"-->
+<!--              size="sm"-->
+<!--              trailingIcon="pencil-02"-->
+<!--              ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave"-->
+<!--              popoverClass="popover-p-8"-->
+<!--              [openDelay]="200"-->
+<!--              (click)="$event.stopPropagation(); openAddPhysicianModal(item);"-->
+<!--              *dfmPermitted="Permission.UpdatePhysicians"-->
+<!--            ></dfm-button>-->
+
+<!--            <dfm-button-->
+<!--              color="link-gray"-->
+<!--              size="sm"-->
+<!--              trailingIcon="trash-01"-->
+<!--              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave"-->
+<!--              popoverClass="popover-p-8"-->
+<!--              [openDelay]="200"-->
+<!--              (click)="$event.stopPropagation(); deletePhysician(item.id)"-->
+<!--              *dfmPermitted="Permission.DeletePhysicians"-->
+<!--            ></dfm-button>-->
+<!--          </div>-->
+
+<!--          &lt;!&ndash; Action Menu &ndash;&gt;-->
+<!--          <dfm-button-->
+<!--            [ngbPopover]="actionMenu"-->
+<!--            autoClose="autoClose"-->
+<!--            triggers="click"-->
+<!--            container="body"-->
+<!--            placement="left"-->
+<!--            popoverClass="popover-p-0"-->
+<!--            class="hidden ph-li-vertical-dots-btn"-->
+<!--            color="link-gray"-->
+<!--            size="sm"-->
+<!--            trailingIcon="dots-vertical"-->
+<!--            (click)="$event.stopPropagation(); toggleMenu(true)"-->
+<!--          ></dfm-button>-->
+
+<!--          <ng-template #actionMenu>-->
+<!--            <div class="ph-li-menus"-->
+<!--                 aria-labelledby="dropdownManual">-->
+<!--              <ng-container *dfmPermitted="Permission.UpdatePhysicians">-->
+<!--                <div *ngIf="!item.status"-->
+<!--                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"-->
+<!--                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"-->
+<!--                     [openDelay]="200" >-->
+<!--                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>-->
+<!--                </div>-->
+
+<!--                <div *ngIf="item.status"-->
+<!--                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"-->
+<!--                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"-->
+<!--                     [openDelay]="200">-->
+<!--                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>-->
+<!--                </div>-->
+<!--              </ng-container>-->
+
+<!--              <div (click)="$event.stopPropagation(); openAddPhysicianModal(item)" ngbPopover="{{'Edit' | translate}}"-->
+<!--                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.UpdatePhysicians">-->
+<!--                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>-->
+<!--              </div>-->
+
+<!--              <div (click)="$event.stopPropagation(); deletePhysician(item.id)" ngbPopover="{{'Delete' | translate}}"-->
+<!--                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.DeletePhysicians">-->
+<!--                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </ng-template>-->
+<!--          &lt;!&ndash; Action Menu ends &ndash;&gt;-->
+
+<!--        </dfm-table-body-cell>-->
+<!--      </ng-template>-->
+<!--    </dfm-table>-->
+<!--    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"-->
+<!--         *ngIf="!physicians.length && (loading$$ | async) === false">-->
+<!--      {{'NoPhysicianFound' | translate}}-->
+<!--    </div>-->
+
+    <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+                    [clearSelected$]="clearSelected$$" [stickyActions]="true"  noDataMessage="{{ 'NoPhysicianFound' | translate }}"
+                    [rowClickable]="true" [stickyCheckbox]="true" (rowClicked)="navigateToViewPhysician($event)"
+                    [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
       <ng-template #bodyRowTemplate let-item>
-        <dfm-table-body-cell>{{ item.firstname | titlecase | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.lastname | titlecase | dashIfNothing }}</dfm-table-body-cell>
-        <dfm-table-body-cell>{{ item.email | dashIfNothing }}</dfm-table-body-cell>
-
-        <dfm-table-body-cell>
+        <dfm-table-row-cell [fullContent]="item.firstname">{{ item.firstname | titlecase | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.lastname">{{ item.lastname | titlecase | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.email">{{ item.email | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.status">
           <dfm-badge *ngIf="item.status"
                      color="success"
                      size="sm"
@@ -96,130 +221,18 @@
                      size="sm">
             {{ +item.status | statusName | dashIfNothing |translate}}
           </dfm-badge>
-        </dfm-table-body-cell>
-
-        <dfm-table-body-cell class="" *dfmPermitted="[Permission.UpdatePhysicians, Permission.DeletePhysicians]">
-          <div class="d-flex dfm-gap-16 align-items-center ph-li-action-buttons">
-            <ng-container *dfmPermitted="Permission.UpdatePhysicians">
-              <dfm-button
-                *ngIf="!item.status"
-                color="link-gray"
-                size="sm"
-                trailingIcon="check-circle"
-                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
-                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-              ></dfm-button>
-
-              <dfm-button
-                *ngIf="item.status"
-                color="link-gray"
-                size="sm"
-                trailingIcon="x-circle"
-                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave"
-                [openDelay]="200"
-                popoverClass="popover-p-8"
-                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-              ></dfm-button>
-            </ng-container>
-
-            <dfm-button
-              color="link-gray"
-              size="sm"
-              trailingIcon="pencil-02"
-              ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="$event.stopPropagation(); openAddPhysicianModal(item);"
-              *dfmPermitted="Permission.UpdatePhysicians"
-            ></dfm-button>
-
-            <dfm-button
-              color="link-gray"
-              size="sm"
-              trailingIcon="trash-01"
-              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave"
-              popoverClass="popover-p-8"
-              [openDelay]="200"
-              (click)="$event.stopPropagation(); deletePhysician(item.id)"
-              *dfmPermitted="Permission.DeletePhysicians"
-            ></dfm-button>
-          </div>
-
-          <!-- Action Menu -->
-          <dfm-button
-            [ngbPopover]="actionMenu"
-            autoClose="autoClose"
-            triggers="click"
-            container="body"
-            placement="left"
-            popoverClass="popover-p-0"
-            class="hidden ph-li-vertical-dots-btn"
-            color="link-gray"
-            size="sm"
-            trailingIcon="dots-vertical"
-            (click)="$event.stopPropagation(); toggleMenu(true)"
-          ></dfm-button>
-
-          <ng-template #actionMenu>
-            <div class="ph-li-menus"
-                 aria-labelledby="dropdownManual">
-              <ng-container *dfmPermitted="Permission.UpdatePhysicians">
-                <div *ngIf="!item.status"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"
-                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
-                     [openDelay]="200" >
-                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>
-                </div>
-
-                <div *ngIf="item.status"
-                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"
-                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
-                     [openDelay]="200">
-                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>
-                </div>
-              </ng-container>
-
-              <div (click)="$event.stopPropagation(); openAddPhysicianModal(item)" ngbPopover="{{'Edit' | translate}}"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.UpdatePhysicians">
-                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>
-              </div>
-
-              <div (click)="$event.stopPropagation(); deletePhysician(item.id)" ngbPopover="{{'Delete' | translate}}"
-                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.DeletePhysicians">
-                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>
-              </div>
-            </div>
+        </dfm-table-row-cell>
+        <dfm-data-table-action-cell *dfmPermitted="[Permission.UpdatePhysicians, Permission.DeletePhysicians]">
+          <ng-template #actionCellTemplate>
+            <dfm-data-table-action *ngIf="!item.status" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }])" ></dfm-data-table-action>
+            <dfm-data-table-action *ngIf="item.status" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }])"></dfm-data-table-action>
+            <dfm-data-table-action icon="pencil-02" tooltip="{{ 'Edit' | translate }}" (click)="$event.stopPropagation(); openAddPhysicianModal(item)" *dfmPermitted="Permission.UpdatePhysicians"></dfm-data-table-action>
+            <dfm-data-table-action icon="trash-01" tooltip="{{ 'Delete' | translate }}" (click)="$event.stopPropagation(); deletePhysician(item.id)" *dfmPermitted="Permission.DeletePhysicians"></dfm-data-table-action>
           </ng-template>
-          <!-- Action Menu ends -->
-
-        </dfm-table-body-cell>
+        </dfm-data-table-action-cell>
       </ng-template>
-    </dfm-table>
-    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"
-         *ngIf="!physicians.length && (loading$$ | async) === false">
-      {{'NoPhysicianFound' | translate}}
-    </div>
+    </dfm-data-table>
   </section>
-
-  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
-  <!--    <div class="shadow-lg ph-li-plus-btn-menu ph-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
-  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
-  <!--  <div class="hidden shadow-lg ph-li-plus-btn rounded-2" (click)="$event.stopPropagation(); optionsMenu.toggle(); toggleMenu()">-->
-  <!--    <dfm-button color="secondary" size="md" class="h-full">-->
-  <!--      <dfm-icon #showMoreButtonIcon name="plus" class="ph-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
-  <!--    </dfm-button>-->
-  <!--  </div>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedPhysicianIDs.length"

@@ -134,7 +134,7 @@ export const Translate = Object.freeze({
 	},
 	StartedAt: {
 		[ENG_BE]: 'Started At',
-		[DUTCH_BE]: 'Start',
+		[DUTCH_BE]: 'Begin',
 	},
 	EndedAt: {
 		[ENG_BE]: 'Ended At',
@@ -156,14 +156,28 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Physician',
 		[DUTCH_BE]: 'Dokter',
 	},
+	ReferralNote: {
+		[ENG_BE]: 'Referral Note',
+		[DUTCH_BE]: 'Referral Note',
+	},
 	AppointmentNo: {
-		[ENG_BE]: 'Appointment No',
+		[ENG_BE]: 'Appointment No.',
 		[DUTCH_BE]: 'Afspraak nr.',
+	},
+	AppointmentDate: {
+		[ENG_BE]: 'Appointment Date',
+		[DUTCH_BE]: 'Afspraak Datum',
 	},
 	AppliedOn: {
 		[ENG_BE]: 'Applied On',
 		[DUTCH_BE]: 'Aangevraagd op',
 	},
+
+	AbsenceTitle: {
+		[ENG_BE]: 'Absence Title',
+		[DUTCH_BE]: 'Afwezigheid Titel',
+	},
+
 	Read: {
 		[ENG_BE]: 'Read',
 		[DUTCH_BE]: 'Lees',
@@ -415,6 +429,10 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'Absence Deleted Successfully',
 			[DUTCH_BE]: 'Afwezigheid succesvol verwijderd',
 		},
+		AppointmentUpdate: {
+			[ENG_BE]: 'Appointment updated successfully',
+			[DUTCH_BE]: 'Afspraak succesvol geupdated',
+		},
 		AppointmentAdded: {
 			[ENG_BE]: 'Appointment Added Successfully',
 			[DUTCH_BE]: 'Afspraak succesvol toegevoegd',
@@ -438,6 +456,10 @@ export const Translate = Object.freeze({
 		ProfileSavedSuccessfully: {
 			[ENG_BE]: 'Profile saved successfully',
 			[DUTCH_BE]: 'Profiel succesvol opgeslagen',
+		},
+		Update: {
+			[ENG_BE]: 'Updated',
+			[DUTCH_BE]: 'bijgewerkt',
 		},
 	},
 
@@ -471,7 +493,7 @@ export const Translate = Object.freeze({
 	},
 
 	SelectStaffOrRoom: {
-		[ENG_BE]: 'Select a room or staff first',
+		[ENG_BE]: 'Please select room or staff',
 		[DUTCH_BE]: 'Selecteer eerst een zaal of personeel',
 	},
 	FormInvalidSimple: {
@@ -536,13 +558,18 @@ export const Translate = Object.freeze({
 	},
 
 	sessionExp: {
-		[ENG_BE]: 'Your session has expired',
-		[DUTCH_BE]: 'Uw sessie is verlopen',
+		[ENG_BE]: 'Your session has expired. Login again',
+		[DUTCH_BE]: 'Uw sessie is verlopen. Log opnieuw in',
 	},
 
 	Profile: {
 		[ENG_BE]: 'Profile',
 		[DUTCH_BE]: 'Profiel',
+	},
+
+	AppointmentRecived: {
+		[ENG_BE]: 'New Appointment Received',
+		[DUTCH_BE]: 'Nieuwe afspraak ontvangen',
 	},
 	Error: {
 		Forbidden: {
@@ -628,6 +655,10 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Complete Profile',
 		[DUTCH_BE]: 'Complete Profile',
 	},
+	Delete: {
+		[ENG_BE]: 'Deleted',
+		[DUTCH_BE]: 'verwijderd',
+	},
 
 	// General
 	GENERAL: {
@@ -687,9 +718,45 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Sunday',
 		[DUTCH_BE]: 'Zondag',
 	},
+	Male: {
+		[ENG_BE]: 'Male',
+		[DUTCH_BE]: 'Male',
+	},
+	Female: {
+		[ENG_BE]: 'Female',
+		[DUTCH_BE]: 'Female',
+	},
+	MaleBody: {
+		[ENG_BE]: 'Male Body',
+		[DUTCH_BE]: 'Male Body',
+	},
+	FemaleBody: {
+		[ENG_BE]: 'Female Body',
+		[DUTCH_BE]: 'Female Body',
+	},
+	Skeleton: {
+		[ENG_BE]: 'Skeleton',
+		[DUTCH_BE]: 'Skeleton',
+	},
+	Gender: {
+		[ENG_BE]: 'Gender',
+		[DUTCH_BE]: 'Gender',
+	},
+	BodyType: {
+		[ENG_BE]: 'Body type',
+		[DUTCH_BE]: 'Body type',
+	},
+	BodyPart: {
+		[ENG_BE]: 'BodyPart',
+		[DUTCH_BE]: 'BodyPart',
+	},
+	ServerErrorMessage: {
+		'Slot exist in this range': {
+			[ENG_BE]: 'Slot exist in this range',
+			[DUTCH_BE]: 'Dit slot overlapt met een reeds bestaand slot',
+		},
+	},
 });
-
-
 
 
 

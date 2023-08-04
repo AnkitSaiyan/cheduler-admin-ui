@@ -81,7 +81,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 				}
 			});
 
-		this.examApiSvc.exams$
+		this.examApiSvc.allExams$
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((exams) => exams.forEach((exam) => this.examIdToNameMap.set(+exam.id, exam.name)));
 
@@ -113,7 +113,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 			)
 			.subscribe(() => {
 				this.notificationSvc.showNotification(Translate.SuccessMessage.StaffDeleted[this.selectedLang]);
-				this.router.navigate(['/', 'staff']);
+				this.router.navigate(['/', 'staff'], { queryParamsHandling: 'merge' });
 			});
 	}
 
