@@ -115,7 +115,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		private shareDataSvc: ShareDataService,
 		private loaderService: LoaderService,
 		private priorityApiSvc: PrioritySlotApiService,
-		private downloadSvc: DownloadService
+		private downloadSvc: DownloadService,
 	) {
 		super();
 
@@ -140,7 +140,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	}
 
 	public ngOnInit(): void {
-		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
+		this.priorityApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
 
 		this.modalSvc.dialogData$
 			.pipe(
@@ -157,25 +157,23 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				next: (absence) => {
 					this.absence$$.next(absence);
 					this.createForm(absence);
-				}
+				},
 			});
 
-		this.roomApiSvc.allRooms$
-			.pipe(takeUntil(this.destroy$$))
-			.subscribe({
-				next: (rooms) => {
-					this.roomList = [...rooms.map((room) => ({ name: room.name, value: room.id.toString() }))];
-					this.filteredRoomList$$.next([...this.roomList]);
-					this.cdr.detectChanges();
-				}
-			});
+		this.roomApiSvc.allRooms$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (rooms) => {
+				this.roomList = [...rooms.map((room) => ({ name: room.name, value: room.id.toString() }))];
+				this.filteredRoomList$$.next([...this.roomList]);
+				this.cdr.detectChanges();
+			},
+		});
 
 		this.userApiSvc.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (staffs) => {
 				this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() }))];
 				this.filteredStaffs$$.next([...this.staffs]);
 				this.cdr.detectChanges();
-			}
+			},
 		});
 
 		this.shareDataSvc
@@ -203,7 +201,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 							this.statuses = StatusesNL;
 							break;
 					}
-				}
+				},
 			});
 	}
 
@@ -257,7 +255,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
 
-
 		const addAbsenceReqData: AddAbsenceRequestDate = {
 			...rest,
 			startedAt: this.datePipe.transform(
@@ -278,7 +275,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			repeatDays: '',
 		};
 
-
 		if (rest.isRepeat && repeatDays?.length) {
 			addAbsenceReqData.repeatDays = repeatDays?.reduce((acc, curr, i) => {
 				if (repeatDays?.length && i < repeatDays.length - 1) {
@@ -297,12 +293,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				.updateAbsence(addAbsenceReqData)
 				.pipe(takeUntil(this.destroy$$))
 				.subscribe({
-					next:
-						() => {
-							this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceUpdated[this.selectedLang]);
-							this.submitting$$.next(false);
-							this.closeModal(true);
-						},
+					next: () => {
+						this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceUpdated[this.selectedLang]);
+						this.submitting$$.next(false);
+						this.closeModal(true);
+					},
 					error: (err) => {
 						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
@@ -470,7 +465,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 					if (this.repeatFrequency && (!this.absence$$.value || !Object.keys(this.absence$$.value)?.length)) {
 						this.repeatFrequency.type = 'number';
 					}
-				}
+				},
 			});
 
 		combineLatest([
@@ -481,7 +476,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			.subscribe({
 				next: () => {
 					this.isAbsenceStaffRoomInvalid.next(false);
-				}
+				},
 			});
 
 		combineLatest([
@@ -494,7 +489,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			.subscribe({
 				next: () => {
 					this.handleTimeChange();
-				}
+				},
 			});
 	}
 
