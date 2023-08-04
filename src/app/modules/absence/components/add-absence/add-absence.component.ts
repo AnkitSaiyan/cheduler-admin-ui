@@ -73,11 +73,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	public startTimes: NameValue[];
 	public endTimes: NameValue[];
 	public statuses = Statuses;
-	public repeatEvery = {
-		// daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
-		weekly: [...this.getRepeatEveryItems(RepeatType.Weekly)],
-		monthly: [...this.getRepeatEveryItems(RepeatType.Daily)],
-	};
+	public repeatEvery!: any;
 	public repeatTypeToName = {
 		daily: 'Days',
 		weekly: 'Weeks',
@@ -122,6 +118,26 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		this.times = this.nameValuePairPipe.transform(this.timeInIntervalPipe.transform(5));
 		this.startTimes = [...this.times];
 		this.endTimes = [...this.times];
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe((lang) => {
+				this.selectedLang = lang;
+				this.repeatEvery = {
+					// daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
+					weekly: [...this.getRepeatEveryItems(RepeatType.Weekly)],
+					monthly: [...this.getRepeatEveryItems(RepeatType.Daily)],
+				};
+
+				switch (lang) {
+					case ENG_BE:
+						this.statuses = Statuses;
+						break;
+					case DUTCH_BE:
+						this.statuses = StatusesNL;
+						break;
+				}
+			});
 	}
 
 	public get formValues(): FormValues {
@@ -499,7 +515,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				return getNumberArray(31).map((d) => ({ name: d.toString(), value: d.toString() }));
 			case RepeatType.Weekly:
 				return getNumberArray(6, 0).map((w) => ({
-					name: this.weekdayToNamePipe.transform(w),
+					name: Translate[this.weekdayToNamePipe.transform(w)][this.selectedLang],
 					value: w.toString(),
 				}));
 			case RepeatType.Monthly:
@@ -532,7 +548,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 					+repeatFrequency.toString().split(' ')[0] > 0
 				) {
 					this.absenceForm.patchValue({
-						repeatFrequency: `${repeatFrequency.toString().split(' ')[0]} ${this.repeatTypeToName[this.formValues.repeatType]}`,
+						repeatFrequency: `${repeatFrequency.toString().split(' ')[0]} ${
+							Translate.RepeatType[this.repeatTypeToName[this.formValues.repeatType]][this.selectedLang]
+						}`,
 					});
 				}
 				this.cdr.detectChanges();
