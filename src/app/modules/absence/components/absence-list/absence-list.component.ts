@@ -20,6 +20,7 @@ import { Permission } from 'src/app/shared/models/permission.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { PaginationData } from '../../../../shared/models/base-response.model';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 
 const ColumnIdToKey = {
 	1: 'name',
@@ -84,12 +85,13 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		public permissionSvc: PermissionService,
+		private prioritySlotSvc: PrioritySlotApiService,
 	) {
 		super();
 		this.absences$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAbsences$$ = new BehaviorSubject<any[]>([]);
-    this.absenceApiSvc.pageNo = 1;
-    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+		this.absenceApiSvc.pageNo = 1;
+		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: () => {
 				if (
 					this.permissionSvc.isPermitted([Permission.UpdateAbsences, Permission.DeleteAbsences]) &&
@@ -105,7 +107,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 	}
 
 	public ngOnInit(): void {
-		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+		this.prioritySlotSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => (this.downloadItems = items),
 		});
 
@@ -254,12 +256,12 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
-			
-				if (!this.filteredAbsences$$.value.length) {
-					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
-					this.clipboardData = '';
-					return;
-				}
+
+			if (!this.filteredAbsences$$.value.length) {
+				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.clipboardData = '';
+				return;
+			}
 
 			this.filteredAbsences$$.value.forEach((absence: Absence) => {
 				dataString += `${absence.name}\t${absence?.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
