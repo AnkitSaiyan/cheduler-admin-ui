@@ -106,7 +106,7 @@
 					<span class="flex-1">{{ 'RepeatEvery' | translate }}</span>
 					<span class="flex-1"
 						>{{ absenceDetails.repeatFrequency === 0 ? ('' | dashIfNothing) : absenceDetails.repeatFrequency }}
-						<span *ngIf="absenceDetails.repeatFrequency">{{ absenceDetails.repeatType | repeatTypeToName }}</span>
+						<span *ngIf="absenceDetails.repeatFrequency">{{ absenceDetails.repeatType | repeatTypeToName | translate }}</span>
 					</span>
 				</div>
 

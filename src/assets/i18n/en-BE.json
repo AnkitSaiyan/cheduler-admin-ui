@@ -461,8 +461,11 @@
 	"Male": "Male",
 	"Female": "Female",
 	"Skeleton": "Skeleton",
-	"Body": "Body"
+	"Body": "Body",
+	"Weeks": "Weeks",
+	"Months": "Months"
 }
+
 
 
 

@@ -464,8 +464,11 @@
 	"Male": "Mannelijk",
 	"Female": "Vrouwelijk",
 	"Skeleton": "Skeleton",
-	"Body": "Lichaam"
+	"Body": "Lichaam",
+	"Weeks": "we(e)ken",
+	"Months": "maand(en)"
 }
+
 
 
 
