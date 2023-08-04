@@ -1,261 +1,222 @@
-table, th, tr, td {
-  border: 1px solid var(--dfm-main-300);
-  border-collapse: collapse;
+table,
+th,
+tr,
+td {
+	border: 1px solid var(--dfm-main-300);
+	border-collapse: collapse;
 }
 
 .calender-month-view {
-  transition: all 200ms linear;
-  width: 100%;
-  height: 100%;
-  min-height: 528px;
-  min-width: 528px;
-  th, td {
-    padding: 8px;
-  }
+	transition: all 200ms linear;
+	width: 100%;
+	height: 100%;
+	min-height: 528px;
+	min-width: 528px;
+	th,
+	td {
+		padding: 8px;
+	}
 
-  .calender-month-view-weekday {
-    background: var(--dfm-table-odd-cell-bg);
+	.calender-month-view-weekday {
+		background: var(--dfm-table-odd-cell-bg);
 
-    th {
-      text-align: center;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-  }
+		th {
+			text-align: center;
+			font-weight: 600;
+			font-size: 0.9rem;
+		}
+	}
 
-  .calender-month-view-day-cell {
-    transition: all 500ms linear;
-    vertical-align: top;
-    position: relative;
-    aspect-ratio: 3 / 2;
+	.calender-month-view-day-cell {
+		transition: all 500ms linear;
+		vertical-align: top;
+		position: relative;
+		aspect-ratio: 3 / 2;
 
-    .calender-month-view-day-cell-content {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      aspect-ratio: 3 / 2;
+		.calender-month-view-day-cell-content {
+			width: 100%;
+			height: 100%;
+			position: relative;
+			aspect-ratio: 3 / 2;
 
-      .calender-month-view-day-exam-event-container {
-        position: absolute;
-        bottom: -8px;
-        left: 0px;
-        right: -8px;
-        display: flex;
-        flex-direction: column;
-          gap: 4px;
-          overflow: hidden;
-          min-height: calc(100% - 32px);
-          max-height: calc(100% - 32px);
+			.calender-month-view-day-exam-event-container {
+				position: absolute;
+				bottom: -8px;
+				left: 0px;
+				right: -8px;
+				display: flex;
+				flex-direction: column;
+				gap: 4px;
+				overflow: hidden;
+				min-height: calc(100% - 32px);
+				max-height: calc(100% - 32px);
 
-        .calender-month-view-event-circle-icon {
-          position: absolute;
-          width: 22px;
-          height: 22px;
-          border-radius: 50%;
-          left: -13px;
-          top: -8px;
-          background: var(--dfm-blue);
-          color: white;
-          text-align: center;
-          font-size: 0.6rem;
-          font-weight: 600;
-          line-height: 22px;
-        }
+				.calender-month-view-event-circle-icon {
+					position: absolute;
+					width: 22px;
+					height: 22px;
+					border-radius: 50%;
+					left: -13px;
+					top: -8px;
+					background: var(--dfm-blue);
+					color: white;
+					text-align: center;
+					font-size: 0.6rem;
+					font-weight: 600;
+					line-height: 22px;
+				}
 
-        .calender-month-view-day-exam-event-title {
-          min-height: 12px;
-            // font-weight: 600;
-            // color: ;
-        }
+				.calender-month-view-day-exam-event-title {
+					min-height: 12px;
+					// font-weight: 600;
+					// color: ;
+				}
 
-        .calender-month-view-day-exam-event-time {
-          font-size: 0.6rem;
-          font-weight: 500;
-          color: var(--dfm-main-500);
-        }
+				.calender-month-view-day-exam-event-time {
+					font-size: 0.6rem;
+					font-weight: 500;
+					color: var(--dfm-main-500);
+				}
 
-        .calender-month-view-day-exam-details-expanded {
-          min-width: 300px;
-          display: flex;
-          flex-direction: column;
-          row-gap: 8px;
+				.calender-month-view-day-exam-details-expanded {
+					min-width: 300px;
+					display: flex;
+					flex-direction: column;
+					row-gap: 8px;
 
-          .calender-month-view-day-exam-details-expanded-title {
-            font-weight: 600;
-            &.date {
-                margin-top: -8px;
-              }
-          }
+					.calender-month-view-day-exam-details-expanded-title {
+						font-weight: 600;
+						&.date {
+							margin-top: -8px;
+						}
+					}
 
-          .calender-month-view-day-exam-details-expanded-patients-container {
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            max-height: 40vh;
+					.calender-month-view-day-exam-details-expanded-patients-container {
+						display: flex;
+						flex-direction: column;
+						overflow-y: auto;
+						max-height: 40vh;
 
-            &::-webkit-scrollbar {
-              width: 12px;
-            }
+						&::-webkit-scrollbar {
+							width: 12px;
+						}
 
-            .calender-month-view-day-exam-details-expanded-patient-details-container {
-              display: flex;
-              flex-direction: column;
+						.calender-month-view-day-exam-details-expanded-patient-details-container {
+							display: flex;
+							flex-direction: column;
 
-              //.calender-month-view-day-exam-details-expanded-patient-details {
-              //  display: flex;
-              //  flex-direction: column;
-              //  padding: 8px !important;
-              //  //&:hover {
-              //  //  background: var(--dfm-main-100);
-              //  //}
-              //}
+							//.calender-month-view-day-exam-details-expanded-patient-details {
+							//  display: flex;
+							//  flex-direction: column;
+							//  padding: 8px !important;
+							//  //&:hover {
+							//  //  background: var(--dfm-main-100);
+							//  //}
+							//}
 
-              .calender-month-view-day-exam-details-expanded-patient-details-divider {
-                border-bottom: 1px solid var(--dfm-main-200);
-                margin: 0 8px;
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: 1;
-              }
-            }
-          }
-        }
-      }
+							.calender-month-view-day-exam-details-expanded-patient-details-divider {
+								border-bottom: 1px solid var(--dfm-main-200);
+								margin: 0 8px;
+								position: absolute;
+								bottom: 0;
+								left: 0;
+								right: 0;
+								z-index: 1;
+							}
+						}
+					}
+				}
+			}
 
-      .calender-month-view-day {
-        transition: all 150ms linear;
-        text-align: center;
-        width: 24px;
-          height: 24px;
-        float: right;
-        border-radius: 50%;
-        line-height: 16px;
-        // padding: 8px;
-        position: relative;
-        display: flex;
-          align-items: center;
-          justify-content: center;
+			.calender-month-view-day {
+				transition: all 150ms linear;
+				text-align: center;
+				width: 24px;
+				height: 24px;
+				float: right;
+				border-radius: 50%;
+				line-height: 16px;
+				// padding: 8px;
+				position: relative;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 
-        &:hover {
-          cursor: pointer;
-          background: var(--dfm-main-200);
-          color: black;
-        }
-      }
+				&:hover {
+					cursor: pointer;
+					background: var(--dfm-main-200);
+					color: black;
+				}
+			}
+		}
+	}
+
+	.calender-month-view-day-light {
+		color: var(--dfm-main-300);
+	}
+
+	.calender-month-view-today {
+		background: coral;
+		color: white;
+	}
+
+	.calender-month-view-selected-day {
+		background: var(--dfm-main-200);
+		color: black;
+	}
 }
-}
-
-
-.calender-month-view-day-light {
-  color: var(--dfm-main-300);
-}
-
-.calender-month-view-today {
-  background: coral;
-  color: white;
-}
-
-.calender-month-view-selected-day {
-  background: var(--dfm-main-200);
-  color: black;
-}
-}
-.calender-month-view-day-exam-event-details {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 2px 8px;
-  font-size: 0.9rem;
-  border-left: 2px solid var(--dfm-blue);
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  background: var(--dfm-blue-light);
-
-    &.more-btn {
-    position: absolute;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    border: unset;
-    border-radius: unset;
-    background: #f7f5f5;
-    cursor: pointer;
-
-  &:hover {
-      font-weight: 600;
-  }
-
-  }
-
-}
-
-.calender-month-view-day-exam-details-expanded {
-  display: flex;
-  flex-direction: column;
-  margin: -8px;
-
-  }
-
-  .dfm-card-container {
-    max-height: 40vh;
-    overflow: scroll;
-    gap: 4px;
-    display: flex;
-    flex-direction: column;
-}
-.calendar-comments-text{
-  word-wrap: break-word;
-  max-width:200px;
-  min-width:50px;
+.calendar-comments-text {
+	word-wrap: break-word;
+	max-width: 200px;
+	min-width: 50px;
 }
 
 .accordion-content {
-  max-height: calc(90vh - 72px);
-  overflow: auto;
+	max-height: calc(90vh - 72px);
+	overflow: auto;
 }
 @media (max-width: 680px) {
-  .calender-month-view-day-exam-event-container {
-    left: -8px
-  }
-  //
-  //.calender-month-view-day-exam-event-details {
-  //  display: none !important;
-  //}
-  //
-  .calender-month-view-event-circle-icon {
-    top: unset !important;
-    bottom: 8px !important;
-    left: 8px !important;
-  }
+	.calender-month-view-day-exam-event-container {
+		left: -8px;
+	}
+	//
+	//.calender-month-view-day-exam-event-details {
+	//  display: none !important;
+	//}
+	//
+	.calender-month-view-event-circle-icon {
+		top: unset !important;
+		bottom: 8px !important;
+		left: 8px !important;
+	}
 
-  .calender-month-view-day-exam-event-time, .calender-month-view-day-exam-event-title {
-    display: none;
-  }
+	.calender-month-view-day-exam-event-time,
+	.calender-month-view-day-exam-event-title {
+		display: none;
+	}
 
-  .calender-month-view-day-exam-details-expanded {
-    min-width: auto;
-  }
+	.calender-month-view-day-exam-details-expanded {
+		min-width: auto;
+	}
 
-  .calender-month-view-day-exam-details-expanded-patients-container {
-    max-height: 256px;
-    overflow: auto;
-  }
+	.calender-month-view-day-exam-details-expanded-patients-container {
+		max-height: 256px;
+		overflow: auto;
+	}
 }
 
 @media (max-height: 1000px) {
-  .calender-month-view-day-exam-event-time {
-    display: none;
-  }
+	.calender-month-view-day-exam-event-time {
+		display: none;
+	}
 
-  .calender-month-view-day-exam-event-title {
-    font-size: 0.6rem !important;
-  }
+	.calender-month-view-day-exam-event-title {
+		font-size: 0.6rem !important;
+	}
 }
 
 .left,
 .right {
-  min-width: 12px;
-  min-height: 528px;
+	min-width: 12px;
+	min-height: 528px;
 }
