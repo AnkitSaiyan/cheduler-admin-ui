@@ -750,7 +750,15 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'BodyPart',
 		[DUTCH_BE]: 'BodyPart',
 	},
+	ServerErrorMessage: {
+		'Slot exist in this range': {
+			[ENG_BE]: 'Slot exist in this range',
+			[DUTCH_BE]: 'Dit slot overlapt met een reeds bestaand slot',
+		},
+	},
 });
+
+
 
 
 

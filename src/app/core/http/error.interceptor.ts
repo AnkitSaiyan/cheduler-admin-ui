@@ -11,13 +11,12 @@ import {ENG_BE} from "../../shared/utils/const";
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-  constructor(private notificationSvc: NotificationDataService, private loaderSvc: LoaderService, private shareDataSvc: ShareDataService) {
-  }
-  public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+	constructor(private notificationSvc: NotificationDataService, private loaderSvc: LoaderService, private shareDataSvc: ShareDataService) {}
+	public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 		return next.handle(req).pipe(
 			catchError((err) => {
-				// lang hardcoded to english for now
-				this.generateErrorMessage(err, ENG_BE);
+				const language = this.shareDataSvc.getLanguage();
+				this.generateErrorMessage(err, language);
 				this.stopLoaders();
 
 				return throwError(err);
@@ -42,51 +41,56 @@ export class ErrorInterceptor implements HttpInterceptor {
 		// );
 	}
 
-  private generateErrorMessage(err: any, lang: string) {
-    // generate error message here
-    let errorMessage = Translate.Error.SomethingWrong[lang];
+	private generateErrorMessage(err: any, lang: string) {
+		// generate error message here
+		let errorMessage = Translate.Error.SomethingWrong[lang];
 
-    if (err.status) {
-      switch (err.status) {
-        case HttpStatusCodes.FORBIDDEN: {
-          errorMessage = Translate.Error.Forbidden[lang];
-        }
-        break;
-        case HttpStatusCodes.UNAUTHORIZED: {
-          errorMessage = Translate.Error.Unauthorized[lang];
-        }
-        break;
-        default: {
-          if (err?.error?.errors) {
-            const errObj = err.error.errors;
-            if (errObj?.GeneralErrors) {
-              if (Array.isArray(errObj.GeneralErrors)) {
-                errorMessage = '';
-                errObj.GeneralErrors.forEach((msg) => {
-                  errorMessage += `${msg} `;
-                });
-              } else if (typeof errObj?.GeneralErrors === 'string') {
-                errorMessage = errObj.GeneralErrors
-              }
-            } else if (typeof errObj === 'string') {
-              errorMessage = errObj;
-            }
+		if (err.status) {
+			switch (err.status) {
+				case HttpStatusCodes.FORBIDDEN:
+					{
+						errorMessage = Translate.Error.Forbidden[lang];
+					}
+					break;
+				case HttpStatusCodes.UNAUTHORIZED:
+					{
+						errorMessage = Translate.Error.Unauthorized[lang];
+					}
+					break;
+				default: {
+					if (err?.error?.errors) {
+						const errObj = err.error.errors;
+						if (errObj?.GeneralErrors) {
+							if (Array.isArray(errObj.GeneralErrors)) {
+								errorMessage = '';
+								errObj.GeneralErrors.forEach((msg) => {
+									errorMessage += `${msg} `;
+								});
+							} else if (typeof errObj?.GeneralErrors === 'string') {
+								errorMessage = errObj.GeneralErrors;
+							}
+						} else if (typeof errObj === 'string') {
+							errorMessage = errObj;
+						}
+					} else if (err?.error?.message && typeof err.error.message === 'string') {
+						errorMessage = err.error.message;
+					} else if (err?.message && typeof err?.message === 'string') {
+						errorMessage = err.message;
+					}
+				}
+			}
+		}
 
-          } else if (err?.error?.message && typeof err.error.message === 'string') {
-            errorMessage = err.error.message;
-          } else if (err?.message && typeof err?.message === 'string') {
-            errorMessage = err.message;
-          }
-        }
-      }
-    }
+		this.notificationSvc.showError(Translate.ServerErrorMessage[errorMessage][lang]);
+	}
 
-    this.notificationSvc.showError(errorMessage);
-  }
-
-  private stopLoaders() {
-    this.loaderSvc.deactivate();
-    this.loaderSvc.spinnerDeactivate();
-  }
+	private stopLoaders() {
+		this.loaderSvc.deactivate();
+		this.loaderSvc.spinnerDeactivate();
+	}
 }
+
+
+
+
 
