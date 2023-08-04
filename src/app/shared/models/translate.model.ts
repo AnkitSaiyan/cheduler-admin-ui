@@ -601,7 +601,7 @@ export const Translate = Object.freeze({
 				MSG_400_APMT_EXISTS: '(NL) Appointment already exist between this range.',
 				MSG_400_APMT_EXCEEDS: '(NL) Appointment exceeds normal time.',
 				MSG_400_DOC_NOT_EDITABLE: '(NL) You can not edit this document',
-				MSG_400_SLOT_EXISTS: '(NL) Slote exist in this range',
+				MSG_400_SLOT_EXISTS: 'Dit slot overlapt met een reeds bestaand slot',
 				MSG_400_APMT_START_BIGGER: '(NL) Duration of minutes is greater than the end time',
 				MSG_400_EXAM_EXIST: '(NL) Exam name is already exist.',
 			},
