@@ -111,6 +111,9 @@ export class ShareDataService {
 	public getLanguage$(): Observable<string> {
 		return this.language$$.asObservable();
 	}
+	public getLanguage(): string {
+		return this.language$$.value;
+	}
 
 	public get patient$(): Observable<any> {
 		return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchPatients()));
