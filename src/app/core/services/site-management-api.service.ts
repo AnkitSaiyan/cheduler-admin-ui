@@ -47,10 +47,10 @@ export class SiteManagementApiService extends DestroyableComponent {
 
   public saveSiteManagementData$(requestData: SiteManagementRequestData): Observable<SiteManagement> {
     this.loaderSvc.activate();
-    const formData = new FormData();  
-    formData.append('Name', requestData.name);
-    formData.append('DisableAppointment', String(requestData.disableAppointment));
-    formData.append('DisableWarningText', String(requestData.disableWarningText));
+    const formData = new FormData();
+		formData.append('Name', requestData.name);
+		formData.append('DisableAppointment', String(requestData.disableAppointment));
+		formData.append('DisableWarningText', requestData.disableWarningText ? String(requestData.disableWarningText) : '');
     formData.append('IntroductoryText', requestData.introductoryText);
     formData.append('IntroductoryTextEnglish', requestData.introductoryTextEnglish);
     formData.append('DoctorReferringConsent', String(requestData.doctorReferringConsent));
