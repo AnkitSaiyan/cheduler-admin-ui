@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Weekday } from '../models/calendar.model';
+import { TranslateService } from '@ngx-translate/core';
 
 @Pipe({
   name: 'weekdayToName',
@@ -15,6 +16,10 @@ export class WeekdayToNamePipe implements PipeTransform {
     6: 'Saturday',
     7: 'Sunday',
   };
+
+  constructor(
+    private _translate: TranslateService
+  ) { };
 
   public transform(weekday: Weekday | any[], short = false, startWithSunday = false): any {
     if (typeof weekday === 'number') {
@@ -34,7 +39,9 @@ export class WeekdayToNamePipe implements PipeTransform {
           return '';
       }
     } else if (Array.isArray(weekday)) {
-      return weekday.map((d: number) => (short ? this.weekdays[d].slice(0, 3) : this.weekdays[d])) as String[];
+      return weekday.map((d: number) =>
+				short ? this._translate.instant(this.weekdays[d].slice(0, 3)) : this._translate.instant(this.weekdays[d]),
+			) as String[];
     }
     return '';
   }

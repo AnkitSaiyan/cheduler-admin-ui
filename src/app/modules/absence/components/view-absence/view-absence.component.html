@@ -98,7 +98,7 @@
 				<div class="d-flex dfm-gap-8 justify-content-between">
 					<span class="flex-1">{{ 'RepeatType' | translate }}</span>
 					<span class="flex-1"
-						><span>{{ absenceDetails.repeatType | titlecase | dashIfNothing }}</span>
+						><span>{{ (absenceDetails.repeatType || '') | translate | titlecase | dashIfNothing }}</span>
 					</span>
 				</div>
 
@@ -133,7 +133,7 @@
 			</header>
 
 			<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-				<span class="text-break" style="white-space: pre-wrap">{{ absenceDetails.info | dashIfNothing}}</span>
+				<span class="text-break" style="white-space: pre-wrap">{{ absenceDetails.info || ('NoDataFound' | translate)}}</span>
 			</div>
 		</div>
 	</section>
