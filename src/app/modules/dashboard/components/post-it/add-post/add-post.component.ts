@@ -21,7 +21,7 @@ export class AddPostComponent extends DestroyableComponent implements OnInit, On
   @ViewChild('myinput') myInputField!: ElementRef;
 
   ngAfterViewInit() {
-    this.myInputField.nativeElement.focus();
+    this.myInputField?.nativeElement?.focus();
   }
 
   postItMessage = new FormControl('', []);

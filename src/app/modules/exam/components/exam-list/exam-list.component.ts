@@ -139,12 +139,12 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
 		this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (examsBase) => {
-				if (this.paginationData && this.paginationData.pageNo < examsBase.metaData.pagination.pageNo) {
+				if (this.paginationData && this.paginationData.pageNo < examsBase?.metaData?.pagination.pageNo) {
 					this.exams$$.next([...this.exams$$.value, ...examsBase.data]);
 				} else {
 					this.exams$$.next(examsBase.data);
 				}
-				this.paginationData = examsBase.metaData.pagination;
+				this.paginationData = examsBase?.metaData?.pagination || 1;
 			},
 			error: (e) => {
 				this.exams$$.next([]);

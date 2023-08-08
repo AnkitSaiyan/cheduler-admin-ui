@@ -144,12 +144,12 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
 		this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (physicianBase) => {
-				if (this.paginationData && this.paginationData.pageNo < physicianBase.metaData.pagination.pageNo) {
+				if (this.paginationData && this.paginationData.pageNo < physicianBase?.metaData?.pagination.pageNo) {
 					this.physicians$$.next([...this.physicians$$.value, ...physicianBase.data]);
 				} else {
 					this.physicians$$.next(physicianBase.data);
 				}
-				this.paginationData = physicianBase.metaData.pagination;
+				this.paginationData = physicianBase?.metaData?.pagination || 1;
 			},
 			error: (e) => this.physicians$$.next([]),
 		});

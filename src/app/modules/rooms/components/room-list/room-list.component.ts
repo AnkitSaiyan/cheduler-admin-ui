@@ -114,12 +114,12 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 			.subscribe({
 				next:
 					(roomsBase) => {
-						if (this.paginationData && this.paginationData.pageNo < roomsBase.metaData.pagination.pageNo) {
+						if (this.paginationData && this.paginationData.pageNo < roomsBase?.metaData?.pagination.pageNo) {
 							this.rooms$$.next([...this.rooms$$.value, ...roomsBase.data]);
 						} else {
 							this.rooms$$.next(roomsBase.data);
 						}
-						this.paginationData = roomsBase.metaData?.pagination;
+						this.paginationData = roomsBase?.metaData?.pagination  || 1;
 						this.mapRoomPlaceInAgenda();
 						this.loading$$.next(false);
 					},

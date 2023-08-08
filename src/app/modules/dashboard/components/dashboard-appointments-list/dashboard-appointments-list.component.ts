@@ -206,12 +206,12 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 		this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (appointmentsBase) => {
-				if (this.paginationData && this.paginationData.pageNo < appointmentsBase.metaData.pagination.pageNo) {
+				if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
 					this.appointments$$.next([...this.appointments$$.value, ...appointmentsBase.data]);
 				} else {
 					this.appointments$$.next(appointmentsBase.data);
 				}
-				this.paginationData = appointmentsBase.metaData.pagination;
+				this.paginationData = appointmentsBase?.metaData?.pagination || 1;
 			},
 			error: () => this.filteredAppointments$$.next([]),
 		});

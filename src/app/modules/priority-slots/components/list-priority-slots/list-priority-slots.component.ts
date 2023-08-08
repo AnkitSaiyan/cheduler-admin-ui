@@ -114,12 +114,12 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (prioritySlotBase) => {
-				if (this.paginationData && this.paginationData.pageNo < prioritySlotBase.metaData.pagination.pageNo) {
+				if (this.paginationData && this.paginationData.pageNo < prioritySlotBase?.metaData?.pagination.pageNo) {
 					this.prioritySlots$$.next([...this.prioritySlots$$.value, ...prioritySlotBase.data]);
 				} else {
 					this.prioritySlots$$.next(prioritySlotBase.data);
 				}
-				this.paginationData = prioritySlotBase.metaData.pagination;
+				this.paginationData = prioritySlotBase?.metaData?.pagination  || 1;
 			},
 			error: (e) => this.prioritySlots$$.next([]),
 		});

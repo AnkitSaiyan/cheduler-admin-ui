@@ -54,12 +54,12 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 		this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (appointmentsBase) => {
 				if (appointmentsBase.data.length > 0) {
-					if (this.paginationData && this.paginationData.pageNo < appointmentsBase.metaData.pagination.pageNo) {
+					if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
 						this.upcomingAppointments$$.next([...this.upcomingAppointments$$.value, ...appointmentsBase.data]);
 					} else {
 						this.upcomingAppointments$$.next(appointmentsBase.data);
 					}
-					this.paginationData = appointmentsBase.metaData.pagination;
+					this.paginationData = appointmentsBase?.metaData?.pagination || 1;
 				} else {
 					this.noDataFound = true;
 				}
