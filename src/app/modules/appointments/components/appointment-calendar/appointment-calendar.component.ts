@@ -1,13 +1,13 @@
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, firstValueFrom, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, firstValueFrom, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { getDateOfMonth, getDurationMinutes } from 'src/app/shared/models/calendar.model';
 import { NameValue } from '../../../../shared/components/search-modal.component';
-import { Appointment } from '../../../../shared/models/appointment.model';
+import { Appointment, AppointmentSlotsRequestData } from '../../../../shared/models/appointment.model';
 import { Exam } from '../../../../shared/models/exam.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PracticeHoursApiService } from '../../../../core/services/practice-hours-api.service';
@@ -511,9 +511,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			this.draggableSvc.revertDrag();
 			return;
 		}
-
 		if (isOutside) {
-      		const appointmentId = appointment?.id;
+			const appointmentId = appointment?.id;
 			const res = await firstValueFrom(
 				this.modalSvc.open(ConfirmActionModalComponent, {
 					data: {
@@ -529,6 +528,22 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			);
 
 			if (!res) {
+				this.draggableSvc.revertDrag();
+				return;
+			}
+		}
+
+		if (appointment?.id && !isOutside) {
+			const date = `${this.selectedDate$$.value.getFullYear()}-${day[1] + 1}-${day[0]}`;
+			const reqData: AppointmentSlotsRequestData = {
+				fromDate: date,
+				toDate: date,
+				date: date,
+				exams: appointment.exams.map(({ id }) => id + ''),
+			};
+			const isSlotAvailable = await firstValueFrom(this.appointmentApiSvc.getSlots$(reqData).pipe(map((data) => !!data?.[0]?.slots?.length)));
+			if (!isSlotAvailable) {
+				this.notificationSvc.showWarning(Translate.NoSlotAvailable[this.selectedLang]);
 				this.draggableSvc.revertDrag();
 				return;
 			}
@@ -557,7 +572,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			.closed.pipe(take(1))
 			.subscribe({
 				next: (value) => {
-          this.draggableSvc.revertDrag(!!value);
+					this.draggableSvc.revertDrag(!!value);
 					eventCard?.remove();
 				},
 			});
