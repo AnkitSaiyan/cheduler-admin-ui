@@ -515,7 +515,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 					patientEmail: appointment?.patientEmail ?? null,
 					doctorId: appointment?.doctorId?.toString() ?? null,
 					examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
-					userId: appointment?.userId?.toString() ?? null,
 					comments: appointment?.comments ?? null,
 					socialSecurityNumber: appointment?.socialSecurityNumber ?? null,
 				},

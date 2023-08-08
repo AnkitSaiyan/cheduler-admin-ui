@@ -690,6 +690,10 @@ export const Translate = Object.freeze({
 		[ENG_BE]: `Can't add appointment on past time`,
 		[DUTCH_BE]: 'Kan geen afspraken toevoegen op dit tijdstip',
 	},
+	NoSlotAvailable: {
+		[ENG_BE]: `No slots found for selected Examination(s) and Time`,
+		[DUTCH_BE]: 'Geen slots gevonden voor geselecteerde onderzoek en Tijd',
+	},
 	'Slot exist in this range': {
 		[ENG_BE]: 'Slot exist in this range',
 		[DUTCH_BE]: 'Dit slot overlapt met een reeds bestaand slot',
@@ -775,6 +779,8 @@ export const Translate = Object.freeze({
 		},
 	},
 });
+
+
 
 
 

@@ -11,15 +11,20 @@ import {
 	SimpleChanges,
 	ViewChild,
 } from '@angular/core';
-import { BehaviorSubject, Subject, debounceTime, filter, startWith, take, takeUntil, throttleTime } from 'rxjs';
+import { BehaviorSubject, Subject, debounceTime, filter, firstValueFrom, map, startWith, take, takeUntil, throttleTime } from 'rxjs';
 import { getDaysOfMonth, getDurationMinutes, getWeekdayWiseDays, Weekday } from '../../../models/calendar.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { AddAppointmentModalComponent } from 'src/app/modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { DraggableService } from 'src/app/core/services/draggable.service';
-import { CalendarType } from 'src/app/shared/utils/const';
+import { CalendarType, DUTCH_BE, ENG_BE } from 'src/app/shared/utils/const';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from '../../destroyable.component';
+import { AppointmentSlotsRequestData } from 'src/app/shared/models/appointment.model';
+import { Translate } from 'src/app/shared/models/translate.model';
+import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
+import { NotificationDataService } from 'src/app/core/services/notification-data.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
 	selector: 'dfm-calendar-month-view',
@@ -62,7 +67,16 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 
 	public calendarType = CalendarType;
 
-	constructor(private modalSvc: ModalService, private draggableSvc: DraggableService, private cdr: ChangeDetectorRef) {
+	private selectedLang: string = ENG_BE;
+
+	constructor(
+		private modalSvc: ModalService,
+		private draggableSvc: DraggableService,
+		private cdr: ChangeDetectorRef,
+		private appointmentApiSvc: AppointmentApiService,
+		private notificationSvc: NotificationDataService,
+		private shareDataSvc: ShareDataService,
+	) {
 		super();
 	}
 
@@ -101,6 +115,13 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 						this.updateCalendarDays();
 					}
 				},
+			});
+
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe((lang) => {
+				this.selectedLang = lang;
 			});
 	}
 
@@ -147,7 +168,22 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 		this.selectedDateEvent.emit(this.selectedDate);
 	}
 
-	public editAppointment({ day, data: appointment }) {
+	public async editAppointment({ day, data: appointment }) {
+		if (appointment?.id && !appointment.isOutside) {
+			const date = `${day[2]}-${day[1] + 1}-${day[0]}`;
+			const reqData: AppointmentSlotsRequestData = {
+				fromDate: date,
+				toDate: date,
+				date: date,
+				exams: appointment.exams.map(({ id }) => id + ''),
+			};
+			const isSlotAvailable = await firstValueFrom(this.appointmentApiSvc.getSlots$(reqData).pipe(map((data) => !!data?.[0]?.slots?.length)));
+			if (!isSlotAvailable) {
+				this.notificationSvc.showWarning(Translate.NoSlotAvailable[this.selectedLang]);
+				this.draggableSvc.revertDrag();
+				return;
+			}
+		}
 		this.modalSvc
 			.open(AddAppointmentModalComponent, {
 				data: {
