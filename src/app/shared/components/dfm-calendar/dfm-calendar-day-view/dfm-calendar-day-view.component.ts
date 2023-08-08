@@ -1,4 +1,5 @@
 import {
+	ChangeDetectorRef,
 	Component,
 	EventEmitter,
 	HostListener,
@@ -11,12 +12,18 @@ import {
 	SimpleChanges,
 	ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, filter, firstValueFrom, lastValueFrom, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, lastValueFrom, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationType } from 'diflexmo-angular-design';
 import { NameValue } from '../../search-modal.component';
-import { AddAppointmentRequestData, Appointment, UpdateDurationRequestData, UpdateRadiologistRequestData } from '../../../models/appointment.model';
+import {
+	AddAppointmentRequestData,
+	Appointment,
+	AppointmentSlotsRequestData,
+	UpdateDurationRequestData,
+	UpdateRadiologistRequestData,
+} from '../../../models/appointment.model';
 import { Exam } from '../../../models/exam.model';
 import { CalenderTimeSlot, getDurationMinutes, Interval } from '../../../models/calendar.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -101,6 +108,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		private translate: TranslateService,
 		private renderer: Renderer2,
 		private draggableSvc: DraggableService,
+		private cdr: ChangeDetectorRef,
 	) {
 		super();
 	}
@@ -397,6 +405,23 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				}).closed,
 			);
 			if (!res) {
+				this.draggableSvc.revertDrag();
+				return;
+			}
+		}
+
+		if (appointment?.id && !isOutside) {
+			const date: string = this.datePipe.transform(this.selectedDate, 'd-M-yyyy')!;
+			const reqData: AppointmentSlotsRequestData = {
+				fromDate: date,
+				toDate: date,
+				date: date,
+				exams: appointment.exams.map(({ id }) => id + ''),
+			};
+			this.cdr.detectChanges();
+			const isSlotAvailable = await firstValueFrom(this.appointmentApiSvc.getSlots$(reqData).pipe(map((data) => !!data?.[0]?.slots?.length)));
+			if (!isSlotAvailable) {
+				this.notificationSvc.showWarning(Translate.NoSlotAvailable[this.selectedLang]);
 				this.draggableSvc.revertDrag();
 				return;
 			}
