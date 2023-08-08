@@ -127,51 +127,51 @@
               <dfm-table-body-cell>{{ item.slotNo }}</dfm-table-body-cell>
               <dfm-table-body-cell>
                 <div *ngIf="item.monday.dayStart && item.monday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.monday.dayStart }} </span>
+                  <span> {{ item.monday.dayStart | dfmUtcToLocal: true : true }} </span>
                   -
-                  <span> {{ item.monday.dayEnd }} </span>
+                  <span> {{ item.monday.dayEnd | dfmUtcToLocal: true : true }} </span>
                 </div>
               </dfm-table-body-cell>
               <dfm-table-body-cell>
                 <div *ngIf="item.tuesday.dayStart && item.tuesday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.tuesday.dayStart }} </span>
+                  <span> {{ item.tuesday.dayStart | dfmUtcToLocal: true : true }} </span>
                   -
-                  <span> {{ item.tuesday.dayEnd }} </span>
+                  <span> {{ item.tuesday.dayEnd | dfmUtcToLocal: true : true }} </span>
                 </div>
               </dfm-table-body-cell>
               <dfm-table-body-cell>
                 <div *ngIf="item.wednesday.dayStart && item.wednesday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.wednesday.dayStart }} </span>
+                  <span> {{ item.wednesday.dayStart | dfmUtcToLocal: true : true }} </span>
                   -
-                  <span> {{ item.wednesday.dayEnd }} </span>
+                  <span> {{ item.wednesday.dayEnd | dfmUtcToLocal: true : true }} </span>
                 </div>
               </dfm-table-body-cell>
               <dfm-table-body-cell>
                 <div *ngIf="item.thursday.dayStart && item.thursday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.thursday.dayStart }} </span>
+                  <span> {{ item.thursday.dayStart | dfmUtcToLocal: true : true }} </span>
                   -
-                  <span> {{ item.thursday.dayEnd }} </span>
+                  <span> {{ item.thursday.dayEnd | dfmUtcToLocal: true : true }} </span>
                 </div>
               </dfm-table-body-cell>
               <dfm-table-body-cell>
                 <div *ngIf="item.friday.dayStart && item.friday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.friday.dayStart }} </span>
+                  <span> {{ item.friday.dayStart | dfmUtcToLocal: true : true }} </span>
                   -
-                  <span> {{ item.friday.dayEnd }} </span>
+                  <span> {{ item.friday.dayEnd | dfmUtcToLocal: true : true }} </span>
                 </div>
               </dfm-table-body-cell>
               <dfm-table-body-cell>
                 <div *ngIf="item.saturday.dayStart && item.saturday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.saturday.dayStart }} </span>
+                  <span> {{ item.saturday.dayStart | dfmUtcToLocal: true : true }} </span>
                   -
-                  <span> {{ item.saturday.dayEnd }} </span>
+                  <span> {{ item.saturday.dayEnd | dfmUtcToLocal: true : true }} </span>
                 </div>
               </dfm-table-body-cell>
               <dfm-table-body-cell>
                 <div *ngIf="item.sunday.dayStart && item.sunday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.sunday.dayStart }} </span>
+                  <span> {{ item.sunday.dayStart | dfmUtcToLocal: true : true }} </span>
                   -
-                  <span> {{ item.sunday.dayEnd }} </span>
+                  <span> {{ item.sunday.dayEnd | dfmUtcToLocal: true : true }} </span>
                 </div>
               </dfm-table-body-cell>
             </ng-template>
