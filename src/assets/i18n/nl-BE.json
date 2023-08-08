@@ -1,7 +1,7 @@
 {
 	"Admin": "Abeheerder",
 	"Reader": "Lezer",
-	"General User": "Algemene Gebruiker",
+	"General User": "Algemene gebruiker",
 	"FirstName": "Voornaam",
 	"LastName": "Naam",
 	"Email": "E-mail",
@@ -12,14 +12,14 @@
 	"Active": "Actief",
 	"Inactive": "Inactief",
 	"Address": "Adres",
-	"AddUser": "Gebruiker Toevoegen",
-	"EditUser": "Bewerk Gebruiker",
-	"EditStaff": "Bewerk Medewerkers",
-	"DeleteStaff": "Verwijder Medewerkers",
+	"AddUser": "Gebruiker toevoegen",
+	"EditUser": "Bewerk gebruiker",
+	"EditStaff": "Bewerk medewerkers",
+	"DeleteStaff": "Verwijder medewerkers",
 	"SelectUserType": "Selecteer type gebruiker",
 	"SchedulerUser": "Gebruiker",
-	"GeneralUser": "Algemene Gebruiker",
-	"SaveChanges": "Bewaar Wijziging",
+	"GeneralUser": "Algemene gebruiker",
+	"SaveChanges": "Bewaar wijziging",
 	"User": "Gebruiker",
 	"Add": "Toevoegen",
 	"Edit": "Bewerken",
@@ -32,12 +32,12 @@
 	"Download": "Download",
 	"Confirmation": "Bevestiging",
 	"View": "Bekijk",
-	"DeleteUser": "Verwijder Gebruiker",
+	"DeleteUser": "Verwijder gebruiker",
 	"AreyousureyouwanttodeletethisUser": "Ben je zeker dat je deze gebruiker wil verwijderen?",
-	"UserDetails": "Details Gebruiker",
-	"UserView": "Gebruiker Bekijk",
+	"UserDetails": "Details gebruiker",
+	"UserView": "Gebruiker bekijk",
 	"Name": "Naam",
-	"RizvNumber": "RIZIV Nummer",
+	"RizvNumber": "RIZIV nummer",
 	"EnterRizvNumber": "Gelieve RIZIV no. in te vullen",
 	"SearchByNameEmailCategory": "Zoek op voornaam, naam en email",
 	"SearchByPrioritySlots": "Zoek op prioritaire slots",
@@ -47,13 +47,13 @@
 	"Priority": "Prioriteit",
 	"Room": "Zaal",
 	"Rooms": "Zalen",
-	"AddRoom": "Zaal Toevoegen",
-	"EditRoom": "Zaal Bewerken",
+	"AddRoom": "Zaal toevoegen",
+	"EditRoom": "Zaal bewerken",
 	"Description": "Beschrijving",
-	"Place In Agenda": "Plaats in agenda",
+	"Place In agenda": "Plaats in agenda",
 	"ChangeStatus": "Wijzig status",
 	"RoomName": "Zaalnaam",
-	"RoomType": "Type Zaal",
+	"RoomType": "Type zaal",
 	"Public": "Publiek",
 	"Private": "Privé",
 	"Always": "Altijd",
@@ -89,55 +89,55 @@
 	"AreYouSureYouWantThisRoom": "Ben je zeker dat je de zaal wil verwijderen?",
 	"AreYouSureYouWantToDeleteThisStaff": "Ben je zeker dat je deze medewerkers wil verwijderen?",
 	"Are you sure you want to delete this Priority Slot?": "Ben je zeker dat je deze prioritaire slot wil verwijderen?",
-	"AddStaff": "Medewerkers Toevoegen",
-	"DeleteStaffToast": "Medewerkers Succesvol Verwijderd",
+	"AddStaff": "Medewerkers toevoegen",
+	"DeleteStaffToast": "Medewerkers succesvol verwijderd",
 	"StaffSearch": "Zoek op voornaam, naam, type en e-mail",
-	"StaffDetails": "Medewerkers Details",
-	"StaffUpdatedToast": "Toevoegen Updated Successfully",
-	"StaffView": "Medewerkers Bekijk",
+	"StaffDetails": "Medewerkers details",
+	"StaffUpdatedToast": "Toevoegen updated successfully",
+	"StaffView": "Medewerkers bekijk",
 	"RoomSearch": "Zoek op naam en op beschrijving zaal",
 	"PlaceInAgenda": "Plaats in agenda",
-	"NoDataFound": "Geen Gegevens Gevonden",
-	"NoRoomFound": "Geen Zaal Gevonden",
-	"NoUserFound": "Geen Gebruiker Gevonden",
-	"NoStaffFound": "Geen Medewerkers Gevonden",
-	"NoPrioritySlotFound": "Geen Prioriteits Slot Gevonden",
+	"NoDataFound": "Geen gegevens gevonden",
+	"NoRoomFound": "Geen zaal gevonden",
+	"NoUserFound": "Geen gebruiker gevonden",
+	"NoStaffFound": "Geen medewerkers gevonden",
+	"NoPrioritySlotFound": "Geen prioriteits slot gevonden",
 	"EnterRoomName": "Geef naam zaal",
 	"EnterRoomDescription": "Geef beschrijving zaal",
-	"InvalidTime": "Ongeldige Tijd",
+	"InvalidTime": "Ongeldige tijd",
 	"StartTimeLessThanEndTime": "Begintijd moet kleiner zijn dan eindtijd",
 	"SlotOverlapsOtherSlots": "Tijdslot overlapt met andere tijdslots",
-	"AddPrioritySlots": "Prioritair Slot Toevoegen",
-	"RoomView": "Zaal Bekijk",
-	"RoomDetails": "Details Zaal",
+	"AddPrioritySlots": "Prioritair slot toevoegen",
+	"RoomView": "Zaal bekijk",
+	"RoomDetails": "Details zaal",
 	"Exams": "Onderzoek",
 	"ExamInstructions": "Aanwijzingen onderzoek",
 	"ExamsInvolvingTheRoom": "Onderzoek met betrokken zaal",
 	"ExamsInvolvingStaffMember": "Onderzoek waarbij een medewerkers betrokken is",
 	"RequiredEmail": "E-mail *",
-	"DeleteRoom": "Verwijder Zaal",
+	"DeleteRoom": "Verwijder zaal",
 	"SearchPhysician": "Zoek op voornaam, naam, e-mail en status",
-	"AddPhysician": "Dokter Toevoegen",
-	"NoPhysicianFound": "Geen Dokter Gevonden",
-	"EditPhysician": "Wijzig Dokter",
-	"EditPrioritySlots": "Wijzig Prioritaire Slots",
-	"DeletePhysician": "Verwijder Dokter",
-	"DeletePrioritySlots": "Verwijder Prioritaire Slots",
-	"PrioritySlotsView": "Prioritaire Slots Bekijk",
+	"AddPhysician": "Dokter toevoegen",
+	"NoPhysicianFound": "Geen dokter gevonden",
+	"EditPhysician": "Wijzig dokter",
+	"EditPrioritySlots": "Wijzig prioritaire slots",
+	"DeletePhysician": "Verwijder dokter",
+	"DeletePrioritySlots": "Verwijder prioritaire slots",
+	"PrioritySlotsView": "Prioritaire slots bekijk",
 	"PriorityDetails": "Algemene informatie prioritair slot",
 	"PriorityRepeatDetails": "Herhalingsinfo prioritair slot",
 	"EmailTheDoctor": "E-mail de dokter als een patient een afpraak maakt die hij/zij voorschreef",
 	"StatusChangesSuccesfully": "Status succesvol veranderd!",
 	"Physician": "Dokter",
-	"PhysicianView": "Dokter Bekijk",
+	"PhysicianView": "Dokter bekijk",
 	"AreyousureyouwanttodeletethisPhysician": "Ben je zeker dat je deze dokter wil verwijderen?",
-	"AddPracticeDataInfo": "Toevoegen Uren Beschikbaarheid Info",
+	"AddPracticeDataInfo": "Toevoegen uren beschikbaarheid info",
 	"PracticeHours": "Praktijkuren",
-	"PracticeAvailabilityData": "Uren Beschikbaarheid Dagen",
-	"SiteManagement": "Site Beheer",
+	"PracticeAvailabilityData": "Uren beschikbaarheid dagen",
+	"SiteManagement": "Site beheer",
 	"SiteName": "Naam praktijk",
 	"SiteLogo": "Logo praktijk",
-	"ChooseFile": "Kies Bestand",
+	"ChooseFile": "Kies bestand",
 	"SiteIntroductionText": "Tekst webpagina patiënt",
 	"DisableAppointmentBooking": "Uitzetten boeken afspraak",
 	"DisableReferringDoctorconsent": "Uitzetten verplichting verwijzende dokter",
@@ -152,21 +152,21 @@
 	"No": "Nee",
 	"CombineSlots": "Combineer tijdssloten",
 	"ReminderMailDuration": "Tijdstip uitsturen herinneringsbericht e-mail",
-	"NoExamsFound": "Geen Onderzoek Gevonden",
-	"RoomAvailabilityInfo": "Info Zaal Beschikbaarheid",
-	"RoomAvailabilityData": "Gegevens Zaal Beschikbaarheid",
+	"NoExamsFound": "Geen onderzoek gevonden",
+	"RoomAvailabilityInfo": "Info zaal beschikbaarheid",
+	"RoomAvailabilityData": "Gegevens zaal beschikbaarheid",
 	"SlotNo": "Nr.",
 	"InvalidEmail": "Email is ongeldig",
-	"PhysicianDetails": "Gegevens Dokter",
+	"PhysicianDetails": "Gegevens dokter",
 	"Absence": "Afwezigheid",
-	"AbsenceName": "Afwezigheid Naam",
+	"AbsenceName": "Afwezigheid naam",
 	"AbsenceSearch": "Zoek op naam of datum afwezigheid",
-	"AddAbsence": "Afwezigheid Toevoegen",
+	"AddAbsence": "Afwezigheid toevoegen",
 	"Title": "Naam",
 	"StartDate": "Begindatum",
 	"EndDate": "Einddatum",
-	"AbsenceInfo": "Info Afwezigheid",
-	"EditAbsence": "Bewerk Afwezigheid",
+	"AbsenceInfo": "Info afwezigheid",
+	"EditAbsence": "Bewerk afwezigheid",
 	"EnterAbsenceTitle": "Geef naam afwezigheid",
 	"Date": "Datum ",
 	"From": "Van",
@@ -174,7 +174,7 @@
 	"EndTimeRequired": "Eindtijd *",
 	"Until": "Tot",
 	"Repeat": "Type",
-	"AllDay": "Volledige Dag",
+	"AllDay": "Volledige dag",
 	"PublicHoliday": "Publieke verlofdag",
 	"RepeatType": "Frequentie",
 	"SelectRepeatType": "Kies herhalings type",
@@ -188,36 +188,36 @@
 	"Staff": "Medewerkers",
 	"SelectStaff": "Selecteer medewerkers",
 	"SelectStaffType": "Selecteer medewerkers type",
-	"StaffType": "Medewerkers Type",
+	"StaffType": "Medewerkers type",
 	"EnterAbsenceInfo": "Geef info afwezigheid",
-	"DeleteAbsence": "Verwijder Afwezigheid",
-	"AbsenceView": "Afwezigheid Bekijk",
-	"AbsenceInformation": "Info Afwezigheid",
-	"AbsenceRepeatDetails": "Details Herhaalde Afwezigheid",
+	"DeleteAbsence": "Verwijder afwezigheid",
+	"AbsenceView": "Afwezigheid bekijk",
+	"AbsenceInformation": "Info afwezigheid",
+	"AbsenceRepeatDetails": "Details herhaalde afwezigheid",
 	"Minutes": "Minuten",
 	"Days": "Dagen",
 	"Hours": "Uren",
 	"HH:MM": "uur:min",
 	"EnterSiteName": "Geef naam site",
 	"AreyousureyouwanttodeletethisAbsence": "Ben je zeker dat je de afwezigheid wil verwijderen?",
-	"ExamInvolvingStaff": "Selecteer Onderzoek met wil medewerkers",
+	"ExamInvolvingStaff": "Selecteer onderzoek met wil medewerkers",
 	"ExamSearch": "Zoek op naam onderzoek",
 	"AddExam": "Onderzoek toevoegen",
 	"Expensive": "Duur",
 	"Exam": "Onderzoek",
-	"ExamName": "Naam Onderzoek",
-	"EditExam": "Bewerk Onderzoek",
+	"ExamName": "Naam onderzoek",
+	"EditExam": "Bewerk onderzoek",
 	"EnterExamName": "Vul de naam van het onderzoek in",
 	"ExpensiveMin": "Duur(Minuten)",
-	"DurationMin": "Toevoegen Beschikbaarheid",
+	"DurationMin": "Toevoegen beschikbaarheid",
 	"Uncombinable": "Niet combineerbaar",
 	"MandatoryStaffs": "Verplichte medewerkers",
 	"GeneralStaff": "Algemene medewerkers",
-	"SelectNo": "Selecteer Nr.",
+	"SelectNo": "Selecteer nr.",
 	"Nursing": "Verpleging",
 	"Secretary": "Secretaresse",
 	"Radiologist": "Radioloog",
-	"AddPracticeData": "Toevoegen Beschikbaarheid",
+	"AddPracticeData": "Toevoegen beschikbaarheid",
 	"EnterDuration": "Vul de duur in",
 	"SelectRoomType": "Selecteer type zaal",
 	"DurationMins": "Duur(Minuten)",
@@ -230,8 +230,8 @@
 	"CorrespondsToTheOpeningHoursOfThePractice": "Zelfde uren als de praktijk",
 	"SelectAssistant": "Selecteer assistent",
 	"SelectExam": "Selecteer onderzoek",
-	"DeleteExam": "Verwijder Onderzoek",
-	"ExamView": "Onderzoek Bekijk",
+	"DeleteExam": "Verwijder onderzoek",
+	"ExamView": "Onderzoek bekijk",
 	"ExamDetails": "Details onderzoek",
 	"RoomsInvolvingTheExam": "Zalen betrokken in het onderzoek",
 	"ExamInfo": "Info onderzoek",
@@ -243,7 +243,7 @@
 	"Configuration": "Configuratie",
 	"Profile": "Profiel",
 	"PrioritySlots": "Prioritaire slots",
-	"SiteManagementNav": "Site Beheer",
+	"SiteManagementNav": "Site beheer",
 	"AppliedOn": "Aangevraagd op",
 	"Pending": "In afwachting",
 	"Approved": "Goedgekeurd",
@@ -252,60 +252,60 @@
 	"Scheduler": "Afspraak",
 	"hh:mm": "uur:min",
 	"dateFormat": "dd/mm/jj",
-	"AbsenceDetails": "Details Afwezigheid",
+	"AbsenceDetails": "Details afwezigheid",
 	"Assistant": "Assistent",
-	"ExamAvailabilityInfo": "Beschikbaarheid Onderzoek Gegevens",
+	"ExamAvailabilityInfo": "Beschikbaarheid onderzoek gegevens",
 	"ExamAvailabilityData": "Gedetailleerde gegevens beschikbaarheid onderzoek",
 	"Medium": "Gemiddeld",
 	"High": "Hoog",
 	"Low": "Laag",
 	"yyyy-mm-dd": "jj-mm-dd",
-	"StartTimeSmallerEndTime": "Begin Tijd moet eerder zijn dan Eind Tijd",
-	"EndTimeGreaterTime": "Eind Tijd moet later zijn dan Begin Tijd",
+	"StartTimeSmallerEndTime": "Begin tijd moet eerder zijn dan eind tijd",
+	"EndTimeGreaterTime": "Eind tijd moet later zijn dan begin tijd",
 	"ExamDeletedSuccessfully": "Onderzoek succesvol verwijderd",
 	"AreYouSureWantToDeleteAppointment": "Ben je zeker dat je deze afspraak wil verwijderen?",
 	"CSV": "CSV",
 	"Excel": "Excel",
 	"PDF": "PDF",
 	"Print": "Afdrukken",
-	"PatientName": "Naam Patiënt",
-	"AddAppointment": "Afspraak Toevoegen",
+	"PatientName": "Naam patiënt",
+	"AddAppointment": "Afspraak toevoegen",
 	"SearchbyPatientnameappointmentnoanddoctor": "Zoek op patiëntnaam afspraak nr. dokter",
 	"Docter": "Dokter",
-	"PatientFirstName": "Voornaam Patiënt",
-	"PatientLastName": "Naam Patiënt",
-	"PatientTelephone": "Telefoon Patiënt",
-	"PatientEmail": "E-mail Patiënt",
+	"PatientFirstName": "Voornaam patiënt",
+	"PatientLastName": "Naam patiënt",
+	"PatientTelephone": "Telefoon patiënt",
+	"PatientEmail": "E-mail patiënt",
 	"EnterPatientEmail": "Voer e-mail van de patiënt in",
-	"CommentsClinicalData": "Opmerkingen / Klinische gegevens",
+	"CommentsClinicalData": "Opmerkingen / klinische gegevens",
 	"SelectExams": "Onderzoek selecteren",
 	"SelectDoctor": "Selecteer dokter",
 	"Doctor": "Dokter",
 	"SelectGeneralUser": "Selecteer algemene gebruiker",
-	"NoslotsfoundforselectedExamsandDatecombination": "Geen plaatsen gevonden voor de geselecteerde combinatie van Onderzoek en datums.",
-	"SlotsLoading": "Slots Laden...",
+	"NoslotsfoundforselectedExamsandDatecombination": "Geen plaatsen gevonden voor de geselecteerde combinatie van onderzoek en datums.",
+	"SlotsLoading": "Slots laden...",
 	"EnterComments": "Voer opmerkingen in",
 	"AreYouSureYouWantToDeleteAppointment": "Weet u zeker dat u deze afspraak wilt verwijderen?",
-	"EditAppointment": "Afspraak Bewerken",
-	"DeleteAppointment": "Afspraak Verwijderen",
-	"AppointmentView": "Afspraken Bekijk",
-	"AppoinmentDetails": "Details Afspraak",
-	"LastModified": "Laatst Veranderd",
+	"EditAppointment": "Afspraak bewerken",
+	"DeleteAppointment": "Afspraak verwijderen",
+	"AppointmentView": "Afspraken bekijk",
+	"AppoinmentDetails": "Details afspraak",
+	"LastModified": "Laatst veranderd",
 	"Number": "Nummer",
 	"AppointmentNo": "Afspraak nr.",
-	"PatientDetails": "Gegevens Patiënt",
-	"AppointmentDetails": "Details Afspraak",
+	"PatientDetails": "Gegevens patiënt",
+	"AppointmentDetails": "Details afspraak",
 	"Comments": "Opmerkingen",
 	"StartedAt": "Start",
 	"EndedAt": "Eind",
 	"Change": "Wijziging",
-	"ChangeRadiologist": "Wijzig Radioloog",
+	"ChangeRadiologist": "Wijzig radioloog",
 	"Move": "Verplaats",
 	"Shorten": "Inkorten",
 	"Extend": "Verlengen",
 	"AtTheBottom": "Onderaan",
 	"AtTheTop": "Bovenaan",
-	"AmountOfMinutes": "Aantal Minuten",
+	"AmountOfMinutes": "Aantal minuten",
 	"EnterMinutes": "Voer minuten in",
 	"At": "Op",
 	"Top": "Bovenkant",
@@ -315,79 +315,79 @@
 	"New": "Nieuw",
 	"Confirm": "Bevestig",
 	"Confirmed": "Bevestigd",
-	"UpcomingAppointmentsInFourHours": " Komende Afspraken in 4 Uren",
+	"UpcomingAppointmentsInFourHours": " komende afspraken in 4 uren",
 	"PostIt": "Post-it",
 	"SearchPostIt": "Zoek post-it",
-	"EmployeeAbsences": "Afwezigheden Medewerkers",
+	"EmployeeAbsences": "Afwezigheden medewerkers",
 	"SearchEmployee": "Zoek werknemer",
-	"TopTenReferringDoctors": "Top 10 Verwijzende Dokters",
+	"TopTenReferringDoctors": "Top 10 verwijzende dokters",
 	"Notifications": "Notificaties",
-	"NewAppointmentCreated": "Nieuwe Afspraak Ontvangen",
-	"TopTenExaminations": "Top 10 Onderzoek",
-	"UnavailablePeriodsOfTheHalls": "Onbeschikbare Periodes Voor Zaal de Volgende 31 Dagen",
+	"NewAppointmentCreated": "Nieuwe afspraak ontvangen",
+	"TopTenExaminations": "Top 10 onderzoek",
+	"UnavailablePeriodsOfTheHalls": "Onbeschikbare periodes voor zaal de volgende 31 dagen",
 	"SearchRoomName": "Zoek op zaal naam",
 	"Patients": "Patiënten",
 	"Completed": "Voltooid",
 	"Cancelled": "Geannuleerd",
-	"OverallStatus": "Algemene Status",
-	"SortBy": "Sorteer Per",
-	"RecentPatients": "Recente Patiënten",
+	"OverallStatus": "Algemene status",
+	"SortBy": "Sorteer per",
+	"RecentPatients": "Recente patiënten",
 	"SearchByPatientName": "Zoek op naam atiënt",
-	"AppointmentDate": "Datum Afspraak",
+	"AppointmentDate": "Datum afspraak",
 	"GetStarted": "Begin",
-	"AppointmentsList": "Afspraken Lijst",
+	"AppointmentsList": "Afspraken lijst",
 	"Search": "Zoek",
 	"AdvancedSearch": "Geavanceerd zoeken",
 	"AreYouSureYouWantToDeleteThisPost": "Weet je zeker dat je deze post-it wilt verwijderen?",
 	"AreYouSureYouWantToDeleteThisExam": "Ben je zeker dat je dit onderzoek wil verwijderen?",
 	"EnterMessage": "Voer bericht in",
 	"Today": "Vandaag",
-	"NoAppointmentsFound": "Geen Afspraken Gevonden",
+	"NoAppointmentsFound": "Geen afspraken gevonden",
 	"Type": "Type",
 	"ClickToCopy": "Kopieren",
 	"Reset": "Resetten",
-	"TypeAppointmentNumber": "Vul het Afspraak Nummer in",
-	"AppointmentNumber": "Afspraak Nummer",
+	"TypeAppointmentNumber": "Vul het afspraak nummer in",
+	"AppointmentNumber": "Afspraak nummer",
 	"Patient": "Patiënt",
 	"SelectPatient": "Patiënt selecteren",
-	"AutoConfirmAppointment": "Afspraak Automatisch Bevestigen",
-	"TodaysAppointments": "Afspraken Van Vandaag",
-	"NoAppointmentFound": "Geen Afspraken Gevonden",
-	"NoUppcomingAppointment": "Geen Komende Afspraken",
+	"AutoConfirmAppointment": "Afspraak automatisch bevestigen",
+	"TodaysAppointments": "Afspraken van vandaag",
+	"NoAppointmentFound": "Geen afspraken gevonden",
+	"NoUppcomingAppointment": "Geen komende afspraken",
 	"Calendar": "Agenda",
 	"ListView": "Lijstweergave",
-	"NoExceptionFound": "Geen Uitzonderingen Gevonden",
-	"NoMandatoryStaffFound": "Geen Verplicht Personeel Gevonden",
-	"NoGeneralStafFfound": "Geen Generale Staf Gevonden",
-	"UserDeleted": "Gebruiker Succesvol Verwijderd",
-	"EmailTemplate": "E-mail Sjablonen",
-	"SearchByTemplateName": " Zoeken op naam, onderwerp en status sjablonen",
+	"NoExceptionFound": "Geen uitzonderingen gevonden",
+	"NoMandatoryStaffFound": "Geen verplicht personeel gevonden",
+	"NoGeneralStafFfound": "Geen generale staf gevonden",
+	"UserDeleted": "Gebruiker succesvol verwijderd",
+	"EmailTemplate": "E-mail sjablonen",
+	"SearchByTemplateName": " zoeken op naam, onderwerp en status sjablonen",
 	"Subject": "Onderwerp",
 	"Content": "Inhoud",
-	"ContentForAdmin": "Inhoud Voor Admin",
-	"AppointmentConfirmationDiflexmo": "Afspraakbevestiging Diflexmo",
+	"ContentForAdmin": "Inhoud voor admin",
+	"AppointmentConfirmationDiflexmo": "Afspraakbevestiging diflexmo",
 	"NextSlotOpen": "Volgend slot open bij % bezetting",
 	"EnterPercentage": "Voer percentage toe",
 	"Daily": "Dagelijks",
-	"AddAppointmentConfirmation": "Afspraakbevestiging Toevoegen",
-	"EditAppointmentConfirmation": "Afspraakbevestiging Bewerk",
-	"MoveAppointmentConfirmation": "Afspraakbevestiging Toevoegen",
+	"AddAppointmentConfirmation": "Afspraakbevestiging toevoegen",
+	"EditAppointmentConfirmation": "Afspraakbevestiging bewerk",
+	"MoveAppointmentConfirmation": "Afspraakbevestiging toevoegen",
 	"AreYouSureWantToMakeAppointmentOutsideOperatingHours": "Weet u zeker dat u buiten openingstijden een afspraak wilt maken?",
 	"AreYouSureWantToMoveAppointmentOutsideOperatingHours": "Weet u zeker dat u buiten openingstijden een afspraak wilt maken?",
-	"LoadingSlots": "Uren Zijn Aan Het Laden",
+	"LoadingSlots": "Uren zijn aan het laden",
 	"To": "Tot",
 	"PracticeNotAvailableForDay": "De praktijk is deze dag niet beschikbaar",
 	"SelectedSlot": "Gekozen uren",
 	"PleaseEnterAtLeastFiveMin": "Vul a.u.b. minimaal 5 min in",
 	"ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame": "De duur van het onderzoek en het totale aantal minuten van de zalen moet hetzelfde zijn.",
-	"NoSlotsFoundForSelectedExamsAndTime": "Geen slots gevonden voor geselecteerde onderzoek  en Tijd",
+	"NoSlotsFoundForSelectedExamsAndTime": "Geen slots gevonden voor geselecteerde onderzoek  en tijd",
 	"Save": "Winkel",
 	"Save2": "Sevestig",
 	"SelectPhysician": "Selecteer dokter",
 	"Heading": "Hoofding",
 	"SubHeading": "Subhoofding",
 	"BodyText": "Boodschap",
-	"CompleteYourProfile": "Voltooi Uw Profiel",
+	"CompleteYourProfile": "Voltooi uw profiel",
 	"Logout": "Uitloggen",
 	"EnterStreet": "Voer straat in",
 	"EnterCity": "Voer stad in",
@@ -400,8 +400,8 @@
 	"CreatedOn": "Gemaakt op",
 	"UserRole": "Gebruikersrol",
 	"SelectRole": "Selecteer rol",
-	"socialSecurityNumber": "Sociaal Zekerheidsnummer",
-	"enterSocialSecurityNumber": "Geef Sociaal Zekerheidsnummer",
+	"socialSecurityNumber": "Sociaal zekerheidsnummer",
+	"enterSocialSecurityNumber": "Geef sociaal zekerheidsnummer",
 	"Jan": "Jan",
 	"Feb": "Feb",
 	"Mar": "Mar",
@@ -417,7 +417,7 @@
 	"Instructions": "Aanwijzingen",
 	"EnterInstructions": "Voer instructies in",
 	"Time": "Tijd",
-	"LogoutConfirmation": "Bevestiging Uitloggen",
+	"LogoutConfirmation": "Bevestiging uitloggen",
 	"Areyousurewanttologout": "Ben je zeker dat je deze sessie wil verlaten?",
 	"NoRoomsAreAvailable": "Er zijn geen zalen beschikbaar",
 	"CanNotAddAppointmentOnPastDate": "Kan geen afspraken toevoegen op dit tijdstip",
@@ -427,7 +427,7 @@
 	"Radiologist(s)": "Radioloog(s)",
 	"Assistant(s)": "Assistent(s)",
 	"Secretary(s)": "secretaresse(s)",
-	"SlotFilled%": "% Bezetting",
+	"SlotFilled%": "% bezetting",
 	"DESIGN_SYSTEM": {
 		"NAVIGATION_BAR": {
 			"PROFILE": "Profiel",
@@ -466,101 +466,15 @@
 	"Skeleton": "Skeleton",
 	"Body": "Lichaam",
 	"Weeks": "we(e)ken",
-	"Months": "maand(en)"
+	"Months": "maand(en)",
+	"daily": "Dagelijks",
+	"weekly" : "weken",
+	"monthly": "maand",
+	"Sun": "Zon",
+	"Mon": "Maa",
+	"Tue": "Din",
+	"Wed": "Woe",
+	"Thu": "Don",
+	"Fri": "Vrij",
+	"Sat": "Zat"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

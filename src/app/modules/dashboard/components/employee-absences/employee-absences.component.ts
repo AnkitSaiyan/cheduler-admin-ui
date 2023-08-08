@@ -72,12 +72,12 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 
 		this.absenceApiService.absencesOnDashboard$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (employeeAbsencesBase) => {
-				if (this.paginationData && this.paginationData.pageNo < employeeAbsencesBase.metaData.pagination.pageNo) {
+				if (this.paginationData && this.paginationData.pageNo < employeeAbsencesBase?.metaData?.pagination.pageNo) {
 					this.absences$$.next([...this.absences$$.value, ...employeeAbsencesBase.data]);
 				} else {
 					this.absences$$.next(employeeAbsencesBase.data);
 				}
-				this.paginationData = employeeAbsencesBase.metaData.pagination;
+				this.paginationData = employeeAbsencesBase?.metaData?.pagination || 1;
 			},
 			error: () => this.absences$$.next([]),
 		});

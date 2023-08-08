@@ -521,13 +521,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			case RepeatType.Daily:
 				return getNumberArray(31).map((d) => ({ name: d.toString(), value: d.toString() }));
 			case RepeatType.Weekly:
-				console.log(
-					'test',
-					getNumberArray(6, 0).map((w) => ({
-						name: this.selectedLang,
-						value: w.toString(),
-					})),
-				);
 				return getNumberArray(6, 0).map((w) => ({
 					name: Translate[this.weekdayToNamePipe.transform(w)][this.selectedLang],
 					value: w.toString(),
@@ -626,4 +619,3 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
-

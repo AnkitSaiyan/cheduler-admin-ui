@@ -114,7 +114,7 @@
 					</header>
 
 					<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-						<span class="font-weight-medium flex-1">{{ examDetails.info | titlecase }}</span>
+						<span *ngIf="examDetails.info; else noInstructionData" class="font-weight-medium flex-1">{{ examDetails.info | titlecase }}</span>
 					</div>
 
 

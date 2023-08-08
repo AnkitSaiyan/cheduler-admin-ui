@@ -181,12 +181,12 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
 		this.appointmentApiService.recentPatients$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (recentPatientBase) => {
-				if (this.paginationData && this.paginationData.pageNo < recentPatientBase.metaData.pagination.pageNo) {
+				if (this.paginationData && this.paginationData.pageNo < recentPatientBase?.metaData?.pagination.pageNo) {
 					this.recentPatients$$.next([...this.recentPatients$$.value, ...recentPatientBase.data]);
 				} else {
 					this.recentPatients$$.next(recentPatientBase.data);
 				}
-				this.paginationData = recentPatientBase?.metaData?.pagination;
+				this.paginationData = recentPatientBase?.metaData?.pagination || 1;
 			},
 			error: (e) => this.recentPatients$$.next([]),
 		});
