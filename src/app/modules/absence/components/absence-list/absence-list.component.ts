@@ -128,12 +128,12 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
 		this.absenceApiSvc.absences$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (absencesBase) => {
-				if (this.paginationData && this.paginationData.pageNo < absencesBase.metaData.pagination.pageNo) {
+				if (this.paginationData && this.paginationData.pageNo < absencesBase?.metaData?.pagination.pageNo) {
 					this.absences$$.next([...this.absences$$.value, ...absencesBase.data]);
 				} else {
 					this.absences$$.next(absencesBase.data);
 				}
-				this.paginationData = absencesBase.metaData.pagination;
+				this.paginationData = absencesBase?.metaData?.pagination || 1;
 			},
 			error: (e) => {
 				this.absences$$.next([]);

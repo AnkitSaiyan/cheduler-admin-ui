@@ -211,7 +211,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 					if (this.userTypeDropdownControl.value === UserType.General) {
 						const generalUserBase = userBase as BaseResponse<User[]>;
 						this.users$$.next([...this.users$$.value, ...generalUserBase.data]);
-						this.paginationData = generalUserBase.metaData.pagination;
+						this.paginationData = generalUserBase?.metaData?.pagination || 1;
 					} else {
 						this.users$$.next([...(userBase as UserBase[])]);
 					}

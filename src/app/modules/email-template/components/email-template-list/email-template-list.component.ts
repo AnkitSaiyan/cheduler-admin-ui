@@ -133,12 +133,12 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 		this.emailTemplateApiSvc.emailTemplates$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (emailBase) => {
-				if (this.paginationData && this.paginationData.pageNo < emailBase.metaData.pagination.pageNo) {
+				if (this.paginationData && this.paginationData.pageNo < emailBase?.metaData?.pagination.pageNo) {
 					this.emails$$.next([...this.emails$$.value, ...emailBase.data]);
 				} else {
 					this.emails$$.next(emailBase.data);
 				}
-				this.paginationData = emailBase.metaData?.pagination;
+				this.paginationData = emailBase?.metaData?.pagination || 1;
 			},
 			error: (e) => this.emails$$.next([]),
 		});

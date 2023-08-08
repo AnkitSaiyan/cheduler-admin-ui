@@ -237,7 +237,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});
 	}
 
-	public openChangeTimeModal(
+	private openChangeTimeModal(
 		appointment: Appointment,
 		extend = true,
 		eventContainer: HTMLDivElement,
@@ -620,7 +620,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			const isExtend = parseInt(container?.style.height) > this.original_height;
 
 			if (parseInt(container?.style.height) != this.original_height && minutes) {
-				this.openChangeTimeModal(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
+				// this.openChangeTimeModal(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
+				this.updateAppointmentDuration(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
 			} else {
 				this.element.style.height = this.original_height + 'px';
 				this.element.style.top = this.original_y + 'px';
@@ -649,5 +650,36 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		let calendarEndInMin = DateTimeUtils.DurationInMinFromHour(+calendarEnd[0], +calendarEnd[1]);
 		calendarEndInMin = calendarEndInMin + 120 > 1440 ? 1440 : calendarEndInMin + 120;
 		return calendarEndInMin - appointmentEndInMin;
+	}
+
+	private updateAppointmentDuration(appointment, isExtend, container, isTopResizer, minutes, divHieght, divTop) {
+		let amountofMinutes =
+			isExtend && isTopResizer && divTop / this.pixelPerMinute < minutes
+				? divTop / this.pixelPerMinute
+				: isExtend && !isTopResizer && this.minutesInBottom < +minutes
+				? this.minutesInBottom
+				: minutes;
+
+		const requestData = {
+			amountofMinutes,
+			extensionType: isExtend ? 'extend' : 'shorten',
+			from: isTopResizer ? 'AtTheTop' : 'AtTheBottom',
+			appointmentId: appointment.id,
+			examId: appointment.exams[0].id,
+			roomId: appointment.exams[0]?.rooms?.length ? appointment.exams[0]?.rooms[0]?.id : null,
+		} as UpdateDurationRequestData;
+
+		container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		return this.appointmentApiSvc.updateAppointmentDuration$(requestData).subscribe({
+			next: (res) => {
+				this.notificationSvc.showSuccess(Translate.AppointmentUpdatedSuccessfully[this.selectedLang]);
+			},
+			error: (err) => {
+				if (container) {
+					container.style.top = divTop + 'px';
+					container.style.height = divHieght + 'px';
+				}
+			},
+		});
 	}
 }

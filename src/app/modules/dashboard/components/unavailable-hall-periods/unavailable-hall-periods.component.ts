@@ -176,12 +176,12 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 		this.dashboardApiService.roomAbsence$.pipe(takeUntil(this.destroy$$)).subscribe(
 			(roomAbsenceBase) => {
-				if (this.paginationData && this.paginationData.pageNo < roomAbsenceBase.metaData.pagination.pageNo) {
+				if (this.paginationData && this.paginationData.pageNo < roomAbsenceBase?.metaData?.pagination.pageNo) {
 					this.roomAbsence$$.next([...this.roomAbsence$$.value, ...roomAbsenceBase.data]);
 				} else {
 					this.roomAbsence$$.next([...roomAbsenceBase.data]);
 				}
-				this.paginationData = roomAbsenceBase.metaData.pagination;
+				this.paginationData = roomAbsenceBase?.metaData?.pagination || 1;
 			},
 			() => this.filteredRoomAbsence$$.next([]),
 		);
