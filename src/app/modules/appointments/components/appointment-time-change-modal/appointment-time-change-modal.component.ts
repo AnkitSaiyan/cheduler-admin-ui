@@ -120,7 +120,7 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
     if (this.extend) {
       if (isTop) {
         this.isExtendOutside = (this.eventTop - +minutes * this.pixelPerMin) < 0;   
-        this.eventContainer.style.top = `${Math.abs(this.eventTop - +minutes * this.pixelPerMin)}px`;
+        this.eventContainer.style.top = `${(this.eventTop - +minutes * this.pixelPerMin)}px`;
         this.eventContainer.style.height = `${Math.abs(this.eventHeight + +minutes * this.pixelPerMin)}px`;
       } else {
         this.isExtendOutside = +minutes > this.extendableTimeInBottom;
