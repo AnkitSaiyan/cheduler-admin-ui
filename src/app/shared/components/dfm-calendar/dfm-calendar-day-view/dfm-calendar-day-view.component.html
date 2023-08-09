@@ -85,7 +85,8 @@
                                [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
                           >
                           <div class='resizers' id="resizers">
-                            <div class='resizer top' #topResizer (mousedown)="resize($event, topResizer, data.appointment, eventContainer)"></div>
+                            <div class='resizer top'
+                            *ngIf="!isMobile" #topResizer (mousedown)="resize($event, topResizer, data.appointment, eventContainer)"></div>
                             <div class="overflow-hidden">
                               <!-- POP OVER -->
                               <ng-template #eventDetails>
@@ -186,7 +187,7 @@
                                     <span>{{ 'ChangeRadiologist' | translate }}</span>
                                   </button>
 
-                                  <!-- <button mat-menu-item [matMenuTriggerFor]="subMenu"
+                                  <button  *ngIf="isMobile" mat-menu-item [matMenuTriggerFor]="subMenu"
                                           (click)="$event.stopPropagation()">
                                     <div class="icon-20">
                                       <dfm-icon name="arrow-right"></dfm-icon>
@@ -203,7 +204,7 @@
                                           <span>{{ 'Extend' | translate }}</span>
                                         </button>
                                     </mat-menu>
-                                  </button> -->
+                                  </button>
 
                                   <button mat-menu-item
                                           [routerLink]="['/', 'appointment', data.appointment.id, 'edit']"
@@ -226,7 +227,7 @@
                                   </button>
                               </mat-menu>
                             </div>
-                            <div class='resizer bottom' #bottomResizer (mousedown)="resize($event, bottomResizer, data.appointment, eventContainer)" ></div>
+                            <div class='resizer bottom' *ngIf="!isMobile"  #bottomResizer (mousedown)="resize($event, bottomResizer, data.appointment, eventContainer)"  ></div>
                           </div>
                           </div>
                         </ng-container>

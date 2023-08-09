@@ -97,6 +97,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private currentResizer!: HTMLDivElement;
 	private element!: HTMLDivElement;
 	private minutesInBottom!: number;
+	public isMobile: boolean = false;
 	constructor(
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,
@@ -129,6 +130,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	}
 
 	public ngOnInit(): void {
+		this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(navigator.userAgent);
 		this.changeDate$$
 			.asObservable()
 			.pipe(filter((offset) => !!offset))
@@ -237,7 +239,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});
 	}
 
-	private openChangeTimeModal(
+	public openChangeTimeModal(
 		appointment: Appointment,
 		extend = true,
 		eventContainer: HTMLDivElement,
@@ -246,6 +248,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		divHieght?: number,
 		divTop?: number,
 	) {
+		this.minutesInBottom = this.extendMinutesInBottom(appointment);
 		const top = eventContainer?.style.top;
 		const height = eventContainer?.style.height;
 		const modalRef = this.modalSvc.open(AppointmentTimeChangeModalComponent, {
