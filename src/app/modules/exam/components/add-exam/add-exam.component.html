@@ -439,6 +439,7 @@
                 <ng-container *ngIf="formValues.practiceAvailabilityToggle">
                     <dfm-time-slots
                             [timeSlotData$$]="examAvailabilityData$$"
+                            [practiceHourData$$]="practiceHourData$$"
                             [emitEvents$$]="emitEvents$$"
                             (formValuesEvent)="saveForm($event)"
                     ></dfm-time-slots>

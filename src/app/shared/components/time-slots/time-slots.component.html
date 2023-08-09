@@ -2,7 +2,7 @@
   <section class="d-flex flex-column dfm-gap-8">
     <span class="text-sm font-weight-semi-bold">{{ 'ChooseDay' | translate }}</span>
 
-    <div class="d-flex dfm-gap-16 weekday-header overflow-x-auto hide-scrollbar">
+    <div class="d-flex dfm-gap-16 weekday-header overflow-x-auto hide-scrollbar align-items-center">
       <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.ALL)" class="pointer" (click)="selectWeekday(weekdayEnum.ALL)"
         >{{ 'ViewAll' | translate | uppercase }}
       </dfm-badge>
@@ -27,6 +27,17 @@
       <dfm-badge size="sm" [color]="getBadgeColor(weekdayEnum.SUN)" class="pointer" (click)="selectWeekday(weekdayEnum.SUN)"
         >{{ 'SUN' | translate }}
       </dfm-badge>
+      <dfm-button-icon
+            *ngIf="(practiceHourData$$ | async)?.length"
+            color="tertiary-gray"
+            size="md"
+            icon="copy-03"
+            ngbPopover="{{ 'Fill' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
+            (click)="fillWithPracticeHourData()"
+          ></dfm-button-icon>
     </div>
   </section>
 

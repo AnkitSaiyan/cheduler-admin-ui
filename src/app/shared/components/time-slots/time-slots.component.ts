@@ -64,6 +64,8 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
 	@Input() public timeSlotData$$ = new BehaviorSubject<TimeSlot[]>([]);
 
+	@Input() public practiceHourData$$ = new BehaviorSubject<TimeSlot[]>([]);
+
 	@Input() public emitEvents$$ = new Subject<void>();
 
 	@Output() public formValuesEvent = new EventEmitter<{ isValid: boolean; values: TimeSlot[] }>();
@@ -92,7 +94,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 			)
 			.subscribe({
 				next: (timeSlots) => {
-
 					this.updateForm(timeSlots);
 				},
 			});
@@ -105,7 +106,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 				});
 
 				this.timeSlotForm.markAllAsTouched();
-
 			},
 		});
 
@@ -128,6 +128,10 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		});
 
 		this.timeSlotForm.patchValue({ selectedWeekday: Weekday.ALL });
+	}
+
+	public fillWithPracticeHourData() {
+		this.updateForm(this.practiceHourData$$.value);
 	}
 
 	private getTimeSlotFormGroup(): FormGroup {
@@ -267,8 +271,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 	}
 
 	private patchUpdatedValues(control: AbstractControl<any>, timeSlot: TimeSlot) {
-
-
 		control.patchValue(
 			{
 				id: timeSlot.id,
@@ -447,6 +449,9 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		return timeSlots;
 	}
 }
+
+
+
 
 
 

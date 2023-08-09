@@ -39,6 +39,7 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { LoaderService } from 'src/app/core/services/loader.service';
+import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 
 interface FormValues {
 	name: string;
@@ -89,6 +90,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public filteredExams$$ = new BehaviorSubject<NameValue[]>([]);
 	public filteredBodyPart$$ = new BehaviorSubject<NameValue[]>([]);
 	public examAvailabilityData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
+	public practiceHourData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
 	public emitEvents$$ = new Subject<void>();
 	public orderOption$$ = new BehaviorSubject<number>(0);
 
@@ -128,6 +130,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		private loaderSvc: LoaderService,
+		private practiceHourApiSvc: PracticeHoursApiService,
 	) {
 		super();
 		const state = this.router.getCurrentNavigation()?.extras?.state;
@@ -324,6 +327,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					this.examDetails$$.next(examDetails);
 				},
 			});
+
+		this.practiceHourApiSvc.practiceHoursWithTimeConversion$.pipe(take(1)).subscribe((practiceHours) => {
+			this.practiceHourData$$.next(practiceHours);
+		});
 
 		this.examForm.get('roomsForExam')?.valueChanges.subscribe((value) => {
 			const total = value.reduce((acc, curr) => {
