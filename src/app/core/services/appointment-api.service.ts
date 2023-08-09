@@ -101,10 +101,14 @@ export class AppointmentApiService extends DestroyableComponent {
 	}
 
 	public get appointment$(): Observable<BaseResponse<Appointment[]>> {
+		this.loaderSvc.activate();
 		return combineLatest([this.appointmentPageNo$$]).pipe(
 			switchMap(([pageNo]) => {
 				return this.fetchAllAppointments$(pageNo).pipe(
-					switchMap((appointments) => this.AttachPatientDetails(appointments.data).pipe(map((data) => ({ ...appointments, data })))),
+					switchMap((appointments) => this.AttachPatientDetails(appointments.data).pipe(map((data) => {
+						this.loaderSvc.deactivate();
+						return ({ ...appointments, data })
+					}))),
 				);
 			}),
 		);

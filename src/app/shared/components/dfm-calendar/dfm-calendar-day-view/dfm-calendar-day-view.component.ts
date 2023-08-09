@@ -592,6 +592,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	}
 
 	public resize(e: any, resizer: HTMLDivElement, appointment: Appointment, container: HTMLDivElement) {
+		container.style.touchAction = 'none';
 		this.minutesInBottom = this.extendMinutesInBottom(appointment);
 		this.element = container;
 		this.currentResizer = resizer;
@@ -600,7 +601,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		this.original_y = parseInt(container?.style.top);
 		this.original_mouse_y = e.pageY;
 		const isTopResizer = resizer.classList.contains('top');
-		let resizeListener = this.renderer.listen(window, 'mousemove', (e: any) => {
+		let resizeListener = this.renderer.listen(window, 'pointermove', (e: any) => {
 			if (!isTopResizer) {
 				const height = this.original_height + (e.pageY - this.original_mouse_y);
 				if (height > this.minimum_size) {
@@ -615,7 +616,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			}
 		});
 
-		let mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
+		let mouseUpEve = this.renderer.listen(window, 'pointerup', () => {
 			const minutes = Math.round(Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute / 5) * 5;
 			const isExtend = parseInt(container?.style.height) > this.original_height;
 
