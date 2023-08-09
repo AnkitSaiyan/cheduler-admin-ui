@@ -468,7 +468,7 @@
 	"Weeks": "we(e)ken",
 	"Months": "maand(en)",
 	"daily": "Dagelijks",
-	"weekly" : "weken",
+	"weekly": "weken",
 	"monthly": "maand",
 	"Sun": "Zon",
 	"Mon": "Maa",
@@ -476,5 +476,9 @@
 	"Wed": "Woe",
 	"Thu": "Don",
 	"Fri": "Vrij",
-	"Sat": "Zat"
+	"Sat": "Zat",
+	"PrefillFromPractice": "Praktijkuren vooraf invullen"
 }
+
+
+

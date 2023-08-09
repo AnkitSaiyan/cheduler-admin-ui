@@ -204,11 +204,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			this.physicianList = [...keyValuePhysicians];
 		});
 
-		this.userApiService.allGeneralUsers$.pipe(takeUntil(this.destroy$$)).subscribe((users) => {
-			const keyValueExams = this.nameValuePipe.transform(users, 'fullName', 'id');
-			this.filteredUserList = [...keyValueExams];
-			this.userList = [...keyValueExams];
-		});
+
 
 		this.appointmentForm
 			.get('startedAt')
@@ -263,10 +259,11 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 		this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (staffs) => {
-				this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() }))];
+				const keyValueExams = this.nameValuePipe.transform(staffs, 'fullName', 'id');
+				this.staffs = [...keyValueExams];
+				this.filteredUserList = [...keyValueExams];
+				this.userList = [...keyValueExams];
 				this.filteredStaffs = [...this.staffs];
-				// this.filteredStaffs$$.next([...this.staffs]);
-				// this.cdr.detectChanges();
 			},
 		});
 

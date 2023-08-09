@@ -41,8 +41,6 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
 	public modalData!: { edit: boolean; userDetails: User };
 
-	public userType = getUserTypeEnum();
-
 	public loading$$ = new BehaviorSubject<boolean>(false);
 
 	private selectedLang: string = ENG_BE;
