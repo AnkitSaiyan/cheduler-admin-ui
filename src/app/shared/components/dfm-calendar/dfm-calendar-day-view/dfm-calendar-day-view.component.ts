@@ -97,6 +97,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private currentResizer!: HTMLDivElement;
 	private element!: HTMLDivElement;
 	private minutesInBottom!: number;
+	public isMobile: boolean = false;
 	constructor(
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,
@@ -129,6 +130,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	}
 
 	public ngOnInit(): void {
+		this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(navigator.userAgent);
 		this.changeDate$$
 			.asObservable()
 			.pipe(filter((offset) => !!offset))
@@ -237,7 +239,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});
 	}
 
-	private openChangeTimeModal(
+	public openChangeTimeModal(
 		appointment: Appointment,
 		extend = true,
 		eventContainer: HTMLDivElement,
@@ -246,6 +248,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		divHieght?: number,
 		divTop?: number,
 	) {
+		this.minutesInBottom = this.extendMinutesInBottom(appointment);
 		const top = eventContainer?.style.top;
 		const height = eventContainer?.style.height;
 		const modalRef = this.modalSvc.open(AppointmentTimeChangeModalComponent, {
@@ -592,7 +595,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	}
 
 	public resize(e: any, resizer: HTMLDivElement, appointment: Appointment, container: HTMLDivElement) {
-		container.style.touchAction = 'none';
 		this.minutesInBottom = this.extendMinutesInBottom(appointment);
 		this.element = container;
 		this.currentResizer = resizer;
@@ -601,7 +603,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		this.original_y = parseInt(container?.style.top);
 		this.original_mouse_y = e.pageY;
 		const isTopResizer = resizer.classList.contains('top');
-		let resizeListener = this.renderer.listen(window, 'pointermove', (e: any) => {
+		let resizeListener = this.renderer.listen(window, 'mousemove', (e: any) => {
 			if (!isTopResizer) {
 				const height = this.original_height + (e.pageY - this.original_mouse_y);
 				if (height > this.minimum_size) {
@@ -616,7 +618,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			}
 		});
 
-		let mouseUpEve = this.renderer.listen(window, 'pointerup', () => {
+		let mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
 			const minutes = Math.round(Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute / 5) * 5;
 			const isExtend = parseInt(container?.style.height) > this.original_height;
 
