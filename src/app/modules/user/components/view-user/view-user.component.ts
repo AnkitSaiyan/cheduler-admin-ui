@@ -1,21 +1,19 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import { BehaviorSubject, combineLatest, filter, map, Observable, switchMap, take, takeUntil, tap } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { ENG_BE, STAFF_ID } from '../../../../shared/utils/const';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { AddUserComponent } from '../add-user/add-user.component';
-import { User, UserType } from '../../../../shared/models/user.model';
-import { getUserTypeEnum } from '../../../../shared/utils/getEnums';
-import { Translate } from '../../../../shared/models/translate.model';
+import { BehaviorSubject, Observable, combineLatest, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { UserManagementApiService } from '../../../../core/services/user-management-api.service';
-import { Permission } from '../../../../shared/models/permission.model';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
+import { UserManagementApiService } from '../../../../core/services/user-management-api.service';
 import { UserService } from '../../../../core/services/user.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { Permission } from '../../../../shared/models/permission.model';
+import { Translate } from '../../../../shared/models/translate.model';
+import { User, UserType } from '../../../../shared/models/user.model';
+import { ENG_BE, STAFF_ID } from '../../../../shared/utils/const';
+import { AddUserComponent } from '../add-user/add-user.component';
 
 @Component({
 	selector: 'dfm-view-user',
@@ -25,13 +23,9 @@ import { UserService } from '../../../../core/services/user.service';
 export class ViewUserComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public userDetails$$ = new BehaviorSubject<User | undefined>(undefined);
 
-	public userTypeEnum = getUserTypeEnum();
-
 	public currentUserType!: UserType;
 
 	public userProperties: Record<string, string> = {};
-
-	protected readonly UserType = UserType;
 
 	protected readonly Permission = Permission;
 
@@ -39,7 +33,6 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
 
 	constructor(
 		private userApiSvc: UserApiService,
-		private routerStateSvc: RouterStateService,
 		private notificationSvc: NotificationDataService,
 		private router: Router,
 		private modalSvc: ModalService,
@@ -57,23 +50,20 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
 			this.route.params.pipe(
 				map((params) => params[STAFF_ID]),
 				switchMap((userID) => {
-					if (this.router.url.split('/')[3] === 's') {
-						return this.userManagementApiSvc.getUserById(userID).pipe(
-							map(
-								(user) =>
-									({
-										id: user.id,
-										email: user.email,
-										firstname: user.givenName,
-										lastname: user.surname,
-										fullName: user.displayName,
-										userType: UserType.Scheduler,
-										status: +user.accountEnabled,
-									} as unknown as User),
-							),
-						);
-					}
-					return this.userApiSvc.getUserByID$(+userID).pipe() as Observable<User>;
+					return this.userManagementApiSvc.getUserById(userID).pipe(
+						map(
+							(user) =>
+								({
+									id: user.id,
+									email: user.email,
+									firstname: user.givenName,
+									lastname: user.surname,
+									fullName: user.displayName,
+									userType: UserType.Scheduler,
+									status: +user.accountEnabled,
+								} as unknown as User),
+						),
+					);
 				}),
 				tap((user) => {
 					this.currentUserType = user.userType;
@@ -85,7 +75,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
 				next: ([authUser, userDetails]) => {
 					this.userDetails$$.next(userDetails);
 					this.userProperties = {};
-					if (authUser && authUser.id === userDetails.id.toString() && authUser?.properties) {
+					if (authUser && authUser.id === userDetails?.id?.toString() && authUser?.properties) {
 						this.userProperties = authUser.properties;
 					}
 				},
@@ -113,10 +103,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
 			.pipe(
 				filter((res: boolean) => res),
 				switchMap(() => {
-					if (this.currentUserType === UserType.Scheduler) {
-						return this.userManagementApiSvc.deleteUser(id as string);
-					}
-					return this.userApiSvc.deleteUser(id as number);
+					return this.userManagementApiSvc.deleteUser(id as string);
 				}),
 				take(1),
 			)
@@ -143,7 +130,7 @@ export class ViewUserComponent extends DestroyableComponent implements OnInit, O
 				if (user) {
 					this.userDetails$$.next(user);
 				}
-			}
-		})
+			},
+		});
 	}
 }

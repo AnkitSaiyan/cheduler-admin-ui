@@ -414,7 +414,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		}
 
 		if (appointment?.id && !isOutside) {
-			const date: string = this.datePipe.transform(this.selectedDate, 'd-M-yyyy')!;
+			const date: string = this.datePipe.transform(this.selectedDate, 'yyyy-M-dd')!;
 			const reqData: AppointmentSlotsRequestData = {
 				fromDate: date,
 				toDate: date,

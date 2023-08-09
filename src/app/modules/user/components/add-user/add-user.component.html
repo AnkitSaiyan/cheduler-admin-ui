@@ -16,33 +16,11 @@
 
   <section class="modal-body ad-us-section2">
     <form [formGroup]="addUserForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
-      <div class="d-flex flex-column dfm-gap-16 flex-1">
-        <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'SelectUserType' | translate | titlecase }}*</span>
-        <div class="w-fit d-flex justify-content-between dfm-gap-24">
-          <dfm-radio-button
-            class="font-weight-normal"
-            label="{{ 'ApplicationUser' | translate | titlecase }}"
-            *ngIf="permissionType !== UserRoleEnum.GeneralUser"
-            [checkedValue]="userType.Scheduler"
-            formControlName="userType"
-          ></dfm-radio-button>
-
-          <dfm-radio-button
-            class="font-weight-normal"
-            label="{{ 'GeneralUser' | translate | titlecase }}"
-            [checkedValue]="userType.General"
-            formControlName="userType"
-          ></dfm-radio-button>
-        </div>
-      </div>
-
-      <div class="d-flex flex-column dfm-gap-16 flex-1" *ngIf="modalData?.userDetails?.userType ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler">
+      <div class="d-flex flex-column dfm-gap-16 flex-1" >
         <div class="d-flex flex-column flex-1">
           <div *ngIf="userRoles$$ | async as userRoles">
             <dfm-input-dropdown
-              [required]="
-                modalData?.userDetails?.userType ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler
-              "
+              [required]="true"
               size="md"
               placeholder="{{'SelectRole' | translate}}"
               label="{{'UserRole' | translate}} *"
@@ -92,18 +70,8 @@
       <div class="d-flex dfm-gap-32 flex-wrap">
         <div class="d-flex flex-column flex-1 w-full">
           <dfm-input
-            [required]="
-              modalData?.userDetails?.userType ? modalData.userDetails.userType === userType.Scheduler : formValues.userType === userType.Scheduler
-            "
-            [label]="
-              modalData?.userDetails?.userType
-                ? modalData.userDetails.userType === userType.General
-                  ? ('Email' | translate)
-                  : ('RequiredEmail' | translate)
-                : formValues.userType === userType.General
-                ? ('Email' | translate)
-                : ('RequiredEmail' | translate)
-            "
+            [required]="true"
+            [label]="('RequiredEmail' | translate)"
             class="flex-1"
             size="md"
             placeholder="{{ 'EnterEmail' | translate }}"

@@ -7,27 +7,22 @@ import { STAFF_ID } from '../../shared/utils/const';
 import { ViewUserComponent } from './components/view-user/view-user.component';
 
 const userRoutes: Routes = [
-  {
-    path: '',
-    component: UserComponent,
-    children: [
-      {
-        path: '',
-        component: UserListComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.User },
-      },
-      {
-        path: `:${STAFF_ID}/g/view`,
-        component: ViewUserComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.User },
-      },
-      {
-        path: `:${STAFF_ID}/s/view`,
-        component: ViewUserComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.User },
-      },
-    ],
-  },
+	{
+		path: '',
+		component: UserComponent,
+		children: [
+			{
+				path: '',
+				component: UserListComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.User },
+			},
+			{
+				path: `:${STAFF_ID}/view`,
+				component: ViewUserComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.User },
+			},
+		],
+	},
 ];
 
 @NgModule({
