@@ -171,7 +171,7 @@
 						</dfm-badge>
 					</dfm-table-body-cell>
 					<dfm-table-body-cell *dfmPermitted="[Permission.UpdateAppointments, Permission.DeleteAppointments]">
-						<div class="d-flex align-items-center dfm-gap-14">
+						<div class="d-flex align-items-center dfm-gap-14" *ngIf="item.isEditable">
 							<!-- <dfm-button
               *ngIf="!item.confirm"
               color="link-gray"

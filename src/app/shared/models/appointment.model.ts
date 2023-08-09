@@ -37,6 +37,7 @@ export interface Appointment {
 	isOutside?: boolean;
 	socialSecurityNumber: number;
 	documentCount?: number;
+	isEditable: boolean;
 }
 
 export interface AddAppointmentRequestData {
