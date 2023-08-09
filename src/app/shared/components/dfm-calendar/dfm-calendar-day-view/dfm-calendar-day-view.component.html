@@ -86,7 +86,7 @@
                           >
                           <div class='resizers' id="resizers">
                             <div class='resizer top'
-                            *ngIf="!isMobile" #topResizer (mousedown)="resize($event, topResizer, data.appointment, eventContainer)"></div>
+                            *ngIf="!isMobile && data.appointment.isEditable" #topResizer (mousedown)="resize($event, topResizer, data.appointment, eventContainer)"></div>
                             <div class="overflow-hidden">
                               <!-- POP OVER -->
                               <ng-template #eventDetails>
@@ -165,7 +165,7 @@
 
                             <div class="calender-day-view-event-more-button" [matMenuTriggerFor]="menu"
                                  >
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                              <svg *ngIf="data.appointment.isEditable" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                    xmlns="http://www.w3.org/2000/svg">
                                 <path
                                   d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
@@ -227,7 +227,7 @@
                                   </button>
                               </mat-menu>
                             </div>
-                            <div class='resizer bottom' *ngIf="!isMobile"  #bottomResizer (mousedown)="resize($event, bottomResizer, data.appointment, eventContainer)"  ></div>
+                            <div class='resizer bottom' *ngIf="!isMobile && data.appointment.isEditable"  #bottomResizer (mousedown)="resize($event, bottomResizer, data.appointment, eventContainer)"  ></div>
                           </div>
                           </div>
                         </ng-container>

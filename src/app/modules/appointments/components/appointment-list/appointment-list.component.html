@@ -161,13 +161,19 @@
             </dfm-badge>
           </dfm-table-row-cell>
           <dfm-data-table-action-cell *dfmPermitted="[Permission.UpdatePhysicians, Permission.DeletePhysicians]">
-            <ng-template #actionCellTemplate *dfmPermitted="[Permission.UpdateAppointments, Permission.DeleteAppointments]">
-              <!-- <dfm-data-table-action *ngIf="!item.confirm" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()" ></dfm-data-table-action>
-              <dfm-data-table-action *ngIf="item.confirm" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()"></dfm-data-table-action> -->
-              <dfm-data-table-action icon="pencil-02" tooltip="{{ 'Edit' | translate }}" *dfmPermitted="Permission.UpdateAppointments" (click)="$event.stopPropagation()" [routerLink]="['/appointment', item.id, 'edit']" queryParamsHandling="merge"
-              [state]="{ comingFromRoute: 'dashboard', edit: true }" ></dfm-data-table-action>
-              <dfm-data-table-action icon="trash-01" *dfmPermitted="Permission.DeleteAppointments" tooltip="{{ 'Delete' | translate }}" (click)="$event.stopPropagation(); deleteAppointment(item.id)"></dfm-data-table-action>
-            </ng-template>
+            <ng-container *ngIf="item.isEditable">
+              <ng-template #actionCellTemplate *dfmPermitted="[Permission.UpdateAppointments, Permission.DeleteAppointments]">
+                <!-- <dfm-data-table-action *ngIf="!item.confirm" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()" ></dfm-data-table-action>
+                        <dfm-data-table-action *ngIf="item.confirm" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()"></dfm-data-table-action> -->
+                <dfm-data-table-action icon="pencil-02" tooltip="{{ 'Edit' | translate }}"
+                  *dfmPermitted="Permission.UpdateAppointments" (click)="$event.stopPropagation()"
+                  [routerLink]="['/appointment', item.id, 'edit']" queryParamsHandling="merge"
+                  [state]="{ comingFromRoute: 'dashboard', edit: true }"></dfm-data-table-action>
+                <dfm-data-table-action icon="trash-01" *dfmPermitted="Permission.DeleteAppointments"
+                  tooltip="{{ 'Delete' | translate }}"
+                  (click)="$event.stopPropagation(); deleteAppointment(item.id)"></dfm-data-table-action>
+              </ng-template>
+            </ng-container>
           </dfm-data-table-action-cell>
         </ng-template>
       </dfm-data-table>

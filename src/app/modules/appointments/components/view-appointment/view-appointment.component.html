@@ -8,7 +8,7 @@
 			<dfm-button color="link-gray" size="lg">{{ 'View' | translate }} </dfm-button>
 		</div>
 
-		<div class="d-flex dfm-gap-16 vw-ap-action-buttons">
+		<div class="d-flex dfm-gap-16 vw-ap-action-buttons" *ngIf="appointment.isEditable">
 			<dfm-button
 				color="link"
 				size="md"
@@ -200,6 +200,7 @@
 		</div>
 	</section>
 	<div class="hidden bg-white vw-ap-action-buttons-mv" *dfmPermitted="[Permission.UpdateAppointments, Permission.DeleteAppointments]">
+		<ng-container *ngIf="appointment.isEditable">
 		<dfm-button color="secondary" size="sm" *dfmPermitted="Permission.DeleteAppointments" (click)="deleteAppointment(appointment.id)">{{
 			'Delete' | translate
 		}}</dfm-button>
@@ -211,6 +212,7 @@
 			[state]="{ comingFromRoute: 'view', edit: true }"
 			>{{ 'Edit' | translate }}
 		</dfm-button>
+	</ng-container>
 	</div>
 </div>
 
