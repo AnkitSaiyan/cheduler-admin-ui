@@ -163,12 +163,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			});
 		});
 
-		this.userApiService.allGeneralUsers$.pipe(takeUntil(this.destroy$$)).subscribe((users) => {
-			const keyValueExams = this.nameValuePipe.transform(users, 'fullName', 'id');
-			this.filteredUserList = [...keyValueExams];
-			this.userList = [...keyValueExams];
-		});
-
 		this.physicianApiSvc.allPhysicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
 			const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
 			this.filteredPhysicianList = [...keyValuePhysicians];
@@ -257,7 +251,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 		this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (staffs) => {
-				this.staffs = [...staffs.map((staff) => ({ name: staff.fullName, value: staff.id.toString() }))];
+				const keyValueExams = this.nameValuePipe.transform(staffs, 'fullName', 'id');
+				this.staffs = [...keyValueExams];
+				this.filteredUserList = [...keyValueExams];
+				this.userList = [...keyValueExams];
 				this.filteredStaffs = [...this.staffs];
 			},
 		});
