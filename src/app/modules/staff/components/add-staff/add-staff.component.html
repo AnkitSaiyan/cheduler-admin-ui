@@ -110,7 +110,8 @@
                           label="{{ 'Telephone' | translate }}"
                           formControlName="telephone"
                         ></dfm-input>
-
+                        <span class="validation-error" *ngIf="!addStaffForm.controls['telephone'].valid && addStaffForm.controls['telephone'].touched">
+                            {{ 'Please Enter Valid Mobile Number' | translate }}</span>
                     </div>
                 </div>
 

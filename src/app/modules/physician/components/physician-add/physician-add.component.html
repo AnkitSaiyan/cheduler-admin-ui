@@ -65,9 +65,8 @@
           <dfm-input #phone [dfmNumberInput]="phone" type="number" (focusout)="handleNumberFocusOut($event)" class="flex-1" size="md" placeholder="{{'EnterTelephone' | translate}}" label="{{'Telephone' | translate}} *"
                      formControlName="telephone">
           </dfm-input>
-          <div class="validation-error" *ngIf="addPhysicianForm.get('telephone')?.hasError('required') && addPhysicianForm.get('telephone')?.touched">
-            {{ 'RequiredField' | translate }}
-          </div>
+          <span class="validation-error" *ngIf="!addPhysicianForm.controls['telephone'].valid && addPhysicianForm.controls['telephone'].touched">
+            {{ 'Please Enter Valid Mobile Number' | translate }}</span>
           <small *ngIf="addPhysicianForm.get('telephone')?.hasError('telephone')" class="validation-error">{{'InvalidEmail' | translate}}</small>
         </div>
 
