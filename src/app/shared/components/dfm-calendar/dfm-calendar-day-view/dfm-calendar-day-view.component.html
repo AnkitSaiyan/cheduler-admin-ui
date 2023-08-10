@@ -15,8 +15,64 @@
               <div role="columnheader" class="calender-day-view-weekday flex-1" *ngFor="let header of headerList">
                 <div class="calender-day-view-header-cell-left-line"></div>
                 <h3>
+                  <ng-template #eventDetails>
+                    <div class="calender-month-view-day-exam-details-expanded">
+                      <div class="dfm-card-container">
+                        <ng-container *ngFor="let data of hideAppointmentData?.[header.name]" >
+                          <div class="calender-month-view-day-exam-event-details" [routerLink]="['/', 'appointment', data.id, 'view']" queryParamsHandling="merge">
+                            <span class="calender-month-view-day-exam-event-title text-truncate ">
+                              {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
+                              -
+                              {{ data?.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}
+
+                              <b>{{(data?.patientFname | titlecase) + ' ' + data?.patientLname | titlecase }}</b>
+                            </span>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+                  </ng-template>
                   <div
-                    class="text-xs font-weight-medium w-fit calender-day-view-day-name">{{ header.name | titlecase }}</div>
+                    class="text-xs font-weight-medium w-fit calender-day-view-day-name d-flex align-items-center dfm-gap-8">{{ header.name | titlecase }}
+                    <div class="calender-month-view-day-exam-event-container" *ngIf="hideAppointmentData[header.name]?.length" #parentElement >
+
+                      <ng-template #eventDetails>
+                        <div class="calender-month-view-day-exam-details-expanded">
+                            <div class="dfm-card-container">
+                              <ng-container *ngFor="let data of hideAppointmentData[header.name]" >
+                                <div class="calender-month-view-day-exam-event-details" [routerLink]="['/', 'appointment', data.id, 'view']" queryParamsHandling="merge">
+                                  <span class="calender-month-view-day-exam-event-title text-truncate ">
+                                    {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
+                                    -
+                                    {{ data?.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}
+
+                                    <b>{{(data?.patientFname | titlecase) + ' ' + data?.patientLname | titlecase }}</b>
+                                  </span>
+                                </div>
+                              </ng-container>
+                            </div>
+                        </div>
+                      </ng-template>
+
+
+                      <ng-container *ngFor="let data of hideAppointmentData[header.name] ">
+                        <div class="calender-month-view-day-exam-event-details" [routerLink]="['/', 'appointment', data.id, 'view']" queryParamsHandling="merge">
+                          <span class="calender-month-view-day-exam-event-title text-truncate ">
+                            {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
+                            -
+                            {{ data?.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
+
+                            <b>{{(data?.patientFname | titlecase) + ' ' + data?.patientLname | titlecase }}</b>
+                          </span>
+                        </div>
+                      </ng-container>
+
+                      <div class="calender-month-view-day-exam-event-details more-btn" [ngbPopover]="eventDetails" #popOver="ngbPopover" triggers="click" [autoClose]="'outside'" container="body" *ngIf="parentElement.scrollHeight > parentElement.clientHeight">
+                        <span class="calender-month-view-day-exam-event-title text-truncate ">View more</span>
+                      </div>
+
+                    </div>
+                  </div>
                 </h3>
               </div>
             </ng-container>
@@ -80,7 +136,7 @@
                         <ng-container
                           *ngFor="let data of roomData;">
                           <ng-container *ngIf="getHeight([data.appointment]) as eventHeight" >
-                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight && getTop([data.appointment]) > -2" #eventContainer class="calender-day-view-event-container resizable" triggers="hover" [ngbPopover]="eventDetails"
+                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight && getTop([data.appointment]) >= 0" #eventContainer class="calender-day-view-event-container resizable" triggers="hover" [ngbPopover]="eventDetails"
                                      [autoClose]="'outside'" container="body" #popover="ngbPopover" [ngbPopoverDrag]="popover"   [draggable]="!((data.appointment.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [calendarType]="calendarType.Day" [draggedElData]="data.appointment" [headerType]="h.name" (dblclick)="$event.preventDefault()"
                                [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
                           >
