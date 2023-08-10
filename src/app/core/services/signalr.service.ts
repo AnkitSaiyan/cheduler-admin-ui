@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { IHttpConnectionOptions } from '@microsoft/signalr';
-import { Observable, Subject, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, of, switchMap } from 'rxjs';
 import { AppointmentApiService } from './appointment-api.service';
 import { NotificationDataService } from './notification-data.service';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { ShareDataService } from './share-data.service';
 import { environment } from '../../../environments/environment';
+import { BaseResponse } from 'src/app/shared/models/base-response.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({
 	providedIn: 'root',
@@ -24,6 +26,7 @@ export class SignalrService {
 		private appointmentApiSvc: AppointmentApiService,
 		private notificationSvc: NotificationDataService,
 		private shareDataSvc: ShareDataService,
+		private http: HttpClient,
 	) {
 		this.createConnection();
 		this.registerForAppointmentModule();
@@ -62,6 +65,7 @@ export class SignalrService {
 			.start()
 			.then(() => {
 				console.log('Connection started.');
+				if (this.hubConnection.connectionId) this.sendConnectionId(this.hubConnection.connectionId);
 			})
 			.catch((err) => {
 				console.log('Opps!');
@@ -89,5 +93,10 @@ export class SignalrService {
 		this.hubConnection.on('UpdatePriorityPercentage', (param: string) => {
 			this.priorityModuleData$$.next(param);
 		});
+	}
+
+	private sendConnectionId(connectionId: string) {
+		const param = new HttpParams().append('connectionId', connectionId);
+		this.http.post<BaseResponse<any>>(`${environment.schedulerApiUrl}/signalr`, { param }).subscribe((res) => console.log('Data send successfully'));
 	}
 }
