@@ -96,7 +96,6 @@ export class SignalrService {
 	}
 
 	private sendConnectionId(connectionId: string) {
-		const param = new HttpParams().append('connectionId', connectionId);
-		this.http.post<BaseResponse<any>>(`${environment.schedulerApiUrl}/signalr`, { param }).subscribe((res) => console.log('Data send successfully'));
+		this.http.post<BaseResponse<any>>(`${environment.schedulerApiUrl}/signalr?connectionId=${connectionId}`, null).subscribe((res) => console.log('Data send successfully'));
 	}
 }

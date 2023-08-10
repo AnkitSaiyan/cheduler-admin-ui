@@ -488,7 +488,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			patientFname: ['', [Validators.required]],
 			patientLname: ['', [Validators.required]],
 			patientTel: [null, [Validators.required, Validators.minLength(10)]],
-			patientEmail: ['', [Validators.required]],
+			patientEmail: ['', []],
 			doctorId: [null, []],
 			startedAt: ['', [Validators.required]],
 			startTime: [null, []],
