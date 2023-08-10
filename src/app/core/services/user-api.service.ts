@@ -99,22 +99,22 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 		return this.pageNoUser$$.value;
 	}
 
-	public get generalUsers$(): Observable<BaseResponse<User[]>> {
-		return combineLatest([this.pageNoUser$$]).pipe(switchMap(([pageNo]) => this.fetchUsers$(pageNo)));
-	}
+	// public get generalUsers$(): Observable<BaseResponse<User[]>> {
+	// 	return combineLatest([this.pageNoUser$$]).pipe(switchMap(([pageNo]) => this.fetchUsers$(pageNo)));
+	// }
 
-	public get allGeneralUsers$(): Observable<User[]> {
-		this.loaderSvc.activate();
-		this.loaderSvc.spinnerActivate();
+	// public get allGeneralUsers$(): Observable<User[]> {
+	// 	this.loaderSvc.activate();
+	// 	this.loaderSvc.spinnerActivate();
 
-		return this.http.get<BaseResponse<User[]>>(`${environment.schedulerApiUrl}/common/getusers`).pipe(
-			map((res) => res?.data?.map((u) => ({ ...u, fullName: `${u.firstname} ${u.lastname}` }))),
-			tap(() => {
-				this.loaderSvc.deactivate();
-				this.loaderSvc.spinnerDeactivate();
-			}),
-		);
-	}
+	// 	return this.http.get<BaseResponse<User[]>>(`${environment.schedulerApiUrl}/common/getusers`).pipe(
+	// 		map((res) => res?.data?.map((u) => ({ ...u, fullName: `${u.firstname} ${u.lastname}` }))),
+	// 		tap(() => {
+	// 			this.loaderSvc.deactivate();
+	// 			this.loaderSvc.spinnerDeactivate();
+	// 		}),
+	// 	);
+	// }
 
 	public get staffs$(): Observable<BaseResponse<User[]>> {
 		return combineLatest([this.pageNoStaff$$]).pipe(switchMap(([pageNo]) => this.fetchStaffs$(pageNo)));

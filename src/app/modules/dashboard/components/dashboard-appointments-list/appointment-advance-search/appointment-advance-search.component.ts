@@ -156,7 +156,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			});
 		});
 
-		this.userApiService.allGeneralUsers$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
+		this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe((staffs) => {
 			const keyValueExams = this.nameValuePipe.transform(staffs, 'fullName', 'id');
 			this.filteredUserList = [...keyValueExams];
 			this.userList = [...keyValueExams];
@@ -498,4 +498,5 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 		this.loadingSlots$$.next(true);
 	}
 }
+
 
