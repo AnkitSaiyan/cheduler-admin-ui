@@ -143,7 +143,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		this.hideAppointmentData = {};
 		if (this.dataGroupedByDateAndRoom[date]) {
 			Object.values(this.dataGroupedByDateAndRoom[date]).forEach((data) => {
-				this.getTop([data?.[0].appointment], true);
+        data.forEach(({ appointment }) => {
+					this.getTop([appointment], true);
+				});
 			});
 		}
 	}
@@ -222,8 +224,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 						...this.hideAppointmentData[groupedData?.[0]?.roomsDetail?.[0]?.name],
 						groupedData?.[0],
 					];
+				} else {
+					this.hideAppointmentData[groupedData?.[0]?.roomsDetail?.[0]?.name] = [groupedData?.[0]];
 				}
-				this.hideAppointmentData[groupedData?.[0]?.roomsDetail?.[0]?.name] = [groupedData?.[0]];
 			}
 
 			return -1;
