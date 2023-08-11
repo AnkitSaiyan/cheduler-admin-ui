@@ -99,6 +99,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private element!: HTMLDivElement;
 	private minutesInBottom!: number;
 	public isMobile: boolean = false;
+	private resizeListener: any;
+	private mouseUpEve: any;
 	public hideAppointmentData = {};
 	constructor(
 		private datePipe: DatePipe,
@@ -634,7 +636,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		this.original_y = parseInt(container?.style.top);
 		this.original_mouse_y = e.pageY;
 		const isTopResizer = resizer.classList.contains('top');
-		let resizeListener = this.renderer.listen(window, 'mousemove', (e: any) => {
+		this.resizeListener = this.renderer.listen(window, 'mousemove', (e: any) => {
 			if (!isTopResizer) {
 				const height = this.original_height + (e.pageY - this.original_mouse_y);
 				if (height > this.minimum_size) {
@@ -649,21 +651,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			}
 		});
 
-		let mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
-			const minutes = Math.round(Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute / 5) * 5;
-			const isExtend = parseInt(container?.style.height) > this.original_height;
-
-			if (parseInt(container?.style.height) != this.original_height && minutes) {
-				// this.openChangeTimeModal(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
-				this.updateAppointmentDuration(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
-			} else {
-				this.element.style.height = this.original_height + 'px';
-				this.element.style.top = this.original_y + 'px';
-			}
-			resizeListener();
-			resizeListener = () => {};
-			mouseUpEve();
-			mouseUpEve = () => {};
+		this.mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
+			this.resizerMouseup(container, isTopResizer, appointment);
 		});
 	}
 
@@ -715,5 +704,65 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				}
 			},
 		});
+	}
+
+	private resizerMouseup(container, isTopResizer, appointment) {
+		const minutes = Math.round(Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute / 5) * 5;
+		const isExtend = parseInt(container?.style.height) > this.original_height;
+
+		if (parseInt(container?.style.height) != this.original_height && minutes) {
+			(async () => {
+				if (this.compareGrayoutAreaWithAppointment(container, isExtend, isTopResizer)) {
+					const confirmation = await this.showConfirm();
+					if (confirmation) {
+						this.updateAppointmentDuration(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
+					} else {
+						this.element.style.height = this.original_height + 'px';
+						this.element.style.top = this.original_y + 'px';
+					}
+				} else {
+					this.updateAppointmentDuration(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
+				}
+			})();
+		} else {
+			this.element.style.height = this.original_height + 'px';
+			this.element.style.top = this.original_y + 'px';
+		}
+		this.resizeListener();
+		this.resizeListener = () => {};
+		this.mouseUpEve();
+		this.mouseUpEve = () => {};
+	}
+
+	private showConfirm(): Promise<Boolean> {
+		return new Promise((resolve) => {
+			const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
+				data: {
+					titleText: 'Confirmation',
+					bodyText: `Are you sure you want to extend this appointment to outside hours?  Note: The involved staff members has to report early as per the start time.`,
+					confirmButtonText: 'Yes',
+					cancelButtonText: 'Cancel',
+				},
+			});
+			modalRef.closed.pipe(take(1)).subscribe({
+				next: (result) => resolve(result),
+			});
+		});
+	}
+
+	private compareGrayoutAreaWithAppointment(container: HTMLElement, isExtend: boolean, isTopResizer: boolean): boolean {
+		if (isExtend && isTopResizer) {
+			const top = parseInt(container.style.top);
+			let grayAreaSlots = <any>[];
+			this.grayOutSlot$$.value.forEach((slot) => {
+				grayAreaSlots.push(`${+slot.top}-${+slot.top + +slot.height}`);
+			});			
+			return grayAreaSlots.some((val) => {
+				const topArray = val.split('-');
+				if (+topArray[0] < top && +topArray[1] -10 > top && !(+topArray[0] < this.original_y && +topArray[1] > this.original_y)) return true;
+				return false;
+			});
+		}
+		return false;
 	}
 }
