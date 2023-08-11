@@ -44,6 +44,7 @@ import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { DraggableService } from 'src/app/core/services/draggable.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
 	selector: 'dfm-calendar-day-view',
@@ -98,6 +99,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private element!: HTMLDivElement;
 	private minutesInBottom!: number;
 	public isMobile: boolean = false;
+	public hideAppointmentData = {};
 	constructor(
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,
@@ -110,8 +112,18 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		private renderer: Renderer2,
 		private draggableSvc: DraggableService,
 		private cdr: ChangeDetectorRef,
+		private route: ActivatedRoute,
 	) {
 		super();
+		this.route.queryParams
+			.pipe(
+				filter(({ d }) => !!d),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe(({ d }) => {
+				const date = d.split('-');
+				this.selectedDate = new Date(date?.[0], date?.[1] - 1, date?.[2], 0, 0, 0, 0);
+			});
 	}
 
 	public ngOnChanges(changes: SimpleChanges) {
@@ -127,6 +139,13 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		this.grayOutSlot$$.next([]);
 		this.getGrayOutArea(this.timeSlot);
+		const date: string = this.datePipe.transform(this.selectedDate, 'd-M-yyyy')!;
+		this.hideAppointmentData = {};
+		if (this.dataGroupedByDateAndRoom[date]) {
+			Object.values(this.dataGroupedByDateAndRoom[date]).forEach((data) => {
+				this.getTop([data?.[0].appointment], true);
+			});
+		}
 	}
 
 	public ngOnInit(): void {
@@ -185,7 +204,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		return durationMinutes * this.pixelsPerMin;
 	}
 
-	public getTop(groupedData: any[]): number {
+	public getTop(groupedData: any[], storeHiddenAppointment: boolean = false): number {
 		// const startHour = new Date(groupedData[0].startedAt).getHours();
 		// const startMinute = new Date(groupedData[0].startedAt).getMinutes();
 		// const barHeight = 1;
@@ -197,6 +216,16 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		start.setDate(this.selectedDate.getDate());
 		const end = new Date(groupedData[0].startedAt);
 		if (start.getTime() > end.getTime()) {
+			if (storeHiddenAppointment) {
+				if (this.hideAppointmentData[groupedData?.[0]?.roomsDetail?.[0]?.name]) {
+					this.hideAppointmentData[groupedData?.[0]?.roomsDetail?.[0]?.name] = [
+						...this.hideAppointmentData[groupedData?.[0]?.roomsDetail?.[0]?.name],
+						groupedData?.[0],
+					];
+				}
+				this.hideAppointmentData[groupedData?.[0]?.roomsDetail?.[0]?.name] = [groupedData?.[0]];
+			}
+
 			return -1;
 		}
 		const minutes = getDurationMinutes(start, end);
@@ -544,7 +573,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			top: 0,
 			height: (timeDuration > 120 ? 120 : timeDuration) * this.pixelsPerMin,
 		});
-		// console.log(this.subtractMinutes(105, timings[timings?.length - 1]), 'test');
 		const dayStart = intervals[intervals.length - 1].dayEnd;
 		const startTime = this.myDate(this.timeSlot?.timings?.[0]);
 		const dayStartTime = this.myDate(dayStart);
