@@ -219,13 +219,13 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const end = new Date(groupedData[0].startedAt);
 		if (start.getTime() > end.getTime()) {
 			if (storeHiddenAppointment) {
-				if (this.hideAppointmentData[groupedData?.[0]?.roomsDetail?.[0]?.name]) {
-					this.hideAppointmentData[groupedData?.[0]?.roomsDetail?.[0]?.name] = [
-						...this.hideAppointmentData[groupedData?.[0]?.roomsDetail?.[0]?.name],
+				if (this.hideAppointmentData[groupedData?.[0]?.exams?.[0]?.rooms?.[0]?.name]) {
+					this.hideAppointmentData[groupedData?.[0]?.exams?.[0]?.rooms?.[0]?.name] = [
+						...this.hideAppointmentData[groupedData?.[0]?.exams?.[0]?.rooms?.[0]?.name],
 						groupedData?.[0],
 					];
 				} else {
-					this.hideAppointmentData[groupedData?.[0]?.roomsDetail?.[0]?.name] = [groupedData?.[0]];
+					this.hideAppointmentData[groupedData?.[0]?.exams?.[0]?.rooms?.[0]?.name] = [groupedData?.[0]];
 				}
 			}
 
