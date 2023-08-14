@@ -78,6 +78,7 @@ import { DfmDragEventDirective } from './directives/dfm-drag-event.directive';
 import { DfmDragAreaEventDirective } from './directives/dfm-drag-area-event.directive';
 import { SafePipe } from './pipes/safe.pipe';
 import { FindSelectedSlotPipe } from './pipes/find-selected-slot.pipe';
+import { RemoveDuplicateDataPipe } from './pipes/remove-duplicate-data.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -131,6 +132,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DocumentViewModalComponent,
 		SafePipe,
 		FindSelectedSlotPipe,
+  RemoveDuplicateDataPipe,
 	],
 	imports: [
 		CommonModule,

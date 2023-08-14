@@ -588,16 +588,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		this.openAndClosePrioritySlot.emit(obj);
 	}
 
-	public removeDuplicateData(data: any): Array<any> {
-		const arr: any = [];
-		data.forEach((user) => {
-			if (user?.users.length) arr.push(...user.users);
-		});
-
-		if (arr.length) return GeneralUtils.removeDuplicateData(arr, 'id');
-		return [];
-	}
-
 	public test(item: any[]) {
 		return [...item, ...item, ...item];
 	}
