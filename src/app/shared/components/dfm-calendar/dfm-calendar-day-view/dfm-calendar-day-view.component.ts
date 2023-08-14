@@ -759,7 +759,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});			
 			return grayAreaSlots.some((val) => {
 				const topArray = val.split('-');
-				if (+topArray[0] < top && +topArray[1] -10 > top && !(+topArray[0] < this.original_y && +topArray[1] > this.original_y)) return true;
+				if (+topArray[0] < top && +topArray[1] - 9 > top && !(+topArray[0] < this.original_y && +topArray[1] > this.original_y)) return true;
 				return false;
 			});
 		}

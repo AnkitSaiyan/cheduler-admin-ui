@@ -215,13 +215,4 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 		if (!this.draggableSvc.dragStartElement) return;
 		this.changeDateDebounce$$.next(offset);
 	}
-
-	public removeDuplicateData(data: any): Array<any> {
-		const arr: any = [];
-		data?.forEach((user) => {
-			if (user?.users.length) arr.push(...user.users);
-		});
-		if (arr.length) return GeneralUtils.removeDuplicateData(arr, 'id');
-		return [];
-	}
 }
