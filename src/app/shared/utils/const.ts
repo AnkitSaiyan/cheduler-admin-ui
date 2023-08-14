@@ -12,6 +12,10 @@ export const PRIORITY_ID = 'priorityID';
 // export const DEV_TENANT_ID = 'NBK0';
 // export const UAT_TENANT_ID = 'N5v0';
 
+//params type array
+
+export const ABSENCE_TYPE_ARRAY  = ['rooms', 'staff'] as const
+
 // Language Constants
 
 export const ENG_BE = 'en-BE';

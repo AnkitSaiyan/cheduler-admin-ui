@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, map, Observable, startWith, Subject, switchMap, tap} from 'rxjs';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {BaseResponse} from 'src/app/shared/models/base-response.model';
-import {Absence, AddAbsenceRequestDate} from '../../shared/models/absence.model';
+import { Absence, AddAbsenceRequestData } from '../../shared/models/absence.model';
 import {environment} from '../../../environments/environment';
 import {LoaderService} from './loader.service';
 import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
@@ -66,7 +66,7 @@ export class AbsenceApiService {
 		);
 	}
 
-	public addNewAbsence$(requestData: AddAbsenceRequestDate): Observable<Absence> {
+	public addNewAbsence$(requestData: AddAbsenceRequestData): Observable<Absence> {
 		this.loaderSvc.activate();
 		const { id, ...restdata } = requestData;
 		return this.http.post<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences`, restdata).pipe(
@@ -83,7 +83,7 @@ export class AbsenceApiService {
 		);
 	}
 
-	public updateAbsence(requestData: AddAbsenceRequestDate): Observable<Absence> {
+	public updateAbsence(requestData: AddAbsenceRequestData): Observable<Absence> {
 		this.loaderSvc.activate();
 		const { id, ...restData } = requestData;
 		return this.http.put<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences/${id}`, restData).pipe(

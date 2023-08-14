@@ -1,27 +1,9 @@
+import { PartialBy, Prettify } from '../utils/types';
+
 export interface SiteManagement {
 	id: number;
 	name: string;
 	logo: any;
-	disableAppointment: boolean;
-	disableWarningText: string | null;
-	introductoryText: string;
-	introductoryTextEnglish: string;
-	doctorReferringConsent: 0 | 1;
-	address: string;
-	email: string;
-	telephone: number;
-	cancelAppointmentTime: number;
-	file?: null | File;
-	isSlotsCombinable: boolean;
-	reminderTime: number;
-	isAppointmentAutoconfirm: boolean;
-	isAppointmentAutoconfirmAdmin: boolean;
-	editUploadedDocument: boolean;
-	documentSizeInKb: number;
-}
-
-export interface SiteManagementRequestData {
-	name: string;
 	disableAppointment: boolean;
 	disableWarningText: string | null;
 	introductoryText: string;
@@ -32,11 +14,12 @@ export interface SiteManagementRequestData {
 	email: string;
 	telephone: number;
 	file?: null | File | Blob;
-	id?: number;
 	isSlotsCombinable: boolean;
 	reminderTime: number;
 	isAppointmentAutoconfirm: boolean;
 	isAppointmentAutoconfirmAdmin: boolean;
 	editUploadedDocument: boolean;
-	documentSize: number;
+	documentSizeInKb: number;
 }
+
+export type SiteManagementRequestData = Prettify<PartialBy<Omit<SiteManagement, 'logo' | 'documentSizeInKb'>, 'id'> & { documentSize: number }>;

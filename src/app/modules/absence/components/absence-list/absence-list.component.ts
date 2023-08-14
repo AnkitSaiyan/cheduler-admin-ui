@@ -1,26 +1,26 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
-import { DatePipe } from '@angular/common';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { AbsenceApiService } from '../../../../core/services/absence-api.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
-import { Absence } from '../../../../shared/models/absence.model';
-import { AddAbsenceComponent } from '../add-absence/add-absence.component';
-import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { Translate } from '../../../../shared/models/translate.model';
+import { BehaviorSubject, debounceTime, filter, map, switchMap, take, takeUntil } from 'rxjs';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
-import { PermissionService } from 'src/app/core/services/permission.service';
-import { PaginationData } from '../../../../shared/models/base-response.model';
+import { AbsenceApiService } from '../../../../core/services/absence-api.service';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
+import { Absence } from '../../../../shared/models/absence.model';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ABSENCE_TYPE, ABSENCE_TYPE_ARRAY, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
-import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
+import { AddAbsenceComponent } from '../add-absence/add-absence.component';
+import { PaginationData } from 'src/app/shared/models/base-response.model';
 
 const ColumnIdToKey = {
 	1: 'name',
@@ -40,6 +40,8 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 	}
 
 	private absences$$: BehaviorSubject<Absence[]>;
+
+	public absenceType$$ = new BehaviorSubject<(typeof ABSENCE_TYPE_ARRAY)[number]>(ABSENCE_TYPE_ARRAY[0]);
 
 	public filteredAbsences$$: BehaviorSubject<Absence[]>;
 
@@ -107,6 +109,19 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 	}
 
 	public ngOnInit(): void {
+		this.route.params
+			.pipe(
+				filter((params) => !!params[ABSENCE_TYPE]),
+				map((params) => params[ABSENCE_TYPE]),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((absenceType) => {
+				if (!ABSENCE_TYPE_ARRAY.includes(absenceType)) {
+					this.router.navigate(['../rooms'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+				} else {
+					this.absenceType$$.next(absenceType);
+				}
+			});
 		this.prioritySlotSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => (this.downloadItems = items),
 		});
@@ -329,7 +344,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
 	public openAddAbsenceModal(absenceDetails?: Absence) {
 		this.modalSvc.open(AddAbsenceComponent, {
-			data: { edit: !!absenceDetails?.id, absenceID: absenceDetails?.id },
+			data: { absenceType: this.absenceType$$.value, edit: !!absenceDetails?.id, absenceID: absenceDetails?.id },
 			options: {
 				size: 'xl',
 				centered: true,

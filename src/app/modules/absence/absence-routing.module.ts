@@ -17,7 +17,7 @@ const absenceRoutes: Routes = [
 				data: { routeType: RouteType.View, routeName: RouteName.Absence },
 			},
 			{
-				path: `:${ABSENCE_ID}/view`,
+				path: `:${ABSENCE_TYPE}/:${ABSENCE_ID}/view`,
 				component: ViewAbsenceComponent,
 				data: { routeType: RouteType.View, routeName: RouteName.Absence },
 			},

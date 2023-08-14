@@ -162,11 +162,15 @@
 	"AbsenceName": "Afwezigheid naam",
 	"AbsenceSearch": "Zoek op naam of datum afwezigheid",
 	"AddAbsence": "Afwezigheid toevoegen",
+	"AddRoomsAbsence": "Afwezigheid toevoegen",
+	"AddStaffAbsence": "Afwezigheid toevoegen",
 	"Title": "Naam",
 	"StartDate": "Begindatum",
 	"EndDate": "Einddatum",
 	"AbsenceInfo": "Info afwezigheid",
 	"EditAbsence": "Bewerk afwezigheid",
+	"EditRoomsAbsence": "Bewerk afwezigheid",
+	"EditStaffAbsence": "Bewerk afwezigheid",
 	"EnterAbsenceTitle": "Geef naam afwezigheid",
 	"Date": "Datum ",
 	"From": "Van",
@@ -479,6 +483,9 @@
 	"Sat": "Zat",
 	"PrefillFromPractice": "Praktijkuren vooraf invullen"
 }
+
+
+
 
 
 
