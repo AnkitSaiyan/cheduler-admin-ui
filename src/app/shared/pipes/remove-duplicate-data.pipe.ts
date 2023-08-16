@@ -5,17 +5,17 @@ import { GeneralUtils } from '../utils/general.utils';
 	name: 'removeDuplicateData',
 })
 export class RemoveDuplicateDataPipe implements PipeTransform {
-	transform(value: any[], key?: string): Array<any> {
+	transform(value: any[], key?: string[]): Array<any> {
 		const arr: any = [];
-		if (key) {
+		if (key?.[1]) {
 			value.forEach((data) => {
-				if (data?.[key].length) arr.push(...data?.[key]);
+				if (data?.[key[1]].length) arr.push(...data?.[key[1]]);
 			});
 		} else {
 			arr.push(...value);
 		}
 
-		if (arr.length) return GeneralUtils.removeDuplicateData(arr, 'id');
+		if (arr.length) return GeneralUtils.removeDuplicateData(arr, key?.[0] || 'id');
 		return [];
 	}
 }
