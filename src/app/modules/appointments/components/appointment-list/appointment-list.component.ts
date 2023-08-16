@@ -467,6 +467,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	public toggleView(): void {
+		this.selectedAppointmentIDs = [];
 		this.router.navigate([], {
 			replaceUrl: true,
 			queryParams: {
