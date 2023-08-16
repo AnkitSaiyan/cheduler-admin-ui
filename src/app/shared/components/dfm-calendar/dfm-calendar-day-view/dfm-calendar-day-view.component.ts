@@ -62,14 +62,14 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	@Input()
 	public timeSlot!: CalenderTimeSlot;
 	@Input()
-	public dataGroupedByDateAndRoom!: {
+	public dataGroupedByDateAndRoom: {
 		[key: string]: {
 			[key: number]: {
 				appointment: Appointment;
 				exams: Exam[];
 			}[];
 		};
-	};
+	} = {};
 	@Input()
 	public format24Hour = false;
 	@Output()

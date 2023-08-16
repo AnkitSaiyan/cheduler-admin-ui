@@ -17,6 +17,7 @@ export enum RepeatType {
 
 export interface Absence {
 	id: number;
+	absenceId: number;
 	name: string;
 	isHoliday: boolean;
 	startedAt: string | Date;
@@ -34,5 +35,5 @@ export interface Absence {
 	user: User[];
 }
 
-export type AddAbsenceRequestData = Prettify<PartialBy<Omit<Absence, 'rooms' | 'user'>, 'id' | 'status'>>;
+export type AddAbsenceRequestData = Prettify<PartialBy<Omit<Absence, 'rooms' | 'user'>, 'id' | 'status' | 'absenceId'>>;
 

@@ -65,25 +65,25 @@
 						</ng-container>
 					</div>
 					<div class="calendar-week-view-events-left-vertical-line"></div>
-					<div *ngFor="let day of daysOfWeekArr; let weekday = index" role="gridcell" class="calendar-week-view-body-grid-column" dfmDragAreaEvent [day]="day" (editAppointment)="editAppointment($event)">
-						<!-- <div class="calendar-week-view-body-grid-absolute"></div> -->
-						<div
-							#eventsContainer
-							(dblclick)="onDblClick($event, eventsContainer, day)"
-							class="calendar-week-view-body-events-container"
-							role="presentation"
-						>
-							<ng-container *ngIf="dataGroupedByDateAndTime[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
-								<ng-container *ngFor="let groupedData of dataGroupedByDateAndTime[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
-									<div
-										*ngIf="getHeight(groupedData) as eventHeight"
-										class="calendar-week-view-event-container"
-										[ngStyle]="{
-											'top.px': getTop(groupedData),
-											'height.px': eventHeight
-										}"
+          <div *ngFor="let day of daysOfWeekArr; let weekday = index" role="gridcell" class="calendar-week-view-body-grid-column" dfmDragAreaEvent [day]="day" (editAppointment)="editAppointment($event)">
+            <!-- <div class="calendar-week-view-body-grid-absolute"></div> -->
+            <div
+              #eventsContainer
+              (dblclick)="onDblClick($event, eventsContainer, day)"
+              class="calendar-week-view-body-events-container"
+              role="presentation"
+            >
+              <ng-container *ngIf="dataGroupedByDateAndTime[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
+                <ng-container *ngFor="let groupedData of dataGroupedByDateAndTime[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
+                  <div
+                    *ngIf="getHeight(groupedData) as eventHeight"
+                    class="calendar-week-view-event-container"
+                    [ngStyle]="{
+                      'top.px': getTop(groupedData),
+                      'height.px': eventHeight
+                    }"
                     (dblclick)="onDblClick($event, eventsContainer, day, false, getTop(groupedData)); $event.stopPropagation()"
-									>
+                  >
 
 
                     <!-- <div class="calendar-week-view-event-circle-icon" [ngClass]="{ 'calendar-week-view-event-circle-icon-sm': eventHeight <= 20 }">
@@ -216,31 +216,31 @@
 
                       </div>
                       <ng-template #priorityCardDetail>
-						<div class="txt-slot-percentage"*ngIf="eventHeight < 99">
-							<ng-container *ngIf="slotPercentage?.length">
-							  <span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
-							  <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
-							</ng-container>
-						  </div>
+            <div class="txt-slot-percentage"*ngIf="eventHeight < 99">
+              <ng-container *ngIf="slotPercentage?.length">
+                <span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
+                <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
+              </ng-container>
+              </div>
                         <span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end }}</span>
                       </ng-template>
-										</div>
-									</ng-container>
-								</ng-container>
-							</ng-container>
-						</div>
-						<ng-container *ngIf="grayOutSlot$$.value[weekday] && grayOutSlot$$.value[weekday] as items">
-							<ng-container *ngFor="let item of items">
-								<div
-									(dblclick)="onDblClick($event, eventsContainer, day, true, item.top)"
-									class="gray-out-area-week"
-									#grayOutArea
-									[ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
-                  					(drop)="dropOnGrayOutArea($event, day, grayOutArea, item.top)"
-								></div>
-							</ng-container>
-						</ng-container>
-					</div>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </div>
+            <ng-container *ngIf="grayOutSlot$$.value[weekday] && grayOutSlot$$.value[weekday] as items">
+              <ng-container *ngFor="let item of items">
+                <div
+                  (dblclick)="onDblClick($event, eventsContainer, day, true, item.top)"
+                  class="gray-out-area-week"
+                  #grayOutArea
+                  [ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
+                            (drop)="dropOnGrayOutArea($event, day, grayOutArea, item.top)"
+                ></div>
+              </ng-container>
+            </ng-container>
+          </div>
 				</div>
 			</div>
 		</div>

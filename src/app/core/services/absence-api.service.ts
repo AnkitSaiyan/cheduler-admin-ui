@@ -7,6 +7,7 @@ import {environment} from '../../../environments/environment';
 import {LoaderService} from './loader.service';
 import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { ABSENCE_TYPE_ARRAY } from 'src/app/shared/utils/const';
 
 @Injectable({
 	providedIn: 'root',
@@ -38,8 +39,20 @@ export class AbsenceApiService {
 		return this.pageNoOnDashboard$$.value;
 	}
 
-	public get absences$(): Observable<BaseResponse<Absence[]>> {
-		return combineLatest([this.refreshAbsences$$.pipe(startWith('')), this.pageNo$$]).pipe(switchMap(([_, pageNo]) => this.fetchAllAbsence(pageNo)));
+	public absences$(absenceType: (typeof ABSENCE_TYPE_ARRAY)[number]): Observable<BaseResponse<Absence[]>> {
+		return combineLatest([this.refreshAbsences$$.pipe(startWith('')), this.pageNo$$]).pipe(
+			switchMap(([_, pageNo]) => this.fetchAllAbsence(pageNo, absenceType)),
+		);
+	}
+
+	public absencesForCalendar$(
+		absenceType: (typeof ABSENCE_TYPE_ARRAY)[number],
+		fromDate: string,
+		toDate: string,
+	): Observable<BaseResponse<Absence[]>> {
+		return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(
+			switchMap(([_]) => this.fetchAllAbsenceForCalendar(absenceType, fromDate, toDate)),
+		);
 	}
 
 	public get absencesOnDashboard$(): Observable<BaseResponse<Absence[]>> {
@@ -100,11 +113,39 @@ export class AbsenceApiService {
 		);
 	}
 
-	private fetchAllAbsence(pageNo: number): Observable<BaseResponse<Absence[]>> {
+	private fetchAllAbsence(pageNo: number, absenceType?: (typeof ABSENCE_TYPE_ARRAY)[number]): Observable<BaseResponse<Absence[]>> {
 		this.loaderSvc.activate();
-
 		const params = new HttpParams().append('pageNo', pageNo);
-		return this.http.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences`, { params }).pipe(tap(() => this.loaderSvc.deactivate()));
+		if (!absenceType) {
+			return this.http
+				.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences`, { params })
+				.pipe(tap(() => this.loaderSvc.deactivate()));
+		}
+		if (absenceType === 'rooms') {
+			return this.http
+				.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getroomabsencelist`, { params })
+				.pipe(tap(() => this.loaderSvc.deactivate()));
+		}
+		return this.http
+			.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getstaffabsencelist`, { params })
+			.pipe(tap(() => this.loaderSvc.deactivate()));
+	}
+
+	private fetchAllAbsenceForCalendar(
+		absenceType: (typeof ABSENCE_TYPE_ARRAY)[number],
+		fromDate: string,
+		toDate: string,
+	): Observable<BaseResponse<Absence[]>> {
+		this.loaderSvc.activate();
+		const params = { toDate, fromDate };
+		if (absenceType === 'rooms') {
+			return this.http
+				.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getroomabsence`, { params })
+				.pipe(tap(() => this.loaderSvc.deactivate()));
+		}
+		return this.http
+			.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getstaffabsence`, { params })
+			.pipe(tap(() => this.loaderSvc.deactivate()));
 	}
 
 	private fetchAbsenceById(absenceID: number): Observable<Absence> {

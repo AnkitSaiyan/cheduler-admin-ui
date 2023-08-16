@@ -3,7 +3,10 @@ import { DateDistributed } from '../models/calendar.model';
 export class DateTimeUtils {
 	constructor() {}
 
-	public static DateDistributedToString(date: DateDistributed, separator = '-'): string {
+	public static DateDistributedToString(date: DateDistributed | Date, separator = '-'): string {
+		if (date instanceof Date) {
+			return this.DateDistributedToString(this.DateToDateDistributed(date));
+		}
 		return `${date.year}${separator}${date.month}${separator}${date.day}`;
 	}
 
@@ -213,6 +216,7 @@ export class DateTimeUtils {
 		return `${localHour}:${localMin}`;
 	}
 }
+
 
 
 

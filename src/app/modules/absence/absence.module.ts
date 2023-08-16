@@ -8,10 +8,19 @@ import { AbsenceListComponent } from './components/absence-list/absence-list.com
 import { ViewAbsenceComponent } from './components/view-absence/view-absence.component';
 import { AddAbsenceComponent } from './components/add-absence/add-absence.component';
 import { SharedModule } from '../../shared/shared.module';
+import { AbsenceTableViewComponent } from './components/absence-table-view/absence-table-view.component';
+import { AbsenceCalendarViewComponent } from './components/absence-calendar-view/absence-calendar-view.component';
 
 @NgModule({
-  declarations: [AbsenceComponent, AbsenceListComponent, ViewAbsenceComponent, AddAbsenceComponent],
-  imports: [CommonModule, AbsenceRoutingModule, ReactiveFormsModule, SharedModule],
-  providers: [],
+	declarations: [
+		AbsenceComponent,
+		AbsenceListComponent,
+		ViewAbsenceComponent,
+		AddAbsenceComponent,
+		AbsenceTableViewComponent,
+		AbsenceCalendarViewComponent,
+	],
+	imports: [CommonModule, AbsenceRoutingModule, ReactiveFormsModule, SharedModule],
+	providers: [],
 })
 export class AbsenceModule {}
