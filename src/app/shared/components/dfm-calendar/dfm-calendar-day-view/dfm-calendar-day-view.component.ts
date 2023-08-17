@@ -753,11 +753,11 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private compareGrayoutAreaWithAppointment(container: HTMLElement, isExtend: boolean, isTopResizer: boolean): boolean {
 		if (isExtend && isTopResizer) {
 			const top = parseInt(container.style.top);
-			let grayAreaSlots = <any>[];
+			let grayAreaSlots: Array<any> = [];
 			this.grayOutSlot$$.value.forEach((slot) => {
 				grayAreaSlots.push(`${+slot.top}-${+slot.top + +slot.height}`);
 			});			
-			return grayAreaSlots.some((val) => {
+			return grayAreaSlots.some((val:string) => {
 				const topArray = val.split('-');
 				if (+topArray[0] < top && +topArray[1] - 9 > top && !(+topArray[0] < this.original_y && +topArray[1] > this.original_y)) return true;
 				return false;
