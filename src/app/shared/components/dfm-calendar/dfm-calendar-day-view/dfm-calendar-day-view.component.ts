@@ -219,7 +219,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		start.setMonth(this.selectedDate.getMonth());
 		start.setDate(this.selectedDate.getDate());
 		const end = new Date(groupedData[0].startedAt);
-		if (start.getTime() > end.getTime()) {
+		const isHiddenAppointmentInBottom = this.extendMinutesInBottom(groupedData[0]) < 0;
+		if (start.getTime() > end.getTime() || isHiddenAppointmentInBottom) {
 			if (storeHiddenAppointment) {
 				if (this.hideAppointmentData[groupedData?.[0]?.exams?.[0]?.rooms?.[0]?.name]) {
 					this.hideAppointmentData[groupedData?.[0]?.exams?.[0]?.rooms?.[0]?.name] = [
