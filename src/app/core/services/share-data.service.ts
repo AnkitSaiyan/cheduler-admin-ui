@@ -29,10 +29,10 @@ export class ShareDataService {
 			name: 'FemaleBody',
 			value: BodyType.Female,
 		},
-		{
-			name: 'Skeleton',
-			value: BodyType.Skeleton,
-		},
+		// {
+		// 	name: 'Skeleton',
+		// 	value: BodyType.Skeleton,
+		// },
 	];
 
 	constructor(private http: HttpClient) {
