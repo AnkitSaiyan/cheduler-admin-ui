@@ -459,7 +459,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				repeatType: absenceDetails?.repeatType,
 				repeatFrequency:
 					absenceDetails?.isRepeat && absenceDetails?.repeatFrequency && absenceDetails.repeatType
-						? `${absenceDetails.repeatFrequency} ${this.repeatTypeToName[absenceDetails.repeatType]}`
+						? `${absenceDetails.repeatFrequency} ${Translate.RepeatType[this.repeatTypeToName[absenceDetails.repeatType]][this.selectedLang]}`
 						: null,
 				repeatDays: absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '',
 			});

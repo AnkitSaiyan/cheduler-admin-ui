@@ -106,7 +106,7 @@ export const Translate = Object.freeze({
 	},
 	End: {
 		[ENG_BE]: 'End',
-		[DUTCH_BE]: 'Eind',
+		[DUTCH_BE]: 'Einde',
 	},
 	Priority: {
 		[ENG_BE]: 'Priority',
@@ -138,7 +138,7 @@ export const Translate = Object.freeze({
 	},
 	EndedAt: {
 		[ENG_BE]: 'Ended At',
-		[DUTCH_BE]: 'Eind',
+		[DUTCH_BE]: 'Einde',
 	},
 	PatientName: {
 		[ENG_BE]: 'Patient Name',
@@ -158,11 +158,11 @@ export const Translate = Object.freeze({
 	},
 	ReferralNote: {
 		[ENG_BE]: 'Referral Note',
-		[DUTCH_BE]: 'Referral Note',
+		[DUTCH_BE]: 'Verwijsbrief',
 	},
 	AppointmentNo: {
 		[ENG_BE]: 'Appointment No.',
-		[DUTCH_BE]: 'Afspraak nr.',
+		[DUTCH_BE]: 'Afspraaknr.',
 	},
 	AppointmentDate: {
 		[ENG_BE]: 'Appointment Date',

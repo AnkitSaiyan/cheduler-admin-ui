@@ -292,12 +292,12 @@
 	"AppoinmentDetails": "Details afspraak",
 	"LastModified": "Laatst veranderd",
 	"Number": "Nummer",
-	"AppointmentNo": "Afspraak nr.",
+	"AppointmentNo": "Afspraaknr.",
 	"PatientDetails": "Gegevens patiënt",
 	"AppointmentDetails": "Details afspraak",
 	"Comments": "Opmerkingen",
 	"StartedAt": "Start",
-	"EndedAt": "Eind",
+	"EndedAt": "Einde",
 	"Change": "Wijziging",
 	"ChangeRadiologist": "Wijzig radioloog",
 	"Move": "Verplaats",
@@ -477,7 +477,8 @@
 	"Thu": "Don",
 	"Fri": "Vrij",
 	"Sat": "Zat",
-	"PrefillFromPractice": "Praktijkuren vooraf invullen"
+	"PrefillFromPractice": "Praktijkuren vooraf invullen",
+	"ReferralNote": "Verwijsbrief"
 }
 
 

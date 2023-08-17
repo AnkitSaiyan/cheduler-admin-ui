@@ -14,8 +14,7 @@
             <ng-container *ngIf="headerList?.length; else todayHeader">
               <div role="columnheader" class="calender-day-view-weekday flex-1" *ngFor="let header of headerList">
                 <div class="calender-day-view-header-cell-left-line"></div>
-                <h3>
-                  <ng-template #eventDetails>
+                  <!-- <ng-template #eventDetails>
                     <div class="calender-month-view-day-exam-details-expanded">
                       <div class="dfm-card-container">
                         <ng-container *ngFor="let data of hideAppointmentData?.[header.name]">
@@ -75,12 +74,12 @@
                         </ng-container>
                       </div>
                     </div>
-                  </ng-template>
+                  </ng-template> -->
                   <div
                     class="text-xs font-weight-medium w-fit calender-day-view-day-name d-flex align-items-center dfm-gap-8">{{ header.name | titlecase }}
                     <div class="calender-month-view-day-exam-event-container" *ngIf="hideAppointmentData[header.name]?.length" #parentElement >
 
-                      <ng-template #eventDetails>
+                      <!-- <ng-template #eventDetails>
                         <div class="calender-month-view-day-exam-details-expanded">
                           <div class="dfm-card-container">
                             <ng-container *ngFor="let data of hideAppointmentData[header.name]">
@@ -140,10 +139,10 @@
                             </ng-container>
                           </div>
                         </div>
-                      </ng-template>
+                      </ng-template> -->
 
 
-                      <ng-container *ngFor="let data of hideAppointmentData[header.name] ">
+                      <div *ngFor="let data of hideAppointmentData[header.name]"  [ngbPopover]="mainAppointmentPopover" #popOver="ngbPopover" triggers="hover" [autoClose]="'outside'" container="body">
                         <div class="calender-month-view-day-exam-event-details d-flex" [routerLink]="['/', 'appointment', data.id, 'view']" queryParamsHandling="merge">
                           <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10 ">
                             <span  class="text-truncate">
@@ -197,15 +196,159 @@
                               </mat-menu>
                           </div>
                         </div>
-                      </ng-container>
+                        <ng-template #mainAppointmentPopover>
+                          <div class="calender-day-view-event-details-expanded">
+                            <div class="d-flex flex-column dfm-gap-4">
+                              <span class="font-weight-medium"> {{"Exam" | translate}}</span>
+                              <span *ngIf="data.exams?.length">{{ data.exams | joinWithAnd : 'name'}}</span>
+                            </div>
 
-                      <div class="calender-month-view-day-exam-event-details more-btn" [ngbPopover]="eventDetails" #popOver="ngbPopover" triggers="click" [autoClose]="false" container="body" *ngIf="parentElement.scrollHeight > parentElement.clientHeight">
-                        <span class="calender-month-view-day-exam-event-title text-truncate">View more</span>
+                            <div class="d-flex flex-column dfm-gap-4">
+                              <span class="font-weight-medium dfm-mt-8"> {{"SelectedSlot" | translate}} </span>
+                              <span class="calendar-comments-text">{{ data.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }} -
+                                {{ data.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
+                            </div>
+
+                            <div class="d-flex flex-column dfm-gap-4">
+                              <span class="font-weight-medium dfm-mt-8"> {{"Comments" | translate}} </span>
+                              <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }}</span>
+                            </div>
+
+                            <div class="d-flex flex-column dfm-gap-4">
+                              <span class="font-weight-medium dfm-mt-8">{{"Staff" | translate}}</span>
+                              <ng-container *ngIf="data.exams | isData : 'users'; else dash">
+                                <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
+                                  <div *ngFor="let user of exam?.users"
+                                       class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
+                                    <div class="circle-gray-200-40">
+                                      {{ user?.firstname?.length ? (user.firstname[0] | uppercase) : '' }}
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                      <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
+                                      <span class="dfm-text-main-500">{{ user?.userType | titlecase }}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </ng-container>
+                              <ng-template #dash>
+                                <span>{{ '' | dashIfNothing }}</span>
+                              </ng-template>
+                            </div>
+                          </div>
+                        </ng-template>
                       </div>
 
+                      <!-- <div class="calender-month-view-day-exam-event-details more-btn" [ngbPopover]="eventDetails" #popOver="ngbPopover" triggers="click" [autoClose]="false" container="body" *ngIf="parentElement.scrollHeight > parentElement.clientHeight">
+                        <span class="calender-month-view-day-exam-event-title text-truncate">View more</span>
+                      </div> -->
+                      <div *ngIf="parentElement.scrollHeight > parentElement.clientHeight" class="calender-month-view-day-exam-event-details more-btn" [matMenuTriggerFor]="eventDetail">
+                        <span class="calender-month-view-day-exam-event-title text-truncate">View more</span>
+
+                        <mat-menu #eventDetail="matMenu">
+                          <div class="calender-month-view-day-exam-details-expanded">
+                            <div class="dfm-card-container" style="padding: 0 8px;">
+                              <div *ngFor="let data of hideAppointmentData?.[header.name]"  [ngbPopover]="appointmentPopover" #popOver="ngbPopover" triggers="hover" [autoClose]="'outside'" container="body">
+                                <div class="calender-month-view-day-exam-event-details d-flex"
+                                  [routerLink]="['/', 'appointment', data.id, 'view']" queryParamsHandling="merge">
+                                  <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10" >
+                                    <span class="text-truncate">
+                                      <b>{{data?.id}} - {{(data?.patientFname | titlecase) + ' ' + data?.patientLname | titlecase }}</b>
+                                    </span>
+                                    <span>
+                                      {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
+                                      -
+                                      {{ data?.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
+                                    </span>
+                                  </span>
+                                  <div *ngIf="data.isEditable" class="header-appointment-dot-btn"  [matMenuTriggerFor]="menu" (click)="$event.stopPropagation();">
+                                    <svg  width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                      xmlns="http://www.w3.org/2000/svg">
+                                      <path
+                                        d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
+                                        stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                      <path
+                                        d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z"
+                                        stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                      <path
+                                        d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z"
+                                        stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                        
+                                    <mat-menu #menu="matMenu" style="z-index: 5;">
+                                      <button mat-menu-item (click)="changeRadiologists(data);">
+                                        <div class="icon-20">
+                                          <dfm-icon name="home-03"></dfm-icon>
+                                        </div>
+                                        <span>{{ 'ChangeRadiologist' | translate }}</span>
+                                      </button>
+                        
+                                      <button mat-menu-item [routerLink]="['/', 'appointment', data.id, 'edit']" queryParamsHandling="merge"
+                                        [state]="{ edit: true, comingFromRoute: 'appointment' }">
+                                        <div class="icon-20">
+                                          <dfm-icon name="pencil-02"></dfm-icon>
+                                        </div>
+                                        <span>{{ 'Edit' | translate }}</span>
+                                      </button>
+                        
+                                      <div class="dropdown-divider"></div>
+                        
+                                      <button mat-menu-item (click)=" deleteAppointment(data.id);">
+                                        <div class="icon-20">
+                                          <dfm-icon name="trash-01"></dfm-icon>
+                                        </div>
+                                        <span>{{ 'Delete' | translate}}</span>
+                                      </button>
+                                    </mat-menu>
+                                  </div>
+                                </div>
+                                <ng-template #appointmentPopover>
+                                  <div class="calender-day-view-event-details-expanded">
+                                    <div class="d-flex flex-column dfm-gap-4">
+                                      <span class="font-weight-medium"> {{"Exam" | translate}}</span>
+                                      <span *ngIf="data.exams?.length">{{ data.exams | joinWithAnd : 'name'}}</span>
+                                    </div>
+      
+                                    <div class="d-flex flex-column dfm-gap-4">
+                                      <span class="font-weight-medium dfm-mt-8"> {{"SelectedSlot" | translate}} </span>
+                                      <span class="calendar-comments-text">{{ data.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }} -
+                                        {{ data.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
+                                    </div>
+      
+                                    <div class="d-flex flex-column dfm-gap-4">
+                                      <span class="font-weight-medium dfm-mt-8"> {{"Comments" | translate}} </span>
+                                      <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }}</span>
+                                    </div>
+      
+                                    <div class="d-flex flex-column dfm-gap-4">
+                                      <span class="font-weight-medium dfm-mt-8">{{"Staff" | translate}}</span>
+                                      <ng-container *ngIf="data.exams | isData : 'users'; else dash">
+                                        <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
+                                          <div *ngFor="let user of exam?.users"
+                                               class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
+                                            <div class="circle-gray-200-40">
+                                              {{ user?.firstname?.length ? (user.firstname[0] | uppercase) : '' }}
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                              <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
+                                              <span class="dfm-text-main-500">{{ user?.userType | titlecase }}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </ng-container>
+                                      <ng-template #dash>
+                                        <span>{{ '' | dashIfNothing }}</span>
+                                      </ng-template>
+                                    </div>
+                                  </div>
+                                </ng-template>
+                              </div>
+                            </div>
+                          </div>
+                          
+                        </mat-menu>
+                      </div>
                     </div>
                   </div>
-                </h3>
               </div>
             </ng-container>
 
