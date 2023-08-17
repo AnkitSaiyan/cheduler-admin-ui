@@ -1,6 +1,36 @@
-<ng-container *ngIf="(absenceViewType$ | async) === 'table'; else calendar">
-  <dfm-absence-table-view ></dfm-absence-table-view>
+<ng-container *ngIf="(absenceType$ | async) as absenceType">
+  <ng-container *ngIf="(absenceViewType$ | async) === 'table'; else calendar">
+    <dfm-absence-table-view ></dfm-absence-table-view>
+  </ng-container>
+  <ng-template #calendar>
+    <dfm-absence-calendar-view>
+      <div id="top-action" class="d-flex dfm-gap-8 align-items-center justify-content-between mb-16">
+        <div>
+          <dfm-button class="ap-li-title-buttons" color="link" size="lg" routerLink="./">{{ 'Absence' | translate }} </dfm-button>
+        </div>
+        <div class="d-flex dfm-gap-8">
+          <dfm-button-icon
+            color="secondary-gray"
+            size="md"
+            icon="list"
+            ngbPopover="{{ 'ListView' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
+            (click)="toggleView(true)"
+          ></dfm-button-icon>
+
+
+          <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAbsences" (click)="openAddAbsenceModal(absenceType)" class="text-nowrap header-buttons" [disabled]="false"
+            >{{ 'Add'+ (absenceType | titlecase) +'Absence' | translate}}
+          </dfm-button>
+
+
+          <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAbsences" (click)="openAddAbsenceModal(absenceType)" class="add-app-btn-mv hidden" [disabled]="false"
+            >{{ 'Add' | translate }}
+          </dfm-button>
+        </div>
+      </div>
+    </dfm-absence-calendar-view>
+  </ng-template>
 </ng-container>
-<ng-template #calendar>
-  <dfm-absence-calendar-view></dfm-absence-calendar-view>
-</ng-template>

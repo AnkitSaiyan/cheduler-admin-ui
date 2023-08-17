@@ -1,3 +1,4 @@
+<ng-content select="#top-action"></ng-content>
 <div class="bg-white d-flex flex-column dfm-gap-16 dfm-p-24 calendar-main-wrapper" *ngIf="selectedDate$$ | async as selectedDate">
   <section class="calendar-header">
     <h4 *ngIf="selectedDate" class="">
@@ -46,10 +47,11 @@
           class="h-100"
           (selectedDateEvent)="updateDate($event)"
           [changeMonth$$]="changeMonth$$"
-          [selectedDate]="selectedDate"
           (dayViewEvent)="changeToDayView($event)"
-          (dateChange)="changeDate($event)"
+          [selectedDate]="selectedDate"
           [newDate$$]="newDate$$"
+          (dateChange)="changeDate($event)"
+          [absenceData]="(absenceData$ | async) ?? {}"
         >
         </dfm-calendar-month-view>
       </ng-container>
@@ -61,7 +63,12 @@
           (dayViewEvent)="changeToDayView($event)"
           (dateChange)="changeDate($event)"
           [newDate$$]="newDate$$"
-          [format24Hour]="true"></dfm-calendar-week-view>
+          [format24Hour]="true"
+          [showGrayOutSlot] ="true"
+          [practiceData]="weekdayToPractice$$ | async"
+          [absenceData]="(absenceData$ | async) ?? {}"
+          [limit] ="(practiceHourMinMax$$ | async ) ?? { min: '00:00:00', max: '24:00:00', grayOutMin: '00:00:00', grayOutMax: '24:00:00' }"
+          ></dfm-calendar-week-view>
       </ng-container>
 
       <ng-container *ngSwitchCase="'day'">
@@ -70,6 +77,8 @@
           (selectedDateEvent)="updateDate($event)"
           [changeDate$$]="changeDate$$"
           [newDate$$]="newDate$$"
+          [headerList]="headerList"
+          [timeSlot]="selectedSlot$$ | async"
           [format24Hour]="true"
         ></dfm-calendar-day-view>
       </ng-container>

@@ -91,6 +91,7 @@ export class AbsenceApiService {
 			tap(() => {
 				this.pageNo$$.next(1);
 				this.pageNoOnDashboard$$.next(1);
+        this.refreshAbsences$$.next();
 				this.loaderSvc.deactivate();
 			}),
 		);
@@ -108,6 +109,7 @@ export class AbsenceApiService {
 			tap(() => {
 				this.pageNo$$.next(1);
 				this.pageNoOnDashboard$$.next(1);
+        this.refreshAbsences$$.next();
 				this.loaderSvc.deactivate();
 			}),
 		);

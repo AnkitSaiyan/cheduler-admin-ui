@@ -52,6 +52,9 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 	@Input()
 	public dataGroupedByDate: { [key: string]: any[] } = {};
 
+	@Input()
+	public absenceData: { [key: string]: any[] } = {};
+
 	@Output()
 	public selectedDateEvent = new EventEmitter<Date>();
 

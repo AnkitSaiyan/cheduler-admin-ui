@@ -68,6 +68,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public dataGroupedByDateAndTime: { [key: string]: any[][] } = {};
 
 	@Input()
+	public absenceData: { [key: string]: any[] } = {};
+
+	@Input()
 	public prioritySlots!: { [key: string]: any[] };
 
 	@Input()
