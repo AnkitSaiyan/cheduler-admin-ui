@@ -1,12 +1,21 @@
 .ap-li-button-dropdown-group {
   background: transparent;
 }
+.ap-li-button-dropdown-group-border{
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+}
 
 .view-link{
   color: blue;
   text-decoration: underline;
 }
-
+.add-appointment-mv{
+  display: none;
+}
+.appointment-status-dropdown{
+  width: 120px;
+}
 .refresh-btn {
   position: fixed;
   bottom: 18px;
@@ -18,12 +27,23 @@
     }
 }
 @media (max-width: 680px) {
+  .add-appointment-mv{
+    display: block;
+  }
+  .add-appointment-lg{
+    display: none!important;
+  }
+  .appointment-status-dropdown{
+    max-width: 100vw;
+    width: 70vw;
+  }
   .ap-ls-main-wrapper {
     padding: 0;
   }
 
   .ap-li-section-1 {
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .ap-li-search, .ap-li-button-dropdown-group, .header-buttons {
@@ -90,6 +110,9 @@
     right: -8px;
     bottom: -8px;
     border-radius: 4px;
+  }
+  .btn-icon.btn-icon-secondary-gray{
+    border: none!important;
   }
 }
 
