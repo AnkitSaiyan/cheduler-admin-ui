@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { BehaviorSubject, Observable, combineLatest, distinctUntilChanged, filter, map, skip, switchMap, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, distinctUntilChanged, filter, map, skip, switchMap, take, takeUntil, tap } from 'rxjs';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
@@ -49,8 +49,11 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	public practiceHourMinMax$$ = new BehaviorSubject<{ min: string; max: string; grayOutMin: string; grayOutMax: string } | null>(null);
 
 	public absenceData$!: Observable<any>;
+	public absenceDayViewData$!: Observable<any>;
 
 	private isDayView$$ = new BehaviorSubject<Boolean>(false);
+
+	public todayEvent$!: Observable<any>;
 
 	private paramsToCalendarView = {
 		m: 'month',
@@ -121,6 +124,22 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			this.calculateMinMaxLimit([...practiceHours]);
 		});
 
+		this.todayEvent$ = this.route.params.pipe(
+			filter((params) => !!params[ABSENCE_TYPE]),
+			map((params) => params[ABSENCE_TYPE]),
+			switchMap((absenceType) =>
+				this.absenceApiSvc.absencesForCalendar$(
+					absenceType,
+					this.datePipe.transform(new Date(), 'yyyy-M-d')!,
+					this.datePipe.transform(new Date(), 'yyyy-M-d')!,
+				),
+			),
+			map(this.dataModification.bind(this)),
+			map((absenceSlot) => absenceSlot[this.datePipe.transform(new Date(), 'd-M-yyyy')!] ?? []),
+			tap(console.log),
+			take(1),
+		);
+
 		this.absenceData$ = this.weekdayToPractice$$.pipe(
 			filter(Boolean),
 			switchMap(() => combineLatest([this.route.params, this.route.queryParams])),
@@ -131,8 +150,14 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 				return this.absenceApiSvc.absencesForCalendar$(absenceType, fromDate, toDate);
 			}),
 			map(this.dataModification.bind(this)),
-			tap(console.log),
 			takeUntil(this.destroy$$),
+		);
+
+		this.absenceDayViewData$ = this.absenceData$.pipe(
+			map(this.dataModificationForDay.bind(this)),
+			tap((dayViewAbsenceSlot) => {
+				this.headerList = Object.keys(dayViewAbsenceSlot).map((name) => ({ name, value: name }));
+			}),
 		);
 	}
 
@@ -313,11 +338,12 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 						break;
 				}
 			});
-		if (!this.isDayView$$.value) {
-			return absenceSlot;
-		}
-		const dayViewAbsenceSlot = absenceSlot[this.datePipe.transform(this.selectedDate$$.value, 'dd-M-yyyy')!].reduce((acc, item) => {
-			const key = item?.roomName ?? item?.userName;
+		return absenceSlot;
+	}
+
+	private dataModificationForDay(absenceSlot: { [key: string]: Absence[] }) {
+		return absenceSlot[this.datePipe.transform(this.selectedDate$$.value, 'dd-M-yyyy')!].reduce((acc, item) => {
+			const key = (item?.roomName ?? item?.userName)!;
 			if (acc[key]) {
 				acc[key] = [...acc[key], item];
 			} else {
@@ -325,8 +351,6 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			}
 			return acc;
 		}, {});
-		this.headerList = Object.keys(dayViewAbsenceSlot).map((name) => ({ name, value: name }));
-		return dayViewAbsenceSlot;
 	}
 
 	public setForm(event: FormControl<Date>) {
@@ -478,6 +502,16 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.practiceHourMinMax$$.next(minMaxValue);
 	}
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

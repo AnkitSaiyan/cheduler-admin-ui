@@ -33,7 +33,9 @@ export interface Absence {
 	userList?: number[];
 	rooms: Room[];
 	user: User[];
+	userName?: string;
+	roomName?: string;
 }
 
-export type AddAbsenceRequestData = Prettify<PartialBy<Omit<Absence, 'rooms' | 'user'>, 'id' | 'status' | 'absenceId'>>;
+export type AddAbsenceRequestData = Prettify<PartialBy<Omit<Absence, 'rooms' | 'user' | 'userName' | 'roomName'>, 'id' | 'status' | 'absenceId'>>;
 
