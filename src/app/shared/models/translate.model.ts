@@ -286,6 +286,14 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Dec',
 		[DUTCH_BE]: 'Dec',
 	},
+	future: {
+		[ENG_BE]: 'Future',
+		[DUTCH_BE]: 'Toekomst',
+	},
+	past: {
+		[ENG_BE]: 'Past',
+		[DUTCH_BE]: 'Verleden',
+	},
 
 	// Toast Messages
 	DownloadSuccess: (filetype) => ({

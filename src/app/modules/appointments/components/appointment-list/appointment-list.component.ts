@@ -89,7 +89,13 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public filteredAppointments$$: BehaviorSubject<Appointment[]>;
 
-	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+	public futureTableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
+
+	public pastTableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
 		isInitialLoading: true,
 		isLoadingMore: false,
@@ -131,6 +137,12 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	public clipboardData: string = '';
 
 	private paginationData: PaginationData | undefined;
+
+	public appointmentViewControl = new FormControl();
+
+	public appointmentListData: NameValue[] = [];
+
+	public isFutureAppointments: boolean = true;
 
 	constructor(
 		private downloadSvc: DownloadService,
@@ -184,21 +196,40 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				];
 			}
 		});
+		this.appointmentApiSvc.appointmentListData$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => {
+				this.appointmentListData = items;
+			},
+		});
 	}
 
 	public ngOnInit() {
+		if(localStorage.getItem('isFutureAppointments'))
+			this.isFutureAppointments = localStorage.getItem('isFutureAppointments') == 'true';	
+
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
-		this.filteredAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (items) => {
-				this.tableData$$.next({
-					items,
-					isInitialLoading: false,
-					isLoading: false,
-					isLoadingMore: false,
-				});
-			},
-		});
+		this.filteredAppointments$$
+			.pipe(
+				takeUntil(this.destroy$$),
+				map((data) => [data.filter((item) => item.isEditable), data.filter((item) => !item.isEditable)]),
+			)
+			.subscribe({
+				next: (items) => {
+					this.futureTableData$$.next({
+						items: items[0],
+						isInitialLoading: false,
+						isLoading: false,
+						isLoadingMore: false,
+					});
+					this.pastTableData$$.next({
+						items: items[1],
+						isInitialLoading: false,
+						isLoading: false,
+						isLoadingMore: false,
+					});
+				},
+			});
 
 		this.appointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (appointment) => this.handleSearch(this.searchControl.value ?? ''),
@@ -320,15 +351,31 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				this.appointments$$.next(modifiedList);
 			},
 		});
+
+		this.appointmentViewControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
+			if (value) {
+				this.isFutureAppointments = value == 'future';
+				localStorage.setItem('isFutureAppointments', JSON.stringify(this.isFutureAppointments));
+			}
+			this.selectedAppointmentIDs = [];
+		});
+		setTimeout(() => {
+			this.appointmentViewControl.setValue(this.isFutureAppointments ? 'future' : 'past');
+		}, 0);
 	}
 
 	public override ngOnDestroy() {
 		super.ngOnDestroy();
 	}
 
-	public handleCheckboxSelection(selected: string[]) {
-		// this.toggleMenu(true);
+	public manageActionColumn([...data]) {
+		if (data.find(({ title }) => title === 'Actions' || title === 'Acties')) {
+			data.pop();
+		}
+		return data
+	}
 
+	public handleCheckboxSelection(selected: string[]) {
 		this.selectedAppointmentIDs = [...selected];
 	}
 
@@ -475,6 +522,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			},
 			queryParamsHandling: 'merge',
 		});
+		setTimeout(() => {
+			this.appointmentViewControl.setValue(this.isFutureAppointments ? 'future' : 'past');
+		}, 0);
 	}
 
 	private groupAppointmentsForCalendar(...appointments: Appointment[]) {
@@ -595,7 +645,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	public onScroll(e: any): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.appointmentApiSvc.appointmentPageNo = this.appointmentApiSvc.appointmentPageNo + 1;
-			this.tableData$$.value.isLoadingMore = true;
+			this.futureTableData$$.value.isLoadingMore = true;
 		}
 	}
 

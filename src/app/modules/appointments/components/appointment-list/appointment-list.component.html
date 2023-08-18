@@ -5,6 +5,11 @@
   <section>
     <div class="d-flex align-items-center dfm-gap-16 flex-1 ap-li-section-1" *ngIf="(calendarView$$ | async) === false">
       <dfm-button class="hidden ap-li-title-buttons" color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{ 'Appointment' | translate }} </dfm-button>
+      <div class="add-appointment-mv">
+      <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
+          >{{ 'AddAppointment' | translate }}
+        </dfm-button>
+      </div>
 
       <dfm-input
         class="flex-1 ap-li-search"
@@ -13,9 +18,18 @@
         icon="search-sm"
         [formControl]="searchControl"
       ></dfm-input>
+      <div class="appointment-status-dropdown">
+      <dfm-input-dropdown
+          class="flex-1"
+          size="md"
+          [formControl]="appointmentViewControl"
+          [showDescription]="false"
+          [items]="appointmentListData"
+        ></dfm-input-dropdown>
+      </div>
 
-      <div class="d-flex align-items-center dfm-button-group-wrapper max-w-20 ap-li-button-dropdown-group">
-        <div class="dfm-dropdown-border-none">
+      <div class="d-flex align-items-center ap-li-button-dropdown-group ap-li-button-dropdown-group-border">
+        <!-- <div >
           <dfm-input
             size="sm"
             placeholder="{{ 'AdvancedSearch' | translate }}"
@@ -24,6 +38,19 @@
             (click)="openAdvancePopup()"
             [readonly]="true"
           ></dfm-input>
+        </div> -->
+        <div >
+          <dfm-button-icon
+            class=""
+            color="secondary-gray"
+            size="md"
+            icon="filter-funnel-01"
+            ngbPopover="{{ 'AdvancedSearch' | translate }}"
+            triggers="mouseenter:mouseleave"
+            popoverClass="popover-p-8"
+            [openDelay]="200"
+            (click)="openAdvancePopup()"
+          ></dfm-button-icon>
         </div>
         <div>
           <dfm-button-icon
@@ -82,9 +109,11 @@
           ></dfm-button-icon>
         </div>
 
+        <div class="add-appointment-lg">
         <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
           >{{ 'AddAppointment' | translate }}
         </dfm-button>
+      </div>
       </div>
     </div>
 
@@ -106,14 +135,14 @@
           ></dfm-button-icon>
 
 
-        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap header-buttons" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
+          <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
           >{{ 'AddAppointment' | translate }}
         </dfm-button>
 
 
-        <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="add-app-btn-mv hidden" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
+        <!-- <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="add-app-btn-mv hidden" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
           >{{ 'Add' | translate }}
-        </dfm-button>
+        </dfm-button> -->
       </div>
     </div>
     </ng-container>
@@ -134,7 +163,8 @@
     *ngIf="filteredAppointments$$ | async as appointments"
   >
     <ng-container *ngIf="(calendarView$$ | async) === false">
-      <dfm-data-table  [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+      <ng-container *ngIf="isFutureAppointments">
+      <dfm-data-table  [data]="(futureTableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                       [clearSelected$]="clearSelected$$" [stickyActions]="true"  noDataMessage="{{ 'NoAppointmentsFound' | translate }}"
                       [rowClickable]="true" [stickyCheckbox]="true" (rowClicked)="navigateToView($event)"
                       [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
@@ -177,6 +207,37 @@
           </dfm-data-table-action-cell>
         </ng-template>
       </dfm-data-table>
+    </ng-container>
+      <ng-container *ngIf="!isFutureAppointments">
+        <dfm-data-table  [data]="(pastTableData$$ | async) ?? {items: []}" [selectable]="false"
+                      noDataMessage="{{ 'NoAppointmentsFound' | translate }}"
+                      [rowClickable]="true"  (rowClicked)="navigateToView($event)"
+                      [stickyFirstColumn]="false" [headers]="manageActionColumn(tableHeaders)" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
+        <ng-template #bodyRowTemplate let-item>
+          <dfm-table-row-cell [fullContent]="item">{{ item?.exams.length ? (item.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing ) : ('' | dashIfNothing) }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item">{{ item?.exams.length ? (item.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing) : ('' | dashIfNothing) }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.patientFname">{{ item?.patientFname | titlecase }} {{ item?.patientLname  }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.exams">{{ item?.exams | joinWithAnd : 'name'  | dashIfNothing }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.doctor">{{ item?.doctor | titlecase | dashIfNothing }}</dfm-table-row-cell>
+          <dfm-table-body-cell>{{!item.documentCount ? '—':''}}  <span *ngIf="item.documentCount" class="view-link" (click)="$event.stopPropagation(); openDocumentModal(item.id)" >View</span></dfm-table-body-cell>
+          <dfm-table-row-cell [fullContent]="item.id">{{ item?.id }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.createdAt">{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.status">
+            <dfm-badge *ngIf="item.approval === statusType.Approved" color="success" size="sm" fontWeight="medium">
+              {{ item.approval | approvalTypeName | translate | dashIfNothing }}
+            </dfm-badge>
+
+            <dfm-badge *ngIf="item.approval === statusType.Cancelled" color="primary" size="sm">
+              {{ item.approval | approvalTypeName  | translate | dashIfNothing }}
+            </dfm-badge>
+
+            <dfm-badge *ngIf="item.approval === statusType.Pending" color="gray" size="sm">
+              {{ item.approval | approvalTypeName | translate  | dashIfNothing }}
+            </dfm-badge>
+          </dfm-table-row-cell>
+        </ng-template>
+      </dfm-data-table>
+      </ng-container>
     </ng-container>
 
     <ng-container *ngIf="calendarView$$ | async">

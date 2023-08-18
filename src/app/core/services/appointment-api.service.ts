@@ -45,6 +45,17 @@ export class AppointmentApiService extends DestroyableComponent {
 		},
 	];
 
+	public appointmentListData: NameValue[] = [
+		{
+			name: 'future',
+			value: 'future',
+		},
+		{
+			name: 'past',
+			value: 'past',
+		},
+	];
+
 	private refreshAppointment$$ = new Subject<void>();
 
 	private selectedLang$$ = new BehaviorSubject<string>('');
@@ -109,6 +120,26 @@ export class AppointmentApiService extends DestroyableComponent {
 						this.loaderSvc.deactivate();
 						return ({ ...appointments, data })
 					}))),
+				);
+			}),
+		);
+	}
+
+	public get appointmentListData$(): Observable<any[]> {
+		return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
+			switchMap(([lang]) => {
+				return of(this.appointmentListData).pipe(
+					map((appointmentListTypeItems) => {
+						if (lang) {
+							return appointmentListTypeItems.map((appointmentType) => {
+								return {
+									...appointmentType,
+									name: Translate[appointmentType.name][lang],
+								};
+							});
+						}
+						return appointmentListTypeItems;
+					}),
 				);
 			}),
 		);
