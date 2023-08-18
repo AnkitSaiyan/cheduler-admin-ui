@@ -136,8 +136,6 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			),
 			map(this.dataModification.bind(this)),
 			map((absenceSlot) => absenceSlot[this.datePipe.transform(new Date(), 'd-M-yyyy')!] ?? []),
-			tap(console.log),
-			take(1),
 		);
 
 		this.absenceData$ = this.weekdayToPractice$$.pipe(
@@ -502,6 +500,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.practiceHourMinMax$$.next(minMaxValue);
 	}
 }
+
 
 
 
