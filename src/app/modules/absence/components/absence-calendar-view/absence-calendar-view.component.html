@@ -79,6 +79,7 @@
           [newDate$$]="newDate$$"
           [headerList]="headerList"
           [timeSlot]="selectedSlot$$ | async"
+          [absenceData]="(absenceData$ | async) ?? {}"
           [format24Hour]="true"
         ></dfm-calendar-day-view>
       </ng-container>

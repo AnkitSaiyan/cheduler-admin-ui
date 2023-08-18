@@ -93,50 +93,24 @@
                             <b>{{data.id}}</b> - {{ (data.name | titlecase)}}
                           </span>
                           <div class="calendar-week-view-event-patients-container accordion-content">
-                            <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
-                              <ngb-panel>
-                                <ng-template ngbPanelTitle>
-                                  <div class="calendar-week-view-event-patients-container">
-                                    <div class="d-flex flex-column dfm-p-8">
-                                      <span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
-                                        data.exams | joinWithAnd : 'name'
-                                      }}</span>
-                                      <span class="text-sm dfm-text-main-500">
-                                        {{ data.start }}
-                                        -
-                                        {{ data.end }}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </ng-template>
-
-                                <ng-template ngbPanelContent>
-                                  <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                                    <span class="font-weight-medium dfm-mt-8"> {{ 'Info' | translate }} </span>
-                                    <span class="calendar-comments-text"> {{ data?.info | dashIfNothing }} </span>
-                                    <!-- <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
-
-                                    <ng-container *ngIf="data?.roomName; else dash">
-                                      <div *ngFor="let user of removeDuplicateData(data.exams)" class="dfm-ps-4 dfm-pt-4">
-                                        <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
-                                          <div class="circle-gray-200-40">
-                                            {{ user?.firstname[0] | uppercase }}
-                                          </div>
-                                          <div class="d-flex flex-column">
-                                            <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
-                                            <span class="dfm-text-main-500">{{ user?.userType | titlecase | translate }}</span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </ng-container>
-
-                                    <ng-template #dash>
-                                      <span>{{ '' | dashIfNothing }}</span>
-                                    </ng-template> -->
-                                  </div>
-                                </ng-template>
-                              </ngb-panel>
-                            </ngb-accordion>
+                            <div class="calendar-week-view-event-patients-container">
+                              <div class="d-flex flex-column dfm-p-8">
+                                <span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
+                                  data.exams | joinWithAnd : 'name'
+                                }}</span>
+                                <span class="text-sm dfm-text-main-500">
+                                  {{ data.start }}
+                                  -
+                                  {{ data.end }}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
+                              <span class="font-weight-medium dfm-mt-8"> {{ 'Info' | translate }} </span>
+                              <span class="calendar-comments-text"> {{ data?.info | dashIfNothing }} </span>
+                              <span class="font-weight-medium dfm-mt-8">{{ (data?.roomName ? 'Room' : 'Staff') | translate }}</span>
+                              <span class="calendar-comments-text"> {{ (data?.roomName ? data?.roomName : data?.userName) | dashIfNothing }} </span>
+                            </div>
                           </div>
                         </div>
                       </ng-template>
@@ -253,25 +227,8 @@
                           <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
                             <span class="font-weight-medium dfm-mt-8"> {{ 'Info' | translate }} </span>
                             <span class="calendar-comments-text"> {{ data?.info | dashIfNothing }} </span>
-                            <!-- <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
-
-                            <ng-container *ngIf="data?.roomName; else dash">
-                              <div *ngFor="let user of removeDuplicateData(data.exams)" class="dfm-ps-4 dfm-pt-4">
-                                <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
-                                  <div class="circle-gray-200-40">
-                                    {{ user?.firstname[0] | uppercase }}
-                                  </div>
-                                  <div class="d-flex flex-column">
-                                    <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
-                                    <span class="dfm-text-main-500">{{ user?.userType | titlecase | translate }}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </ng-container>
-
-                            <ng-template #dash>
-                              <span>{{ '' | dashIfNothing }}</span>
-                            </ng-template> -->
+                            <span class="font-weight-medium dfm-mt-8">{{ (data?.roomName ? 'Room' : 'Staff') | translate }}</span>
+                            <span class="calendar-comments-text"> {{ (data?.roomName ? data?.roomName : data?.userName) | dashIfNothing }} </span>
                           </div>
                         </ng-template>
                       </ngb-panel>

@@ -50,6 +50,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	public absenceData$!: Observable<any>;
 
+	private isDayView$$ = new BehaviorSubject<Boolean>(false);
+
 	private paramsToCalendarView = {
 		m: 'month',
 		w: 'week',
@@ -89,8 +91,12 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 				const dateSplit = params['d'].split('-');
 				if (dateSplit.length === 3) {
 					const date = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2]);
-					this.selectedDate$$.next(date);
-					this.newDate$$.next({ date, isWeekChange: false });
+					if (isNaN(date.getTime())) {
+						this.updateToToday();
+					} else {
+						this.selectedDate$$.next(date);
+						this.newDate$$.next({ date, isWeekChange: false });
+					}
 				} else {
 					this.updateQuery('m', this.selectedDate$$.value, true);
 				}
@@ -108,10 +114,6 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			next: (value) => {
 				this.updateQuery(this.calendarViewToParam[value]);
 			},
-		});
-
-		this.roomApiSvc.allRooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
-			this.headerList = rooms.map(({ name, id }) => ({ name, value: id }));
 		});
 
 		this.practiceHoursApiSvc.practiceHours$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
@@ -175,6 +177,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	}
 
 	private getFromAndToDate([params, queryParam]) {
+		this.isDayView$$.next(false);
 		const [year, month, day] = queryParam['d'].split('-');
 
 		const currDate = new Date(+year, +month - 1, +day, 0, 0, 0, 0);
@@ -207,7 +210,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 						(timing: any) => DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(timing)) > DateTimeUtils.TimeToNumber(timing),
 					),
 				});
-
+				this.isDayView$$.next(true);
 				return [params[ABSENCE_TYPE], { fromDate: queryParam['d'], toDate: queryParam['d'] }];
 		}
 	}
@@ -224,7 +227,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			}))
 			.forEach((absence: any) => {
 				let { repeatFrequency } = absence;
-				const { absenceId, name, info, startedAt, endedAt } = absence;
+				const { absenceId, name, info, startedAt, endedAt, roomName, userName } = absence;
 				const startDate = new Date(new Date(absence.startedAt).toDateString());
 				let firstDate = new Date(new Date(absence.startedAt).toDateString());
 				const lastDate = new Date(new Date(absence.endedAt).toDateString());
@@ -243,6 +246,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 								info,
 								startedAt,
 								endedAt,
+								roomName,
+								userName,
 							};
 							absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 							firstDate.setDate(firstDate.getDate() + repeatFrequency);
@@ -266,6 +271,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 										info,
 										startedAt,
 										endedAt,
+										roomName,
+										userName,
 									};
 									absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 								}
@@ -290,6 +297,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 											info,
 											startedAt,
 											endedAt,
+											roomName,
+											userName,
 										};
 										absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 									}
@@ -304,8 +313,20 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 						break;
 				}
 			});
-
-		return absenceSlot;
+		if (!this.isDayView$$.value) {
+			return absenceSlot;
+		}
+		const dayViewAbsenceSlot = absenceSlot[this.datePipe.transform(this.selectedDate$$.value, 'dd-M-yyyy')!].reduce((acc, item) => {
+			const key = item?.roomName ?? item?.userName;
+			if (acc[key]) {
+				acc[key] = [...acc[key], item];
+			} else {
+				acc[key] = [item];
+			}
+			return acc;
+		}, {});
+		this.headerList = Object.keys(dayViewAbsenceSlot).map((name) => ({ name, value: name }));
+		return dayViewAbsenceSlot;
 	}
 
 	public setForm(event: FormControl<Date>) {
@@ -457,6 +478,23 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.practiceHourMinMax$$.next(minMaxValue);
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -70,6 +70,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			}[];
 		};
 	} = {};
+
+	@Input()
+	public absenceData: { [key: string]: any[] } = {};
 	@Input()
 	public format24Hour = false;
 	@Output()
@@ -146,6 +149,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				this.getTop([data?.[0].appointment], true);
 			});
 		}
+		console.log(this.absenceData, 'test');
 	}
 
 	public ngOnInit(): void {
@@ -231,6 +235,52 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const minutes = getDurationMinutes(start, end);
 		return minutes * this.pixelsPerMin;
 	}
+
+	public getAbsenceTop(groupedData: any[], storeHiddenAppointment: boolean = false): number {
+		const start = this.myDate(this.timeSlot?.timings?.[0]);
+		start.setFullYear(this.selectedDate.getFullYear());
+		start.setMonth(this.selectedDate.getMonth());
+		start.setDate(this.selectedDate.getDate());
+		const end = new Date(groupedData[0].startedAt);
+		end.setFullYear(this.selectedDate.getFullYear());
+		end.setMonth(this.selectedDate.getMonth());
+		end.setDate(this.selectedDate.getDate());
+		if (start.getTime() > end.getTime()) {
+			return -1;
+		}
+		const minutes = getDurationMinutes(start, end);
+		return minutes * this.pixelsPerMin;
+	}
+
+	// public getAbsenceHeight(groupedData: any[]): number {
+	// 	let endDate: Date = groupedData[0].endedAt;
+	// 	groupedData.forEach((data) => {
+	// 		if (data.endedAt > endDate) {
+	// 			endDate = data.endedAt;
+	// 		}
+	// 	});
+
+	// 	const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+
+	// 	const startDate =
+	// 		this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
+	// 			? this.myDate(this.limit.min)
+	// 			: new Date(groupedData[0].startedAt);
+
+	// 	const groupEndDate = this.datePipe.transform(new Date(endDate), 'HH:mm:ss') ?? '';
+	// 	if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
+	// 		return 0;
+	// 	}
+
+	// 	if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
+	// 		return 0;
+	// 	}
+	// 	const finalEndDate =
+	// 		this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
+
+	// 	const durationMinutes = getDurationMinutes(startDate, finalEndDate);
+	// 	return durationMinutes * this.pixelsPerMin;
+	// }
 
 	public toggleMoreMenu(moreMenu: NgbDropdown) {
 		moreMenu.toggle();
