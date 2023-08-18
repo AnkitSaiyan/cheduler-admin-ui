@@ -257,35 +257,40 @@
       </ng-container>
 
       <div class="d-flex flex-wrap flex-1 gap" [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" *ngIf="!formValues.isHoliday">
-        <div class="flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
-          <dfm-input-dropdown
-            #roomDropdown
-            [items]="roomList"
-            [multiple]="true"
-            [typeToSearch]="true"
-            (searchInput)="handleDropdownSearch($event, 'room')"
-            [placeholder]="((roomDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRooms') | async) ?? ''"
-            size="md"
-            formControlName="roomList"
-            label="{{ 'Rooms' | translate }}"
-          >
-          </dfm-input-dropdown>
-        </div>
+        <ng-container *ngIf="modalData.absenceType === 'rooms'">
+          <div class="flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
+            <dfm-input-dropdown
+              #roomDropdown
+              [items]="roomList"
+              [multiple]="true"
+              [typeToSearch]="true"
+              (searchInput)="handleDropdownSearch($event, 'room')"
+              [placeholder]="((roomDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRooms') | async) ?? ''"
+              size="md"
+              formControlName="roomList"
+              label="{{ 'Rooms' | translate }}"
+            >
+            </dfm-input-dropdown>
+          </div>
+        </ng-container>
 
-        <div class="flex-1 ad-ab-staffs" *ngIf="filteredStaffs$$ | async as staffList">
-          <dfm-input-dropdown
-            #staffDropDown
-            [items]="staffList"
-            [multiple]="true"
-            [typeToSearch]="true"
-            (searchInput)="handleDropdownSearch($event, 'staff')"
-            size="md"
-            formControlName="userList"
-            label="{{ 'Staff' | translate }}"
-            [placeholder]="((staffDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
-          >
-          </dfm-input-dropdown>
-        </div>
+        <ng-container  *ngIf="modalData.absenceType === 'staff'">
+          <div class="flex-1 ad-ab-staffs" *ngIf="filteredStaffs$$ | async as staffList">
+            <dfm-input-dropdown
+              #staffDropDown
+              [items]="staffList"
+              [multiple]="true"
+              [typeToSearch]="true"
+              (searchInput)="handleDropdownSearch($event, 'staff')"
+              size="md"
+              formControlName="userList"
+              label="{{ 'Staff' | translate }}"
+              [placeholder]="((staffDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
+            >
+            </dfm-input-dropdown>
+          </div>
+        </ng-container>
+
         <div class="w-full" style="margin-top: -24px" *ngIf="isAbsenceStaffRoomInvalid | async">
           <small class="validation-error">Please select either Room or Staff for Absence</small>
         </div>

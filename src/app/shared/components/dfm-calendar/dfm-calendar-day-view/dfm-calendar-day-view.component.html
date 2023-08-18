@@ -564,11 +564,70 @@
                         </ng-container>
                         </ng-container>
                       </ng-container>
+
+                    </ng-container>
+                    <ng-container
+                      *ngIf="absenceData && absenceData[h.value] as roomData">
+                      <ng-container
+                        *ngFor="let data of roomData;">
+                        <ng-container *ngIf="getHeight([data]) as eventHeight" >
+                          <div *ngIf="calendarView.offsetHeight >= getAbsenceTop([data]) + eventHeight && getAbsenceTop([data]) >= 0" #eventContainer class="calender-day-view-event-container resizable" triggers="hover" [ngbPopover]="absenceDetails"
+                                    [autoClose]="'outside'" container="body" (dblclick)="$event.preventDefault()"
+                              [ngStyle]="{ 'top.px': getAbsenceTop([data]), 'height.px': eventHeight }"
+                          >
+                          <!-- POP OVER -->
+                          <ng-template #absenceDetails>
+                            <div class="calender-day-view-event-details-expanded">
+
+
+                              <div class="d-flex flex-column dfm-gap-4">
+                                <span class="font-weight-medium dfm-mt-8"> {{"SelectedSlot" | translate}} </span>
+                                <span class="calendar-comments-text">{{ data.start }} -
+                                  {{ data.end }}</span>
+                              </div>
+
+                              <div class="d-flex flex-column dfm-gap-4">
+                                <span class="font-weight-medium dfm-mt-8"> {{"Info" | translate}} </span>
+                                <span class="calendar-comments-text"> {{ data.info | dashIfNothing }}</span>
+                              </div>
+
+                              <div class="d-flex flex-column dfm-gap-4">
+                                <span class="font-weight-medium dfm-mt-8"> {{(data?.roomName ? "Room" : 'Staff') | translate}} </span>
+                                <span class="calendar-comments-text"> {{ (data.roomName ?? data.userName) | dashIfNothing }}</span>
+                              </div>
+                            </div>
+                          </ng-template>
+                          <!-- POP OVER ENDS -->
+                          <div class="calender-day-view-event-details-container" (click)="$event.stopPropagation()"
+                              [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto ': +eventHeight <= 40, 'center': +eventContainer.offsetHeight >20 && +eventContainer.offsetHeight <=40 }"
+                              >
+                            <div class="d-flex dfm-gap-4" >
+
+                              <div class="d-flex flex-column calender-day-view-event-title">
+                                <span class=" text-truncate" *ngIf="data?.name; else date">
+                                  {{data.id}} - {{ data.name }}
+                                </span>
+                                <ng-template #date>
+                                  <span class="calender-day-view-event-time">
+                                    {{ data.start }} -
+                                    {{ data.end }}
+                                  </span>
+                                </ng-template>
+
+                                <span class="calender-day-view-event-time" *ngIf="+eventContainer.offsetHeight > 40 && data?.name">
+                                  {{ data.start }} -
+                                  {{ data.end }}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          </div>
+                        </ng-container>
+                      </ng-container>
                     </ng-container>
                   </div>
                 </div>
               </ng-container>
-
               <ng-template #singleGridCol>
                 <div role="gridcell" class="calender-day-view-body-grid-column">
                   <div></div>
@@ -580,11 +639,11 @@
           </div>
         </div>
       </div>
-      <ng-container *ngIf="!timeSlot?.timings?.length">
+      <!-- <ng-container *ngIf="!timeSlot?.timings?.length">
         <div class="d-flex flex-1 align-items-center justify-content-center">
           <p >{{"PracticeNotAvailableForDay" | translate}}</p>
         </div>
-      </ng-container>
+      </ng-container> -->
     </div>
   </div>
 </div>

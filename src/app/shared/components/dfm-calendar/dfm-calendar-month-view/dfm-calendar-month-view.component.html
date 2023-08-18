@@ -86,13 +86,47 @@
                         </span>
                       </div>
                     </ng-container>
+                    <ng-container *ngFor="let data of absenceData[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" >
+                      <ng-template #absenceDetails>
+                        <div class="calendar-week-view-event-details-expanded">
+                          <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
+                            <b>{{data.id}}</b> - {{ (data.name | titlecase)}}
+                          </span>
+                          <div class="calendar-week-view-event-patients-container accordion-content">
+                            <div class="calendar-week-view-event-patients-container">
+                              <div class="d-flex flex-column dfm-p-8">
+                                <span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
+                                  data.exams | joinWithAnd : 'name'
+                                }}</span>
+                                <span class="text-sm dfm-text-main-500">
+                                  {{ data.start }}
+                                  -
+                                  {{ data.end }}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
+                              <span class="font-weight-medium dfm-mt-8"> {{ 'Info' | translate }} </span>
+                              <span class="calendar-comments-text"> {{ data?.info | dashIfNothing }} </span>
+                              <span class="font-weight-medium dfm-mt-8">{{ (data?.roomName ? 'Room' : 'Staff') | translate }}</span>
+                              <span class="calendar-comments-text"> {{ (data?.roomName ? data?.roomName : data?.userName) | dashIfNothing }} </span>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <div class="calender-month-view-day-exam-event-details" [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
+                        <span class="calender-month-view-day-exam-event-title text-truncate ">
+                          {{ data?.start}}
+                          -
+                          {{ data?.end}}
+
+                          <b>{{(data?.name | titlecase)}}</b>
+                        </span>
+                      </div>
+                    </ng-container>
                   </div>
               </div>
             </ng-template>
-
-            <!-- <div class="calender-month-view-event-circle-icon">
-              {{ dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()].length}}
-            </div> -->
 
 
             <ng-container *ngFor="let data of dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]">
@@ -163,10 +197,54 @@
 
                   <b>{{(data?.patientFname | titlecase) + ' ' + data?.patientLname | titlecase }}</b>
                 </span>
-                <!-- <span class="calender-month-view-day-exam-event-time"
-                      *ngIf="dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]?.length !== 1">
-                  Multiple timings
-                </span> -->
+              </div>
+            </ng-container>
+            <ng-container *ngFor="let data of absenceData[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]">
+              <ng-template #absenceDetails>
+                <div class="calendar-week-view-event-details-expanded">
+                  <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
+                    <b>{{data.id}}</b> - {{ (data.name | titlecase)}}
+                  </span>
+                  <div class="calendar-week-view-event-patients-container accordion-content">
+                    <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+                      <ngb-panel>
+                        <ng-template ngbPanelTitle>
+                          <div class="calendar-week-view-event-patients-container">
+                            <div class="d-flex flex-column dfm-p-8">
+                              <span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
+                                data.exams | joinWithAnd : 'name'
+                              }}</span>
+                              <span class="text-sm dfm-text-main-500">
+                                {{ data.start }}
+                                -
+                                {{ data.end }}
+                              </span>
+                            </div>
+                          </div>
+                        </ng-template>
+
+                        <ng-template ngbPanelContent>
+                          <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
+                            <span class="font-weight-medium dfm-mt-8"> {{ 'Info' | translate }} </span>
+                            <span class="calendar-comments-text"> {{ data?.info | dashIfNothing }} </span>
+                            <span class="font-weight-medium dfm-mt-8">{{ (data?.roomName ? 'Room' : 'Staff') | translate }}</span>
+                            <span class="calendar-comments-text"> {{ (data?.roomName ? data?.roomName : data?.userName) | dashIfNothing }} </span>
+                          </div>
+                        </ng-template>
+                      </ngb-panel>
+                    </ngb-accordion>
+                  </div>
+                </div>
+              </ng-template>
+
+              <div class="calender-month-view-day-exam-event-details" [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
+                <span class="calender-month-view-day-exam-event-title text-truncate ">
+                  {{ data?.start }}
+                  -
+                  {{ data?.end}}
+
+                  <b>{{(data?.name | titlecase)}}</b>
+                </span>
               </div>
             </ng-container>
 

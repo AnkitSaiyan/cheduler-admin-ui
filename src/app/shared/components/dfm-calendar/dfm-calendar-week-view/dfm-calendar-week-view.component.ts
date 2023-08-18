@@ -65,7 +65,10 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 
 	@Input()
-	public dataGroupedByDateAndTime!: { [key: string]: any[][] };
+	public dataGroupedByDateAndTime: { [key: string]: any[][] } = {};
+
+	@Input()
+	public absenceData: { [key: string]: any[] } = {};
 
 	@Input()
 	public prioritySlots!: { [key: string]: any[] };
@@ -151,7 +154,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		if (this.showGrayOutSlot) {
 			this.getGrayOutArea();
 		}
-		// console.log(this.prioritySlots, 'test');
+
 	}
 
 	public ngOnInit(): void {
@@ -421,7 +424,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			isOutside,
 		});
 	}
-	
+
 	public editAppointment(event: any) {
 		this.addAppointment.emit({
 			e: { offsetY: event.event.offsetY },

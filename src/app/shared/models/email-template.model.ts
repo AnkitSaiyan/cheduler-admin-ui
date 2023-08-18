@@ -10,11 +10,5 @@ export interface Email {
   status: Status;
 }
 
-export interface EmailTemplateRequestData {
-  title: string;
-  subject: string;
-  status: Status;
-  content: string;
-  adminContent: string;
-  id: number
-}
+export type EmailTemplateRequestData = Omit<Email, 'name'>;
+

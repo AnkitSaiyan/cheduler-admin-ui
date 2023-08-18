@@ -10,7 +10,7 @@
 
 		<div class="d-flex dfm-gap-16 ab-vw-action-buttons">
 			<dfm-button color="link" size="md" leadingIcon="pencil-02" (click)="openEditAbsenceModal()" *dfmPermitted="Permission.UpdateAbsences"
-				>{{ 'EditAbsence' | translate }}
+				>{{ 'Edit'+ ((absenceType$$ | async) ?? '' | titlecase) +'Absence' | translate }}
 			</dfm-button>
 
 			<dfm-button
@@ -64,12 +64,12 @@
 					<span class="flex-1 text-truncate">{{ absenceDetails.endedAt | dfmDefaultDate | dashIfNothing }}</span>
 				</div>
 
-				<div class="d-flex dfm-gap-8 justify-content-between">
+				<div class="d-flex dfm-gap-8 justify-content-between" *ngIf="(absenceType$$ | async) === 'staff'">
 					<span class="flex-1">{{ 'Staff' | translate }}</span>
 					<span class="flex-1 text-break"> {{ (absenceDetails.user | joinWithAnd : 'firstname':'lastname') | dashIfNothing }}</span>
 				</div>
 
-				<div class="d-flex dfm-gap-8 justify-content-between">
+				<div class="d-flex dfm-gap-8 justify-content-between" *ngIf="(absenceType$$ | async) === 'rooms'">
 					<span class="flex-1">{{ 'Rooms' | translate }}</span>
 					<span class="flex-1 text-break">{{ absenceDetails.rooms | joinWithAnd : 'name' | titlecase | dashIfNothing }}</span>
 				</div>
@@ -184,7 +184,7 @@
 		}}</dfm-button>
 	</div>
 
-	
+
 </div>
 
 <ng-template #dash>
