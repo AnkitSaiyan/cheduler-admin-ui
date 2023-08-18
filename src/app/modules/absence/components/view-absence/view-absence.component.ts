@@ -1,19 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { ABSENCE_ID } from '../../../../shared/utils/const';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { Absence, RepeatType } from '../../../../shared/models/absence.model';
-import { AbsenceApiService } from '../../../../core/services/absence-api.service';
-import { AddAbsenceComponent } from '../add-absence/add-absence.component';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { Translate } from '../../../../shared/models/translate.model';
+import { BehaviorSubject, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { AbsenceApiService } from '../../../../core/services/absence-api.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { RouterStateService } from '../../../../core/services/router-state.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { Absence, RepeatType } from '../../../../shared/models/absence.model';
+import { Translate } from '../../../../shared/models/translate.model';
+import { ABSENCE_ID, ABSENCE_TYPE, ABSENCE_TYPE_ARRAY, ENG_BE } from '../../../../shared/utils/const';
+import { AddAbsenceComponent } from '../add-absence/add-absence.component';
 
 @Component({
 	selector: 'dfm-view-absence',
@@ -31,7 +30,9 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
 	public columns = ['AppointmentNo', 'Exam', 'StartDate', 'EndDate', 'PatientName', 'Edit'];
 
-	effectedAppointments$$:BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
+	public absenceType$$ = new BehaviorSubject<(typeof ABSENCE_TYPE_ARRAY)[number]>(ABSENCE_TYPE_ARRAY[0]);
+
+	effectedAppointments$$: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
 
 	constructor(
 		private absenceApiSvc: AbsenceApiService,
@@ -48,7 +49,10 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 	public ngOnInit(): void {
 		this.route.params
 			.pipe(
-				filter((params) => params[ABSENCE_ID]),
+				filter((params) => params[ABSENCE_ID] && params[ABSENCE_TYPE]),
+				tap((params) => {
+					this.absenceType$$.next(params[ABSENCE_TYPE]);
+				}),
 				map((params) => params[ABSENCE_ID]),
 				switchMap((absenceID) => this.absenceApiSvc.getAbsenceByID$(+absenceID)),
 				takeUntil(this.destroy$$),
@@ -89,7 +93,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
 	public openEditAbsenceModal() {
 		this.modalSvc.open(AddAbsenceComponent, {
-			data: { edit: !!this.absenceDetails$$.value?.id, absenceID: this.absenceDetails$$.value?.id },
+			data: { absenceType: this.absenceType$$.value, edit: !!this.absenceDetails$$.value?.id, absenceID: this.absenceDetails$$.value?.id },
 			options: {
 				size: 'xl',
 				centered: true,

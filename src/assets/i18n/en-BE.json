@@ -162,11 +162,15 @@
 	"AbsenceName": "Absence name",
 	"AbsenceSearch": "Search by absence name & date",
 	"AddAbsence": "Add absence",
+	"AddRoomsAbsence": "Add rooms absence",
+	"AddStaffAbsence": "Add staff absence",
 	"Title": "Title",
 	"StartDate": "Start date",
 	"EndDate": "End date",
 	"AbsenceInfo": "Absence info",
 	"EditAbsence": "Edit absence",
+	"EditRoomsAbsence": "Edit rooms absence",
+	"EditStaffAbsence": "Edit staff absence",
 	"EnterAbsenceTitle": "Enter absence title",
 	"Date": "Date",
 	"From": "From",
@@ -477,6 +481,8 @@
 	"PrefillFromPractice": "Prefill practice hours",
 	"ReferralNote": "Referral Note"
 }
+
+
 
 
 

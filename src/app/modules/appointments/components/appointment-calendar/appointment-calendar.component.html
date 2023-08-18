@@ -49,8 +49,8 @@
           (dayViewEvent)="changeToDayView($event)"
           [selectedDate]="selectedDate"
           [newDate$$]="newDate$$"
-          [dataGroupedByDate]="appointmentsGroupedByDate"
           (dateChange)="changeDate($event)"
+          [dataGroupedByDate]="appointmentsGroupedByDate"
         >
         </dfm-calendar-month-view>
       </ng-container>
@@ -61,8 +61,8 @@
           [changeWeek$$]="changeWeek$$"
           (dayViewEvent)="changeToDayView($event)"
           (dateChange)="changeDate($event)"
-          [selectedDate]="selectedDate"
           [newDate$$]="newDate$$"
+          [selectedDate]="selectedDate"
           [dataGroupedByDateAndTime]="appointmentsGroupedByDateAndTIme"
           (addAppointment)="addAppointment($event)"
           [format24Hour]="true"
@@ -81,9 +81,9 @@
           [changeDate$$]="changeDate$$"
           [newDate$$]="newDate$$"
           [headerList]="headerList"
-          [dataGroupedByDateAndRoom]="appointmentGroupedByDateAndRoom"
           [timeSlot]="selectedSlot$$ | async"
           [format24Hour]="true"
+          [dataGroupedByDateAndRoom]="appointmentGroupedByDateAndRoom"
         ></dfm-calendar-day-view>
       </ng-container>
     </ng-container>

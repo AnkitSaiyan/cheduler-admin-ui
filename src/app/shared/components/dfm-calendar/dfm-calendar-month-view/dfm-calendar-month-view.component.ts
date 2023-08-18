@@ -50,7 +50,10 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 
 	@Input()
-	public dataGroupedByDate!: { [key: string]: any[] };
+	public dataGroupedByDate: { [key: string]: any[] } = {};
+
+	@Input()
+	public absenceData: { [key: string]: any[] } = {};
 
 	@Output()
 	public selectedDateEvent = new EventEmitter<Date>();

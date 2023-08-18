@@ -1,32 +1,30 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, of, startWith, switchMap, take, takeUntil } from 'rxjs';
-import { InputComponent, NotificationType } from 'diflexmo-angular-design';
-import { DatePipe } from '@angular/common';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { LoaderService } from 'src/app/core/services/loader.service';
-import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { InputComponent, NotificationType } from 'diflexmo-angular-design';
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, of, startWith, switchMap, take, takeUntil } from 'rxjs';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { Absence, AddAbsenceRequestDate, PriorityType, RepeatType } from '../../../../shared/models/absence.model';
-import { AbsenceApiService } from '../../../../core/services/absence-api.service';
-import { NameValue } from '../../../../shared/components/search-modal.component';
-import { getNumberArray } from '../../../../shared/utils/getNumberArray';
-import { WeekdayToNamePipe } from '../../../../shared/pipes/weekday-to-name.pipe';
-import { MonthToNamePipe } from '../../../../shared/pipes/month-to-name.pipe';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
-import { toggleControlError } from '../../../../shared/utils/toggleControlError';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { Translate } from '../../../../shared/models/translate.model';
-import { GeneralUtils } from '../../../../shared/utils/general.utils';
-import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
-import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { UserApiService } from '../../../../core/services/user-api.service';
-import { DownloadService } from "../../../../core/services/download.service";
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { Absence, AddAbsenceRequestData, PriorityType, RepeatType } from '../../../../shared/models/absence.model';
+import { Translate } from '../../../../shared/models/translate.model';
+import { MonthToNamePipe } from '../../../../shared/pipes/month-to-name.pipe';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { WeekdayToNamePipe } from '../../../../shared/pipes/weekday-to-name.pipe';
+import { ABSENCE_TYPE_ARRAY, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
+import { getNumberArray } from '../../../../shared/utils/getNumberArray';
+import { toggleControlError } from '../../../../shared/utils/toggleControlError';
 
 interface FormValues {
 	name: string;
@@ -67,7 +65,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	public submitting$$ = new BehaviorSubject<boolean>(false);
 	public absence$$ = new BehaviorSubject<Absence | null>(null);
 	public isAbsenceStaffRoomInvalid = new BehaviorSubject<boolean>(false);
-	public modalData!: { edit: boolean; absenceID: number };
+	public modalData!: { absenceType: (typeof ABSENCE_TYPE_ARRAY)[number]; edit: boolean; absenceID: number };
 	public priorityType = PriorityType;
 	public repeatTypes: any[] = [];
 	public startTimes: NameValue[];
@@ -109,9 +107,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		private nameValuePairPipe: NameValuePairPipe,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
-		private loaderService: LoaderService,
 		private priorityApiSvc: PrioritySlotApiService,
-		private downloadSvc: DownloadService,
 	) {
 		super();
 
@@ -271,7 +267,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
 
-		const addAbsenceReqData: AddAbsenceRequestDate = {
+		let addAbsenceReqData: AddAbsenceRequestData = {
 			...rest,
 			startedAt: this.datePipe.transform(
 				DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`), true),
@@ -290,6 +286,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			repeatFrequency: rest.isRepeat && rest.repeatFrequency ? +rest.repeatFrequency.toString().split(' ')[0] : 0,
 			repeatDays: '',
 		};
+		if (this.modalData.absenceType === 'rooms') {
+			addAbsenceReqData.userList = [];
+		} else {
+			addAbsenceReqData.roomList = [];
+		}
 
 		if (rest.isRepeat && repeatDays?.length) {
 			addAbsenceReqData.repeatDays = repeatDays?.reduce((acc, curr, i) => {
