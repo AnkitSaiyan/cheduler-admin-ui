@@ -8,7 +8,7 @@
 		</header>
 	</section>
 
-	<section class="chart-wrapper align-self-center dfm-mb-16" *ngIf="noDataFound">
+	<section class="chart-wrapper align-self-center dfm-mb-2" *ngIf="noDataFound">
 		<canvas
 			baseChart
 			[type]="'doughnut'"
@@ -28,11 +28,11 @@
 		</div>
 		<div class="d-flex dfm-gap-8" *ngIf="appointmentDetails['Pending']">
 			<span class="font-weight-medium">{{ appointmentDetails['Pending'] ? appointmentDetails['Pending'] : 0 }}</span>
-			<span class="dfm-text-main-400">{{ 'New' | translate }}</span>
+			<span class="dfm-text-main-400">{{ 'Pending' | translate }}</span>
 		</div>
 		<div class="d-flex dfm-gap-8" *ngIf="appointmentDetails['Approved']">
 			<span class="font-weight-medium">{{ appointmentDetails['Approved'] ? appointmentDetails['Approved'] : 0 }}</span>
-			<span class="dfm-text-main-400">{{ 'Confirmed' | translate }}</span>
+			<span class="dfm-text-main-400">{{ 'Approved' | translate }}</span>
 		</div>
 		<div class="d-flex dfm-gap-8" *ngIf="appointmentDetails['Cancelled']">
 			<span class="font-weight-medium">{{ appointmentDetails['Cancelled'] ? appointmentDetails['Cancelled'] : 0 }}</span>

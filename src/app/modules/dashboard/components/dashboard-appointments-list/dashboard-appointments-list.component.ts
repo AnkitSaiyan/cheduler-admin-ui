@@ -80,7 +80,13 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public filteredAppointments$$: BehaviorSubject<any[]>;
 
-	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+	public upcomingTableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
+
+	public pastTableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
 		isInitialLoading: true,
 		isLoadingMore: false,
@@ -122,6 +128,12 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	public clipboardData: string = '';
 
 	private paginationData: PaginationData | undefined;
+
+	public appointmentViewControl = new FormControl();
+
+	public appointmentListData: NameValue[] = [];
+
+	public isUpcomingAppointmentsDashboard: boolean = true;
 
 	constructor(
 		private downloadSvc: DownloadService,
@@ -182,23 +194,43 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		//       }
 		//     }
 		//   });
+
+		this.appointmentApiSvc.appointmentListData$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => {
+				this.appointmentListData = items;
+			},
+		});
 	}
 
 	public ngOnInit() {
+		if(localStorage.getItem('isUpcomingAppointmentsDashboard'))
+			this.isUpcomingAppointmentsDashboard = localStorage.getItem('isUpcomingAppointmentsDashboard') == 'true';	
+
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => (this.downloadItems = items),
 		});
 
-		this.filteredAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (items) => {
-				this.tableData$$.next({
-					items,
-					isInitialLoading: false,
-					isLoading: false,
-					isLoadingMore: false,
-				});
-			},
-		});
+		this.filteredAppointments$$
+			.pipe(
+				takeUntil(this.destroy$$),
+				map((data) => [data.filter((item) => item.isEditable), data.filter((item) => !item.isEditable)]),
+			)
+			.subscribe({
+				next: (items) => {
+					this.upcomingTableData$$.next({
+						items: items[0],
+						isInitialLoading: false,
+						isLoading: false,
+						isLoadingMore: false,
+					});
+					this.pastTableData$$.next({
+						items: items[1],
+						isInitialLoading: false,
+						isLoading: false,
+						isLoadingMore: false,
+					});
+				},
+			});
 
 		this.appointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (appointment) => this.filteredAppointments$$.next([...appointment]),
@@ -327,6 +359,16 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				this.appointmentApiSvc.pageNo = 1;
 			},
 		});
+		this.appointmentViewControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
+			if (value) {
+				this.isUpcomingAppointmentsDashboard = value == 'upcoming';
+				localStorage.setItem('isUpcomingAppointmentsDashboard', JSON.stringify(this.isUpcomingAppointmentsDashboard));
+			}
+			this.selectedAppointmentIDs = [];
+		});
+		setTimeout(() => {
+			this.appointmentViewControl.setValue(this.isUpcomingAppointmentsDashboard ? 'upcoming' : 'past');
+		}, 0);
 	}
 
 	public override ngOnDestroy() {
@@ -428,7 +470,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		}
 	}
 
-	public navigateToView(e: TableItem, appointments: Appointment[]) {
+	public navigateToView(e: TableItem, appointments: any[]) {
 		if (e?.id) {
 			this.router.navigate([`/appointment/${e.id}/view`], { replaceUrl: true });
 		}
@@ -553,7 +595,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	public onScroll(e: any): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.appointmentApiSvc.appointmentPageNo = this.appointmentApiSvc.appointmentPageNo + 1;
-			this.tableData$$.value.isLoadingMore = true;
+			this.upcomingTableData$$.value.isLoadingMore = true;
 		}
 	}
 
@@ -574,5 +616,12 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			  },
 			})
 		// this.appointmentApiSvc.getDocumentById$(id).subscribe(res => console.log(res));
+	}
+
+	public manageActionColumn([...data]): Array<string> {
+		if (data.find((title) => title === 'Actions' || title === 'Acties')) {
+			data.pop();
+		}
+		return data
 	}
 }

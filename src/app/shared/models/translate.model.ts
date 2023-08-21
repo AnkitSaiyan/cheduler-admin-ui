@@ -286,9 +286,9 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Dec',
 		[DUTCH_BE]: 'Dec',
 	},
-	future: {
-		[ENG_BE]: 'Future',
-		[DUTCH_BE]: 'Toekomst',
+	upcoming: {
+		[ENG_BE]: 'Upcoming',
+		[DUTCH_BE]: 'Komende',
 	},
 	past: {
 		[ENG_BE]: 'Past',
@@ -718,6 +718,24 @@ export const Translate = Object.freeze({
 		Months: {
 			[ENG_BE]: 'Months',
 			[DUTCH_BE]: 'maand(en)',
+		},
+	},
+	AppointmentStatus: {
+		Total: {
+			[ENG_BE]: 'Total',
+			[DUTCH_BE]: 'Totaal',
+		},
+		Cancelled: {
+			[ENG_BE]: 'Cancelled',
+			[DUTCH_BE]: 'Geannuleerd',
+		},
+		Approved: {
+			[ENG_BE]: 'Approved',
+			[DUTCH_BE]: 'Goedgekeurd',
+		},
+		Pending: {
+			[ENG_BE]: 'Pending',
+			[DUTCH_BE]: 'In afwachting',
 		},
 	},
 	Monday: {
