@@ -41,7 +41,8 @@ export class PatientsBarChartComponent extends DestroyableComponent implements O
         {
           barPercentage: 1.0,
           // categoryPercentage: 1.0,
-          data: [65, 59, 80, 81, 56, 55, 40],
+          // data: [65, 59, 80, 81, 56, 55, 40],
+          data: [],          
           backgroundColor: ['#DDD6FE'],
           hoverBackgroundColor: ['#DDD6FE'],
         },

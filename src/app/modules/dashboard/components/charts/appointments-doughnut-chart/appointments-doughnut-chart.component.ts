@@ -3,8 +3,10 @@ import { ChartConfiguration, ChartData, ChartOptions } from 'chart.js';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import { takeUntil } from 'rxjs';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { AppointmentChartDataType } from 'src/app/shared/models/dashboard.model';
+import { Translate } from 'src/app/shared/models/translate.model';
 
 @Component({
 	selector: 'dfm-appointments-doughnut-chart',
@@ -30,23 +32,37 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
 
 	public doughnutChartPlugins = [pluginDataLabels.default];
 
-	constructor(private dashboardApiService: DashboardApiService) {
+	private selectedLang!: string;
+
+	private chartData!: AppointmentChartDataType[];
+
+	constructor(private dashboardApiService: DashboardApiService, private shareDataSvc: ShareDataService) {
 		super();
+		this.shareDataSvc.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (lang) => {
+				this.selectedLang = lang;
+				if(this.chartData)this.createChartConfig(this.chartData);
+			},
+			
+		});
 	}
 
 	public ngOnInit(): void {
 		this.dashboardApiService.appointmentDoughnutChartData$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (chartData) => {
+				this.chartData = chartData;
 				this.createChartConfig(chartData);
 			},
 		});
 	}
 
 	private createChartConfig(chartData: AppointmentChartDataType[]): void {
+		this.doughnutChartLabels = [];
 		chartData.forEach((data) => {
 			this.appointmentDetails[data.label] = data.value;
-			this.doughnutChartLabels.push(data.label === 'Approved' ? 'Confirmed' : data.label);
-		});
+			// this.doughnutChartLabels.push(data.label === 'Approved' ? 'Confirmed' : data.label);
+			this.doughnutChartLabels.push(Translate.AppointmentStatus[data.label][this.selectedLang]);
+		});		
 
 		if (this.appointmentDetails.Total === 0 && this.appointmentDetails.Pending === 0 && this.appointmentDetails.Approved === 0) {
 			this.noDataFound = false;
