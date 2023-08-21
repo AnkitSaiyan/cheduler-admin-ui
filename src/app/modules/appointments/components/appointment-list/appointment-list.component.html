@@ -163,8 +163,8 @@
     *ngIf="filteredAppointments$$ | async as appointments"
   >
     <ng-container *ngIf="(calendarView$$ | async) === false">
-      <ng-container *ngIf="isFutureAppointments">
-      <dfm-data-table  [data]="(futureTableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
+      <ng-container *ngIf="isUpcomingAppointments">
+      <dfm-data-table  [data]="(upcomingTableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                       [clearSelected$]="clearSelected$$" [stickyActions]="true"  noDataMessage="{{ 'NoAppointmentsFound' | translate }}"
                       [rowClickable]="true" [stickyCheckbox]="true" (rowClicked)="navigateToView($event)"
                       [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
@@ -208,7 +208,7 @@
         </ng-template>
       </dfm-data-table>
     </ng-container>
-      <ng-container *ngIf="!isFutureAppointments">
+      <ng-container *ngIf="!isUpcomingAppointments">
         <dfm-data-table  [data]="(pastTableData$$ | async) ?? {items: []}" [selectable]="false"
                       noDataMessage="{{ 'NoAppointmentsFound' | translate }}"
                       [rowClickable]="true"  (rowClicked)="navigateToView($event)"

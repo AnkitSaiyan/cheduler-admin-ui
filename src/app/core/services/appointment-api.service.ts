@@ -47,8 +47,8 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	public appointmentListData: NameValue[] = [
 		{
-			name: 'future',
-			value: 'future',
+			name: 'upcoming',
+			value: 'upcoming',
 		},
 		{
 			name: 'past',

@@ -7,6 +7,19 @@
   }
 }
 
+.appointment-status-dropdown{
+  max-width: 150px;
+}
+
+.ap-li-button-dropdown-group-border{
+  border: 1px solid var(--dfm-input-border);
+  border-radius: 8px;
+}
+
+.btn-icon.btn-icon-secondary-gray{
+  border: none!important;
+}
+
 .view-link{
   color: blue;
   text-decoration: underline;

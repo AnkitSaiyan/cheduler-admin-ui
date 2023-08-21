@@ -89,7 +89,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public filteredAppointments$$: BehaviorSubject<Appointment[]>;
 
-	public futureTableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+	public upcomingTableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
 		isInitialLoading: true,
 		isLoadingMore: false,
@@ -142,7 +142,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public appointmentListData: NameValue[] = [];
 
-	public isFutureAppointments: boolean = true;
+	public isUpcomingAppointments: boolean = true;
 
 	constructor(
 		private downloadSvc: DownloadService,
@@ -204,8 +204,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	public ngOnInit() {
-		if(localStorage.getItem('isFutureAppointments'))
-			this.isFutureAppointments = localStorage.getItem('isFutureAppointments') == 'true';	
+		if(localStorage.getItem('isUpcomingAppointments'))
+			this.isUpcomingAppointments = localStorage.getItem('isUpcomingAppointments') == 'true';	
 
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
@@ -216,7 +216,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			)
 			.subscribe({
 				next: (items) => {
-					this.futureTableData$$.next({
+					this.upcomingTableData$$.next({
 						items: items[0],
 						isInitialLoading: false,
 						isLoading: false,
@@ -354,13 +354,13 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 		this.appointmentViewControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			if (value) {
-				this.isFutureAppointments = value == 'future';
-				localStorage.setItem('isFutureAppointments', JSON.stringify(this.isFutureAppointments));
+				this.isUpcomingAppointments = value == 'upcoming';
+				localStorage.setItem('isUpcomingAppointments', JSON.stringify(this.isUpcomingAppointments));
 			}
 			this.selectedAppointmentIDs = [];
 		});
 		setTimeout(() => {
-			this.appointmentViewControl.setValue(this.isFutureAppointments ? 'future' : 'past');
+			this.appointmentViewControl.setValue(this.isUpcomingAppointments ? 'upcoming' : 'past');
 		}, 0);
 	}
 
@@ -368,7 +368,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		super.ngOnDestroy();
 	}
 
-	public manageActionColumn([...data]) {
+	public manageActionColumn([...data]): Array<any> {
 		if (data.find(({ title }) => title === 'Actions' || title === 'Acties')) {
 			data.pop();
 		}
@@ -523,7 +523,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			queryParamsHandling: 'merge',
 		});
 		setTimeout(() => {
-			this.appointmentViewControl.setValue(this.isFutureAppointments ? 'future' : 'past');
+			this.appointmentViewControl.setValue(this.isUpcomingAppointments ? 'upcoming' : 'past');
 		}, 0);
 	}
 
@@ -645,7 +645,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	public onScroll(e: any): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.appointmentApiSvc.appointmentPageNo = this.appointmentApiSvc.appointmentPageNo + 1;
-			this.futureTableData$$.value.isLoadingMore = true;
+			this.upcomingTableData$$.value.isLoadingMore = true;
 		}
 	}
 
