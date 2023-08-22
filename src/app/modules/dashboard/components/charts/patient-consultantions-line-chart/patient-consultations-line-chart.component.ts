@@ -22,7 +22,9 @@ export class PatientConsultationsLineChartComponent extends DestroyableComponent
 				beginAtZero: true,
 				ticks: {
 					includeBounds: true,
+					precision: 0,
 				},
+				suggestedMax: 50,
 			},
 		},
 	};
