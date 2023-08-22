@@ -405,8 +405,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const startCalendarMinute = startCalendarDate.getMinutes();
 		const barHeight = 1;
 		const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-		const top =
-			(startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
+		const top = (startMinute + startHour * 60) * this.pixelsPerMin - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
+
 		// if (top < 0) return 0;
 		if (top % 20) {
 			return Math.floor(top / 20) * 20 + 20;

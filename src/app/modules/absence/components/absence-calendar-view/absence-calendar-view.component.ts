@@ -241,14 +241,14 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	private dataModification({ data: absence }) {
 		const absenceSlot = {};
 		absence
-			.map((value) => ({
+			?.map((value) => ({
 				...value,
 				startedAt: value.startedAt,
 				endedAt: value.endedAt,
 				slotStartTime: this.utcToLocalPipe.transform(this.datePipe.transform(value.startedAt, 'HH:mm:ss'), true),
 				slotEndTime: this.utcToLocalPipe.transform(this.datePipe.transform(value.endedAt, 'HH:mm:ss'), true),
 			}))
-			.forEach((absence: any) => {
+			?.forEach((absence: any) => {
 				let { repeatFrequency } = absence;
 				const { absenceId, name, info, startedAt, endedAt, roomName, userName } = absence;
 				const startDate = new Date(new Date(absence.startedAt).toDateString());
@@ -340,7 +340,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	}
 
 	private dataModificationForDay(absenceSlot: { [key: string]: Absence[] }) {
-		return absenceSlot[this.datePipe.transform(this.selectedDate$$.value, 'dd-M-yyyy')!].reduce((acc, item) => {
+		return absenceSlot?.[this.datePipe.transform(this.selectedDate$$.value, 'dd-M-yyyy')!]?.reduce((acc, item) => {
 			const key = (item?.roomName ?? item?.userName)!;
 			if (acc[key]) {
 				acc[key] = [...acc[key], item];
@@ -500,6 +500,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.practiceHourMinMax$$.next(minMaxValue);
 	}
 }
+
+
 
 
 

@@ -16,7 +16,18 @@ import { TranslateService } from '@ngx-translate/core';
 export class PatientConsultationsLineChartComponent extends DestroyableComponent implements OnInit {
 	public lineChartLabels = ['Total', 'New', 'Unconfirmed'];
 
-	public lineChartOptions!: ChartOptions<'line'>;
+	public lineChartOptions: ChartOptions<'line'> = {
+		scales: {
+			y: {
+				beginAtZero: true,
+				ticks: {
+					includeBounds: true,
+					precision: 0,
+				},
+				suggestedMax: 50,
+			},
+		},
+	};
 
 	public lineChartConfig!: ChartConfiguration<'line'>['data'];
 
