@@ -1,5 +1,5 @@
 <div class="d-flex flex-column dfm-gap-16 position-relative ap-ls-main-wrapper">
-  <button  mat-mini-fab color="primary" *ngIf="(calendarView$$ | async) === false" class="refresh-btn" (click)="onRefresh()">
+  <button  mat-mini-fab color="primary" *ngIf="(calendarView$$ | async) === false" class="refresh-btn" (click)="isResetBtnDisable ? $event.preventDefault() : onRefresh();">
     <mat-icon>refresh</mat-icon>
   </button>
   <section>
@@ -61,7 +61,7 @@
             triggers="mouseenter:mouseleave"
             popoverClass="popover-p-8"
             [openDelay]="200"
-            (click)="onRefresh()"
+            (click)="isResetBtnDisable ? $event.preventDefault() : onRefresh();"
           ></dfm-button-icon>
         </div>
       </div>

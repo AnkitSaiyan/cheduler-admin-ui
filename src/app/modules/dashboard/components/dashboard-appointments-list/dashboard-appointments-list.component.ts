@@ -135,6 +135,8 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public isUpcomingAppointmentsDashboard: boolean = true;
 
+	public isResetBtnDisable: boolean = true;
+
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -407,6 +409,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public onRefresh(): void {
 		// this.appointmentApiSvc.refresh();
+		this.isResetBtnDisable = true;
 		this.appointmentApiSvc.appointmentPageNo = 1;
 	}
 
@@ -571,6 +574,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 					//
 					this.appointments$$.next(appointments?.data);
 					this.filteredAppointments$$.next(appointments?.data);
+					this.isResetBtnDisable = false;
 
 					// appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
 					//
