@@ -144,6 +144,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public isUpcomingAppointments: boolean = true;
 
+	public isResetBtnDisable:boolean = true;
+
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -636,6 +638,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public onRefresh(): void {
 		this.appointmentApiSvc.refresh();
+		this.isResetBtnDisable = true;
 		this.appointmentApiSvc.appointmentPageNo = 1;
 	}
 
@@ -683,6 +686,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				next: (appointments) => {
 					this.appointments$$.next(appointments?.data);
 					this.filteredAppointments$$.next(appointments?.data);
+					this.isResetBtnDisable = false;
 				},
 			});
 	}

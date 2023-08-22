@@ -48,7 +48,7 @@
 							triggers="mouseenter:mouseleave"
 							popoverClass="popover-p-8"
 							[openDelay]="200"
-							(click)="onRefresh()"
+							(click)="isResetBtnDisable ? $event.preventDefault() : onRefresh();"
 						></dfm-button-icon>
 					</div>
 				</div>
@@ -102,7 +102,7 @@
 					triggers="mouseenter:mouseleave"
 					popoverClass="popover-p-8"
 					[openDelay]="200"
-					(click)="onRefresh()"
+					(click)="isResetBtnDisable ? $event.preventDefault() : onRefresh();"
 				></dfm-button-icon>
 
 				<div class="d-flex align-items-center dfm-button-group-wrapper">
