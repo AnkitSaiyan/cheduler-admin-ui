@@ -280,7 +280,7 @@
 	"PatientLastName": "Naam patiënt",
 	"PatientTelephone": "Telefoon patiënt",
 	"PatientEmail": "E-mail patiënt",
-	"EnterPatientEmail": "Voer e-mail van de patiënt in",
+	"EnterPatientEmail": "Gelieve e-mail adres in te vullen",
 	"CommentsClinicalData": "Opmerkingen / klinische gegevens",
 	"SelectExams": "Onderzoek selecteren",
 	"SelectDoctor": "Selecteer dokter",

@@ -202,9 +202,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		});
 	}
 
-	public ngOnInit() {
-		if(localStorage.getItem('isUpcomingAppointmentsDashboard'))
-			this.isUpcomingAppointmentsDashboard = localStorage.getItem('isUpcomingAppointmentsDashboard') == 'true';	
+	public ngOnInit() {	
 
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => (this.downloadItems = items),
@@ -362,7 +360,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		this.appointmentViewControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			if (value) {
 				this.isUpcomingAppointmentsDashboard = value == 'upcoming';
-				localStorage.setItem('isUpcomingAppointmentsDashboard', JSON.stringify(this.isUpcomingAppointmentsDashboard));
 			}
 			this.selectedAppointmentIDs = [];
 		});
