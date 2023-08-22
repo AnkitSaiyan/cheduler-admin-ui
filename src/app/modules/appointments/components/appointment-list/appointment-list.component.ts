@@ -203,9 +203,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		});
 	}
 
-	public ngOnInit() {
-		if(localStorage.getItem('isUpcomingAppointments'))
-			this.isUpcomingAppointments = localStorage.getItem('isUpcomingAppointments') == 'true';	
+	public ngOnInit() {	
 
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
@@ -355,7 +353,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.appointmentViewControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			if (value) {
 				this.isUpcomingAppointments = value == 'upcoming';
-				localStorage.setItem('isUpcomingAppointments', JSON.stringify(this.isUpcomingAppointments));
 			}
 			this.selectedAppointmentIDs = [];
 		});
