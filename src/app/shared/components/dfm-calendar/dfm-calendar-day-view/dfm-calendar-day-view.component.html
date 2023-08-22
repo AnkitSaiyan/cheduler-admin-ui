@@ -43,7 +43,7 @@
                                   d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z"
                                   stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                               </svg>
-                  
+
                               <mat-menu #menu="matMenu" style="z-index: 5;">
                                 <button mat-menu-item (click)="changeRadiologists(data);">
                                   <div class="icon-20">
@@ -51,7 +51,7 @@
                                   </div>
                                   <span>{{ 'ChangeRadiologist' | translate }}</span>
                                 </button>
-                  
+
                                 <button mat-menu-item [routerLink]="['/', 'appointment', data.id, 'edit']" queryParamsHandling="merge"
                                   [state]="{ edit: true, comingFromRoute: 'appointment' }">
                                   <div class="icon-20">
@@ -59,9 +59,9 @@
                                   </div>
                                   <span>{{ 'Edit' | translate }}</span>
                                 </button>
-                  
+
                                 <div class="dropdown-divider"></div>
-                  
+
                                 <button mat-menu-item (click)=" deleteAppointment(data.id);">
                                   <div class="icon-20">
                                     <dfm-icon name="trash-01"></dfm-icon>
@@ -108,7 +108,7 @@
                                       d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z"
                                       stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                   </svg>
-                      
+
                                   <mat-menu #menu="matMenu" style="z-index: 5;">
                                     <button mat-menu-item (click)="changeRadiologists(data);">
                                       <div class="icon-20">
@@ -116,7 +116,7 @@
                                       </div>
                                       <span>{{ 'ChangeRadiologist' | translate }}</span>
                                     </button>
-                      
+
                                     <button mat-menu-item [routerLink]="['/', 'appointment', data.id, 'edit']" queryParamsHandling="merge"
                                       [state]="{ edit: true, comingFromRoute: 'appointment' }">
                                       <div class="icon-20">
@@ -124,9 +124,9 @@
                                       </div>
                                       <span>{{ 'Edit' | translate }}</span>
                                     </button>
-                      
+
                                     <div class="dropdown-divider"></div>
-                      
+
                                     <button mat-menu-item (click)=" deleteAppointment(data.id);">
                                       <div class="icon-20">
                                         <dfm-icon name="trash-01"></dfm-icon>
@@ -176,7 +176,7 @@
                                   </div>
                                   <span>{{ 'ChangeRadiologist' | translate }}</span>
                                 </button>
-                              
+
                                 <button mat-menu-item [routerLink]="['/', 'appointment', data.id, 'edit']" queryParamsHandling="merge"
                                   [state]="{ edit: true, comingFromRoute: 'appointment' }">
                                   <div class="icon-20">
@@ -184,9 +184,9 @@
                                   </div>
                                   <span>{{ 'Edit' | translate }}</span>
                                 </button>
-                              
+
                                 <div class="dropdown-divider"></div>
-                              
+
                                 <button mat-menu-item (click)=" deleteAppointment(data.id);">
                                   <div class="icon-20">
                                     <dfm-icon name="trash-01"></dfm-icon>
@@ -273,7 +273,7 @@
                                         d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z"
                                         stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
-                        
+
                                     <mat-menu #menu="matMenu" style="z-index: 5;">
                                       <button mat-menu-item (click)="changeRadiologists(data);">
                                         <div class="icon-20">
@@ -281,7 +281,7 @@
                                         </div>
                                         <span>{{ 'ChangeRadiologist' | translate }}</span>
                                       </button>
-                        
+
                                       <button mat-menu-item [routerLink]="['/', 'appointment', data.id, 'edit']" queryParamsHandling="merge"
                                         [state]="{ edit: true, comingFromRoute: 'appointment' }">
                                         <div class="icon-20">
@@ -289,9 +289,9 @@
                                         </div>
                                         <span>{{ 'Edit' | translate }}</span>
                                       </button>
-                        
+
                                       <div class="dropdown-divider"></div>
-                        
+
                                       <button mat-menu-item (click)=" deleteAppointment(data.id);">
                                         <div class="icon-20">
                                           <dfm-icon name="trash-01"></dfm-icon>
@@ -307,18 +307,18 @@
                                       <span class="font-weight-medium"> {{"Exam" | translate}}</span>
                                       <span *ngIf="data.exams?.length">{{ data.exams | joinWithAnd : 'name'}}</span>
                                     </div>
-      
+
                                     <div class="d-flex flex-column dfm-gap-4">
                                       <span class="font-weight-medium dfm-mt-8"> {{"SelectedSlot" | translate}} </span>
                                       <span class="calendar-comments-text">{{ data.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }} -
                                         {{ data.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
                                     </div>
-      
+
                                     <div class="d-flex flex-column dfm-gap-4">
                                       <span class="font-weight-medium dfm-mt-8"> {{"Comments" | translate}} </span>
                                       <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }}</span>
                                     </div>
-      
+
                                     <div class="d-flex flex-column dfm-gap-4">
                                       <span class="font-weight-medium dfm-mt-8">{{"Staff" | translate}}</span>
                                       <ng-container *ngIf="data.exams | isData : 'users'; else dash">
@@ -344,7 +344,7 @@
                               </div>
                             </div>
                           </div>
-                          
+
                         </mat-menu>
                       </div>
                     </div>
@@ -639,11 +639,11 @@
           </div>
         </div>
       </div>
-      <!-- <ng-container *ngIf="!timeSlot?.timings?.length">
+      <ng-container *ngIf="!timeSlot?.timings?.length">
         <div class="d-flex flex-1 align-items-center justify-content-center">
           <p >{{"PracticeNotAvailableForDay" | translate}}</p>
         </div>
-      </ng-container> -->
+      </ng-container>
     </div>
   </div>
 </div>
