@@ -162,6 +162,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				});
 			});
 		}
+    this.cdr.detectChanges();
 	}
 
 	public ngOnInit(): void {
@@ -288,7 +289,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		if (
 			DateTimeUtils.UTCDateToLocalDate(start)?.getTime() > DateTimeUtils.UTCDateToLocalDate(endAbsenceDate)?.getTime() ||
-			DateTimeUtils.UTCDateToLocalDate(timingEnd)?.getTime() < DateTimeUtils.UTCDateToLocalDate(start)?.getTime()
+			DateTimeUtils.UTCDateToLocalDate(timingEnd)?.getTime() < DateTimeUtils.UTCDateToLocalDate(end, true)?.getTime()
 		) {
 			if (storeHiddenAppointment) {
 				const key = groupedData?.[0]?.roomName || groupedData?.[0]?.userName;
