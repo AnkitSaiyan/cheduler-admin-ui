@@ -206,6 +206,9 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public ngOnInit() {	
 
+		console.log('test commit');
+		
+
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => (this.downloadItems = items),
 		});
