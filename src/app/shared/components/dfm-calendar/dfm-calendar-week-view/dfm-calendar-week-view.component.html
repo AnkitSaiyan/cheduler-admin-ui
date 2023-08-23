@@ -31,6 +31,93 @@
                 {{ day[0] }}
               </div>
             </h3>
+            <div class="calender-month-view-day-exam-event-container" *ngIf="hideAbsenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]?.length" #parentAbsenceElement >
+              <div *ngFor="let data of hideAbsenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]"  [ngbPopover]="mainAbsencePopover" #popOver="ngbPopover" triggers="hover" [autoClose]="'outside'" container="body">
+                <div class="calender-month-view-day-exam-event-details d-flex" >
+                  <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10 ">
+                    <span  class="text-truncate">
+                      <b>{{data?.id}} - {{data?.name | titlecase }}</b>
+                    </span>
+                    <span>
+                    {{ data?.start}}
+                    -
+                    {{ data?.end}}
+                  </span>
+                  </span>
+                </div>
+                <ng-template #mainAbsencePopover>
+                  <div class="calender-day-view-event-details-expanded">
+
+
+                    <div class="d-flex flex-column dfm-gap-4">
+                      <span class="font-weight-medium dfm-mt-8"> {{"SelectedSlot" | translate}} </span>
+                      <span class="calendar-comments-text">{{ data.start }} -
+                        {{ data.end }}</span>
+                    </div>
+
+                    <div class="d-flex flex-column dfm-gap-4">
+                      <span class="font-weight-medium dfm-mt-8"> {{"Info" | translate}} </span>
+                      <span class="calendar-comments-text"> {{ data.info | dashIfNothing }}</span>
+                    </div>
+
+                    <div class="d-flex flex-column dfm-gap-4">
+                      <span class="font-weight-medium dfm-mt-8"> {{(data?.roomName ? "Room" : 'Staff') | translate}} </span>
+                      <span class="calendar-comments-text"> {{ (data.roomName ?? data.userName) | dashIfNothing }}</span>
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+
+              <!-- <div class="calender-month-view-day-exam-event-details more-btn" [ngbPopover]="eventDetails" #popOver="ngbPopover" triggers="click" [autoClose]="false" container="body" *ngIf="parentElement.scrollHeight > parentElement.clientHeight">
+                <span class="calender-month-view-day-exam-event-title text-truncate">View more</span>
+              </div> -->
+              <div *ngIf="parentAbsenceElement.scrollHeight > parentAbsenceElement.clientHeight" class="calender-month-view-day-exam-event-details more-btn" [matMenuTriggerFor]="absenceEventDetail">
+                <span class="calender-month-view-day-exam-event-title text-truncate">View more</span>
+
+                <mat-menu #absenceEventDetail="matMenu">
+                  <div class="calender-month-view-day-exam-details-expanded">
+                    <div class="dfm-card-container" style="padding: 0 8px;">
+                      <div *ngFor="let data of hideAbsenceData?.[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]"  [ngbPopover]="absencePopover" #popOver="ngbPopover" triggers="hover" [autoClose]="'outside'" container="body">
+                        <div class="calender-month-view-day-exam-event-details d-flex" >
+                          <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10" >
+                            <span class="text-truncate">
+                              <b>{{data?.id}} - {{data?.name | titlecase }}</b>
+                            </span>
+                            <span>
+                              {{ data?.start}}
+                              -
+                              {{ data?.end}}
+                            </span>
+                          </span>
+                        </div>
+                        <ng-template #absencePopover>
+                          <div class="calender-day-view-event-details-expanded">
+
+
+                            <div class="d-flex flex-column dfm-gap-4">
+                              <span class="font-weight-medium dfm-mt-8"> {{"SelectedSlot" | translate}} </span>
+                              <span class="calendar-comments-text">{{ data.start }} -
+                                {{ data.end }}</span>
+                            </div>
+
+                            <div class="d-flex flex-column dfm-gap-4">
+                              <span class="font-weight-medium dfm-mt-8"> {{"Info" | translate}} </span>
+                              <span class="calendar-comments-text"> {{ data.info | dashIfNothing }}</span>
+                            </div>
+
+                            <div class="d-flex flex-column dfm-gap-4">
+                              <span class="font-weight-medium dfm-mt-8"> {{(data?.roomName ? "Room" : 'Staff') | translate}} </span>
+                              <span class="calendar-comments-text"> {{ (data.roomName ?? data.userName) | dashIfNothing }}</span>
+                            </div>
+                          </div>
+                        </ng-template>
+                      </div>
+                    </div>
+                  </div>
+
+                </mat-menu>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -184,7 +271,7 @@
               <ng-container *ngIf="absenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                 <ng-container *ngFor="let groupedData of absenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                   <div
-                    *ngIf="getAbsenceHeight([groupedData]) as eventHeight"
+                    *ngIf="getAbsenceTop([groupedData]) >= 0 && getAbsenceHeight([groupedData]) as eventHeight"
                     class="calendar-week-view-event-container"
                     [ngStyle]="{
                       'top.px': getAbsenceTop([groupedData]),

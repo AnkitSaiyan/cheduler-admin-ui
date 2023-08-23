@@ -141,6 +141,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getDurationFn = (s, e) => getDurationMinutes(s, e);
 
+	public hideAbsenceData = {};
+
 	private changeDateDebounce$$ = new Subject<number>();
 
 	constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private modalSvc: ModalService, private draggableSvc: DraggableService) {
@@ -154,6 +156,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		if (this.showGrayOutSlot) {
 			this.getGrayOutArea();
 		}
+
+		this.setHideAbsence(this.absenceData);
 	}
 
 	public ngOnInit(): void {
@@ -220,6 +224,28 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		date.setMinutes(date.getMinutes() - (date.getMinutes() % 5));
 		this.selectedDate = date;
 		this.emitDate(isWeekChange);
+	}
+
+	private setHideAbsence(absence: { [key: string]: any[] }) {
+		this.hideAbsenceData = {};
+		if (!Object.keys(absence)?.length) {
+			return;
+		}
+		Object.entries(absence).forEach(([key, data]) => {
+			data.forEach((absence) => {
+				if (
+					DateTimeUtils.TimeToNumber(absence.end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
+					DateTimeUtils.TimeToNumber(absence.start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
+				) {
+					if (this.hideAbsenceData[key]) {
+						this.hideAbsenceData[key] = [...this.hideAbsenceData[key], absence];
+					} else {
+						this.hideAbsenceData[key] = [absence];
+					}
+				}
+			});
+		});
+		console.log(this.hideAbsenceData, 'hide absence');
 	}
 
 	private emitDate(isWeekChange: boolean = false) {
@@ -383,10 +409,14 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			DateTimeUtils.TimeToNumber(groupedData?.[0]?.start) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) &&
 			DateTimeUtils.TimeToNumber(groupedData?.[0]?.end) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min))
 		) {
+			const endTime =
+				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) > DateTimeUtils.TimeToNumber(groupedData?.[0]?.end)
+					? DateTimeUtils?.LocalToUTCTimeTimeString(groupedData?.[0]?.end)
+					: this.limit.max;
 			return (
 				getDurationMinutes(
 					DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min), true),
-					DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.max), true),
+					DateTimeUtils.UTCDateToLocalDate(this.myDate(endTime), true),
 					false,
 				) * this.pixelsPerMin
 			);
@@ -453,6 +483,12 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const horizontalBarHeight = (this.getAbsenceHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 		const top =
 			(startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
+		if (
+			DateTimeUtils.TimeToNumber(groupedData?.[0].end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
+			DateTimeUtils.TimeToNumber(groupedData?.[0].start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
+		) {
+			return -1;
+		}
 		if (
 			DateTimeUtils.TimeToNumber(groupedData?.[0]?.start) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) &&
 			DateTimeUtils.TimeToNumber(groupedData?.[0]?.end) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min))

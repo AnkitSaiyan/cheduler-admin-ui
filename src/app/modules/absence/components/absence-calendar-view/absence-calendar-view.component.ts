@@ -148,6 +148,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 				return this.absenceApiSvc.absencesForCalendar$(absenceType, fromDate, toDate);
 			}),
 			map(this.dataModification.bind(this)),
+			tap(console.log),
 			takeUntil(this.destroy$$),
 		);
 
@@ -500,6 +501,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.practiceHourMinMax$$.next(minMaxValue);
 	}
 }
+
 
 
 
