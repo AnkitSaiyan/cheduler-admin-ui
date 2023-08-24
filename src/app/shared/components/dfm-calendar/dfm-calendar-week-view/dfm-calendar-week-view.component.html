@@ -271,19 +271,20 @@
               <ng-container *ngIf="absenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                 <ng-container *ngFor="let groupedData of absenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                   <div
-                    *ngIf="getAbsenceTop([groupedData]) >= 0 && getAbsenceHeight([groupedData]) as eventHeight"
+                    *ngIf="getAbsenceTop(groupedData) >= 0 && getAbsenceHeight(groupedData) as eventHeight"
                     class="calendar-week-view-event-container"
                     [ngStyle]="{
-                      'top.px': getAbsenceTop([groupedData]),
+                      'top.px': getAbsenceTop(groupedData),
                       'height.px': eventHeight
                     }"
                   >
                     <div
                       class="calendar-week-view-event-details-container"
-                      [ngClass]="{ 'justify-content-center p-0': getAbsenceHeight([groupedData]) <= 40 }"
+                      *ngFor="let data of groupedData"
+                      [ngClass]="{ 'justify-content-center p-0': getAbsenceHeight([data]) <= 40 }"
                       [ngStyle]="{
-                        'margin-top.px': getDurationMinutes(groupedData.startedAt, groupedData.startedAt) * 4,
-                        'height.px': getDurationMinutes(groupedData.startedAt, groupedData.endedAt) * 4
+                        'margin-top.px': getMargin(groupedData?.[0].startedAt, data.startedAt) * 4,
+                        'height.px': getDurationMinutes(data.startedAt, data.endedAt) * 4
                       }"
                       triggers="click"
                       container="body"
@@ -295,33 +296,33 @@
                       <ng-template #absenceDetails>
                         <div class="calendar-week-view-event-details-expanded">
                           <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
-                            {{ (groupedData.name | titlecase) }}
+                            {{ (data.name | titlecase) }}
                           </span>
 
                             <div class="calendar-week-view-event-patients-container accordion-content">
                               <div class="calendar-week-view-event-patients-container">
                                 <div class="d-flex flex-column dfm-p-8">
                                   <span class="text-sm dfm-text-main-500">
-                                    {{ groupedData.start }}
+                                    {{ data.start }}
                                     -
-                                    {{ groupedData.end }}
+                                    {{ data.end }}
                                   </span>
                                 </div>
                               </div>
                               <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
                                 <span class="font-weight-medium dfm-mt-8"> {{ 'Info' | translate }} </span>
-                                <span class="calendar-comments-text"> {{ groupedData?.info | dashIfNothing }} </span>
-                                <span class="font-weight-medium dfm-mt-8">{{ (groupedData?.roomName ? 'Room' : 'Staff') | translate }}</span>
-                                <span class="calendar-comments-text"> {{ (groupedData?.roomName ? groupedData?.roomName : groupedData?.userName) | dashIfNothing }} </span>
+                                <span class="calendar-comments-text"> {{ data?.info | dashIfNothing }} </span>
+                                <span class="font-weight-medium dfm-mt-8">{{ (data?.roomName ? 'Room' : 'Staff') | translate }}</span>
+                                <span class="calendar-comments-text"> {{ (data?.roomName ? data?.roomName : data?.userName) | dashIfNothing }} </span>
                               </div>
                             </div>
                           </div>
                       </ng-template>
-                      <ng-container *ngIf="getAbsenceHeight([groupedData]) as childEventHeight">
-                        <span class="calendar-week-view-event-title" *ngIf="childEventHeight >= 60">{{ groupedData.name | titlecase}}</span>
+                      <ng-container *ngIf="getAbsenceHeight([data]) as childEventHeight">
+                        <span class="calendar-week-view-event-title" *ngIf="childEventHeight >= 60">{{ data.name | titlecase}}</span>
                         <span class="calendar-week-view-event-time" [ngClass]="{ 'dfm-ms-12': childEventHeight <= 40, 'dfm-ms-16': childEventHeight <= 20 }">
-                          {{ groupedData.start}} -
-                          {{ groupedData.end }}
+                          {{ data.start}} -
+                          {{ data.end }}
                         </span>
                       </ng-container>
                     </div>

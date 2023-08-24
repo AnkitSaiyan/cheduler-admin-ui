@@ -158,6 +158,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		}
 
 		this.setHideAbsence(this.absenceData);
+		console.log(this.dataGroupedByDateAndTime, 'test');
+		console.log(this.absenceData, 'absence');
 	}
 
 	public ngOnInit(): void {
@@ -232,17 +234,19 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			return;
 		}
 		Object.entries(absence).forEach(([key, data]) => {
-			data.forEach((absence) => {
-				if (
-					DateTimeUtils.TimeToNumber(absence.end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
-					DateTimeUtils.TimeToNumber(absence.start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
-				) {
-					if (this.hideAbsenceData[key]) {
-						this.hideAbsenceData[key] = [...this.hideAbsenceData[key], absence];
-					} else {
-						this.hideAbsenceData[key] = [absence];
+			data.forEach((items) => {
+				items.forEach((absence) => {
+					if (
+						DateTimeUtils.TimeToNumber(absence.end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
+						DateTimeUtils.TimeToNumber(absence.start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
+					) {
+						if (this.hideAbsenceData[key]) {
+							this.hideAbsenceData[key] = [...this.hideAbsenceData[key], absence];
+						} else {
+							this.hideAbsenceData[key] = [absence];
+						}
 					}
-				}
+				});
 			});
 		});
 		console.log(this.hideAbsenceData, 'hide absence');
@@ -255,6 +259,25 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public getMinute(date: string) {
 		const splittedDate = date.split(':');
 		return +splittedDate[0] * 60 + +splittedDate[1];
+	}
+
+	public getMargin(start: Date, end: Date) {
+		const localStartTime = this.datePipe.transform(DateTimeUtils.UTCDateToLocalDate(new Date(start), true), 'HH:mm:ss') ?? '';
+
+		const localEndTime = this.datePipe.transform(DateTimeUtils.UTCDateToLocalDate(new Date(end), true), 'HH:mm:ss') ?? '';
+
+		const startDate =
+			this.myDate(localStartTime).getTime() < DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min)).getTime()
+				? DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min))
+				: this.myDate(localStartTime);
+
+		const endDate =
+			this.myDate(localEndTime).getTime() < DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min)).getTime()
+				? DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min))
+				: this.myDate(localEndTime);
+
+		const margin = getDurationMinutes(startDate, endDate);
+		return margin;
 	}
 
 	public changeToDayView(day: number, month: number, year: number) {
