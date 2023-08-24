@@ -105,6 +105,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private resizeListener: any;
 	private mouseUpEve: any;
 	public hideAppointmentData = {};
+	public hideAbsenceData = {};
 	constructor(
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,
@@ -148,12 +149,20 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		this.hideAppointmentData = {};
 		if (this.dataGroupedByDateAndRoom[date]) {
 			Object.values(this.dataGroupedByDateAndRoom[date]).forEach((data) => {
-        data.forEach(({ appointment }) => {
+				data.forEach(({ appointment }) => {
 					this.getTop([appointment], true);
 				});
 			});
 		}
-		console.log(this.absenceData, 'test');
+		this.hideAbsenceData = {};
+		if (Object.keys(this.absenceData)?.length) {
+			Object.values(this.absenceData).forEach((data) => {
+				data.forEach((absence) => {
+					this.getAbsenceTop([absence], true);
+				});
+			});
+		}
+    this.cdr.detectChanges();
 	}
 
 	public ngOnInit(): void {
@@ -212,6 +221,21 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		return durationMinutes * this.pixelsPerMin;
 	}
 
+	public getAbsenceHeight(groupedData: any): number {
+		const [startHour, startMinute] = groupedData.start.split(':');
+		const [endHour, endMinute] = groupedData.end.split(':');
+
+		const startDate = new Date();
+		startDate.setHours(+startHour);
+		startDate.setMinutes(+startMinute);
+
+		const endDate = new Date();
+		endDate.setHours(+endHour);
+		endDate.setMinutes(+endMinute);
+		const durationMinutes = getDurationMinutes(startDate, endDate);
+		return durationMinutes * this.pixelsPerMin;
+	}
+
 	public getTop(groupedData: any[], storeHiddenAppointment: boolean = false): number {
 		// const startHour = new Date(groupedData[0].startedAt).getHours();
 		// const startMinute = new Date(groupedData[0].startedAt).getMinutes();
@@ -247,14 +271,43 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		start.setFullYear(this.selectedDate.getFullYear());
 		start.setMonth(this.selectedDate.getMonth());
 		start.setDate(this.selectedDate.getDate());
+
+		const timingEnd = this.myDate(this.timeSlot?.timings?.[this.timeSlot?.timings?.length - 1]);
+		timingEnd.setFullYear(this.selectedDate.getFullYear());
+		timingEnd.setMonth(this.selectedDate.getMonth());
+		timingEnd.setDate(this.selectedDate.getDate());
+
 		const end = new Date(groupedData[0].startedAt);
 		end.setFullYear(this.selectedDate.getFullYear());
 		end.setMonth(this.selectedDate.getMonth());
 		end.setDate(this.selectedDate.getDate());
-		if (start.getTime() > end.getTime()) {
-			return -1;
+
+		const endAbsenceDate = new Date(groupedData[0].endedAt);
+		endAbsenceDate.setFullYear(this.selectedDate.getFullYear());
+		endAbsenceDate.setMonth(this.selectedDate.getMonth());
+		endAbsenceDate.setDate(this.selectedDate.getDate());
+
+		if (
+			DateTimeUtils.UTCDateToLocalDate(start)?.getTime() > DateTimeUtils.UTCDateToLocalDate(endAbsenceDate)?.getTime() ||
+			DateTimeUtils.UTCDateToLocalDate(timingEnd)?.getTime() < DateTimeUtils.UTCDateToLocalDate(end, true)?.getTime()
+		) {
+			if (storeHiddenAppointment) {
+				const key = groupedData?.[0]?.roomName || groupedData?.[0]?.userName;
+				if (this.hideAbsenceData?.[key]) {
+					this.hideAbsenceData[key] = [...this.hideAbsenceData[key], groupedData?.[0]];
+				} else {
+					this.hideAbsenceData[key] = [...groupedData];
+				}
+			}
 		}
-		const minutes = getDurationMinutes(start, end);
+		// if (start.getTime() > end.getTime() ) {
+		// 	return 0;
+		// }
+
+		const minutes = getDurationMinutes(DateTimeUtils.UTCDateToLocalDate(start, true), DateTimeUtils.UTCDateToLocalDate(end, true), false);
+		if (minutes < 0 && DateTimeUtils.UTCDateToLocalDate(start)?.getTime() < DateTimeUtils.UTCDateToLocalDate(endAbsenceDate)?.getTime()) {
+			return this.pixelPerMinute;
+		}
 		return minutes * this.pixelsPerMin;
 	}
 
@@ -807,8 +860,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			let grayAreaSlots: Array<any> = [];
 			this.grayOutSlot$$.value.forEach((slot) => {
 				grayAreaSlots.push(`${+slot.top}-${+slot.top + +slot.height}`);
-			});			
-			return grayAreaSlots.some((val:string) => {
+			});
+			return grayAreaSlots.some((val: string) => {
 				const topArray = val.split('-');
 				if (+topArray[0] < top && +topArray[1] - 9 > top && !(+topArray[0] < this.original_y && +topArray[1] > this.original_y)) return true;
 				return false;

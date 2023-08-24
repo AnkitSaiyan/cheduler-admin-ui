@@ -482,3 +482,119 @@ h3 {
 	max-width: 180px;
 }
 
+.calender-month-view-day-exam-event-details {
+  display: flex;
+  // flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding: 2px 8px;
+  font-size: 0.9rem;
+  border-left: 2px solid var(--dfm-blue);
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  background: var(--dfm-blue-light);
+  cursor: pointer;
+
+  &.more-btn {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    border: unset;
+    border-radius: unset;
+    background: #f7f5f5;
+    cursor: pointer;
+    width: calc(100% - 16px);
+
+    &:hover {
+      font-weight: 600;
+    }
+  }
+}
+
+.calender-month-view-day-exam-event-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  width: 100%;
+  max-height: 40px;
+
+  .calender-month-view-event-circle-icon {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    left: -13px;
+    top: -8px;
+    background: var(--dfm-blue);
+    color: white;
+    text-align: center;
+    font-size: 0.6rem;
+    font-weight: 600;
+    line-height: 22px;
+  }
+
+  .calender-month-view-day-exam-event-title {
+    min-height: 12px;
+    font-size: 10px !important;
+    // font-weight: 600;
+    // color: ;
+  }
+
+  .calender-month-view-day-exam-event-time {
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--dfm-main-500);
+  }
+
+  .calender-month-view-day-exam-details-expanded {
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+
+    .calender-month-view-day-exam-details-expanded-title {
+      font-weight: 600;
+
+      &.date {
+        margin-top: -8px;
+      }
+    }
+
+    .calender-month-view-day-exam-details-expanded-patients-container {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      max-height: 40vh;
+
+      &::-webkit-scrollbar {
+        width: 12px;
+      }
+
+      .calender-month-view-day-exam-details-expanded-patient-details-container {
+        display: flex;
+        flex-direction: column;
+
+        //.calender-month-view-day-exam-details-expanded-patient-details {
+        //  display: flex;
+        //  flex-direction: column;
+        //  padding: 8px !important;
+        //  //&:hover {
+        //  //  background: var(--dfm-main-100);
+        //  //}
+        //}
+
+        .calender-month-view-day-exam-details-expanded-patient-details-divider {
+          border-bottom: 1px solid var(--dfm-main-200);
+          margin: 0 8px;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 1;
+        }
+      }
+    }
+  }
+}
