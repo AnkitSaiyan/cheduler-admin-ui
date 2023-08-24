@@ -154,6 +154,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				});
 			});
 		}
+
 		this.hideAbsenceData = {};
 		if (Object.keys(this.absenceData)?.length) {
 			Object.values(this.absenceData).forEach((data) => {

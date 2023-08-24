@@ -479,8 +479,10 @@
 	"Fri": "Fri",
 	"Sat": "Sat",
 	"PrefillFromPractice": "Prefill practice hours",
-	"ReferralNote": "Referral Note"
+	"ReferralNote": "Referral Note",
+	"AbsenceSlot": "Absence Slot"
 }
+
 
 
 

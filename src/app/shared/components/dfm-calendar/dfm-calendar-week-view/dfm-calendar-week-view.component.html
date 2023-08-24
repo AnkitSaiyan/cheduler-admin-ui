@@ -36,7 +36,7 @@
                 <div class="calender-month-view-day-exam-event-details d-flex" >
                   <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10 ">
                     <span  class="text-truncate">
-                      <b>{{data?.id}} - {{data?.name | titlecase }}</b>
+                      {{data?.name | titlecase }}
                     </span>
                     <span>
                     {{ data?.start}}
@@ -50,7 +50,7 @@
 
 
                     <div class="d-flex flex-column dfm-gap-4">
-                      <span class="font-weight-medium dfm-mt-8"> {{"SelectedSlot" | translate}} </span>
+                      <span class="font-weight-medium dfm-mt-8"> {{"AbsenceSlot" | translate}} </span>
                       <span class="calendar-comments-text">{{ data.start }} -
                         {{ data.end }}</span>
                     </div>
@@ -295,41 +295,32 @@
                       <ng-template #absenceDetails>
                         <div class="calendar-week-view-event-details-expanded">
                           <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
-                            <b>{{groupedData.id}}</b> - {{ (groupedData.name | titlecase) }}
+                            {{ (groupedData.name | titlecase) }}
                           </span>
 
                             <div class="calendar-week-view-event-patients-container accordion-content">
-                              <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
-                                <ngb-panel>
-                                  <ng-template ngbPanelTitle>
-                                    <div class="calendar-week-view-event-patients-container">
-                                      <div class="d-flex flex-column dfm-p-8">
-                                        <span class="text-sm dfm-text-main-500">
-                                          {{ groupedData.start }}
-                                          -
-                                          {{ groupedData.end }}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </ng-template>
-
-                                  <ng-template ngbPanelContent>
-                                    <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                                      <span class="font-weight-medium dfm-mt-8"> {{ 'Info' | translate }} </span>
-                                      <span class="calendar-comments-text"> {{ groupedData?.info | dashIfNothing }} </span>
-                                      <span class="font-weight-medium dfm-mt-8">{{ (groupedData?.roomName ? 'Room' : 'Staff') | translate }}</span>
-                                      <span class="calendar-comments-text"> {{ (groupedData?.roomName ? groupedData?.roomName : groupedData?.userName) | dashIfNothing }} </span>
-                                    </div>
-                                  </ng-template>
-                                </ngb-panel>
-                              </ngb-accordion>
+                              <div class="calendar-week-view-event-patients-container">
+                                <div class="d-flex flex-column dfm-p-8">
+                                  <span class="text-sm dfm-text-main-500">
+                                    {{ groupedData.start }}
+                                    -
+                                    {{ groupedData.end }}
+                                  </span>
+                                </div>
+                              </div>
+                              <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
+                                <span class="font-weight-medium dfm-mt-8"> {{ 'Info' | translate }} </span>
+                                <span class="calendar-comments-text"> {{ groupedData?.info | dashIfNothing }} </span>
+                                <span class="font-weight-medium dfm-mt-8">{{ (groupedData?.roomName ? 'Room' : 'Staff') | translate }}</span>
+                                <span class="calendar-comments-text"> {{ (groupedData?.roomName ? groupedData?.roomName : groupedData?.userName) | dashIfNothing }} </span>
+                              </div>
                             </div>
                           </div>
                       </ng-template>
                       <ng-container *ngIf="getAbsenceHeight([groupedData]) as childEventHeight">
                         <span class="calendar-week-view-event-title" *ngIf="childEventHeight >= 60">{{ groupedData.name | titlecase}}</span>
                         <span class="calendar-week-view-event-time" [ngClass]="{ 'dfm-ms-12': childEventHeight <= 40, 'dfm-ms-16': childEventHeight <= 20 }">
-                          <b>{{groupedData.id}}</b> - {{ groupedData.start}} -
+                          {{ groupedData.start}} -
                           {{ groupedData.end }}
                         </span>
                       </ng-container>
