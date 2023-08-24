@@ -1,12 +1,19 @@
 <div class="position-relative">
 	<div class="d-flex flex-column dfm-gap-24 dfm-pb-8 ap-li-main-wrapper">
 		<section class="dfm-px-16 dfm-pt-16 d-flex flex-column dfm-gap-8">
-			<header class="d-flex align-items-center dfm-gap-8">
-				<div class="dfm-button-gray-400">
-					<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
+			<div class="d-flex justify-content-between">
+				<header class="d-flex align-items-center dfm-gap-8">
+					<div class="dfm-button-gray-400">
+						<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
+					</div>
+					<span class="font-weight-medium">{{ 'AppointmentsList' | translate }}</span>
+				</header>
+				<div class="ap-li-section2-action-bar">
+					<dfm-button color="primary" size="md" class="text-nowrap" routerLink="/appointment/add"
+						[state]="{ comingFromRoute: 'dashboard' }">{{ 'AddAppointment' | translate }}
+					</dfm-button>
 				</div>
-				<span class="font-weight-medium">{{ 'AppointmentsList' | translate }}</span>
-			</header>
+			</div>
 		</section>
 
 		<section>
@@ -84,9 +91,9 @@
       >{{"Confirm" | translate}}
       </dfm-button> -->
 
-				<dfm-button color="primary" size="md" class="text-nowrap" routerLink="/appointment/add" [state]="{ comingFromRoute: 'dashboard' }"
+				<!-- <dfm-button color="primary" size="md" class="text-nowrap" routerLink="/appointment/add" [state]="{ comingFromRoute: 'dashboard' }"
 					>{{ 'AddAppointment' | translate }}
-				</dfm-button>
+				</dfm-button> -->
 			</div>
 
 			<div class="hidden align-items-center dfm-gap-8 dfm-px-8 justify-content-center ap-li-section2-action-bar-mv hide-scrollbar overflow-x-auto">
