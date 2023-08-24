@@ -16,6 +16,29 @@
   }
 }
 
+.view-link{
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.file-name {
+  font-weight: 500;
+  font-size: 14px;
+  color: blue;
+  width: 180px;
+  text-align: center;
+  overflow-wrap: break-word;
+  margin-bottom: 0;
+}
+
+.clear-icon{
+  display: inline-flex;
+  height: 18px;
+  color: var(--dfm-primary);
+  cursor: pointer;
+}
+
 .time-slot-text {
   background: var(--dfm-main-100);
   border-radius: 10px;

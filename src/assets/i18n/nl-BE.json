@@ -482,11 +482,8 @@
 	"Fri": "Vrij",
 	"Sat": "Zat",
 	"PrefillFromPractice": "Praktijkuren vooraf invullen",
-	"ReferralNote": "Verwijsbrief"
+	"ReferralNote": "Verwijsbrief",
+	"Uploading": "Uploaden",
+	"FAILED_TO_UPLOAD": "Uploaden is mislukt",
+	"Uploaded": "Geüpload"
 }
-
-
-
-
-
-

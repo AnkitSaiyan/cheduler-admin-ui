@@ -804,6 +804,14 @@ export const Translate = Object.freeze({
 			[DUTCH_BE]: 'Dit slot overlapt met een reeds bestaand slot',
 		},
 	},
+	FileFormatNotAllowed: {
+	  [ENG_BE]: 'File format not allowed',
+	  [DUTCH_BE]: 'Bestandsformaat niet toegestaan.',
+	},
+	FileNotGreaterThan: {
+	  [ENG_BE]: 'File size should not be greater than',
+	  [DUTCH_BE]: 'De bestandsgrootte mag niet groter zijn dan.',
+	},
 });
 
 

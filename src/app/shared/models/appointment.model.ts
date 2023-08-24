@@ -180,6 +180,7 @@ export interface CreateAppointmentFormValues {
 	comments: string;
 	socialSecurityNumber: number;
 	userList?: string[];
+	qrCodeId: string;
 }
 
 export interface UpdateRadiologistRequestData {
