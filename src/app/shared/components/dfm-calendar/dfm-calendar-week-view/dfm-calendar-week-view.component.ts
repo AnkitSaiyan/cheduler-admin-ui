@@ -141,6 +141,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getDurationFn = (s, e) => getDurationMinutes(s, e);
 
+	public hideAbsenceData = {};
+
 	private changeDateDebounce$$ = new Subject<number>();
 
 	constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private modalSvc: ModalService, private draggableSvc: DraggableService) {
@@ -155,6 +157,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			this.getGrayOutArea();
 		}
 
+		this.setHideAbsence(this.absenceData);
 	}
 
 	public ngOnInit(): void {
@@ -221,6 +224,28 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		date.setMinutes(date.getMinutes() - (date.getMinutes() % 5));
 		this.selectedDate = date;
 		this.emitDate(isWeekChange);
+	}
+
+	private setHideAbsence(absence: { [key: string]: any[] }) {
+		this.hideAbsenceData = {};
+		if (!Object.keys(absence)?.length) {
+			return;
+		}
+		Object.entries(absence).forEach(([key, data]) => {
+			data.forEach((absence) => {
+				if (
+					DateTimeUtils.TimeToNumber(absence.end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
+					DateTimeUtils.TimeToNumber(absence.start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
+				) {
+					if (this.hideAbsenceData[key]) {
+						this.hideAbsenceData[key] = [...this.hideAbsenceData[key], absence];
+					} else {
+						this.hideAbsenceData[key] = [absence];
+					}
+				}
+			});
+		});
+		console.log(this.hideAbsenceData, 'hide absence');
 	}
 
 	private emitDate(isWeekChange: boolean = false) {
@@ -332,7 +357,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 				endDate = data.endedAt;
 			}
 		});
-
 		const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
 
 		const startDate =
@@ -352,6 +376,57 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
 
 		const durationMinutes = getDurationMinutes(startDate, finalEndDate);
+		return durationMinutes * this.pixelsPerMin;
+	}
+
+	public getAbsenceHeight(groupedData: any[]): number {
+		let endDate: Date = groupedData[0].endedAt;
+		groupedData.forEach((data) => {
+			if (data.endedAt > endDate) {
+				endDate = data.endedAt;
+			}
+		});
+
+		const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+
+		const startDate =
+			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
+				? this.myDate(this.limit.min)
+				: new Date(groupedData[0].startedAt);
+
+		const groupEndDate = this.datePipe.transform(new Date(endDate), 'HH:mm:ss') ?? '';
+		// if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
+		// 	return 0;
+		// }
+
+		// if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
+		// 	return 0;
+		// }
+		const finalEndDate =
+			this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
+
+		if (
+			DateTimeUtils.TimeToNumber(groupedData?.[0]?.start) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) &&
+			DateTimeUtils.TimeToNumber(groupedData?.[0]?.end) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min))
+		) {
+			const endTime =
+				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) > DateTimeUtils.TimeToNumber(groupedData?.[0]?.end)
+					? DateTimeUtils?.LocalToUTCTimeTimeString(groupedData?.[0]?.end)
+					: this.limit.max;
+			return (
+				getDurationMinutes(
+					DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min), true),
+					DateTimeUtils.UTCDateToLocalDate(this.myDate(endTime), true),
+					false,
+				) * this.pixelsPerMin
+			);
+		}
+
+		const durationMinutes = getDurationMinutes(
+			DateTimeUtils.UTCDateToLocalDate(startDate, true),
+			DateTimeUtils.UTCDateToLocalDate(finalEndDate, true),
+			false,
+		);
 		return durationMinutes * this.pixelsPerMin;
 	}
 
@@ -387,6 +462,39 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 		const top =
 			(startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
+		if (top % 20) {
+			return Math.floor(top / 20) * 20 + 20;
+		}
+		return top;
+	}
+
+	public getAbsenceTop(groupedData: any[]): number {
+		const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+		const startDate =
+			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
+				? this.myDate(this.limit.min)
+				: new Date(groupedData[0].startedAt);
+		const startHour = startDate.getHours();
+		const startMinute = startDate.getMinutes();
+		const startCalendarDate = this.myDate(this.limit.min);
+		const startCalendarHour = startCalendarDate.getHours();
+		const startCalendarMinute = startCalendarDate.getMinutes();
+		const barHeight = 1;
+		const horizontalBarHeight = (this.getAbsenceHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
+		const top =
+			(startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
+		if (
+			DateTimeUtils.TimeToNumber(groupedData?.[0].end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
+			DateTimeUtils.TimeToNumber(groupedData?.[0].start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
+		) {
+			return -1;
+		}
+		if (
+			DateTimeUtils.TimeToNumber(groupedData?.[0]?.start) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) &&
+			DateTimeUtils.TimeToNumber(groupedData?.[0]?.end) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min))
+		) {
+			return 0;
+		}
 		if (top % 20) {
 			return Math.floor(top / 20) * 20 + 20;
 		}

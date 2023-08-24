@@ -151,7 +151,7 @@ export function getAllDaysOfWeek(date: Date, sundayFirst: boolean = false): Arra
 	return dateDistributed;
 }
 
-export function getDurationMinutes(start: Date, end: Date): number {
+export function getDurationMinutes(start: Date, end: Date, isAbsolute: boolean = true): number {
 	if (start && end) {
 		const startDate = new Date(start);
 		const endDate = new Date(end);
@@ -169,7 +169,10 @@ export function getDurationMinutes(start: Date, end: Date): number {
 
 		const hours = endH - (startH + 1);
 		const minutes = 60 - startDate.getMinutes() + endDate.getMinutes();
-		return Math.abs(hours * 60 + minutes);
+		if (isAbsolute) {
+			return Math.abs(hours * 60 + minutes);
+		}
+		return hours * 60 + minutes;
 	}
 
 	return 0;
