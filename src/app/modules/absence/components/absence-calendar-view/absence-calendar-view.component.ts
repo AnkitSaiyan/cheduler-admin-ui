@@ -258,9 +258,9 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			?.forEach((absence: any) => {
 				let { repeatFrequency } = absence;
 				const { absenceId, name, info, startedAt, endedAt, roomName, userName } = absence;
-				const startDate = new Date(new Date(absence.startedAt).toDateString());
-				let firstDate = new Date(new Date(absence.startedAt).toDateString());
-				const lastDate = new Date(new Date(absence.endedAt).toDateString());
+				const startDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
+				let firstDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
+				const lastDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.endedAt), true)).toDateString());
 				switch (true) {
 					case !absence.isRepeat:
 					case absence.repeatType === RepeatType.Daily: {
@@ -572,6 +572,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
+
 
 
 
