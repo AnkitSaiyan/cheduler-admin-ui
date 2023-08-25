@@ -158,6 +158,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		}
 
 		this.setHideAbsence(this.absenceData);
+		console.log(this.dataGroupedByDateAndTime, 'test');
+		console.log(this.absenceData, 'absence');
 	}
 
 	public ngOnInit(): void {
@@ -232,17 +234,19 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			return;
 		}
 		Object.entries(absence).forEach(([key, data]) => {
-			data.forEach((absence) => {
-				if (
-					DateTimeUtils.TimeToNumber(absence.end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
-					DateTimeUtils.TimeToNumber(absence.start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
-				) {
-					if (this.hideAbsenceData[key]) {
-						this.hideAbsenceData[key] = [...this.hideAbsenceData[key], absence];
-					} else {
-						this.hideAbsenceData[key] = [absence];
+			data.forEach((items) => {
+				items.forEach((absence) => {
+					if (
+						DateTimeUtils.TimeToNumber(absence.end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
+						DateTimeUtils.TimeToNumber(absence.start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
+					) {
+						if (this.hideAbsenceData[key]) {
+							this.hideAbsenceData[key] = [...this.hideAbsenceData[key], absence];
+						} else {
+							this.hideAbsenceData[key] = [absence];
+						}
 					}
-				}
+				});
 			});
 		});
 		console.log(this.hideAbsenceData, 'hide absence');
@@ -255,6 +259,25 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public getMinute(date: string) {
 		const splittedDate = date.split(':');
 		return +splittedDate[0] * 60 + +splittedDate[1];
+	}
+
+	public getMargin(start: Date, end: Date) {
+		const localStartTime = this.datePipe.transform(DateTimeUtils.UTCDateToLocalDate(new Date(start), true), 'HH:mm:ss') ?? '';
+
+		const localEndTime = this.datePipe.transform(DateTimeUtils.UTCDateToLocalDate(new Date(end), true), 'HH:mm:ss') ?? '';
+
+		const startDate =
+			this.myDate(localStartTime).getTime() < DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min)).getTime()
+				? DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min))
+				: this.myDate(localStartTime);
+
+		const endDate =
+			this.myDate(localEndTime).getTime() < DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min)).getTime()
+				? DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min))
+				: this.myDate(localEndTime);
+
+		const margin = getDurationMinutes(startDate, endDate);
+		return margin;
 	}
 
 	public changeToDayView(day: number, month: number, year: number) {
@@ -381,53 +404,22 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getAbsenceHeight(groupedData: any[]): number {
 		let endDate: Date = groupedData[0].endedAt;
+    let endTime: string = groupedData[0]?.end;
 		groupedData.forEach((data) => {
-			if (data.endedAt > endDate) {
+			if (DateTimeUtils.TimeToNumber(data.end) > DateTimeUtils.TimeToNumber(endTime)) {
 				endDate = data.endedAt;
+				endTime = data.end;
 			}
 		});
 
-		const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+		const groupStartDate = this.datePipe.transform(DateTimeUtils.UTCDateToLocalDate(new Date(groupedData[0].startedAt)), 'HH:mm:ss') ?? '';
 
 		const startDate =
-			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
+			this.myDate(groupStartDate).getTime() < this.myDate(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)).getTime()
 				? this.myDate(this.limit.min)
 				: new Date(groupedData[0].startedAt);
 
-		const groupEndDate = this.datePipe.transform(new Date(endDate), 'HH:mm:ss') ?? '';
-		// if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
-		// 	return 0;
-		// }
-
-		// if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
-		// 	return 0;
-		// }
-		const finalEndDate =
-			this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
-
-		if (
-			DateTimeUtils.TimeToNumber(groupedData?.[0]?.start) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) &&
-			DateTimeUtils.TimeToNumber(groupedData?.[0]?.end) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min))
-		) {
-			const endTime =
-				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) > DateTimeUtils.TimeToNumber(groupedData?.[0]?.end)
-					? DateTimeUtils?.LocalToUTCTimeTimeString(groupedData?.[0]?.end)
-					: this.limit.max;
-			return (
-				getDurationMinutes(
-					DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min), true),
-					DateTimeUtils.UTCDateToLocalDate(this.myDate(endTime), true),
-					false,
-				) * this.pixelsPerMin
-			);
-		}
-
-		const durationMinutes = getDurationMinutes(
-			DateTimeUtils.UTCDateToLocalDate(startDate, true),
-			DateTimeUtils.UTCDateToLocalDate(finalEndDate, true),
-			false,
-		);
-		return durationMinutes * this.pixelsPerMin;
+		return this.getMargin(startDate, endDate) * this.pixelsPerMin;
 	}
 
 	public getPrioritySlotHeight(prioritySlot: any): number {

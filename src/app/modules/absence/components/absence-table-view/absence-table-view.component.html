@@ -184,10 +184,10 @@
                     (rowClicked)="navigateToViewAbsence($event)" [stickyFirstColumn]="false" [headers]="tableHeaders"
                     (scrolled)="onScroll($event)" (sorted)="onSort($event)">
       <ng-template #bodyRowTemplate let-item>
-        <dfm-table-row-cell [fullContent]="item.name">{{ item.name | titlecase | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.startedAt" >{{ item?.startedAt | dfmUtcToLocal : false : true | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.endedAt">{{ item?.endedAt | dfmUtcToLocal : false : true | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.info">{{ item.info | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell >{{ item.name | titlecase | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell >{{ item?.startedAt | dfmUtcToLocal : false : true | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell >{{ item?.endedAt | dfmUtcToLocal : false : true | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell >{{ item.info | dashIfNothing }}</dfm-table-row-cell>
         <dfm-data-table-action-cell *dfmPermitted="[Permission.UpdateAbsences, Permission.DeleteAbsences]">
           <ng-template #actionCellTemplate>
             <dfm-data-table-action *dfmPermitted="Permission.UpdateAbsences" icon="pencil-02" tooltip="{{ 'Edit' | translate }}" (click)="$event.stopPropagation(); openAddAbsenceModal(item)"></dfm-data-table-action>

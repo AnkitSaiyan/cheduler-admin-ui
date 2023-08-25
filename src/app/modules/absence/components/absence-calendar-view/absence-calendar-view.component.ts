@@ -1,8 +1,22 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { BehaviorSubject, Observable, combineLatest, distinctUntilChanged, filter, map, skip, switchMap, take, takeUntil, tap } from 'rxjs';
+import {
+	BehaviorSubject,
+	Observable,
+	catchError,
+	combineLatest,
+	distinctUntilChanged,
+	filter,
+	map,
+	of,
+	skip,
+	switchMap,
+	take,
+	takeUntil,
+	tap,
+} from 'rxjs';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
@@ -10,7 +24,7 @@ import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { NameValue } from 'src/app/shared/components/search-modal.component';
 import { Absence, RepeatType } from 'src/app/shared/models/absence.model';
-import { getDateOfMonth } from 'src/app/shared/models/calendar.model';
+import { getDateOfMonth, getDurationMinutes } from 'src/app/shared/models/calendar.model';
 import { PracticeAvailabilityServer } from 'src/app/shared/models/practice.model';
 import { TimeInIntervalPipe } from 'src/app/shared/pipes/time-in-interval.pipe';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
@@ -49,11 +63,16 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	public practiceHourMinMax$$ = new BehaviorSubject<{ min: string; max: string; grayOutMin: string; grayOutMax: string } | null>(null);
 
 	public absenceData$!: Observable<any>;
+
 	public absenceDayViewData$!: Observable<any>;
+
+	public absenceWeekViewData$!: Observable<any>;
 
 	private isDayView$$ = new BehaviorSubject<Boolean>(false);
 
 	public todayEvent$!: Observable<any>;
+
+	@ViewChild('sidePanel') sidePanel!: ElementRef;
 
 	private paramsToCalendarView = {
 		m: 'month',
@@ -157,6 +176,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 				this.headerList = Object.keys(dayViewAbsenceSlot).map((name) => ({ name, value: name }));
 			}),
 		);
+
+		this.absenceWeekViewData$ = this.absenceData$.pipe(map(this.dataModificationForWeek.bind(this)));
 	}
 
 	public override ngOnDestroy(): void {
@@ -251,9 +272,9 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			?.forEach((absence: any) => {
 				let { repeatFrequency } = absence;
 				const { absenceId, name, info, startedAt, endedAt, roomName, userName } = absence;
-				const startDate = new Date(new Date(absence.startedAt).toDateString());
-				let firstDate = new Date(new Date(absence.startedAt).toDateString());
-				const lastDate = new Date(new Date(absence.endedAt).toDateString());
+				const startDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
+				let firstDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
+				const lastDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.endedAt), true)).toDateString());
 				switch (true) {
 					case !absence.isRepeat:
 					case absence.repeatType === RepeatType.Daily: {
@@ -340,15 +361,78 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	}
 
 	private dataModificationForDay(absenceSlot: { [key: string]: Absence[] }) {
-		return absenceSlot?.[this.datePipe.transform(this.selectedDate$$.value, 'dd-M-yyyy')!]?.reduce((acc, item) => {
-			const key = (item?.roomName ?? item?.userName)!;
-			if (acc[key]) {
-				acc[key] = [...acc[key], item];
-			} else {
-				acc[key] = [item];
-			}
-			return acc;
-		}, {});
+		return (
+			absenceSlot?.[this.datePipe.transform(this.selectedDate$$.value, 'd-M-yyyy')!]?.reduce((acc, item) => {
+				const key = (item?.roomName ?? item?.userName)!;
+				if (acc[key]) {
+					acc[key] = [...acc[key], item];
+				} else {
+					acc[key] = [item];
+				}
+				return acc;
+			}, {}) ?? {}
+		);
+	}
+
+	private dataModificationForWeek(absenceSlot: { [key: string]: Absence[] }) {
+		let startDate: string;
+		let endDate: string;
+		let sameGroup: boolean;
+		let absenceGroupedByDate = {};
+
+		Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
+			let groupedAbsence: any[] = [];
+			absence
+				.sort((s1, s2) => (DateTimeUtils.TimeToNumber(s1.start) > DateTimeUtils.TimeToNumber(s2.start) ? 1 : -1))
+				.forEach((item: any, index) => {
+					const dateString = key;
+					if (!absenceGroupedByDate[dateString]) {
+						absenceGroupedByDate[dateString] = [];
+						startDate = item.start;
+						endDate = item.end;
+						sameGroup = false;
+					} else {
+						const currSD = item.start;
+						const currED = item.end;
+
+						const endTime = new Date();
+						endTime.setHours(+endDate.split(':')[0]);
+						endTime.setMinutes(+endDate.split(':')[1]);
+
+						const currSDTime = new Date();
+						currSDTime.setHours(+currSD.split(':')[0]);
+						currSDTime.setMinutes(+currSD.split(':')[1]);
+
+						if (
+							DateTimeUtils.TimeToNumber(currSD) >= DateTimeUtils.TimeToNumber(startDate) &&
+							DateTimeUtils.TimeToNumber(currSD) <= DateTimeUtils.TimeToNumber(endDate)
+						) {
+							sameGroup = true;
+							if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
+								endDate = currED;
+							}
+						} else if (DateTimeUtils.TimeToNumber(currSD) > DateTimeUtils.TimeToNumber(endDate) && getDurationMinutes(endTime, currSDTime) <= 1) {
+							sameGroup = true;
+							if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
+								endDate = currED;
+							}
+						} else {
+							startDate = currSD;
+							endDate = currED;
+							sameGroup = false;
+						}
+					}
+
+					if (!sameGroup) {
+						if (index !== 0) {
+							groupedAbsence = [];
+						}
+						absenceGroupedByDate[dateString].push(groupedAbsence);
+					}
+					groupedAbsence.push(item);
+				});
+		});
+		return absenceGroupedByDate;
 	}
 
 	public setForm(event: FormControl<Date>) {
@@ -499,7 +583,49 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		minMaxValue = { ...minMaxValue, grayOutMin: min, grayOutMax: max };
 		this.practiceHourMinMax$$.next(minMaxValue);
 	}
+
+	public sidePanelViewToggle() {
+		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

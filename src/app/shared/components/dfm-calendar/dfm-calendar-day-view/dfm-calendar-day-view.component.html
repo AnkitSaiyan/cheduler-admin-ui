@@ -290,7 +290,7 @@
                         <div class="calender-month-view-day-exam-event-details d-flex" >
                           <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10 ">
                             <span  class="text-truncate">
-                              <b>{{data?.id}} - {{data?.name | titlecase }}</b>
+                              {{data?.name | titlecase }}
                             </span>
                             <span>
                             {{ data?.start}}
@@ -304,7 +304,7 @@
 
 
                             <div class="d-flex flex-column dfm-gap-4">
-                              <span class="font-weight-medium dfm-mt-8"> {{"SelectedSlot" | translate}} </span>
+                              <span class="font-weight-medium dfm-mt-8"> {{"AbsenceSlot" | translate}} </span>
                               <span class="calendar-comments-text">{{ data.start }} -
                                 {{ data.end }}</span>
                             </div>
@@ -605,7 +605,7 @@
 
 
                               <div class="d-flex flex-column dfm-gap-4">
-                                <span class="font-weight-medium dfm-mt-8"> {{"SelectedSlot" | translate}} </span>
+                                <span class="font-weight-medium dfm-mt-8"> {{"AbsenceSlot" | translate}} </span>
                                 <span class="calendar-comments-text">{{ data.start }} -
                                   {{ data.end }}</span>
                               </div>
@@ -629,7 +629,7 @@
 
                               <div class="d-flex flex-column calender-day-view-event-title">
                                 <span class=" text-truncate" *ngIf="data?.name; else date">
-                                  {{data.id}} - {{ data.name }}
+                                  {{ data.name }}
                                 </span>
                                 <ng-template #date>
                                   <span class="calender-day-view-event-time">

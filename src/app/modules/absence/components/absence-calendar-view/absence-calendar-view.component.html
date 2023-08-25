@@ -1,23 +1,29 @@
 <ng-content select="#top-action"></ng-content>
 <div class="dfm-container gap-16">
-  <div class="not-mobile side-panel bg-white" *ngIf="(todayEvent$ | async) as todayEvent">
-    <ng-container >
-      <h4>Today's Events ({{todayEvent.length}}):</h4>
-      <div *ngFor="let data of todayEvent" class="dfm-ps-8 dfm-pt-8">
-        <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
-          <div class="circle-gray-200-40">
-            {{ (data?.userName?.[0] ?? data?.roomName?.[0]) | uppercase }}
-          </div>
-          <div class="d-flex flex-column">
-            <span>{{ (data?.userName ?? data?.roomName) | titlecase }}</span>
-            <div>
-              <span class="dfm-text-main-500">{{ data?.name+' ' }}</span>
-              <span class="dfm-text-main-500">({{ data?.start }}-{{data?.end}})</span>
+  <div class="not-mobile side-panel-container side-panel-hide " #sidePanel>
+    <div class="side-panel bg-white" *ngIf="(todayEvent$ | async) as todayEvent" >
+      <ng-container >
+        <h4>Today's Events ({{todayEvent.length}}):</h4>
+        <div *ngFor="let data of todayEvent" class="dfm-ps-8 dfm-pt-8">
+          <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
+            <div class="circle-gray-200-40">
+              {{ (data?.userName?.[0] ?? data?.roomName?.[0]) | uppercase }}
+            </div>
+            <div class="d-flex flex-column">
+              <span>{{ (data?.userName ?? data?.roomName) | titlecase }}</span>
+              <div>
+                <span class="dfm-text-main-500">{{ data?.name+' ' }}</span>
+                <span class="dfm-text-main-500">({{ data?.start }}-{{data?.end}})</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </ng-container>
+      </ng-container>
+    </div>
+    <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-left" ngbPopover="Today's Event"
+    triggers="mouseenter:mouseleave"
+    popoverClass="popover-p-8"
+    [openDelay]="200" (click)="sidePanelViewToggle()"></dfm-button-icon>
   </div>
   <div class="bg-white d-flex flex-column dfm-gap-16 dfm-p-24 calendar-main-wrapper" *ngIf="selectedDate$$ | async as selectedDate">
     <section class="calendar-header">
@@ -86,7 +92,7 @@
             [format24Hour]="true"
             [showGrayOutSlot] ="true"
             [practiceData]="weekdayToPractice$$ | async"
-            [absenceData]="(absenceData$ | async) ?? {}"
+            [absenceData]="(absenceWeekViewData$ | async) ?? {}"
             [limit] ="(practiceHourMinMax$$ | async ) ?? { min: '00:00:00', max: '24:00:00', grayOutMin: '00:00:00', grayOutMax: '24:00:00' }"
             ></dfm-calendar-week-view>
         </ng-container>
