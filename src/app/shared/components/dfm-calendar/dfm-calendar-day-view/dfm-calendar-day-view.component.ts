@@ -142,27 +142,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
 			this.dataGroupedByDateAndRoom = currentValue;
 		}
-
-		this.grayOutSlot$$.next([]);
-		this.getGrayOutArea(this.timeSlot);
-		const date: string = this.datePipe.transform(this.selectedDate, 'd-M-yyyy')!;
-		this.hideAppointmentData = {};
-		if (this.dataGroupedByDateAndRoom[date]) {
-			Object.values(this.dataGroupedByDateAndRoom[date]).forEach((data) => {
-				data.forEach(({ appointment }) => {
-					this.getTop([appointment], true);
-				});
-			});
-		}
-
-		this.hideAbsenceData = {};
-		if (Object.keys(this.absenceData)?.length) {
-			Object.values(this.absenceData).forEach((data) => {
-				data.forEach((absence) => {
-					this.getAbsenceTop([absence], true);
-				});
-			});
-		}
+    this.setHideAbsence(this.absenceData)
     this.cdr.detectChanges();
 	}
 
@@ -207,6 +187,28 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	public override ngOnDestroy() {
 		super.ngOnDestroy();
 	}
+
+  private setHideAbsence(absence : { [key: string]: any[] }){
+    this.hideAbsenceData = {};
+		if (Object.keys(absence)?.length) {
+			Object.entries(absence).forEach(([key, data]) => {
+				data.forEach((absence) => {
+					if (
+						DateTimeUtils.TimeToNumber(absence.end) <
+							DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot?.timings?.[0])) ||
+						DateTimeUtils.TimeToNumber(absence.start) >
+							DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot?.timings?.[this.timeSlot?.timings?.length - 1])) + 1
+					) {
+						if (this.hideAbsenceData[key]) {
+							this.hideAbsenceData[key] = [...this.hideAbsenceData[key], absence];
+						} else {
+							this.hideAbsenceData[key] = [absence];
+						}
+					}
+				});
+			});
+		}
+  }
 
 	public getHeight(groupedData: any[]): number {
 		let endDate: Date = groupedData[0].endedAt;
