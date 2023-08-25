@@ -289,14 +289,11 @@
                       <div *ngFor="let data of hideAbsenceData[header.name]"  [ngbPopover]="mainAbsencePopover" #popOver="ngbPopover" triggers="hover" [autoClose]="'outside'" container="body">
                         <div class="calender-month-view-day-exam-event-details d-flex" >
                           <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10 ">
-                            <span  class="text-truncate">
-                              {{data?.name | titlecase }}
+                            <span class="text-truncate">
+                              {{ data?.start}}
+                              -
+                              {{ data?.end}} <b>{{data?.name | titlecase }}</b>
                             </span>
-                            <span>
-                            {{ data?.start}}
-                            -
-                            {{ data?.end}}
-                          </span>
                           </span>
                         </div>
                         <ng-template #mainAbsencePopover>
@@ -335,12 +332,9 @@
                                 <div class="calender-month-view-day-exam-event-details d-flex" >
                                   <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10" >
                                     <span class="text-truncate">
-                                      <b>{{data?.id}} - {{data?.name | titlecase }}</b>
-                                    </span>
-                                    <span>
                                       {{ data?.start}}
                                       -
-                                      {{ data?.end}}
+                                      {{ data?.end}} <b>{{data?.name | titlecase }}</b>
                                     </span>
                                   </span>
                                 </div>

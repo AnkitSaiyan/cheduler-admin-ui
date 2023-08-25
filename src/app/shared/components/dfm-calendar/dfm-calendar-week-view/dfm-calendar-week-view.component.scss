@@ -2,6 +2,9 @@ h3 {
 	margin: 0;
 }
 
+.font-10 {
+  font-size: 10px !important;
+}
 .calendar-week-view-header {
 	box-sizing: border-box;
 	display: flex;
@@ -512,6 +515,11 @@ h3 {
   }
 }
 
+.dfm-card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 .calender-month-view-day-exam-event-container {
   display: flex;
   flex-direction: column;
