@@ -419,41 +419,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 				? this.myDate(this.limit.min)
 				: new Date(groupedData[0].startedAt);
 
-		const groupEndDate = this.datePipe.transform(new Date(endDate), 'HH:mm:ss') ?? '';
 		return this.getMargin(startDate, endDate) * this.pixelsPerMin;
-		// if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
-		// 	return 0;
-		// }
-
-		// if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
-		// 	return 0;
-		// }
-		const finalEndDate =
-			this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
-
-		if (
-			DateTimeUtils.TimeToNumber(groupedData?.[0]?.start) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) &&
-			DateTimeUtils.TimeToNumber(groupedData?.[0]?.end) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min))
-		) {
-			const endTime =
-				DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) > DateTimeUtils.TimeToNumber(groupedData?.[0]?.end)
-					? DateTimeUtils?.LocalToUTCTimeTimeString(groupedData?.[0]?.end)
-					: this.limit.max;
-			return (
-				getDurationMinutes(
-					DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min), true),
-					DateTimeUtils.UTCDateToLocalDate(this.myDate(endTime), true),
-					false,
-				) * this.pixelsPerMin
-			);
-		}
-
-		const durationMinutes = getDurationMinutes(
-			DateTimeUtils.UTCDateToLocalDate(startDate, true),
-			DateTimeUtils.UTCDateToLocalDate(finalEndDate, true),
-			false,
-		);
-		return durationMinutes * this.pixelsPerMin;
 	}
 
 	public getPrioritySlotHeight(prioritySlot: any): number {
