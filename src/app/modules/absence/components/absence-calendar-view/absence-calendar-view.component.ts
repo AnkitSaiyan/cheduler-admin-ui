@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest, distinctUntilChanged, filter, map, skip, switchMap, take, takeUntil, tap } from 'rxjs';
@@ -57,6 +57,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	private isDayView$$ = new BehaviorSubject<Boolean>(false);
 
 	public todayEvent$!: Observable<any>;
+
+	@ViewChild('sidePanel') sidePanel!: ElementRef;
 
 	private paramsToCalendarView = {
 		m: 'month',
@@ -565,7 +567,13 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		minMaxValue = { ...minMaxValue, grayOutMin: min, grayOutMax: max };
 		this.practiceHourMinMax$$.next(minMaxValue);
 	}
+
+	public sidePanelViewToggle() {
+		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
+	}
 }
+
+
 
 
 
