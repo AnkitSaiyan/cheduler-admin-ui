@@ -2,7 +2,21 @@ import { DatePipe } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { BehaviorSubject, Observable, combineLatest, distinctUntilChanged, filter, map, skip, switchMap, take, takeUntil, tap } from 'rxjs';
+import {
+	BehaviorSubject,
+	Observable,
+	catchError,
+	combineLatest,
+	distinctUntilChanged,
+	filter,
+	map,
+	of,
+	skip,
+	switchMap,
+	take,
+	takeUntil,
+	tap,
+} from 'rxjs';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
@@ -347,15 +361,17 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	}
 
 	private dataModificationForDay(absenceSlot: { [key: string]: Absence[] }) {
-		return absenceSlot?.[this.datePipe.transform(this.selectedDate$$.value, 'dd-M-yyyy')!]?.reduce((acc, item) => {
-			const key = (item?.roomName ?? item?.userName)!;
-			if (acc[key]) {
-				acc[key] = [...acc[key], item];
-			} else {
-				acc[key] = [item];
-			}
-			return acc;
-		}, {});
+		return (
+			absenceSlot?.[this.datePipe.transform(this.selectedDate$$.value, 'd-M-yyyy')!]?.reduce((acc, item) => {
+				const key = (item?.roomName ?? item?.userName)!;
+				if (acc[key]) {
+					acc[key] = [...acc[key], item];
+				} else {
+					acc[key] = [item];
+				}
+				return acc;
+			}, {}) ?? {}
+		);
 	}
 
 	private dataModificationForWeek(absenceSlot: { [key: string]: Absence[] }) {
@@ -572,6 +588,16 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

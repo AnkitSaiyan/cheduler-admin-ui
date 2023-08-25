@@ -715,7 +715,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 	private myDate(date: string): Date {
 		const formattedDate = new Date();
-		const splitDate = date.split(':');
+		const splitDate = date?.split(':');
 		formattedDate.setHours(+splitDate[0]);
 		formattedDate.setMinutes(+splitDate[1]);
 		formattedDate.setSeconds(0);
