@@ -38,6 +38,8 @@ import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { Translate } from '../../../../shared/models/translate.model';
+import { ModalService } from 'src/app/core/services/modal.service';
+import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 
 @Component({
 	selector: 'dfm-add-appointment',
@@ -97,6 +99,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	public isOutside: boolean | undefined = false;
 	private staffs: NameValue[] = [];
 	public filteredStaffs: NameValue[] = [];
+	public uploadFileName!: string;
+	private fileSize!: number;
+	documentStage: string = '';
 
 	constructor(
 		private fb: FormBuilder,
@@ -117,6 +122,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		private cdr: ChangeDetectorRef,
 		private loaderService: LoaderService,
 		private shareDataSvc: ShareDataService,
+		private modalSvc: ModalService,
 	) {
 		super();
 
@@ -145,6 +151,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 		this.siteManagementApiSvc.siteManagementData$.pipe(take(1)).subscribe((siteSettings) => {
 			this.isCombinable = siteSettings.isSlotsCombinable;
+			this.fileSize = siteSettings.documentSizeInKb/1024
 			this.isDoctorConsentDisable$$.next(siteSettings.doctorReferringConsent === 1);
 		});
 
@@ -497,6 +504,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			comments: ['', []],
 			approval: [AppointmentStatus.Pending, []],
 			socialSecurityNumber: [null, []],
+			qrCodeId: ['', []],
 		});
 	}
 
@@ -641,5 +649,74 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 	public onDateChange(value: string, controlName: string) {
 		this.appointmentForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
+	}
+
+	public uploadRefferingNote(event: any) {
+		this.uploadFileName = event.target.files[0].name;
+		var extension = this.uploadFileName.substr(this.uploadFileName.lastIndexOf('.') + 1).toLowerCase();
+		var allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
+		if (!event.target.files.length) {
+			return;
+		} else if (allowedExtensions.indexOf(extension) === -1) {
+			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
+			this.documentStage = 'FAILED_TO_UPLOAD';
+		} else if (fileSize) {
+			this.notificationSvc.showNotification(`File size should not be greater than ${this.fileSize} MB.`, NotificationType.WARNING);
+			this.documentStage = 'FAILED_TO_UPLOAD';
+		} else {
+			this.documentStage = 'Uploading';
+			this.onFileChange(event);
+		}
+	}
+
+	private onFileChange(event: any) {
+		new Promise((resolve) => {
+			const { files } = event.target as HTMLInputElement;
+
+			if (files && files?.length) {
+				const reader = new FileReader();
+				reader.onload = (e: any) => {
+					resolve(files[0]);
+				};
+				reader.readAsDataURL(files[0]);
+			}
+		}).then((res) => {
+			this.uploadDocument(res);
+			event.target.value = '';
+		});
+	}
+
+	private uploadDocument(file: any) {
+		this.appointmentApiSvc.uploadDocumnet(file, '').subscribe({
+			next: (res) => {
+				this.documentStage = this.uploadFileName;
+
+				this.appointmentForm.patchValue({
+					qrCodeId: res?.apmtDocUniqueId,
+				});
+			},
+			error: (err) => (this.documentStage = 'FAILED_TO_UPLOAD'),
+		});
+	}
+
+	public viewDocument() {
+		this.modalSvc.open(DocumentViewModalComponent, {
+			data: {
+				id: this.formValues.qrCodeId,
+			},
+			options: {
+				size: 'xl',
+				backdrop: true,
+				centered: true,
+				modalDialogClass: 'ad-ap-modal-shadow',
+			},
+		});
+	}
+
+	public clearFile() {
+		this.appointmentApiSvc.deleteDocument(this.formValues.qrCodeId).pipe(takeUntil(this.destroy$$)).subscribe();
+		this.formValues.qrCodeId = '';
+		this.documentStage = '';
 	}
 }

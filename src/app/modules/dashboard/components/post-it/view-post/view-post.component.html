@@ -4,7 +4,7 @@
     <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close()"></dfm-button-icon>
   </div>
 
-  <div class="modal-body d-flex-main pb-4" *ngIf="postItData">
+  <div class="modal-body d-flex-main pb-4" *ngIf="postItData; else loader">
       <div *ngFor="let post of postItData; let i = index" class="h-100 main-post">
         <div
           class="d-flex flex-column dfm-gap-16 dfm-px-24 dfm-pt-16 dfm-pb-24 justify-content-between rounded-3 shadow-sm post-it-card"
@@ -44,4 +44,10 @@
         </div>
       </div>
   </div>
+
+  <ng-template #loader>
+    <div style="height: 20vh;" class="d-flex justify-content-center align-items-center w-full flex-1">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+  </ng-template>
 </div>
