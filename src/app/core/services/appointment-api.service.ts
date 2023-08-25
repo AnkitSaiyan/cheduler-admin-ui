@@ -513,15 +513,37 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public getDocumentById$(appointmentId: number, isPreview:boolean): Observable<any> {
-		let params = new HttpParams();
-		params = params.append('appointmentId', appointmentId);
-		params = params.append('isPreview', isPreview);
-		return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, { params }).pipe(
-			map((response) => response.data),
-			tap(() => {}),
+	public uploadDocumnet(file: any, uniqueId: string): Observable<any> {
+		const formData = new FormData();
+		formData.append('File', file);
+		formData.append('ApmtQRCodeId', uniqueId);
+		formData.append('FileData', '');
+		formData.append('FileName', '');
+		// formData.append('AppointmentId', (localStorage.getItem('appointmentId') ?? 0).toString());
+		formData.append('AppointmentId', '0');
+		return this.http.post<any>(`${environment.schedulerApiUrl}/qrcode/upload`, formData).pipe(
+		  map((response) => response.data),
+		  tap(),
 		);
-	}
+	  }
+	
+	  public getDocumentById$(id: any, isPreview:boolean): Observable<any> {
+		let params = new HttpParams();
+		const idType = isNaN(id) ? 'qrCodeId' : 'appointmentId';
+		params = params.append(idType, id);
+		params = params.append('isPreview', isPreview);
+			return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, {params}).pipe(
+			  map((response) => response.data),
+			  tap(() => {}),
+			);
+	  }
+	  
+	  public deleteDocument(qrId: string): Observable<any> {
+		return this.http.delete<any>(`${environment.schedulerApiUrl}/qrcode/${qrId}`).pipe(
+		  map((response) => response.statusCode),
+		  tap(),
+		);
+	  }
 
 	public refresh(): void {
 		this.refreshAppointment$$.next();

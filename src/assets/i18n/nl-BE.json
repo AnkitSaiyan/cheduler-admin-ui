@@ -483,12 +483,8 @@
 	"Sat": "Zat",
 	"PrefillFromPractice": "Praktijkuren vooraf invullen",
 	"ReferralNote": "Verwijsbrief",
-	"AbsenceSlot": "Absence Slot"
+	"AbsenceSlot": "Absence Slot",
+	"Uploading": "Uploaden",
+	"FAILED_TO_UPLOAD": "Uploaden is mislukt",
+	"Uploaded": "Geüpload"
 }
-
-
-
-
-
-
-
