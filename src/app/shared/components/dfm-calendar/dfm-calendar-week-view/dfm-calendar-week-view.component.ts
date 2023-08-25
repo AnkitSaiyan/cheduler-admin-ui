@@ -404,20 +404,23 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getAbsenceHeight(groupedData: any[]): number {
 		let endDate: Date = groupedData[0].endedAt;
+    let endTime: string = groupedData[0]?.end;
 		groupedData.forEach((data) => {
-			if (data.endedAt > endDate) {
+			if (DateTimeUtils.TimeToNumber(data.end) > DateTimeUtils.TimeToNumber(endTime)) {
 				endDate = data.endedAt;
+				endTime = data.end;
 			}
 		});
 
-		const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+		const groupStartDate = this.datePipe.transform(DateTimeUtils.UTCDateToLocalDate(new Date(groupedData[0].startedAt)), 'HH:mm:ss') ?? '';
 
 		const startDate =
-			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
+			this.myDate(groupStartDate).getTime() < this.myDate(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)).getTime()
 				? this.myDate(this.limit.min)
 				: new Date(groupedData[0].startedAt);
 
 		const groupEndDate = this.datePipe.transform(new Date(endDate), 'HH:mm:ss') ?? '';
+		return this.getMargin(startDate, endDate) * this.pixelsPerMin;
 		// if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
 		// 	return 0;
 		// }

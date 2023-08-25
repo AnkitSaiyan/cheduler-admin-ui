@@ -284,7 +284,7 @@
                       [ngClass]="{ 'justify-content-center p-0': getAbsenceHeight([data]) <= 40 }"
                       [ngStyle]="{
                         'margin-top.px': getMargin(groupedData?.[0].startedAt, data.startedAt) * 4,
-                        'height.px': getDurationMinutes(data.startedAt, data.endedAt) * 4
+                        'height.px': getMargin(data.startedAt, data.endedAt) * 4
                       }"
                       triggers="click"
                       container="body"
