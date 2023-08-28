@@ -461,7 +461,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public getAbsenceTop(groupedData: any[]): number {
-		const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+		const groupStartDate = this.datePipe.transform(new Date(groupedData[0]?.startedAt), 'HH:mm:ss') ?? '';
 		const startDate =
 			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
 				? this.myDate(this.limit.min)
