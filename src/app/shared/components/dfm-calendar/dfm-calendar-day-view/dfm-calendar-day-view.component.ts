@@ -144,6 +144,15 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		}
     this.setHideAbsence(this.absenceData)
     this.getGrayOutArea(this.timeSlot);
+    const date: string = this.datePipe.transform(this.selectedDate, 'd-M-yyyy')!;
+		this.hideAppointmentData = {};
+		if (this.dataGroupedByDateAndRoom[date]) {
+			Object.values(this.dataGroupedByDateAndRoom[date]).forEach((data) => {
+				data.forEach(({ appointment }) => {
+					this.getTop([appointment], true);
+				});
+			});
+		}
     this.cdr.detectChanges();
 	}
 
