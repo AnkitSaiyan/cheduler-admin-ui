@@ -106,7 +106,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	private fileSize!: number;
 
-	documentStage: string = '';
+	public documentStage: string = '';
+
+	public edit: boolean = false;
 
 	constructor(
 		private modalSvc: ModalService,
@@ -170,7 +172,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 		if (this.modalData.appointment?.id) {
 			this.loading$$.next(true);
-
+			this.edit = true;
 			this.appointmentApiSvc
 				.getAppointmentByID$(this.modalData.appointment.id)
 				.pipe(take(1))

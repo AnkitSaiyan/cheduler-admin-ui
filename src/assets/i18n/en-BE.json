@@ -481,7 +481,7 @@
 	"PrefillFromPractice": "Prefill practice hours",
 	"ReferralNote": "Referral Note",
 	"AbsenceSlot": "Unavailable Slot",
-	"Uploading": "Uploading",
+	"Uploading": "Uploading...",
 	"FAILED_TO_UPLOAD": "Failed to upload",
 	"Uploaded": "Uploaded"
 }
