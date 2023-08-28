@@ -61,7 +61,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 		this.router.navigate([], {
 			replaceUrl: true,
 			queryParams: {
-				v: isCalendarView ? 't' : 'w',
+				v: isCalendarView ? 't' : 'm',
 				d: this.datePipe.transform(new Date(), 'yyyy-MM-dd'),
 			},
 			queryParamsHandling: 'merge',
