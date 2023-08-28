@@ -174,7 +174,16 @@
           <dfm-table-row-cell [fullContent]="item.patientFname">{{ item?.patientFname | titlecase }} {{ item?.patientLname  }}</dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item.exams">{{ item?.exams | joinWithAnd : 'name'  | dashIfNothing }}</dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item.doctor">{{ item?.doctor | titlecase | dashIfNothing }}</dfm-table-row-cell>
-          <dfm-table-body-cell>{{!item.documentCount ? '—':''}}  <span *ngIf="item.documentCount" class="view-link" (click)="$event.stopPropagation(); openDocumentModal(item.id)" >{{'View' | translate}}</span></dfm-table-body-cell>
+          <dfm-table-body-cell>
+            <span *ngIf="item.documentCount" class="view-link"
+								(click)="$event.stopPropagation(); openDocumentModal(item.id)">{{'View' | translate}}</span>
+								<input #fileInput type="file" class="hidden" accept="image/*"
+								(click)="$event.stopPropagation();"
+									(change)="uploadRefferingNote($event, item.id)" />
+								<span class="upload-button" *ngIf="!item.documentCount" (click)="$event.stopPropagation(); fileInput.click();">
+									<img src="../../../../../assets/images/upload-icon.png" alt="" width="16px" />
+								</span>
+          </dfm-table-body-cell>
           <dfm-table-row-cell [fullContent]="item.id">{{ item?.id }}</dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item.createdAt">{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item.status">

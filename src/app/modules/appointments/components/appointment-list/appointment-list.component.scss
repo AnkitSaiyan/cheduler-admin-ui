@@ -10,6 +10,16 @@
   color: blue;
   text-decoration: underline;
 }
+
+.upload-button {
+  background-color: var(--dfm-primary);
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .add-appointment-mv{
   display: none;
 }

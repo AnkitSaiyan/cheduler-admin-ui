@@ -294,6 +294,15 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Past',
 		[DUTCH_BE]: 'Verleden',
 	},
+	uploading: {
+		[ENG_BE]: 'Uploading...',
+		[DUTCH_BE]: 'Uploaden',
+	},
+	documentUploadSuccessfully: {
+		[ENG_BE]: 'Document uploaded successfully',
+		[DUTCH_BE]: 'Document Succesvol geüpload ',
+	},
+	
 
 	// Toast Messages
 	DownloadSuccess: (filetype) => ({
@@ -307,7 +316,7 @@ export const Translate = Object.freeze({
 	}),
 
 	AddedSuccess: (filetype) => ({
-		[ENG_BE]: `${filetype}Added successfully`,
+		[ENG_BE]: `${filetype} Added successfully`,
 		[DUTCH_BE]: `${filetype} Succesvol toegevoegd`,
 	}),
 
@@ -595,6 +604,10 @@ export const Translate = Object.freeze({
 		FailedToSave: {
 			[ENG_BE]: 'Failed to save the appointment',
 			[DUTCH_BE]: 'Afspraak werd niet weerhouden',
+		},
+		FailedToUpload: {
+			[ENG_BE]: 'Failed to upload.',
+			[DUTCH_BE]: 'Uploaden is mislukt',
 		},
 		BackendCodes: {
 			[ENG_BE]: {

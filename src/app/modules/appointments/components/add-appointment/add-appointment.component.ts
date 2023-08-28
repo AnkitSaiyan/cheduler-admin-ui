@@ -662,7 +662,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
 			this.documentStage = 'FAILED_TO_UPLOAD';
 		} else if (fileSize) {
-			this.notificationSvc.showNotification(`File size should not be greater than ${this.fileSize} MB.`, NotificationType.WARNING);
+			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
 			this.documentStage = 'FAILED_TO_UPLOAD';
 		} else {
 			this.documentStage = 'Uploading';

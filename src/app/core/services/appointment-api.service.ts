@@ -513,14 +513,14 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public uploadDocumnet(file: any, uniqueId: string): Observable<any> {
+	public uploadDocumnet(file: any, uniqueId: string, appointmentId = '0' ): Observable<any> {
 		const formData = new FormData();
 		formData.append('File', file);
 		formData.append('ApmtQRCodeId', uniqueId);
 		formData.append('FileData', '');
 		formData.append('FileName', '');
 		// formData.append('AppointmentId', (localStorage.getItem('appointmentId') ?? 0).toString());
-		formData.append('AppointmentId', '0');
+		formData.append('AppointmentId', appointmentId);
 		return this.http.post<any>(`${environment.schedulerApiUrl}/qrcode/upload`, formData).pipe(
 		  map((response) => response.data),
 		  tap(),
