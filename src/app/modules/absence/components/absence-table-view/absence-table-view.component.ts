@@ -373,7 +373,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		this.router.navigate([], {
 			replaceUrl: true,
 			queryParams: {
-				v: !this.calendarView$$.value ? 'w' : 't',
+				v: !this.calendarView$$.value ? 'm' : 't',
 			},
 			queryParamsHandling: 'merge',
 		});
@@ -390,4 +390,5 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		this.filteredAbsences$$.next(GeneralUtils.SortArray(this.filteredAbsences$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
 
