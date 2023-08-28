@@ -619,24 +619,28 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			}))
 			.forEach((prioritySlot: PrioritySlot) => {
 				let { repeatFrequency } = prioritySlot;
-				const { priority, nxtSlotOpenPct } = prioritySlot;
-				const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
-				let firstDate = new Date(new Date(prioritySlot.startedAt).toDateString());
-				const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
+				const { priority, nxtSlotOpenPct, id, isClose, startedAt, endedAt } = prioritySlot;
+				const startDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(prioritySlot.startedAt), true)).toDateString());
+				let firstDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(prioritySlot.startedAt), true)).toDateString());
+				const lastDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(prioritySlot.endedAt), true)).toDateString());
 				switch (true) {
 					case !prioritySlot.isRepeat:
 					case prioritySlot.repeatType === RepeatType.Daily: {
 						repeatFrequency = prioritySlot.isRepeat ? repeatFrequency : 1;
 						while (true) {
+							if (firstDate.getTime() > lastDate.getTime()) break;
 							const dateString = this.datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
 							const customPrioritySlot = {
 								start: prioritySlot.slotStartTime.slice(0, 5),
 								end: prioritySlot.slotEndTime?.slice(0, 5),
 								priority,
 								nxtSlotOpenPct,
+								id,
+								isClose,
+								startedAt,
+								endedAt,
 							};
 							myPrioritySlots[dateString] = myPrioritySlots[dateString] ? [...myPrioritySlots[dateString], customPrioritySlot] : [customPrioritySlot];
-							if (firstDate.getTime() >= lastDate.getTime()) break;
 							firstDate.setDate(firstDate.getDate() + repeatFrequency);
 						}
 						break;
@@ -655,6 +659,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 										end: prioritySlot.slotEndTime?.slice(0, 5),
 										priority,
 										nxtSlotOpenPct,
+										id,
+										isClose,
+										startedAt,
+										endedAt,
 									};
 									myPrioritySlots[dateString] = myPrioritySlots[dateString]
 										? [...myPrioritySlots[dateString], customPrioritySlot]
@@ -678,6 +686,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 											end: prioritySlot.slotEndTime?.slice(0, 5),
 											priority,
 											nxtSlotOpenPct,
+											id,
+											isClose,
+											startedAt,
+											endedAt,
 										};
 										myPrioritySlots[dateString] = myPrioritySlots[dateString]
 											? [...myPrioritySlots[dateString], customPrioritySlot]
