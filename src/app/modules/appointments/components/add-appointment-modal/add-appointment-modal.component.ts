@@ -257,6 +257,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				} else {
 					this.setSlots(slots, this.isCombinable);
 				}
+        this.setSlots(slots, this.isCombinable);
 				this.loadingSlots$$.next(false);
 			});
 
