@@ -143,6 +143,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			this.dataGroupedByDateAndRoom = currentValue;
 		}
     this.setHideAbsence(this.absenceData)
+    this.getGrayOutArea(this.timeSlot);
     this.cdr.detectChanges();
 	}
 
