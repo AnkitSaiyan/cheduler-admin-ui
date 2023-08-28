@@ -123,7 +123,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		this.users$$ = new BehaviorSubject<any[]>([]);
 		this.filteredUsers$$ = new BehaviorSubject<any[]>([]);
 		this.userApiSvc.pageNoUser = 1;
-		this.updateColumns(this.columnsForGeneral);
+		this.updateColumns(this.columnsForScheduler);
 	}
 
 	public ngOnInit(): void {
