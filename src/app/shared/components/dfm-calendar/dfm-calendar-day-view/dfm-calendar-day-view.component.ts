@@ -142,7 +142,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
 			this.dataGroupedByDateAndRoom = currentValue;
 		}
-    this.setHideAbsence(this.absenceData)
+    if (this.timeSlot?.timings?.length) {
+			this.setHideAbsence(this.absenceData);
+		}
     this.getGrayOutArea(this.timeSlot);
     const date: string = this.datePipe.transform(this.selectedDate, 'd-M-yyyy')!;
 		this.hideAppointmentData = {};
