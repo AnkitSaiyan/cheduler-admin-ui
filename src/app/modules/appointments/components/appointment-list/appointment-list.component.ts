@@ -32,6 +32,7 @@ import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/
 import { SignalrService } from 'src/app/core/services/signalr.service';
 import { AppointmentAdvanceSearchComponent } from 'src/app/modules/dashboard/components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
 import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
+import { SiteManagementApiService } from 'src/app/core/services/site-management-api.service';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -144,7 +145,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public isUpcomingAppointments: boolean = true;
 
-	public isResetBtnDisable:boolean = true;
+	public isResetBtnDisable: boolean = true;
+	
+	private fileSize!: number;
 
 	constructor(
 		private downloadSvc: DownloadService,
@@ -166,6 +169,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		private joinWithAndPipe: JoinWithAndPipe,
 		private translatePipe: TranslatePipe,
 		private signalRSvc: SignalrService,
+		private siteManagementApiSvc: SiteManagementApiService,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -206,6 +210,11 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	public ngOnInit() {	
+
+		this.siteManagementApiSvc.siteManagementData$.pipe(takeUntil(this.destroy$$)).subscribe((siteSettings) => {
+			this.fileSize = siteSettings.documentSizeInKb / 1024;
+		});
+
 
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
@@ -703,6 +712,49 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				modalDialogClass: 'ad-ap-modal-shadow',
 			},
 		});
-		// this.appointmentApiSvc.getDocumentById$(id).subscribe(res => console.log(res));
+	}
+
+	public uploadRefferingNote(event: any, id: any) {
+		event.stopImmediatePropagation();
+		var extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+		var allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
+		if (!event.target.files.length) {
+			return;
+		} else if (allowedExtensions.indexOf(extension) === -1) {
+			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
+		} else if (fileSize) {
+			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
+		} else {
+			this.notificationSvc.showNotification(Translate.uploading[this.selectedLang], NotificationType.WARNING);
+			this.onFileChange(event, id);
+		}
+	}
+
+	private onFileChange(event: any, id) {
+		new Promise((resolve) => {
+			const { files } = event.target as HTMLInputElement;
+
+			if (files && files?.length) {
+				const reader = new FileReader();
+				reader.onload = (e: any) => {
+					resolve(files[0]);
+				};
+				reader.readAsDataURL(files[0]);
+			}
+		}).then((res) => {
+			this.uploadDocument(res, id);
+			event.target.value = '';
+		});
+	}
+
+	private uploadDocument(file: any, id) {
+		this.appointmentApiSvc.uploadDocumnet(file, '', id).subscribe({
+			next: (res) => {
+				this.notificationSvc.showNotification(`${Translate.documentUploadSuccessfully[this.selectedLang]}`, NotificationType.SUCCESS);
+				this.onRefresh();
+			},
+			error: (err) => this.notificationSvc.showNotification(`${Translate.Error.FailedToUpload[this.selectedLang]}`, NotificationType.DANGER),
+		});
 	}
 }

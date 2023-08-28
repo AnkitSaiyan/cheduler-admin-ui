@@ -168,7 +168,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			cancelAppointmentTime: [duration, []],
 			cancelAppointmentType: [durationType, []],
 			email: [siteManagementData?.email ?? '', [Validators.required]],
-			telephone: [siteManagementData?.telephone, [Validators.required, Validators.minLength(10)]],
+			telephone: [siteManagementData?.telephone, [Validators.required]],
 			address: [siteManagementData?.address, [Validators.required]],
 			isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
 			reminderTime: [reminderDuration, []],

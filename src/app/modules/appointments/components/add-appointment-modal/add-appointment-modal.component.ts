@@ -106,7 +106,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	private fileSize!: number;
 
-	documentStage: string = '';
+	public documentStage: string = '';
+
+	public edit: boolean = false;
 
 	constructor(
 		private modalSvc: ModalService,
@@ -170,7 +172,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 		if (this.modalData.appointment?.id) {
 			this.loading$$.next(true);
-
+			this.edit = true;
 			this.appointmentApiSvc
 				.getAppointmentByID$(this.modalData.appointment.id)
 				.pipe(take(1))
@@ -470,7 +472,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		this.appointmentForm = this.fb.group({
 			patientFname: [null, [Validators.required]],
 			patientLname: [null, [Validators.required]],
-			patientTel: [null, [Validators.required, Validators.minLength(10)]],
+			patientTel: [null, [Validators.required]],
 			patientEmail: [null, []],
 			doctorId: [null, []],
 			startedAt: [null, [Validators.required]],
@@ -602,7 +604,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
 			this.documentStage = 'FAILED_TO_UPLOAD';
 		} else if (fileSize) {
-			this.notificationSvc.showNotification(`File size should not be greater than ${this.fileSize} MB.`, NotificationType.WARNING);
+			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
 			this.documentStage = 'FAILED_TO_UPLOAD';
 		} else {
 			this.documentStage = 'Uploading';

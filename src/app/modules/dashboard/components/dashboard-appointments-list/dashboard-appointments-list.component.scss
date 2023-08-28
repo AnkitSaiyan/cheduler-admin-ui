@@ -7,6 +7,15 @@
   }
 }
 
+.upload-button {
+  background-color: var(--dfm-primary);
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .appointment-status-dropdown{
   max-width: 152px;
 }

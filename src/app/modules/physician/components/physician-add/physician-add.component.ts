@@ -73,7 +73,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
       lastname: [physicianDetails?.lastname ?? '', [Validators.required]],
       email: [physicianDetails?.email ?? '', []],
       rizivNumber: [physicianDetails?.rizivNumber ?? null, []],
-      telephone: [physicianDetails?.telephone, [Validators.required, Validators.minLength(10)]],
+      telephone: [physicianDetails?.telephone, [Validators.required]],
       gsm: [physicianDetails?.gsm, []],
       address: [physicianDetails?.address, []],
       notifyDoctor: [!!physicianDetails?.notifyDoctor, []],

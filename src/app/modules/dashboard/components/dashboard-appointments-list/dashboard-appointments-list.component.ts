@@ -34,6 +34,7 @@ import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { SignalrService } from 'src/app/core/services/signalr.service';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
+import { SiteManagementApiService } from 'src/app/core/services/site-management-api.service';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -137,6 +138,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public isResetBtnDisable: boolean = true;
 
+	private fileSize!: number;
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -158,6 +160,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		private translatePipe: TranslatePipe,
 		private signalRSvc: SignalrService,
 		private dashBoardSvc: DashboardApiService,
+		private siteManagementApiSvc: SiteManagementApiService,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -204,7 +207,10 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		});
 	}
 
-	public ngOnInit() {			
+	public ngOnInit() {
+		this.siteManagementApiSvc.siteManagementData$.pipe(takeUntil(this.destroy$$)).subscribe((siteSettings) => {
+			this.fileSize = siteSettings.documentSizeInKb / 1024;
+		});
 
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => (this.downloadItems = items),
@@ -616,13 +622,56 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			    modalDialogClass: 'ad-ap-modal-shadow',
 			  },
 			})
-		// this.appointmentApiSvc.getDocumentById$(id).subscribe(res => console.log(res));
 	}
 
 	public manageActionColumn([...data]): Array<string> {
 		if (data.find((title) => title === 'Actions' || title === 'Acties')) {
 			data.pop();
 		}
-		return data
+		return data;
+	}
+
+	public uploadRefferingNote(event: any, id: any) {
+		event.stopImmediatePropagation();
+		var extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+		var allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
+		if (!event.target.files.length) {
+			return;
+		} else if (allowedExtensions.indexOf(extension) === -1) {
+			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
+		} else if (fileSize) {
+			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
+		} else {
+			this.notificationSvc.showNotification(Translate.uploading[this.selectedLang], NotificationType.WARNING);
+			this.onFileChange(event, id);
+		}
+	}
+
+	private onFileChange(event: any, id) {
+		new Promise((resolve) => {
+			const { files } = event.target as HTMLInputElement;
+
+			if (files && files?.length) {
+				const reader = new FileReader();
+				reader.onload = (e: any) => {
+					resolve(files[0]);
+				};
+				reader.readAsDataURL(files[0]);
+			}
+		}).then((res) => {
+			this.uploadDocument(res, id);
+			event.target.value = '';
+		});
+	}
+
+	private uploadDocument(file: any, id) {
+		this.appointmentApiSvc.uploadDocumnet(file, '', id).subscribe({
+			next: (res) => {
+				this.notificationSvc.showNotification(`${Translate.documentUploadSuccessfully[this.selectedLang]}`, NotificationType.SUCCESS);
+				this.onRefresh();
+			},
+			error: (err) => this.notificationSvc.showNotification(`${Translate.Error.FailedToUpload[this.selectedLang]}`, NotificationType.DANGER),
+		});
 	}
 }
