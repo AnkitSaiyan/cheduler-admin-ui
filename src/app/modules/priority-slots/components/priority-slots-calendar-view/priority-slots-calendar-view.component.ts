@@ -230,17 +230,17 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		prioritySlots
 			.map((value) => ({
 				...value,
-				startedAt: this.utcToLocalPipe.transform(value.startedAt, false, true),
-				endedAt: this.utcToLocalPipe.transform(value.endedAt, false, true),
+				startedAt: value.startedAt,
+				endedAt: value.endedAt,
 				slotStartTime: this.utcToLocalPipe.transform(value.slotStartTime, true),
 				slotEndTime: this.utcToLocalPipe.transform(value.slotEndTime, true),
 			}))
 			.forEach((prioritySlot: PrioritySlot) => {
 				let { repeatFrequency } = prioritySlot;
-				const { priority, nxtSlotOpenPct, id, isClose } = prioritySlot;
-				const startDate = new Date(new Date(prioritySlot.startedAt).toDateString());
-				let firstDate = new Date(new Date(prioritySlot.startedAt).toDateString());
-				const lastDate = new Date(new Date(prioritySlot.endedAt).toDateString());
+				const { priority, nxtSlotOpenPct, id, isClose, startedAt, endedAt } = prioritySlot;
+				const startDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(prioritySlot.startedAt), true)).toDateString());
+				let firstDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(prioritySlot.startedAt), true)).toDateString());
+				const lastDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(prioritySlot.endedAt), true)).toDateString());
 				switch (true) {
 					case !prioritySlot.isRepeat:
 					case prioritySlot.repeatType === RepeatType.Daily: {
@@ -255,6 +255,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 								nxtSlotOpenPct,
 								id,
 								isClose,
+								startedAt,
+								endedAt,
 							};
 							myPrioritySlots[dateString] = myPrioritySlots[dateString] ? [...myPrioritySlots[dateString], customPrioritySlot] : [customPrioritySlot];
 							firstDate.setDate(firstDate.getDate() + repeatFrequency);
@@ -277,6 +279,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 										nxtSlotOpenPct,
 										id,
 										isClose,
+										startedAt,
+										endedAt,
 									};
 									myPrioritySlots[dateString] = myPrioritySlots[dateString]
 										? [...myPrioritySlots[dateString], customPrioritySlot]
@@ -302,6 +306,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 											nxtSlotOpenPct,
 											id,
 											isClose,
+											startedAt,
+											endedAt,
 										};
 										myPrioritySlots[dateString] = myPrioritySlots[dateString]
 											? [...myPrioritySlots[dateString], customPrioritySlot]
@@ -351,6 +357,9 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			});
 	}
 }
+
+
+
 
 
 

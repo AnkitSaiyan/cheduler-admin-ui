@@ -329,15 +329,15 @@
                 <ng-container *ngIf="prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                   <ng-container *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]; let i = index">
                     <div
-                      *ngIf="getPrioritySlotHeight(prioritySlot) as eventHeight"
+                      *ngIf="getAbsenceTop([prioritySlot]) >= 0 && getAbsenceHeight([prioritySlot]) as eventHeight"
                       [ngbPopover]="priorityCardDetail"
                       triggers="mouseenter:mouseleave"
                       triggers="mouseenter:mouseleave"
                       [class]="'priority-slots-area ' + prioritySlotsVariant"
                       [ngClass]="prioritySlot.priority"
                       [ngStyle]="{
-                        'top.px': getPrioritySlotTop(prioritySlot) < 0 ? 0 : getPrioritySlotTop(prioritySlot),
-                        'height.px': getPrioritySlotTop(prioritySlot) < 0 ? 0 : eventHeight
+                        'top.px': getAbsenceTop([prioritySlot]),
+                        'height.px': eventHeight
                       }"
                     >
                       <div class="priority-slot-percentage" [ngStyle]="{'top': eventHeight>20 ? '12px':'0', 'padding': eventHeight>20 ? '12px':'0'}" >

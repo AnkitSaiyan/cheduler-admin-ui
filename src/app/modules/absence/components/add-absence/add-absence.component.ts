@@ -263,8 +263,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			return;
 		}
 
-		this.submitting$$.next(true);
-
 		const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
 
 		let addAbsenceReqData: AddAbsenceRequestData = {
@@ -304,6 +302,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		if (this.modalData?.absenceID) {
 			addAbsenceReqData.id = this.modalData.absenceID;
 		}
+
+		this.submitting$$.next(true);
 
 		if (this.modalData.edit) {
 			this.absenceApiSvc

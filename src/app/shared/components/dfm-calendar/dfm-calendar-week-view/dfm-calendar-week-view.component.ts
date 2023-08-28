@@ -158,8 +158,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		}
 
 		this.setHideAbsence(this.absenceData);
-		console.log(this.dataGroupedByDateAndTime, 'test');
-		console.log(this.absenceData, 'absence');
+		console.log(this.prioritySlots, 'priority');
 	}
 
 	public ngOnInit(): void {
@@ -423,6 +422,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public getPrioritySlotHeight(prioritySlot: any): number {
+    console.log(prioritySlot);
 		const max = DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max);
 		let startDate: Date = this.myDate(prioritySlot.start);
 		const min = DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min));
@@ -473,8 +473,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const startCalendarMinute = startCalendarDate.getMinutes();
 		const barHeight = 1;
 		const horizontalBarHeight = (this.getAbsenceHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-		const top =
-			(startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
+		const top = (startMinute + startHour * 60) * this.pixelsPerMin - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
 		if (
 			DateTimeUtils.TimeToNumber(groupedData?.[0].end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
 			DateTimeUtils.TimeToNumber(groupedData?.[0].start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
