@@ -460,14 +460,16 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	}
 
 	private updateQuery(queryStr?: string, date?: Date, replaceUrl: boolean = false) {
-		this.router.navigate([], {
-			queryParams: {
-				...(queryStr ? { v: queryStr } : {}),
-				...(date ? { d: this.datePipe.transform(date, 'yyyy-MM-dd') } : {}),
-			},
-			queryParamsHandling: 'merge',
-			replaceUrl,
-		});
+    setTimeout(() => {
+			this.router.navigate([], {
+				queryParams: {
+					...(queryStr ? { v: queryStr } : {}),
+					...(date ? { d: this.datePipe.transform(date, 'yyyy-MM-dd') } : {}),
+				},
+				queryParamsHandling: 'merge',
+				replaceUrl,
+			});
+		}, 0);
 	}
 
 	public updateToToday() {
@@ -602,6 +604,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
 
 
 

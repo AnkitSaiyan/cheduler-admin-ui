@@ -152,6 +152,7 @@
                       'time-slot-disabled-text': !checkSlotAvailability(slot),
                       'time-slot-selected-text': selectedTimeSlot[examID]?.slot === slot.start + '-' + slot.end
                     }"
+                    [dfmAutoScrollInView]="selectedTimeSlot[examID]?.slot === slot.start + '-' + slot.end"
                   >
                     {{ (slot.start?.slice(0, -3))! | dfmUtcToLocal: true }} - {{ (slot.end?.slice(0, -3))! | dfmUtcToLocal : true }}
                   </div>
@@ -181,6 +182,7 @@
                   [ngClass]="{
                     'time-slot-selected-text': (selectedTimeSlot | findSelectedSlot : exams.value )?.slot === slot.start + '-' + slot.end
                   }"
+                  [dfmAutoScrollInView]="(selectedTimeSlot | findSelectedSlot : exams.value )?.slot === slot.start + '-' + slot.end"
                 >
                   {{ slot.start?.slice(0, -3) | dfmUtcToLocal: true }} - {{ slot.end?.slice(0, -3) | dfmUtcToLocal: true }}
                 </div>
