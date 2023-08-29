@@ -302,7 +302,6 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Document uploaded successfully',
 		[DUTCH_BE]: 'Document Succesvol geüpload ',
 	},
-	
 
 	// Toast Messages
 	DownloadSuccess: (filetype) => ({
@@ -509,9 +508,13 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Formulier is niet geldig, vul de verplichte velden in',
 	},
 
-	SelectStaffOrRoom: {
-		[ENG_BE]: 'Please select room or staff',
-		[DUTCH_BE]: 'Selecteer eerst een zaal of personeel',
+	SelectStaff: {
+		[ENG_BE]: 'Please select staff',
+		[DUTCH_BE]: 'Selecteer eerst een personeel',
+	},
+	SelectRoom: {
+		[ENG_BE]: 'Please select room ',
+		[DUTCH_BE]: 'Selecteer eerst een zaal ',
 	},
 	FormInvalidSimple: {
 		[ENG_BE]: 'Form is not valid',
@@ -818,14 +821,15 @@ export const Translate = Object.freeze({
 		},
 	},
 	FileFormatNotAllowed: {
-	  [ENG_BE]: 'File format not allowed',
-	  [DUTCH_BE]: 'Bestandsformaat niet toegestaan.',
+		[ENG_BE]: 'File format not allowed',
+		[DUTCH_BE]: 'Bestandsformaat niet toegestaan.',
 	},
 	FileNotGreaterThan: {
-	  [ENG_BE]: 'File size should not be greater than',
-	  [DUTCH_BE]: 'De bestandsgrootte mag niet groter zijn dan.',
+		[ENG_BE]: 'File size should not be greater than',
+		[DUTCH_BE]: 'De bestandsgrootte mag niet groter zijn dan.',
 	},
 });
+
 
 
 
