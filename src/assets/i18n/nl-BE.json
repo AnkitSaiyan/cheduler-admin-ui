@@ -486,6 +486,8 @@
 	"AbsenceSlot": "Unavailable Slot",
 	"Uploading": "Uploaden...",
 	"FAILED_TO_UPLOAD": "Uploaden is mislukt",
-	"Uploaded": "Geüpload"
+	"Uploaded": "Geüpload",
+	"RE_UPLOAD_REFERRAL_NOTE": "Verwijsbrief opnieuw uploaden",
+	"DocumentSize": "Documentgrootte"
 }
 
