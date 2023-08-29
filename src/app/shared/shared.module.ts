@@ -79,6 +79,7 @@ import { DfmDragAreaEventDirective } from './directives/dfm-drag-area-event.dire
 import { SafePipe } from './pipes/safe.pipe';
 import { FindSelectedSlotPipe } from './pipes/find-selected-slot.pipe';
 import { RemoveDuplicateDataPipe } from './pipes/remove-duplicate-data.pipe';
+import { DfmAutoScrollInViewDirective } from './directives/dfm-auto-scroll-in-view.directive';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -114,6 +115,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		IsPermittedDirective,
 		DfmDragEventDirective,
 		DfmDragAreaEventDirective,
+		DfmAutoScrollInViewDirective,
 		NumberArrayPipe,
 		IsPreviousDayPipe,
 		IsDataPipe,
@@ -132,7 +134,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DocumentViewModalComponent,
 		SafePipe,
 		FindSelectedSlotPipe,
-  RemoveDuplicateDataPipe,
+		RemoveDuplicateDataPipe,
 	],
 	imports: [
 		CommonModule,
@@ -205,6 +207,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		IsPermittedDirective,
 		DfmDragEventDirective,
 		DfmDragAreaEventDirective,
+		DfmAutoScrollInViewDirective,
 		NumberArrayPipe,
 		ClipboardModule,
 		TranslateModule,
