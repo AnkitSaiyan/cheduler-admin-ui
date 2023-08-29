@@ -255,10 +255,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			if (this.formValues.roomList || this.formValues.userList) {
 				if (this.modalData.absenceType === 'rooms') {
 					this.notificationSvc.showNotification(Translate.SelectRoom[this.selectedLang], NotificationType.WARNING);
-					this.isAbsenceStaffRoomInvalid.next(true);
-					return;
+				} else {
+					this.notificationSvc.showNotification(Translate.SelectStaff[this.selectedLang], NotificationType.WARNING);
 				}
-				this.notificationSvc.showNotification(Translate.SelectStaff[this.selectedLang], NotificationType.WARNING);
 				this.isAbsenceStaffRoomInvalid.next(true);
 				return;
 			}
