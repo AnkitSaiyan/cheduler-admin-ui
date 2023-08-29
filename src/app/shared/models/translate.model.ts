@@ -296,7 +296,7 @@ export const Translate = Object.freeze({
 	},
 	uploading: {
 		[ENG_BE]: 'Uploading...',
-		[DUTCH_BE]: 'Uploaden',
+		[DUTCH_BE]: 'Uploaden...',
 	},
 	documentUploadSuccessfully: {
 		[ENG_BE]: 'Document uploaded successfully',
@@ -805,11 +805,11 @@ export const Translate = Object.freeze({
 	},
 	BodyType: {
 		[ENG_BE]: 'Body type',
-		[DUTCH_BE]: 'Body type',
+		[DUTCH_BE]: 'Lichaamstype',
 	},
 	BodyPart: {
-		[ENG_BE]: 'BodyPart',
-		[DUTCH_BE]: 'BodyPart',
+		[ENG_BE]: 'Body part',
+		[DUTCH_BE]: 'Lichaamsdeel',
 	},
 	ServerErrorMessage: {
 		'Slot exist in this range': {

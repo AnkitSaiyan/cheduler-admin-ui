@@ -483,6 +483,8 @@
 	"AbsenceSlot": "Unavailable Slot",
 	"Uploading": "Uploading...",
 	"FAILED_TO_UPLOAD": "Failed to upload",
-	"Uploaded": "Uploaded"
+	"Uploaded": "Uploaded",
+	"RE_UPLOAD_REFERRAL_NOTE": "Re-upload referral note",
+	"DocumentSize": "Document size"
 }
 
