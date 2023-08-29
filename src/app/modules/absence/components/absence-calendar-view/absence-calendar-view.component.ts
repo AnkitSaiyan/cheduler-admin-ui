@@ -28,7 +28,7 @@ import { getDateOfMonth, getDurationMinutes } from 'src/app/shared/models/calend
 import { PracticeAvailabilityServer } from 'src/app/shared/models/practice.model';
 import { TimeInIntervalPipe } from 'src/app/shared/pipes/time-in-interval.pipe';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
-import { ABSENCE_TYPE } from 'src/app/shared/utils/const';
+import { ABSENCE_TYPE, ABSENCE_TYPE_ARRAY } from 'src/app/shared/utils/const';
 import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 import { getNumberArray } from 'src/app/shared/utils/getNumberArray';
 
@@ -161,6 +161,12 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			filter(Boolean),
 			switchMap(() => combineLatest([this.route.params, this.route.queryParams])),
 			filter(([params, queryParams]: [Params, Params]) => !!params[ABSENCE_TYPE] && !!queryParams['v'] && !!queryParams['d']),
+			tap(([params, queryParams]: [Params, Params]) => {
+				this.headerList = [];
+				if (params[ABSENCE_TYPE] === ABSENCE_TYPE_ARRAY[0] && queryParams['v'] === 'd') {
+					this.setHeaderForRoom();
+				}
+			}),
 			distinctUntilChanged(this.distinctUntilChanged),
 			map(this.getFromAndToDate.bind(this)),
 			switchMap(([absenceType, { fromDate, toDate }]) => {
@@ -173,7 +179,9 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.absenceDayViewData$ = this.absenceData$.pipe(
 			map(this.dataModificationForDay.bind(this)),
 			tap((dayViewAbsenceSlot) => {
-				this.headerList = Object.keys(dayViewAbsenceSlot).map((name) => ({ name, value: name }));
+				if (!this.headerList.length) {
+					this.headerList = Object.keys(dayViewAbsenceSlot).map((name) => ({ name, value: name }));
+				}
 			}),
 		);
 
@@ -182,6 +190,12 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	public override ngOnDestroy(): void {
 		super.ngOnDestroy();
+	}
+
+	private setHeaderForRoom(): void {
+		this.roomApiSvc.allRooms$.pipe(take(1)).subscribe((rooms) => {
+			this.headerList = rooms.map(({ name, id }) => ({ name, value: id }));
+		});
 	}
 
 	private distinctUntilChanged([preParams, preQueryParam], [currParams, currQueryParam]): boolean {
@@ -588,6 +602,12 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
+
+
+
+
+
 
 
 
