@@ -146,7 +146,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	public isUpcomingAppointments: boolean = true;
 
 	public isResetBtnDisable: boolean = true;
-	
+
 	private fileSize!: number;
 
 	constructor(
@@ -209,12 +209,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		});
 	}
 
-	public ngOnInit() {	
-
+	public ngOnInit() {
 		this.siteManagementApiSvc.siteManagementData$.pipe(takeUntil(this.destroy$$)).subscribe((siteSettings) => {
 			this.fileSize = siteSettings.documentSizeInKb / 1024;
 		});
-
 
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
 
@@ -380,7 +378,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		if (data.find(({ title }) => title === 'Actions' || title === 'Acties')) {
 			data.pop();
 		}
-		return data
+		return data;
 	}
 
 	public handleCheckboxSelection(selected: string[]) {
@@ -395,8 +393,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				if (appointment.approval === 1) status = this.translate.instant('Approved');
 				if (appointment.approval === 2) status = this.translate.instant('Canceled');
 				return (
-					appointment.patientFname?.toLowerCase()?.includes(searchText) ||
-					appointment.patientLname?.toLowerCase()?.includes(searchText) ||
+					(appointment.patientFname?.toLowerCase() + ' ' + appointment.patientLname?.toLowerCase())?.includes(searchText) ||
 					appointment.doctor?.toLowerCase()?.includes(searchText) ||
 					appointment.id?.toString()?.includes(searchText) ||
 					status?.toLowerCase()?.startsWith(searchText)

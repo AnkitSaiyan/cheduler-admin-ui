@@ -457,6 +457,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				if (user.status === 1) status = this.translate.instant('Active');
 				if (user.status === 0) status = this.translate.instant('Inactive');
 				return (
+					(user.firstname?.toLowerCase() + ' ' + user.lastname?.toLowerCase())?.includes(searchText) ||
 					user.firstname?.toLowerCase()?.includes(searchText) ||
 					user.lastname?.toLowerCase()?.includes(searchText) ||
 					user.email?.toLowerCase()?.includes(searchText) ||
