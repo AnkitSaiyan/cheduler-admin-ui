@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest, distinctUntilChanged, filter, map, skip, switchMap, take, takeUntil, tap } from 'rxjs';
@@ -22,6 +22,7 @@ import { getNumberArray } from 'src/app/shared/utils/getNumberArray';
 	selector: 'dfm-absence-calendar-view',
 	templateUrl: './absence-calendar-view.component.html',
 	styleUrls: ['./absence-calendar-view.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AbsenceCalendarViewComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public calendarViewFormControl = new FormControl();
@@ -590,6 +591,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
 
 
 
