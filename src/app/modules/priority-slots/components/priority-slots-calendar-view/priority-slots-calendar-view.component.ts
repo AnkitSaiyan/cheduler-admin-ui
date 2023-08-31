@@ -188,7 +188,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			this.prioritySlotsCloseOpen$$.next(response);
 			this.currentDays = dates;
 			this.prioritySlotOpenAndCloseMap();
-			// console.log('aaaaaaaaaaaaaaaaaaaaaa', response, this.prioritySlots$$.value);
+			//
 		});
 	}
 
@@ -357,6 +357,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			});
 	}
 }
+
 
 
 

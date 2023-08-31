@@ -120,16 +120,15 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 
 	public openDocumentModal(id: number) {
 		this.modalSvc.open(DocumentViewModalComponent, {
-			  data: {
-				id
-			  },
-			  options: {
-			    size: 'xl',
-			    backdrop: true,
-			    centered: true,
-			    modalDialogClass: 'ad-ap-modal-shadow',
-			  },
-			})
-		// this.appointmentApiSvc.getDocumentById$(id).subscribe(res => console.log(res));
+			data: {
+				id,
+			},
+			options: {
+				size: 'xl',
+				backdrop: true,
+				centered: true,
+				modalDialogClass: 'ad-ap-modal-shadow',
+			},
+		});
 	}
 }

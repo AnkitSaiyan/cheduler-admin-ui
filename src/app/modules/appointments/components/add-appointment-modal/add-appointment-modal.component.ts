@@ -468,7 +468,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	private createForm() {
-		console.log(this.modalData.appointment, 'data');
+
 
 		this.appointmentForm = this.fb.group({
 			patientFname: [null, [Validators.required]],
