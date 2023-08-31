@@ -262,6 +262,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		start.setMonth(this.selectedDate.getMonth());
 		start.setDate(this.selectedDate.getDate());
 		const end = new Date(groupedData[0].startedAt);
+		end.setMilliseconds(0);
 		const isHiddenAppointmentInBottom = this.extendMinutesInBottom(groupedData[0]) < 0;
 		if (start.getTime() > end.getTime() || isHiddenAppointmentInBottom) {
 			if (storeHiddenAppointment) {
@@ -733,6 +734,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		formattedDate.setHours(+splitDate[0]);
 		formattedDate.setMinutes(+splitDate[1]);
 		formattedDate.setSeconds(0);
+    formattedDate.setMilliseconds(0);
 		return formattedDate;
 	}
 
