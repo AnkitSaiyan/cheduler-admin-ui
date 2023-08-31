@@ -178,6 +178,7 @@
 	"EndTimeRequired": "End time",
 	"Until": "Until",
 	"Repeat": "Repeat",
+	"DoesNotRepeat": "Doesn't repeat",
 	"AllDay": "All day",
 	"PublicHoliday": "Public holiday",
 	"RepeatType": "Repeat type",
@@ -487,4 +488,5 @@
 	"RE_UPLOAD_REFERRAL_NOTE": "Re-upload referral note",
 	"DocumentSize": "Document size"
 }
+
 

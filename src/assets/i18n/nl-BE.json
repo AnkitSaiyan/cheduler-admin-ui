@@ -178,6 +178,7 @@
 	"EndTimeRequired": "Eindtijd *",
 	"Until": "Tot",
 	"Repeat": "Type",
+	"DoesNotRepeat": "Doesn't repeat",
 	"AllDay": "Volledige dag",
 	"PublicHoliday": "Publieke verlofdag",
 	"RepeatType": "Frequentie",
@@ -490,4 +491,5 @@
 	"RE_UPLOAD_REFERRAL_NOTE": "Verwijsbrief opnieuw uploaden",
 	"DocumentSize": "Documentgrootte"
 }
+
 
