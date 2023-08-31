@@ -338,7 +338,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			}, 0);
 			// (this.examForm.get('roomsForExam') as FormArray).controls.forEach((control) => {
 			// 	if (control.value?.sortOrder && control.value?.sortOrder > total) {
-			// 		// console.log(control.value?.sortOrder, 'test', this.availableRooms$$.value[this.examForm.value.roomType].length);
+			// 		//
 			// 		control.get('sortOrder')?.reset();
 			// 	}
 			// });

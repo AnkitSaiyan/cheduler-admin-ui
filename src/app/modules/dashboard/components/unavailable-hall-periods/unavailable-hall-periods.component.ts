@@ -160,7 +160,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 		this.filteredRoomAbsence$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => {
-				// console.log('filter', items);
+				//
 				this.tableData$$.next({
 					items,
 					isInitialLoading: false,
@@ -256,7 +256,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 				.map(({ title }) => title)
 				.slice(2)
 				.join('\t\t')}\n`;
-			
+
 				if (!this.filteredRoomAbsence$$.value.length) {
 					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
 					this.clipboardData = '';
@@ -288,6 +288,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 		this.filteredRoomAbsence$$.next(GeneralUtils.SortArray(this.filteredRoomAbsence$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
 
 
 
