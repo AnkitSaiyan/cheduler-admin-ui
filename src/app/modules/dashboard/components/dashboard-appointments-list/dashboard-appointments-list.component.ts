@@ -394,7 +394,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				if (appointment.approval === 1) status = this.translate.instant('Approved');
 				if (appointment.approval === 2) status = this.translate.instant('Canceled');
 				return (
-					appointment.patientFname?.toLowerCase()?.includes(searchText) ||
+					(appointment.patientFname?.toLowerCase() + ' ' + appointment.patientLname?.toLowerCase())?.includes(searchText) ||
 					appointment.patientLname?.toLowerCase()?.includes(searchText) ||
 					appointment.doctor?.toLowerCase()?.includes(searchText) ||
 					appointment.id?.toString()?.includes(searchText) ||
@@ -451,7 +451,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t\t')}\n`;
-			
+
 			if (!this.filteredAppointments$$.value.length) {
 				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';

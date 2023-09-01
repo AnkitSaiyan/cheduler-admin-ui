@@ -1,22 +1,8 @@
 import { DatePipe } from '@angular/common';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import {
-	BehaviorSubject,
-	Observable,
-	catchError,
-	combineLatest,
-	distinctUntilChanged,
-	filter,
-	map,
-	of,
-	skip,
-	switchMap,
-	take,
-	takeUntil,
-	tap,
-} from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, distinctUntilChanged, filter, map, skip, switchMap, take, takeUntil, tap } from 'rxjs';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
@@ -36,6 +22,7 @@ import { getNumberArray } from 'src/app/shared/utils/getNumberArray';
 	selector: 'dfm-absence-calendar-view',
 	templateUrl: './absence-calendar-view.component.html',
 	styleUrls: ['./absence-calendar-view.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AbsenceCalendarViewComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public calendarViewFormControl = new FormControl();
@@ -143,9 +130,9 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			this.calculateMinMaxLimit([...practiceHours]);
 		});
 
-		this.todayEvent$ = this.route.params.pipe(
-			filter((params) => !!params[ABSENCE_TYPE]),
-			map((params) => params[ABSENCE_TYPE]),
+		this.todayEvent$ = this.route.data.pipe(
+			filter((data) => !!data[ABSENCE_TYPE]),
+			map((data) => data[ABSENCE_TYPE]),
 			switchMap((absenceType) =>
 				this.absenceApiSvc.absencesForCalendar$(
 					absenceType,
@@ -159,11 +146,11 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 		this.absenceData$ = this.weekdayToPractice$$.pipe(
 			filter(Boolean),
-			switchMap(() => combineLatest([this.route.params, this.route.queryParams])),
-			filter(([params, queryParams]: [Params, Params]) => !!params[ABSENCE_TYPE] && !!queryParams['v'] && !!queryParams['d']),
-			tap(([params, queryParams]: [Params, Params]) => {
+			switchMap(() => combineLatest([this.route.data, this.route.queryParams])),
+			filter(([data, queryParams]: [Params, Params]) => !!data[ABSENCE_TYPE] && !!queryParams['v'] && !!queryParams['d']),
+			tap(([data, queryParams]: [Params, Params]) => {
 				this.headerList = [];
-				if (params[ABSENCE_TYPE] === ABSENCE_TYPE_ARRAY[0] && queryParams['v'] === 'd') {
+				if (data[ABSENCE_TYPE] === ABSENCE_TYPE_ARRAY[0] && queryParams['v'] === 'd') {
 					this.setHeaderForRoom();
 				}
 			}),
@@ -234,7 +221,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		}
 	}
 
-	private getFromAndToDate([params, queryParam]) {
+	private getFromAndToDate([data, queryParam]) {
 		this.isDayView$$.next(false);
 		const [year, month, day] = queryParam['d'].split('-');
 
@@ -249,7 +236,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 				toDate = DateTimeUtils.DateDistributedToString(new Date(+year, +month, 0), '-');
 
-				return [params[ABSENCE_TYPE], { fromDate, toDate }];
+				return [data[ABSENCE_TYPE], { fromDate, toDate }];
 			case queryParam['v'] === 'w':
 				currDate.setDate(currDate.getDate() - (currDate.getDay() ? currDate.getDay() - 1 : 6));
 
@@ -259,7 +246,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 				toDate = DateTimeUtils.DateDistributedToString(currDate, '-');
 
-				return [params[ABSENCE_TYPE], { fromDate, toDate }];
+				return [data[ABSENCE_TYPE], { fromDate, toDate }];
 			default:
 				const time = this.weekdayToPractice$$.value[currDate.getDay()];
 				this.selectedSlot$$.next({
@@ -269,7 +256,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 					),
 				});
 				this.isDayView$$.next(true);
-				return [params[ABSENCE_TYPE], { fromDate: queryParam['d'], toDate: queryParam['d'] }];
+				return [data[ABSENCE_TYPE], { fromDate: queryParam['d'], toDate: queryParam['d'] }];
 		}
 	}
 
@@ -460,7 +447,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	}
 
 	private updateQuery(queryStr?: string, date?: Date, replaceUrl: boolean = false) {
-    setTimeout(() => {
+		setTimeout(() => {
 			this.router.navigate([], {
 				queryParams: {
 					...(queryStr ? { v: queryStr } : {}),
@@ -604,6 +591,11 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
+
+
+
+
 
 
 

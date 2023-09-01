@@ -22,9 +22,6 @@ import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 
-interface NewTableItem extends TableItem {
-	absenceId: string | number;
-}
 
 const ColumnIdToKey = {
 	1: 'name',
@@ -115,19 +112,15 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 	}
 
 	public ngOnInit(): void {
-		this.route.params
+		this.route.data
 			.pipe(
 				tap(() => {
 					this.absenceApiSvc.pageNo = 1;
 				}),
-				filter((params) => !!params[ABSENCE_TYPE]),
-				map((params) => params[ABSENCE_TYPE]),
+				filter((data) => !!data[ABSENCE_TYPE]),
+				map((data) => data[ABSENCE_TYPE]),
 				switchMap((absenceType) => {
-					if (!ABSENCE_TYPE_ARRAY.includes(absenceType)) {
-						this.router.navigate(['../rooms'], { relativeTo: this.route, queryParamsHandling: 'merge' });
-					} else {
-						this.absenceType$$.next(absenceType);
-					}
+					this.absenceType$$.next(absenceType);
 					return this.absenceApiSvc.absences$(absenceType);
 				}),
 				takeUntil(this.destroy$$),
@@ -390,5 +383,8 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		this.filteredAbsences$$.next(GeneralUtils.SortArray(this.filteredAbsences$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
+
 
 

@@ -246,7 +246,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 		this.filteredRecentPatients$$.next([
 			...this.recentPatients$$.value.filter((appointment) => {
 				return (
-					appointment.patientFname?.toLowerCase()?.includes(searchText) ||
+					(appointment.patientFname?.toLowerCase() + ' ' + appointment.patientLname?.toLowerCase()).includes(searchText) ||
 					appointment.patientEmail?.toLowerCase()?.includes(searchText) ||
 					appointment.doctor?.toLowerCase()?.includes(searchText) ||
 					appointment.startedAt?.toString()?.includes(searchText)
@@ -262,7 +262,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 				.map(({ title }) => title)
 				.slice(2)
 				.join('\t\t')}\n`;
-			
+
 			if (!this.filteredRecentPatients$$.value.length) {
 				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';

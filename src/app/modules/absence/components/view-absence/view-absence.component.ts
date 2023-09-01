@@ -47,12 +47,18 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 	}
 
 	public ngOnInit(): void {
+    this.route.data
+			.pipe(
+				filter((data) => !!data[ABSENCE_TYPE]),
+				map((data) => data[ABSENCE_TYPE]),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((absenceType) => {
+				this.absenceType$$.next(absenceType);
+			});
 		this.route.params
 			.pipe(
-				filter((params) => params[ABSENCE_ID] && params[ABSENCE_TYPE]),
-				tap((params) => {
-					this.absenceType$$.next(params[ABSENCE_TYPE]);
-				}),
+				filter((params) => params[ABSENCE_ID]),
 				map((params) => params[ABSENCE_ID]),
 				switchMap((absenceID) => this.absenceApiSvc.getAbsenceByID$(+absenceID)),
 				takeUntil(this.destroy$$),

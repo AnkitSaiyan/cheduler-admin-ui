@@ -129,7 +129,7 @@ export function getAllDaysOfWeek(date: Date, sundayFirst: boolean = false): Arra
 	}
 	const dates: Date[] = [];
 	const dateDistributed: Array<[number, number, number]> = [];
-	// console.log(weekDay, date);
+	//
 
 	const updateDate = (num) => {
 		const d: Date = new Date(date);

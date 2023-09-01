@@ -158,7 +158,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		}
 
 		this.setHideAbsence(this.absenceData);
-		console.log(this.prioritySlots, 'priority');
+
 	}
 
 	public ngOnInit(): void {
@@ -248,7 +248,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 				});
 			});
 		});
-		console.log(this.hideAbsenceData, 'hide absence');
+
 	}
 
 	private emitDate(isWeekChange: boolean = false) {
@@ -422,7 +422,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public getPrioritySlotHeight(prioritySlot: any): number {
-    console.log(prioritySlot);
+
 		const max = DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max);
 		let startDate: Date = this.myDate(prioritySlot.start);
 		const min = DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min));
@@ -557,6 +557,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		formattedDate.setHours(+splitDate[0]);
 		formattedDate.setMinutes(+splitDate[1]);
 		formattedDate.setSeconds(0);
+    formattedDate.setMilliseconds(0);
 		return formattedDate;
 	}
 
@@ -680,7 +681,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public prioritySlotOpenAndClose(slotPercentage: any, prioritySlot: any, isClose: any) {
-		// console.log(slotPercentage, prioritySlot, this.slotPriorityKey[prioritySlot.priority]);
+		//
 		const obj = {
 			prioritySlotid: prioritySlot.id,
 			percentage: slotPercentage[this.slotPriorityKey[prioritySlot.priority]],

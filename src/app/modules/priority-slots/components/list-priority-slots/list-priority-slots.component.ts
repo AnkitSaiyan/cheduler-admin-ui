@@ -36,7 +36,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 	clipboardData: string = '';
 	public searchControl = new FormControl('', []);
 	public downloadDropdownControl = new FormControl('', []);
-	public columns: string[] = ['Start', 'End', 'Priority'];
+	public columns: string[] = ['Start', 'End', 'Priority', 'Actions'];
 
 	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
@@ -119,7 +119,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 				} else {
 					this.prioritySlots$$.next(prioritySlotBase.data);
 				}
-				this.paginationData = prioritySlotBase?.metaData?.pagination  || 1;
+				this.paginationData = prioritySlotBase?.metaData?.pagination || 1;
 			},
 			error: (e) => this.prioritySlots$$.next([]),
 		});
@@ -188,10 +188,11 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((lang) => {
 				this.selectedLang = lang;
-				this.columns = [Translate.Start[lang], Translate.End[lang], Translate.Priority[lang]];
-				if (this.permissionSvc.isPermitted([Permission.UpdatePrioritySlots, Permission.DeletePrioritySlots])) {
-					this.columns = [...this.columns, Translate.Actions[lang]];
-				}
+
+				this.tableHeaders = this.tableHeaders.map((h, i) => ({
+					...h,
+					title: Translate[this.columns[i]][lang],
+				}));
 
 				// eslint-disable-next-line default-case
 				switch (lang) {
@@ -362,6 +363,8 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		this.filteredPrioritySlots$$.next(GeneralUtils.SortArray(this.filteredPrioritySlots$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
 
 
 
