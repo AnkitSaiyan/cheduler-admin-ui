@@ -171,8 +171,8 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 	public currentWeekDays(days: any) {
 		const dates = days.map((item) => {
 			const newDate = new Date();
-			newDate.setMonth(item[1]);
 			newDate.setDate(item[0]);
+			newDate.setMonth(item[1]);
 			return this.datePipe.transform(newDate, 'yyyy-MM-dd');
 		});
 
@@ -357,6 +357,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			});
 	}
 }
+
 
 
 
