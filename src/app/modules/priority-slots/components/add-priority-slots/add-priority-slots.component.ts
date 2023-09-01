@@ -198,21 +198,15 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 				return;
 			}
 		} else {
-			const invalid = ['startedAt', 'slotStartTime', 'priority', 'slotEndTime'].some((key) => {
+			const invalid = ['startedAt', 'slotStartTime', 'priority', 'slotEndTime', 'nxtSlotOpenPct'].some((key) => {
 				controls[key].markAsTouched();
 				return controls[key].invalid;
 			});
-
 			if (invalid) {
 				this.prioritySlotForm.markAllAsTouched();
 				this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 				return;
 			}
-		}
-		if (!this.prioritySlotForm.valid) {
-			controls['nxtSlotOpenPct'].markAsTouched();
-			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-			return;
 		}
 		controls['nxtSlotOpenPct'].markAsTouched();
 
@@ -619,3 +613,9 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
+
+
+
+
+
+
