@@ -258,9 +258,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		// const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 		// const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
 		const start = this.myDate(this.timeSlot?.timings?.[0]);
-		start.setFullYear(this.selectedDate.getFullYear());
-		start.setMonth(this.selectedDate.getMonth());
 		start.setDate(this.selectedDate.getDate());
+		start.setMonth(this.selectedDate.getMonth());
+		start.setFullYear(this.selectedDate.getFullYear());
 		const end = new Date(groupedData[0].startedAt);
 		end.setMilliseconds(0);
 		const isHiddenAppointmentInBottom = this.extendMinutesInBottom(groupedData[0]) < 0;
@@ -284,24 +284,24 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 	public getAbsenceTop(groupedData: any[], storeHiddenAppointment: boolean = false): number {
 		const start = this.myDate(this.timeSlot?.timings?.[0]);
-		start.setFullYear(this.selectedDate.getFullYear());
-		start.setMonth(this.selectedDate.getMonth());
 		start.setDate(this.selectedDate.getDate());
+		start.setMonth(this.selectedDate.getMonth());
+		start.setFullYear(this.selectedDate.getFullYear());
 
 		const timingEnd = this.myDate(this.timeSlot?.timings?.[this.timeSlot?.timings?.length - 1]);
-		timingEnd.setFullYear(this.selectedDate.getFullYear());
-		timingEnd.setMonth(this.selectedDate.getMonth());
 		timingEnd.setDate(this.selectedDate.getDate());
+		timingEnd.setMonth(this.selectedDate.getMonth());
+		timingEnd.setFullYear(this.selectedDate.getFullYear());
 
 		const end = new Date(groupedData[0].startedAt);
-		end.setFullYear(this.selectedDate.getFullYear());
-		end.setMonth(this.selectedDate.getMonth());
 		end.setDate(this.selectedDate.getDate());
+		end.setMonth(this.selectedDate.getMonth());
+		end.setFullYear(this.selectedDate.getFullYear());
 
 		const endAbsenceDate = new Date(groupedData[0].endedAt);
-		endAbsenceDate.setFullYear(this.selectedDate.getFullYear());
-		endAbsenceDate.setMonth(this.selectedDate.getMonth());
 		endAbsenceDate.setDate(this.selectedDate.getDate());
+		endAbsenceDate.setMonth(this.selectedDate.getMonth());
+		endAbsenceDate.setFullYear(this.selectedDate.getFullYear());
 
 		if (
 			DateTimeUtils.UTCDateToLocalDate(start)?.getTime() > DateTimeUtils.UTCDateToLocalDate(endAbsenceDate)?.getTime() ||
