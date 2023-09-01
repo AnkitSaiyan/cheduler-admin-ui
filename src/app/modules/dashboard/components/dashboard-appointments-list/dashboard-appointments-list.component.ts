@@ -271,7 +271,9 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			)
 			.subscribe({
 				next: (value) => {
-					if (!this.filteredAppointments$$.value.length) {
+					const data: any[] = this.isUpcomingAppointmentsDashboard ? this.upcomingTableData$$.value.items : this.pastTableData$$.value.items;
+					
+					if (!data.length) {
 						this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
 						this.clearDownloadDropdown();
 						return;
@@ -280,7 +282,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 					this.downloadSvc.downloadJsonAs(
 						value as DownloadAsType,
 						this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
-						this.filteredAppointments$$.value.map((ap: Appointment) => [
+						data.map((ap: Appointment) => [
 							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
 							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
 							`${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
