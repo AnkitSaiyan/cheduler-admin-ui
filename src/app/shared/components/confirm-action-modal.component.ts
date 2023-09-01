@@ -3,12 +3,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { takeUntil } from 'rxjs';
 import { ModalService } from '../../core/services/modal.service';
 import { DestroyableComponent } from './destroyable.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 export interface ConfirmActionModalData {
   titleText: string;
   bodyText: string;
   confirmButtonText: string;
   cancelButtonText: string;
+  closeActiveModal?: boolean;
 }
 
 @Component({
@@ -17,7 +19,7 @@ export interface ConfirmActionModalData {
     <div #content class="bg-white rounded-4 confirm-action-modal">
       <div class="modal-header">
         <h5 class="modal-title">{{ modalData.titleText | translate }}</h5>
-        <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
+        <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="this.modalData.closeActiveModal ? closeActiveModal(false) : close(false)"></dfm-button-icon>
       </div>
 
       <div class="modal-body">
@@ -26,9 +28,9 @@ export interface ConfirmActionModalData {
 
       <div class="modal-footer">
         <dfm-button color="secondary" size="md"
-                    (click)="close(false)">{{ modalData.cancelButtonText | translate }}</dfm-button>
+                    (click)="this.modalData.closeActiveModal ? closeActiveModal(false) : close(false)">{{ modalData.cancelButtonText | translate }}</dfm-button>
         <dfm-button color="primary" size="md"
-                    (click)="close(true)">{{ modalData.confirmButtonText | translate }}</dfm-button>
+                    (click)="this.modalData.closeActiveModal ? closeActiveModal(true) : close(true)">{{ modalData.confirmButtonText | translate }}</dfm-button>
       </div>
     </div>
   `,
@@ -53,9 +55,10 @@ export class ConfirmActionModalComponent extends DestroyableComponent implements
     cancelButtonText: 'Cancel',
     titleText: 'Confirmation',
     bodyText: 'Are you sure you want to perform this action?',
+    closeActiveModal: false,
   };
 
-  constructor(private dialogSvc: ModalService, public translate: TranslateService) {
+  constructor(private dialogSvc: ModalService, public translate: TranslateService, public activeModal: NgbActiveModal) {
     super();
   }
 
@@ -66,6 +69,7 @@ export class ConfirmActionModalComponent extends DestroyableComponent implements
         if (data.titleText) this.modalData.titleText = data.titleText;
         if (data.confirmButtonText) this.modalData.confirmButtonText = data.confirmButtonText;
         if (data.cancelButtonText) this.modalData.cancelButtonText = data.cancelButtonText;
+        if (data.closeActiveModal) this.modalData.closeActiveModal = data.closeActiveModal;
       }
     });
   }
@@ -76,5 +80,9 @@ export class ConfirmActionModalComponent extends DestroyableComponent implements
 
   public close(result: boolean) {
     this.dialogSvc.close(result);
+  }
+
+  public closeActiveModal(result: boolean) {
+    this.activeModal.close(result);
   }
 }

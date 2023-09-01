@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
@@ -25,6 +25,7 @@ import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
+import { ConfirmActionModalComponent } from 'src/app/shared/components/confirm-action-modal.component';
 
 interface FormValues {
 	name: string;
@@ -93,6 +94,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 	public endDateControl = new FormControl();
 
+	private addAppointmentImpactedAbsence: boolean = false;
+
 	constructor(
 		private modalSvc: ModalService,
 		private fb: FormBuilder,
@@ -108,6 +111,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		private priorityApiSvc: PrioritySlotApiService,
+		public activeModal: NgbActiveModal
 	) {
 		super();
 
@@ -222,7 +226,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	}
 
 	public closeModal(res: boolean) {
-		this.modalSvc.close(res);
+		this.activeModal.close(res);
 	}
 
 	public saveAbsence() {
@@ -287,6 +291,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			repeatType: rest.isRepeat ? rest.repeatType : null,
 			repeatFrequency: rest.isRepeat && rest.repeatFrequency ? +rest.repeatFrequency.toString().split(' ')[0] : 0,
 			repeatDays: '',
+			addAppointmentImpactedAbsence: this.addAppointmentImpactedAbsence,
 		};
 		if (this.modalData.absenceType === 'rooms') {
 			addAbsenceReqData.userList = [];
@@ -320,7 +325,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 						this.closeModal(true);
 					},
 					error: (err) => {
-						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+						if (err?.error?.message == "MSG_400_APMT_AFFECTS") this.openModal();
 						this.submitting$$.next(false);
 					},
 				});
@@ -333,9 +338,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 						this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceAdded[this.selectedLang]);
 						this.submitting$$.next(false);
 						this.closeModal(true);
+						// this.activeModal.close(true);
 					},
 					error: (err) => {
-						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+						if (err?.error?.message == "MSG_400_APMT_AFFECTS") this.openModal();
 						this.submitting$$.next(false);
 					},
 				});
@@ -595,7 +601,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		//   return;
 		// }
 
-		if (startedAt.day === endedAt.day && startedAt.month === endedAt.month && startedAt.year === endedAt.year) {
+		if (startedAt?.day === endedAt?.day && startedAt?.month === endedAt?.month && startedAt?.year === endedAt?.year) {
 			if (DateTimeUtils.TimeToNumber(startTime) >= DateTimeUtils.TimeToNumber(endTime)) {
 				toggleControlError(this.absenceForm.get('startTime'), 'time');
 				toggleControlError(this.absenceForm.get('endTime'), 'time');
@@ -612,5 +618,24 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 	public onDateChange(value: string, controlName: string) {
 		this.absenceForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
+	}
+
+	private openModal() {
+		let modal = this.modalSvc
+			.open(ConfirmActionModalComponent, {
+				data: {
+					bodyText: 'APPOINTMENT_AFFECTS_ABSENCE',
+					closeActiveModal: true,
+				},
+			});
+			modal.closed.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: (res) => {
+					if (res) {
+						this.addAppointmentImpactedAbsence = true;
+						this.saveAbsence();
+					}
+				},
+			});
 	}
 }
