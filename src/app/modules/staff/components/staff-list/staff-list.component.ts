@@ -335,7 +335,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
-			
+
 				if (!this.filteredStaffs$$.value.length) {
 					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
 					this.clipboardData = '';
@@ -412,6 +412,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 				if (staff.status === 1) status = this.translate.instant('Active');
 				if (staff.status === 0) status = this.translate.instant('Inactive');
 				return (
+					(staff.firstname?.toLowerCase() + ' ' + staff.lastname?.toLowerCase())?.includes(searchText) ||
 					staff.firstname?.toLowerCase()?.includes(searchText) ||
 					staff.lastname?.toLowerCase()?.includes(searchText) ||
 					staff.email?.toLowerCase()?.includes(searchText) ||

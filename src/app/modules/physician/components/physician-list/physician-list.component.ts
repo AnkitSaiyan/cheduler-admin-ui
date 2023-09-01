@@ -271,6 +271,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				if (!physician.status) status = this.translate.instant('Inactive');
 
 				return (
+					(physician.firstname?.toLowerCase() + ' ' + physician.lastname?.toLowerCase())?.includes(searchText) ||
 					physician.firstname?.toLowerCase()?.includes(searchText) ||
 					physician.lastname?.toLowerCase()?.includes(searchText) ||
 					physician.email?.toLowerCase()?.includes(searchText) ||
@@ -325,7 +326,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
-			
+
 				if (!this.filteredPhysicians$$.value.length) {
 					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
 					this.clipboardData = '';

@@ -464,6 +464,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		formattedDate.setHours(+splitDate[0]);
 		formattedDate.setMinutes(+splitDate[1]);
 		formattedDate.setSeconds(0);
+    formattedDate.setMilliseconds(0);
 		return formattedDate;
 	}
 
