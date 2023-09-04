@@ -82,6 +82,7 @@ import { RemoveDuplicateDataPipe } from './pipes/remove-duplicate-data.pipe';
 import { DfmAutoScrollInViewDirective } from './directives/dfm-auto-scroll-in-view.directive';
 import { RepeatFormComponent } from './components/repeat-form/repeat-form.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -168,6 +169,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatMenuModule,
 		MatSlideToggleModule,
 		MatTabsModule,
+		MatButtonToggleModule,
 	],
 	exports: [
 		DesignSystemModule,
@@ -234,6 +236,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatSlideToggleModule,
 		RepeatFormComponent,
 		MatTabsModule,
+		MatButtonToggleModule,
 	],
 	providers: [
 		TranslatePipe,

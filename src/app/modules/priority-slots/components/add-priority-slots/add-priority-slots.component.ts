@@ -12,7 +12,7 @@ import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { PriorityType, RepeatType } from '../../../../shared/models/absence.model';
+import { EndDateType, PriorityType, RepeatType } from '../../../../shared/models/absence.model';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { WeekdayToNamePipe } from '../../../../shared/pipes/weekday-to-name.pipe';
@@ -81,12 +81,18 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 	private repeatFrequency!: InputComponent;
 
 	private staffDetails: User[] = [];
+
 	private times: NameValue[];
+
 	private selectedLang: string = ENG_BE;
 
 	public startDateControl = new FormControl();
 
 	public endDateControl = new FormControl();
+
+	public endDateTypeControl = new FormControl(EndDateType.Never, []);
+
+	public EndDateType = EndDateType;
 
 	constructor(
 		private modalSvc: ModalService,
@@ -440,8 +446,8 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			],
 			slotEndTime: [startTime, [Validators.required]],
 			isRepeat: [!!prioritySlotDetails?.isRepeat, []],
-			repeatType: [null, []],
-			repeatDays: ['', []],
+			repeatType: [RepeatType.Daily, []],
+			repeatDays: ['', [Validators.max(31)]],
 			repeatFrequency: [
 				prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
 					? `${prioritySlotDetails.repeatFrequency} ${Translate.RepeatType[this.repeatTypeToName[prioritySlotDetails.repeatType]][this.selectedLang]}`
@@ -613,6 +619,12 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
+
+
+
+
+
+
 
 
 

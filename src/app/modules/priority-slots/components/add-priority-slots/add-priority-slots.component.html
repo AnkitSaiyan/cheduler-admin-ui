@@ -37,7 +37,7 @@
           ></dfm-radio-button>
         </div>
       </div>
-      <div class="d-flex dfm-gap-32 align-items-center ad-pr-dates">
+      <div class="d-flex dfm-gap-32 align-items-start ad-pr-dates">
         <div class="ad-pr-from-date flex-1 max-w-5">
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
@@ -152,90 +152,53 @@
         </div>
       </div>
 
-      <!-- <div class="d-flex dfm-gap-32 flex-wrap ad-pr-radio-group mt-4">
-
-
-      </div> -->
-
-
-
       <ng-container *ngIf="formValues.isRepeat">
-        <div class="d-flex dfm-gap-32 flex-wrap align-items-start ad-pr-repeat-form">
-          <div class="flex-1">
-            <div class="">
-              <dfm-input-dropdown
-                #repeatType
-                [items]="repeatTypes"
-                size="md"
-                label="{{ 'RepeatType' | translate }} *"
-                [required]="formValues.isRepeat"
-                placeholder="{{ 'SelectRepeatType' | translate }}"
-                formControlName="repeatType"
-                (select)="handleChange(repeatFrequency)"
-              >
-              </dfm-input-dropdown>
-            </div>
-            <div
-              class="validation-error"
-              *ngIf="prioritySlotForm.get('repeatType')?.hasError('required') && prioritySlotForm.get('repeatType')?.touched"
-            >
-              {{ 'RequiredField' | translate }}
-            </div>
-          </div>
+        <dfm-repeat-form [form]="prioritySlotForm">
+          <div class="d-flex flex-column dfm-gap-16 flex-1 mt-4 endDate">
+            <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'Ends' | translate }} *</span>
+            <div class="w-fit d-flex justify-content-between dfm-gap-24 align-items-start flex-wrap">
+              <dfm-radio-button
+                class="font-weight-normal"
+                label="{{ 'Never' | translate }}"
+                [formControl]="endDateTypeControl"
+                [checkedValue]="EndDateType.Never"
+                hint="the event repeat indefinitely"
+                size="sm"
+              ></dfm-radio-button>
+              <div class="d-flex align-items-start dfm-gap-16">
+                <dfm-radio-button
+                  class="font-weight-normal max-w-192 "
+                  label="{{ 'Until' | translate }}"
+                  [formControl]="endDateTypeControl"
+                  [checkedValue]="EndDateType.Until"
+                  hint="The event will run until reaches a specific date"
+                  size="sm"
+                >
 
-          <div class="flex-1">
-            <div>
-              <dfm-input
-                #repeatFrequency
-                class="flex-1"
-                formControlName="repeatFrequency"
-                label="{{ 'RepeatEvery' | translate }} *"
-                placeholder="{{ 'EnterRepeatCount' | translate }}"
-                size="md"
-                type="text"
-                required
-                [readonly]="!repeatType.value"
-                (focusin)="handleFocusIn()"
-                (focusout)="handleFocusOut()"
-              >
-              </dfm-input>
-            </div>
-            <div
-              class="validation-error"
-              *ngIf="prioritySlotForm.get('repeatFrequency')?.hasError('required') && prioritySlotForm.get('repeatFrequency')?.touched"
-            >
-              {{ 'RequiredField' | translate }}
-            </div>
-            <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched"
-              >Repeat frequency should be greater than 0</small
-            >
-          </div>
-          <div class="flex-1">
-            <div class="ad-pr-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
-              <dfm-input-dropdown
-                #repeatEveryDropdown
-                [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
-                [multiple]="true"
-                [placeholder]="((repeatEveryDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRepeatEvery') | async) ?? ''"
-                size="md"
-                label="{{ 'RepeatOn' | translate }} *"
-                [required]="formValues.isRepeat && formValues.repeatType !== 'daily'"
-                formControlName="repeatDays"
-              >
-              </dfm-input-dropdown>
-            </div>
-            <div
-              class="validation-error"
-              *ngIf="prioritySlotForm.get('repeatDays')?.hasError('required') && prioritySlotForm.get('repeatDays')?.touched"
-            >
-              {{ 'RequiredField' | translate }}
-            </div>
-          </div>
-        </div>
-      </ng-container>
+                </dfm-radio-button>
+                <div class="dfm-button-group-wrapper flex-1 max-w-192 ">
+                  <div class="input-as-dfm-input">
+                    <input [formControl]="endDateControl" [disabled]="endDateTypeControl.value === EndDateType.Never" (dateChange)="onDateChange($event.value, 'endedAt')"
+                    placeholder="{{'dateFormat' | translate}}"
+                    required [min]="startDateControl.value"  [matDatepicker]="picker2" readonly class="w-full min-w-128">
+                  </div>
+                  <dfm-button-icon
+                    color="secondary-gray"
+                    size="md"
+                    icon="calendar-date"
+                    ngbPopover="{{ 'Calendar' | translate }}"
+                    triggers="mouseenter:mouseleave"
+                    popoverClass="popover-p-8"
+                    [openDelay]="200"
+                    (click)="picker2.open()"
+                  ></dfm-button-icon>
+                  <mat-datepicker #picker2></mat-datepicker>
 
-      <ng-container *ngIf="formValues.isRepeat">
-        <dfm-repeat-form></dfm-repeat-form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </dfm-repeat-form>
       </ng-container>
 
 

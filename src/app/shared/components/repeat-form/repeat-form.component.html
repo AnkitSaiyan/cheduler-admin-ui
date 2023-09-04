@@ -1,64 +1,135 @@
-<div class="dfm-container">
-  <mat-tab-group>
-    <mat-tab [label]="'Daily' | translate ">
-      <div>
-        <div>
-          <dfm-input
-            #repeatFrequency
-            class="flex-1"
-            formControlName="repeatFrequency"
-            label="{{ 'RepeatEvery' | translate }} *"
-            placeholder="{{ 'EnterRepeatCount' | translate }}"
-            size="md"
-            type="text"
-            required
-          >
-          </dfm-input>
-        </div>
-      </div>
-    </mat-tab>
-    <mat-tab [label]="'Weekly' | translate "> Content 2 </mat-tab>
-    <mat-tab [label]="'Monthly' | translate "> Content 3 </mat-tab>
-  </mat-tab-group>
-  <div class="d-flex flex-column dfm-gap-16 flex-1 mt-4">
-    <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'Ends' | translate }} *</span>
-    <div class="w-fit d-flex justify-content-between dfm-gap-24">
-      <dfm-radio-button
-        class="font-weight-normal"
-        label="{{ 'Never' | translate }}"
-        formControlName="priority"
-      ></dfm-radio-button>
-      <dfm-radio-button
-        class="font-weight-normal"
-        label="{{ 'Until' | translate }}"
-        formControlName="priority"
-      >
-        <div class="dfm-button-group-wrapper flex-1">
-          <div class="input-as-dfm-input">
-            <input
-            placeholder="{{'dateFormat' | translate}}"
-            required  [matDatepicker]="picker2" readonly class="w-full min-w-128">
+<form [formGroup]="form" class="dfm-container">
+  <mat-button-toggle-group  name="weekDays" formControlName="repeatType">
+    <mat-button-toggle [value]="RepeatType.Daily">{{ 'Daily' | translate }}</mat-button-toggle>
+    <mat-button-toggle [value]="RepeatType.Weekly">{{ 'Weekly' | translate  }}</mat-button-toggle>
+    <mat-button-toggle [value]="RepeatType.Monthly">{{ 'Monthly' | translate }}</mat-button-toggle>
+  </mat-button-toggle-group>
+  <ng-container [ngSwitch]="form.get('repeatType')?.value">
+    <ng-container *ngSwitchCase="RepeatType.Daily">
+      <div class="mt-4">
+        <div class="d-flex align-items-center dfm-gap-16 max-w-366 ">
+          <label >{{ 'RepeatEvery' | translate }} *</label>
+          <div>
+            <dfm-input
+              #repeatFrequency
+              class="flex-1"
+              formControlName="repeatFrequency"
+              placeholder="{{ 'EnterRepeatCount' | translate }}"
+              size="md"
+              type="number"
+              required
+            >
+            </dfm-input>
+            <div
+              class="validation-error"
+              *ngIf="form.get('repeatFrequency')?.hasError('required') && form.get('repeatFrequency')?.touched"
+            >
+              {{ 'RequiredField' | translate }}
+            </div>
+            <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched"
+              >Repeat frequency should be greater than 0
+            </small>
           </div>
-          <dfm-button-icon
-            color="secondary-gray"
-            size="md"
-            icon="calendar-date"
-            ngbPopover="{{ 'Calendar' | translate }}"
-            triggers="mouseenter:mouseleave"
-            popoverClass="popover-p-8"
-            [openDelay]="200"
-            (click)="picker2.open()"
-          ></dfm-button-icon>
-          <mat-datepicker #picker2></mat-datepicker>
+          <span>{{'Days' | translate}}</span>
         </div>
-        <!-- <small
-          class="validation-error"
-          *ngIf="prioritySlotForm.get('endedAt')?.hasError('required') && prioritySlotForm.get('endedAt')?.touched"
-        >
-          {{ 'RequiredField' | translate }}
-        </small> -->
-    </dfm-radio-button>
-    </div>
-  </div>
+        <h1 class="mat-caption dfm-text-main-500">The priority slot will be repeated every day or every x day, depending on the selected value</h1>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="RepeatType.Weekly">
+      <div class="mt-4">
+        <div class="d-flex align-items-center dfm-gap-16 max-w-366 ">
+          <label >{{ 'RepeatEvery' | translate }} *</label>
+          <div>
+            <dfm-input
+              #repeatFrequency
+              class="flex-1"
+              formControlName="repeatFrequency"
+              placeholder="{{ 'EnterRepeatCount' | translate }}"
+              size="md"
+              type="number"
+              required
+            >
+            </dfm-input>
+            <div
+              class="validation-error"
+              *ngIf="form.get('repeatFrequency')?.hasError('required') && form.get('repeatFrequency')?.touched"
+            >
+              {{ 'RequiredField' | translate }}
+            </div>
+            <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched"
+            >Repeat frequency should be greater than 0
+            </small>
+        </div>
+          <span>Week(s)</span>
+        </div>
+        <h1 class="mat-caption dfm-text-main-500">The priority slot will be repeated every day or every x day, depending on the selected value</h1>
+      </div>
+      <mat-button-toggle-group class="week"  name="weekDays" multiple formControlName="repeatDays">
+        <mat-button-toggle [value]="1">{{ 'MON' | translate }}</mat-button-toggle>
+        <mat-button-toggle [value]="2">{{ 'TUE' | translate }}</mat-button-toggle>
+        <mat-button-toggle [value]="3">{{ 'WED' | translate }}</mat-button-toggle>
+        <mat-button-toggle [value]="4">{{ 'THU' | translate }}</mat-button-toggle>
+        <mat-button-toggle [value]="5">{{ 'FRI' | translate }}</mat-button-toggle>
+        <mat-button-toggle [value]="6">{{ 'SAT' | translate }}</mat-button-toggle>
+        <mat-button-toggle [value]="0">{{ 'SUN' | translate }}</mat-button-toggle>
+      </mat-button-toggle-group>
+    </ng-container>
+    <ng-container *ngSwitchCase="RepeatType.Monthly">
+      <div class="mt-4">
+        <div class="d-flex align-items-center dfm-gap-16 flex-wrap ">
+          <div class="d-flex align-items-center dfm-gap-8">
+            <label >{{ 'RepeatEvery' | translate }} *</label>
+            <div>
+              <dfm-input
+                #repeatFrequency
+                class="flex-1 max-w-192"
+                formControlName="repeatFrequency"
+                placeholder="{{ 'EnterRepeatCount' | translate }}"
+                size="md"
+                type="number"
+                required
 
-</div>
+              >
+              </dfm-input>
+              <div
+                class="validation-error"
+                *ngIf="form.get('repeatFrequency')?.hasError('required') && form.get('repeatFrequency')?.touched"
+              >
+                {{ 'RequiredField' | translate }}
+              </div>
+              <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched"
+                >Repeat frequency should be greater than 0
+              </small>
+            </div>
+            <span>Month(s)</span>
+          </div>
+
+          <div class="d-flex align-items-center dfm-gap-8">
+            <label >on day(s)</label>
+            <div>
+              <dfm-input
+                #repeatFrequency
+                class="flex-1 max-w-192"
+                formControlName="repeatDays"
+                placeholder="Enter month day"
+                size="md"
+                type="number"
+                required
+              >
+              </dfm-input>
+              <div
+                class="validation-error"
+                *ngIf="form.get('repeatDays')?.hasError('required') && form.get('repeatFrequency')?.touched"
+              >
+                {{ 'RequiredField' | translate }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <h1 class="mat-caption dfm-text-main-500">The priority slot will be repeated every x months on selected days of month</h1>
+      </div>
+    </ng-container>
+</ng-container>
+<ng-content select=".endDate"></ng-content>
+
+</form>

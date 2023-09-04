@@ -15,6 +15,11 @@ export enum RepeatType {
 	Monthly = 'monthly',
 }
 
+export enum EndDateType {
+	Never = 'never',
+	Until = 'until',
+}
+
 export interface Absence {
 	id: number;
 	absenceId: number;

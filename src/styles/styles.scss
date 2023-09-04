@@ -1310,3 +1310,22 @@ angular-editor-toolbar button i {
 .mat-tab-label {
   width: 100%;
 }
+// mat group button style
+
+
+.mat-button-toggle-group {
+  width: 100%;
+
+  *:not(button) {
+    max-height: 44px;
+    width: calc(100%);
+  }
+
+    span {
+    padding: 0 4px !important;
+  }
+}
+
+.mat-button-toggle-checked {
+  background-color: var(--dfm-secondary) !important;
+}
