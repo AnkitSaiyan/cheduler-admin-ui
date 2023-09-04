@@ -828,6 +828,10 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'File size should not be greater than',
 		[DUTCH_BE]: 'De bestandsgrootte mag niet groter zijn dan.',
 	},
+	DownloadingInProgress: {
+		[ENG_BE]: 'Downloading in progress...',
+		[DUTCH_BE]: 'Bezig met downloaden...',
+	}
 });
 
 

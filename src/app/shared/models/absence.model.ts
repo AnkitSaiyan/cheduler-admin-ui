@@ -35,6 +35,7 @@ export interface Absence {
 	user: User[];
 	userName?: string;
 	roomName?: string;
+	addAppointmentImpactedAbsence: boolean;
 }
 
 export type AddAbsenceRequestData = Prettify<PartialBy<Omit<Absence, 'rooms' | 'user' | 'userName' | 'roomName'>, 'id' | 'status' | 'absenceId'>>;

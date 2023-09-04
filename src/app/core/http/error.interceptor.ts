@@ -61,7 +61,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         }
       }
     }
-    this.notificationSvc.showError(errorMessage);
+    if(err.error.message !== "MSG_400_APMT_AFFECTS") this.notificationSvc.showError(errorMessage);
   }
 
 	private stopLoaders() {

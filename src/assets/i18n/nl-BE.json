@@ -489,7 +489,8 @@
 	"FAILED_TO_UPLOAD": "Uploaden is mislukt",
 	"Uploaded": "Geüpload",
 	"RE_UPLOAD_REFERRAL_NOTE": "Verwijsbrief opnieuw uploaden",
-	"DocumentSize": "Documentgrootte"
+	"DocumentSize": "Documentgrootte",
+	"APPOINTMENT_AFFECTS_ABSENCE": "Weet u zeker dat u deze afwezigheid wilt toevoegen? \n Let op: Houd er rekening mee dat het toevoegen van deze afwezigheid invloed heeft op uw komende afspraken."
 }
 
 

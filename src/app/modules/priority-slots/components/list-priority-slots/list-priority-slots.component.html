@@ -1,7 +1,7 @@
 <div class="d-flex flex-column dfm-gap-16 position-relative">
-  <button  mat-mini-fab color="primary" class="refresh-btn" (click)="onRefresh()">
+  <!-- <button  mat-mini-fab color="primary" class="refresh-btn" (click)="onRefresh()">
     <mat-icon>refresh</mat-icon>
-  </button>
+  </button> -->
   <section class="list-page-section-1">
     <!-- <dfm-button class="pr-li-title-buttons" color="link" size="lg" routerLink="./">{{"PrioritySlots" | translate}} </dfm-button> -->
     <ng-container *ngIf="(calendarView$$ | async) === false; else space">
