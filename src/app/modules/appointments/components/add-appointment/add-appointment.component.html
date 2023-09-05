@@ -329,7 +329,7 @@
         <span class="text-sm font-weight-medium dfm-text-main-700">{{ 'ReferralNote' | translate }}</span>
         <div class="d-flex dfm-gap-16 align-items-center">
         <label class="input-type-file-primary-md text-nowrap">{{ 'ChooseFile' | translate }}
-          <input #fileInput type="file" class="hidden" accept="image/*"
+          <input #fileInput type="file" class="hidden" accept="image/*, application/pdf"
             (change)="$event.stopPropagation(); uploadRefferingNote($event)" />
         </label>
         <span *ngIf="documentStage != 'FAILED_TO_UPLOAD' && documentStage != 'Uploading' && documentStage"
