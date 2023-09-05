@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { EndDateType, RepeatType } from '../../models/absence.model';
 import { DestroyableComponent } from '../destroyable.component';
 import { takeUntil } from 'rxjs';
+import { getNumberArray } from '../../utils/getNumberArray';
 
 @Component({
 	selector: 'dfm-repeat-form',
@@ -13,6 +14,8 @@ export class RepeatFormComponent extends DestroyableComponent implements OnInit,
 	@Input() form!: FormGroup;
 
 	public RepeatType = RepeatType;
+
+	public repeatEvery = [...getNumberArray(28).map((d) => ({ name: d.toString(), value: d.toString() }))];
 
 	constructor() {
 		super();
@@ -28,4 +31,5 @@ export class RepeatFormComponent extends DestroyableComponent implements OnInit,
 		super.ngOnDestroy();
 	}
 }
+
 

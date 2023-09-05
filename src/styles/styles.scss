@@ -1317,8 +1317,8 @@ angular-editor-toolbar button i {
   width: 100%;
 
   *:not(button) {
-    max-height: 44px;
     width: calc(100%);
+    max-height: 44px;
   }
 
     span {

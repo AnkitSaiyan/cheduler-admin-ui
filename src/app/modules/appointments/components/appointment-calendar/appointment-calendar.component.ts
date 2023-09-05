@@ -623,7 +623,9 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				const { priority, nxtSlotOpenPct, id, isClose, startedAt, endedAt } = prioritySlot;
 				const startDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(prioritySlot.startedAt), true)).toDateString());
 				let firstDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(prioritySlot.startedAt), true)).toDateString());
-				const lastDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(prioritySlot.endedAt), true)).toDateString());
+				const lastDate = new Date(
+					new Date(DateTimeUtils.UTCDateToLocalDate(new Date(prioritySlot.endedAt ? prioritySlot.endedAt : new Date()), true)).toDateString(),
+				);
 				switch (true) {
 					case !prioritySlot.isRepeat:
 					case prioritySlot.repeatType === RepeatType.Daily: {
