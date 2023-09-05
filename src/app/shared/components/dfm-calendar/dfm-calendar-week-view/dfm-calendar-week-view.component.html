@@ -344,7 +344,7 @@
                         <div class="txt-slot-percentage"*ngIf="eventHeight>99">
                           <ng-container *ngIf="slotPercentage?.length">
                             <span style="font-size: 14px; font-weight: 500; color: black">{{'SlotFilled%' | translate}}:</span>
-                            <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
+                            <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday]?.percentage?.[prioritySlot.id] ?? 0 }}</span>
                           </ng-container>
                         </div>
 
@@ -362,8 +362,8 @@
                       <ng-template #priorityCardDetail>
                         <div class="txt-slot-percentage"*ngIf="eventHeight < 99">
                           <ng-container *ngIf="slotPercentage?.length">
-                            <span style="font-size: 14px; font-weight: 500; color: black">Slot Filled %: </span>
-                            <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday][slotPriorityKey[prioritySlot.priority]] }}</span>
+                            <span style="font-size: 14px; font-weight: 500; color: black">{{'SlotFilled%' | translate}}: </span>
+                            <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday]?.percentage?.[prioritySlot.id] ?? 0 }}</span>
                           </ng-container>
                         </div>
                         <span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end }}</span>

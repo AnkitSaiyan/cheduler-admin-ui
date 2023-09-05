@@ -158,7 +158,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		}
 
 		this.setHideAbsence(this.absenceData);
-
 	}
 
 	public ngOnInit(): void {
@@ -248,7 +247,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 				});
 			});
 		});
-
 	}
 
 	private emitDate(isWeekChange: boolean = false) {
@@ -403,7 +401,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getAbsenceHeight(groupedData: any[]): number {
 		let endDate: Date = groupedData[0].endedAt;
-    let endTime: string = groupedData[0]?.end;
+		let endTime: string = groupedData[0]?.end;
 		groupedData.forEach((data) => {
 			if (DateTimeUtils.TimeToNumber(data.end) > DateTimeUtils.TimeToNumber(endTime)) {
 				endDate = data.endedAt;
@@ -422,7 +420,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public getPrioritySlotHeight(prioritySlot: any): number {
-
 		const max = DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max);
 		let startDate: Date = this.myDate(prioritySlot.start);
 		const min = DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min));
@@ -557,7 +554,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		formattedDate.setHours(+splitDate[0]);
 		formattedDate.setMinutes(+splitDate[1]);
 		formattedDate.setSeconds(0);
-    formattedDate.setMilliseconds(0);
+		formattedDate.setMilliseconds(0);
 		return formattedDate;
 	}
 
@@ -681,17 +678,12 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public prioritySlotOpenAndClose(slotPercentage: any, prioritySlot: any, isClose: any) {
-		//
 		const obj = {
 			prioritySlotid: prioritySlot.id,
-			percentage: slotPercentage[this.slotPriorityKey[prioritySlot.priority]],
+			percentage: slotPercentage?.percentage?.[prioritySlot.id] ?? 0,
 			date: slotPercentage.date,
 			isClose,
 		};
 		this.openAndClosePrioritySlot.emit(obj);
-	}
-
-	public test(item: any[]) {
-		return [...item, ...item, ...item];
 	}
 }

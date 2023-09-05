@@ -645,7 +645,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		} else if (fileSize) {
 			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
 		} else {
-			this.notificationSvc.showNotification(Translate.uploading[this.selectedLang], NotificationType.WARNING);
+			this.notificationSvc.showNotification(Translate.uploading[this.selectedLang], NotificationType.SUCCESS);
 			this.onFileChange(event, id);
 		}
 	}
