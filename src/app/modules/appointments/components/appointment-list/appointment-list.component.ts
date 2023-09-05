@@ -725,7 +725,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		} else if (fileSize) {
 			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
 		} else {
-			this.notificationSvc.showNotification(Translate.uploading[this.selectedLang], NotificationType.SUCCESS);
+			this.notificationSvc.showNotification(Translate.uploading[this.selectedLang], NotificationType.INFO);
 			this.onFileChange(event, id);
 		}
 	}
