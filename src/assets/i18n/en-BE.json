@@ -178,6 +178,7 @@
 	"EndTimeRequired": "End time",
 	"Until": "Until",
 	"Repeat": "Repeat",
+	"DoesNotRepeat": "Doesn't repeat",
 	"AllDay": "All day",
 	"PublicHoliday": "Public holiday",
 	"RepeatType": "Repeat type",
@@ -488,4 +489,7 @@
 	"DocumentSize": "Document size",
 	"APPOINTMENT_AFFECTS_ABSENCE": "Are you sure you want to add this absence? \n Note: Please note that adding this absence will impact your upcoming appointments."
 }
+
+
+
 
