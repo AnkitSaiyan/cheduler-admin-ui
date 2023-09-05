@@ -44,8 +44,8 @@
 
         <div class="d-flex flex-column dfm-gap-8">
           <div class="d-flex dfm-gap-8 flex-wrap">
+            <div class="d-flex flex-column flex-1 min-w-228">
             <dfm-input
-              class="flex-1 min-w-228"
               size="md"
               #firstname
               [dfmNameInput]="firstname"
@@ -53,9 +53,11 @@
               [label]="('PatientFirstName' | translate) + ' *'"
               formControlName="patientFname"
             ></dfm-input>
-
+            <span class="validation-error" *ngIf="appointmentForm.controls['patientFname'].hasError('required') && appointmentForm.controls['patientFname'].touched">
+              {{ 'RequiredField' | translate }}</span>
+            </div>
+            <div class="d-flex flex-column flex-1 min-w-228">
             <dfm-input
-              class="flex-1 min-w-228"
               size="md"
               #lastname
               [dfmNameInput]="lastname"
@@ -63,7 +65,10 @@
               [label]="('PatientLastName' | translate) + ' *'"
               formControlName="patientLname"
             ></dfm-input>
-          </div>
+            <span class="validation-error" *ngIf="appointmentForm.controls['patientLname'].hasError('required') && appointmentForm.controls['patientLname'].touched">
+              {{ 'RequiredField' | translate }}</span>
+            </div>
+        </div>
 
           <div class="d-flex dfm-gap-8 flex-wrap">
             <div class="flex-1 min-w-228" >
@@ -106,7 +111,7 @@
             formControlName = "socialSecurityNumber"
           ></dfm-input>
           </div>
-          <div class="flex-1 small-dropdown min-w-256">
+          <div class="flex-1 small-dropdown min-w-256 d-flex flex-column">
             <dfm-input-dropdown
             class=""
             #exams
@@ -120,6 +125,8 @@
             size="md"
             label="{{ 'Exams' | translate }} *">
           </dfm-input-dropdown>
+          <span class="validation-error" *ngIf="appointmentForm.controls['examList'].hasError('required') && appointmentForm.controls['examList'].touched">
+            {{ 'RequiredField' | translate }}</span>
           </div>
         </div>
 
@@ -241,7 +248,7 @@
             </dfm-input-dropdown>
           </div>
 
-          <div class="flex-1 min-w-228">
+          <div class="flex-1 min-w-228 d-flex flex-column">
             <dfm-input-dropdown
               #generalUsers
               [items]="filteredUserList"
@@ -253,6 +260,8 @@
               [label]="('GeneralUser' | translate) + ' *'"
             >
             </dfm-input-dropdown>
+            <span class="validation-error" *ngIf="appointmentForm.controls['userId'].hasError('required') &&  appointmentForm.controls['userId'].touched">
+              {{ 'RequiredField' | translate }}</span>
           </div>
 
         </div>
