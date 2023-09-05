@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, of, startWith, Subject, switchMap, tap, takeUntil } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { EventEmitter, Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, Subject, combineLatest, map, of, startWith, switchMap, takeUntil, tap } from 'rxjs';
+import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
-import { AddRoomRequestData, Room, RoomsGroupedByType, RoomType, UpdateRoomPlaceInAgendaRequestData } from '../../shared/models/rooms.model';
+import { AddRoomRequestData, Room, RoomType, RoomsGroupedByType, UpdateRoomPlaceInAgendaRequestData } from '../../shared/models/rooms.model';
 import { ChangeStatusRequestData, Status } from '../../shared/models/status.model';
+import { Translate } from '../../shared/models/translate.model';
 import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
-import { Translate } from '../../shared/models/translate.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -21,6 +21,8 @@ export class RoomsApiService extends DestroyableComponent {
 	private pageNo$$ = new BehaviorSubject<number>(1);
 
 	private readonly roomUrl = `${environment.schedulerApiUrl}/room`;
+
+	private cancelAPICalled = new EventEmitter<void>();
 
 	private roomTypes: { name: string; value: string }[] = [
 		{
@@ -40,7 +42,7 @@ export class RoomsApiService extends DestroyableComponent {
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: (lang) => this.selectedLang$$.next(lang)
+				next: (lang) => this.selectedLang$$.next(lang),
 			});
 	}
 
@@ -73,10 +75,7 @@ export class RoomsApiService extends DestroyableComponent {
 	}
 
 	public get rooms$(): Observable<BaseResponse<Room[]>> {
-		return combineLatest([
-			this.refreshRooms$$.pipe(startWith('')),
-			this.pageNo$$
-		]).pipe(switchMap(([_, pageNo]) => this.fetchRooms(pageNo)));
+		return combineLatest([this.refreshRooms$$.pipe(startWith('')), this.pageNo$$]).pipe(switchMap(([_, pageNo]) => this.fetchRooms(pageNo)));
 	}
 
 	private fetchRooms(pageNo: number): Observable<BaseResponse<Room[]>> {
@@ -88,8 +87,8 @@ export class RoomsApiService extends DestroyableComponent {
 			map((response) => {
 				return {
 					...response,
-					data: response?.data?.sort((r1, r2) => (r1.placeInAgenda - r2.placeInAgenda)),
-				}
+					data: response?.data?.sort((r1, r2) => r1.placeInAgenda - r2.placeInAgenda),
+				};
 			}),
 			tap(() => {
 				this.loaderSvc.deactivate();
@@ -105,6 +104,7 @@ export class RoomsApiService extends DestroyableComponent {
 	private fetchAllRooms$(): Observable<Room[]> {
 		this.loaderSvc.activate();
 		this.loaderSvc.spinnerActivate();
+		this.cancelAPICalled.emit();
 
 		return this.http.get<BaseResponse<Room[]>>(`${environment.schedulerApiUrl}/common/getrooms`).pipe(
 			map((response) =>
@@ -116,6 +116,7 @@ export class RoomsApiService extends DestroyableComponent {
 				this.loaderSvc.deactivate();
 				this.loaderSvc.spinnerDeactivate();
 			}),
+			takeUntil(this.cancelAPICalled),
 		);
 	}
 

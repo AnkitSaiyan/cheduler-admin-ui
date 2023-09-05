@@ -613,8 +613,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		prioritySlots
 			.map((value) => ({
 				...value,
-				startedAt: this.utcToLocalPipe.transform(value.startedAt, false, true),
-				endedAt: this.utcToLocalPipe.transform(value.endedAt, false, true),
+				startedAt: value.startedAt,
+				endedAt: value.endedAt,
 				slotStartTime: this.utcToLocalPipe.transform(value.slotStartTime, true),
 				slotEndTime: this.utcToLocalPipe.transform(value.slotEndTime, true),
 			}))

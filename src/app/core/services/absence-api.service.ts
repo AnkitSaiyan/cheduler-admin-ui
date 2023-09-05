@@ -1,13 +1,12 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, combineLatest, map, Observable, startWith, Subject, switchMap, tap} from 'rxjs';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {BaseResponse} from 'src/app/shared/models/base-response.model';
-import { Absence, AddAbsenceRequestData } from '../../shared/models/absence.model';
-import {environment} from '../../../environments/environment';
-import {LoaderService} from './loader.service';
-import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { EventEmitter, Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, Subject, combineLatest, debounceTime, map, startWith, switchMap, takeUntil, tap } from 'rxjs';
+import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { ABSENCE_TYPE_ARRAY } from 'src/app/shared/utils/const';
+import { environment } from '../../../environments/environment';
+import { Absence, AddAbsenceRequestData } from '../../shared/models/absence.model';
+import { LoaderService } from './loader.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -20,6 +19,8 @@ export class AbsenceApiService {
 	private pageNo$$ = new BehaviorSubject<number>(1);
 
 	private pageNoOnDashboard$$ = new BehaviorSubject<number>(1);
+
+	private cancelAPICalled = new EventEmitter<void>();
 
 	constructor(private http: HttpClient, private loaderSvc: LoaderService, private utcToLocalPipe: UtcToLocalPipe) {}
 
@@ -51,6 +52,7 @@ export class AbsenceApiService {
 		toDate: string,
 	): Observable<BaseResponse<Absence[]>> {
 		return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(
+			debounceTime(100),
 			switchMap(([_]) => this.fetchAllAbsenceForCalendar(absenceType, fromDate, toDate)),
 		);
 	}
@@ -91,7 +93,7 @@ export class AbsenceApiService {
 			tap(() => {
 				this.pageNo$$.next(1);
 				this.pageNoOnDashboard$$.next(1);
-        this.refreshAbsences$$.next();
+				this.refreshAbsences$$.next();
 				this.loaderSvc.deactivate();
 			}),
 		);
@@ -109,7 +111,7 @@ export class AbsenceApiService {
 			tap(() => {
 				this.pageNo$$.next(1);
 				this.pageNoOnDashboard$$.next(1);
-        this.refreshAbsences$$.next();
+				this.refreshAbsences$$.next();
 				this.loaderSvc.deactivate();
 			}),
 		);
@@ -140,14 +142,17 @@ export class AbsenceApiService {
 	): Observable<BaseResponse<Absence[]>> {
 		this.loaderSvc.activate();
 		const params = { toDate, fromDate };
+		this.cancelAPICalled.emit();
 		if (absenceType === 'rooms') {
-			return this.http
-				.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getroomabsence`, { params })
-				.pipe(tap(() => this.loaderSvc.deactivate()));
+			return this.http.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getroomabsence`, { params }).pipe(
+				tap(() => this.loaderSvc.deactivate()),
+				takeUntil(this.cancelAPICalled),
+			);
 		}
-		return this.http
-			.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getstaffabsence`, { params })
-			.pipe(tap(() => this.loaderSvc.deactivate()));
+		return this.http.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getstaffabsence`, { params }).pipe(
+			tap(() => this.loaderSvc.deactivate()),
+			takeUntil(this.cancelAPICalled),
+		);
 	}
 
 	private fetchAbsenceById(absenceID: number): Observable<Absence> {
