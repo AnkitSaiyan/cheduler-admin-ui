@@ -1305,3 +1305,27 @@ angular-editor-toolbar button i {
 .dfm-cursor-grabbing {
 	cursor: grabbing !important;
 }
+
+// tabs style
+.mat-tab-label {
+  width: 100%;
+}
+// mat group button style
+
+
+.mat-button-toggle-group {
+  width: 100%;
+
+  *:not(button) {
+    width: calc(100%);
+    max-height: 44px;
+  }
+
+    span {
+    padding: 0 4px !important;
+  }
+}
+
+.mat-button-toggle-checked {
+  background-color: var(--dfm-secondary) !important;
+}

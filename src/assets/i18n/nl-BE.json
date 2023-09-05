@@ -178,6 +178,7 @@
 	"EndTimeRequired": "Eindtijd *",
 	"Until": "Tot",
 	"Repeat": "Type",
+	"DoesNotRepeat": "Doesn't repeat",
 	"AllDay": "Volledige dag",
 	"PublicHoliday": "Publieke verlofdag",
 	"RepeatType": "Frequentie",
@@ -491,4 +492,5 @@
 	"DocumentSize": "Documentgrootte",
 	"APPOINTMENT_AFFECTS_ABSENCE": "Weet u zeker dat u deze afwezigheid wilt toevoegen? \n Let op: Houd er rekening mee dat het toevoegen van deze afwezigheid invloed heeft op uw komende afspraken."
 }
+
 

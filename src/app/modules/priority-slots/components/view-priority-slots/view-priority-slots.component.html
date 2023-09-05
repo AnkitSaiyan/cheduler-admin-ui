@@ -64,9 +64,9 @@
 					<span class="flex-1" *ngIf="priorityDetails.endedAt">{{ priorityDetails.startedAt | dfmDefaultDate }}</span>
 				</div>
 
-				<div class="d-flex dfm-gap-8 justify-content-between" >
+				<div class="d-flex dfm-gap-8 justify-content-between" *ngIf="priorityDetails.endedAt">
 					<span class="flex-1">{{ 'EndDate' | translate }}</span>
-					<span class="flex-1">{{ priorityDetails.endedAt | dfmDefaultDate | dashIfNothing }}</span>
+					<span class="flex-1" >{{ priorityDetails.endedAt | dfmDefaultDate | dashIfNothing }}</span>
 				</div>
 
 				<div class="d-flex dfm-gap-8 justify-content-between">

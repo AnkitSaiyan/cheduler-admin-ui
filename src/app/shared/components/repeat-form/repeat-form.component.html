@@ -1,0 +1,143 @@
+<form [formGroup]="form" class="dfm-container">
+  <mat-button-toggle-group  name="weekDays" formControlName="repeatType">
+    <mat-button-toggle [value]="RepeatType.Daily">{{ 'Daily' | translate }}</mat-button-toggle>
+    <mat-button-toggle [value]="RepeatType.Weekly">{{ 'Weekly' | translate  }}</mat-button-toggle>
+    <mat-button-toggle [value]="RepeatType.Monthly">{{ 'Monthly' | translate }}</mat-button-toggle>
+  </mat-button-toggle-group>
+  <ng-container [ngSwitch]="form.get('repeatType')?.value">
+    <ng-container *ngSwitchCase="RepeatType.Daily">
+      <div class="mt-4">
+        <div class="d-flex align-items-start dfm-gap-16 max-w-366 ">
+          <label >{{ 'RepeatEvery' | translate }} *</label>
+          <div>
+            <dfm-input
+              #repeatFrequency
+              class="flex-1"
+              formControlName="repeatFrequency"
+              placeholder="{{ 'EnterRepeatCount' | translate }}"
+              size="md"
+              type="number"
+              required
+            >
+            </dfm-input>
+            <div
+              class="validation-error"
+              *ngIf="form.get('repeatFrequency')?.hasError('required') && form.get('repeatFrequency')?.touched"
+            >
+              {{ 'RequiredField' | translate }}
+            </div>
+            <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched"
+              >Repeat frequency should be greater than 0
+            </small>
+          </div>
+          <span class="lh-44">Day(s)</span>
+        </div>
+        <h1 class="mat-caption dfm-text-main-500">The priority slot will be repeated every day or every x day, depending on the selected value</h1>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="RepeatType.Weekly">
+      <div class="mt-4">
+        <div class="d-flex align-items-start dfm-gap-16 max-w-366 ">
+          <label >{{ 'RepeatEvery' | translate }} *</label>
+          <div>
+            <dfm-input
+              #repeatFrequency
+              class="flex-1"
+              formControlName="repeatFrequency"
+              placeholder="{{ 'EnterRepeatCount' | translate }}"
+              size="md"
+              type="number"
+              required
+            >
+            </dfm-input>
+            <div
+              class="validation-error"
+              *ngIf="form.get('repeatFrequency')?.hasError('required') && form.get('repeatFrequency')?.touched"
+            >
+              {{ 'RequiredField' | translate }}
+            </div>
+            <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched"
+            >Repeat frequency should be greater than 0
+            </small>
+        </div>
+          <span class="lh-44">Week(s)</span>
+        </div>
+        <h1 class="mat-caption dfm-text-main-500">The priority slot will be repeated every day or every x day, depending on the selected value</h1>
+      </div>
+      <mat-button-toggle-group class="week"  name="weekDays" multiple formControlName="repeatDays">
+        <mat-button-toggle value="1">{{ 'MON' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="2">{{ 'TUE' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="3">{{ 'WED' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="4">{{ 'THU' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="5">{{ 'FRI' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="6">{{ 'SAT' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="0">{{ 'SUN' | translate }}</mat-button-toggle>
+      </mat-button-toggle-group>
+      <div
+        class="validation-error"
+        *ngIf="form.get('repeatDays')?.hasError('required') && form.get('repeatDays')?.touched"
+      >
+        {{ 'RequiredField' | translate }}
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="RepeatType.Monthly">
+      <div class="mt-4">
+        <div class="d-flex align-items-center dfm-gap-16 flex-wrap ">
+          <div class="d-flex align-items-start dfm-gap-8">
+            <label class="lh-44">{{ 'RepeatEvery' | translate }} *</label>
+            <div>
+              <dfm-input
+                #repeatFrequency
+                class="flex-1 max-w-192"
+                formControlName="repeatFrequency"
+                placeholder="{{ 'EnterRepeatCount' | translate }}"
+                size="md"
+                type="number"
+                required
+
+              >
+              </dfm-input>
+              <div
+                class="validation-error"
+                *ngIf="form.get('repeatFrequency')?.hasError('required') && form.get('repeatFrequency')?.touched"
+              >
+                {{ 'RequiredField' | translate }}
+              </div>
+              <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched"
+                >Repeat frequency should be greater than 0
+              </small>
+            </div>
+            <span class="lh-44">Month(s)</span>
+          </div>
+
+          <div class="d-flex align-items-start dfm-gap-8">
+            <label class="lh-44">on day(s)</label>
+            <div>
+              <div class="ad-pr-repeat-every">
+                <dfm-input-dropdown
+                  #repeatEveryDropdown
+                  [items]="repeatEvery"
+                  [multiple]="true"
+                  [placeholder]="((repeatEveryDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRepeatEvery') | async) ?? ''"
+                  size="md"
+                  [required]="true"
+                  formControlName="repeatDays"
+                >
+                </dfm-input-dropdown>
+              </div>
+              <div
+                class="validation-error"
+                *ngIf="form.get('repeatDays')?.hasError('required') && form.get('repeatFrequency')?.touched"
+              >
+                {{ 'RequiredField' | translate }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <h1 class="mat-caption dfm-text-main-500">The priority slot will be repeated every x months on selected days of month</h1>
+      </div>
+    </ng-container>
+</ng-container>
+<ng-content select=".endDate"></ng-content>
+
+</form>

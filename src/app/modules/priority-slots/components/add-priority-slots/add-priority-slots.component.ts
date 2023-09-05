@@ -12,7 +12,7 @@ import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { PriorityType, RepeatType } from '../../../../shared/models/absence.model';
+import { EndDateType, PriorityType, RepeatType } from '../../../../shared/models/absence.model';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { WeekdayToNamePipe } from '../../../../shared/pipes/weekday-to-name.pipe';
@@ -81,12 +81,18 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 	private repeatFrequency!: InputComponent;
 
 	private staffDetails: User[] = [];
+
 	private times: NameValue[];
+
 	private selectedLang: string = ENG_BE;
 
 	public startDateControl = new FormControl();
 
 	public endDateControl = new FormControl();
+
+	public endDateTypeControl = new FormControl(EndDateType.Never, []);
+
+	public EndDateType = EndDateType;
 
 	constructor(
 		private modalSvc: ModalService,
@@ -152,6 +158,9 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			)
 			.subscribe((prioritySlot) => {
 				this.prioritySlot$$.next(prioritySlot);
+				if (prioritySlot?.endedAt) {
+					this.endDateTypeControl.patchValue(EndDateType.Until);
+				}
 				this.createForm(prioritySlot);
 			});
 
@@ -188,25 +197,48 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
 	public savePrioritySlot() {
 		const { controls } = this.prioritySlotForm;
+		const invalid = ['startedAt', 'slotStartTime', 'priority', 'slotEndTime', 'nxtSlotOpenPct'].some((key) => {
+			controls[key].markAsTouched();
+			return controls[key].invalid;
+		});
+		if (invalid) {
+			this.prioritySlotForm.markAllAsTouched();
+			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+			return;
+		}
 		if (this.formValues.isRepeat) {
-			if (this.prioritySlotForm.invalid) {
-				this.prioritySlotForm.markAllAsTouched();
-				this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-
-				Object.keys(this.prioritySlotForm.controls).map((key) => this.prioritySlotForm.get(key)?.markAsTouched());
-
-				return;
-			}
-		} else {
-			const invalid = ['startedAt', 'slotStartTime', 'priority', 'slotEndTime', 'nxtSlotOpenPct'].some((key) => {
-				controls[key].markAsTouched();
-				return controls[key].invalid;
-			});
-			if (invalid) {
-				this.prioritySlotForm.markAllAsTouched();
+			if (this.endDateTypeControl.value === EndDateType.Until && controls['endedAt'].invalid) {
+				controls['endedAt'].markAsTouched();
 				this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 				return;
 			}
+			switch (this.prioritySlotForm.get('repeatType')?.value) {
+				case RepeatType.Weekly:
+				case RepeatType.Monthly: {
+					const invalid = ['repeatFrequency', 'repeatDays'].some((key) => {
+						controls[key].markAsTouched();
+						return controls[key].invalid;
+					});
+					if (invalid) {
+						this.prioritySlotForm.markAllAsTouched();
+						this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+						return;
+					}
+					break;
+				}
+				default: {
+					if (controls['repeatFrequency'].invalid) {
+						controls['repeatFrequency'].markAsTouched();
+						this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+						return;
+					}
+					break;
+				}
+			}
+		} else if (controls['endedAt'].invalid) {
+			controls['endedAt'].markAsTouched();
+			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+			return;
 		}
 		controls['nxtSlotOpenPct'].markAsTouched();
 
@@ -221,10 +253,13 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 				'yyyy-MM-dd HH:mm:ss',
 			) as string,
 
-			endedAt: this.datePipe.transform(
-				DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${slotEndTime}:00`), true),
-				'yyyy-MM-dd HH:mm:ss',
-			) as string,
+			endedAt:
+				this.endDateTypeControl?.value === EndDateType.Never
+					? null
+					: (this.datePipe.transform(
+							DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${slotEndTime}:00`), true),
+							'yyyy-MM-dd HH:mm:ss',
+					  ) as string),
 
 			repeatType: rest.isRepeat ? rest.repeatType : null,
 			repeatFrequency: rest.isRepeat && rest.repeatFrequency ? +rest.repeatFrequency.toString().split(' ')[0] : 0,
@@ -436,18 +471,13 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 							day: new Date(prioritySlotDetails.endedAt).getDate(),
 					  }
 					: null,
-				[],
+				[Validators.required],
 			],
 			slotEndTime: [startTime, [Validators.required]],
 			isRepeat: [!!prioritySlotDetails?.isRepeat, []],
-			repeatType: [null, []],
-			repeatDays: ['', []],
-			repeatFrequency: [
-				prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
-					? `${prioritySlotDetails.repeatFrequency} ${Translate.RepeatType[this.repeatTypeToName[prioritySlotDetails.repeatType]][this.selectedLang]}`
-					: null,
-				[Validators.min(1)],
-			],
+			repeatType: [RepeatType.Daily, []],
+			repeatDays: ['', [Validators.required]],
+			repeatFrequency: [prioritySlotDetails?.repeatFrequency, [Validators.required, Validators.min(1)]],
 			userList: [prioritySlotDetails?.users?.length ? prioritySlotDetails.users.map(({ id }) => id.toString()) : [], []],
 			priority: [prioritySlotDetails?.priority ?? null, [Validators.required]],
 			nxtSlotOpenPct: [
@@ -462,12 +492,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 					slotStartTime: startTime,
 					slotEndTime: endTime,
 					repeatType: prioritySlotDetails?.repeatType,
-					repeatFrequency:
-						prioritySlotDetails?.isRepeat && prioritySlotDetails?.repeatFrequency && prioritySlotDetails.repeatType
-							? `${prioritySlotDetails.repeatFrequency} ${
-									Translate.RepeatType[this.repeatTypeToName[prioritySlotDetails.repeatType]][this.selectedLang]
-							  }`
-							: null,
 					repeatDays: prioritySlotDetails?.repeatDays ? prioritySlotDetails.repeatDays.split(',') : '',
 				});
 				this.cdr.detectChanges();
@@ -613,6 +637,29 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

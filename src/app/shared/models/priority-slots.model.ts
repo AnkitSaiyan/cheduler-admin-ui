@@ -4,7 +4,7 @@ import { User } from './user.model';
 export interface PrioritySlot {
 	id?: number;
 	startedAt: string;
-	endedAt: string;
+	endedAt: string | null;
 	priority: PriorityType;
 	isRepeat: boolean;
 	repeatType: RepeatType | null;
@@ -23,6 +23,7 @@ export interface NextSlotOpenPercentageData {
 	mediumPriorityPercentage: number;
 	lowPriorityPercentage: number;
 }
+
 
 
 
