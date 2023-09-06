@@ -175,6 +175,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.appointmentApiSvc.appointmentPageNo = 1;
+		localStorage.removeItem('previousPagefromView');
 
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe((params) => {
 			if (params['v']) {
@@ -470,6 +471,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public navigateToView(e: TableItem) {
 		if (e?.id) {
+			localStorage.setItem('previousPagefromView', 'appointment');
 			this.router.navigate([`./${e.id}/view`], { replaceUrl: true, relativeTo: this.route, queryParamsHandling: 'merge' });
 		}
 	}

@@ -166,6 +166,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.appointmentApiSvc.appointmentPageNo = 1;
+		localStorage.removeItem('previousPagefromView');
 
 		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: () => {
@@ -480,6 +481,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public navigateToView(e: TableItem, appointments: any[]) {
 		if (e?.id) {
+			localStorage.setItem('previousPagefromView', 'dashboard');
 			this.router.navigate([`/appointment/${e.id}/view`], { replaceUrl: true });
 		}
 	}
