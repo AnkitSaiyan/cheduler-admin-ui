@@ -116,7 +116,7 @@
                       </ng-template>
                       <div class="calender-month-view-day-exam-event-details" [ngClass]="{'holiday': data.isHoliday}" [ngbPopover]="data.isHoliday ? null :absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
                         <span class="calender-month-view-day-exam-event-title text-truncate ">
-                          <span *ngIf="!data.isHoliday">{{ data?.start }}
+                          <span >{{ data?.start }}
                             -
                             {{ data?.end}} </span>
 
@@ -227,7 +227,7 @@
 
               <div class="calender-month-view-day-exam-event-details" [ngClass]="{'holiday': data.isHoliday}" [ngbPopover]="data.isHoliday ? null: absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
                 <span class="calender-month-view-day-exam-event-title text-truncate ">
-                  <span *ngIf="!data.isHoliday">{{ data?.start }}
+                  <span >{{ data?.start }}
                   -
                   {{ data?.end}} </span>
 

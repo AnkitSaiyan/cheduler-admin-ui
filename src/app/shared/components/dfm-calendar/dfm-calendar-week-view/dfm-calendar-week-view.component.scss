@@ -503,6 +503,11 @@ h3 {
   background: var(--dfm-blue-light);
   cursor: pointer;
 
+  &.holiday {
+      border-left: 2px solid var(--dfm-yellow);
+      background: var(--dfm-yellow-light);
+      cursor: default;
+    }
   &.more-btn {
     position: absolute;
     bottom: 0;

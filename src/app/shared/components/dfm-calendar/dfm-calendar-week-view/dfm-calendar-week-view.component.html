@@ -36,7 +36,7 @@
                 <div class="calender-month-view-day-exam-event-details d-flex" [ngClass]="{'holiday': data.isHoliday}">
                   <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10 ">
                     <span  class="text-truncate">
-                      <span *ngIf="!data.isHoliday">{{ data?.start }}
+                      <span >{{ data?.start }}
                         -
                         {{ data?.end}} </span> <b>{{data?.name | titlecase }}</b>
                     </span>
@@ -78,7 +78,7 @@
                         <div class="calender-month-view-day-exam-event-details d-flex" [ngClass]="{'holiday': data.isHoliday}">
                           <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10" >
                             <span class="text-truncate">
-                              <span *ngIf="!data.isHoliday">{{ data?.start }}
+                              <span >{{ data?.start }}
                                 -
                                 {{ data?.end}} </span> <b>{{data?.name | titlecase }}</b>
                             </span>
