@@ -34,6 +34,8 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 
 	public statuses = Statuses;
 
+	public readonly previousPagefromView = localStorage.getItem('previousPagefromView') || 'appointment';
+
 	constructor(
 		private appointmentApiSvc: AppointmentApiService,
 		private routerStateSvc: RouterStateService,

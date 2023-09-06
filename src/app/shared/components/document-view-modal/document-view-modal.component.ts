@@ -7,6 +7,7 @@ import { NotificationDataService } from 'src/app/core/services/notification-data
 import { Translate } from '../../models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { ENG_BE } from '../../utils/const';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
 	selector: 'dfm-document-view-modal',
@@ -34,7 +35,8 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 		private modalSvc: ModalService,
 		private appointmentApiSvc: AppointmentApiService,
 		private notificationService: NotificationDataService,
-		private shareDataSvc: ShareDataService
+		private shareDataSvc: ShareDataService,
+		private activeModal: NgbActiveModal,
 	) {
 		super();
 	}
@@ -88,6 +90,6 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 	}
 
 	public closeModal() {
-		this.modalSvc.close();
+		this.activeModal.close();
 	}
 }

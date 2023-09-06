@@ -26,7 +26,7 @@ import { EMAIL_REGEX, ENG_BE } from '../../../../shared/utils/const';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { Translate } from '../../../../shared/models/translate.model';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
-import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { CustomDateParserFormatter } from '../../../..//shared/utils/dateFormat';
 import { DateDistributed, getDurationMinutes } from 'src/app/shared/models/calendar.model';
 import { UserApiService } from '../../../../core/services/user-api.service';
@@ -122,6 +122,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		private notificationSvc: NotificationDataService,
 		private siteManagementApiSvc: SiteManagementApiService,
 		private datePipe: DatePipe,
+		private activeModal: NgbActiveModal,
 	) {
 		super();
 	}
@@ -179,6 +180,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				.subscribe({
 					next: (appointment) => this.updateForm(appointment as Appointment),
 				});
+			this.getDocument(this.modalData.appointment.id)
 		}
 
 		combineLatest([this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length))])
@@ -289,7 +291,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	public close(result: boolean) {
-		this.modalSvc.close(result);
+		this.activeModal.close(result);
 	}
 
 	public checkSlotAvailability(slot: SlotModified) {
@@ -635,7 +637,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		this.appointmentApiSvc.uploadDocumnet(file, '').subscribe({
 			next: (res) => {
 				this.documentStage = this.uploadFileName;
-
 				this.appointmentForm.patchValue({
 					qrCodeId: res?.apmtDocUniqueId,
 				});
@@ -662,5 +663,17 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		this.appointmentApiSvc.deleteDocument(this.formValues.qrCodeId).pipe(takeUntil(this.destroy$$)).subscribe();
 		this.formValues.qrCodeId = '';
 		this.documentStage = '';
+	}
+
+	private getDocument(id:number) {
+		this.appointmentApiSvc
+          .getDocumentById$(id, true)
+          .pipe(takeUntil(this.destroy$$))
+			.subscribe((res) => {
+				this.documentStage = res.fileName;
+				this.appointmentForm.patchValue({
+					qrCodeId: res?.apmtQRCodeId,
+				});
+          });
 	}
 }

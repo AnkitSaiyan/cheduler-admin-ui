@@ -21,15 +21,12 @@ export class RepeatFormComponent extends DestroyableComponent implements OnInit,
 		super();
 	}
 
-	ngOnInit() {
-		this.form.valueChanges.subscribe((value) => {
-			console.log('test', value);
-		});
-	}
+	ngOnInit() {}
 
 	public override ngOnDestroy(): void {
 		super.ngOnDestroy();
 	}
 }
+
 
 
