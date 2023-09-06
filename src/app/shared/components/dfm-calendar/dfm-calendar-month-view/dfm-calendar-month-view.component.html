@@ -114,11 +114,11 @@
                           </div>
                         </div>
                       </ng-template>
-                      <div class="calender-month-view-day-exam-event-details" [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
+                      <div class="calender-month-view-day-exam-event-details" [ngClass]="{'holiday': data.isHoliday}" [ngbPopover]="data.isHoliday ? null :absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
                         <span class="calender-month-view-day-exam-event-title text-truncate ">
-                          {{ data?.start}}
-                          -
-                          {{ data?.end}}
+                          <span *ngIf="!data.isHoliday">{{ data?.start }}
+                            -
+                            {{ data?.end}} </span>
 
                           <b>{{(data?.name | titlecase)}}</b>
                         </span>
@@ -225,11 +225,11 @@
                 </div>
               </ng-template>
 
-              <div class="calender-month-view-day-exam-event-details" [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
+              <div class="calender-month-view-day-exam-event-details" [ngClass]="{'holiday': data.isHoliday}" [ngbPopover]="data.isHoliday ? null: absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
                 <span class="calender-month-view-day-exam-event-title text-truncate ">
-                  {{ data?.start }}
+                  <span *ngIf="!data.isHoliday">{{ data?.start }}
                   -
-                  {{ data?.end}}
+                  {{ data?.end}} </span>
 
                   <b>{{(data?.name | titlecase)}}</b>
                 </span>

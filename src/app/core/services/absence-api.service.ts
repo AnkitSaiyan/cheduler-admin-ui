@@ -57,6 +57,13 @@ export class AbsenceApiService {
 		);
 	}
 
+	public absencesHolidayForCalendar$(fromDate: string, toDate: string): Observable<BaseResponse<Absence[]>> {
+		return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(
+			debounceTime(100),
+			switchMap(([_]) => this.fetchAllAbsenceHolidayForCalendar(fromDate, toDate)),
+		);
+	}
+
 	public get absencesOnDashboard$(): Observable<BaseResponse<Absence[]>> {
 		return combineLatest([this.refreshAbsencesOnDashboard$$.pipe(startWith('')), this.pageNoOnDashboard$$]).pipe(
 			switchMap(([_, pageNo]) => this.fetchAllAbsence(pageNo)),
@@ -150,6 +157,14 @@ export class AbsenceApiService {
 			);
 		}
 		return this.http.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getstaffabsence`, { params }).pipe(
+			tap(() => this.loaderSvc.deactivate()),
+			takeUntil(this.cancelAPICalled),
+		);
+	}
+	private fetchAllAbsenceHolidayForCalendar(fromDate: string, toDate: string): Observable<BaseResponse<Absence[]>> {
+		this.loaderSvc.activate();
+		const params = { toDate, fromDate };
+		return this.http.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/common/getholidaylist`, { params }).pipe(
 			tap(() => this.loaderSvc.deactivate()),
 			takeUntil(this.cancelAPICalled),
 		);
