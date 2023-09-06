@@ -187,7 +187,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 					return !!appointmentID;
 				}),
 				switchMap((appointmentID) => {
-					this.getDocument(+appointmentID)
 					return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
 				}),
 				debounceTime(0),
@@ -196,6 +195,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			.subscribe((appointment) => {
 				this.appointment$$.next(appointment ?? ({} as Appointment));
 				this.updateForm(appointment);
+				if(appointment?.id && appointment.documentCount)this.getDocument(appointment.id)
 			});
 
 		this.appointmentForm
