@@ -254,7 +254,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			) as string,
 
 			endedAt:
-				this.endDateTypeControl?.value === EndDateType.Never
+				this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat
 					? null
 					: (this.datePipe.transform(
 							DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${slotEndTime}:00`), true),
@@ -637,6 +637,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
+
 
 
 
