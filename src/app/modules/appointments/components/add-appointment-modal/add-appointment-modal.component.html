@@ -265,7 +265,7 @@
           </div>
 
         </div>
-        <div class="d-flex dfm-gap-32 flex-wrap" *ngIf="!edit">
+        <div class="d-flex dfm-gap-32 flex-wrap">
           <div class="flex-1 min-w-256">
           <dfm-text-area
             label="{{ 'CommentsClinicalData' | translate }}"
@@ -291,11 +291,11 @@
             </p>
           </div>
         </div>
-        <dfm-text-area *ngIf="edit"
+        <!-- <dfm-text-area *ngIf="edit"
         label="{{ 'CommentsClinicalData' | translate }}"
         placeholder="{{ 'EnterComments' | translate }}"
         formControlName="comments"
-      ></dfm-text-area>
+      ></dfm-text-area> -->
       </div>
     </form>
   </div>

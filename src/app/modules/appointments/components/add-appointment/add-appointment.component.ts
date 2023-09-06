@@ -101,7 +101,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	public filteredStaffs: NameValue[] = [];
 	public uploadFileName!: string;
 	private fileSize!: number;
-	documentStage: string = '';
+	public documentStage: string = '';
+	
 
 	constructor(
 		private fb: FormBuilder,
@@ -186,6 +187,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 					return !!appointmentID;
 				}),
 				switchMap((appointmentID) => {
+					this.getDocument(+appointmentID)
 					return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
 				}),
 				debounceTime(0),
@@ -718,5 +720,17 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		this.appointmentApiSvc.deleteDocument(this.formValues.qrCodeId).pipe(takeUntil(this.destroy$$)).subscribe();
 		this.formValues.qrCodeId = '';
 		this.documentStage = '';
+	}
+
+	private getDocument(id:number) {
+		this.appointmentApiSvc
+          .getDocumentById$(id, true)
+          .pipe(takeUntil(this.destroy$$))
+			.subscribe((res) => {
+				this.documentStage = res.fileName;
+				this.appointmentForm.patchValue({
+					qrCodeId: res?.apmtQRCodeId,
+				});
+          });
 	}
 }
