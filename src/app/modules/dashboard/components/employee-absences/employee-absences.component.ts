@@ -12,7 +12,7 @@ import { Absence } from 'src/app/shared/models/absence.model';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ENG_BE } from '../../../../shared/utils/const';
+import { ABSENCE_TYPE, ABSENCE_TYPE_ARRAY, ENG_BE } from '../../../../shared/utils/const';
 
 @Component({
 	selector: 'dfm-employee-absences',
@@ -70,17 +70,20 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 			next: (absences) => this.filteredAbsence$$.next([...absences]),
 		});
 
-		this.absenceApiService.absencesOnDashboard$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (employeeAbsencesBase) => {
-				if (this.paginationData && this.paginationData.pageNo < employeeAbsencesBase?.metaData?.pagination.pageNo) {
-					this.absences$$.next([...this.absences$$.value, ...employeeAbsencesBase.data]);
-				} else {
-					this.absences$$.next(employeeAbsencesBase.data);
-				}
-				this.paginationData = employeeAbsencesBase?.metaData?.pagination || 1;
-			},
-			error: () => this.absences$$.next([]),
-		});
+		this.absenceApiService
+			.absences$(ABSENCE_TYPE_ARRAY[1])
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: (employeeAbsencesBase) => {
+					if (this.paginationData && this.paginationData.pageNo < employeeAbsencesBase?.metaData?.pagination.pageNo) {
+						this.absences$$.next([...this.absences$$.value, ...employeeAbsencesBase.data]);
+					} else {
+						this.absences$$.next(employeeAbsencesBase.data);
+					}
+					this.paginationData = employeeAbsencesBase?.metaData?.pagination || 1;
+				},
+				error: () => this.absences$$.next([]),
+			});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
 			next: (searchText) => {

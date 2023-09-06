@@ -94,8 +94,8 @@
 				<dfm-table-row-cell [fullContent]="item.roomName"
 					><span class="font-weight-normal">{{ item.roomName }}</span></dfm-table-row-cell
 				>
-				<dfm-table-row-cell [fullContent]="item.startDate">{{ item.startDate | dfmUtcToLocal | dfmDefaultDate }}</dfm-table-row-cell>
-				<dfm-table-row-cell [fullContent]="item.endDate">{{ item.endDate | dfmUtcToLocal | dfmDefaultDate }}</dfm-table-row-cell>
+				<dfm-table-row-cell [fullContent]="item.startDate">{{ item.startDate | dfmUtcToLocal: false : true | dfmDefaultDate }}</dfm-table-row-cell>
+				<dfm-table-row-cell [fullContent]="item.endDate">{{ item.endDate | dfmUtcToLocal : false : true | dfmDefaultDate }}</dfm-table-row-cell>
 				<dfm-table-row-cell [fullContent]="item.absenceName"
 					><span class="font-weight-medium">{{ item.absenceName }}</span></dfm-table-row-cell
 				>
