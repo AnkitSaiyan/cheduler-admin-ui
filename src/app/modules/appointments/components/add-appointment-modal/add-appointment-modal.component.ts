@@ -180,7 +180,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				.subscribe({
 					next: (appointment) => this.updateForm(appointment as Appointment),
 				});
-			this.getDocument(this.modalData.appointment.id)
+			if (this.modalData.appointment?.id && this.modalData.appointment.documentCount) this.getDocument(this.modalData.appointment.id);
 		}
 
 		combineLatest([this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length))])
