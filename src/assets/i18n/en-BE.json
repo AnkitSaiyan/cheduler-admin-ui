@@ -487,8 +487,10 @@
 	"Uploaded": "Uploaded",
 	"RE_UPLOAD_REFERRAL_NOTE": "Re-upload referral note",
 	"DocumentSize": "Document size",
-	"APPOINTMENT_AFFECTS_ABSENCE": "Are you sure you want to add this absence? \n Note: Please note that adding this absence will impact your upcoming appointments."
+	"APPOINTMENT_AFFECTS_ABSENCE": "Are you sure you want to add this absence? \n Note: Please note that adding this absence will impact your upcoming appointments.",
+	"LabHoliday": " The Lab is closed for today"
 }
+
 
 
 

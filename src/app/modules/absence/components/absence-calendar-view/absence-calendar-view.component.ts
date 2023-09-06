@@ -185,7 +185,9 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			map(this.dataModificationForDay.bind(this)),
 			tap((dayViewAbsenceSlot) => {
 				if (!this.headerList.length) {
-					this.headerList = Object.keys(dayViewAbsenceSlot).map((name) => ({ name, value: name }));
+					this.headerList = Object.keys(dayViewAbsenceSlot)
+						.filter((name) => name !== 'undefined')
+						.map((name) => ({ name, value: name }));
 				}
 			}),
 		);
@@ -613,6 +615,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
+
 
 
 

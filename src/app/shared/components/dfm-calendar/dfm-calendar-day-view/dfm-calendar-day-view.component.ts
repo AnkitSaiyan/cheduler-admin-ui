@@ -106,6 +106,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private mouseUpEve: any;
 	public hideAppointmentData = {};
 	public hideAbsenceData = {};
+	public isHoliday$$ = new BehaviorSubject<Boolean>(false);
 	constructor(
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,
@@ -142,11 +143,11 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
 			this.dataGroupedByDateAndRoom = currentValue;
 		}
-    if (this.timeSlot?.timings?.length) {
+		if (this.timeSlot?.timings?.length) {
 			this.setHideAbsence(this.absenceData);
 		}
-    this.getGrayOutArea(this.timeSlot);
-    const date: string = this.datePipe.transform(this.selectedDate, 'd-M-yyyy')!;
+		this.getGrayOutArea(this.timeSlot);
+		const date: string = this.datePipe.transform(this.selectedDate, 'd-M-yyyy')!;
 		this.hideAppointmentData = {};
 		if (this.dataGroupedByDateAndRoom[date]) {
 			Object.values(this.dataGroupedByDateAndRoom[date]).forEach((data) => {
@@ -155,7 +156,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				});
 			});
 		}
-    this.cdr.detectChanges();
+		this.cdr.detectChanges();
+		console.log(this.headerList, 'header');
 	}
 
 	public ngOnInit(): void {
@@ -200,11 +202,15 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		super.ngOnDestroy();
 	}
 
-  private setHideAbsence(absence : { [key: string]: any[] }){
-    this.hideAbsenceData = {};
+	private setHideAbsence(absence: { [key: string]: any[] }) {
+		this.hideAbsenceData = {};
+		this.isHoliday$$.next(false);
 		if (Object.keys(absence)?.length) {
 			Object.entries(absence).forEach(([key, data]) => {
 				data.forEach((absence) => {
+					if (absence?.isHoliday) {
+						this.isHoliday$$.next(true);
+					}
 					if (
 						DateTimeUtils.TimeToNumber(absence.end) <
 							DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot?.timings?.[0])) ||
@@ -220,7 +226,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				});
 			});
 		}
-  }
+	}
 
 	public getHeight(groupedData: any[]): number {
 		let endDate: Date = groupedData[0].endedAt;
@@ -734,7 +740,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		formattedDate.setHours(+splitDate[0]);
 		formattedDate.setMinutes(+splitDate[1]);
 		formattedDate.setSeconds(0);
-    formattedDate.setMilliseconds(0);
+		formattedDate.setMilliseconds(0);
 		return formattedDate;
 	}
 
