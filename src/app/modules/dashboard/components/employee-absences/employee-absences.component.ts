@@ -156,7 +156,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 
 	public navigateToViewStaff(id: number): void{
 		if (id) {
-			this.router.navigate([`/absence/staff/${id}/view`], { queryParams: { page: 'dashboard'} }
+			this.router.navigate([`/absence/staff/${id}/view`]
 				// , { relativeTo: this.route, queryParamsHandling: 'preserve' }
 			);
 		}
