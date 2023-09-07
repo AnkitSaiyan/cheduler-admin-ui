@@ -32,13 +32,13 @@
               </div>
             </h3>
             <div class="calender-month-view-day-exam-event-container" *ngIf="hideAbsenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]?.length" #parentAbsenceElement >
-              <div *ngFor="let data of hideAbsenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]"  [ngbPopover]="mainAbsencePopover" #popOver="ngbPopover" triggers="hover" [autoClose]="'outside'" container="body">
-                <div class="calender-month-view-day-exam-event-details d-flex" >
+              <div *ngFor="let data of hideAbsenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]"  [ngbPopover]="data.isHoliday ? null: mainAbsencePopover" #popOver="ngbPopover" triggers="hover" [autoClose]="'outside'" container="body">
+                <div class="calender-month-view-day-exam-event-details d-flex" [ngClass]="{'holiday': data.isHoliday}">
                   <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10 ">
                     <span  class="text-truncate">
-                      {{ data?.start}}
-                    -
-                    {{ data?.end}} <b>{{data?.name | titlecase }}</b>
+                      <span >{{ data?.start }}
+                        -
+                        {{ data?.end}} </span> <b>{{data?.name | titlecase }}</b>
                     </span>
                   </span>
                 </div>
@@ -74,13 +74,13 @@
                 <mat-menu #absenceEventDetail="matMenu">
                   <div class="calender-month-view-day-exam-details-expanded">
                     <div class="dfm-card-container" style="padding: 0 8px;">
-                      <div *ngFor="let data of hideAbsenceData?.[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]"  [ngbPopover]="absencePopover" #popOver="ngbPopover" triggers="hover" [autoClose]="'outside'" container="body">
-                        <div class="calender-month-view-day-exam-event-details d-flex" >
+                      <div *ngFor="let data of hideAbsenceData?.[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]"  [ngbPopover]="data.isHoliday ? null:absencePopover" #popOver="ngbPopover" triggers="hover" [autoClose]="'outside'" container="body">
+                        <div class="calender-month-view-day-exam-event-details d-flex" [ngClass]="{'holiday': data.isHoliday}">
                           <span class="calender-month-view-day-exam-event-title text-truncate d-flex flex-column font-10" >
                             <span class="text-truncate">
-                              {{ data?.start}}
-                              -
-                              {{ data?.end}} <b>{{data?.name | titlecase }}</b>
+                              <span >{{ data?.start }}
+                                -
+                                {{ data?.end}} </span> <b>{{data?.name | titlecase }}</b>
                             </span>
                           </span>
                         </div>
@@ -275,7 +275,8 @@
                     <div
                       class="calendar-week-view-event-details-container"
                       *ngFor="let data of groupedData"
-                      [ngClass]="{ 'justify-content-center p-0': getAbsenceHeight([data]) <= 40 }"
+                      [ngClass]="{ 'justify-content-center p-0': getAbsenceHeight([data]) <= 40,'holiday': data.isHoliday }"
+
                       [ngStyle]="{
                         'margin-top.px': getMargin(groupedData?.[0].startedAt, data.startedAt) * 4,
                         'height.px': getMargin(data.startedAt, data.endedAt) * 4
@@ -284,7 +285,7 @@
                       container="body"
                       triggers="click"
                       container="body"
-                      [ngbPopover]="absenceDetails"
+                      [ngbPopover]="data.isHoliday ? null:absenceDetails"
                       [autoClose]="'outside'"
                     >
                       <ng-template #absenceDetails>

@@ -106,15 +106,6 @@ td {
 							display: flex;
 							flex-direction: column;
 
-							//.calender-month-view-day-exam-details-expanded-patient-details {
-							//  display: flex;
-							//  flex-direction: column;
-							//  padding: 8px !important;
-							//  //&:hover {
-							//  //  background: var(--dfm-main-100);
-							//  //}
-							//}
-
 							.calender-month-view-day-exam-details-expanded-patient-details-divider {
 								border-bottom: 1px solid var(--dfm-main-200);
 								margin: 0 8px;
@@ -178,6 +169,10 @@ td {
 	border-bottom-left-radius: 4px;
 	background: var(--dfm-blue-light);
 
+  &.holiday {
+      border-left: 2px solid var(--dfm-yellow);
+      background: var(--dfm-yellow-light);
+    }
 	&.more-btn {
 		position: absolute;
 		bottom: 0;

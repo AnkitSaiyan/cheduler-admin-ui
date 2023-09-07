@@ -104,7 +104,6 @@ export class RoomsApiService extends DestroyableComponent {
 	private fetchAllRooms$(): Observable<Room[]> {
 		this.loaderSvc.activate();
 		this.loaderSvc.spinnerActivate();
-		this.cancelAPICalled.emit();
 
 		return this.http.get<BaseResponse<Room[]>>(`${environment.schedulerApiUrl}/common/getrooms`).pipe(
 			map((response) =>
@@ -116,7 +115,6 @@ export class RoomsApiService extends DestroyableComponent {
 				this.loaderSvc.deactivate();
 				this.loaderSvc.spinnerDeactivate();
 			}),
-			takeUntil(this.cancelAPICalled),
 		);
 	}
 

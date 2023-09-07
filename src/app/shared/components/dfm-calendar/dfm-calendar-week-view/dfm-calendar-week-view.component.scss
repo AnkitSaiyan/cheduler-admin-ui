@@ -333,6 +333,11 @@ h3 {
 		cursor: pointer;
 		overflow: hidden;
 
+    &.holiday {
+        border-left: 2px solid var(--dfm-yellow);
+        background: var(--dfm-yellow-light);
+        cursor: default;
+      }
 		&:hover {
 			z-index: 2;
 			box-shadow: 0 0.125rem 1.25rem rgb(30 30 28 / 10%);
@@ -498,6 +503,11 @@ h3 {
   background: var(--dfm-blue-light);
   cursor: pointer;
 
+  &.holiday {
+      border-left: 2px solid var(--dfm-yellow);
+      background: var(--dfm-yellow-light);
+      cursor: default;
+    }
   &.more-btn {
     position: absolute;
     bottom: 0;

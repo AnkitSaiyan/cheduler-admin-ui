@@ -2,7 +2,21 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { BehaviorSubject, Observable, combineLatest, distinctUntilChanged, filter, map, skip, switchMap, take, takeUntil, tap } from 'rxjs';
+import {
+	BehaviorSubject,
+	Observable,
+	catchError,
+	combineLatest,
+	distinctUntilChanged,
+	filter,
+	map,
+	of,
+	skip,
+	switchMap,
+	take,
+	takeUntil,
+	tap,
+} from 'rxjs';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
@@ -157,8 +171,12 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			distinctUntilChanged(this.distinctUntilChanged),
 			map(this.getFromAndToDate.bind(this)),
 			switchMap(([absenceType, { fromDate, toDate }]) => {
-				return this.absenceApiSvc.absencesForCalendar$(absenceType, fromDate, toDate);
+				return combineLatest([
+					this.absenceApiSvc.absencesForCalendar$(absenceType, fromDate, toDate),
+					this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate),
+				]);
 			}),
+			map(([absence, holiday]) => [...absence.data, ...holiday.data]),
 			map(this.dataModification.bind(this)),
 			takeUntil(this.destroy$$),
 		);
@@ -167,7 +185,9 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			map(this.dataModificationForDay.bind(this)),
 			tap((dayViewAbsenceSlot) => {
 				if (!this.headerList.length) {
-					this.headerList = Object.keys(dayViewAbsenceSlot).map((name) => ({ name, value: name }));
+					this.headerList = Object.keys(dayViewAbsenceSlot)
+						.filter((name) => name !== 'undefined')
+						.map((name) => ({ name, value: name }));
 				}
 			}),
 		);
@@ -260,7 +280,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		}
 	}
 
-	private dataModification({ data: absence }) {
+	private dataModification(absence) {
 		const absenceSlot = {};
 		absence
 			?.map((value) => ({
@@ -269,10 +289,11 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 				endedAt: value.endedAt,
 				slotStartTime: this.utcToLocalPipe.transform(this.datePipe.transform(value.startedAt, 'HH:mm:ss'), true),
 				slotEndTime: this.utcToLocalPipe.transform(this.datePipe.transform(value.endedAt, 'HH:mm:ss'), true),
+				isHoliday: value.isHoliday,
 			}))
 			?.forEach((absence: any) => {
 				let { repeatFrequency } = absence;
-				const { absenceId, name, info, startedAt, endedAt, roomName, userName } = absence;
+				const { absenceId, name, info, startedAt, endedAt, roomName, userName, isHoliday } = absence;
 				const startDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
 				let firstDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
 				const lastDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.endedAt), true)).toDateString());
@@ -293,6 +314,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 								endedAt,
 								roomName,
 								userName,
+								isHoliday,
 							};
 							absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 							firstDate.setDate(firstDate.getDate() + repeatFrequency);
@@ -318,6 +340,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 										endedAt,
 										roomName,
 										userName,
+										isHoliday,
 									};
 									absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 								}
@@ -344,6 +367,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 											endedAt,
 											roomName,
 											userName,
+											isHoliday,
 										};
 										absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 									}
@@ -591,6 +615,11 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
+
+
+
+
 
 
 
