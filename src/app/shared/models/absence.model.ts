@@ -26,7 +26,7 @@ export interface Absence {
 	name: string;
 	isHoliday: boolean;
 	startedAt: string | Date;
-	endedAt: string | Date;
+	endedAt: string | Date | null;
 	priority: PriorityType;
 	info: string;
 	status: Status;

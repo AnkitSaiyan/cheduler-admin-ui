@@ -13,7 +13,7 @@ import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NameValue } from '../../../../shared/components/search-modal.component';
-import { Absence, AddAbsenceRequestData, PriorityType, RepeatType } from '../../../../shared/models/absence.model';
+import { Absence, AddAbsenceRequestData, EndDateType, PriorityType, RepeatType } from '../../../../shared/models/absence.model';
 import { Translate } from '../../../../shared/models/translate.model';
 import { MonthToNamePipe } from '../../../../shared/pipes/month-to-name.pipe';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
@@ -96,6 +96,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 	private addAppointmentImpactedAbsence: boolean = false;
 
+	public endDateTypeControl = new FormControl(EndDateType.Never, []);
+
+	public EndDateType = EndDateType;
+
 	constructor(
 		private modalSvc: ModalService,
 		private fb: FormBuilder,
@@ -111,7 +115,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		private priorityApiSvc: PrioritySlotApiService,
-		public activeModal: NgbActiveModal
+		public activeModal: NgbActiveModal,
 	) {
 		super();
 
@@ -230,29 +234,56 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	}
 
 	public saveAbsence() {
+		const { controls } = this.absenceForm;
 		let valid = true;
 		if (!this.formValues.roomList.length && !this.formValues.userList.length) {
 			valid = false;
 		}
 
-		if (this.formValues.isRepeat) {
-			if (this.absenceForm.invalid) {
-				this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-				Object.keys(this.absenceForm.controls).map((key) => this.absenceForm.get(key)?.markAsTouched());
-				return;
-			}
-		} else {
-			const { controls } = this.absenceForm;
-			const invalid = ['name', 'startedAt', 'startTime', 'info'].some((key) => {
-				controls[key].markAsTouched();
-				return controls[key].invalid;
-			});
-			this.absenceForm.markAllAsTouched();
+		const invalid = ['name', 'startedAt', 'startTime', 'info'].some((key) => {
+			controls[key].markAsTouched();
+			return controls[key].invalid;
+		});
+		this.absenceForm.markAllAsTouched();
 
-			if (invalid) {
+		if (invalid) {
+			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+			return;
+		}
+
+		if (this.formValues.isRepeat) {
+			if (this.endDateTypeControl.value === EndDateType.Until && controls['endedAt'].invalid) {
+				controls['endedAt'].markAsTouched();
 				this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 				return;
 			}
+			switch (this.absenceForm.get('repeatType')?.value) {
+				case RepeatType.Weekly:
+				case RepeatType.Monthly: {
+					const invalid = ['repeatFrequency', 'repeatDays'].some((key) => {
+						controls[key].markAsTouched();
+						return controls[key].invalid;
+					});
+					if (invalid) {
+						this.absenceForm.markAllAsTouched();
+						this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+						return;
+					}
+					break;
+				}
+				default: {
+					if (controls['repeatFrequency'].invalid) {
+						controls['repeatFrequency'].markAsTouched();
+						this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+						return;
+					}
+					break;
+				}
+			}
+		} else if (controls['endedAt'].invalid) {
+			controls['endedAt'].markAsTouched();
+			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+			return;
 		}
 
 		if (!this.formValues.isHoliday && !valid) {
@@ -282,10 +313,13 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			// endedAt: rest.isRepeat
 			//   ? `${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`
 			//   : `${startedAt.year}-${startedAt.month}-${startedAt.day} ${endTime}:00`,
-			endedAt: this.datePipe.transform(
-				DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), true),
-				'yyyy-MM-dd HH:mm:ss',
-			) as string,
+			endedAt:
+				this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat
+					? null
+					: (this.datePipe.transform(
+							DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), true),
+							'yyyy-MM-dd HH:mm:ss',
+					  ) as string),
 			userList: rest.isHoliday ? [] : userList,
 			roomList: rest.isHoliday ? [] : roomList,
 			repeatType: rest.isRepeat ? rest.repeatType : null,
@@ -325,7 +359,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 						this.closeModal(true);
 					},
 					error: (err) => {
-						if (err?.error?.message == "MSG_400_APMT_AFFECTS") this.openModal();
+						if (err?.error?.message == 'MSG_400_APMT_AFFECTS') this.openModal();
 						this.submitting$$.next(false);
 					},
 				});
@@ -341,7 +375,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 						// this.activeModal.close(true);
 					},
 					error: (err) => {
-						if (err?.error?.message == "MSG_400_APMT_AFFECTS") this.openModal();
+						if (err?.error?.message == 'MSG_400_APMT_AFFECTS') this.openModal();
 						this.submitting$$.next(false);
 					},
 				});
@@ -454,11 +488,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			endTime: [endTime, [Validators.required]],
 			isRepeat: [!!absenceDetails?.isRepeat, []],
 			isHoliday: [!!absenceDetails?.isHoliday, []],
-			repeatType: [null, []],
-			repeatDays: ['', []],
+			repeatType: [RepeatType.Daily, []],
+			repeatDays: ['', [Validators.required]],
 			repeatFrequency: [null, [Validators.min(1)]],
-			userList: [absenceDetails?.user?.length ? absenceDetails.user.map(({ id }) => id?.toString()) : [], []],
-			roomList: [absenceDetails?.rooms?.length ? absenceDetails?.rooms.map(({ id }) => id?.toString()) : [], []],
+			userList: [absenceDetails?.user?.length ? absenceDetails.user.map(({ id }) => id?.toString()) : [], [Validators.required]],
+			roomList: [absenceDetails?.rooms?.length ? absenceDetails?.rooms.map(({ id }) => id?.toString()) : [], [Validators.required]],
 			info: [absenceDetails?.info ?? '', []],
 			priority: [absenceDetails?.priority ?? null, []],
 		});
@@ -467,11 +501,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			this.absenceForm.patchValue({
 				startTime: startTime || '00:00',
 				endTime: endTime || '23:55',
-				repeatType: absenceDetails?.repeatType,
-				repeatFrequency:
-					absenceDetails?.isRepeat && absenceDetails?.repeatFrequency && absenceDetails.repeatType
-						? `${absenceDetails.repeatFrequency} ${Translate.RepeatType[this.repeatTypeToName[absenceDetails.repeatType]][this.selectedLang]}`
-						: null,
+				repeatType: absenceDetails?.repeatType ?? RepeatType.Daily,
+				repeatFrequency: absenceDetails?.repeatFrequency,
 				repeatDays: absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '',
 			});
 
@@ -621,21 +652,19 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	}
 
 	private openModal() {
-		let modal = this.modalSvc
-			.open(ConfirmActionModalComponent, {
-				data: {
-					bodyText: 'APPOINTMENT_AFFECTS_ABSENCE',
-					closeActiveModal: true,
-				},
-			});
-			modal.closed.pipe(takeUntil(this.destroy$$))
-			.subscribe({
-				next: (res) => {
-					if (res) {
-						this.addAppointmentImpactedAbsence = true;
-						this.saveAbsence();
-					}
-				},
-			});
+		let modal = this.modalSvc.open(ConfirmActionModalComponent, {
+			data: {
+				bodyText: 'APPOINTMENT_AFFECTS_ABSENCE',
+				closeActiveModal: true,
+			},
+		});
+		modal.closed.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (res) => {
+				if (res) {
+					this.addAppointmentImpactedAbsence = true;
+					this.saveAbsence();
+				}
+			},
+		});
 	}
 }
