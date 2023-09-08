@@ -307,7 +307,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		let addAbsenceReqData: AddAbsenceRequestData = {
 			...rest,
 			startedAt: this.datePipe.transform(
-				DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`), true),
+				DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`), !rest.isHoliday),
 				'yyyy-MM-dd HH:mm:ss',
 			) as string,
 			// endedAt: rest.isRepeat
@@ -317,7 +317,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat
 					? null
 					: (this.datePipe.transform(
-							DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), true),
+							DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), !rest.isHoliday),
 							'yyyy-MM-dd HH:mm:ss',
 					  ) as string),
 			userList: rest.isHoliday ? [] : userList,
