@@ -1,3 +1,8 @@
+import { Params } from '@angular/router';
+import { DateTimeUtils } from '../utils/date-time.utils';
+import { Absence, RepeatType } from './absence.model';
+import { DatePipe } from '@angular/common';
+
 export enum Weekday {
 	SUN,
 	MON,
@@ -200,4 +205,234 @@ export interface Interval {
 export interface CalenderTimeSlot {
 	timings: string[];
 	intervals: Interval[];
+}
+
+export function calendarDistinctUntilChanged(preQueryParam: Params, currQueryParam: Params): boolean {
+	if (preQueryParam['v'] !== currQueryParam['v']) return false;
+
+	const [currYear, currMonth, currDay] = currQueryParam['d'].split('-');
+
+	const [preYear, preMonth, preDay] = preQueryParam['d'].split('-');
+
+	const currDate = new Date(currYear, currMonth - 1, currDay, 0, 0, 0, 0);
+
+	const preDate = new Date(preYear, preMonth - 1, preDay, 0, 0, 0, 0);
+
+	switch (true) {
+		case currQueryParam['v'] === 'm':
+			if (currMonth !== preMonth || currYear !== preYear) {
+				return false;
+			}
+			return true;
+		case currQueryParam['v'] === 'w':
+			if (currMonth !== preMonth || currYear !== preYear) {
+				return false;
+			}
+			const firstDayOfPreWeek = new Date().setDate(preDate.getDate() - (preDate.getDay() ? preDate.getDay() : 7));
+
+			const firstDayOfCurrWeek = new Date().setDate(currDate.getDate() - (currDate.getDay() ? currDate.getDay() : 7));
+
+			if (firstDayOfPreWeek !== firstDayOfCurrWeek) {
+				return false;
+			}
+			return true;
+		default:
+			return false;
+	}
+}
+
+export function getFromAndToDate(queryParam: Params) {
+	const [year, month, day] = queryParam['d'].split('-');
+
+	const currDate = new Date(+year, +month - 1, +day, 0, 0, 0, 0);
+
+	let fromDate: string;
+
+	let toDate: string;
+	switch (true) {
+		case queryParam['v'] === 'm':
+			fromDate = DateTimeUtils.DateDistributedToString(new Date(+year, +month - 1, 1), '-');
+
+			toDate = DateTimeUtils.DateDistributedToString(new Date(+year, +month, 0), '-');
+
+			return { fromDate, toDate };
+		case queryParam['v'] === 'w':
+			currDate.setDate(currDate.getDate() - (currDate.getDay() ? currDate.getDay() - 1 : 6));
+
+			fromDate = DateTimeUtils.DateDistributedToString(currDate, '-');
+
+			currDate.setDate(currDate.getDate() + 6);
+
+			toDate = DateTimeUtils.DateDistributedToString(currDate, '-');
+
+			return { fromDate, toDate };
+		default:
+			return { fromDate: queryParam['d'], toDate: queryParam['d'] };
+	}
+}
+
+export function dataModification(absence, utcToLocalPipe, datePipe: DatePipe) {
+	const absenceSlot = {};
+	absence
+		?.map((value: any) => ({
+			...value,
+			startedAt: value.startedAt,
+			endedAt: value.endedAt,
+			slotStartTime: utcToLocalPipe.transform(datePipe.transform(value.startedAt, 'HH:mm:ss'), true),
+			slotEndTime: utcToLocalPipe.transform(datePipe.transform(value.endedAt, 'HH:mm:ss'), true),
+			isHoliday: value.isHoliday,
+		}))
+		?.forEach((absence: any) => {
+			let { repeatFrequency } = absence;
+			const { absenceId, name, info, startedAt, endedAt, roomName, userName, isHoliday } = absence;
+			const startDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
+			let firstDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
+			const lastDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.endedAt), true)).toDateString());
+			switch (true) {
+				case !absence.isRepeat:
+				case absence.repeatType === RepeatType.Daily: {
+					repeatFrequency = absence.isRepeat ? repeatFrequency : 1;
+					while (true) {
+						if (firstDate.getTime() > lastDate.getTime()) break;
+						const dateString = datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+						const customPrioritySlot = {
+							start: absence.slotStartTime.slice(0, 5),
+							end: absence.slotEndTime?.slice(0, 5),
+							id: absenceId,
+							name,
+							info,
+							startedAt,
+							endedAt,
+							roomName,
+							userName,
+							isHoliday,
+						};
+						absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
+						firstDate.setDate(firstDate.getDate() + repeatFrequency);
+					}
+					break;
+				}
+				case absence.repeatType === RepeatType.Weekly: {
+					const closestSunday = new Date(startDate.getTime() - startDate.getDay() * 24 * 60 * 60 * 1000);
+					firstDate = new Date(closestSunday);
+					while (true) {
+						absence.repeatDays.split(',').forEach((day) => {
+							firstDate.setTime(closestSunday.getTime());
+							firstDate.setDate(closestSunday.getDate() + +day);
+							if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
+								const dateString = datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+								const customPrioritySlot = {
+									start: absence.slotStartTime.slice(0, 5),
+									end: absence.slotEndTime?.slice(0, 5),
+									id: absenceId,
+									name,
+									info,
+									startedAt,
+									endedAt,
+									roomName,
+									userName,
+									isHoliday,
+								};
+								absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
+							}
+						});
+						if (closestSunday.getTime() >= lastDate.getTime()) break;
+						closestSunday.setDate(closestSunday.getDate() + repeatFrequency * 7);
+					}
+					break;
+				}
+				case absence.repeatType === RepeatType.Monthly: {
+					while (true) {
+						absence.repeatDays.split(',').forEach((day) => {
+							if (getDateOfMonth(firstDate.getFullYear(), firstDate.getMonth() + 1, 0) >= +day) {
+								firstDate.setDate(+day);
+								if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
+									const dateString = datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
+									const customPrioritySlot = {
+										start: absence.slotStartTime.slice(0, 5),
+										end: absence.slotEndTime?.slice(0, 5),
+										id: absenceId,
+										name,
+										info,
+										startedAt,
+										endedAt,
+										roomName,
+										userName,
+										isHoliday,
+									};
+									absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
+								}
+							}
+						});
+						if (firstDate.getTime() >= lastDate.getTime()) break;
+						firstDate.setMonth(firstDate.getMonth() + repeatFrequency);
+					}
+					break;
+				}
+				default:
+					break;
+			}
+		});
+	return absenceSlot;
+}
+
+export function dataModificationForWeek(absenceSlot: { [key: string]: Absence[] }) {
+	let startDate: string;
+	let endDate: string;
+	let sameGroup: boolean;
+	let absenceGroupedByDate = {};
+
+	Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
+		let groupedAbsence: any[] = [];
+		absence
+			.sort((s1, s2) => (DateTimeUtils.TimeToNumber(s1.start) > DateTimeUtils.TimeToNumber(s2.start) ? 1 : -1))
+			.forEach((item: any, index) => {
+				const dateString = key;
+				if (!absenceGroupedByDate[dateString]) {
+					absenceGroupedByDate[dateString] = [];
+					startDate = item.start;
+					endDate = item.end;
+					sameGroup = false;
+				} else {
+					const currSD = item.start;
+					const currED = item.end;
+
+					const endTime = new Date();
+					endTime.setHours(+endDate.split(':')[0]);
+					endTime.setMinutes(+endDate.split(':')[1]);
+
+					const currSDTime = new Date();
+					currSDTime.setHours(+currSD.split(':')[0]);
+					currSDTime.setMinutes(+currSD.split(':')[1]);
+
+					if (
+						DateTimeUtils.TimeToNumber(currSD) >= DateTimeUtils.TimeToNumber(startDate) &&
+						DateTimeUtils.TimeToNumber(currSD) <= DateTimeUtils.TimeToNumber(endDate)
+					) {
+						sameGroup = true;
+						if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
+							endDate = currED;
+						}
+					} else if (DateTimeUtils.TimeToNumber(currSD) > DateTimeUtils.TimeToNumber(endDate) && getDurationMinutes(endTime, currSDTime) <= 1) {
+						sameGroup = true;
+						if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
+							endDate = currED;
+						}
+					} else {
+						startDate = currSD;
+						endDate = currED;
+						sameGroup = false;
+					}
+				}
+
+				if (!sameGroup) {
+					if (index !== 0) {
+						groupedAbsence = [];
+					}
+					absenceGroupedByDate[dateString].push(groupedAbsence);
+				}
+				groupedAbsence.push(item);
+			});
+	});
+	return absenceGroupedByDate;
 }

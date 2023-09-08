@@ -171,12 +171,9 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			distinctUntilChanged(this.distinctUntilChanged),
 			map(this.getFromAndToDate.bind(this)),
 			switchMap(([absenceType, { fromDate, toDate }]) => {
-				return combineLatest([
-					this.absenceApiSvc.absencesForCalendar$(absenceType, fromDate, toDate),
-					this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate),
-				]);
+				return this.absenceApiSvc.absencesForCalendar$(absenceType, fromDate, toDate);
 			}),
-			map(([absence, holiday]) => [...absence.data, ...holiday.data]),
+			map((data) => data.data),
 			map(this.dataModification.bind(this)),
 			takeUntil(this.destroy$$),
 		);
@@ -615,6 +612,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
+
 
 
 

@@ -164,10 +164,9 @@ export class AbsenceApiService {
 	private fetchAllAbsenceHolidayForCalendar(fromDate: string, toDate: string): Observable<BaseResponse<Absence[]>> {
 		this.loaderSvc.activate();
 		const params = { toDate, fromDate };
-		return this.http.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/common/getholidaylist`, { params }).pipe(
-			tap(() => this.loaderSvc.deactivate()),
-			takeUntil(this.cancelAPICalled),
-		);
+		return this.http
+			.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/common/getholidaylist`, { params })
+			.pipe(tap(() => this.loaderSvc.deactivate()));
 	}
 
 	private fetchAbsenceById(absenceID: number): Observable<Absence> {
