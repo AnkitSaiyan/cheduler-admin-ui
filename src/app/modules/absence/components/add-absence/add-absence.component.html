@@ -218,47 +218,49 @@
         </dfm-repeat-form>
       </ng-container>
 
-      <div class="d-flex flex-wrap flex-1 gap" [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" *ngIf="!formValues.isHoliday">
-        <ng-container *ngIf="modalData.absenceType === 'rooms'">
-          <div class="flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
-            <dfm-input-dropdown
-              #roomDropdown
-              [items]="roomList"
-              [multiple]="true"
-              [typeToSearch]="true"
-              (searchInput)="handleDropdownSearch($event, 'room')"
-              [placeholder]="((roomDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRooms') | async) ?? ''"
-              size="md"
-              [required]="true"
-              formControlName="roomList"
-              label="{{ 'Rooms' | translate }}"
-            >
-            </dfm-input-dropdown>
-            <span class="validation-error" *ngIf="controls['roomList'].hasError('required') && controls['roomList'].touched">
-              {{ 'RequiredField' | translate }}</span
-            >
-          </div>
-        </ng-container>
+      <div class="d-flex flex-wrap flex-1 gap" [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" >
+        <ng-container *ngIf="!formValues.isHoliday">
+          <ng-container *ngIf="modalData.absenceType === 'rooms'">
+            <div class="flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
+              <dfm-input-dropdown
+                #roomDropdown
+                [items]="roomList"
+                [multiple]="true"
+                [typeToSearch]="true"
+                (searchInput)="handleDropdownSearch($event, 'room')"
+                [placeholder]="((roomDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRooms') | async) ?? ''"
+                size="md"
+                [required]="true"
+                formControlName="roomList"
+                label="{{ 'Rooms' | translate }}"
+              >
+              </dfm-input-dropdown>
+              <span class="validation-error" *ngIf="controls['roomList'].hasError('required') && controls['roomList'].touched">
+                {{ 'RequiredField' | translate }}</span
+              >
+            </div>
+          </ng-container>
 
-        <ng-container  *ngIf="modalData.absenceType === 'staff'">
-          <div class="flex-1 ad-ab-staffs" *ngIf="filteredStaffs$$ | async as staffList">
-            <dfm-input-dropdown
-              #staffDropDown
-              [items]="staffList"
-              [multiple]="true"
-              [typeToSearch]="true"
-              (searchInput)="handleDropdownSearch($event, 'staff')"
-              size="md"
-              [required]="true"
-              formControlName="userList"
-              label="{{ 'Staff' | translate }}"
-              [placeholder]="((staffDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
-            >
-            </dfm-input-dropdown>
-            <span class="validation-error" *ngIf="controls['userList'].hasError('required') && controls['userList'].touched">
-              {{ 'RequiredField' | translate }}</span
-            >
-          </div>
+          <ng-container  *ngIf="modalData.absenceType === 'staff'">
+            <div class="flex-1 ad-ab-staffs" *ngIf="filteredStaffs$$ | async as staffList">
+              <dfm-input-dropdown
+                #staffDropDown
+                [items]="staffList"
+                [multiple]="true"
+                [typeToSearch]="true"
+                (searchInput)="handleDropdownSearch($event, 'staff')"
+                size="md"
+                [required]="true"
+                formControlName="userList"
+                label="{{ 'Staff' | translate }}"
+                [placeholder]="((staffDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
+              >
+              </dfm-input-dropdown>
+              <span class="validation-error" *ngIf="controls['userList'].hasError('required') && controls['userList'].touched">
+                {{ 'RequiredField' | translate }}</span
+              >
+            </div>
+          </ng-container>
         </ng-container>
 
         <div class="d-flex flex-column dfm-gap-16 flex-1">
