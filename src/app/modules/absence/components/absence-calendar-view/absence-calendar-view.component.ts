@@ -7,11 +7,13 @@ import {
 	Observable,
 	catchError,
 	combineLatest,
+	debounceTime,
 	distinctUntilChanged,
 	filter,
 	map,
 	of,
 	skip,
+	startWith,
 	switchMap,
 	take,
 	takeUntil,
@@ -49,6 +51,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	public selectedDate$$ = new BehaviorSubject<Date>(new Date());
 
+	public today$$ = new BehaviorSubject(new Date());
+
 	public changeMonth$$ = new BehaviorSubject<number>(0);
 
 	public changeWeek$$ = new BehaviorSubject<number>(0);
@@ -71,7 +75,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	private isDayView$$ = new BehaviorSubject<Boolean>(false);
 
-	public todayEvent$!: Observable<any>;
+	public todayEvent$$ = new BehaviorSubject<any[]>([]);
 
 	@ViewChild('sidePanel') sidePanel!: ElementRef;
 
@@ -144,20 +148,6 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			this.calculateMinMaxLimit([...practiceHours]);
 		});
 
-		this.todayEvent$ = this.route.data.pipe(
-			filter((data) => !!data[ABSENCE_TYPE]),
-			map((data) => data[ABSENCE_TYPE]),
-			switchMap((absenceType) =>
-				this.absenceApiSvc.absencesForCalendar$(
-					absenceType,
-					this.datePipe.transform(new Date(), 'yyyy-M-d')!,
-					this.datePipe.transform(new Date(), 'yyyy-M-d')!,
-				),
-			),
-			map(this.dataModification.bind(this)),
-			map((absenceSlot) => absenceSlot[this.datePipe.transform(new Date(), 'd-M-yyyy')!] ?? []),
-		);
-
 		this.absenceData$ = this.weekdayToPractice$$.pipe(
 			filter(Boolean),
 			switchMap(() => combineLatest([this.route.data, this.route.queryParams])),
@@ -170,13 +160,11 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			}),
 			distinctUntilChanged(this.distinctUntilChanged),
 			map(this.getFromAndToDate.bind(this)),
+			debounceTime(100),
 			switchMap(([absenceType, { fromDate, toDate }]) => {
-				return combineLatest([
-					this.absenceApiSvc.absencesForCalendar$(absenceType, fromDate, toDate),
-					this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate),
-				]);
+				return this.absenceApiSvc.absencesForCalendar$(absenceType, fromDate, toDate);
 			}),
-			map(([absence, holiday]) => [...absence.data, ...holiday.data]),
+			map((data) => data.data),
 			map(this.dataModification.bind(this)),
 			takeUntil(this.destroy$$),
 		);
@@ -470,6 +458,27 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		});
 	}
 
+	public setEventForm(event: FormControl<Date>) {
+		event.valueChanges
+			.pipe(
+				startWith(new Date()),
+				switchMap((date) => combineLatest([of(date), this.route.data])),
+				filter(([_, routeData]) => !!routeData[ABSENCE_TYPE]),
+				map(([date, routeData]) => [date, routeData[ABSENCE_TYPE]]),
+				switchMap(([date, absenceType]) =>
+					this.absenceApiSvc.absencesForCalendar$(
+						absenceType,
+						this.datePipe.transform(new Date(date), 'yyyy-M-d')!,
+						this.datePipe.transform(new Date(date), 'yyyy-M-d')!,
+					),
+				),
+				map((data) => data.data),
+				map(this.dataModification.bind(this)),
+				map((absenceSlot) => absenceSlot[this.datePipe.transform(new Date(event.value ??  new Date()), 'd-M-yyyy')!] ?? []),
+			)
+			.subscribe((data) => this.todayEvent$$.next(data));
+	}
+
 	private updateQuery(queryStr?: string, date?: Date, replaceUrl: boolean = false) {
 		setTimeout(() => {
 			this.router.navigate([], {
@@ -615,6 +624,31 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import {
 	ChangeDetectorRef,
 	Component,
@@ -12,11 +13,23 @@ import {
 	SimpleChanges,
 	ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, filter, firstValueFrom, lastValueFrom, map, switchMap, take, takeUntil, tap } from 'rxjs';
-import { DatePipe } from '@angular/common';
+import { ActivatedRoute, Params } from '@angular/router';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
-import { NotificationType } from 'diflexmo-angular-design';
-import { NameValue } from '../../search-modal.component';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { BehaviorSubject, debounceTime, filter, firstValueFrom, map, switchMap, take, takeUntil } from 'rxjs';
+import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
+import { DraggableService } from 'src/app/core/services/draggable.service';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
+import { CalendarType, ENG_BE } from 'src/app/shared/utils/const';
+import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
+import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ShareDataService } from '../../../../core/services/share-data.service';
+import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
+import { AppointmentTimeChangeModalComponent } from '../../../../modules/appointments/components/appointment-time-change-modal/appointment-time-change-modal.component';
+import { ChangeRadiologistModalComponent } from '../../../../modules/appointments/components/change-radiologist-modal/change-radiologist-modal.component';
 import {
 	AddAppointmentRequestData,
 	Appointment,
@@ -24,27 +37,14 @@ import {
 	UpdateDurationRequestData,
 	UpdateRadiologistRequestData,
 } from '../../../models/appointment.model';
+import { CalenderTimeSlot, Interval, getDurationMinutes, getFromAndToDate } from '../../../models/calendar.model';
 import { Exam } from '../../../models/exam.model';
-import { CalenderTimeSlot, getDurationMinutes, Interval } from '../../../models/calendar.model';
-import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../confirm-action-modal.component';
-import { ChangeRadiologistModalComponent } from '../../../../modules/appointments/components/change-radiologist-modal/change-radiologist-modal.component';
-import { AppointmentTimeChangeModalComponent } from '../../../../modules/appointments/components/appointment-time-change-modal/appointment-time-change-modal.component';
-import { ShareDataService } from '../../../../core/services/share-data.service';
-import { getAddAppointmentRequestData } from '../../../utils/getAddAppointmentRequestData';
 import { ReadStatus } from '../../../models/status.model';
-import { AddAppointmentModalComponent } from '../../../../modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { Translate } from '../../../models/translate.model';
-import { CalendarType, ENG_BE } from 'src/app/shared/utils/const';
+import { getAddAppointmentRequestData } from '../../../utils/getAddAppointmentRequestData';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../confirm-action-modal.component';
 import { DestroyableComponent } from '../../destroyable.component';
-import { PermissionService } from 'src/app/core/services/permission.service';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
-import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { DraggableService } from 'src/app/core/services/draggable.service';
-import { ActivatedRoute } from '@angular/router';
+import { NameValue } from '../../search-modal.component';
 
 @Component({
 	selector: 'dfm-calendar-day-view',
@@ -120,6 +120,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		private draggableSvc: DraggableService,
 		private cdr: ChangeDetectorRef,
 		private route: ActivatedRoute,
+		private absenceApiSvc: AbsenceApiService,
 	) {
 		super();
 		this.route.queryParams
@@ -196,6 +197,21 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			.subscribe({
 				next: (lang) => (this.selectedLang = lang),
 			});
+
+		this.route.queryParams
+			.pipe(
+				filter(Boolean),
+				debounceTime(100),
+				filter((queryParams: Params) => !!queryParams['v'] && !!queryParams['d']),
+				map(getFromAndToDate),
+				switchMap(({ fromDate, toDate }) => {
+					return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
+				}),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((data) => {
+				this.isHoliday$$.next(Boolean(data.data?.length));
+			});
 	}
 
 	public override ngOnDestroy() {
@@ -204,13 +220,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 	private setHideAbsence(absence: { [key: string]: any[] }) {
 		this.hideAbsenceData = {};
-		this.isHoliday$$.next(false);
 		if (Object.keys(absence)?.length) {
 			Object.entries(absence).forEach(([key, data]) => {
 				data.forEach((absence) => {
-					if (absence?.isHoliday) {
-						this.isHoliday$$.next(true);
-					}
 					if (
 						DateTimeUtils.TimeToNumber(absence.end) <
 							DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot?.timings?.[0])) ||

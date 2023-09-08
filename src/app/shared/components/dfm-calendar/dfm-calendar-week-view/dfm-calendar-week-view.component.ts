@@ -15,9 +15,16 @@ import {
 	ViewChildren,
 	ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, Subject, debounceTime, filter, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, debounceTime, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs';
 import { ModalService } from '../../../../core/services/modal.service';
-import { getAllDaysOfWeek, getDurationMinutes } from '../../../models/calendar.model';
+import {
+	calendarDistinctUntilChanged,
+	dataModification,
+	dataModificationForWeek,
+	getAllDaysOfWeek,
+	getDurationMinutes,
+	getFromAndToDate,
+} from '../../../models/calendar.model';
 import { DateTimeUtils } from '../../../utils/date-time.utils';
 import { DestroyableComponent } from '../../destroyable.component';
 
@@ -25,6 +32,9 @@ import { DraggableService } from 'src/app/core/services/draggable.service';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { Appointment } from 'src/app/shared/models/appointment.model';
 import { CalendarType } from 'src/app/shared/utils/const';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
+import { ActivatedRoute, Params } from '@angular/router';
 // @Pipe({
 //   name: 'calendarEventHeight',
 //   standalone: true
@@ -145,7 +155,17 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	private changeDateDebounce$$ = new Subject<number>();
 
-	constructor(private datePipe: DatePipe, private cdr: ChangeDetectorRef, private modalSvc: ModalService, private draggableSvc: DraggableService) {
+	public holidayData$$ = new BehaviorSubject<any>({});
+
+	constructor(
+		private datePipe: DatePipe,
+		private cdr: ChangeDetectorRef,
+		private modalSvc: ModalService,
+		private draggableSvc: DraggableService,
+		private route: ActivatedRoute,
+		private absenceApiSvc: AbsenceApiService,
+		private utcToLocalPipe: UtcToLocalPipe,
+	) {
 		super();
 	}
 
@@ -185,6 +205,20 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 					}
 				},
 			});
+
+		this.route.queryParams
+			.pipe(
+				filter(Boolean),
+				filter((queryParams: Params) => !!queryParams['v'] && !!queryParams['d']),
+				distinctUntilChanged(calendarDistinctUntilChanged),
+				map(getFromAndToDate),
+				switchMap(({ fromDate, toDate }) => {
+					return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
+				}),
+				map((data) => dataModification(data.data, this.utcToLocalPipe, this.datePipe)),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((data) => this.holidayData$$.next(data));
 	}
 
 	public ngAfterViewInit() {

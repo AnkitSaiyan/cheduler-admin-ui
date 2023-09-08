@@ -11,8 +11,33 @@ import {
 	SimpleChanges,
 	ViewChild,
 } from '@angular/core';
-import { BehaviorSubject, Subject, debounceTime, filter, firstValueFrom, map, startWith, take, takeUntil, throttleTime } from 'rxjs';
-import { getDaysOfMonth, getDurationMinutes, getWeekdayWiseDays, Weekday } from '../../../models/calendar.model';
+import {
+	BehaviorSubject,
+	Observable,
+	Subject,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	firstValueFrom,
+	map,
+	of,
+	startWith,
+	switchMap,
+	take,
+	takeUntil,
+	tap,
+	throttleTime,
+} from 'rxjs';
+import {
+	calendarDistinctUntilChanged,
+	dataModification,
+	getDateOfMonth,
+	getDaysOfMonth,
+	getDurationMinutes,
+	getFromAndToDate,
+	getWeekdayWiseDays,
+	Weekday,
+} from '../../../models/calendar.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { AddAppointmentModalComponent } from 'src/app/modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from 'src/app/core/services/modal.service';
@@ -25,6 +50,12 @@ import { Translate } from 'src/app/shared/models/translate.model';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Absence, RepeatType } from 'src/app/shared/models/absence.model';
+import { ActivatedRoute, Params } from '@angular/router';
+import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { DatePipe } from '@angular/common';
+import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 
 @Component({
 	selector: 'dfm-calendar-month-view',
@@ -72,6 +103,8 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 
 	private selectedLang: string = ENG_BE;
 
+	public holidayData$$ = new BehaviorSubject<any>({});
+
 	constructor(
 		private modalSvc: ModalService,
 		private draggableSvc: DraggableService,
@@ -79,6 +112,10 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 		private appointmentApiSvc: AppointmentApiService,
 		private notificationSvc: NotificationDataService,
 		private shareDataSvc: ShareDataService,
+		private route: ActivatedRoute,
+		private absenceApiSvc: AbsenceApiService,
+		private utcToLocalPipe: UtcToLocalPipe,
+		private datePipe: DatePipe,
 	) {
 		super();
 	}
@@ -126,6 +163,20 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 			.subscribe((lang) => {
 				this.selectedLang = lang;
 			});
+
+		this.route.queryParams
+			.pipe(
+				filter(Boolean),
+				filter((queryParams: Params) => !!queryParams['v'] && !!queryParams['d']),
+				distinctUntilChanged(calendarDistinctUntilChanged),
+				map(getFromAndToDate),
+				switchMap(({ fromDate, toDate }) => {
+					return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
+				}),
+				map((data) => dataModification(data.data, this.utcToLocalPipe, this.datePipe)),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((data) => this.holidayData$$.next(data));
 	}
 
 	public override ngOnDestroy(): void {

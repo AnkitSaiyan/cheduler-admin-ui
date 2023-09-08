@@ -86,7 +86,7 @@ h3 {
             min-height: 18px;
             line-height: 16px;
             max-height: 72px;
-            width: calc(100% - 16px);
+            width: 100%;
             margin: 8px;
         }
 
@@ -135,7 +135,7 @@ h3 {
             min-height: 18px;
             line-height: 16px;
             max-height: 72px;
-            width: calc(100% - 16px);
+            width: 100%;
             margin: 8px;
         }
 
@@ -590,7 +590,7 @@ h3 {
     border-radius: unset;
     background: #f7f5f5;
     cursor: pointer;
-    width: calc(100% - 16px);
+    width: 100%;
 
     &:hover {
       font-weight: 600;

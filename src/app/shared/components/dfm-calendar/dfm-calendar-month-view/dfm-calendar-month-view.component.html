@@ -86,6 +86,17 @@
                         </span>
                       </div>
                     </ng-container>
+                    <ng-container *ngIf="(holidayData$$ | async) as holiday ">
+
+                      <ng-container *ngFor="let data of holiday[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" >
+                        <div class="calender-month-view-day-exam-event-details holiday"  >
+                          <span class="calender-month-view-day-exam-event-title text-truncate ">
+
+                            <b>{{(data?.name | titlecase)}}</b>
+                          </span>
+                        </div>
+                      </ng-container>
+                    </ng-container>
                     <ng-container *ngFor="let data of absenceData[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" >
                       <ng-template #absenceDetails>
                         <div class="calendar-week-view-event-details-expanded">
@@ -114,7 +125,7 @@
                           </div>
                         </div>
                       </ng-template>
-                      <div class="calender-month-view-day-exam-event-details" [ngClass]="{'holiday': data.isHoliday}" [ngbPopover]="data.isHoliday ? null :absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
+                      <div class="calender-month-view-day-exam-event-details" [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
                         <span class="calender-month-view-day-exam-event-title text-truncate ">
                           <span >{{ data?.start }}
                             -
@@ -124,6 +135,8 @@
                         </span>
                       </div>
                     </ng-container>
+
+
                   </div>
               </div>
             </ng-template>
@@ -199,6 +212,15 @@
                 </span>
               </div>
             </ng-container>
+            <ng-container *ngIf="(holidayData$$ | async) as holiday ">
+              <ng-container *ngFor="let data of holiday[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]">
+                <div class="calender-month-view-day-exam-event-details holiday" >
+                  <span class="calender-month-view-day-exam-event-title text-truncate ">
+                    <b>{{(data?.name | titlecase)}}</b>
+                  </span>
+                </div>
+              </ng-container>
+            </ng-container>
             <ng-container *ngFor="let data of absenceData[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]">
               <ng-template #absenceDetails>
                 <div class="calendar-week-view-event-details-expanded">
@@ -225,7 +247,7 @@
                 </div>
               </ng-template>
 
-              <div class="calender-month-view-day-exam-event-details" [ngClass]="{'holiday': data.isHoliday}" [ngbPopover]="data.isHoliday ? null: absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
+              <div class="calender-month-view-day-exam-event-details"  [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
                 <span class="calender-month-view-day-exam-event-title text-truncate ">
                   <span >{{ data?.start }}
                   -
@@ -235,6 +257,9 @@
                 </span>
               </div>
             </ng-container>
+
+
+
 
             <div class="calender-month-view-day-exam-event-details more-btn" [ngbPopover]="eventDetails" #popOver="ngbPopover" triggers="click" [autoClose]="'outside'" container="body" *ngIf="parentElement.scrollHeight > parentElement.clientHeight">
               <span class="calender-month-view-day-exam-event-title text-truncate ">View more</span>
