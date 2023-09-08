@@ -169,8 +169,8 @@ export class AbsenceApiService {
 		return this.http.get<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences/${absenceID}`).pipe(
 			map((response) => ({
 				...response.data,
-				startedAt: this.utcToLocalPipe.transform(response?.data?.startedAt, false, true),
-				endedAt: this.utcToLocalPipe.transform(response?.data?.endedAt, false, true),
+				startedAt: this.utcToLocalPipe.transform(response?.data?.startedAt, false, !response?.data.isHoliday),
+				endedAt: this.utcToLocalPipe.transform(response?.data?.endedAt, false, !response?.data.isHoliday),
 			})),
 			tap(() => this.loaderSvc.deactivate()),
 		);
