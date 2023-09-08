@@ -13,6 +13,7 @@ import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ABSENCE_TYPE, ABSENCE_TYPE_ARRAY, ENG_BE } from '../../../../shared/utils/const';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
 	selector: 'dfm-employee-absences',
@@ -47,6 +48,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		private datePipe: DatePipe,
+		private router: Router,
 	) {
 		super();
 		this.absences$$ = new BehaviorSubject<any[]>([]);
@@ -149,6 +151,14 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.absenceApiService.pageNoOnDashboard = this.absenceApiService.pageNoOnDashboard + 1;
+		}
+	}
+
+	public navigateToViewStaff(id: number): void{
+		if (id) {
+			this.router.navigate([`/absence/staff/${id}/view`]
+				// , { relativeTo: this.route, queryParamsHandling: 'preserve' }
+			);
 		}
 	}
 }
