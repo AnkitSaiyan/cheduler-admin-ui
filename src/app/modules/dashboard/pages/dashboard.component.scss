@@ -1,7 +1,8 @@
 .dfm-dashboard-wrapper {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(20, 120px);
+  // grid-template-rows: repeat(20, 120px);
+  grid-template-rows: repeat(17, 120px);
   grid-gap: 12px;
 
   .card-container {
@@ -71,9 +72,14 @@
         overflow: hidden;
     }
 
-    &:nth-child(15) {
+                &:nth-child(15) {
+                  grid-column: 1/5;
+                  grid-row: 17/21;
+                  overflow: hidden;
+                }
+                &:nth-child(10) {
       grid-column: 1/5;
-      grid-row: 17/21;
+      grid-row: 14/18;
         overflow: hidden;
     }
   }
