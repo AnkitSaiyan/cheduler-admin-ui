@@ -96,6 +96,20 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 	private physicianList: NameValue[] = [];
 	private patientList: NameValue[] = [];
 	private times: NameValue[];
+	public statusList: NameValue[] = [
+		{
+			name: 'Pending',
+			value: AppointmentStatus.Pending,
+		},
+		{
+			name: 'Approved',
+			value: AppointmentStatus.Approved,
+		},
+		{
+			name: 'Cancelled',
+			value: AppointmentStatus.Cancelled,
+		},
+	];
 
 	constructor(
 		private dialogSvc: ModalService,
@@ -462,6 +476,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			startedAt: [],
 			startTime: [],
 			endTime: [],
+			approval: [],
 		});
 	}
 
