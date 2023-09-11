@@ -306,16 +306,23 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		let addAbsenceReqData: AddAbsenceRequestData = {
 			...rest,
-			startedAt: this.datePipe.transform(
-				DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`), !rest.isHoliday),
-				'yyyy-MM-dd HH:mm:ss',
-			) as string,
+			startedAt: rest.isHoliday
+				? (this.datePipe.transform(
+						new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`),
+						'yyyy-MM-dd HH:mm:ss',
+				  ) as string)
+				: (this.datePipe.transform(
+						DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`), !rest.isHoliday),
+						'yyyy-MM-dd HH:mm:ss',
+				  ) as string),
 			// endedAt: rest.isRepeat
 			//   ? `${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`
 			//   : `${startedAt.year}-${startedAt.month}-${startedAt.day} ${endTime}:00`,
 			endedAt:
 				this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat
 					? null
+					: rest.isHoliday
+					? (this.datePipe.transform(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), 'yyyy-MM-dd HH:mm:ss') as string)
 					: (this.datePipe.transform(
 							DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), !rest.isHoliday),
 							'yyyy-MM-dd HH:mm:ss',
