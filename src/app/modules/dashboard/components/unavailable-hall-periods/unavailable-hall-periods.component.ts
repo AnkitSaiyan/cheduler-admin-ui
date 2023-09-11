@@ -15,7 +15,7 @@ import { NameValue } from 'src/app/shared/components/search-modal.component';
 import { Appointment } from 'src/app/shared/models/appointment.model';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { Translate } from 'src/app/shared/models/translate.model';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from 'src/app/shared/utils/const';
+import { DUTCH_BE, ENG_BE, ROOM_ID, Statuses, StatusesNL } from 'src/app/shared/utils/const';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
@@ -286,6 +286,14 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 	public onSort(e: DfmTableHeader): void {
 		this.filteredRoomAbsence$$.next(GeneralUtils.SortArray(this.filteredRoomAbsence$$.value, e.sort, ColumnIdToKey[e.id]));
+	}
+
+	public navigateToView(e: any) {
+		if (e?.roomId) {
+			this.router.navigate([`/absence/rooms/${e.roomId}/view`]
+				// , { relativeTo: this.route, queryParamsHandling: 'preserve' }
+			);
+		}
 	}
 }
 
