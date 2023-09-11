@@ -9,6 +9,9 @@ import { getNumberArray } from '../../utils/getNumberArray';
 	selector: 'dfm-repeat-form',
 	templateUrl: './repeat-form.component.html',
 	styleUrls: ['./repeat-form.component.scss'],
+	host: {
+		class: 'repeat-form',
+	},
 })
 export class RepeatFormComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	@Input() form!: FormGroup;
@@ -27,6 +30,7 @@ export class RepeatFormComponent extends DestroyableComponent implements OnInit,
 		super.ngOnDestroy();
 	}
 }
+
 
 
 

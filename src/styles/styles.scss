@@ -1329,3 +1329,9 @@ angular-editor-toolbar button i {
 .mat-button-toggle-checked {
   background-color: var(--dfm-secondary) !important;
 }
+
+.repeat-form {
+  padding: 12px;
+  margin: 0 -12px;
+  background: var(--dfm-gray-light);
+}

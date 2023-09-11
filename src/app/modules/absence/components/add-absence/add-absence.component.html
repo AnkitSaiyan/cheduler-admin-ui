@@ -30,6 +30,25 @@
         >
       </div>
 
+      <div class="d-flex flex-column dfm-gap-16 flex-1 ad-ab-repeat-radio">
+        <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'Repeat' | translate }}</span>
+
+        <div class="w-fit d-flex justify-content-between dfm-gap-24">
+          <dfm-radio-button
+            class="font-weight-normal"
+            label="{{ 'DoesNotRepeat' | translate }}"
+            [checkedValue]="false"
+            formControlName="isRepeat"
+          ></dfm-radio-button>
+          <dfm-radio-button
+            class="font-weight-normal"
+            label="{{ 'Repeat' | translate }}"
+            [checkedValue]="true"
+            formControlName="isRepeat"
+          ></dfm-radio-button>
+        </div>
+      </div>
+
       <div class="d-flex dfm-gap-32 ad-ab-dates">
         <div class="ad-ab-from-date flex-1 max-w-5">
           <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
@@ -43,7 +62,7 @@
                   <div class="input-as-dfm-input">
                     <input [formControl]="startDateControl" (dateChange)="onDateChange($event.value, 'startedAt')"
                     placeholder="{{'dateFormat' | translate}}"
-                    required  [matDatepicker]="picker" readonly class="w-full min-w-128">
+                    required  [matDatepicker]="picker" [max]="endDateControl.value" readonly class="w-full min-w-128">
                   </div>
                   <dfm-button-icon
                     color="secondary-gray"
@@ -95,7 +114,7 @@
           <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ 'Until' | translate }}*</div>
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
-            <div class="flex-1 d-flex flex-column">
+            <div class="flex-1 d-flex flex-column" *ngIf="!formValues.isRepeat">
               <div class="dfm-button-group-wrapper flex-1">
                 <div class="input-as-dfm-input">
                   <input [formControl]="endDateControl" (dateChange)="onDateChange($event.value, 'endedAt')"
@@ -142,25 +161,107 @@
         </div>
       </div>
 
-      <div class="d-flex dfm-gap-32 flex-wrap ad-ab-radio-group">
-        <div class="d-flex flex-column dfm-gap-16 flex-1 ad-ab-repeat-radio">
-          <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'Repeat' | translate }}</span>
+      <ng-container *ngIf="formValues.isRepeat">
+        <dfm-repeat-form [form]="absenceForm">
+          <div class="d-flex flex-column dfm-gap-16 flex-1 mt-4 endDate">
+            <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'Ends' | translate }} *</span>
+            <div class="w-fit d-flex justify-content-between dfm-gap-24 align-items-start flex-wrap">
+              <dfm-radio-button
+                class="font-weight-normal"
+                label="{{ 'Never' | translate }}"
+                [formControl]="endDateTypeControl"
+                [checkedValue]="EndDateType.Never"
+                hint="the event repeat indefinitely"
+                size="sm"
+              ></dfm-radio-button>
+              <div class="d-flex align-items-start dfm-gap-16">
+                <dfm-radio-button
+                  class="font-weight-normal max-w-192 "
+                  label="{{ 'Until' | translate }}"
+                  [formControl]="endDateTypeControl"
+                  [checkedValue]="EndDateType.Until"
+                  hint="The event will run until reaches a specific date"
+                  size="sm"
+                >
 
-          <div class="w-fit d-flex justify-content-between dfm-gap-24">
-            <dfm-radio-button
-              class="font-weight-normal"
-              label="{{ 'AllDay' | translate }}"
-              [checkedValue]="false"
-              formControlName="isRepeat"
-            ></dfm-radio-button>
-            <dfm-radio-button
-              class="font-weight-normal"
-              label="{{ 'Repeat' | translate }}"
-              [checkedValue]="true"
-              formControlName="isRepeat"
-            ></dfm-radio-button>
+                </dfm-radio-button>
+                <div *ngIf="endDateTypeControl.value === EndDateType.Until">
+                  <div class="dfm-button-group-wrapper flex-1 max-w-192" >
+                    <div class="input-as-dfm-input">
+                      <input [formControl]="endDateControl" (dateChange)="onDateChange($event.value, 'endedAt')"
+                      placeholder="{{'dateFormat' | translate}}"
+                      required [min]="startDateControl.value" [matDatepicker]="picker2" readonly class="w-full min-w-128">
+                    </div>
+                    <dfm-button-icon
+                      color="secondary-gray"
+                      size="md"
+                      icon="calendar-date"
+                      ngbPopover="{{ 'Calendar' | translate }}"
+                      triggers="mouseenter:mouseleave"
+                      popoverClass="popover-p-8"
+                      [openDelay]="200"
+                      (click)="picker2.open()"
+                    ></dfm-button-icon>
+                    <mat-datepicker #picker2></mat-datepicker>
+
+                  </div>
+                  <div
+                    class="validation-error"
+                    *ngIf="absenceForm.get('endedAt')?.hasError('required') &&absenceForm.get('endedAt')?.touched"
+                  >
+                    {{ 'RequiredField' | translate }}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </dfm-repeat-form>
+      </ng-container>
+
+      <div class="d-flex flex-wrap flex-1 gap" [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" >
+        <ng-container *ngIf="!formValues.isHoliday">
+          <ng-container *ngIf="modalData.absenceType === 'rooms'">
+            <div class="flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
+              <dfm-input-dropdown
+                #roomDropdown
+                [items]="roomList"
+                [multiple]="true"
+                [typeToSearch]="true"
+                (searchInput)="handleDropdownSearch($event, 'room')"
+                [placeholder]="((roomDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRooms') | async) ?? ''"
+                size="md"
+                [required]="true"
+                formControlName="roomList"
+                label="{{ 'Rooms' | translate }}"
+              >
+              </dfm-input-dropdown>
+              <span class="validation-error" *ngIf="controls['roomList'].hasError('required') && controls['roomList'].touched">
+                {{ 'RequiredField' | translate }}</span
+              >
+            </div>
+          </ng-container>
+
+          <ng-container  *ngIf="modalData.absenceType === 'staff'">
+            <div class="flex-1 ad-ab-staffs" *ngIf="filteredStaffs$$ | async as staffList">
+              <dfm-input-dropdown
+                #staffDropDown
+                [items]="staffList"
+                [multiple]="true"
+                [typeToSearch]="true"
+                (searchInput)="handleDropdownSearch($event, 'staff')"
+                size="md"
+                [required]="true"
+                formControlName="userList"
+                label="{{ 'Staff' | translate }}"
+                [placeholder]="((staffDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
+              >
+              </dfm-input-dropdown>
+              <span class="validation-error" *ngIf="controls['userList'].hasError('required') && controls['userList'].touched">
+                {{ 'RequiredField' | translate }}</span
+              >
+            </div>
+          </ng-container>
+        </ng-container>
 
         <div class="d-flex flex-column dfm-gap-16 flex-1">
           <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'PublicHoliday' | translate }}</span>
@@ -178,121 +279,6 @@
               formControlName="isHoliday"
             ></dfm-radio-button>
           </div>
-        </div>
-        <!--
-                <div class="d-flex flex-column dfm-gap-16 flex-1">
-                  <span
-                    class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">Priority</span>
-                  <div class="w-fit d-flex justify-content-between dfm-gap-24">
-                    <dfm-radio-button class="font-weight-normal" label="High" [checkedValue]="priorityType.High"
-                                      formControlName="priority"></dfm-radio-button>
-                    <dfm-radio-button class="font-weight-normal" label="Medium" [checkedValue]="priorityType.Medium"
-                                      formControlName="priority"></dfm-radio-button>
-                    <dfm-radio-button class="font-weight-normal" label="Low" [checkedValue]="priorityType.Low"
-                                      formControlName="priority"></dfm-radio-button>
-                  </div>
-                </div> -->
-      </div>
-
-      <ng-container *ngIf="formValues.isRepeat">
-        <div class="d-flex dfm-gap-32 flex-wrap align-items-start ad-ab-repeat-form">
-          <div class="flex-1">
-            <div class="">
-              <dfm-input-dropdown
-                #repeatType
-                [items]="repeatTypes"
-                size="md"
-                label="{{ 'RepeatType' | translate }} *"
-                [required]="formValues.isRepeat"
-                placeholder="{{ 'SelectRepeatType' | translate }} *"
-                formControlName="repeatType"
-                (select)="handleChange(repeatFrequency)"
-              >
-              </dfm-input-dropdown>
-            </div>
-            <span class="validation-error" *ngIf="controls['repeatType'].hasError('required') && controls['repeatType'].touched">
-              {{ 'RequiredField' | translate }}</span
-            >
-          </div>
-          <div class="flex-1">
-            <div class="d-flex flex-column ">
-              <dfm-input
-                #repeatFrequency
-                class="flex-1"
-                formControlName="repeatFrequency"
-                label="{{ 'RepeatEvery' | translate }} *"
-                placeholder="{{ 'EnterRepeatCount' | translate }}"
-                size="md"
-                type="text"
-                required
-                [readonly]="!repeatType.value"
-                (focusin)="handleFocusIn()"
-                (focusout)="handleFocusOut()"
-              >
-              </dfm-input>
-            </div>
-            <span class="validation-error" *ngIf="controls['repeatFrequency'].hasError('required') && controls['repeatFrequency'].touched">
-              {{ 'RequiredField' | translate }}</span
-            >
-
-            <small class="validation-error" *ngIf="repeatFrequency.control.hasError('min') && repeatFrequency.control.touched">{{
-              'RepeatFrequency' | translate
-            }}</small>
-          </div>
-
-          <div class="flex-1 ad-ab-repeat-every" *ngIf="repeatType.value && repeatType.value !== 'daily'">
-            <dfm-input-dropdown
-              #repeatEveryDropdown
-              [items]="repeatType.value ? repeatEvery[repeatType.value] : null"
-              [multiple]="true"
-              [placeholder]="((repeatEveryDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRepeatEvery') | async) ?? ''"
-              size="md"
-              label="{{ 'RepeatOn' | translate }} *"
-              [required]="formValues.isRepeat && formValues.repeatType !== 'daily'"
-              formControlName="repeatDays"
-            >
-            </dfm-input-dropdown>
-          </div>
-        </div>
-      </ng-container>
-
-      <div class="d-flex flex-wrap flex-1 gap" [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" *ngIf="!formValues.isHoliday">
-        <ng-container *ngIf="modalData.absenceType === 'rooms'">
-          <div class="flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
-            <dfm-input-dropdown
-              #roomDropdown
-              [items]="roomList"
-              [multiple]="true"
-              [typeToSearch]="true"
-              (searchInput)="handleDropdownSearch($event, 'room')"
-              [placeholder]="((roomDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRooms') | async) ?? ''"
-              size="md"
-              formControlName="roomList"
-              label="{{ 'Rooms' | translate }}"
-            >
-            </dfm-input-dropdown>
-          </div>
-        </ng-container>
-
-        <ng-container  *ngIf="modalData.absenceType === 'staff'">
-          <div class="flex-1 ad-ab-staffs" *ngIf="filteredStaffs$$ | async as staffList">
-            <dfm-input-dropdown
-              #staffDropDown
-              [items]="staffList"
-              [multiple]="true"
-              [typeToSearch]="true"
-              (searchInput)="handleDropdownSearch($event, 'staff')"
-              size="md"
-              formControlName="userList"
-              label="{{ 'Staff' | translate }}"
-              [placeholder]="((staffDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
-            >
-            </dfm-input-dropdown>
-          </div>
-        </ng-container>
-
-        <div class="w-full" style="margin-top: -24px" *ngIf="isAbsenceStaffRoomInvalid | async">
-          <small class="validation-error">Please select either Room or Staff for Absence</small>
         </div>
       </div>
 

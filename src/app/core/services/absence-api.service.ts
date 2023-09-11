@@ -20,8 +20,6 @@ export class AbsenceApiService {
 
 	private pageNoOnDashboard$$ = new BehaviorSubject<number>(1);
 
-	private cancelAPICalled = new EventEmitter<void>();
-
 	constructor(private http: HttpClient, private loaderSvc: LoaderService, private utcToLocalPipe: UtcToLocalPipe) {}
 
 	public set pageNo(pageNo: number) {
@@ -149,25 +147,21 @@ export class AbsenceApiService {
 	): Observable<BaseResponse<Absence[]>> {
 		this.loaderSvc.activate();
 		const params = { toDate, fromDate };
-		this.cancelAPICalled.emit();
 		if (absenceType === 'rooms') {
-			return this.http.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getroomabsence`, { params }).pipe(
-				tap(() => this.loaderSvc.deactivate()),
-				takeUntil(this.cancelAPICalled),
-			);
+			return this.http
+				.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getroomabsence`, { params })
+				.pipe(tap(() => this.loaderSvc.deactivate()));
 		}
-		return this.http.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getstaffabsence`, { params }).pipe(
-			tap(() => this.loaderSvc.deactivate()),
-			takeUntil(this.cancelAPICalled),
-		);
+		return this.http
+			.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getstaffabsence`, { params })
+			.pipe(tap(() => this.loaderSvc.deactivate()));
 	}
 	private fetchAllAbsenceHolidayForCalendar(fromDate: string, toDate: string): Observable<BaseResponse<Absence[]>> {
 		this.loaderSvc.activate();
 		const params = { toDate, fromDate };
-		return this.http.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/common/getholidaylist`, { params }).pipe(
-			tap(() => this.loaderSvc.deactivate()),
-			takeUntil(this.cancelAPICalled),
-		);
+		return this.http
+			.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/common/getholidaylist`, { params })
+			.pipe(tap(() => this.loaderSvc.deactivate()));
 	}
 
 	private fetchAbsenceById(absenceID: number): Observable<Absence> {
@@ -175,8 +169,8 @@ export class AbsenceApiService {
 		return this.http.get<BaseResponse<Absence>>(`${environment.schedulerApiUrl}/absences/${absenceID}`).pipe(
 			map((response) => ({
 				...response.data,
-				startedAt: this.utcToLocalPipe.transform(response?.data?.startedAt, false, true),
-				endedAt: this.utcToLocalPipe.transform(response?.data?.endedAt, false, true),
+				startedAt: response?.data.isHoliday ? response?.data?.startedAt : this.utcToLocalPipe.transform(response?.data?.startedAt, false, true),
+				endedAt: response?.data.isHoliday ? response?.data?.endedAt : this.utcToLocalPipe.transform(response?.data?.endedAt, false, true),
 			})),
 			tap(() => this.loaderSvc.deactivate()),
 		);

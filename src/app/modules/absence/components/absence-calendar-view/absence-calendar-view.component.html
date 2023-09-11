@@ -1,26 +1,34 @@
 <ng-content select="#top-action"></ng-content>
 <div class="dfm-container gap-16">
   <div class="not-mobile side-panel-container side-panel-hide " #sidePanel>
-    <div class="side-panel bg-white" *ngIf="(todayEvent$ | async) as todayEvent" >
+    <div class="side-panel bg-white"  >
       <ng-container >
-        <h4>Today's Events ({{todayEvent.length}}):</h4>
-        <div *ngFor="let data of todayEvent" class="dfm-ps-8 dfm-pt-8">
-          <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
-            <div class="circle-gray-200-40">
-              {{ (data?.userName?.[0] ?? data?.roomName?.[0]) | uppercase }}
-            </div>
-            <div class="d-flex flex-column">
-              <span>{{ (data?.userName ?? data?.roomName) | titlecase }}</span>
-              <div>
-                <span class="dfm-text-main-500">{{ data?.name+' ' }}</span>
-                <span class="dfm-text-main-500">({{ data?.start }}-{{data?.end}})</span>
+        <div class="d-flex justify-content-end mr-1 date-picker">
+          <dfm-calendar-picker  (formControl)="setEventForm($event)" size="sm" #eventDate></dfm-calendar-picker>
+        </div>
+        <h4>{{ eventDate.dateControl.value ? (eventDate.dateControl.value | date : 'MMM d, y' ) :"Today's"}} Events ({{(todayEvent$$ | async)?.length}}):</h4>
+        <ng-container *ngIf="(todayEvent$$ | async) as todayEvent">
+          <div *ngFor="let data of todayEvent" class="dfm-ps-8 dfm-pt-8">
+            <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
+              <div class="circle-gray-200-40">
+                {{ (data?.userName?.[0] ?? data?.roomName?.[0]) | uppercase }}
+              </div>
+              <div class="d-flex flex-column">
+                <span>{{ (data?.userName ?? data?.roomName) | titlecase }}</span>
+                <div>
+                  <span class="dfm-text-main-500">{{ data?.name+' ' }}</span>
+                  <span class="dfm-text-main-500">({{ data?.start }}-{{data?.end}})</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+          <div *ngIf="!todayEvent?.length" class="d-flex flex-1 align-items-center justify-content-center">
+            <p >{{"PracticeNotAvailableForDay" | translate}}</p>
+          </div>
+        </ng-container>
       </ng-container>
     </div>
-    <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-left" ngbPopover="Today's Event"
+    <dfm-button-icon color="secondary-gray" size="md" icon="chevron-left" ngbPopover="Today's Event"
     triggers="mouseenter:mouseleave"
     popoverClass="popover-p-8"
     [openDelay]="200" (click)="sidePanelViewToggle()"></dfm-button-icon>
@@ -34,6 +42,20 @@
         <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : ' yyyy' }}</ng-template></h4>
 
       <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper align-items-center">
+        <div #menuTrigger="matMenuTrigger"
+          (mouseover)="menuTrigger.openMenu(); $event.stopPropagation(); $event.preventDefault()" (mouseleave)="menuTrigger.closeMenu(); $event.stopPropagation(); $event.preventDefault()"   [matMenuTriggerFor]="infoDetail">
+          <dfm-button-icon color="secondary-gray" size="sm" icon="info-circle" ></dfm-button-icon>
+          <mat-menu #infoDetail="matMenu" [hasBackdrop]="false">
+            <div class="card-info">
+              <div>
+                <div></div><h1 class="mat-caption dfm-text-main-500">Yellow represents holidays.</h1>
+              </div>
+              <div>
+                <div></div><h1 class="mat-caption dfm-text-main-500">Blue represents normal lab events.</h1>
+              </div>
+            </div>
+          </mat-menu>
+        </div>
         <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown">
           <dfm-input-dropdown
             size="sm"
@@ -47,19 +69,20 @@
       <div class="d-flex dfm-gap-4">
         <div class="flex-1 calendar-date-buttons">
           <div class="d-flex gap-2 m-t-2">
-          <div>
-          <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-left" (click)="changeDate(-1)"></dfm-button-icon>
-        </div>
 
-        <div class="h-fit">
-          <dfm-button color="secondary-gray" size="sm" class="h-100" (click)="updateToToday()">{{ 'Today' | translate }} </dfm-button>
-        </div>
+            <div>
+              <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-left" (click)="changeDate(-1)"></dfm-button-icon>
+            </div>
 
-        <div>
-          <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-right" (click)="changeDate(1)"></dfm-button-icon>
+            <div class="h-fit">
+              <dfm-button color="secondary-gray" size="sm" class="h-100" (click)="updateToToday()">{{ 'Today' | translate }} </dfm-button>
+            </div>
+
+            <div>
+              <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-right" (click)="changeDate(1)"></dfm-button-icon>
+            </div>
+          </div>
         </div>
-      </div>
-      </div>
       <div class="flex-1">
         <dfm-calendar-picker [selectedDate]="selectedDate" (formControl)="setForm($event)"></dfm-calendar-picker>
       </div>
