@@ -5,7 +5,7 @@
       color="link"
       size="lg"
       routerLink="./"
-    >{{'Absence' | translate}}
+    >{{((absenceType$$ | async)! | titlecase | translate)}} {{'Absence' | translate}}
     </dfm-button>
 
     <dfm-input
