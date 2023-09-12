@@ -138,7 +138,7 @@
 		</div>
 	</section>
 
-	<section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16 vw-ap-sec2-card" *ngIf="effectedAppointments$$ | async as effectedAppointments">
+	<!-- <section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16 vw-ap-sec2-card" *ngIf="effectedAppointments$$ | async as effectedAppointments">
 		<header class="d-flex align-items-center dfm-gap-8">
 			<div class="dfm-button-gray-400">
 				<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
@@ -173,7 +173,7 @@
 				{{ 'NoDataFound' | translate }}
 			</div>
 		</div>
-	</section>
+	</section> -->
 
 	<div class="hidden bg-white ab-vw-action-buttons-mv" *dfmPermitted="[Permission.UpdateAbsences, Permission.DeleteAbsences]">
 		<dfm-button color="secondary" size="sm" (click)="deleteAbsence(absenceDetails.id)" *dfmPermitted="Permission.DeleteAbsences">{{
