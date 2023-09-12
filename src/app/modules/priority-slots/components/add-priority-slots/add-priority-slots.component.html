@@ -155,55 +155,50 @@
       <ng-container *ngIf="formValues.isRepeat">
         <dfm-repeat-form [form]="prioritySlotForm">
           <div class="d-flex flex-column dfm-gap-16 flex-1 mt-4 endDate">
-            <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'Ends' | translate }} *</span>
+            <!-- <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'Ends' | translate }} *</span> -->
             <div class="w-fit d-flex justify-content-between dfm-gap-24 align-items-start flex-wrap">
-              <dfm-radio-button
+              <!-- <dfm-radio-button
                 class="font-weight-normal"
                 label="{{ 'Never' | translate }}"
                 [formControl]="endDateTypeControl"
                 [checkedValue]="EndDateType.Never"
                 hint="the event repeat indefinitely"
                 size="sm"
-              ></dfm-radio-button>
-              <div class="d-flex align-items-start dfm-gap-16 flex-wrap">
-                <dfm-radio-button
+              ></dfm-radio-button>-->
+              <!-- <div class="d-flex align-items-start dfm-gap-16 flex-wrap"> -->
+               <!-- <dfm-radio-button
                   class="font-weight-normal max-w-192 "
                   label="{{ 'Until' | translate }}"
                   [formControl]="endDateTypeControl"
                   [checkedValue]="EndDateType.Until"
                   hint="The event will run until reaches a specific date"
-                  size="sm"
-                >
+                  size="sm">
+                </dfm-radio-button> -->
+                <!-- <div *ngIf="endDateTypeControl.value === EndDateType.Until"> -->
 
-                </dfm-radio-button>
-                <div *ngIf="endDateTypeControl.value === EndDateType.Until">
+
+                <div class="flex-1 d-flex dfm-gap-8 flex-column">
+                  <span class="text-sm font-weight-medium dfm-text-main-700">{{ "Until" | translate }}*</span>
                   <div class="dfm-button-group-wrapper flex-1 max-w-256">
                     <div class="input-as-dfm-input">
                       <input [formControl]="endDateControl" (dateChange)="onDateChange($event.value, 'endedAt')"
-                      placeholder="{{'dateFormat' | translate}}"
-                      required [min]="startDateControl.value"  [matDatepicker]="picker2" readonly class="w-full min-w-128">
+                        placeholder="{{'dateFormat' | translate}}" required [min]="startDateControl.value" [matDatepicker]="picker2"
+                        readonly class="w-full min-w-128">
                     </div>
-                    <dfm-button-icon
-                      color="secondary-gray"
-                      size="md"
-                      icon="calendar-date"
-                      ngbPopover="{{ 'Calendar' | translate }}"
-                      triggers="mouseenter:mouseleave"
-                      popoverClass="popover-p-8"
-                      [openDelay]="200"
-                      (click)="picker2.open()"
-                    ></dfm-button-icon>
+                    <dfm-button-icon color="secondary-gray" size="md" icon="calendar-date" ngbPopover="{{ 'Calendar' | translate }}"
+                      triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200"
+                      (click)="picker2.open()"></dfm-button-icon>
                     <mat-datepicker #picker2></mat-datepicker>
-
+                
                   </div>
-                  <div
-                    class="validation-error"
-                    *ngIf="prioritySlotForm.get('endedAt')?.hasError('required') && prioritySlotForm.get('endedAt')?.touched"
-                  >
+                  <h1 class="mat-caption dfm-text-main-500">{{'The event will run until reaches a specific date' | translate}}</h1>
+                  <div class="validation-error"
+                    *ngIf="prioritySlotForm.get('endedAt')?.hasError('required') && prioritySlotForm.get('endedAt')?.touched">
                     {{ 'RequiredField' | translate }}
                   </div>
                 </div>
-              </div>
+                <!-- </div> -->
+              <!-- </div> -->
             </div>
           </div>
         </dfm-repeat-form>
