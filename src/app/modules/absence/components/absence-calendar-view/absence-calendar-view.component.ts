@@ -148,17 +148,30 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			this.calculateMinMaxLimit([...practiceHours]);
 		});
 
+		combineLatest([this.route.data, this.route.queryParams])
+			.pipe(
+				filter(([data, queryParams]: [Params, Params]) => data[ABSENCE_TYPE] === ABSENCE_TYPE_ARRAY[0] && queryParams['v'] === 'd'),
+				distinctUntilChanged(([preParams, preQueryParam], [currParams, currQueryParam]) => {
+					return !Boolean(preParams[ABSENCE_TYPE] !== currParams[ABSENCE_TYPE] || preQueryParam['v'] !== currQueryParam['v']);
+				}),
+				debounceTime(100),
+				switchMap(() => this.roomApiSvc.allRooms$),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((rooms) => {
+				this.headerList = rooms.map(({ name, id }) => ({ name, value: id }));
+			});
+
 		this.absenceData$ = this.weekdayToPractice$$.pipe(
 			filter(Boolean),
 			switchMap(() => combineLatest([this.route.data, this.route.queryParams])),
 			filter(([data, queryParams]: [Params, Params]) => !!data[ABSENCE_TYPE] && !!queryParams['v'] && !!queryParams['d']),
+			distinctUntilChanged(this.distinctUntilChanged),
 			tap(([data, queryParams]: [Params, Params]) => {
-				this.headerList = [];
-				if (data[ABSENCE_TYPE] === ABSENCE_TYPE_ARRAY[0] && queryParams['v'] === 'd') {
-					this.setHeaderForRoom();
+				if (data[ABSENCE_TYPE] === ABSENCE_TYPE_ARRAY[1] && queryParams['v'] === 'd') {
+					this.headerList = [];
 				}
 			}),
-			distinctUntilChanged(this.distinctUntilChanged),
 			map(this.getFromAndToDate.bind(this)),
 			debounceTime(100),
 			switchMap(([absenceType, { fromDate, toDate }]) => {
@@ -185,12 +198,6 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	public override ngOnDestroy(): void {
 		super.ngOnDestroy();
-	}
-
-	private setHeaderForRoom(): void {
-		this.roomApiSvc.allRooms$.pipe(take(1)).subscribe((rooms) => {
-			this.headerList = rooms.map(({ name, id }) => ({ name, value: id }));
-		});
 	}
 
 	private distinctUntilChanged([preParams, preQueryParam], [currParams, currQueryParam]): boolean {
@@ -474,7 +481,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 				),
 				map((data) => data.data),
 				map(this.dataModification.bind(this)),
-				map((absenceSlot) => absenceSlot[this.datePipe.transform(new Date(event.value ??  new Date()), 'd-M-yyyy')!] ?? []),
+				map((absenceSlot) => absenceSlot[this.datePipe.transform(new Date(event.value ?? new Date()), 'd-M-yyyy')!] ?? []),
 			)
 			.subscribe((data) => this.todayEvent$$.next(data));
 	}

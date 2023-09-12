@@ -160,7 +160,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	}
 
 	public ngOnInit(): void {
-		this.priorityApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
+		this.priorityApiSvc.repeatType$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.repeatTypes = items));
 
 		this.modalSvc.dialogData$
 			.pipe(
