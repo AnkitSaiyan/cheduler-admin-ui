@@ -271,23 +271,23 @@ export function getFromAndToDate(queryParam: Params) {
 	}
 }
 
-export function dataModification(absence, utcToLocalPipe, datePipe: DatePipe) {
+export function dataModification(absence, datePipe: DatePipe) {
 	const absenceSlot = {};
 	absence
 		?.map((value: any) => ({
 			...value,
 			startedAt: value.startedAt,
 			endedAt: value.endedAt,
-			slotStartTime: utcToLocalPipe.transform(datePipe.transform(value.startedAt, 'HH:mm:ss'), true),
-			slotEndTime: utcToLocalPipe.transform(datePipe.transform(value.endedAt, 'HH:mm:ss'), true),
+			slotStartTime: datePipe.transform(value.startedAt, 'HH:mm:ss'),
+			slotEndTime: datePipe.transform(value.endedAt, 'HH:mm:ss'),
 			isHoliday: value.isHoliday,
 		}))
 		?.forEach((absence: any) => {
 			let { repeatFrequency } = absence;
 			const { absenceId, name, info, startedAt, endedAt, roomName, userName, isHoliday } = absence;
-			const startDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
-			let firstDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
-			const lastDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.endedAt), true)).toDateString());
+			const startDate = new Date(new Date(new Date(absence.startedAt)).toDateString());
+			let firstDate = new Date(new Date(new Date(absence.startedAt)).toDateString());
+			const lastDate = new Date(new Date(new Date(absence.endedAt)).toDateString());
 			switch (true) {
 				case !absence.isRepeat:
 				case absence.repeatType === RepeatType.Daily: {

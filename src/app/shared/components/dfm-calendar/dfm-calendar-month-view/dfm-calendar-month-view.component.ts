@@ -173,7 +173,7 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 				switchMap(({ fromDate, toDate }) => {
 					return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
 				}),
-				map((data) => dataModification(data.data, this.utcToLocalPipe, this.datePipe)),
+				map((data) => dataModification(data.data, this.datePipe)),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe((data) => this.holidayData$$.next(data));
