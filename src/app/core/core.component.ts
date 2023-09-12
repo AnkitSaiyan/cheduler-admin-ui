@@ -82,7 +82,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		new NavigationItem('Absence', 'user-x-01', undefined, false, [
 			new NavigationItem('Absence-Rooms', 'building-01', `/absence/${ABSENCE_TYPE_ARRAY[0]}`, false),
 			new NavigationItem('Absence-Staff', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[1]}`, false),
-			new NavigationItem('Public-Holiday', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[2]}`, false),
+			new NavigationItem('Public Holiday', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[2]}`, false),
 		]),
 		new NavigationItem('Configuration', 'tool-02', undefined, false, [
 			new NavigationItem('User', 'user-circle', '/user', false),
@@ -102,7 +102,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		new NavigationItem('Absence', 'user-x-01', undefined, false, [
 			new NavigationItem('Absence-Rooms', 'building-01', `/absence/${ABSENCE_TYPE_ARRAY[0]}`, false),
 			new NavigationItem('Absence-Staff', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[1]}`, false),
-			new NavigationItem('Public-Holiday', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[2]}`, false),
+			new NavigationItem('Public Holiday', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[2]}`, false),
 		]),
 		new NavigationItem('Configuration', 'tool-02', undefined, false, [
 			new NavigationItem('User', 'user-circle', '/user', false),
@@ -119,7 +119,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		new NavigationItem('Afwezigheid', 'user-x-01', undefined, false, [
 			new NavigationItem('Afwezigheid-Zalen', 'building-01', `/absence/${ABSENCE_TYPE_ARRAY[0]}`, false),
 			new NavigationItem('Afwezigheid-Medewerkers', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[1]}`, false),
-			new NavigationItem('Publieke-Verlofdag', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[2]}`, false),
+			new NavigationItem('Publieke Verlofdag', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[2]}`, false),
 		]),
 		new NavigationItem('Configuratie', 'tool-02', undefined, false, [
 			new NavigationItem('Gebruikers', 'user-circle', '/user', false),
@@ -139,7 +139,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		new NavigationItem('Afwezigheid', 'user-x-01', undefined, false, [
 			new NavigationItem('Afwezigheid-Zalen', 'building-01', `/absence/${ABSENCE_TYPE_ARRAY[0]}`, false),
 			new NavigationItem('Afwezigheid-Medewerkers', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[1]}`, false),
-			new NavigationItem('Publieke-Verlofdag', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[2]}`, false),
+			new NavigationItem('Publieke Verlofdag', 'user-01', `/absence/${ABSENCE_TYPE_ARRAY[2]}`, false),
 		]),
 		new NavigationItem('Configuratie', 'tool-02', undefined, false, [
 			new NavigationItem('Gebruikers', 'user-circle', '/user', false),
