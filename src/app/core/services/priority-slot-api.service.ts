@@ -93,7 +93,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		return combineLatest(request) as Observable<NextSlotOpenPercentageData[]>;
 	}
 
-	get fileTypes$(): Observable<any[]> {
+	get repeatType$(): Observable<any[]> {
 		return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
 			switchMap(([lang]) => {
 				return of(this.repeatTypes).pipe(
@@ -252,6 +252,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		this.refreshPrioritySlots$$.next();
 	}
 }
+
 
 
 

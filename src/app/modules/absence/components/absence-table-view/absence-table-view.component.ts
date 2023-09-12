@@ -90,7 +90,6 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		public permissionSvc: PermissionService,
-		private prioritySlotSvc: PrioritySlotApiService,
 	) {
 		super();
 		this.absences$$ = new BehaviorSubject<any[]>([]);
@@ -139,7 +138,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 				},
 			});
 
-		this.prioritySlotSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
+		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => (this.downloadItems = items),
 		});
 
@@ -383,6 +382,8 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		this.filteredAbsences$$.next(GeneralUtils.SortArray(this.filteredAbsences$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
 
 
 
