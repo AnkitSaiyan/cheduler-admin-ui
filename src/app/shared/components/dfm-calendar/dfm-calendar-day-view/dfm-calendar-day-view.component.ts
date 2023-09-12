@@ -16,7 +16,7 @@ import {
 import { ActivatedRoute, Params } from '@angular/router';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, debounceTime, filter, firstValueFrom, map, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, firstValueFrom, map, switchMap, take, takeUntil } from 'rxjs';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
@@ -172,7 +172,12 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		this.newDate$$
 			.asObservable()
-			.pipe()
+			.pipe(
+				distinctUntilChanged((pre, curr) => {
+					return pre.date !== curr.date;
+				}),
+				takeUntil(this.destroy$$),
+			)
 			.subscribe({
 				next: ({ date }) => {
 					if (date) {
@@ -198,20 +203,20 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				next: (lang) => (this.selectedLang = lang),
 			});
 
-		this.route.queryParams
-			.pipe(
-				filter(Boolean),
-				debounceTime(100),
-				filter((queryParams: Params) => !!queryParams['v'] && !!queryParams['d']),
-				map(getFromAndToDate),
-				switchMap(({ fromDate, toDate }) => {
-					return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
-				}),
-				takeUntil(this.destroy$$),
-			)
-			.subscribe((data) => {
-				this.isHoliday$$.next(Boolean(data.data?.length));
-			});
+		// this.route.queryParams
+		// 	.pipe(
+		// 		filter(Boolean),
+		// 		debounceTime(100),
+		// 		filter((queryParams: Params) => !!queryParams['v'] && !!queryParams['d']),
+		// 		map(getFromAndToDate),
+		// 		switchMap(({ fromDate, toDate }) => {
+		// 			return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
+		// 		}),
+		// 		takeUntil(this.destroy$$),
+		// 	)
+		// 	.subscribe((data) => {
+		// 		this.isHoliday$$.next(Boolean(data.data?.length));
+		// 	});
 	}
 
 	public override ngOnDestroy() {
