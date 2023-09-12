@@ -96,7 +96,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 	private addAppointmentImpactedAbsence: boolean = false;
 
-	public endDateTypeControl = new FormControl(EndDateType.Never, []);
+	public endDateTypeControl = new FormControl(EndDateType.Until, []);
 
 	public EndDateType = EndDateType;
 
