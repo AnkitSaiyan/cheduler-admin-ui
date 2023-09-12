@@ -2,7 +2,7 @@
 
 <div class="bg-white rounded-4 ad-ab-main-wrapper dfm-px-16">
   <section class="modal-header ad-ab-section1">
-    <h5 class="modal-title ad-ab-title-buttons">{{ modalData?.edit ? ('EditAbsence' | translate) : ('AddAbsence' | translate) }}</h5>
+    <h5 class="modal-title ad-ab-title-buttons">{{ modalData?.edit ? ((modalData.absenceType === 'public-holiday' ? 'EditPublicHoliday' :'EditAbsence') | translate) : ((modalData.absenceType === 'public-holiday' ? 'AddPublicHoliday' :'AddAbsence') | translate) }}</h5>
     <dfm-button-icon class="ad-ab-title-buttons" color="tertiary-gray" icon="x-close" (click)="closeModal(false)"></dfm-button-icon>
 
     <div class="hidden dfm-gap-8 align-items-center ad-ab-title-buttons-mv">
@@ -50,7 +50,7 @@
       </div>
 
       <div class="d-flex dfm-gap-32 ad-ab-dates">
-        <div class="ad-ab-from-date flex-1 max-w-5">
+        <div class="ad-ab-from-date max-w-5">
           <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
             {{ formValues.isRepeat ? ('From' | translate) : ('From' | translate) }} *
           </div>
@@ -109,7 +109,7 @@
           <!-- <small class="validation-error" *ngIf="startTime.control.hasError('time')">{{"RequiredField" | translate}}</small> -->
         </div>
 
-        <div class="ad-ab-to-date flex-1 max-w-5">
+        <div class="ad-ab-to-date max-w-5">
           <!--          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ formValues.isRepeat ? ('Until' | translate) : ("EndTimeRequired" | translate) }} *</div>-->
           <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6" *ngIf="!(modalData.absenceType === ABSENCE_TYPE_ARRAY[2] && formValues.isRepeat)">{{ 'Until' | translate }}*</div>
 
@@ -213,7 +213,7 @@
                   >
                     {{ 'RequiredField' | translate }}
                   </div>
-                </div>  
+                </div>
                 <!-- </div> -->
               <!-- </div> -->
             </div>
@@ -221,7 +221,7 @@
         </dfm-repeat-form>
       </ng-container>
 
-      <div class="d-flex flex-wrap flex-1 gap" [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" >
+      <div class="d-flex flex-wrap flex-1 gap max-w-5 " [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" >
         <ng-container *ngIf="!formValues.isHoliday">
           <ng-container *ngIf="modalData.absenceType === 'rooms'">
             <div class="flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
@@ -304,7 +304,7 @@
   <section class="modal-footer ad-ab-footer-buttons">
     <dfm-button color="secondary" size="md" (click)="closeModal(false)">{{ 'Cancel' | translate }}</dfm-button>
     <dfm-button color="primary" size="md" [disabled]="(submitting$$ | async) === true" (click)="saveAbsence()">{{
-      modalData?.edit ? ('SaveChanges' | translate) : ('AddAbsence' | translate)
+      modalData?.edit ? ('SaveChanges' | translate) : ((modalData.absenceType === 'public-holiday' ? 'AddPublicHoliday' :'AddAbsence') | translate)
     }}</dfm-button>
   </section>
 </div>

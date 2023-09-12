@@ -162,6 +162,7 @@
 	"AbsenceName": "Afwezigheid naam",
 	"AbsenceSearch": "Zoek op naam of datum afwezigheid",
 	"AddAbsence": "Afwezigheid toevoegen",
+	"AddPublicHoliday": "Publieke verlofdag toevoegen",
 	"AddRoomsAbsence": "Afwezigheid toevoegen",
 	"AddStaffAbsence": "Afwezigheid toevoegen",
 	"AddPublic-holidayAbsence": "Afwezigheid toevoegen",
@@ -170,6 +171,7 @@
 	"EndDate": "Einde",
 	"AbsenceInfo": "Info afwezigheid",
 	"EditAbsence": "Bewerk afwezigheid",
+	"EditPublicHoliday": "Bewerk publieke verlofdag",
 	"EditRoomsAbsence": "Bewerk afwezigheid",
 	"EditStaffAbsence": "Bewerk afwezigheid",
 	"EditPublic-holidayAbsence": "Bewerk afwezigheid",
@@ -198,9 +200,12 @@
 	"StaffType": "Medewerkers type",
 	"EnterAbsenceInfo": "Geef info afwezigheid",
 	"DeleteAbsence": "Verwijder afwezigheid",
+	"DeletePublicHoliday": "Verwijder publieke verlofdag",
 	"AbsenceView": "Afwezigheid bekijk",
 	"AbsenceInformation": "Info afwezigheid",
+	"PublicHolidayInformation": "Info publieke verlofdag",
 	"AbsenceRepeatDetails": "Details herhaalde afwezigheid",
+	"PublicHolidayRepeatDetails": "Details herhaalde publieke verlofdag",
 	"Minutes": "Minuten",
 	"Days": "Dagen",
 	"Hours": "Uren",
@@ -260,6 +265,7 @@
 	"hh:mm": "uur:min",
 	"dateFormat": "dd/mm/jj",
 	"AbsenceDetails": "Details afwezigheid",
+	"Public-holidayDetails": "Details publieke verlofdag",
 	"Assistant": "Assistent",
 	"ExamAvailabilityInfo": "Beschikbaarheid onderzoek gegevens",
 	"ExamAvailabilityData": "Gedetailleerde gegevens beschikbaarheid onderzoek",
@@ -496,15 +502,20 @@
 	"LabHoliday": "Het Lab is vandaag gesloten",
 	"NoAbsenceForTheDay": "Geen afwezigheid voor de dag",
 	"Public-holiday": "Publieke verlofdag",
-	"REAPEAT_FREQUENCY_SHOULD_BE_GREATER_THAN_0":"Herhaalfrequentie moet groter zijn dan 0",
-	"PRIORITY_SLOT_WILL_BE_REPEATED_EVERY_DAY_DEPENDING_ON_VALUE":"Het prioriteitsslot wordt elke dag of elke x dag herhaald, afhankelijk van de geselecteerde waarde",
-	"PRIORITY_SLOT_WILL_BE_REPEATED_EVERY_MONTH_DEPENDIN_ON_VALUE":"Het prioriteitsslot wordt elke x maanden herhaald op geselecteerde dagen van de maand",
-	"Day(s)":"Dagen",
-	"Week(s)":"Weken",
+	"REAPEAT_FREQUENCY_SHOULD_BE_GREATER_THAN_0": "Herhaalfrequentie moet groter zijn dan 0",
+	"PRIORITY_SLOT_WILL_BE_REPEATED_EVERY_DAY_DEPENDING_ON_VALUE": "Het prioriteitsslot wordt elke dag of elke x dag herhaald, afhankelijk van de geselecteerde waarde",
+	"PRIORITY_SLOT_WILL_BE_REPEATED_EVERY_MONTH_DEPENDIN_ON_VALUE": "Het prioriteitsslot wordt elke x maanden herhaald op geselecteerde dagen van de maand",
+	"Day(s)": "Dagen",
+	"Week(s)": "Weken",
 	"Month(s)": "Maanden",
 	"On": "Op"
-
 }
+
+
+
+
+
+
 
 
 

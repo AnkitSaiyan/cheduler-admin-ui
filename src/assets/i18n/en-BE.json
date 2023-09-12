@@ -162,6 +162,7 @@
 	"AbsenceName": "Absence name",
 	"AbsenceSearch": "Search by absence name & date",
 	"AddAbsence": "Add absence",
+	"AddPublicHoliday": "Add public holiday",
 	"AddRoomsAbsence": "Add rooms absence",
 	"AddStaffAbsence": "Add staff absence",
 	"AddPublic-holidayAbsence": "Add public holiday",
@@ -170,8 +171,10 @@
 	"EndDate": "End date",
 	"AbsenceInfo": "Absence info",
 	"EditAbsence": "Edit absence",
+	"EditPublicHoliday": "Edit public holiday",
 	"EditRoomsAbsence": "Edit rooms absence",
 	"EditStaffAbsence": "Edit staff absence",
+	"EditPublic-holidayAbsence": "Edit public holiday",
 	"EnterAbsenceTitle": "Enter absence title",
 	"Date": "Date",
 	"From": "From",
@@ -197,9 +200,13 @@
 	"StaffType": "Staff type",
 	"EnterAbsenceInfo": "Enter absence info",
 	"DeleteAbsence": "Delete absence",
+	"DeletePublicHoliday": "Delete public holiday",
+	"DeleteP": "Delete absence",
 	"AbsenceView": "Absence view",
 	"AbsenceInformation": "Absence information",
+	"PublicHolidayInformation": "Public holiday information",
 	"AbsenceRepeatDetails": "Absence repeat details",
+	"PublicHolidayRepeatDetails": "Public holiday repeat details",
 	"Minutes": "Minutes",
 	"Days": "Days",
 	"Hours": "Hours",
@@ -261,6 +268,7 @@
 	"hh:mm": "hh:mm",
 	"dateFormat": "dd/mm/yyyy",
 	"AbsenceDetails": "Absence details",
+	"Public-holidayDetails": "Public holiday details",
 	"Assistant": "Assistant",
 	"ExamAvailabilityInfo": "Examination availability info",
 	"ExamAvailabilityData": "Examination availability data",
@@ -492,14 +500,21 @@
 	"LabHoliday": " The Lab is closed for today",
 	"NoAbsenceForTheDay": "No absence for the day",
 	"Public-holiday": "Public Holiday",
-	"REAPEAT_FREQUENCY_SHOULD_BE_GREATER_THAN_0":"Repeat frequency should be greater than 0",
-	"PRIORITY_SLOT_WILL_BE_REPEATED_EVERY_DAY_DEPENDING_ON_VALUE":"The priority slot will be repeated every day or every x day, depending on the selected value",
-	"PRIORITY_SLOT_WILL_BE_REPEATED_EVERY_MONTH_DEPENDIN_ON_VALUE":"The priority slot will be repeated every x months on selected days of month",
-	"Day(s)":"Day(s)",
-	"Week(s)":"Week(s)",
+	"REAPEAT_FREQUENCY_SHOULD_BE_GREATER_THAN_0": "Repeat frequency should be greater than 0",
+	"PRIORITY_SLOT_WILL_BE_REPEATED_EVERY_DAY_DEPENDING_ON_VALUE": "The priority slot will be repeated every day or every x day, depending on the selected value",
+	"PRIORITY_SLOT_WILL_BE_REPEATED_EVERY_MONTH_DEPENDIN_ON_VALUE": "The priority slot will be repeated every x months on selected days of month",
+	"Day(s)": "Day(s)",
+	"Week(s)": "Week(s)",
 	"Month(s)": "Month(s)",
 	"On": "On"
 }
+
+
+
+
+
+
+
 
 
 
