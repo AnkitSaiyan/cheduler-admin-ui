@@ -41,7 +41,7 @@
         <div class="ad-pr-from-date flex-1 max-w-5">
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
-            <div class="flex-1 d-flex dfm-gap-8 flex-column">
+            <div class="flex-1 d-flex dfm-gap-8 flex-column max-w-256">
               <span class="text-sm font-weight-medium dfm-text-main-700">{{ !formValues.isRepeat ? ('From' | translate) : ('From' | translate) }} *</span>
 
               <div class="dfm-button-group-wrapper h-fit flex-1">
@@ -97,13 +97,13 @@
 
         <div class="ad-pr-to-date flex-1 max-w-5">
           <div class="d-flex align-items-start dfm-gap-16">
-            <div class="flex-1 d-flex dfm-gap-8 flex-column" *ngIf="!formValues.isRepeat">
+            <div class="flex-1 d-flex dfm-gap-8 flex-column max-w-256" *ngIf="!formValues.isRepeat">
               <span class="text-sm font-weight-medium dfm-text-main-700">{{ "To" | translate }}*</span>
-              <div class="dfm-button-group-wrapper flex-1">
+              <div class="dfm-button-group-wrapper flex-1 ">
                 <div class="input-as-dfm-input">
                   <input [formControl]="endDateControl" (dateChange)="onDateChange($event.value, 'endedAt')"
                   placeholder="{{'dateFormat' | translate}}"
-                  required [min]="startDateControl.value"  [matDatepicker]="picker2" readonly class="w-full min-w-128">
+                  required [min]="startDateControl.value || minFromDate"  [matDatepicker]="picker2" readonly class="w-full min-w-128">
                 </div>
                 <dfm-button-icon
                   color="secondary-gray"
@@ -165,7 +165,7 @@
                 hint="the event repeat indefinitely"
                 size="sm"
               ></dfm-radio-button>
-              <div class="d-flex align-items-start dfm-gap-16">
+              <div class="d-flex align-items-start dfm-gap-16 flex-wrap">
                 <dfm-radio-button
                   class="font-weight-normal max-w-192 "
                   label="{{ 'Until' | translate }}"
@@ -177,7 +177,7 @@
 
                 </dfm-radio-button>
                 <div *ngIf="endDateTypeControl.value === EndDateType.Until">
-                  <div class="dfm-button-group-wrapper flex-1 max-w-192" >
+                  <div class="dfm-button-group-wrapper flex-1 max-w-256">
                     <div class="input-as-dfm-input">
                       <input [formControl]="endDateControl" (dateChange)="onDateChange($event.value, 'endedAt')"
                       placeholder="{{'dateFormat' | translate}}"
