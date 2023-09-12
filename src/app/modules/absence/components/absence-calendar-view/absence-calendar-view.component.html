@@ -1,6 +1,6 @@
 <ng-content select="#top-action"></ng-content>
-<div class="dfm-container gap-16">
-  <div class="not-mobile side-panel-container side-panel-hide " #sidePanel>
+<div class="dfm-container gap-16" *ngIf="(absenceType$ | async) as absenceType ">
+  <div class="not-mobile side-panel-container side-panel-hide " *ngIf="absenceType !== ABSENCE_TYPE_ARRAY[2]" #sidePanel>
     <div class="side-panel bg-white"  >
       <ng-container >
         <div class="d-flex justify-content-end mr-1 date-picker">
@@ -42,7 +42,7 @@
         <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : ' yyyy' }}</ng-template></h4>
 
       <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper align-items-center">
-        <div #menuTrigger="matMenuTrigger"
+        <div #menuTrigger="matMenuTrigger" *ngIf="absenceType !== ABSENCE_TYPE_ARRAY[2]"
           (mouseover)="menuTrigger.openMenu(); $event.stopPropagation(); $event.preventDefault()" (mouseleave)="menuTrigger.closeMenu(); $event.stopPropagation(); $event.preventDefault()"   [matMenuTriggerFor]="infoDetail">
           <dfm-button-icon color="secondary-gray" size="sm" icon="info-circle" ></dfm-button-icon>
           <mat-menu #infoDetail="matMenu" [hasBackdrop]="false">
@@ -56,7 +56,7 @@
             </div>
           </mat-menu>
         </div>
-        <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown">
+        <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown" *ngIf="absenceType !== ABSENCE_TYPE_ARRAY[2]" >
           <dfm-input-dropdown
             size="sm"
             [formControl]="calendarViewFormControl"

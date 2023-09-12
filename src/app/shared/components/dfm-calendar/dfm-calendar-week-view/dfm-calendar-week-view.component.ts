@@ -206,19 +206,19 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 				},
 			});
 
-		this.route.queryParams
-			.pipe(
-				filter(Boolean),
-				filter((queryParams: Params) => !!queryParams['v'] && !!queryParams['d']),
-				distinctUntilChanged(calendarDistinctUntilChanged),
-				map(getFromAndToDate),
-				switchMap(({ fromDate, toDate }) => {
-					return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
-				}),
-				map((data) => dataModification(data.data, this.datePipe)),
-				takeUntil(this.destroy$$),
-			)
-			.subscribe((data) => this.holidayData$$.next(data));
+		// this.route.queryParams
+		// 	.pipe(
+		// 		filter(Boolean),
+		// 		filter((queryParams: Params) => !!queryParams['v'] && !!queryParams['d']),
+		// 		distinctUntilChanged(calendarDistinctUntilChanged),
+		// 		map(getFromAndToDate),
+		// 		switchMap(({ fromDate, toDate }) => {
+		// 			return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
+		// 		}),
+		// 		map((data) => dataModification(data.data, this.datePipe)),
+		// 		takeUntil(this.destroy$$),
+		// 	)
+		// 	.subscribe((data) => this.holidayData$$.next(data));
 	}
 
 	public ngAfterViewInit() {

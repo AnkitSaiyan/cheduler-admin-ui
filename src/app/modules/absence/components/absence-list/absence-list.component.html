@@ -6,7 +6,8 @@
     <dfm-absence-calendar-view>
       <div id="top-action" class="d-flex dfm-gap-8 align-items-center justify-content-between mb-16">
         <div>
-          <dfm-button class="ap-li-title-buttons" color="link" size="lg" routerLink="./">{{absenceType | titlecase | translate}} {{ 'Absence' | translate }} </dfm-button>
+          <dfm-button class="ap-li-title-buttons" color="link" size="lg" *ngIf="absenceType !== 'public-holiday'" routerLink="./">{{absenceType | titlecase | translate}} {{ 'Absence' | translate }} </dfm-button>
+          <dfm-button class="ap-li-title-buttons" color="link" size="lg" *ngIf="absenceType === 'public-holiday'" routerLink="./">{{absenceType | titlecase | translate}} </dfm-button>
         </div>
         <div class="d-flex dfm-gap-8">
           <dfm-button-icon

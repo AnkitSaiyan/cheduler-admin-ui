@@ -164,6 +164,7 @@
 	"AddAbsence": "Afwezigheid toevoegen",
 	"AddRoomsAbsence": "Afwezigheid toevoegen",
 	"AddStaffAbsence": "Afwezigheid toevoegen",
+	"AddPublic-holidayAbsence": "Afwezigheid toevoegen",
 	"Title": "Naam",
 	"StartDate": "Begin",
 	"EndDate": "Einde",
@@ -171,6 +172,7 @@
 	"EditAbsence": "Bewerk afwezigheid",
 	"EditRoomsAbsence": "Bewerk afwezigheid",
 	"EditStaffAbsence": "Bewerk afwezigheid",
+	"EditPublic-holidayAbsence": "Bewerk afwezigheid",
 	"EnterAbsenceTitle": "Geef naam afwezigheid",
 	"Date": "Datum ",
 	"From": "Van",
@@ -493,6 +495,7 @@
 	"APPOINTMENT_AFFECTS_ABSENCE": "Weet u zeker dat u deze afwezigheid wilt toevoegen? \n Let op: Houd er rekening mee dat het toevoegen van deze afwezigheid invloed heeft op uw komende afspraken.",
 	"LabHoliday": "Het Lab is vandaag gesloten",
 	"NoAbsenceForTheDay": "Geen afwezigheid voor de dag",
+	"Public-holiday": "Publieke verlofdag",
 	"REAPEAT_FREQUENCY_SHOULD_BE_GREATER_THAN_0":"Herhaalfrequentie moet groter zijn dan 0",
 	"PRIORITY_SLOT_WILL_BE_REPEATED_EVERY_DAY_DEPENDING_ON_VALUE":"Het prioriteitsslot wordt elke dag of elke x dag herhaald, afhankelijk van de geselecteerde waarde",
 	"PRIORITY_SLOT_WILL_BE_REPEATED_EVERY_MONTH_DEPENDIN_ON_VALUE":"Het prioriteitsslot wordt elke x maanden herhaald op geselecteerde dagen van de maand",
@@ -502,6 +505,13 @@
 	"On": "Op"
 
 }
+
+
+
+
+
+
+
 
 
 

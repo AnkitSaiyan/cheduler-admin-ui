@@ -41,7 +41,7 @@ import { getNumberArray } from 'src/app/shared/utils/getNumberArray';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AbsenceCalendarViewComponent extends DestroyableComponent implements OnInit, OnDestroy {
-	public calendarViewFormControl = new FormControl();
+	public calendarViewFormControl = new FormControl('month', []);
 
 	public dataControl = new FormControl();
 
@@ -76,6 +76,10 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	private isDayView$$ = new BehaviorSubject<Boolean>(false);
 
 	public todayEvent$$ = new BehaviorSubject<any[]>([]);
+
+	public absenceType$!: Observable<(typeof ABSENCE_TYPE_ARRAY)[number]>;
+
+	public ABSENCE_TYPE_ARRAY = ABSENCE_TYPE_ARRAY;
 
 	@ViewChild('sidePanel') sidePanel!: ElementRef;
 
@@ -137,6 +141,11 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			}, 0);
 		});
 
+		this.absenceType$ = this.route.data.pipe(
+			filter((data) => !!data[ABSENCE_TYPE]),
+			map((data) => data[ABSENCE_TYPE]),
+		);
+
 		this.calendarViewFormControl.valueChanges.pipe(filter(Boolean), skip(1), takeUntil(this.destroy$$)).subscribe({
 			next: (value) => {
 				this.updateQuery(this.calendarViewToParam[value]);
@@ -165,7 +174,10 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.absenceData$ = this.weekdayToPractice$$.pipe(
 			filter(Boolean),
 			switchMap(() => combineLatest([this.route.data, this.route.queryParams])),
-			filter(([data, queryParams]: [Params, Params]) => !!data[ABSENCE_TYPE] && !!queryParams['v'] && !!queryParams['d']),
+			filter(
+				([data, queryParams]: [Params, Params]) =>
+					!!data[ABSENCE_TYPE] && data[ABSENCE_TYPE] !== ABSENCE_TYPE_ARRAY[2] && !!queryParams['v'] && !!queryParams['d'],
+			),
 			distinctUntilChanged(this.distinctUntilChanged),
 			tap(([data, queryParams]: [Params, Params]) => {
 				if (data[ABSENCE_TYPE] === ABSENCE_TYPE_ARRAY[1] && queryParams['v'] === 'd') {
@@ -631,6 +643,10 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
+
+
+
 
 
 
