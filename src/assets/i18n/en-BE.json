@@ -164,6 +164,7 @@
 	"AddAbsence": "Add absence",
 	"AddRoomsAbsence": "Add rooms absence",
 	"AddStaffAbsence": "Add staff absence",
+	"AddPublic-holidayAbsence": "Add public holiday",
 	"Title": "Title",
 	"StartDate": "Start date",
 	"EndDate": "End date",
@@ -489,8 +490,11 @@
 	"DocumentSize": "Document size",
 	"APPOINTMENT_AFFECTS_ABSENCE": "Are you sure you want to add this absence? \n Note: Please note that adding this absence will impact your upcoming appointments.",
 	"LabHoliday": " The Lab is closed for today",
-	"NoAbsenceForTheDay": "No absence for the day"
+	"NoAbsenceForTheDay": "No absence for the day",
+	"Public-holiday": "Public Holiday"
 }
+
+
 
 
 

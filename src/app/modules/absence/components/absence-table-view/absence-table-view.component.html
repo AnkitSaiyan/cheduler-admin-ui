@@ -4,8 +4,18 @@
       class="hidden ab-li-title-buttons"
       color="link"
       size="lg"
+      *ngIf="(absenceType$$ | async) !== 'public-holiday'"
       routerLink="./"
     >{{((absenceType$$ | async)! | titlecase | translate)}} {{'Absence' | translate}}
+    </dfm-button>
+
+    <dfm-button
+      class="hidden ab-li-title-buttons"
+      color="link"
+      size="lg"
+      *ngIf="(absenceType$$ | async) === 'public-holiday'"
+      routerLink="./"
+    >{{((absenceType$$ | async)! | titlecase | translate)}}
     </dfm-button>
 
     <dfm-input

@@ -164,6 +164,7 @@
 	"AddAbsence": "Afwezigheid toevoegen",
 	"AddRoomsAbsence": "Afwezigheid toevoegen",
 	"AddStaffAbsence": "Afwezigheid toevoegen",
+	"AddPublic-holidayAbsence": "Afwezigheid toevoegen",
 	"Title": "Naam",
 	"StartDate": "Begin",
 	"EndDate": "Einde",
@@ -171,6 +172,7 @@
 	"EditAbsence": "Bewerk afwezigheid",
 	"EditRoomsAbsence": "Bewerk afwezigheid",
 	"EditStaffAbsence": "Bewerk afwezigheid",
+	"EditPublic-holidayAbsence": "Bewerk afwezigheid",
 	"EnterAbsenceTitle": "Geef naam afwezigheid",
 	"Date": "Datum ",
 	"From": "Van",
@@ -492,8 +494,16 @@
 	"DocumentSize": "Documentgrootte",
 	"APPOINTMENT_AFFECTS_ABSENCE": "Weet u zeker dat u deze afwezigheid wilt toevoegen? \n Let op: Houd er rekening mee dat het toevoegen van deze afwezigheid invloed heeft op uw komende afspraken.",
 	"LabHoliday": "Het Lab is vandaag gesloten",
-	"NoAbsenceForTheDay": "Geen afwezigheid voor de dag"
+	"NoAbsenceForTheDay": "Geen afwezigheid voor de dag",
+	"Public-holiday": "Publieke verlofdag"
 }
+
+
+
+
+
+
+
 
 
 

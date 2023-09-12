@@ -89,11 +89,12 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 					return res;
 				}),
 				switchMap(() => this.absenceApiSvc.deleteAbsence$(id)),
+				switchMap(() => this.route.data),
 				take(1),
 			)
-			.subscribe(() => {
+			.subscribe((data) => {
 				this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang]);
-				this.router.navigate(['/', 'absence'], { queryParamsHandling: 'merge' });
+				this.router.navigate(['/', 'absence', data[ABSENCE_TYPE]], { queryParamsHandling: 'merge' });
 			});
 	}
 

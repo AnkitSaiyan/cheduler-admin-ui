@@ -22,6 +22,11 @@ const absenceRoutes: Routes = [
 				data: { routeType: RouteType.View, routeName: RouteName.Absence, [ABSENCE_TYPE]: ABSENCE_TYPE_ARRAY[1] },
 			},
 			{
+				path: ABSENCE_TYPE_ARRAY[2],
+				component: AbsenceListComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.Absence, [ABSENCE_TYPE]: ABSENCE_TYPE_ARRAY[2] },
+			},
+			{
 				path: `${ABSENCE_TYPE_ARRAY[0]}/:${ABSENCE_ID}/view`,
 				component: ViewAbsenceComponent,
 				data: { routeType: RouteType.View, routeName: RouteName.Absence, [ABSENCE_TYPE]: ABSENCE_TYPE_ARRAY[0] },
@@ -30,6 +35,11 @@ const absenceRoutes: Routes = [
 				path: `${ABSENCE_TYPE_ARRAY[1]}/:${ABSENCE_ID}/view`,
 				component: ViewAbsenceComponent,
 				data: { routeType: RouteType.View, routeName: RouteName.Absence, [ABSENCE_TYPE]: ABSENCE_TYPE_ARRAY[1] },
+			},
+			{
+				path: `${ABSENCE_TYPE_ARRAY[2]}/:${ABSENCE_ID}/view`,
+				component: ViewAbsenceComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.Absence, [ABSENCE_TYPE]: ABSENCE_TYPE_ARRAY[2] },
 			},
 			{
 				path: '**',

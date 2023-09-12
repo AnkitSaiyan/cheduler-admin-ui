@@ -130,13 +130,17 @@ export class AbsenceApiService {
 				.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences`, { params })
 				.pipe(tap(() => this.loaderSvc.deactivate()));
 		}
-		if (absenceType === 'rooms') {
+		if (absenceType === ABSENCE_TYPE_ARRAY[0]) {
 			return this.http
 				.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getroomabsencelist`, { params })
 				.pipe(tap(() => this.loaderSvc.deactivate()));
+		} else if (absenceType === ABSENCE_TYPE_ARRAY[1]) {
+			return this.http
+				.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getstaffabsencelist`, { params })
+				.pipe(tap(() => this.loaderSvc.deactivate()));
 		}
 		return this.http
-			.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getstaffabsencelist`, { params })
+			.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getholidaylist`, { params })
 			.pipe(tap(() => this.loaderSvc.deactivate()));
 	}
 

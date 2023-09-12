@@ -100,6 +100,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 	public EndDateType = EndDateType;
 
+	public ABSENCE_TYPE_ARRAY = ABSENCE_TYPE_ARRAY;
+
 	constructor(
 		private modalSvc: ModalService,
 		private fb: FormBuilder,
@@ -235,6 +237,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 	public saveAbsence() {
 		const { controls } = this.absenceForm;
+		const isHoliday = this.modalData.absenceType === ABSENCE_TYPE_ARRAY[2];
 		let valid = true;
 		if (!this.formValues.roomList.length && !this.formValues.userList.length) {
 			valid = false;
@@ -286,7 +289,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			return;
 		}
 
-		if (!this.formValues.isHoliday && !valid) {
+		if (!isHoliday && !valid) {
 			if (this.formValues.roomList || this.formValues.userList) {
 				if (this.modalData.absenceType === 'rooms') {
 					this.notificationSvc.showNotification(Translate.SelectRoom[this.selectedLang], NotificationType.WARNING);
@@ -306,11 +309,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		let addAbsenceReqData: AddAbsenceRequestData = {
 			...rest,
-			startedAt: rest.isHoliday
-				? (this.datePipe.transform(
-						new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`),
-						'yyyy-MM-dd HH:mm:ss',
-				  ) as string)
+			isHoliday: isHoliday,
+			startedAt: isHoliday
+				? (this.datePipe.transform(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} 00:00:00`), 'yyyy-MM-dd HH:mm:ss') as string)
 				: (this.datePipe.transform(
 						DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`), !rest.isHoliday),
 						'yyyy-MM-dd HH:mm:ss',
@@ -321,14 +322,14 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			endedAt:
 				this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat
 					? null
-					: rest.isHoliday
-					? (this.datePipe.transform(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), 'yyyy-MM-dd HH:mm:ss') as string)
+					: isHoliday
+					? (this.datePipe.transform(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} 23:55:00`), 'yyyy-MM-dd HH:mm:ss') as string)
 					: (this.datePipe.transform(
 							DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), !rest.isHoliday),
 							'yyyy-MM-dd HH:mm:ss',
 					  ) as string),
-			userList: rest.isHoliday ? [] : userList,
-			roomList: rest.isHoliday ? [] : roomList,
+			userList: isHoliday ? [] : userList,
+			roomList: isHoliday ? [] : roomList,
 			repeatType: rest.isRepeat ? rest.repeatType : null,
 			repeatFrequency: rest.isRepeat && rest.repeatFrequency ? +rest.repeatFrequency.toString().split(' ')[0] : 0,
 			repeatDays: '',
@@ -422,14 +423,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			},
 			{ emitEvent: false },
 		);
-	}
-
-	public handleFocusOut() {
-		this.updateRepeatFrequency();
-	}
-
-	public handleFocusIn() {
-		this.updateRepeatFrequency('number');
 	}
 
 	public handleChange(repeatFrequency: InputComponent) {}
@@ -526,7 +519,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 					if (!absenceDetails) {
 						this.absenceForm.get('repeatDays')?.setValue(null);
 					}
-					this.updateRepeatFrequency();
 					if (this.repeatFrequency && (!this.absence$$.value || !Object.keys(this.absence$$.value)?.length)) {
 						this.repeatFrequency.type = 'number';
 					}
@@ -580,40 +572,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			return;
 		}
 		this.endTimes = [...GeneralUtils.FilterArray(this.times, time, 'value')];
-	}
-
-	private updateRepeatFrequency(type: 'number' | 'text' = 'text') {
-		if (!this.repeatFrequency?.value || !this.formValues.repeatFrequency) {
-			return;
-		}
-
-		const { repeatFrequency } = this.formValues;
-
-		switch (type) {
-			case 'text':
-				this.repeatFrequency.type = 'text';
-				if (
-					!repeatFrequency.toString().includes(this.repeatTypeToName[this.formValues.repeatType]) &&
-					+repeatFrequency.toString().split(' ')[0] > 0
-				) {
-					this.absenceForm.patchValue({
-						repeatFrequency: `${repeatFrequency.toString().split(' ')[0]} ${
-							Translate.RepeatType[this.repeatTypeToName[this.formValues.repeatType]][this.selectedLang]
-						}`,
-					});
-				}
-				this.cdr.detectChanges();
-				break;
-			case 'number':
-				if (repeatFrequency.split(' ')[0] && !Number.isNaN(+repeatFrequency.split(' ')[0])) {
-					this.absenceForm.patchValue({
-						repeatFrequency: +repeatFrequency.split(' ')[0],
-					});
-				}
-				this.repeatFrequency.type = 'number';
-				break;
-			default:
-		}
 	}
 
 	private handleTimeChange() {

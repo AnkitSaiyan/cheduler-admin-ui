@@ -14,7 +14,7 @@ export const PRIORITY_ID = 'priorityID';
 
 //params type array
 
-export const ABSENCE_TYPE_ARRAY  = ['rooms', 'staff'] as const
+export const ABSENCE_TYPE_ARRAY = ['rooms', 'staff', 'public-holiday'] as const;
 
 // Language Constants
 
