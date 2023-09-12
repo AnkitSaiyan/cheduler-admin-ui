@@ -90,7 +90,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
 	public endDateControl = new FormControl();
 
-	public endDateTypeControl = new FormControl(EndDateType.Never, []);
+	public endDateTypeControl = new FormControl(EndDateType.Until, []);
 
 	public EndDateType = EndDateType;
 
