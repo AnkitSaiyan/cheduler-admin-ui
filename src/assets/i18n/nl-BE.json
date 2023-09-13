@@ -212,6 +212,7 @@
 	"HH:MM": "uur:min",
 	"EnterSiteName": "Geef naam site",
 	"AreyousureyouwanttodeletethisAbsence": "Ben je zeker dat je de afwezigheid wil verwijderen?",
+	"AreyousureyouwanttodeletethisPunlicHoliday": "Ben je zeker dat je de publieke verlofdag wil verwijderen?",
 	"ExamInvolvingStaff": "Selecteer onderzoek met wil medewerkers",
 	"ExamSearch": "Zoek op naam onderzoek",
 	"AddExam": "Onderzoek toevoegen",
@@ -510,6 +511,7 @@
 	"Month(s)": "Maanden",
 	"On": "Op"
 }
+
 
 
 

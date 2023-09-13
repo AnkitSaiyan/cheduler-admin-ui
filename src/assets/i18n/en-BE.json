@@ -213,6 +213,7 @@
 	"HH:MM": "hh:mm",
 	"EnterSiteName": "Enter site name",
 	"AreyousureyouwanttodeletethisAbsence": "Are you sure you want to delete the absence?",
+	"AreyousureyouwanttodeletethisPunlicHoliday": "Are you sure you want to delete the public holiday?",
 	"ExamInvolvingStaff": "Select exams involving this staff",
 	"ExamSearch": "Search by examination name",
 	"AddExam": "Add examination",
@@ -508,6 +509,7 @@
 	"Month(s)": "Month(s)",
 	"On": "On"
 }
+
 
 
 
