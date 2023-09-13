@@ -28,7 +28,7 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
 
 	public doughnutChartLegend = false;
 
-	public noDataFound: boolean = false;
+	public noDataFound: boolean = true;
 
 	public doughnutChartPlugins = [pluginDataLabels.default];
 
