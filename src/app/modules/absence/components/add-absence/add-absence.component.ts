@@ -362,7 +362,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				.pipe(takeUntil(this.destroy$$))
 				.subscribe({
 					next: () => {
-						this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceUpdated[this.selectedLang]);
+						this.notificationSvc.showNotification(
+							this.modalData.absenceType === ABSENCE_TYPE_ARRAY?.[2]
+								? Translate.SuccessMessage.PublicHolidayUpdate[this.selectedLang]
+								: Translate.SuccessMessage.AbsenceUpdated[this.selectedLang],
+						);
 						this.submitting$$.next(false);
 						this.closeModal(true);
 					},
@@ -377,7 +381,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				.pipe(takeUntil(this.destroy$$))
 				.subscribe({
 					next: () => {
-						this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceAdded[this.selectedLang]);
+						this.notificationSvc.showNotification(
+							this.modalData.absenceType === ABSENCE_TYPE_ARRAY?.[2]
+								? Translate.SuccessMessage.PublicHolidayAdded[this.selectedLang]
+								: Translate.SuccessMessage.AbsenceAdded[this.selectedLang],
+						);
 						this.submitting$$.next(false);
 						this.closeModal(true);
 						// this.activeModal.close(true);
