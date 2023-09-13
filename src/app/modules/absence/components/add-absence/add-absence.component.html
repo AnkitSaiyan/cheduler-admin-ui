@@ -10,7 +10,7 @@
         <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" (click)="closeModal(false)"> </dfm-button-icon>
       </div>
 
-      <dfm-button color="link" size="lg"> {{ modalData?.edit ? ('EditAbsence' | translate) : ('AddAbsence' | translate) }} </dfm-button>
+      <dfm-button color="link" size="lg"> {{ modalData?.edit ? ((modalData.absenceType === 'public-holiday' ? 'EditPublicHoliday' :'EditAbsence') | translate) : ((modalData.absenceType === 'public-holiday' ? 'AddPublicHoliday' :'AddAbsence') | translate) }} </dfm-button>
     </div>
   </section>
 

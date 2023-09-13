@@ -30,10 +30,11 @@
       <!-- Mobile View -->
       <div class="hidden dfm-gap-8 align-items-center ab-vw-title-buttons-mv">
         <div class="rounded-circle overflow-hidden">
-          <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" routerLink="/absence" queryParamsHandling="merge"> </dfm-button-icon>
+          <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" [routerLink]="'/absence/'+absenceType" queryParamsHandling="merge"> </dfm-button-icon>
         </div>
 
-        <dfm-button color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{ 'AbsenceView' | translate }} </dfm-button>
+        <dfm-button color="link" size="lg" [routerLink]="'/absence/'+absenceType" *ngIf="absenceType !== 'public-holiday'" queryParamsHandling="merge">{{ 'AbsenceView' | translate }} </dfm-button>
+        <dfm-button color="link" size="lg" [routerLink]="'/absence/'+absenceType" *ngIf="absenceType === 'public-holiday'" queryParamsHandling="merge">{{ 'Public-holiday' | translate }} </dfm-button>
       </div>
       <!-- ** -->
     </section>
