@@ -54,14 +54,11 @@
           </div>
 
           <div class="d-flex dfm-gap-8 justify-content-between">
-            <span class="flex-1">{{ absenceDetails.isRepeat ? ('StartDate' | translate) : ('Date' | translate) }}</span>
-            <span class="flex-1" *ngIf="!absenceDetails.isRepeat"
-              >{{ absenceDetails.startedAt | dfmDefaultDate }} <ng-container *ngIf="absenceDetails.endedAt">- {{ absenceDetails.endedAt | dfmDefaultDate : 'time' }}</ng-container></span
-            >
-            <span class="flex-1" *ngIf="absenceDetails.isRepeat">{{ absenceDetails.startedAt | dfmDefaultDate }},</span>
+            <span class="flex-1">{{ 'StartDate' | translate}}</span>
+            <span class="flex-1">{{ absenceDetails.startedAt | dfmDefaultDate }},</span>
           </div>
 
-          <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="absenceDetails.isRepeat && absenceDetails.endedAt">
+          <div class="d-flex dfm-gap-8 justify-content-between" *ngIf="absenceDetails.endedAt">
             <span class="flex-1">{{ 'EndDate' | translate }}</span>
             <span class="flex-1 text-truncate">{{ absenceDetails.endedAt | dfmDefaultDate | dashIfNothing }}</span>
           </div>
