@@ -246,10 +246,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
 			data: {
 				titleText: 'Confirmation',
-				bodyText:
-					this.absenceType$$.value === ABSENCE_TYPE_ARRAY?.[2]
-						? 'AreyousureyouwanttodeletethisPunlicHoliday'
-						: 'AreyousureyouwanttodeletethisAbsence',
+				bodyText: 'AreyousureyouwanttodeletethisAbsence',
 				confirmButtonText: 'Delete',
 				cancelButtonText: 'Cancel',
 			} as ConfirmActionModalData,
@@ -263,11 +260,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 			)
 			.subscribe({
 				next: () => {
-					this.notificationSvc.showNotification(
-						this.absenceType$$.value === ABSENCE_TYPE_ARRAY?.[2]
-							? Translate.SuccessMessage.PublicHolidayDeleted[this.selectedLang]
-							: Translate.SuccessMessage.AbsenceDeleted[this.selectedLang],
-					);
+					this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang]);
 					// filtering out deleted absence
 					this.absences$$.next([...this.absences$$.value.filter((a) => +a.absenceId !== +id)]);
 				},
@@ -389,8 +382,6 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		this.filteredAbsences$$.next(GeneralUtils.SortArray(this.filteredAbsences$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
-
-
 
 
 

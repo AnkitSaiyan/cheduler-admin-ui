@@ -77,10 +77,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 		const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
 			data: {
 				titleText: 'Confirmation',
-				bodyText:
-					this.absenceType$$.value === ABSENCE_TYPE_ARRAY?.[2]
-						? 'AreyousureyouwanttodeletethisPunlicHoliday'
-						: 'AreyousureyouwanttodeletethisAbsence',
+				bodyText: 'AreyousureyouwanttodeletethisAbsence',
 				confirmButtonText: 'Delete',
 				cancelButtonText: 'Cancel',
 			} as ConfirmActionModalData,
@@ -96,11 +93,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 				take(1),
 			)
 			.subscribe((data) => {
-				this.notificationSvc.showNotification(
-					this.absenceType$$.value === ABSENCE_TYPE_ARRAY?.[2]
-						? Translate.SuccessMessage.PublicHolidayDeleted[this.selectedLang]
-						: Translate.SuccessMessage.AbsenceDeleted[this.selectedLang],
-				);
+				this.notificationSvc.showNotification(Translate.SuccessMessage.AbsenceDeleted[this.selectedLang]);
 				this.router.navigate(['/', 'absence', data[ABSENCE_TYPE]], { queryParamsHandling: 'merge' });
 			});
 	}

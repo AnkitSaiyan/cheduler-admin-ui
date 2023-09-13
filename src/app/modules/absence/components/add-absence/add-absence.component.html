@@ -10,7 +10,7 @@
         <dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" (click)="closeModal(false)"> </dfm-button-icon>
       </div>
 
-      <dfm-button color="link" size="lg"> {{ modalData?.edit ? ((modalData.absenceType === 'public-holiday' ? 'EditPublicHoliday' :'EditAbsence') | translate) : ((modalData.absenceType === 'public-holiday' ? 'AddPublicHoliday' :'AddAbsence') | translate) }} </dfm-button>
+      <dfm-button color="link" size="lg"> {{ modalData?.edit ? ('EditAbsence' | translate) : ('AddAbsence' | translate) }} </dfm-button>
     </div>
   </section>
 
@@ -188,7 +188,7 @@
                 <!-- <div *ngIf="endDateTypeControl.value === EndDateType.Until"> -->
                   <div class="flex-1 d-flex dfm-gap-8 flex-column">
                     <span class="text-sm font-weight-medium dfm-text-main-700">{{ "Until" | translate }}*</span>
-                  <div class="dfm-button-group-wrapper flex-1 " >
+                  <div class="dfm-button-group-wrapper flex-1 max-w-256" >
                     <div class="input-as-dfm-input">
                       <input [formControl]="endDateControl" (dateChange)="onDateChange($event.value, 'endedAt')"
                       placeholder="{{'dateFormat' | translate}}"

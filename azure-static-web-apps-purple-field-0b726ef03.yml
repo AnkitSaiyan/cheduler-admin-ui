@@ -10,38 +10,39 @@ trigger:
       - uat
 
 jobs:
-  - job: build_and_deploy_job
-    displayName: Build and Deploy Job
-    condition: or(eq(variables['Build.Reason'], 'Manual'),or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'IndividualCI')))
-    pool:
-      vmImage: ubuntu-latest
-    variables:
-      - group: Azure-Static-Web-Apps-purple-field-0b726ef03-variable-group
-    steps:
-      - checkout: self
-        submodules: true
-      - task: Npm@1
-        displayName: 'npm install'
-        inputs:
-          command: 'custom'
-          customCommand: 'install --force'
-          customRegistry: 'useFeed'
-          customFeed: '18e540ed-207f-4a1e-8e3b-014618dd9c9a'
-      - script: |
-          npm install -g @angular/cli
-          npm install
-          ng build --configuration production --base-href /admin/
-      - task: Bash@3
-        displayName: 'Copy staticwebapp.config.json'
-        inputs:
-          targetType: 'inline'
-          script: 'cp ./staticwebapp.config.json ./dist/diflexmo-admin/staticwebapp.config.json'
-      - task: AzureStaticWebApp@0
-        inputs:
-          skip_app_build: true
-          azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_PURPLE_FIELD_0B726EF03)
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: './dist/diflexmo-admin' # App source code path
+- job: build_and_deploy_job
+  displayName: Build and Deploy Job
+  condition: or(eq(variables['Build.Reason'], 'Manual'),or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'IndividualCI')))
+  pool:
+    vmImage: ubuntu-latest
+  variables:
+  - group: Azure-Static-Web-Apps-purple-field-0b726ef03-variable-group
+  steps:
+  - checkout: self
+    submodules: true
+  - task: Npm@1
+    displayName: 'npm install'
+    inputs:
+      command: 'custom'
+      customCommand: 'install --force'
+      customRegistry: 'useFeed'
+      customFeed: '18e540ed-207f-4a1e-8e3b-014618dd9c9a'
+  - task: Npm@1
+    displayName: 'npm build'
+    inputs:
+      command: 'custom'
+      customCommand: 'run build --configuration=production'
+  - task: Bash@3
+    displayName: 'Copy staticwebapp.config.json'
+    inputs:
+      targetType: 'inline'
+      script: 'cp ./staticwebapp.config.json ./dist/diflexmo-admin/staticwebapp.config.json'
+  - task: AzureStaticWebApp@0
+    inputs:
+      skip_app_build: true
+      azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_PURPLE_FIELD_0B726EF03)
+###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
+# For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
+      app_location: "./dist/diflexmo-admin" # App source code path
 ###### End of Repository/Build Configurations ######
 
