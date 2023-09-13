@@ -175,7 +175,14 @@
 								<input #fileInput type="file" class="hidden" accept="image/*, application/pdf"
 								(click)="$event.stopPropagation();"
 									(change)="uploadRefferingNote($event, item.id)" />
-								<span class="upload-button" *ngIf="!item.documentCount" (click)="$event.stopPropagation(); fileInput.click();">
+								<span 
+								class="upload-button" 
+								*ngIf="!item.documentCount" 
+								(click)="$event.stopPropagation(); fileInput.click();"
+								ngbPopover="{{ 'UploadReferralNote' | translate }}"
+								triggers="mouseenter:mouseleave"
+								popoverClass="popover-p-8"
+								[openDelay]="200">
 									<img src="../../../../../assets/images/upload-icon.png" alt="" width="16px" />
 								</span>
 							</dfm-table-body-cell>
