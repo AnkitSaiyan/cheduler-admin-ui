@@ -233,20 +233,11 @@
         </div>
       </div>
 
-      <span
-        class="font-weight-medium text-sm dfm-my-8"
-        *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false && !isOutside"
-      >
-        {{ 'NoSlotsFoundForSelectedExamsAndTime' | translate }}
-      </span>
-
-      <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf=" (loadingSlots$$ | async) && !isOutside"> {{ 'LoadingSlots' | translate }} </span>
-
-      <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="slots?.length && !isOutside">
+      <div class="ad-ap-slots-container dfm-gap-16 w-full overflow-x-auto" *ngIf="!isOutside">
         <ng-container *ngIf="!isCombinable; else combinable">
           <div class="dfm-card d-flex flex-column dfm-p-16 card-item" *ngFor="let examID of exams.value">
             <div class="d-flex flex-column gap-1">
-              <div class="d-flex gap-2 align-items-center text-sm">
+              <div class="d-flex gap-2 align-items-center text-sm" *ngIf="examIdToDetails[examID]?.name">
                 <span class="font-weight-medium">{{ 'ExamName' | translate }}: </span>
                 <span>{{ examIdToDetails[examID]?.name }}</span>
               </div>
@@ -283,7 +274,7 @@
 
         <ng-template #combinable>
           <div class="d-flex flex-column gap-1">
-            <div class="d-flex gap-2 align-items-center text-sm">
+            <div class="d-flex gap-2 align-items-center text-sm" *ngIf="exams.value?.length">
               <span class="font-weight-medium">{{ 'ExamName' | translate }}: </span>
               <span>
                 <ng-container *ngFor="let examID of exams.value; let i = index">
@@ -317,6 +308,15 @@
           </div>
         </ng-template>
       </div>
+      <span
+        class="font-weight-medium text-sm dfm-my-8"
+        *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false && !isOutside"
+      >
+        {{ 'NoSlotsFoundForSelectedExamsAndTime' | translate }}
+      </span>
+
+      <span class="font-weight-medium dfm-text-main-500 text-sm dfm-my-8" *ngIf=" (loadingSlots$$ | async) && !isOutside"> {{ 'LoadingSlots' | translate }} </span>
+
       <div class="d-flex dfm-gap-32">
       <div style="flex-basis: 66%;">
       <dfm-text-area
