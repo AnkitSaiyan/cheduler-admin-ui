@@ -571,55 +571,58 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 		this.loadingSlots$$.next(true);
 
-		this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
-			.pipe(take(1))
-			.subscribe((slots) => {
-				if (!this.isOutside) this.setSlots(slots[0].slots, this.isCombinable);
+    setTimeout(() => {
+			this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
+				.pipe(take(1))
+				.subscribe((slots) => {
+					if (!this.isOutside) this.setSlots(slots[0].slots, this.isCombinable);
 
-				this.loadingSlots$$.next(false);
+					this.loadingSlots$$.next(false);
 
-				const slotData = (start, end, examId, roomList, userList) =>
-					({
-						start,
-						end,
-						roomList,
-						userList,
-						examId,
-					} as SlotModified);
+					const slotData = (start, end, examId, roomList, userList) =>
+						({
+							start,
+							end,
+							roomList,
+							userList,
+							examId,
+						} as SlotModified);
 
-				if (appointment?.exams?.length) {
-					// const exams = this.isCombinable ? [appointment.exams[0]] : [...appointment.exams];
-					const exams = [...appointment.exams];
+					if (appointment?.exams?.length) {
+						// const exams = this.isCombinable ? [appointment.exams[0]] : [...appointment.exams];
+						const exams = [...appointment.exams];
 
-					exams.forEach((exam) => {
-						const start = DateTimeUtils.DateTo24TimeString(exam.startedAt);
-						const end = DateTimeUtils.DateTo24TimeString(exam.endedAt);
-						const userList = exam.users?.filter((u) => +u.examId === +exam.id)?.map((u) => +u.id) || [];
-						const roomList = [
-							...(exam.rooms
-								?.filter((r) => +r.examId === +exam.id)
-								?.map((r) => ({
-									start: (r?.startedAt as string)?.slice(-8),
-									end: (r?.endedAt as string)?.slice(-8),
-									roomId: +r.id,
-								})) || []),
-						];
+						exams.forEach((exam) => {
+							const start = DateTimeUtils.DateTo24TimeString(exam.startedAt);
+							const end = DateTimeUtils.DateTo24TimeString(exam.endedAt);
+							const userList = exam.users?.filter((u) => +u.examId === +exam.id)?.map((u) => +u.id) || [];
+							const roomList = [
+								...(exam.rooms
+									?.filter((r) => +r.examId === +exam.id)
+									?.map((r) => ({
+										start: (r?.startedAt as string)?.slice(-8),
+										end: (r?.endedAt as string)?.slice(-8),
+										roomId: +r.id,
+									})) || []),
+							];
 
-						this.handleSlotSelectionToggle(
-							slotData(
-								this.isCombinable ? DateTimeUtils.DateTo24TimeString(appointment.startedAt) : start,
-								this.isCombinable ? DateTimeUtils.DateTo24TimeString(appointment.endedAt) : end,
-								+exam.id,
-								roomList,
-								userList,
-							),
-							!!appointment.id,
-						);
-					});
-				}
+							this.handleSlotSelectionToggle(
+								slotData(
+									this.isCombinable ? DateTimeUtils.DateTo24TimeString(appointment.startedAt) : start,
+									this.isCombinable ? DateTimeUtils.DateTo24TimeString(appointment.endedAt) : end,
+									+exam.id,
+									roomList,
+									userList,
+								),
+								!!appointment.id,
+							);
+						});
+					}
 
-				this.cdr.detectChanges();
-			});
+					this.cdr.detectChanges();
+				});
+		}, 600);
+
 	}
 
 	private findSlot(examID: number, start: string, end: string): SlotModified | undefined {
