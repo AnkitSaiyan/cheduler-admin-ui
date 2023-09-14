@@ -102,7 +102,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	public uploadFileName!: string;
 	private fileSize!: number;
 	public documentStage: string = '';
-	
 
 	constructor(
 		private fb: FormBuilder,
@@ -152,7 +151,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 		this.siteManagementApiSvc.siteManagementData$.pipe(take(1)).subscribe((siteSettings) => {
 			this.isCombinable = siteSettings.isSlotsCombinable;
-			this.fileSize = siteSettings.documentSizeInKb/1024
+			this.fileSize = siteSettings.documentSizeInKb / 1024;
 			this.isDoctorConsentDisable$$.next(siteSettings.doctorReferringConsent === 1);
 		});
 
@@ -195,7 +194,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			.subscribe((appointment) => {
 				this.appointment$$.next(appointment ?? ({} as Appointment));
 				this.updateForm(appointment);
-				if(appointment?.id && appointment.documentCount)this.getDocument(appointment.id)
+				if (appointment?.id && appointment.documentCount) this.getDocument(appointment.id);
 			});
 
 		this.appointmentForm
@@ -438,8 +437,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot, this.isCombinable);
 	}
 
-	public handleSlotSelectionToggle(slots: SlotModified) {
-		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
+	public handleSlotSelectionToggle(slots: SlotModified, isEdit: boolean = false) {
+		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable, isEdit);
 	}
 
 	public handleEmailInput(e: Event): void {
@@ -614,6 +613,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 								roomList,
 								userList,
 							),
+							!!appointment.id,
 						);
 					});
 				}
@@ -722,15 +722,15 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		this.documentStage = '';
 	}
 
-	private getDocument(id:number) {
+	private getDocument(id: number) {
 		this.appointmentApiSvc
-          .getDocumentById$(id, true)
-          .pipe(takeUntil(this.destroy$$))
+			.getDocumentById$(id, true)
+			.pipe(takeUntil(this.destroy$$))
 			.subscribe((res) => {
 				this.documentStage = res.fileName;
 				this.appointmentForm.patchValue({
 					qrCodeId: res?.apmtQRCodeId,
 				});
-          });
+			});
 	}
 }

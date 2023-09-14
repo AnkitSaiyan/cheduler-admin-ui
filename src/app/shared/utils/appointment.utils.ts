@@ -31,42 +31,41 @@ export class AppointmentUtils {
 		slots.forEach((slot) => {
 			const uniqueSlots = new Set<string>();
 
-				slot?.exams?.forEach((exam: any) => {
-					const slotString = isCombinable
-						? `${slot.start}-${slot.end}`
-						: `${exam.start}-${exam.end}`;
+			slot?.exams?.forEach((exam: any) => {
+				const slotString = isCombinable ? `${slot.start}-${slot.end}` : `${exam.start}-${exam.end}`;
 
-					if (!uniqueSlots.has(slotString + exam.examId)) {
-						const newSlot = {
-							examId: exam.examId,
-							roomList: exam.rooms,
-							userList: exam.users,
-							...( isCombinable ? {
-								start: slot.start,
-								end: slot.end,
-								exams: slot.exams,
-							} : {
-								start: exam.start,
-								end: exam.end,
-							})
-						} as SlotModified;
+				if (!uniqueSlots.has(slotString + exam.examId)) {
+					const newSlot = {
+						examId: exam.examId,
+						roomList: exam.rooms,
+						userList: exam.users,
+						...(isCombinable
+							? {
+									start: slot.start,
+									end: slot.end,
+									exams: slot.exams,
+							  }
+							: {
+									start: exam.start,
+									end: exam.end,
+							  }),
+					} as SlotModified;
 
-						if (!examIdToSlotsMap[+exam.examId]) {
-							examIdToSlotsMap[+exam.examId] = [];
-						}
-
-						examIdToSlotsMap[+exam.examId].push(newSlot);
-						newSlots.push(newSlot);
-						uniqueSlots.add(slotString + exam.examId);
+					if (!examIdToSlotsMap[+exam.examId]) {
+						examIdToSlotsMap[+exam.examId] = [];
 					}
-				});
+
+					examIdToSlotsMap[+exam.examId].push(newSlot);
+					newSlots.push(newSlot);
+					uniqueSlots.add(slotString + exam.examId);
+				}
+			});
 		});
 
 		return { newSlots, examIdToSlots: examIdToSlotsMap };
 	}
 
 	public static IsSlotAvailable(slot: SlotModified, selectedTimeSlot: SelectedSlots, isCombinable = false) {
-
 		return !Object.values(selectedTimeSlot)?.some((value) => {
 			const firstSlot = value?.slot?.split('-');
 			return (
@@ -75,8 +74,8 @@ export class AppointmentUtils {
 		});
 	}
 
-	public static ToggleSlotSelection(slot: SlotModified, selectedTimeSlot: SelectedSlots, isCombinable = false): void {
-		if (!this.IsSlotAvailable(slot, selectedTimeSlot, isCombinable) || !slot?.end || !slot?.start) {
+	public static ToggleSlotSelection(slot: SlotModified, selectedTimeSlot: SelectedSlots, isCombinable = false, isEdit = false): void {
+		if (!isEdit && (!this.IsSlotAvailable(slot, selectedTimeSlot, isCombinable) || !slot?.end || !slot?.start)) {
 			return;
 		}
 		// debugger;
@@ -92,8 +91,6 @@ export class AppointmentUtils {
 				userList: slot?.userList ?? [],
 			};
 		}
-
-
 	}
 
 	public static GenerateSlotRequestData(date: DateDistributed, examList: number[]): AppointmentSlotsRequestData {
@@ -176,6 +173,7 @@ export class AppointmentUtils {
 		return requestData;
 	}
 }
+
 
 
 
