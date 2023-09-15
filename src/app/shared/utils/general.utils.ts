@@ -19,6 +19,7 @@ export class GeneralUtils {
 	}
 
 	public static saveSessionExpTime(): void {
+		localStorage.removeItem('isSessionExpired');
 		localStorage.setItem('sessionExp', JSON.stringify(new Date(new Date().getTime() + 60 * 60 * 1000).getTime()));
 	}
 
