@@ -75,6 +75,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	public absenceData: { [key: string]: any[] } = {};
 	@Input()
 	public format24Hour = false;
+	@Input()
+	public disableDblClick = false;	
 	@Output()
 	public selectedDateEvent = new EventEmitter<Date>();
 	@Output()
@@ -541,7 +543,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	}
 
 	public async addAppointment(e: MouseEvent, eventsContainer?: HTMLDivElement, appointment?: Appointment) {
-		if (this.permissionSvc.permissionType === UserRoleEnum.Reader || location.href.includes('absence')) return;
+		if (this.permissionSvc.permissionType === UserRoleEnum.Reader || this.disableDblClick) return;
 		const currentDate = new Date();
 
 		let minutes = Math.round(+e?.offsetY / this.pixelPerMinute);

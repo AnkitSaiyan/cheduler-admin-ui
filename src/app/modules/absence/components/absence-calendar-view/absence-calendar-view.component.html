@@ -130,6 +130,7 @@
             [timeSlot]="selectedSlot$$ | async"
             [absenceData]="(absenceDayViewData$ | async) ?? {}"
             [format24Hour]="true"
+            [disableDblClick]="true"
           ></dfm-calendar-day-view>
         </ng-container>
       </ng-container>
