@@ -541,7 +541,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	}
 
 	public async addAppointment(e: MouseEvent, eventsContainer?: HTMLDivElement, appointment?: Appointment) {
-		if (this.permissionSvc.permissionType === UserRoleEnum.Reader) return;
+		if (this.permissionSvc.permissionType === UserRoleEnum.Reader || location.href.includes('absence')) return;
 		const currentDate = new Date();
 
 		let minutes = Math.round(+e?.offsetY / this.pixelPerMinute);
