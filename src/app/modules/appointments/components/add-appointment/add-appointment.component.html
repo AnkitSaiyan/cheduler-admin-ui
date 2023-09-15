@@ -123,6 +123,7 @@
             formControlName = "socialSecurityNumber"
           >
           </dfm-input>
+          <small *ngIf="!appointmentForm.get('socialSecurityNumber')?.valid" class="validation-error">{{ 'InvalidSocialSecurityNumber' | translate }}</small>
           </div>
 
         <div class="flex-1 w-full min-w-128" *ngIf="(isDoctorConsentDisable$$ | async) === false">

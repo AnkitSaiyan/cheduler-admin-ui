@@ -416,6 +416,7 @@
 	"SelectRole": "Selecteer rol",
 	"socialSecurityNumber": "Rijksregisternummer",
 	"enterSocialSecurityNumber": "Vul het rijksregisternummer in",
+	"InvalidSocialSecurityNumber": "Rijksregisternummer Ongeldige",
 	"Jan": "Jan",
 	"Feb": "Feb",
 	"Mar": "Mar",
