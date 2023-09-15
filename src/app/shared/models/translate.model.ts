@@ -594,6 +594,11 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Uw sessie is verlopen. Log opnieuw in',
 	},
 
+	failesToFetchUserDetails: {
+		[ENG_BE]: 'Failed to fetch user details. Logging out.',
+		[DUTCH_BE]: 'Kan gebruikersgegevens niet ophalen. Uitloggen.',
+	},
+
 	Profile: {
 		[ENG_BE]: 'Profile',
 		[DUTCH_BE]: 'Profiel',
