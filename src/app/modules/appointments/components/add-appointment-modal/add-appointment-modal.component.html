@@ -109,6 +109,7 @@
             [label]="('socialSecurityNumber' | translate)"
             formControlName = "socialSecurityNumber"
           ></dfm-input>
+          <small *ngIf="!appointmentForm.get('socialSecurityNumber')?.valid" class="validation-error">{{ 'InvalidSocialSecurityNumber' | translate }}</small>
           </div>
           <div class="flex-1 small-dropdown min-w-256 d-flex flex-column">
             <dfm-input-dropdown
