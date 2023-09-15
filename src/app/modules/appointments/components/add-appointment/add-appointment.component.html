@@ -117,13 +117,13 @@
 
         <div class="flex-1 min-w-256 w-full">
           <dfm-input
-            type="number"
             size="md"
             placeholder="{{ 'enterSocialSecurityNumber' | translate }}"
             label="{{ 'socialSecurityNumber' | translate | titlecase }}"
             formControlName = "socialSecurityNumber"
           >
           </dfm-input>
+          <small *ngIf="!appointmentForm.get('socialSecurityNumber')?.valid" class="validation-error">{{ 'InvalidSocialSecurityNumber' | translate }}</small>
           </div>
 
         <div class="flex-1 w-full min-w-128" *ngIf="(isDoctorConsentDisable$$ | async) === false">

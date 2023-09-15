@@ -504,7 +504,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			userId: [null, [Validators.required]],
 			comments: ['', []],
 			approval: [AppointmentStatus.Pending, []],
-			socialSecurityNumber: [null, []],
+			socialSecurityNumber: [null, [Validators.pattern('^[0-9.]+$')]],
 			qrCodeId: ['', []],
 		});
 	}
