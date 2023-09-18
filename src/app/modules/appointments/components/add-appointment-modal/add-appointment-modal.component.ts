@@ -634,7 +634,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	private uploadDocument(file: any) {
-		this.appointmentApiSvc.uploadDocumnet(file, '').subscribe({
+		this.appointmentApiSvc.uploadDocumnet(file, '', (this.modalData?.appointment?.id ?? 0)+'').subscribe({
 			next: (res) => {
 				this.documentStage = this.uploadFileName;
 				this.appointmentForm.patchValue({
