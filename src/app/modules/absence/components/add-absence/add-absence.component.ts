@@ -311,9 +311,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			...rest,
 			isHoliday: isHoliday,
 			startedAt: isHoliday
-				? (DateTimeUtils.formatDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} 00:00:00`)) as string)
-				: (DateTimeUtils.formatDate(
-						DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`), !rest.isHoliday)
+				? (this.datePipe.transform(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} 00:00:00`).toISOString(), 'yyyy-MM-dd HH:mm:ss') as string)
+				: (this.datePipe.transform(
+						DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`), !rest.isHoliday).toISOString(),
+						'yyyy-MM-dd HH:mm:ss',
 				  ) as string),
 			// endedAt: rest.isRepeat
 			//   ? `${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`
@@ -322,9 +323,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat
 					? null
 					: isHoliday
-					? (DateTimeUtils.formatDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} 23:55:00`)) as string)
-					: (DateTimeUtils.formatDate(
-							DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), !rest.isHoliday),
+					? (this.datePipe.transform(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} 23:55:00`).toISOString(), 'yyyy-MM-dd HH:mm:ss') as string)
+					: (this.datePipe.transform(
+							DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), !rest.isHoliday).toISOString(),
+							'yyyy-MM-dd HH:mm:ss',
 					  ) as string),
 			userList: isHoliday ? [] : userList,
 			roomList: isHoliday ? [] : roomList,
