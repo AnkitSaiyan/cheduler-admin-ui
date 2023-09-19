@@ -307,6 +307,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
 
+    alert('first-310');
+
 		let addAbsenceReqData: AddAbsenceRequestData = {
 			...rest,
 			isHoliday: isHoliday,
@@ -335,11 +337,14 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			repeatDays: '',
 			addAppointmentImpactedAbsence: this.addAppointmentImpactedAbsence,
 		};
+
+		alert('second-341');
 		if (this.modalData.absenceType === 'rooms') {
 			addAbsenceReqData.userList = [];
 		} else {
 			addAbsenceReqData.roomList = [];
 		}
+    alert('third-347');
 
 		if (rest.isRepeat && repeatDays?.length) {
 			addAbsenceReqData.repeatDays = repeatDays?.reduce((acc, curr, i) => {
@@ -349,10 +354,12 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				return acc + curr;
 			}, '');
 		}
+		alert('fourth-357');
 
 		if (this.modalData?.absenceID) {
 			addAbsenceReqData.id = this.modalData.absenceID;
 		}
+    alert('fifth-362');
 
 		this.submitting$$.next(true);
 
@@ -376,6 +383,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 					},
 				});
 		} else {
+			alert('sixth-386');
 			this.absenceApiSvc
 				.addNewAbsence$(addAbsenceReqData)
 				.pipe(takeUntil(this.destroy$$))
