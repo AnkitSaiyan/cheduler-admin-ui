@@ -165,7 +165,7 @@
 	"AddPublicHoliday": "Publieke verlofdag toevoegen",
 	"AddRoomsAbsence": "Afwezigheid toevoegen",
 	"AddStaffAbsence": "Afwezigheid toevoegen",
-	"AddPublic-holidayAbsence": "Afwezigheid toevoegen",
+	"AddPublic-holidayAbsence": "Publieke verlofdag toevoegen",
 	"Title": "Naam",
 	"StartDate": "Begin",
 	"EndDate": "Einde",
@@ -174,7 +174,7 @@
 	"EditPublicHoliday": "Bewerk publieke verlofdag",
 	"EditRoomsAbsence": "Bewerk afwezigheid",
 	"EditStaffAbsence": "Bewerk afwezigheid",
-	"EditPublic-holidayAbsence": "Bewerk afwezigheid",
+	"EditPublic-holidayAbsence": "Bewerk publieke verlofdag afwezigheid",
 	"EnterAbsenceTitle": "Geef naam afwezigheid",
 	"Date": "Datum ",
 	"From": "Van",
@@ -304,7 +304,7 @@
 	"DeleteAppointment": "Afspraak verwijderen",
 	"AppointmentView": "Afspraken bekijk",
 	"AppoinmentDetails": "Details afspraak",
-	"LastModified": "Laatst gewijzigd",
+	"LastModified": "Aangevraagd op",
 	"Number": "Nummer",
 	"AppointmentNo": "Afspraaknr.",
 	"PatientDetails": "Gegevens patiënt",
@@ -416,6 +416,7 @@
 	"SelectRole": "Selecteer rol",
 	"socialSecurityNumber": "Rijksregisternummer",
 	"enterSocialSecurityNumber": "Vul het rijksregisternummer in",
+	"InvalidSocialSecurityNumber": "Rijksregisternummer Ongeldige",
 	"Jan": "Jan",
 	"Feb": "Feb",
 	"Mar": "Mar",
@@ -509,7 +510,9 @@
 	"Day(s)": "Dagen",
 	"Week(s)": "Weken",
 	"Month(s)": "Maanden",
-	"On": "Op"
+	"On": "Op",
+	"YELLOW_REPRESENTS_HOLIDAY":"Geel staat voor feestdagen.",
+	"BLUE_REPRESENTS_NORMAL_LAB_EVENT":"Blauw staat voor normale."
 }
 
 

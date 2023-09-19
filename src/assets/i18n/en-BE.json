@@ -414,6 +414,7 @@
 	"SelectRole": "Select role",
 	"socialSecurityNumber": "Social security number",
 	"enterSocialSecurityNumber": "Enter social security number",
+	"InvalidSocialSecurityNumber": "Invalid social security number",
 	"Jan": "Jan",
 	"Feb": "Feb",
 	"Mar": "Mar",
@@ -507,21 +508,7 @@
 	"Day(s)": "Day(s)",
 	"Week(s)": "Week(s)",
 	"Month(s)": "Month(s)",
-	"On": "On"
+	"On": "On",
+	"YELLOW_REPRESENTS_HOLIDAY":"Yellow represents holidays.",
+	"BLUE_REPRESENTS_NORMAL_LAB_EVENT":"Blue represents normal lab events."
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -37,6 +37,7 @@ import {UserService} from "./services/user.service";
 import {DefaultDatePipe} from "../shared/pipes/default-date.pipe";
 import { ModalService } from './services/modal.service';
 import { ConfirmActionModalComponent } from '../shared/components/confirm-action-modal.component';
+import { Translate } from '../shared/models/translate.model';
 
 @Component({
 	selector: 'dfm-main',
@@ -274,9 +275,11 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 				filter(([_, loggingOut]) => !loggingOut),
 				switchMap(([user, _]) => {
 					if (!user) {
-						throw Error('Failed to fetch user details. Logging out.');
+						const lang = localStorage.getItem('lang') || DUTCH_BE;
+						throw Error(
+							localStorage.getItem('isSessionExpired') === 'true' ? Translate.sessionExp[lang] : Translate.failesToFetchUserDetails[lang],
+						);
 					}
-
 					this.profileData = new NavigationProfileData(new NavigationUser(user.displayName, user.email, '', '', false), []);
 
 					return this.userApiSvc.getUserRole(user.id).pipe(
@@ -291,7 +294,10 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 							this.user = user as AuthUser;
 						}),
 						catchError(() => {
-							const error: any = new Error('Failed to get user roles. Logging out.');
+							const lang = localStorage.getItem('lang') || DUTCH_BE;
+							const error: any = new Error(
+								localStorage.getItem('isSessionExpired') === 'true' ? Translate.sessionExp[lang] : Translate.failesToFetchUserDetails[lang],
+							);
 							return throwError(error);
 						}),
 					);
