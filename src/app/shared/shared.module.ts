@@ -83,6 +83,7 @@ import { DfmAutoScrollInViewDirective } from './directives/dfm-auto-scroll-in-vi
 import { RepeatFormComponent } from './components/repeat-form/repeat-form.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { SsnInputDirective } from './directives/ssn-input.directive';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -139,6 +140,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		FindSelectedSlotPipe,
 		RemoveDuplicateDataPipe,
 		RepeatFormComponent,
+  		SsnInputDirective,
 	],
 	imports: [
 		CommonModule,
@@ -237,6 +239,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		RepeatFormComponent,
 		MatTabsModule,
 		MatButtonToggleModule,
+		SsnInputDirective,
 	],
 	providers: [
 		TranslatePipe,

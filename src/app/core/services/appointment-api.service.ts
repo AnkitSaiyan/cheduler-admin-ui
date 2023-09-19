@@ -179,7 +179,7 @@ export class AppointmentApiService extends DestroyableComponent {
 			if (data?.FirstName) queryParams['FirstName'] = data.FirstName;
 			if (data?.LastName) queryParams['LastName'] = data.LastName;
 			if (data?.userId) queryParams['userId'] = data.userId;
-			if (data?.approval) queryParams['approval'] = data.approval;
+			if (data?.approval >= 0) queryParams['approval'] = data.approval;
 
 
 			return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
