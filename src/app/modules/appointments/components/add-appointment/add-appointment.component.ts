@@ -146,6 +146,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		return this.appointmentForm?.value;
 	}
 
+	public get selcectedExamList(): Array<any> {
+		return this.appointmentForm?.value.examList || [];
+	}
+
 	public ngOnInit(): void {
 		this.createForm();
 
