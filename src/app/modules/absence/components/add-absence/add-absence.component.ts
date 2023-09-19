@@ -307,15 +307,21 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
 
-    alert('first-310');
+
 
 		let addAbsenceReqData: AddAbsenceRequestData = {
 			...rest,
 			isHoliday: isHoliday,
 			startedAt: isHoliday
-				? (this.datePipe.transform(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} 00:00:00`), 'yyyy-MM-dd HH:mm:ss') as string)
+				? (this.datePipe.transform(
+						new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} 00:00:00`.replace(/-/g, '/')),
+						'yyyy-MM-dd HH:mm:ss',
+				  ) as string)
 				: (this.datePipe.transform(
-						DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`), !rest.isHoliday),
+						DateTimeUtils.LocalDateToUTCDate(
+							new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`.replace(/-/g, '/')),
+							!rest.isHoliday,
+						),
 						'yyyy-MM-dd HH:mm:ss',
 				  ) as string),
 			// endedAt: rest.isRepeat
@@ -325,9 +331,15 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat
 					? null
 					: isHoliday
-					? (this.datePipe.transform(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} 23:55:00`), 'yyyy-MM-dd HH:mm:ss') as string)
+					? (this.datePipe.transform(
+							new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} 23:55:00`.replace(/-/g, '/')),
+							'yyyy-MM-dd HH:mm:ss',
+					  ) as string)
 					: (this.datePipe.transform(
-							DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`), !rest.isHoliday),
+							DateTimeUtils.LocalDateToUTCDate(
+								new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`.replace(/-/g, '/')),
+								!rest.isHoliday,
+							),
 							'yyyy-MM-dd HH:mm:ss',
 					  ) as string),
 			userList: isHoliday ? [] : userList,
@@ -338,13 +350,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			addAppointmentImpactedAbsence: this.addAppointmentImpactedAbsence,
 		};
 
-		alert('second-341');
 		if (this.modalData.absenceType === 'rooms') {
 			addAbsenceReqData.userList = [];
 		} else {
 			addAbsenceReqData.roomList = [];
 		}
-    alert('third-347');
 
 		if (rest.isRepeat && repeatDays?.length) {
 			addAbsenceReqData.repeatDays = repeatDays?.reduce((acc, curr, i) => {
@@ -354,12 +364,12 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				return acc + curr;
 			}, '');
 		}
-		alert('fourth-357');
+
 
 		if (this.modalData?.absenceID) {
 			addAbsenceReqData.id = this.modalData.absenceID;
 		}
-    alert('fifth-362');
+
 
 		this.submitting$$.next(true);
 
@@ -383,7 +393,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 					},
 				});
 		} else {
-			alert('sixth-386');
 			this.absenceApiSvc
 				.addNewAbsence$(addAbsenceReqData)
 				.pipe(takeUntil(this.destroy$$))
