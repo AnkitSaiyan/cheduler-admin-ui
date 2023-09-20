@@ -40,9 +40,10 @@ const ColumnIdToKey = {
 	3: 'patientFname',
 	4: 'exams',
 	5: 'doctor',
-	6: 'id',
-	7: 'createdAt',
-	8: 'status',
+	6: 'referralNote',
+	7: 'id',
+	8: 'createdAt',
+	9: 'approval',
 };
 
 @Component({
@@ -73,15 +74,15 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	];
 
 	public tableHeaders: DfmTableHeader[] = [
-		{ id: '1', title: 'StartedAt', isSortable: true },
-		{ id: '2', title: 'EndedAt', isSortable: true },
-		{ id: '3', title: 'PatientName', isSortable: true },
-		{ id: '4', title: 'Exam', isSortable: true },
-		{ id: '5', title: 'Physician', isSortable: true },
-		{ id: '6', title: 'ReferralNote', isSortable: true },
-		{ id: '7', title: 'AppointmentNo', isSortable: true },
-		{ id: '8', title: 'AppliedOn', isSortable: true },
-		{ id: '9', title: 'Status', isSortable: true },
+		{ id: '1', title: 'StartedAt', isSortable: true, sort : 'Asc' },
+		{ id: '2', title: 'EndedAt'},
+		{ id: '3', title: 'PatientName'},
+		{ id: '4', title: 'Exam'},
+		{ id: '5', title: 'Physician'},
+		{ id: '6', title: 'ReferralNote'},
+		{ id: '7', title: 'AppointmentNo'},
+		{ id: '8', title: 'AppliedOn'},
+		{ id: '9', title: 'Status'},
 	];
 
 	public downloadItems: NameValue[] = [];
@@ -243,17 +244,22 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			next: (appointment) => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
-		this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointmentsBase) => {
-				if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
-					this.appointments$$.next([...this.appointments$$.value, ...appointmentsBase.data]);
-				} else {
-					this.appointments$$.next(appointmentsBase.data);
-				}
-				this.paginationData = appointmentsBase?.metaData?.pagination || 1;
-			},
-			error: () => this.filteredAppointments$$.next([]),
-		});
+		this.appointmentApiSvc.appointment$
+			.pipe(
+				takeUntil(this.destroy$$),
+				map((appointmentsBase) => ({ data: GeneralUtils.SortArray(appointmentsBase.data, 'Asc', 'startedAt'), metaData: appointmentsBase.metaData })),
+			)
+			.subscribe({
+				next: (appointmentsBase) => {
+					if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
+						this.appointments$$.next([...this.appointments$$.value, ...appointmentsBase.data]);
+					} else {
+						this.appointments$$.next(appointmentsBase.data);
+					}
+					this.paginationData = appointmentsBase?.metaData?.pagination || 1;
+				},
+				error: () => this.filteredAppointments$$.next([]),
+			});
 
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
 			this.searchControl.setValue(search);
