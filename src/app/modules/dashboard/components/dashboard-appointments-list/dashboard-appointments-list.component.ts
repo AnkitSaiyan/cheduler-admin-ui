@@ -239,21 +239,30 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				},
 			});
 
-		this.appointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointment) => this.filteredAppointments$$.next([...appointment]),
-		});
+		this.appointments$$
+			.pipe(
+				takeUntil(this.destroy$$),
+			)
+			.subscribe({
+				next: (appointment) => this.filteredAppointments$$.next([...appointment]),
+			});
 
-		this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointmentsBase) => {
-				if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
-					this.appointments$$.next([...this.appointments$$.value, ...appointmentsBase.data]);
-				} else {
-					this.appointments$$.next(appointmentsBase.data);
-				}
-				this.paginationData = appointmentsBase?.metaData?.pagination || 1;
-			},
-			error: () => this.filteredAppointments$$.next([]),
-		});
+		this.appointmentApiSvc.appointment$
+			.pipe(
+				takeUntil(this.destroy$$),
+				map((appointmentsBase) => ({ data: GeneralUtils.SortArray(appointmentsBase.data, 'Asc', 'startedAt'), metaData: appointmentsBase.metaData })),
+			)
+			.subscribe({
+				next: (appointmentsBase) => {
+					if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
+						this.appointments$$.next([...this.appointments$$.value, ...appointmentsBase.data]);
+					} else {
+						this.appointments$$.next(appointmentsBase.data);
+					}
+					this.paginationData = appointmentsBase?.metaData?.pagination || 1;
+				},
+				error: () => this.filteredAppointments$$.next([]),
+			});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
 			next: (searchText) => {
