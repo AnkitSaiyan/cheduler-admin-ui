@@ -91,6 +91,11 @@
                 *ngIf="slotStartTime.control.hasError('time') && slotEndTime.control.value && slotStartTime.control.value"
                 >{{ 'StartTimeSmallerEndTime' | translate }}</small
               >
+              <small
+                class="validation-error text-center d-flex"
+                *ngIf="!prioritySlotForm.controls['slotStartTime'].value && (prioritySlotForm.controls['slotStartTime'].touched || prioritySlotForm.controls['slotStartTime'].dirty)"
+                >{{ 'InvalidTime' | translate }}
+              </small>
             </div>
           </div>
         </div>
@@ -146,6 +151,11 @@
                 *ngIf="slotEndTime.control.hasError('time') && slotStartTime.control.value && slotEndTime.control.value"
               >
                 {{ 'EndTimeGreaterTime' | translate }}
+              </small>
+              <small
+                class="validation-error text-center d-flex"
+                *ngIf="!prioritySlotForm.controls['slotEndTime'].value && (prioritySlotForm.controls['slotEndTime'].touched || prioritySlotForm.controls['slotEndTime'].dirty)"
+                >{{ 'InvalidTime' | translate }}
               </small>
             </div>
           </div>
