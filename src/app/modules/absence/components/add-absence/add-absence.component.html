@@ -96,7 +96,7 @@
                 </dfm-input-dropdown>
               </div>
               <span class="validation-error" *ngIf="controls['startTime'].hasError('required') && controls['startTime'].touched">
-                {{ 'RequiredField' | translate }}</span
+                {{ 'InvalidTime' | translate }}</span
               >
               <small class="validation-error" *ngIf="endTime.control.hasError('time')">
                 {{ 'StartTimeLessThanEndTime' | translate }}
@@ -152,7 +152,7 @@
                 </dfm-input-dropdown>
               </div>
               <span class="validation-error" *ngIf="controls['endTime'].hasError('required') && controls['endTime'].touched">
-                {{ 'RequiredField' | translate }}</span
+                {{ 'InvalidTime' | translate }}</span
               >
             </div>
           </div>
