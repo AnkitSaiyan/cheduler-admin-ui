@@ -225,13 +225,13 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			.subscribe({
 				next: (items) => {
 					this.upcomingTableData$$.next({
-						items: items[0],
+						items: GeneralUtils.SortArray(items[0], 'Asc', 'startedAt'),
 						isInitialLoading: false,
 						isLoading: false,
 						isLoadingMore: false,
 					});
 					this.pastTableData$$.next({
-						items: items[1],
+						items: GeneralUtils.SortArray(items[1], 'Asc', 'startedAt'),
 						isInitialLoading: false,
 						isLoading: false,
 						isLoadingMore: false,
