@@ -83,7 +83,15 @@ export class SignalrService {
 						  ' ' +
 						  param.id +
 						  ' ' +
-						  `${param.action == 'Delete' ? Translate.Delete[this.selectedLang] : Translate.SuccessMessage.Update[this.selectedLang]}`
+						  `${
+								param.action == 'Delete'
+									? Translate.Delete[this.selectedLang]
+									: param.action == 'Approved'
+									? Translate.AppointmentStatus.Approved[this.selectedLang]
+									: param.action == 'Cancelled'
+									? Translate.AppointmentStatus.Cancelled[this.selectedLang]
+									: Translate.SuccessMessage.Update[this.selectedLang]
+						  }`
 				}!`,
 			);
 		});
