@@ -42,10 +42,12 @@ export class GeneralUtils {
 		}
 	}
 
-	public static modifyListData([...list]: any[], item: any, action: 'add' | 'delete' | 'update', key?: string, index?: null | number): any[] {
+	public static modifyListData([...list]: any[], item: any, action: 'add' | 'delete' | 'update' | 'approved' | 'cancelled', key?: string, index?: null | number): any[] {
 		if (!list.length) {
 			return list;
 		}
+
+		action = action == 'approved' || action == 'cancelled' ? 'update' : action;
 
 		switch (action) {
 			case 'add':
@@ -57,7 +59,7 @@ export class GeneralUtils {
 					}
 					return data !== item;
 				});
-			case 'update':
+			case 'update' || 'approved' || 'cancelled':
 				if (typeof index === 'number' && index > -1 && index < list.length) {
 					list[index] = item;
 					return list;
