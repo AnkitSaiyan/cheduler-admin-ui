@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
+import { ColumnSort, DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil, withLatestFrom } from 'rxjs';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
@@ -85,6 +85,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		{ id: '9', title: 'Status'},
 	];
 
+	public pastTableHeaders: DfmTableHeader[] = [...this.tableHeaders];
+
 	public downloadItems: NameValue[] = [];
 
 	public appointments$$: BehaviorSubject<Appointment[]>;
@@ -150,6 +152,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	private fileSize!: number;
 
+	private sortType: undefined | ColumnSort = 'Asc'
+
+	private sortTypePast: undefined | ColumnSort = 'Asc'
+	
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -221,6 +227,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.filteredAppointments$$
 			.pipe(
 				takeUntil(this.destroy$$),
+				map((appointments) => (GeneralUtils.SortArray(appointments, this.isUpcomingAppointments ?this.sortType : this.sortTypePast, 'startedAt'))),
 				map((data) => [data.filter((item) => item.isEditable), data.filter((item) => !item.isEditable)]),
 			)
 			.subscribe({
@@ -247,7 +254,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.appointmentApiSvc.appointment$
 			.pipe(
 				takeUntil(this.destroy$$),
-				map((appointmentsBase) => ({ data: GeneralUtils.SortArray(appointmentsBase.data, 'Asc', 'startedAt'), metaData: appointmentsBase.metaData })),
+				// map((appointmentsBase) => ({ data: GeneralUtils.SortArray(appointmentsBase.data, 'Asc', 'startedAt'), metaData: appointmentsBase.metaData })),
 			)
 			.subscribe({
 				next: (appointmentsBase) => {
@@ -350,6 +357,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 					...h,
 					title: Translate[this.columns[i]][lang],
 				}));
+				this.pastTableHeaders = this.pastTableHeaders.map((h, i) => ({
+					...h,
+					title: Translate[this.columns[i]][lang],
+				}));
 				// eslint-disable-next-line default-case
 				switch (lang) {
 					case ENG_BE:
@@ -373,6 +384,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				this.isUpcomingAppointments = value == 'upcoming';
 			}
 			this.selectedAppointmentIDs = [];
+			this.filteredAppointments$$.next([...this.appointments$$.value])
 		});
 		setTimeout(() => {
 			this.appointmentViewControl.setValue(this.isUpcomingAppointments ? 'upcoming' : 'past');
@@ -383,12 +395,12 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		super.ngOnDestroy();
 	}
 
-	public manageActionColumn([...data]): Array<any> {
-		if (data.find(({ title }) => title === 'Actions' || title === 'Acties')) {
-			data.pop();
-		}
-		return data;
-	}
+	// public manageActionColumn([...data]): Array<any> {
+	// 	if (data.find(({ title }) => title === 'Actions' || title === 'Acties')) {
+	// 		data.pop();
+	// 	}
+	// 	return data;
+	// }
 
 	public handleCheckboxSelection(selected: string[]) {
 		this.selectedAppointmentIDs = [...selected];
@@ -665,7 +677,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		}
 	}
 
-	public onSort(e: DfmTableHeader): void {
+	public onSort(e: DfmTableHeader, table = 'upcoming'): void {
+		table == 'past' ? this.sortTypePast = e.sort : this.sortType = e.sort
 		this.filteredAppointments$$.next(GeneralUtils.SortArray(this.filteredAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 
