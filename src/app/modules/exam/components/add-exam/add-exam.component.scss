@@ -47,6 +47,7 @@ section.ad-ex-section2 {
 }
 @media (min-width: 680px)and (max-width: 920px){
   .exam-form-mv{
+    width: 30%;
     flex: 1;
   }
   .exam-form-exam-mv{
@@ -54,6 +55,12 @@ section.ad-ex-section2 {
   }
 }
 
+@media (min-width: 920px) {
+  .exam-form-mv {
+    width: 30%;
+    flex: 1;
+  }
+}
 @media (max-width: 680px) {
   .ad-ex-title-buttons {
     display: none !important;
@@ -145,7 +152,7 @@ section.ad-ex-section2 {
     font-size: 14px!important;
     white-space: normal!important;
   }
- 
+
 }
 
 .order {
