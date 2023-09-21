@@ -1,45 +1,31 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {InputComponent, NotificationType} from 'diflexmo-angular-design';
-import {
-	BehaviorSubject,
-	combineLatest,
-	debounceTime,
-	distinctUntilChanged,
-	filter,
-	first,
-	map,
-	of,
-	startWith,
-	Subject,
-	switchMap,
-	take,
-	takeUntil,
-} from 'rxjs';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { TimeSlot } from '../../../../shared/models/calendar.model';
-import { UserApiService } from '../../../../core/services/user-api.service';
-import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, BodyType, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
-import { Room, RoomsGroupedByType, RoomType } from '../../../../shared/models/rooms.model';
-import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
-import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { AvailabilityType, UserType } from '../../../../shared/models/user.model';
-import { toggleControlError } from '../../../../shared/utils/toggleControlError';
-import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
-import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { NameValue } from '../../../../shared/components/search-modal.component';
-import { Status } from '../../../../shared/models/status.model';
-import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { GeneralUtils } from '../../../../shared/utils/general.utils';
-import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { InputComponent, NotificationType } from 'diflexmo-angular-design';
+import { BehaviorSubject, Subject, combineLatest, debounceTime, filter, first, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { ExamApiService } from '../../../../core/services/exam-api.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { RouterStateService } from '../../../../core/services/router-state.service';
+import { UserApiService } from '../../../../core/services/user-api.service';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { TimeSlot } from '../../../../shared/models/calendar.model';
+import { CreateExamRequestData, Exam } from '../../../../shared/models/exam.model';
+import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
+import { Room, RoomType, RoomsGroupedByType } from '../../../../shared/models/rooms.model';
+import { Status } from '../../../../shared/models/status.model';
+import { Translate } from '../../../../shared/models/translate.model';
+import { AvailabilityType, UserType } from '../../../../shared/models/user.model';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { BodyType, COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
+import { toggleControlError } from '../../../../shared/utils/toggleControlError';
 
 interface FormValues {
 	name: string;
@@ -590,7 +576,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			name: [null, [Validators.required]],
 			// name: [null, [Validators.required]],
 			expensive: [null, [Validators.required, Validators.min(5)]],
-			bodyType: [null, [Validators.required]],
+			bodyType: [[BodyType.Male, BodyType.Female], [Validators.required]],
 			bodyPart: [null, [Validators.required]],
 			roomType: [null, [Validators.required]],
 			roomsForExam: this.fb.array([]),
