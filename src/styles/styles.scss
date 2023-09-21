@@ -1339,3 +1339,14 @@ angular-editor-toolbar button i {
 .max-w-256{
   max-width: 256px !important;
 }
+@media (max-width: 680px) {
+  .dfm-navigation-bar {
+    z-index: 101 !important;
+  }
+
+  .modal-backdrop-enable-click {
+    position: absolute;
+    top: 64px;
+    z-index: 100;
+  }
+}
