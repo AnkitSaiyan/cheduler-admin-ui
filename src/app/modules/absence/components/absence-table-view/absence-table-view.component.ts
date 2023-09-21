@@ -358,6 +358,8 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 				size: 'xl',
 				centered: true,
 				backdropClass: 'modal-backdrop-remove-mv',
+				backdrop: false,
+				windowClass: 'modal-backdrop-enable-click',
 				keyboard: false,
 			},
 		});
@@ -389,6 +391,15 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		this.filteredAbsences$$.next(GeneralUtils.SortArray(this.filteredAbsences$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
+
+
+
+
+
+
+
 
 
 
