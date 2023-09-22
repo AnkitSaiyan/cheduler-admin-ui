@@ -84,6 +84,7 @@ import { RepeatFormComponent } from './components/repeat-form/repeat-form.compon
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { SsnInputDirective } from './directives/ssn-input.directive';
+import { ShareDataService } from '../core/services/share-data.service';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -248,6 +249,9 @@ export function HttpLoaderFactory(http: HttpClient) {
 	],
 })
 export class SharedModule {
+	constructor(private _adapter: DateAdapter<any>, private shareDataSvc: ShareDataService) {
+		this.shareDataSvc.getLanguage$().subscribe((lang) =>this._adapter.setLocale(lang))
+	}
 	static forRoot(): ModuleWithProviders<SharedModule> {
 		return {
 			ngModule: SharedModule,
