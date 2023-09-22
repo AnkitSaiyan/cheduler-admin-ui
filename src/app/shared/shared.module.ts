@@ -69,7 +69,7 @@ import { ShowSlotPercentagePipe } from './pipes/showSlotPercentage.pipe';
 import { UserRolePipe } from './pipes/user-role.pipe';
 import { UtcToLocalPipe } from './pipes/utc-to-local.pipe';
 import { DUTCH_BE } from './utils/const';
-// import { CustomDatePickerAdapter } from './utils/date-adapter';
+import { CustomDatePickerAdapter } from './utils/date-adapter';
 
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { IsPreviousDayPipe } from './pipes/is-previous-day.pipe';
@@ -243,7 +243,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 	],
 	providers: [
 		TranslatePipe,
-		// { provide: DateAdapter, useClass: CustomDatePickerAdapter, deps: [MAT_DATE_LOCALE] },
+		{ provide: DateAdapter, useClass: CustomDatePickerAdapter, deps: [MAT_DATE_LOCALE] },
 		{ provide: MAT_DATE_LOCALE, useValue: DUTCH_BE },
 	],
 })
