@@ -1,6 +1,4 @@
 import { ColumnSort } from 'diflexmo-angular-design';
-import { isSetEqual } from '@angular/compiler-cli/src/ngtsc/incremental/semantic_graph';
-import { ensureOriginalSegmentLinks } from '@angular/compiler-cli/src/ngtsc/sourcemaps/src/source_file';
 
 export class GeneralUtils {
 	public static FilterArray([...arr]: readonly any[], filterText: string, key?: string): any[] {
@@ -24,6 +22,7 @@ export class GeneralUtils {
 	}
 
 	public static SortArray([...arr]: readonly any[], sort: ColumnSort | undefined, key?: string): any[] {
+		if (key == 'startedAt' || key == 'endedAt') return this.sortDate(arr, sort, key);
 		switch (sort) {
 			case 'Asc':
 				return arr.sort((a, b) => {
@@ -88,5 +87,20 @@ export class GeneralUtils {
 
 		const filtered = list.filter((val, index, array) => array.findIndex((v) => v[key] == val[key]) == index);
 		return filtered;
+	}
+
+	private static sortDate([...arr]: readonly any[], sort: ColumnSort | undefined, key: string): any[] {
+		let trueData: any[] = [];
+		let falseData: any[] = [];
+		for (let val of arr) val[key] ? trueData.push(val) : falseData.push(val);
+
+		switch (sort) {
+			case 'Asc':
+				trueData.sort((a: any, b: any) => (new Date(a[key]) < new Date(b[key]) ? -1 : 1));
+				break;
+			default:
+				trueData.sort((a: any, b: any) => (new Date(b[key]) < new Date(a[key]) ? -1 : 1));
+		}
+		return [...trueData, ...falseData];
 	}
 }
