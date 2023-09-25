@@ -25,28 +25,23 @@
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
             <div class="flex-1 d-flex flex-column">
-              <div class="dfm-button-group-wrapper h-fit flex-1">
-                <div class="input-as-dfm-input flex-1">
-                  <input
-                    class="w-full min-w-128"
-                    formControlName="startedAt"
-                    placeholder="{{ 'dateFormat' | translate }}"
-                    ngbDatepicker
-                    #startedAt="ngbDatepicker"
-                  />
+              <div class="dfm-button-group-wrapper flex-1 h-fit">
+                <div class="input-as-dfm-input">
+                  <input formControlName="startedAt"
+                    placeholder="{{'dateFormat' | translate}}"
+                    required [value]="currentDate"  [matDatepicker]="picker" readonly class="w-full min-w-128">
                 </div>
-                <div>
-                  <dfm-button-icon
-                    color="tertiary-gray"
-                    size="md"
-                    icon="calendar-date"
-                    ngbPopover="{{ 'Calendar' | translate }}"
-                    triggers="mouseenter:mouseleave"
-                    popoverClass="popover-p-8"
-                    [openDelay]="200"
-                    (click)="startedAt.toggle()"
-                  ></dfm-button-icon>
-                </div>
+                <dfm-button-icon
+                  color="secondary-gray"
+                  size="md"
+                  icon="calendar-date"
+                  ngbPopover="{{ 'Calendar' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                  (click)="picker.open()"
+                ></dfm-button-icon>
+                <mat-datepicker #picker></mat-datepicker>
               </div>
             </div>
 
@@ -71,28 +66,22 @@
           <div class="d-flex align-items-start dfm-gap-16">
             <div class="flex-1 d-flex flex-column">
               <div class="dfm-button-group-wrapper flex-1">
-                <div class="input-as-dfm-input flex-1">
-                  <input
-                    class="w-full min-w-128"
-                    formControlName="endedAt"
-                    placeholder="{{ 'dateFormat' | translate }}"
-                    ngbDatepicker
-                    #endedAt="ngbDatepicker"
-                    [minDate]="formValues.startedAt"
-                  />
+                <div class="input-as-dfm-input">
+                  <input formControlName="endedAt"
+                    placeholder="{{'dateFormat' | translate}}"
+                    required [value]="currentDate"  [matDatepicker]="picker2" readonly class="w-full min-w-128">
                 </div>
-                <div>
-                  <dfm-button-icon
-                    color="tertiary-gray"
-                    size="md"
-                    icon="calendar-date"
-                    ngbPopover="{{ 'Calendar' | translate }}"
-                    triggers="mouseenter:mouseleave"
-                    popoverClass="popover-p-8"
-                    [openDelay]="200"
-                    (click)="endedAt.toggle()"
-                  ></dfm-button-icon>
-                </div>
+                <dfm-button-icon
+                  color="secondary-gray"
+                  size="md"
+                  icon="calendar-date"
+                  ngbPopover="{{ 'Calendar' | translate }}"
+                  triggers="mouseenter:mouseleave"
+                  popoverClass="popover-p-8"
+                  [openDelay]="200"
+                  (click)="picker2.open()"
+                ></dfm-button-icon>
+                <mat-datepicker #picker2></mat-datepicker>
               </div>
             </div>
 

@@ -29,7 +29,7 @@
 	"EnterLastName": "Gelieve naam in te vullen",
 	"EnterEmail": "Gelieve e-mail in te vullen",
 	"ValidEmail": "Gelieve een geldige e-mail in te vullen",
-	"Download": "Download",
+	"Download": "Downloaden",
 	"Confirmation": "Bevestiging",
 	"View": "Bekijk",
 	"DeleteUser": "Verwijder gebruiker",
@@ -514,5 +514,6 @@
 	"On": "Op",
 	"YELLOW_REPRESENTS_HOLIDAY":"Geel staat voor feestdagen.",
 	"BLUE_REPRESENTS_NORMAL_LAB_EVENT":"Blauw staat voor normale.",
-	"Loading": "Loaden..."
+	"Loading": "Loaden...",
+	"Close": "Sluiten"
 }
