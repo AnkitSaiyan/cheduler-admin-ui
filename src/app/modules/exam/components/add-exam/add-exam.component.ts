@@ -9,7 +9,6 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { RouterStateService } from '../../../../core/services/router-state.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NameValue } from '../../../../shared/components/search-modal.component';
@@ -26,12 +25,14 @@ import { BodyType, COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, Statuses,
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
+import { BodyPartService } from 'src/app/core/services/body-part.service';
+import { BodyPart } from 'src/app/shared/models/body-part.model';
 
 interface FormValues {
 	name: string;
 	expensive: number;
-	bodyType: BodyType;
-	bodyPart: string;
+	bodyType: string[];
+	bodyPart: string[] | number[];
 	roomType: RoomType;
 	roomsForExam: {
 		roomId: number;
@@ -90,8 +91,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public readonly interval: number = 5;
 	public examID!: string;
 	public roomTypes: any[] = [];
-	public bodyType: any[] = [];
-	public bodyPart: any[] = [];
+	public bodyType: NameValue[] = [];
+	public bodyPart: NameValue[] = [];
 	public timings: NameValue[] = [];
 	public filteredTimings: NameValue[] = [];
 	private selectedLang: string = ENG_BE;
@@ -110,13 +111,13 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		private notificationSvc: NotificationDataService,
 		private router: Router,
 		private route: ActivatedRoute,
-		private routerStateSvc: RouterStateService,
 		private nameValuePipe: NameValuePairPipe,
 		private timeInIntervalPipe: TimeInIntervalPipe,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		private loaderSvc: LoaderService,
 		private practiceHourApiSvc: PracticeHoursApiService,
+		private bodyPartSvc: BodyPartService,
 	) {
 		super();
 		const state = this.router.getCurrentNavigation()?.extras?.state;
@@ -145,18 +146,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	}
 
 	public ngOnInit(): void {
-		this.shareDataSvc
-			.bodyPart$()
-			.pipe(
-				filter(() => this.edit),
-				take(1),
-			)
-			.subscribe({
-				next: (items) => {
-					this.bodyPart = items;
-					this.filteredBodyPart$$.next(items);
-				},
-			});
+		this.setBodyType(this.nameValuePipe.transform(this.bodyPartSvc.commonBodyPart, 'bodypartName', 'id'));
+
 		this.roomApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => (this.roomTypes = items),
 		});
@@ -446,7 +437,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		const createExamRequestData: CreateExamRequestData = {
 			name: this.formValues.name,
-			bodyType: this.formValues.bodyType,
+			bodyType: this.formValues.bodyType.join(','),
 			bodyPart: this.formValues.bodyPart,
 			expensive: this.formValues.expensive,
 			info: this.formValues.info ?? null,
@@ -603,21 +594,24 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		this.examForm
 			.get('bodyType')
-			?.valueChanges.pipe(
-				debounceTime(0),
-				switchMap((bodyType) => this.shareDataSvc.bodyPart$(bodyType)),
-				takeUntil(this.destroy$$),
-			)
+			?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
 			.subscribe({
 				next: (items) => {
-					this.bodyPart = items;
-					this.filteredBodyPart$$.next(items);
+					switch (items?.length) {
+						case 0: {
+							this.setBodyType([]);
+							break;
+						}
+						case 1: {
+							this.setBodyType(this.nameValuePipe.transform(this.bodyPartSvc.getBodyPartByType(items?.[0]), 'bodypartName', 'id'));
+							break;
+						}
+						default:
+							this.setBodyType(this.nameValuePipe.transform(this.bodyPartSvc.commonBodyPart, 'bodypartName', 'id'));
+							break;
+					}
 				},
 			});
-
-		// this.examDetails$$.pipe(filter(Boolean), takeUntil(this.destroy$$)).subscribe((value) => {
-		// 	this.examForm.patchValue({ bodyPart: value.bodyPart });
-		// });
 
 		this.examForm
 			.get('expensive')
@@ -651,6 +645,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			.subscribe(() => {
 				this.checkStaffCountValidity(this.examForm.get('secretaries'), this.examForm.get('secretaryCount'), 'secretaryCount');
 			});
+	}
+
+	private setBodyType(bodyParts: NameValue[]) {
+		this.bodyPart = bodyParts;
+		this.filteredBodyPart$$.next(bodyParts);
 	}
 
 	private updateForm(examDetails?: Exam): void {
@@ -703,7 +702,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			mandatoryStaffs: mandatory,
 			uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
 		});
-		this.examForm.patchValue({ bodyType: examDetails?.bodyType }, { onlySelf: true, emitEvent: false });
+		this.examForm.patchValue({ bodyType: examDetails?.bodyType?.split(',') }, { onlySelf: true, emitEvent: false });
 
 		if (examDetails?.roomsForExam?.length) {
 			this.roomApiSvc

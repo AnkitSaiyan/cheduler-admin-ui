@@ -45,8 +45,8 @@ export interface Uncombinables {
 export interface CreateExamRequestData {
 	name: string;
 	expensive: number;
-	bodyType: BodyType;
-	bodyPart: string;
+	bodyType: string;
+	bodyPart: string[] | number[];
 	roomsForExam: {
 		roomId: number;
 		duration: number;

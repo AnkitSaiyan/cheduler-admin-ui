@@ -65,32 +65,6 @@ export class ShareDataService {
 		);
 	}
 
-	public bodyPart$(bodyType?: BodyType): Observable<any[]> {
-		return this.http.get('assets/json/category.json').pipe(
-			switchMap((value: any) => {
-				switch (bodyType) {
-					case BodyType.Male:
-						return of([...value.maleBodyParts.front, ...value.maleBodyParts.back].sort().map((value) => ({ name: value, value })));
-					case BodyType.Female:
-						return of([...value.femaleBodyParts.front, ...value.femaleBodyParts.back].sort().map((value) => ({ name: value, value })));
-
-					case BodyType.Skeleton:
-						return of([...value.skeletonParts].sort().map((value) => ({ name: value, value })));
-					default:
-						return of(
-							[
-								...value.maleBodyParts.front,
-								...value.maleBodyParts.back,
-								...value.femaleBodyParts.front,
-								...value.femaleBodyParts.back,
-								...value.skeletonParts,
-							].map((value) => ({ name: value, value })),
-						);
-				}
-			}),
-		);
-	}
-
 	public setChangeTimeModalData(data: any) {
 		this.changeTimeModalData$$.next(data);
 	}

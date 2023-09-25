@@ -163,7 +163,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			const keyValueExams = this.nameValuePipe.transform(exams, 'name', 'id');
 			this.filteredExamList = [...keyValueExams];
 			this.examList = [...keyValueExams];
-
 			exams.forEach((exam) => {
 				if (!this.examIdToDetails[+exam.id]) {
 					this.examIdToDetails[+exam.id] = {
