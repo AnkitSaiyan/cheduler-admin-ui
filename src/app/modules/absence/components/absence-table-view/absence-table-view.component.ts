@@ -79,6 +79,8 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 
 	private paginationData: PaginationData | undefined;
 
+	public isLoading: boolean = true;
+
 	constructor(
 		private absenceApiSvc: AbsenceApiService,
 		private notificationSvc: NotificationDataService,
@@ -132,6 +134,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 						this.absences$$.next(absencesBase.data);
 					}
 					this.paginationData = absencesBase?.metaData?.pagination || 1;
+					this.isLoading = false;
 				},
 				error: (e) => {
 					this.absences$$.next([]);

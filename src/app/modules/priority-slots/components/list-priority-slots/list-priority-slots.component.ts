@@ -59,6 +59,8 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
 	private paginationData: PaginationData | undefined;
 
+	public isLoading: boolean = true;
+
 	constructor(
 		private priorityApiSvc: PrioritySlotApiService,
 		private notificationSvc: NotificationDataService,
@@ -120,6 +122,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 					this.prioritySlots$$.next(prioritySlotBase.data);
 				}
 				this.paginationData = prioritySlotBase?.metaData?.pagination || 1;
+				this.isLoading = false;
 			},
 			error: (e) => this.prioritySlots$$.next([]),
 		});
