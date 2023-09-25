@@ -90,6 +90,8 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
 	private paginationData: PaginationData | undefined;
 
+	public isLoading: boolean = true;
+
 	constructor(
 		private physicianApiSvc: PhysicianApiService,
 		private notificationSvc: NotificationDataService,
@@ -150,6 +152,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 					this.physicians$$.next(physicianBase.data);
 				}
 				this.paginationData = physicianBase?.metaData?.pagination || 1;
+				this.isLoading = false;
 			},
 			error: (e) => this.physicians$$.next([]),
 		});

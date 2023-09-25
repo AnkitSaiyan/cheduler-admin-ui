@@ -190,7 +190,7 @@
 <!--    </div>-->
 
     <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}"  [stickyActions]="false"
-                    noDataMessage="{{ 'NoDataFound' | translate }}" [rowClickable]="true" [stickyCheckbox]="true"
+                    noDataMessage="{{ (isLoading ? 'Loading' : 'NoAppointmentsFound') | translate }}" [rowClickable]="true" [stickyCheckbox]="true"
                     (rowClicked)="navigateToViewAbsence($event)" [stickyFirstColumn]="false" [headers]="tableHeaders"
                     (scrolled)="onScroll($event)" (sorted)="onSort($event)">
       <ng-template #bodyRowTemplate let-item>

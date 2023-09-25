@@ -241,7 +241,7 @@
 				</dfm-table>
 				<div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"
 					*ngIf="!appointments.length">
-					{{ 'NoAppointmentsFound' | translate }}
+					{{ (isLoading ? 'Loading' : 'NoAppointmentsFound') | translate }}
 				</div>
 			</section>
 		</ng-container>
@@ -288,7 +288,7 @@
 				</dfm-table>
 				<div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"
 					*ngIf="!appointments.length">
-					{{ 'NoAppointmentsFound' | translate }}
+					{{ (isLoading ? 'Loading' : 'NoAppointmentsFound') | translate }}
 				</div>
 			</section>
 		</ng-container>

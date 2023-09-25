@@ -82,6 +82,8 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 
 	private paginationData: PaginationData | undefined;
 
+	public isLoading: boolean = true;
+
 	constructor(
 		private notificationSvc: NotificationDataService,
 		private downloadSvc: DownloadService,
@@ -139,6 +141,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 					this.emails$$.next(emailBase.data);
 				}
 				this.paginationData = emailBase?.metaData?.pagination || 1;
+				this.isLoading = false;
 			},
 			error: (e) => this.emails$$.next([]),
 		});

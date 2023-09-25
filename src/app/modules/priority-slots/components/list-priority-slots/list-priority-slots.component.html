@@ -83,7 +83,7 @@
     ></dfm-input>
 
     <section class="list-page-content-height" *ngIf="filteredPrioritySlots$$ | async as prioritySlots">
-      <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}"  [stickyActions]="true"  noDataMessage="{{ 'NoPrioritySlotFound' | translate }}"
+      <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}"  [stickyActions]="true"  noDataMessage="{{ (isLoading ? 'Loading' : 'NoPrioritySlotFound') | translate }}"
                     [rowClickable]="true" [stickyCheckbox]="true" (rowClicked)="navigateToViewAbsence($event)"
                     [stickyFirstColumn]="false" [headers]="tableHeaders" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
       <ng-template #bodyRowTemplate let-item>

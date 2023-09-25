@@ -139,6 +139,8 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	public isResetBtnDisable: boolean = true;
 
 	private fileSize!: number;
+
+	public isLoading: boolean = true;
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -260,6 +262,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 						this.appointments$$.next(appointmentsBase.data);
 					}
 					this.paginationData = appointmentsBase?.metaData?.pagination || 1;
+					this.isLoading = false;
 				},
 				error: () => this.filteredAppointments$$.next([]),
 			});
