@@ -1,13 +1,8 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, of, switchMap, take, takeUntil } from 'rxjs';
-import { NotificationType } from 'diflexmo-angular-design';
-import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, map, take, takeUntil } from 'rxjs';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from '../../../../../shared/components/destroyable.component';
-import { NotificationDataService } from '../../../../../core/services/notification-data.service';
-import { AppointmentApiService } from '../../../../../core/services/appointment-api.service';
 import { RoomType } from '../../../../../shared/models/rooms.model';
 import { NameValue } from '../../../../../shared/components/search-modal.component';
 import { RoomsApiService } from '../../../../../core/services/rooms-api.service';
@@ -16,26 +11,20 @@ import { NameValuePairPipe } from '../../../../../shared/pipes/name-value-pair.p
 import { TimeInIntervalPipe } from '../../../../../shared/pipes/time-in-interval.pipe';
 import { PhysicianApiService } from '../../../../../core/services/physician.api.service';
 import {
-	AddAppointmentRequestData,
 	Appointment,
-	AppointmentSlotsRequestData,
 	CreateAppointmentFormValues,
 	SelectedSlots,
 	SlotModified,
 } from '../../../../../shared/models/appointment.model';
-import { APPOINTMENT_ID, COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../../shared/utils/const';
-import { RouterStateService } from '../../../../../core/services/router-state.service';
+import { COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../../shared/utils/const';
 import { AppointmentStatus } from '../../../../../shared/models/status.model';
-import { AppointmentUtils } from '../../../../../shared/utils/appointment.utils';
 import { SiteManagementApiService } from '../../../../../core/services/site-management-api.service';
 import { DateTimeUtils } from '../../../../../shared/utils/date-time.utils';
-import { DateDistributed } from '../../../../../shared/models/calendar.model';
 import { GeneralUtils } from '../../../../../shared/utils/general.utils';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { CustomDateParserFormatter } from '../../../../../shared/utils/dateFormat';
 import { UserApiService } from '../../../../../core/services/user-api.service';
-import { Translate } from 'src/app/shared/models/translate.model';
 
 @Component({
 	selector: 'dfm-appointment-advance-search',
@@ -110,26 +99,19 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			value: AppointmentStatus.Cancelled,
 		},
 	];
+	public currentDate = new Date();
 
 	constructor(
 		private dialogSvc: ModalService,
 		private fb: FormBuilder,
-		private notificationSvc: NotificationDataService,
-		private appointmentApiSvc: AppointmentApiService,
 		private roomApiSvc: RoomsApiService,
 		private userApiService: UserApiService,
 		private examApiService: ExamApiService,
 		private physicianApiSvc: PhysicianApiService,
 		private nameValuePipe: NameValuePairPipe,
 		private timeInIntervalPipe: TimeInIntervalPipe,
-		private datePipe: DatePipe,
-		private routerStateSvc: RouterStateService,
-		private router: Router,
-		private route: ActivatedRoute,
 		private shareDataService: ShareDataService,
 		private siteManagementApiSvc: SiteManagementApiService,
-		private cdr: ChangeDetectorRef,
-		private shareDataSvc: ShareDataService,
 	) {
 		super();
 		this.times = this.nameValuePipe.transform(this.timeInIntervalPipe.transform(5));
@@ -210,151 +192,12 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 				this.filteredPatientsList = [...tempKeyValue];
 				this.patientList = [...tempKeyValue];
 			});
-
-		// this.routerStateSvc
-		//     .listenForParamChange$(APPOINTMENT_ID)
-		//     .pipe(
-		//         switchMap((appointmentID) => {
-		//             if (!appointmentID) {
-		//                 return this.appointmentApiSvc.getAppointmentByID$(+appointmentID);
-		//             }
-		//             return of({} as Appointment);
-		//         }),
-		//         debounceTime(0),
-		//         takeUntil(this.destroy$$),
-		//     )
-		//     .subscribe((appointment) => {
-		//         this.appointment$$.next(appointment ?? ({} as Appointment));
-		//         this.updateForm(appointment);
-		//     });
-		//
-		//     this.shareDataSvc
-		//     .getLanguage$()
-		//     .pipe(takeUntil(this.destroy$$))
-		//     .subscribe({
-		//         next: (lang) => {
-		//             // this.selectedLang = lang;
-		//
-		//             // eslint-disable-next-line default-case
-		//             switch (lang) {
-		//                 case ENG_BE:
-		//                     // this.statuses = Statuses;
-		//                     break;
-		//                 // case DUTCH_BE:
-		//                     // this.statuses = StatusesNL;
-		//                     // break;
-		//             }
-		//         }
-		//     });
 	}
 
 	public override ngOnDestroy() {
 		localStorage.removeItem(COMING_FROM_ROUTE);
 		localStorage.removeItem(EDIT);
 		super.ngOnDestroy();
-	}
-
-	public getSlotData(reqData: AppointmentSlotsRequestData) {
-		return this.appointmentApiSvc.getSlots$(reqData);
-	}
-
-	public saveAppointment(): void {
-		try {
-			if (this.appointmentForm.invalid) {
-				this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-				Object.keys(this.appointmentForm.controls).forEach((key) => this.appointmentForm.get(key)?.markAsTouched());
-				return;
-			}
-
-			if (
-				(this.isCombinable && !Object.values(this.selectedTimeSlot).length) ||
-				(!this.isCombinable && Object.values(this.selectedTimeSlot).length !== this.formValues.examList?.length)
-			) {
-				this.notificationSvc.showNotification(`${Translate.SelectSlots[this.selectedLang]}`, NotificationType.WARNING);
-				return;
-			}
-
-			this.submitting$$.next(true);
-
-			if (this.isCombinable) {
-				this.formValues.examList.forEach((examID) => {
-					const selectedSlot = Object.values(this.selectedTimeSlot)[0];
-
-					if (!this.selectedTimeSlot[+examID]) {
-						this.selectedTimeSlot[+examID] = {
-							...selectedSlot,
-							examId: +examID,
-						};
-					}
-				});
-			}
-
-			const requestData: AddAppointmentRequestData = AppointmentUtils.GenerateAppointmentRequestData(
-				{ ...this.formValues },
-				{ ...this.selectedTimeSlot },
-				{ ...(this.appointment$$.value ?? ({} as Appointment)) },
-				this.isCombinable,
-			);
-
-			if (this.edit) {
-				this.appointmentApiSvc
-					.updateAppointment$(requestData)
-					.pipe(takeUntil(this.destroy$$))
-					.subscribe({
-						next: () => {
-							this.shareDataService.getLanguage$().subscribe((language: string) => {
-								this.notificationSvc.showNotification(language === ENG_BE ? `Appointment updated successfully` : 'Afspraak succesvol geupdated');
-							});
-							this.submitting$$.next(false);
-
-							let route: string;
-							if (this.comingFromRoute === 'view') {
-								route = '../view';
-							} else {
-								route = this.edit ? '/appointment' : '/dashboard';
-							}
-							this.router.navigate([route], { relativeTo: this.route });
-						},
-						error: (err) => {
-							// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
-							this.submitting$$.next(false);
-						},
-					});
-			} else {
-				this.appointmentApiSvc
-					.saveAppointment$(requestData)
-					.pipe(takeUntil(this.destroy$$))
-					.subscribe({
-						next: () => {
-							this.shareDataService.getLanguage$().subscribe((language: string) => {
-								this.notificationSvc.showNotification(language === ENG_BE ? `Appointment saved successfully` : 'Afspraak succesvol opgeslagen');
-							});
-							this.submitting$$.next(false);
-
-							let route: string;
-							switch (this.comingFromRoute) {
-								case 'view':
-									route = '../view';
-									break;
-								case 'dashboard':
-									route = '/';
-									break;
-								default:
-									route = this.edit ? '/appointment' : '../';
-							}
-							this.router.navigate([route], { relativeTo: this.route });
-						},
-						error: (err) => {
-							// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
-							this.submitting$$.next(false);
-						},
-					});
-			}
-		} catch (e) {
-			this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}.`, NotificationType.DANGER);
-			this.submitting$$.next(false);
-			return;
-		}
 	}
 
 	public handleEmailInput(e: Event): void {
@@ -371,12 +214,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 		} else {
 			this.appointmentForm.get('patientEmail')?.setErrors(null);
 		}
-	}
-
-	public clearSlotDetails() {
-		this.examIdToAppointmentSlots = {};
-		this.selectedTimeSlot = {};
-		this.slots = [];
 	}
 
 	public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam' | 'room' | 'patient'): void {
@@ -414,10 +251,20 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			data['FirstName'] = abc[0];
 			data['LastName'] = abc[1];
 		}
-		if (data?.startedAt) data['startedAt'] = `${data?.startedAt?.year}-${data?.startedAt?.month}-${data?.startedAt?.day} ${data?.startTime}:00`;
-		else data['startedAt'] = '';
-		if (data?.endedAt) data['endedAt'] = `${data?.endedAt?.year}-${data?.endedAt?.month}-${data?.endedAt?.day} ${data?.endTime}:00`;
-		else data['endedAt'] = '';
+
+		if (data?.startedAt) {
+			const startDate = DateTimeUtils.DateToDateDistributed(data?.startedAt);
+			data['startedAt'] = `${startDate?.year}-${startDate?.month}-${startDate?.day} ${data?.startTime}:00`;
+		}
+
+		if (data?.endedAt) {
+			const endDate = DateTimeUtils.DateToDateDistributed(data?.endedAt);
+			data['endedAt'] = `${endDate?.year}-${endDate?.month}-${endDate?.day} ${data?.endTime}:00`;
+		}
+		// if (data?.startedAt) data['startedAt'] = `${data?.startedAt?.year}-${data?.startedAt?.month}-${data?.startedAt?.day} ${data?.startTime}:00`;
+		// else data['startedAt'] = '';
+		// if (data?.endedAt) data['endedAt'] = `${data?.endedAt?.year}-${data?.endedAt?.month}-${data?.endedAt?.day} ${data?.endTime}:00`;
+		// else data['endedAt'] = '';
 		this.dialogSvc.close(data);
 	}
 
@@ -478,39 +325,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			endTime: [],
 			approval: [],
 		});
-	}
-
-	private updateForm(appointment: Appointment | undefined) {
-		let date!: Date;
-		let dateDistributed: DateDistributed = {} as DateDistributed;
-
-		if (appointment?.startedAt) {
-			date = new Date(appointment?.startedAt);
-		} else if (appointment?.exams[0]?.startedAt) {
-			date = new Date(appointment?.exams[0]?.startedAt);
-		}
-
-		dateDistributed = DateTimeUtils.DateToDateDistributed(date);
-
-		this.appointmentForm.patchValue(
-			{
-				patientFname: appointment?.patientFname ?? null,
-				patientLname: appointment?.patientLname ?? null,
-				patientTel: appointment?.patientTel ?? null,
-				patientEmail: appointment?.patientEmail ?? null,
-				doctorId: appointment?.doctorId?.toString() ?? null,
-				startedAt: dateDistributed,
-				examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
-				userId: appointment?.userId?.toString() ?? null,
-				comments: appointment?.comments ?? null,
-				approval: appointment?.approval ?? AppointmentStatus.Pending,
-			},
-			{ emitEvent: false },
-		);
-
-		const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
-
-		this.loadingSlots$$.next(true);
 	}
 }
 

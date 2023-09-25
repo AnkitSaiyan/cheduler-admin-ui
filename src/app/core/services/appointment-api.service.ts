@@ -172,14 +172,14 @@ export class AppointmentApiService extends DestroyableComponent {
 			const queryParams = { pageNo: 1 };
 			if (data?.appointmentNumber) queryParams['id'] = data.appointmentNumber;
 			if (data?.roomsId) queryParams['roomId'] = data.roomsId;
-			if (data?.examList) queryParams['examId'] = data.examList;
+			if (data?.examList.length) queryParams['examId'] = data.examList;
 			if (data?.doctorId) queryParams['doctorId'] = data.doctorId;
 			if (data?.startedAt) queryParams['startDate'] = data.startedAt;
 			if (data?.endedAt) queryParams['endDate'] = data.endedAt;
 			if (data?.FirstName) queryParams['FirstName'] = data.FirstName;
 			if (data?.LastName) queryParams['LastName'] = data.LastName;
 			if (data?.userId) queryParams['userId'] = data.userId;
-			if (data?.approval >= 0) queryParams['approval'] = data.approval;
+			if (data?.approval == 0 || data.approval) queryParams['approval'] = data.approval;
 
 
 			return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
