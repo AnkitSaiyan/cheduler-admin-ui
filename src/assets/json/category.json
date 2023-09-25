@@ -1,180 +1,284 @@
 {
-	"skeletonParts": [
-		"Skull",
-		"Spine",
-		"Sacrum",
-		"Pelvis",
-		"Ribs",
-		"Sternum",
-		"Clavicle [Rt]",
-		"Clavicle [Lt]",
-		"Scapula [Rt]",
-		"Scapula [Lt]",
-		"Humerus [Rt]",
-		"Humerus [Lt]",
-		"Radius [Rt]",
-		"Radius [Lt]",
-		"Ulna [Rt]",
-		"Ulna [Lt]",
-		"Hand [Rt]",
-		"Hand [Lt]",
-		"Femur [Rt]",
-		"Femur [Lt]",
-		"Patella [Rt]",
-		"Patella [Lt]",
-		"Tibia [Rt]",
-		"Tibia [Lt]",
-		"Fibula [Rt]",
-		"Fibula [Lt]",
-		"Foot [Rt]",
-		"Foot [Lt]",
-		"Carpals [Rt]",
-		"Carpals [Lt]",
-		"Metacarpals [Rt]",
-		"Metacarpals [Lt]",
-		"Hand Phalanges [Rt]",
-		"Hand Phalanges [Lt]",
-		"Calcaneus [Rt]",
-		"Calcaneus [Lt]",
-		"Talus [Rt]",
-		"Talus [Lt]",
-		"Tarsals [Rt]",
-		"Tarsals [Lt]",
-		"Metatarsals [Rt]",
-		"Metatarsals [Lt]",
-		"Foot Phalanges [Rt]",
-		"Foot Phalanges [Lt]"
-	],
-	"maleBodyParts": {
-		"front": [
-			"Head",
-			"Neck",
-			"Chest",
-			"Abdomen",
-			"Pelvis",
-			"Shoulder [Rt]",
-			"Shoulder [Lt]",
-			"Arm [Rt]",
-			"Arm [Lt]",
-			"Elbow [Rt]",
-			"Elbow [Lt]",
-			"Forearm [Rt]",
-			"Forearm [Lt]",
-			"Wrist [Rt]",
-			"Wrist [Lt]",
-			"Hand [Rt]",
-			"Hand [Lt]",
-			"Thigh [Rt]",
-			"Thigh [Lt]",
-			"Knee [Rt]",
-			"Knee [Lt]",
-			"Leg [Rt]",
-			"Leg [Lt]",
-			"Ankle [Rt]",
-			"Ankle [Lt]",
-			"Foot [Rt]",
-			"Foot [Lt]"
-		],
-		"back": [
-			"Head [Back]",
-			"Neck [Back]",
-			"Back",
-			"Loin",
-			"Buttocks",
-			"Shoulder [Back] [Rt]",
-			"Shoulder [Back] [Lt]",
-			"Arm [Back] [Rt]",
-			"Arm [Back] [Lt]",
-			"Elbow [Back] [Rt]",
-			"Elbow [Back] [Lt]",
-			"Forearm [Back] [Rt]",
-			"Forearm [Back] [Lt]",
-			"Wrist [Back] [Rt]",
-			"Wrist [Back] [Lt]",
-			"Hand [Back] [Rt]",
-			"Hand [Back] [Lt]",
-			"Hamstring [Rt]",
-			"Hamstring [Lt]",
-			"Knee [Back] [Rt]",
-			"Knee [Back] [Lt]",
-			"Leg [Back] [Rt]",
-			"Leg [Back] [Lt]",
-			"Calf [Rt]",
-			"Calf [Lt]",
-			"Ankle [Back] [Rt]",
-			"Ankle [Back] [Lt]",
-			"Sole [Rt]",
-			"Sole [Lt]",
-			"Foot [Back] [Rt]",
-			"Foot [Back] [Lt]"
-		]
-	},
-	"femaleBodyParts": {
-		"front": [
-			"Head",
-			"Neck",
-			"Chest",
-			"Breasts",
-			"Abdomen",
-			"Pelvis",
-			"Shoulder [Rt]",
-			"Shoulder [Lt]",
-			"Arm [Rt]",
-			"Arm [Lt]",
-			"Elbow [Rt]",
-			"Elbow [Lt]",
-			"Forearm [Rt]",
-			"Forearm [Lt]",
-			"Wrist [Rt]",
-			"Wrist [Lt]",
-			"Hand [Rt]",
-			"Hand [Lt]",
-			"Thigh [Rt]",
-			"Thigh [Lt]",
-			"Knee [Rt]",
-			"Knee [Lt]",
-			"Leg [Rt]",
-			"Leg [Lt]",
-			"Ankle [Rt]",
-			"Ankle [Lt]",
-			"Foot [Rt]",
-			"Foot [Lt]",
-			"Foot [Lt]"
-		],
-		"back": [
-			"Head [Back]",
-			"Neck [Back]",
-			"Back",
-			"Loin",
-			"Buttocks",
-			"Shoulder [Back] [Rt]",
-			"Shoulder [Back] [Lt]",
-			"Arm [Back] [Rt]",
-			"Arm [Back] [Lt]",
-			"Elbow [Back] [Rt]",
-			"Elbow [Back] [Lt]",
-			"Forearm [Back] [Rt]",
-			"Forearm [Back] [Lt]",
-			"Wrist [Back] [Rt]",
-			"Wrist [Back] [Lt]",
-			"Hand [Back] [Rt]",
-			"Hand [Back] [Lt]",
-			"Hamstring [Rt]",
-			"Hamstring [Lt]",
-			"Knee [Back] [Rt]",
-			"Knee [Back] [Lt]",
-			"Leg [Back] [Rt]",
-			"Leg [Back] [Lt]",
-			"Calf [Rt]",
-			"Calf [Lt]",
-			"Ankle [Back] [Rt]",
-			"Ankle [Back] [Lt]",
-			"Sole [Rt]",
-			"Sole [Lt]",
-			"Foot [Back] [Rt]",
-			"Foot [Back] [Lt]"
-		]
-	}
+	"statusCode": 200,
+	"statusText": "OK",
+	"message": null,
+	"metaData": null,
+	"data": [
+		{
+			"id": 1,
+			"bodypartName": "Hand [Rt]",
+			"bodypartAlias": "hand-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 2,
+			"bodypartName": "Hand [Lt]",
+			"bodypartAlias": "hand-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 3,
+			"bodypartName": "Head",
+			"bodypartAlias": "head",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 4,
+			"bodypartName": "Neck ",
+			"bodypartAlias": "neck",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 5,
+			"bodypartName": "Head [Back]",
+			"bodypartAlias": "head-back",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 6,
+			"bodypartName": "Neck [Back]",
+			"bodypartAlias": "neck-back",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 7,
+			"bodypartName": "Back",
+			"bodypartAlias": "back",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 8,
+			"bodypartName": "Loin",
+			"bodypartAlias": "loin",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 9,
+			"bodypartName": "Buttocks",
+			"bodypartAlias": "buttocks",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 10,
+			"bodypartName": "Shoulder [Back] [Rt]",
+			"bodypartAlias": "shoulder-back-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 11,
+			"bodypartName": "Shoulder [Back] [Lt]",
+			"bodypartAlias": "shoulder-back-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 12,
+			"bodypartName": "Wrist [Rt]",
+			"bodypartAlias": "wrist-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 13,
+			"bodypartName": "Wrist [Lt]",
+			"bodypartAlias": "wrist-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 14,
+			"bodypartName": "Upper leg [Rt]",
+			"bodypartAlias": "upper-leg-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 15,
+			"bodypartName": "Upper leg [Lt]",
+			"bodypartAlias": "upper-leg-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 16,
+			"bodypartName": "Lower leg [Rt]",
+			"bodypartAlias": "lower-leg-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 17,
+			"bodypartName": "Lower leg [Lt]",
+			"bodypartAlias": "lower-leg-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 18,
+			"bodypartName": "Knee [Rt]",
+			"bodypartAlias": "knee-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 19,
+			"bodypartName": "Knee [Lt]",
+			"bodypartAlias": "knee-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 20,
+			"bodypartName": "Calf [Rt]",
+			"bodypartAlias": "calf-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 21,
+			"bodypartName": "Calf [Lt]",
+			"bodypartAlias": "calf-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 22,
+			"bodypartName": "Ankle [Rt]",
+			"bodypartAlias": "ankle-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 23,
+			"bodypartName": "Ankle [Lt]",
+			"bodypartAlias": "ankle-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 24,
+			"bodypartName": "Heel [Rt]",
+			"bodypartAlias": "heel-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 25,
+			"bodypartName": "Heel [Lt]",
+			"bodypartAlias": "heel-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 26,
+			"bodypartName": "Foot [Rt]",
+			"bodypartAlias": "foot-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 27,
+			"bodypartName": "Foot [Lt]",
+			"bodypartAlias": "foot-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 28,
+			"bodypartName": "Chest",
+			"bodypartAlias": "chest",
+			"isMale": true,
+			"isFemale": false
+		},
+		{
+			"id": 29,
+			"bodypartName": "Breasts",
+			"bodypartAlias": "breast",
+			"isMale": false,
+			"isFemale": true
+		},
+		{
+			"id": 30,
+			"bodypartName": "Abdomen",
+			"bodypartAlias": "abdomen",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 31,
+			"bodypartName": "Shoulder [Rt]",
+			"bodypartAlias": "shoulder-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 32,
+			"bodypartName": "Shoulder [Lt]",
+			"bodypartAlias": "shoulder-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 33,
+			"bodypartName": "Arm [Rt]",
+			"bodypartAlias": "arm-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 34,
+			"bodypartName": "Arm [Lt]",
+			"bodypartAlias": "arm-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 35,
+			"bodypartName": "Elbow [Rt]",
+			"bodypartAlias": "elbow-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 36,
+			"bodypartName": "Elbow [Lt]",
+			"bodypartAlias": "elbow-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 37,
+			"bodypartName": "Forearm [Rt]",
+			"bodypartAlias": "forearm-rt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 38,
+			"bodypartName": "Forearm [Lt]",
+			"bodypartAlias": "forearm-lt",
+			"isMale": true,
+			"isFemale": true
+		},
+		{
+			"id": 39,
+			"bodypartName": "Upper arm [Lt]",
+			"bodypartAlias": "upper-arm-lt",
+			"isMale": true,
+			"isFemale": true
+		}
+	]
 }
+
 
 
