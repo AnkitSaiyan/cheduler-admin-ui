@@ -155,6 +155,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	private sortType: undefined | ColumnSort = 'Asc'
 
 	private sortTypePast: undefined | ColumnSort = 'Asc'
+
+	public isLoading: boolean = true;
 	
 	constructor(
 		private downloadSvc: DownloadService,
@@ -264,6 +266,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 						this.appointments$$.next(appointmentsBase.data);
 					}
 					this.paginationData = appointmentsBase?.metaData?.pagination || 1;
+					this.isLoading = false;
 				},
 				error: () => this.filteredAppointments$$.next([]),
 			});

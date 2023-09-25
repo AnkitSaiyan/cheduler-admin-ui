@@ -89,6 +89,8 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 	private idsToObjMap: Map<string, any> = new Map<string, any>();
 
+	public isLoading: boolean = true;
+
 	constructor(
 		private userApiSvc: UserApiService,
 		private notificationSvc: NotificationDataService,
@@ -153,6 +155,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 				this.staffs$$.next([...this.staffs$$.value, ...staffBase.data]);
 				this.paginationData = staffBase?.metaData?.pagination || 1;
+				this.isLoading = false;
 			},
 			error: (e) => {
 				this.staffs$$.next([]);
