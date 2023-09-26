@@ -3,7 +3,8 @@ import { map, Observable } from "rxjs";
 import { TranslateService } from "@ngx-translate/core";
 
 @Pipe({
-    name: 'dfmMultiDropdownPlaceholderName'
+    name: 'dfmMultiDropdownPlaceholderName',
+    pure: false,
 })
 export class MultiDropdownPlaceholderNamePipe implements PipeTransform {
     constructor(private translate: TranslateService) {}
