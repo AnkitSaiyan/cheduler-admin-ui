@@ -26,6 +26,8 @@ import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
 import { ConfirmActionModalComponent } from 'src/app/shared/components/confirm-action-modal.component';
+import { PracticeAvailabilityServer } from 'src/app/shared/models/practice.model';
+import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 
 interface FormValues {
 	name: string;
@@ -102,6 +104,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 	public ABSENCE_TYPE_ARRAY = ABSENCE_TYPE_ARRAY;
 
+	public practiceHourMinMax$$ = new BehaviorSubject<{ min: string; max: string; grayOutMin: string; grayOutMax: string } | null>(null);
+
 	constructor(
 		private modalSvc: ModalService,
 		private fb: FormBuilder,
@@ -118,6 +122,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		private shareDataSvc: ShareDataService,
 		private priorityApiSvc: PrioritySlotApiService,
 		public activeModal: NgbActiveModal,
+		private practiceHoursApiSvc: PracticeHoursApiService,
 	) {
 		super();
 
@@ -168,8 +173,12 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			.pipe(
 				switchMap((modalData) => {
 					this.modalData = modalData;
-					if (modalData?.absenceID) {
-						return this.absenceApiSvc.getAbsenceByID$(modalData.absenceID);
+					return this.practiceHoursApiSvc.practiceHours$;
+				}),
+				switchMap((practiceHours) => {
+					this.minMaxTime(practiceHours);
+					if (this.modalData?.absenceID) {
+						return this.absenceApiSvc.getAbsenceByID$(this.modalData.absenceID);
 					}
 					return of({} as Absence);
 				}),
@@ -229,6 +238,59 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 	public override ngOnDestroy() {
 		super.ngOnDestroy();
+	}
+
+	private minMaxTime(practiceHours) {
+		const value = [...practiceHours];
+		let minMaxValue = value.reduce((pre: any, curr) => {
+			let finalValue = { ...pre };
+			if (!pre?.min || !pre?.max) {
+				finalValue = { min: curr.dayStart, max: curr.dayEnd };
+				return finalValue;
+			}
+			if (DateTimeUtils.TimeToNumber(curr.dayStart) <= DateTimeUtils.TimeToNumber(pre?.min)) {
+				finalValue = { ...finalValue, min: curr.dayStart };
+			}
+			if (DateTimeUtils.TimeToNumber(curr.dayEnd) >= DateTimeUtils.TimeToNumber(pre?.max)) {
+				finalValue = { ...finalValue, max: curr.dayEnd };
+			}
+			return finalValue;
+		}, {});
+
+		const { min, max } = minMaxValue;
+		if (
+			DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(min)) > DateTimeUtils.TimeToNumber(min) ||
+			DateTimeUtils.TimeToNumber('02:00:00') >= DateTimeUtils.TimeToNumber(min)
+		) {
+			minMaxValue = { ...minMaxValue, min: '00:00:00' };
+		} else {
+			minMaxValue = { ...minMaxValue, min: this.calculate(120, min, 'minus') };
+		}
+		if (
+			DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) < DateTimeUtils.TimeToNumber(max) / 100 ||
+			DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)
+		) {
+			minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
+		} else {
+			if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
+				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
+			} else {
+				minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
+			}
+		}
+		minMaxValue = { ...minMaxValue, grayOutMin: min, grayOutMax: max };
+		console.log(minMaxValue, 'test');
+		this.practiceHourMinMax$$.next(minMaxValue);
+	}
+
+	private calculate(minutes: number, time: string, type: 'plus' | 'minus'): string {
+		const date = new Date();
+		const [hour, minute] = time.split(':');
+		date.setHours(+hour);
+		date.setMinutes(+minute);
+		date.setSeconds(0);
+		const finalDate = type === 'minus' ? new Date(date.getTime() - minutes * 60 * 1000) : new Date(date.getTime() + minutes * 60 * 1000);
+		return this.datePipe.transform(finalDate, 'HH:mm') ?? '';
 	}
 
 	public closeModal(res: boolean) {
@@ -524,8 +586,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		setTimeout(() => {
 			this.absenceForm.patchValue({
-				startTime: startTime || '00:00',
-				endTime: endTime || '23:55',
+				startTime: startTime || DateTimeUtils.UTCTimeToLocalTimeString(this.practiceHourMinMax$$.value?.grayOutMin.slice(0, 5) ?? ''),
+				endTime: endTime || DateTimeUtils.UTCTimeToLocalTimeString(this.practiceHourMinMax$$.value?.grayOutMax.slice(0, 5) ?? ''),
 				repeatType: absenceDetails?.repeatType ?? RepeatType.Daily,
 				repeatFrequency: absenceDetails?.repeatFrequency,
 				repeatDays: absenceDetails?.repeatDays ? absenceDetails.repeatDays.split(',') : '',
