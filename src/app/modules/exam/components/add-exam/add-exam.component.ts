@@ -686,7 +686,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		this.examForm.patchValue({
 			name: examDetails?.name,
 			expensive: examDetails?.expensive,
-			bodyPart: examDetails?.bodyPart,
+			bodyPart: examDetails?.bodyPartDetails?.map(({ id }) => id.toString()),
 			practiceAvailabilityToggle: !!examDetails?.practiceAvailability?.length,
 			status: this.edit ? +!!examDetails?.status : Status.Active,
 			info: examDetails?.info,

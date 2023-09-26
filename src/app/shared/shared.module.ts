@@ -83,6 +83,7 @@ import { DfmAutoScrollInViewDirective } from './directives/dfm-auto-scroll-in-vi
 import { RepeatFormComponent } from './components/repeat-form/repeat-form.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { ShowBodyPartPipe } from './pipes/show-body-part.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -133,6 +134,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		LoginFailedComponent,
 		DfmCalendarPickerComponent,
 		MultiDropdownPlaceholderNamePipe,
+		ShowBodyPartPipe,
 		SortOrderValidation,
 		DocumentViewModalComponent,
 		SafePipe,
@@ -192,6 +194,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MonthToNamePipe,
 		JoinWithAndPipe,
 		NameValuePairPipe,
+		ShowBodyPartPipe,
 		ApprovalTypeNamePipe,
 		FindSelectedSlotPipe,
 		SumPipe,

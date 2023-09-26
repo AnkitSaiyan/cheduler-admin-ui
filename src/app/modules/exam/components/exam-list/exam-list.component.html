@@ -64,134 +64,6 @@
   ></dfm-input>
 
   <section #tableWrapper class="list-page-content-height" *ngIf="filteredExams$$ | async as exams">
-<!--    <dfm-table [items]="exams" [selectable]="permissionSvc.isNotReader" (selected)="handleCheckboxSelection($event)"-->
-<!--               [clearSelected$]="clearSelected$$" [rowClickable]="true" (rowClicked)="navigateToViewExam($event)"-->
-<!--               class="dfm-table-wrapper">-->
-<!--      <ng-template #headerRowTemplate>-->
-<!--        <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate}}</dfm-table-header-cell>-->
-<!--      </ng-template>-->
-
-<!--      <ng-template #bodyRowTemplate let-item>-->
-<!--        <dfm-table-body-cell>{{ item.name | dashIfNothing }}</dfm-table-body-cell>-->
-<!--        <dfm-table-body-cell>{{ item.expensive | dashIfNothing }}</dfm-table-body-cell>-->
-
-<!--        <dfm-table-body-cell>-->
-<!--          <dfm-badge *ngIf="item.status === statusType.Active"-->
-<!--                     color="success"-->
-<!--                     size="sm"-->
-<!--                     fontWeight="medium">-->
-<!--            {{ item.status | statusName | dashIfNothing | translate}}-->
-<!--          </dfm-badge>-->
-
-<!--          <dfm-badge *ngIf="item.status === statusType.Inactive"-->
-<!--                     color="primary"-->
-<!--                     size="sm">-->
-<!--            {{ item.status | statusName | dashIfNothing | translate }}-->
-<!--          </dfm-badge>-->
-<!--        </dfm-table-body-cell>-->
-
-<!--        <dfm-table-body-cell *dfmPermitted="[Permission.UpdateExams, Permission.DeleteExams]">-->
-<!--          <div class="d-flex dfm-gap-16 align-items-center ex-li-action-buttons">-->
-<!--            <ng-container *dfmPermitted="Permission.UpdateExams">-->
-<!--              <dfm-button-->
-<!--                *ngIf="item.status === statusType.Inactive"-->
-<!--                color="link-gray"-->
-<!--                size="sm"-->
-<!--                trailingIcon="check-circle"-->
-<!--                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"-->
-<!--                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"-->
-<!--                popoverClass="popover-p-8" [openDelay]="200"-->
-<!--              ></dfm-button>-->
-
-<!--              <dfm-button-->
-<!--                *ngIf="item.status === statusType.Active"-->
-<!--                color="link-gray"-->
-<!--                size="sm"-->
-<!--                trailingIcon="x-circle"-->
-<!--                (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"-->
-<!--                ngbPopover="{{'ChangeStatus' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"-->
-<!--                popoverClass="popover-p-8" [openDelay]="200"-->
-<!--              ></dfm-button>-->
-<!--            </ng-container>-->
-
-<!--            <dfm-button-->
-<!--              color="link-gray"-->
-<!--              size="sm"-->
-<!--              trailingIcon="pencil-02"-->
-<!--              (click)="$event.stopPropagation();"-->
-<!--              [routerLink]="['./', item.id, 'edit']"-->
-<!--              [state]="{ comingFromRoute: 'exam', edit: true }"-->
-<!--              ngbPopover="{{'Edit' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"-->
-<!--              popoverClass="popover-p-8" [openDelay]="200"-->
-<!--              *dfmPermitted="Permission.UpdateExams"-->
-<!--            ></dfm-button>-->
-
-<!--            <dfm-button-->
-<!--              color="link-gray"-->
-<!--              size="sm"-->
-<!--              trailingIcon="trash-01"-->
-<!--              (click)="$event.stopPropagation(); deleteExam(item.id)"-->
-<!--              ngbPopover="{{'Delete' | translate}}" triggers="mouseenter:mouseleave" triggers="mouseenter:mouseleave"-->
-<!--              popoverClass="popover-p-8" [openDelay]="200"-->
-<!--              *dfmPermitted="Permission.DeleteExams"-->
-<!--            ></dfm-button>-->
-<!--          </div>-->
-
-<!--          &lt;!&ndash; Action Menu &ndash;&gt;-->
-<!--          <dfm-button-->
-<!--            [ngbPopover]="actionMenu"-->
-<!--            autoClose="autoClose"-->
-<!--            triggers="click"-->
-<!--            container="body"-->
-<!--            placement="left"-->
-<!--            popoverClass="popover-p-0"-->
-<!--            class="hidden ex-li-vertical-dots-btn"-->
-<!--            color="link-gray"-->
-<!--            size="sm"-->
-<!--            trailingIcon="dots-vertical"-->
-<!--            (click)="$event.stopPropagation(); toggleMenu(true)"-->
-<!--          ></dfm-button>-->
-
-<!--          <ng-template #actionMenu>-->
-<!--            <div class="ex-li-menus"-->
-<!--                 aria-labelledby="dropdownManual">-->
-
-<!--              <ng-container *dfmPermitted="Permission.UpdateExams">-->
-<!--                <div *ngIf="!item.status"-->
-<!--                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Active }])"-->
-<!--                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"-->
-<!--                     [openDelay]="200">-->
-<!--                  <dfm-button trailingIcon="check-circle" color="link-gray"></dfm-button>-->
-<!--                </div>-->
-
-<!--                <div *ngIf="item.status"-->
-<!--                     (click)="$event.stopPropagation(); changeStatus([ { id: item.id, status: statusType.Inactive }])"-->
-<!--                     ngbPopover="{{'Status' | translate}}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"-->
-<!--                     [openDelay]="200">-->
-<!--                  <dfm-button trailingIcon="x-circle" color="link-gray"></dfm-button>-->
-<!--                </div>-->
-<!--              </ng-container>-->
-
-<!--              <div (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']"-->
-<!--                   [state]="{ comingFromRoute: 'exam', edit: true }" ngbPopover="{{'Edit' | translate}}"-->
-<!--                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.UpdateExams">-->
-<!--                <dfm-button trailingIcon="pencil-02" color="link-gray"></dfm-button>-->
-<!--              </div>-->
-
-<!--              <div (click)="$event.stopPropagation(); deleteExam(item.id)" ngbPopover="{{'Delete' | translate}}"-->
-<!--                   triggers="mouseenter:mouseleave" popoverClass="popover-p-8" [openDelay]="200" *dfmPermitted="Permission.DeleteExams">-->
-<!--                <dfm-button trailingIcon="trash-01" color="link-gray"></dfm-button>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </ng-template>-->
-<!--          &lt;!&ndash; Action Menu ends &ndash;&gt;-->
-
-<!--        </dfm-table-body-cell>-->
-<!--      </ng-template>-->
-<!--    </dfm-table>-->
-<!--    <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!exams.length">-->
-<!--      {{"NoExamsFound" | translate}}-->
-<!--    </div>-->
 
     <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                     [clearSelected$]="clearSelected$$" [stickyActions]="true" noDataMessage="{{ 'NoExamsFound' | translate }}"
@@ -200,8 +72,8 @@
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-row-cell [fullContent]="item.name">{{ item.name | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-row-cell [fullContent]="item.expensive">{{ item.expensive | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.bodyType">{{ item.bodyType?.split('_')?.[0] | titlecase | dashIfNothing | translate }} {{(item.bodyType?.split('_')?.[1] ?? '') | titlecase | translate}}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.bodyPart">{{ item.bodyPart | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.bodyType">{{ item.bodyType.split(',').join(', ') | titlecase | dashIfNothing | translate }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.bodyPart">{{ item.bodyPartDetails | bodyPartDetail | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-row-cell [fullContent]="item.status">
           <dfm-badge *ngIf="item.status === statusType.Active"
                      color="success"
@@ -227,24 +99,6 @@
       </ng-template>
     </dfm-data-table>
   </section>
-  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
-  <!--    <div class="shadow-lg ex-li-plus-btn-menu ex-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
-  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
-  <!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg ex-li-plus-btn rounded-2"-->
-  <!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
-  <!--    <dfm-icon #showMoreButtonIcon name="plus" class="ex-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
-  <!--  </dfm-button>-->
 </div>
 
 <dfm-confirm-status-change-banner [display]="selectedExamIDs.length"
