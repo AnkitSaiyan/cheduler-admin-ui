@@ -712,7 +712,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	public viewDocument() {
 		this.modalSvc.open(DocumentViewModalComponent, {
 			data: {
-				id: this.formValues.qrCodeId,
+				id: this.appointment$$?.value?.id || this.formValues.qrCodeId,
 			},
 			options: {
 				size: 'xl',
