@@ -16,7 +16,7 @@ export class SsnInputDirective {
   @Input()
   public dfmSsnInput!: InputComponent;
 
-  private numberOnly: RegExp = /^[0-9.]+$/;
+  private numberOnly: RegExp = /^[0-9.-]+$/;
 
   constructor(private elementRef: ElementRef, private r: Renderer2) {}
 
