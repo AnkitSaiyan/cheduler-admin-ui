@@ -809,11 +809,11 @@ export const Translate = Object.freeze({
 	},
 	MaleBody: {
 		[ENG_BE]: 'Male Body',
-		[DUTCH_BE]: 'Male Body',
+		[DUTCH_BE]: 'Mannelijk lichaam',
 	},
 	FemaleBody: {
 		[ENG_BE]: 'Female Body',
-		[DUTCH_BE]: 'Female Body',
+		[DUTCH_BE]: 'Vrouwelijk lichaam',
 	},
 	Skeleton: {
 		[ENG_BE]: 'Skeleton',
