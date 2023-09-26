@@ -4,6 +4,7 @@ import { Room, RoomType } from './rooms.model';
 import {TimeSlot, Weekday} from './calendar.model';
 import { PracticeAvailability } from './practice.model';
 import { BodyType } from '../utils/const';
+import { BodyPart } from './body-part.model';
 
 export interface Exam {
 	id: number;
@@ -17,6 +18,7 @@ export interface Exam {
 	nursingCount: number;
 	secretaryCount: number;
 	availabilityType: AvailabilityType;
+	bodyPartDetails: BodyPart[];
 	count?: number;
 	status: Status;
 	users?: User[];
