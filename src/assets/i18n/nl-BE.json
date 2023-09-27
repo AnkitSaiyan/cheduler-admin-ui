@@ -179,7 +179,7 @@
 	"Date": "Datum ",
 	"From": "Van",
 	"StartTimeRequired": "Begintijd *",
-	"EndTimeRequired": "Eindtijd *",
+	"EndTimeRequired": "Eindtijd",
 	"Until": "Tot",
 	"Repeat": "Type",
 	"DoesNotRepeat": "Herhaalt niet",
