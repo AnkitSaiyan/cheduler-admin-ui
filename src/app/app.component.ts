@@ -8,7 +8,7 @@ import {
 	InteractionStatus,
 } from '@azure/msal-browser';
 import { IdTokenClaims } from '@azure/msal-common';
-import {filter, Observable, Subject, switchMap, tap} from 'rxjs';
+import { filter, Observable, Subject, switchMap, take, tap } from 'rxjs';
 import defaultLanguage from '../assets/i18n/nl-BE.json';
 import englishLanguage from '../assets/i18n/en-BE.json';
 import { AuthConfig } from './configuration/auth.config';
@@ -18,6 +18,7 @@ import { UserService } from './core/services/user.service';
 import {AuthUser} from "./shared/models/user.model";
 import {RouteName} from "./shared/models/permission.model";
 import {Router} from "@angular/router";
+import { BodyPartService } from './core/services/body-part.service';
 
 type IdTokenClaimsWithPolicyId = IdTokenClaims & {
 	acr?: string;
@@ -41,9 +42,9 @@ export class AppComponent implements OnInit, OnDestroy {
 		private msalBroadcastService: MsalBroadcastService,
 		public userService: UserService,
 		public notificationSvc: NotificationDataService,
-		private router: Router
-	) {
-	}
+		private router: Router,
+		private bodyPartSvc: BodyPartService,
+	) {}
 
 	public ngOnInit(): void {
 		this.setupLanguage();
@@ -51,9 +52,7 @@ export class AppComponent implements OnInit, OnDestroy {
 		this.authService.instance.enableAccountStorageEvents();
 
 		this.msalBroadcastService.msalSubject$
-			.pipe(
-				filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS),
-			)
+			.pipe(filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS))
 			.subscribe((result: EventMessage) => {
 				const payload = result.payload as AuthenticationResult;
 				const idToken = payload.idTokenClaims as IdTokenClaimsWithPolicyId;
@@ -66,37 +65,35 @@ export class AppComponent implements OnInit, OnDestroy {
 		this.msalBroadcastService.inProgress$
 			.pipe(
 				filter((status: InteractionStatus) => status === InteractionStatus.None),
-				switchMap(() => this.checkAndSetActiveAccount())
+				switchMap(() => this.checkAndSetActiveAccount()),
 			)
 			.subscribe({
 				next: (x) => {
 					if (!x) {
 						setTimeout(() => this.userService.logout(), 1500);
 					}
-				}
+				},
 			});
 
 		// To logout on every tab if user logs out in one tab
 		this.msalBroadcastService.msalSubject$
-			.pipe(
-				filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_ADDED || msg.eventType === EventType.ACCOUNT_REMOVED),
-			)
+			.pipe(filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_ADDED || msg.eventType === EventType.ACCOUNT_REMOVED))
 			.subscribe({
 				next: () => {
 					window.location.pathname = '/';
 				},
 			});
 
-
 		this.user$ = this.userService.authUser$.pipe(
 			tap((user) => {
 				if (user) {
 					if (user.properties['extension_ProfileIsIncomplete']) {
-						this.router.navigate([`/${RouteName.CompleteProfile}`])
+						this.router.navigate([`/${RouteName.CompleteProfile}`]);
 					}
 				}
-			})
+			}),
 		);
+		this.bodyPartSvc.allBodyPart$().pipe(take(1)).subscribe();
 	}
 
 	private checkAndSetActiveAccount() {
@@ -112,9 +109,7 @@ export class AppComponent implements OnInit, OnDestroy {
 			this.authService.instance.setActiveAccount(accounts[0]);
 		}
 
-
-
-		return this.userService.initializeUser()
+		return this.userService.initializeUser();
 	}
 
 	private setupLanguage() {

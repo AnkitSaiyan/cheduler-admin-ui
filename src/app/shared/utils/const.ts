@@ -64,9 +64,9 @@ export const ErrLoginFailed: string = 'Failed to login user';
 export const LoggingYouOut = 'Logging you out';
 
 export enum BodyType {
-	Male = 'male_body',
-	Female = 'female_body',
-	Skeleton = 'skeleton',
+	Male = 'male',
+	Female = 'female',
+	Common = 'common',
 }
 
 export enum CalendarType {
