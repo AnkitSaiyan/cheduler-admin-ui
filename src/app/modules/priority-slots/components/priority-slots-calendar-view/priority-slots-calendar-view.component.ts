@@ -173,6 +173,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			const newDate = new Date();
 			newDate.setDate(item[0]);
 			newDate.setMonth(item[1]);
+			newDate.setFullYear(item[2])
 			return this.datePipe.transform(newDate, 'yyyy-MM-dd');
 		});
 
