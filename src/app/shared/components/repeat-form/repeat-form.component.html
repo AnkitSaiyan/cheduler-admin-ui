@@ -1,8 +1,8 @@
 <form [formGroup]="form" class="dfm-container">
   <mat-button-toggle-group  name="weekDays" formControlName="repeatType">
     <mat-button-toggle [value]="RepeatType.Daily">{{ 'Daily' | translate }}</mat-button-toggle>
-    <mat-button-toggle [value]="RepeatType.Weekly">{{ 'weekly' | translate  }}</mat-button-toggle>
-    <mat-button-toggle [value]="RepeatType.Monthly">{{ 'monthly' | translate }}</mat-button-toggle>
+    <mat-button-toggle [value]="RepeatType.Weekly">{{ 'Weekly' | translate  }}</mat-button-toggle>
+    <mat-button-toggle [value]="RepeatType.Monthly">{{ 'Monthly' | translate }}</mat-button-toggle>
   </mat-button-toggle-group>
   <ng-container [ngSwitch]="form.get('repeatType')?.value">
     <ng-container *ngSwitchCase="RepeatType.Daily">
@@ -14,7 +14,7 @@
               #repeatFrequency
               class="flex-1 max-w-192"
               formControlName="repeatFrequency"
-              placeholder="{{ 'EnterRepeatCount' | translate }}"
+              placeholder="{{ '' | translate }}"
               size="md"
               type="number"
               required
