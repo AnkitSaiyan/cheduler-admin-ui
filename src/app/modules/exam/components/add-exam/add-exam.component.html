@@ -50,7 +50,7 @@
         <form [formGroup]="examForm" class="dfm-p-16 d-flex flex-column dfm-gap-32">
             <div class="d-flex flex-column dfm-gap-16 ad-ex-form-exam-info">
                 <div class="d-flex dfm-gap-24 flex-wrap ad-ex-name-expense-room">
-                    <div class="flex-1 exam-form-exam-mv">
+                    <div class="flex-1 exam-form-mv">
                         <dfm-input
                                 class="ad-ex-name"
                                 size="md"
@@ -67,20 +67,26 @@
 
 
                     <div class="exam-form-mv">
-                        <div class="">
-                            <dfm-input-dropdown
-                                    class="flex-1"
-                                    size="md"
-                                    placeholder="{{ 'SelectBodyType'| translate }}"
-                                    label="{{ 'BodyType' | translate }} *"
-                                    formControlName="bodyType"
-                                    [items]="bodyType"
-                            ></dfm-input-dropdown>
-                        </div>
-                        <div class="validation-error"
-                             *ngIf="examForm.get('roomType')?.hasError('required') && examForm.get('roomType')?.touched">
-                            {{ 'RequiredField' | translate }}
-                        </div>
+                      <div class="">
+                        <dfm-input-dropdown
+                          #bodyTypeDropdown
+                          class="flex-1"
+                          size="md"
+                          [placeholder]="((bodyTypeDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectBodyType') | async) ?? ''"
+                          label="{{ 'BodyType' | translate }} *"
+                          [items]="bodyType"
+                          [multiple]="true"
+                          [typeToSearch]="false"
+                          size="md"
+                          [required]="true"
+                          formControlName="bodyType"
+                        >
+                        </dfm-input-dropdown>
+                      </div>
+                      <div class="validation-error"
+                            *ngIf="examForm.get('bodyType')?.hasError('required') && examForm.get('bodyType')?.touched">
+                          {{ 'RequiredField' | translate }}
+                      </div>
                     </div>
                     <div class="exam-form-mv">
                       <div class="">
@@ -88,16 +94,17 @@
                                   class="flex-1"
                                   #bodyPartDropdown
                                   size="md"
-                                  placeholder="{{ 'SelectBodyPart' | translate }}"
+                                  [placeholder]="((bodyPartDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectBodyPart') | async) ?? ''"
                                   label="{{ 'BodyPart' | translate }} *"
                                   formControlName="bodyPart"
                                   [typeToSearch]="true"
                                   (searchInput)="handleDropdownSearch($event, 'bodyPart')"
                                   [items]="(filteredBodyPart$$ | async) ?? []"
+                                  [multiple]="true"
                           ></dfm-input-dropdown>
                       </div>
                       <div class="validation-error"
-                           *ngIf="examForm.get('roomType')?.hasError('required') && examForm.get('roomType')?.touched">
+                           *ngIf="examForm.get('bodyPart')?.hasError('required') && examForm.get('bodyPart')?.touched">
                           {{ 'RequiredField' | translate }}
                       </div>
                   </div>
