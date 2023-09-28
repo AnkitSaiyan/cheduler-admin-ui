@@ -507,7 +507,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			userId: [null, [Validators.required]],
 			comments: ['', []],
 			approval: [AppointmentStatus.Pending, []],
-			socialSecurityNumber: [null, [Validators.pattern('^[0-9.]+$')]],
+			socialSecurityNumber: [null, []],
 			qrCodeId: ['', []],
 		});
 	}
@@ -711,7 +711,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	public viewDocument() {
 		this.modalSvc.open(DocumentViewModalComponent, {
 			data: {
-				id: this.formValues.qrCodeId,
+				id: this.appointment$$?.value?.id || this.formValues.qrCodeId,
 			},
 			options: {
 				size: 'xl',

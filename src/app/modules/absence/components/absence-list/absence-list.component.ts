@@ -51,6 +51,8 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 				size: 'xl',
 				centered: true,
 				backdropClass: 'modal-backdrop-remove-mv',
+				backdrop: false,
+				windowClass: 'modal-backdrop-enable-click',
 				keyboard: false,
 			},
 		});

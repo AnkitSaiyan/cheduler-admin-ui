@@ -66,7 +66,7 @@
   <section #tableWrapper class="list-page-content-height" *ngIf="filteredExams$$ | async as exams">
 
     <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
-                    [clearSelected$]="clearSelected$$" [stickyActions]="true" noDataMessage="{{ 'NoExamsFound' | translate }}"
+                    [clearSelected$]="clearSelected$$" [stickyActions]="true" noDataMessage="{{ ( isLoading ? 'Loading' : 'NoExamsFound') | translate }}"
                     [rowClickable]="true" [stickyCheckbox]="true" [stickyFirstColumn]="false" [headers]="tableHeaders"
                     (rowClicked)="navigateToViewExam($event)" (scrolled)="onScroll($event)" (sorted)="onSort($event)">
       <ng-template #bodyRowTemplate let-item>

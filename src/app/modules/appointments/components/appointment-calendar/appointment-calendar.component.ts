@@ -234,6 +234,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				takeUntil(this.destroy$$),
 			)
 			.subscribe(([_, queryParams]) => {
+				if (this.calendarViewFormControl.value === 'day' && !queryParams['d']) this.updateQuery('d', this.selectedDate$$.value);
+
 				const value = new Date(queryParams['d']);
 				const time = this.weekdayToPractice$$.value[value.getDay()];
 				this.selectedSlot$$.next({

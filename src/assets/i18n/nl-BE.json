@@ -29,7 +29,7 @@
 	"EnterLastName": "Gelieve naam in te vullen",
 	"EnterEmail": "Gelieve e-mail in te vullen",
 	"ValidEmail": "Gelieve een geldige e-mail in te vullen",
-	"Download": "Download",
+	"Download": "Downloaden",
 	"Confirmation": "Bevestiging",
 	"View": "Bekijk",
 	"DeleteUser": "Verwijder gebruiker",
@@ -179,10 +179,10 @@
 	"Date": "Datum ",
 	"From": "Van",
 	"StartTimeRequired": "Begintijd *",
-	"EndTimeRequired": "Eindtijd *",
+	"EndTimeRequired": "Eindtijd",
 	"Until": "Tot",
-	"Repeat": "Type",
-	"DoesNotRepeat": "Doesn't repeat",
+	"Repeat": "Herhaal",
+	"DoesNotRepeat": "Herhaal niet",
 	"AllDay": "Volledige dag",
 	"PublicHoliday": "Publieke verlofdag",
 	"RepeatType": "Frequentie",
@@ -346,7 +346,7 @@
 	"OverallStatus": "Algemene status",
 	"SortBy": "Sorteer per",
 	"RecentPatients": "Recente patiënten",
-	"SearchByPatientName": "Zoek op naam atiënt",
+	"SearchByPatientName": "Zoek op naam patiënt",
 	"AppointmentDate": "Datum afspraak",
 	"GetStarted": "Begin",
 	"AppointmentsList": "Afsprakenlijst",
@@ -416,7 +416,7 @@
 	"SelectRole": "Selecteer rol",
 	"socialSecurityNumber": "Rijksregisternummer",
 	"enterSocialSecurityNumber": "Vul het rijksregisternummer in",
-	"InvalidSocialSecurityNumber": "Rijksregisternummer Ongeldige",
+	"InvalidSocialSecurityNumber": "Rijksregisternummer Ongeldig",
 	"Jan": "Jan",
 	"Feb": "Feb",
 	"Mar": "Mar",
@@ -494,7 +494,8 @@
 	"Sat": "Zat",
 	"PrefillFromPractice": "Praktijkuren vooraf invullen",
 	"ReferralNote": "Verwijsbrief",
-	"AbsenceSlot": "Unavailable Slot",
+	"UploadReferralNote": "Uploaden Verwijsbrief",
+	"AbsenceSlot": "Niet beschikbaar slot",
 	"Uploading": "Uploaden...",
 	"FAILED_TO_UPLOAD": "Uploaden is mislukt",
 	"Uploaded": "Geüpload",
@@ -512,23 +513,11 @@
 	"Month(s)": "Maanden",
 	"On": "Op",
 	"YELLOW_REPRESENTS_HOLIDAY":"Geel staat voor feestdagen.",
-	"BLUE_REPRESENTS_NORMAL_LAB_EVENT":"Blauw staat voor normale."
+	"BLUE_REPRESENTS_NORMAL_LAB_EVENT":"Blauw staat voor normale.",
+	"Loading": "Loaden...",
+	"Close": "Sluiten",
+	"Weekly": "Wekelijks",
+	"Monthly": "Maandelijks",
+	"THE_EVENT_WILL_RUN_UNTIL_REACHES_A_SPECIFIC_DATE": "Het evenement loopt tot een specifieke datum wordt bereikt"
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

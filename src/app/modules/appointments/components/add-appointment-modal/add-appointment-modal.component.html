@@ -104,6 +104,8 @@
         <div class="d-flex dfm-mb-8 dfm-gap-8 flex-wrap">
           <div class="flex-1 min-w-256">
             <dfm-input
+            #ssn
+						[dfmSsnInput]="ssn"
             size="md"
             [placeholder]="'enterSocialSecurityNumber' | translate"
             [label]="('socialSecurityNumber' | translate)"

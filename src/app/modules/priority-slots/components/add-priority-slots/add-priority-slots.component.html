@@ -91,6 +91,11 @@
                 *ngIf="slotStartTime.control.hasError('time') && slotEndTime.control.value && slotStartTime.control.value"
                 >{{ 'StartTimeSmallerEndTime' | translate }}</small
               >
+              <small
+                class="validation-error text-center d-flex"
+                *ngIf="!prioritySlotForm.controls['slotStartTime'].value && (prioritySlotForm.controls['slotStartTime'].touched || prioritySlotForm.controls['slotStartTime'].dirty)"
+                >{{ 'InvalidTime' | translate }}
+              </small>
             </div>
           </div>
         </div>
@@ -147,6 +152,11 @@
               >
                 {{ 'EndTimeGreaterTime' | translate }}
               </small>
+              <small
+                class="validation-error text-center d-flex"
+                *ngIf="!prioritySlotForm.controls['slotEndTime'].value && (prioritySlotForm.controls['slotEndTime'].touched || prioritySlotForm.controls['slotEndTime'].dirty)"
+                >{{ 'InvalidTime' | translate }}
+              </small>
             </div>
           </div>
         </div>
@@ -191,7 +201,7 @@
                     <mat-datepicker #picker2></mat-datepicker>
                 
                   </div>
-                  <h1 class="mat-caption dfm-text-main-500">{{'The event will run until reaches a specific date' | translate}}</h1>
+                  <h1 class="mat-caption dfm-text-main-500">{{'THE_EVENT_WILL_RUN_UNTIL_REACHES_A_SPECIFIC_DATE' | translate}}</h1>
                   <div class="validation-error"
                     *ngIf="prioritySlotForm.get('endedAt')?.hasError('required') && prioritySlotForm.get('endedAt')?.touched">
                     {{ 'RequiredField' | translate }}

@@ -64,6 +64,8 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
 	private columns: string[] = ['Name', 'Expensive', 'BodyType', 'BodyPart', 'Status', 'Actions'];
 
+	public isLoading: boolean = true;
+
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'Name', isSortable: true },
 		{ id: '2', title: 'Expensive', isSortable: true },
@@ -145,6 +147,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 					this.exams$$.next(examsBase.data);
 				}
 				this.paginationData = examsBase?.metaData?.pagination || 1;
+				this.isLoading = false;
 			},
 			error: (e) => {
 				this.exams$$.next([]);

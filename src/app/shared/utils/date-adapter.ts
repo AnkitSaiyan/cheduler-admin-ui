@@ -19,17 +19,11 @@ export class CustomDatePickerAdapter extends NativeDateAdapter {
 		return 1;
 	}
 
-	override getMonthNames(): string[] {
-		const language = localStorage.getItem('lang');
-		if (language === DUTCH_BE) {
-			return ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
-		}
-		return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-	}
+	// override getMonthNames(): string[] {
+	// 	const language = localStorage.getItem('lang');
+	// 	if (language === DUTCH_BE) {
+	// 		return ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
+	// 	}
+	// 	return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	// }
 }
-
-
-
-
-
-

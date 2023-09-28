@@ -175,7 +175,14 @@
 								<input #fileInput type="file" class="hidden" accept="image/*, application/pdf"
 								(click)="$event.stopPropagation();"
 									(change)="uploadRefferingNote($event, item.id)" />
-								<span class="upload-button" *ngIf="!item.documentCount" (click)="$event.stopPropagation(); fileInput.click();">
+								<span 
+								class="upload-button" 
+								*ngIf="!item.documentCount" 
+								(click)="$event.stopPropagation(); fileInput.click();"
+								ngbPopover="{{ 'UploadReferralNote' | translate }}"
+								triggers="mouseenter:mouseleave"
+								popoverClass="popover-p-8"
+								[openDelay]="200">
 									<img src="../../../../../assets/images/upload-icon.png" alt="" width="16px" />
 								</span>
 							</dfm-table-body-cell>
@@ -234,7 +241,7 @@
 				</dfm-table>
 				<div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"
 					*ngIf="!appointments.length">
-					{{ 'NoAppointmentsFound' | translate }}
+					{{ (isLoading ? 'Loading' : 'NoAppointmentsFound') | translate }}
 				</div>
 			</section>
 		</ng-container>
@@ -281,7 +288,7 @@
 				</dfm-table>
 				<div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom"
 					*ngIf="!appointments.length">
-					{{ 'NoAppointmentsFound' | translate }}
+					{{ (isLoading ? 'Loading' : 'NoAppointmentsFound') | translate }}
 				</div>
 			</section>
 		</ng-container>

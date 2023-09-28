@@ -52,11 +52,10 @@
       <div class="d-flex dfm-gap-32 ad-ab-dates">
         <div class="ad-ab-from-date max-w-5">
           <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
-            {{ formValues.isRepeat ? ('From' | translate) : ('From' | translate) }} *
+            {{ 'From' | translate }} *
           </div>
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
-            <div>
               <div class="flex-1 d-flex flex-column">
                 <div class="dfm-button-group-wrapper h-fit flex-1">
                   <div class="input-as-dfm-input">
@@ -76,12 +75,11 @@
                   ></dfm-button-icon>
                   <mat-datepicker #picker></mat-datepicker>
                 </div>
-
                 <small class="validation-error" *ngIf="absenceForm.get('startedAt')?.hasError('required') && absenceForm.get('startedAt')?.touched">
                   {{ 'RequiredField' | translate }}
                 </small>
               </div>
-            </div>
+         
 
             <div [ngClass]="{'hidden':modalData.absenceType === ABSENCE_TYPE_ARRAY[2] }">
               <div class="flex-1 min-w-128 max-w-192" >
@@ -98,7 +96,7 @@
                 </dfm-input-dropdown>
               </div>
               <span class="validation-error" *ngIf="controls['startTime'].hasError('required') && controls['startTime'].touched">
-                {{ 'RequiredField' | translate }}</span
+                {{ 'InvalidTime' | translate }}</span
               >
               <small class="validation-error" *ngIf="endTime.control.hasError('time')">
                 {{ 'StartTimeLessThanEndTime' | translate }}
@@ -111,10 +109,10 @@
 
         <div class="ad-ab-to-date max-w-5">
           <!--          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ formValues.isRepeat ? ('Until' | translate) : ("EndTimeRequired" | translate) }} *</div>-->
-          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6" *ngIf="!(modalData.absenceType === ABSENCE_TYPE_ARRAY[2] && formValues.isRepeat)">{{ 'Until' | translate }}*</div>
+          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6" *ngIf="!(modalData.absenceType === ABSENCE_TYPE_ARRAY[2] && formValues.isRepeat)">{{ 'EndTimeRequired' | translate }} *</div>
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
-            <div class=" d-flex flex-column" *ngIf="!formValues.isRepeat">
+            <div class=" d-flex flex-column flex-1" *ngIf="!formValues.isRepeat">
               <div class="dfm-button-group-wrapper flex-1">
                 <div class="input-as-dfm-input">
                   <input [formControl]="endDateControl" (dateChange)="onDateChange($event.value, 'endedAt')"
@@ -138,8 +136,8 @@
                 {{ 'RequiredField' | translate }}
               </small>
             </div>
-            <div class="flex-1" [ngClass]="{'hidden':modalData.absenceType === ABSENCE_TYPE_ARRAY[2] }">
-              <div class="min-w-128 max-w-192" >
+            <div [ngClass]="{'hidden':modalData.absenceType === ABSENCE_TYPE_ARRAY[2] }">
+              <div class="flex-1 min-w-128 max-w-192" >
                 <dfm-input-dropdown
                   #endTime
                   [items]="endTimes"
@@ -154,7 +152,7 @@
                 </dfm-input-dropdown>
               </div>
               <span class="validation-error" *ngIf="controls['endTime'].hasError('required') && controls['endTime'].touched">
-                {{ 'RequiredField' | translate }}</span
+                {{ 'InvalidTime' | translate }}</span
               >
             </div>
           </div>
@@ -188,7 +186,7 @@
                 <!-- <div *ngIf="endDateTypeControl.value === EndDateType.Until"> -->
                   <div class="flex-1 d-flex dfm-gap-8 flex-column">
                     <span class="text-sm font-weight-medium dfm-text-main-700">{{ "Until" | translate }}*</span>
-                  <div class="dfm-button-group-wrapper flex-1 " >
+                  <div class="dfm-button-group-wrapper flex-1 max-w-256" >
                     <div class="input-as-dfm-input">
                       <input [formControl]="endDateControl" (dateChange)="onDateChange($event.value, 'endedAt')"
                       placeholder="{{'dateFormat' | translate}}"
@@ -206,7 +204,7 @@
                     ></dfm-button-icon>
                     <mat-datepicker #picker2></mat-datepicker>
                   </div>
-                  <h1 class="mat-caption dfm-text-main-500">{{'The event will run until reaches a specific date' | translate}}</h1>
+                  <h1 class="mat-caption dfm-text-main-500">{{'THE_EVENT_WILL_RUN_UNTIL_REACHES_A_SPECIFIC_DATE' | translate}}</h1>
                   <div
                     class="validation-error"
                     *ngIf="absenceForm.get('endedAt')?.hasError('required') &&absenceForm.get('endedAt')?.touched"
@@ -221,7 +219,7 @@
         </dfm-repeat-form>
       </ng-container>
 
-      <div class="d-flex flex-wrap flex-1 gap max-w-5 " [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" >
+      <div class="d-flex flex-wrap flex-1 gap room-staff-dropdown" [ngClass]="{ 'dfm-mt-8': formValues.repeatDays?.length }" >
         <ng-container *ngIf="!formValues.isHoliday">
           <ng-container *ngIf="modalData.absenceType === 'rooms'">
             <div class="flex-1 ad-ab-rooms" *ngIf="filteredRoomList$$ | async as roomList">
