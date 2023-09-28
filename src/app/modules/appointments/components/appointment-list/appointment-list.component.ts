@@ -158,6 +158,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public isLoading: boolean = true;
 	
+	
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
