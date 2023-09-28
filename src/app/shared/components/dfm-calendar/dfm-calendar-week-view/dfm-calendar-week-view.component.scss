@@ -228,6 +228,16 @@ h3 {
 					// padding-right: 12px;
 					position: relative;
 
+          &[data-holiday="true"] {
+              opacity: .7;
+              cursor: not-allowed;
+              background: repeating-linear-gradient(34deg,
+                  transparent,
+                  transparent 6px,
+                  var(--dfm-main-300) 3px,
+                  var(--dfm-main-300) 12px);
+
+            }
 					.calendar-week-view-body-grid-absolute {
 						position: absolute;
 						top: 0;
