@@ -76,7 +76,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	@Input()
 	public format24Hour = false;
 	@Input()
-	public disableDblClick = false;	
+	public disableDblClick = false;
 	@Output()
 	public selectedDateEvent = new EventEmitter<Date>();
 	@Output()
@@ -205,20 +205,20 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				next: (lang) => (this.selectedLang = lang),
 			});
 
-		// this.route.queryParams
-		// 	.pipe(
-		// 		filter(Boolean),
-		// 		debounceTime(100),
-		// 		filter((queryParams: Params) => !!queryParams['v'] && !!queryParams['d']),
-		// 		map(getFromAndToDate),
-		// 		switchMap(({ fromDate, toDate }) => {
-		// 			return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
-		// 		}),
-		// 		takeUntil(this.destroy$$),
-		// 	)
-		// 	.subscribe((data) => {
-		// 		this.isHoliday$$.next(Boolean(data.data?.length));
-		// 	});
+		this.route.queryParams
+			.pipe(
+				filter(Boolean),
+				debounceTime(100),
+				filter((queryParams: Params) => !!queryParams['v'] && !!queryParams['d']),
+				map(getFromAndToDate),
+				switchMap(({ fromDate, toDate }) => {
+					return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
+				}),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((data) => {
+				this.isHoliday$$.next(Boolean(data.data?.length));
+			});
 	}
 
 	public override ngOnDestroy() {
