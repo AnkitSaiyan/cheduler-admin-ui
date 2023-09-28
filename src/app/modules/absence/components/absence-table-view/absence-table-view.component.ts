@@ -79,6 +79,8 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 
 	private paginationData: PaginationData | undefined;
 
+	public isLoading: boolean = true;
+
 	constructor(
 		private absenceApiSvc: AbsenceApiService,
 		private notificationSvc: NotificationDataService,
@@ -132,6 +134,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 						this.absences$$.next(absencesBase.data);
 					}
 					this.paginationData = absencesBase?.metaData?.pagination || 1;
+					this.isLoading = false;
 				},
 				error: (e) => {
 					this.absences$$.next([]);
@@ -358,6 +361,8 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 				size: 'xl',
 				centered: true,
 				backdropClass: 'modal-backdrop-remove-mv',
+				backdrop: false,
+				windowClass: 'modal-backdrop-enable-click',
 				keyboard: false,
 			},
 		});
@@ -389,6 +394,15 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		this.filteredAbsences$$.next(GeneralUtils.SortArray(this.filteredAbsences$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
+
+
+
+
+
+
+
 
 
 

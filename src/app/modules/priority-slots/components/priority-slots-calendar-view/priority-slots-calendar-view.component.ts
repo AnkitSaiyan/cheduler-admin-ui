@@ -63,7 +63,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 
 	ngOnInit() {
 		this.dataControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value: any) => {
-			const date = new Date(value.year, value.month - 1, value.day);
+			const date = new Date(value);
 			this.updateDate(date, true);
 			this.newDate$$.next({ date, isWeekChange: true });
 		});
@@ -173,6 +173,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			const newDate = new Date();
 			newDate.setDate(item[0]);
 			newDate.setMonth(item[1]);
+			newDate.setFullYear(item[2])
 			return this.datePipe.transform(newDate, 'yyyy-MM-dd');
 		});
 

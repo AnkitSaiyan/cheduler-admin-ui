@@ -307,6 +307,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
 
+
+
 		let addAbsenceReqData: AddAbsenceRequestData = {
 			...rest,
 			isHoliday: isHoliday,
@@ -347,6 +349,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			repeatDays: '',
 			addAppointmentImpactedAbsence: this.addAppointmentImpactedAbsence,
 		};
+
 		if (this.modalData.absenceType === 'rooms') {
 			addAbsenceReqData.userList = [];
 		} else {
@@ -362,9 +365,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			}, '');
 		}
 
+
 		if (this.modalData?.absenceID) {
 			addAbsenceReqData.id = this.modalData.absenceID;
 		}
+
 
 		this.submitting$$.next(true);
 

@@ -483,7 +483,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			examList: [[], [Validators.required]],
 			userId: [null, [Validators.required]],
 			comments: [null, []],
-			socialSecurityNumber: [null, [Validators.pattern('^[0-9.]+$')]],
+			socialSecurityNumber: [null, []],
 			qrCodeId: ['', []],
 		});
 
@@ -648,7 +648,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	public viewDocument() {
 		this.modalSvc.open(DocumentViewModalComponent, {
 			data: {
-				id: this.formValues.qrCodeId,
+				id: this.modalData?.appointment?.id || this.formValues.qrCodeId,
 			},
 			options: {
 				size: 'xl',
