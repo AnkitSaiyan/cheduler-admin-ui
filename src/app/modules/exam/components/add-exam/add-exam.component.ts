@@ -363,7 +363,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		let valid = true;
 
 		if (!this.examForm.valid) {
-			['name', 'expensive', 'roomType'].forEach((value) => {
+			['name', 'expensive', 'roomType', 'bodyPart', 'bodyType'].forEach((value) => {
 				this.examForm.controls[value].markAsTouched();
 			});
 			(this.examForm.controls['roomsForExam'] as FormArray).controls.forEach((control) => {
