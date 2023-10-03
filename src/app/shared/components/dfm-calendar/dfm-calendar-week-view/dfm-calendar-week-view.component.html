@@ -171,9 +171,11 @@
 						</ng-container>
 					</div>
 					<div class="calendar-week-view-events-left-vertical-line"></div>
-          <div *ngFor="let day of daysOfWeekArr; let weekday = index" role="gridcell" class="calendar-week-view-body-grid-column" dfmDragAreaEvent [day]="day" (editAppointment)="editAppointment($event)">
+          <div *ngFor="let day of daysOfWeekArr; let weekday = index" role="gridcell" class="calendar-week-view-body-grid-column" #gridCell [attr.data-holiday]="!!holidayData$$.value[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]?.length" dfmDragAreaEvent [day]="day" (editAppointment)="editAppointment($event)">
             <!-- <div class="calendar-week-view-body-grid-absolute"></div> -->
-            <div
+            <ng-container
+              *ngIf="gridCell.getAttribute('data-holiday') === 'false'">
+              <div
               #eventsContainer
               (dblclick)="onDblClick($event, eventsContainer, day)"
               class="calendar-week-view-body-events-container"
@@ -410,6 +412,8 @@
                 ></div>
               </ng-container>
             </ng-container>
+            </ng-container>
+
           </div>
 				</div>
 			</div>
