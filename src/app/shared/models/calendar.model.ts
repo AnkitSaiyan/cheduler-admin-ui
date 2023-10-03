@@ -241,7 +241,7 @@ export function calendarDistinctUntilChanged(preQueryParam: Params, currQueryPar
 	}
 }
 
-export function getFromAndToDate(queryParam: Params) {
+export function getFromAndToDate(queryParam: Params, isHoliday: boolean = false) {
 	const [year, month, day] = queryParam['d'].split('-');
 
 	const currDate = new Date(+year, +month - 1, +day, 0, 0, 0, 0);
@@ -251,6 +251,7 @@ export function getFromAndToDate(queryParam: Params) {
 	let toDate: string;
 	switch (true) {
 		case queryParam['v'] === 'm':
+		case isHoliday:
 			fromDate = DateTimeUtils.DateDistributedToString(new Date(+year, +month - 1, 1), '-');
 
 			toDate = DateTimeUtils.DateDistributedToString(new Date(+year, +month, 0), '-');

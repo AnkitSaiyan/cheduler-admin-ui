@@ -115,31 +115,33 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	}
 
 	ngOnInit() {
-		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe((params) => {
-			if (!params['d']) {
-				this.updateQuery('m', this.selectedDate$$.value, true);
-			} else {
-				const dateSplit = params['d'].split('-');
-				if (dateSplit.length === 3) {
-					const date = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2]);
-					if (isNaN(date.getTime())) {
-						this.updateToToday();
-					} else {
-						this.selectedDate$$.next(date);
-						this.newDate$$.next({ date, isWeekChange: false });
-					}
-				} else {
+		combineLatest([this.route.queryParams, this.route.data])
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe(([params, data]) => {
+				if (!params['d']) {
 					this.updateQuery('m', this.selectedDate$$.value, true);
-				}
-			}
-			setTimeout(() => {
-				if (!params['v']) {
-					this.calendarViewFormControl.setValue('month', { onlySelf: true, emitEvent: false });
 				} else {
-					this.calendarViewFormControl.setValue(this.paramsToCalendarView[params['v']], { onlySelf: true, emitEvent: false });
+					const dateSplit = params['d'].split('-');
+					if (dateSplit.length === 3) {
+						const date = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2]);
+						if (isNaN(date.getTime())) {
+							this.updateToToday();
+						} else {
+							this.selectedDate$$.next(date);
+							this.newDate$$.next({ date, isWeekChange: false });
+						}
+					} else {
+						this.updateQuery('m', this.selectedDate$$.value, true);
+					}
 				}
-			}, 0);
-		});
+				setTimeout(() => {
+					if (!params['v'] || data?.['absenceType'] === ABSENCE_TYPE_ARRAY[2]) {
+						this.calendarViewFormControl.setValue('month', { onlySelf: true, emitEvent: false });
+					} else {
+						this.calendarViewFormControl.setValue(this.paramsToCalendarView[params['v']], { onlySelf: true, emitEvent: false });
+					}
+				}, 0);
+			});
 
 		this.absenceType$ = this.route.data.pipe(
 			filter((data) => !!data[ABSENCE_TYPE]),
@@ -643,6 +645,20 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
