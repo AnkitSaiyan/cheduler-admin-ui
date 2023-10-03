@@ -72,3 +72,9 @@
     border-radius: 4px;
   }
 }
+
+.type:not(:last-of-type) {
+  &::after {
+    content: ', ';
+  }
+}

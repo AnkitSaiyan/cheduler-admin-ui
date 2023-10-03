@@ -39,3 +39,8 @@
   }
 }
 
+.type:not(:last-of-type) {
+  &::after {
+    content: ', ';
+  }
+}

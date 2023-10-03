@@ -72,8 +72,12 @@
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-row-cell [fullContent]="item.name">{{ item.name | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-row-cell [fullContent]="item.expensive">{{ item.expensive | dashIfNothing }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.bodyType">{{ item.bodyType.split(',').join(', ') | titlecase | dashIfNothing | translate }}</dfm-table-row-cell>
-        <dfm-table-row-cell [fullContent]="item.bodyPart">{{ item.bodyPartDetails | bodyPartDetail | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.bodyType">
+          <ng-container *ngFor="let type of item.bodyType.split(',')">
+            <span class="type">{{ type | titlecase | dashIfNothing | translate }}</span>
+          </ng-container>
+        </dfm-table-row-cell>
+        <dfm-table-row-cell [fullContent]="item.bodyPart">{{ item.bodyPartDetails | bodyPartDetail : shareDataService.getLanguage() | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-row-cell [fullContent]="item.status">
           <dfm-badge *ngIf="item.status === statusType.Active"
                      color="success"

@@ -98,8 +98,8 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 		private modalSvc: ModalService,
 		private downloadSvc: DownloadService,
 		private cdr: ChangeDetectorRef,
-		private shareDataService: ShareDataService,
-		private translate: TranslateService,
+		public shareDataService: ShareDataService,
+		public translate: TranslateService,
 		public permissionSvc: PermissionService,
 	) {
 		super();
@@ -313,12 +313,12 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 				.map(({ title }) => title)
 				.slice(0, -1)
 				.join('\t')}\n`;
-			
-				if (!this.filteredExams$$.value.length) {
-					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
-					this.clipboardData = '';
-					return;
-				}
+
+			if (!this.filteredExams$$.value.length) {
+				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.clipboardData = '';
+				return;
+			}
 
 			this.filteredExams$$.value.forEach((exam: Exam) => {
 				dataString += `${exam.name}\t${exam.expensive}\t${StatusToName[exam.status]}\n`;
