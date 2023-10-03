@@ -514,10 +514,10 @@
 	"On": "Op",
 	"YELLOW_REPRESENTS_HOLIDAY":"Geel staat voor feestdagen.",
 	"BLUE_REPRESENTS_NORMAL_LAB_EVENT":"Blauw staat voor normale.",
-	"Loading": "Loaden...",
+	"Loading": "Laden...",
 	"Close": "Sluiten",
 	"Weekly": "Wekelijks",
 	"Monthly": "Maandelijks",
-	"THE_EVENT_WILL_RUN_UNTIL_REACHES_A_SPECIFIC_DATE": "Het evenement loopt tot een specifieke datum wordt bereikt"
+	"THE_EVENT_WILL_RUN_UNTIL_REACHES_A_SPECIFIC_DATE": "Het prioriteitsslot loopt tot een specifieke datum wordt bereikt"
 
 }
