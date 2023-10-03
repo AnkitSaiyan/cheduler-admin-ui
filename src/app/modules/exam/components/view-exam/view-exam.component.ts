@@ -60,7 +60,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 		private notificationSvc: NotificationDataService,
 		private router: Router,
 		private modalSvc: ModalService,
-		private shareDataService: ShareDataService,
+		public shareDataService: ShareDataService,
 		private route: ActivatedRoute,
 	) {
 		super();
