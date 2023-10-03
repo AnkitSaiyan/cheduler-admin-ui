@@ -1,19 +1,24 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, combineLatest, filter, map, switchMap, tap } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable, combineLatest, filter, map, switchMap, takeUntil, tap } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { BodyPart } from 'src/app/shared/models/body-part.model';
 import { BodyType, DUTCH_BE, ENG_BE } from 'src/app/shared/utils/const';
 import { environment } from 'src/environments/environment';
 import { ShareDataService } from './share-data.service';
+import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 
 @Injectable({
 	providedIn: 'root',
 })
-export class BodyPartService {
+export class BodyPartService extends DestroyableComponent implements OnDestroy {
 	constructor(private http: HttpClient, private sharedDataSvc: ShareDataService) {
+		super();
 		combineLatest([this.bodyPart$$, this.sharedDataSvc.getLanguage$()])
-			.pipe(filter(([bodyPart]) => !!bodyPart.length))
+			.pipe(
+				filter(([bodyPart]) => !!bodyPart.length),
+				takeUntil(this.destroy$$),
+			)
 			.subscribe(([bodyPart, lang]) => this.setBodyPart(bodyPart, lang));
 	}
 
@@ -47,6 +52,10 @@ export class BodyPartService {
 		return this.bodyPart.get(type) as BodyPart[];
 	}
 
+	public override ngOnDestroy(): void {
+		super.ngOnDestroy();
+	}
+
 	private setBodyPart(bodyParts: BodyPart[], lang: string) {
 		const modifiedBodyPart = bodyParts.map((data) => ({ ...data, bodypartName: lang === ENG_BE ? data.bodypartName : data.bodypartNameNl }));
 		this.bodyPart.set(BodyType.Common, modifiedBodyPart),
@@ -63,6 +72,7 @@ export class BodyPartService {
 			});
 	}
 }
+
 
 
 
