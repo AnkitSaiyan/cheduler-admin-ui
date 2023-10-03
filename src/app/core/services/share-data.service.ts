@@ -5,6 +5,8 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { DUTCH_BE, BodyType } from 'src/app/shared/utils/const';
 import { Translate } from 'src/app/shared/models/translate.model';
+import { NameValue } from 'src/app/shared/components/search-modal.component';
+import { AppointmentStatus } from 'src/app/shared/models/status.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -35,6 +37,21 @@ export class ShareDataService {
 		// },
 	];
 
+	public statuses: NameValue[] = [
+		{
+			name: 'Pending',
+			value: AppointmentStatus.Pending,
+		},
+		{
+			name: 'Approved',
+			value: AppointmentStatus.Approved,
+		},
+		{
+			name: 'Cancelled',
+			value: AppointmentStatus.Cancelled,
+		},
+	];
+
 	constructor(private http: HttpClient) {
 		if (localStorage.getItem('lang')) {
 			this.language$$.next(localStorage.getItem('lang') ?? '');
@@ -59,6 +76,26 @@ export class ShareDataService {
 							});
 						}
 						return bodyTypes;
+					}),
+				);
+			}),
+		);
+	}
+
+	get AppointmentStatus$(): Observable<any[]> {
+		return combineLatest([this.language$$.pipe(startWith(''))]).pipe(
+			switchMap(([lang]) => {
+				return of(this.statuses).pipe(
+					map((statuses) => {
+						if (lang) {
+							return statuses.map((statuses) => {
+								return {
+									...statuses,
+									name: Translate.AppointmentStatus[statuses.name][lang],
+								};
+							});
+						}
+						return statuses;
 					}),
 				);
 			}),
