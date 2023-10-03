@@ -37,7 +37,7 @@ import {
 	UpdateDurationRequestData,
 	UpdateRadiologistRequestData,
 } from '../../../models/appointment.model';
-import { CalenderTimeSlot, Interval, getDurationMinutes, getFromAndToDate } from '../../../models/calendar.model';
+import { CalenderTimeSlot, Interval, dataModification, getDurationMinutes, getFromAndToDate } from '../../../models/calendar.model';
 import { Exam } from '../../../models/exam.model';
 import { ReadStatus } from '../../../models/status.model';
 import { Translate } from '../../../models/translate.model';
@@ -214,10 +214,15 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				switchMap(({ fromDate, toDate }) => {
 					return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
 				}),
+				map((data) => dataModification(data.data, this.datePipe)),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe((data) => {
-				this.isHoliday$$.next(Boolean(data.data?.length));
+				const isHoliday: boolean = Boolean(
+					data[this.datePipe.transform(this.selectedDate, 'd-M-yyyy') ?? ''] &&
+						data[this.datePipe.transform(this.selectedDate, 'd-M-yyyy') ?? ''].some(({ isHoliday }) => isHoliday),
+				);
+				this.isHoliday$$.next(isHoliday);
 			});
 	}
 
