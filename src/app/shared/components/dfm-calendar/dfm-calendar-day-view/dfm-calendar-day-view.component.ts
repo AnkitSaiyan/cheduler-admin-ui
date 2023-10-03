@@ -210,7 +210,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				filter(Boolean),
 				debounceTime(100),
 				filter((queryParams: Params) => !!queryParams['v'] && !!queryParams['d']),
-				map(getFromAndToDate),
+				map((data) => getFromAndToDate(data)),
 				switchMap(({ fromDate, toDate }) => {
 					return this.absenceApiSvc.absencesHolidayForCalendar$(fromDate, toDate);
 				}),
