@@ -85,20 +85,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 	private physicianList: NameValue[] = [];
 	private patientList: NameValue[] = [];
 	private times: NameValue[];
-	public statusList: NameValue[] = [
-		{
-			name: 'Pending',
-			value: AppointmentStatus.Pending,
-		},
-		{
-			name: 'Approved',
-			value: AppointmentStatus.Approved,
-		},
-		{
-			name: 'Cancelled',
-			value: AppointmentStatus.Cancelled,
-		},
-	];
+	public statusList: NameValue[] = [];
 	public currentDate = new Date();
 
 	constructor(
@@ -132,6 +119,10 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 		});
 
 		this.createForm();
+
+		this.shareDataService.AppointmentStatus$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => (this.statusList = items),
+		});
 
 		this.siteManagementApiSvc.siteManagementData$.pipe(take(1)).subscribe((siteSettings) => {
 			this.isCombinable = siteSettings.isSlotsCombinable;
