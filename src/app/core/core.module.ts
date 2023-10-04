@@ -7,8 +7,8 @@ import { CoreComponent } from './core.component';
 import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
-  declarations: [CoreComponent],
-  imports: [CommonModule, CoreRoutingModule, SharedModule, MatProgressBarModule],
-  exports: [MatProgressBarModule],
+	declarations: [CoreComponent],
+	imports: [CommonModule, CoreRoutingModule, SharedModule, MatProgressBarModule],
+	exports: [MatProgressBarModule],
 })
 export class CoreModule {}
