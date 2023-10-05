@@ -1,3 +1,14 @@
+.mat-loader {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  display: block;
+  backdrop-filter: blur(1px); 
+}
+
 .ad-sf-action-buttons {
   display: flex;
 }

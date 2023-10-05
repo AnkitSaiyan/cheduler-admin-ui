@@ -44,8 +44,8 @@
     </section>
 
     <section class="dfm-card ad-sf-section2 add-page-content-height position-relative">
-        <dfm-mat-spinner></dfm-mat-spinner>
-        <div class="mat-spinner" *ngIf="loading$$ | async">
+        <!-- <dfm-mat-spinner></dfm-mat-spinner> -->
+        <div class="mat-loader" *ngIf="loading$$ | async">
             <mat-progress-spinner class="example-margin" color="primary" mode="indeterminate" [diameter]="50"> </mat-progress-spinner>
           </div>
 
