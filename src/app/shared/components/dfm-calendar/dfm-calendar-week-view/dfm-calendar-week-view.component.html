@@ -190,6 +190,8 @@
                       'top.px': getTop(groupedData),
                       'height.px': eventHeight
                     }"
+                    #appointmentGroup
+                    (drop)="dropOnGroupArea($event, day, appointmentGroup, getTop(groupedData), false)"
                     (dblclick)="onDblClick($event, eventsContainer, day, false, getTop(groupedData)); $event.stopPropagation()"
                   >
 
@@ -298,6 +300,8 @@
                       'top.px': getAbsenceTop(groupedData),
                       'height.px': eventHeight
                     }"
+                    #absenceGroup
+                    (drop)="dropOnGroupArea($event, day, absenceGroup, getAbsenceTop(groupedData), false)"
                   >
                     <div
                       class="calendar-week-view-event-details-container"
@@ -408,7 +412,7 @@
                   class="gray-out-area-week"
                   #grayOutArea
                   [ngStyle]="{ 'top.px': item.top, 'height.px': item.height, width: bodyMain.style.width }"
-                            (drop)="dropOnGrayOutArea($event, day, grayOutArea, item.top)"
+                            (drop)="dropOnGroupArea($event, day, grayOutArea, item.top)"
                 ></div>
               </ng-container>
             </ng-container>
