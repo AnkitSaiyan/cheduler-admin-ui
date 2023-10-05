@@ -604,6 +604,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				toDate: date,
 				date: date,
 				exams: appointment.exams.map(({ id }) => id + ''),
+				AppointmentId: appointment?.id,
 			};
 			this.cdr.detectChanges();
 			const isSlotAvailable = await firstValueFrom(this.appointmentApiSvc.getSlots$(reqData).pipe(map((data) => !!data?.[0]?.slots?.length)));
