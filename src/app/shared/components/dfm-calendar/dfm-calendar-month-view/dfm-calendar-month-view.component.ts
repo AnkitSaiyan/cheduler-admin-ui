@@ -230,6 +230,7 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 				toDate: date,
 				date: date,
 				exams: appointment.exams.map(({ id }) => id + ''),
+				AppointmentId: appointment?.id,
 			};
 			const isSlotAvailable = await firstValueFrom(this.appointmentApiSvc.getSlots$(reqData).pipe(map((data) => !!data?.[0]?.slots?.length)));
 			if (!isSlotAvailable) {

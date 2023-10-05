@@ -154,6 +154,7 @@ export interface AppointmentSlotsRequestData {
 	toDate?: string;
 	date: string;
 	exams: number[] | string[];
+	AppointmentId: number;
 }
 
 export interface SelectedSlots {
