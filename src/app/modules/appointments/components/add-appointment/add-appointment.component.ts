@@ -195,6 +195,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				takeUntil(this.destroy$$),
 			)
 			.subscribe((appointment) => {
+				this.loaderService.spinnerActivate();
 				this.appointment$$.next(appointment ?? ({} as Appointment));
 				this.updateForm(appointment);
 				if (appointment?.id && appointment.documentCount) this.getDocument(appointment.id);
@@ -574,7 +575,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 		this.loadingSlots$$.next(true);
 
-    setTimeout(() => {
+		setTimeout(() => {
+			this.loaderService.spinnerDeactivate();
 			this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
 				.pipe(take(1))
 				.subscribe((slots) => {
@@ -621,7 +623,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 							);
 						});
 					}
-
 					this.cdr.detectChanges();
 				});
 		}, 600);
