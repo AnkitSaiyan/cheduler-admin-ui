@@ -228,7 +228,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 					this.clearSlotDetails();
 					return AppointmentUtils.GenerateSlotRequestData(date, this.formValues.examList);
 				}),
-				switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
+				switchMap((reqData) => this.appointmentApiSvc.getSlots$({...reqData, AppointmentId: this.modalData?.appointment?.id ?? 0})),
 			)
 			.subscribe((slots) => {
 				this.setSlots(slots[0].slots, slots[0]?.isCombined);
@@ -246,7 +246,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 					this.clearSlotDetails();
 					return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
 				}),
-				switchMap((reqData) => this.appointmentApiSvc.getSlots$(reqData)),
+				switchMap((reqData) => this.appointmentApiSvc.getSlots$({...reqData, AppointmentId: this.modalData?.appointment?.id ?? 0})),
 			)
 			.subscribe((data) => {
 				const { slots }: any = data[0];

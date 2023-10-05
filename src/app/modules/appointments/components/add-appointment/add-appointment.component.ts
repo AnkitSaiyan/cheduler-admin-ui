@@ -279,7 +279,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	}
 
 	public getSlotData(reqData: AppointmentSlotsRequestData) {
-		return this.appointmentApiSvc.getSlots$(reqData);
+		return this.appointmentApiSvc.getSlots$({...reqData, AppointmentId: this.appointment$$?.value?.id ?? 0});
 	}
 
 	public saveAppointment(): void {
