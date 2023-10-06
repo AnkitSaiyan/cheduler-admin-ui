@@ -585,7 +585,7 @@
 
                     </ng-container>
                     <ng-container
-                      *ngIf="absenceData && absenceData[h.value] as roomData">
+                      *ngIf="absenceData && absenceData[h.name] as roomData">
                       <ng-container
                         *ngFor="let data of roomData;">
                         <ng-container *ngIf="getAbsenceHeight(data) as eventHeight" >
