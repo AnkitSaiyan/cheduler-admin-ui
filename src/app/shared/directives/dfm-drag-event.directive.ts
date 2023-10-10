@@ -1,7 +1,7 @@
-import { Directive, ElementRef, HostListener, Input, OnChanges, SimpleChanges, TemplateRef } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { CalendarType } from '../utils/const';
-import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 @Directive({
 	selector: '[dfmDragEvent]',
 })
@@ -24,6 +24,9 @@ export class DfmDragEventDirective implements OnChanges {
 		if (this.ngbPopoverDrag) this.ngbPopoverDrag.close();
 		if (event.currentTarget !== event.target) return;
 		if (this.calendarType === 'day') this.draggableSvc.headerType = this.headerType;
+		setTimeout(() => {
+			this.draggableSvc.isDragStarted = true;
+		}, 10);
 		this.draggableSvc.dragStartElement = { event, data: this.draggedElData };
 		this.draggableSvc.dragStartElementParentRef = this.elementRef;
 		event.stopPropagation();
@@ -42,6 +45,7 @@ export class DfmDragEventDirective implements OnChanges {
 
 	@HostListener('drop', ['$event'])
 	onDragDrop(event: DragEvent) {
+		this.draggableSvc.isDragStarted = false;
 		if (!this.draggableSvc.dragStartElement) return;
 		event.stopPropagation();
 	}

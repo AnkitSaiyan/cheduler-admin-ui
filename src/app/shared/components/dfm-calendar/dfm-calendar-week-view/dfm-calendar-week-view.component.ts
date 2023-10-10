@@ -161,7 +161,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		private datePipe: DatePipe,
 		private cdr: ChangeDetectorRef,
 		private modalSvc: ModalService,
-		private draggableSvc: DraggableService,
+		public draggableSvc: DraggableService,
 		private route: ActivatedRoute,
 		private absenceApiSvc: AbsenceApiService,
 		private utcToLocalPipe: UtcToLocalPipe,
@@ -559,11 +559,14 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public editAppointment(event: any) {
+		const weekday = new Date(event.day[2], event.day[1], event.day[0], 0, 0, 0, 0).getDay();
+		const grayOutArea = this.grayOutSlot$$.value?.[weekday - 1];
+		const isOutside = grayOutArea.some((item) => item.top < event.event.offsetY && item.top + item.height > event.event.offsetY);
 		this.addAppointment.emit({
 			e: { offsetY: event.event.offsetY },
 			day: event.day,
 			grayOutSlot: this.grayOutSlot$$.value,
-			isOutside: false,
+			isOutside,
 			appointment: event.data,
 		});
 	}
