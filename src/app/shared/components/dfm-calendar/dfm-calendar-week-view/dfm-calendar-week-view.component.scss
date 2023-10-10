@@ -252,6 +252,16 @@ h3 {
 						position: relative;
 						height: 100%;
 						width: 100%;
+            &.drag-backdrop {
+                position: absolute;
+                top: 0;
+                z-index: -1;
+                opacity: .5;
+              }
+
+              &.drag-started {
+                z-index: 999;
+              }
 					}
 				}
 			}

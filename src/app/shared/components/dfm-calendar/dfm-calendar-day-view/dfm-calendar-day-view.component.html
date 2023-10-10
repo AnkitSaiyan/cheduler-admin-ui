@@ -644,6 +644,12 @@
                       </ng-container>
                     </ng-container>
                   </div>
+                  <div
+                    class="calender-day-view-body-events-container drag-backdrop"
+                    role="backdrop"
+                    [ngClass]="{'drag-started': draggableSvc.isDragStarted}"
+                  >
+                  </div>
                 </div>
               </ng-container>
               <ng-template #singleGridCol>
