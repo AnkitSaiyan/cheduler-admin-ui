@@ -30,7 +30,6 @@ h3 {
 		width: 100%;
 		// padding-right: 16px;
 		overflow: scroll;
-		scroll-behavior: smooth;
 
 		&::-webkit-scrollbar {
 			display: none;
@@ -152,7 +151,6 @@ h3 {
 
 		.calendar-week-view-events-container-main {
 			overflow-x: scroll;
-			scroll-behavior: smooth;
 			//overflow-y: scroll;
 			display: flex;
 			align-items: flex-start;
