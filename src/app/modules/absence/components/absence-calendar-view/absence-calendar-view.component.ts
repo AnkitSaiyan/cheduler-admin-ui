@@ -73,6 +73,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	public absenceWeekViewData$!: Observable<any>;
 
+	public absenceMonthViewData$!: Observable<any>;
+
 	private isDayView$$ = new BehaviorSubject<Boolean>(false);
 
 	public todayEvent$$ = new BehaviorSubject<any[]>([]);
@@ -208,6 +210,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		);
 
 		this.absenceWeekViewData$ = this.absenceData$.pipe(map(this.dataModificationForWeek.bind(this)));
+
+		this.absenceMonthViewData$ = this.absenceData$.pipe(map(this.dataModificationForMonth));
 	}
 
 	public override ngOnDestroy(): void {
@@ -481,6 +485,23 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		return absenceGroupedByDate;
 	}
 
+	private dataModificationForMonth(absenceSlot: { [key: string]: Absence[] }) {
+		let modifiedAbsence = {};
+		Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
+			const filterAbsence = {};
+			const name = absence?.[0].userName ? 'userName' : 'roomName';
+			absence.forEach((item) => {
+				if (filterAbsence?.[item.id]) {
+					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: filterAbsence[item.id][name] + ', ' + item[name] };
+				} else {
+					filterAbsence[item.id] = item;
+				}
+			});
+			modifiedAbsence[key] = Object.values(filterAbsence);
+		});
+		return modifiedAbsence;
+	}
+
 	public setForm(event: FormControl<Date>) {
 		this.dataControl = event;
 		this.dataControl.setValue(this.selectedDate$$.value, { onlySelf: true, emitEvent: false });
@@ -657,6 +678,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
 
 
 
