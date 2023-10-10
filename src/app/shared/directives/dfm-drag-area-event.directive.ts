@@ -31,11 +31,16 @@ export class DfmDragAreaEventDirective {
 		event.target.classList.remove('drag-area-border');
 		event.stopPropagation();
 	}
+	@HostListener('dragend', ['$event'])
+	onDragEnd() {
+		this.draggableSvc.isDragStarted = false;
+	}
 
 	@HostListener('drop', ['$event'])
 	onDragDrop(event: DragEvent | any) {
 		event.stopPropagation();
 		event.preventDefault();
+		this.draggableSvc.isDragStarted = false;
 		if (this.calendarType === 'day' && this.headerType !== this.draggableSvc.headerType) return;
 		if (!this.draggableSvc.dragStartElement) return;
 		this.draggableSvc.dragEndElementRef = this.elementRef;
