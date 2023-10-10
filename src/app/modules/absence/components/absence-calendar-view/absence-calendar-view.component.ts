@@ -413,8 +413,20 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		let endDate: string;
 		let sameGroup: boolean;
 		let absenceGroupedByDate = {};
-
+		let modifiedAbsence = {};
 		Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
+			const filterAbsence = {};
+			const name = absence?.[0].userName ? 'userName' : 'roomName';
+			absence.forEach((item) => {
+				if (filterAbsence?.[item.id]) {
+					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: filterAbsence[item.id][name] + ', ' + item[name] };
+				} else {
+					filterAbsence[item.id] = item;
+				}
+			});
+			modifiedAbsence[key] = Object.values(filterAbsence);
+		});
+		Object.entries(modifiedAbsence).forEach(([key, absence]: [string, any]) => {
 			let groupedAbsence: any[] = [];
 			absence
 				.sort((s1, s2) => (DateTimeUtils.TimeToNumber(s1.start) > DateTimeUtils.TimeToNumber(s2.start) ? 1 : -1))
