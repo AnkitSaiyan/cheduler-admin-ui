@@ -604,6 +604,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				toDate: date,
 				date: date,
 				exams: appointment.exams.map(({ id }) => id + ''),
+				AppointmentId: appointment?.id,
 			};
 			this.cdr.detectChanges();
 			const isSlotAvailable = await firstValueFrom(this.appointmentApiSvc.getSlots$(reqData).pipe(map((data) => !!data?.[0]?.slots?.length)));
@@ -778,7 +779,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		return this.datePipe.transform(subtractedDate, 'HH:mm') ?? '';
 	}
 
-	public resize(e: any, resizer: HTMLDivElement, appointment: Appointment, container: HTMLDivElement) {
+	public resize(e: any, resizer: HTMLDivElement, appointment: Appointment, container: HTMLDivElement): void {
 		this.minutesInBottom = this.extendMinutesInBottom(appointment);
 		this.element = container;
 		this.currentResizer = resizer;
@@ -788,6 +789,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		this.original_mouse_y = e.pageY;
 		const isTopResizer = resizer.classList.contains('top');
 		this.resizeListener = this.renderer.listen(window, 'mousemove', (e: any) => {
+			container.style.zIndex = '10';
 			if (!isTopResizer) {
 				const height = this.original_height + (e.pageY - this.original_mouse_y);
 				if (height > this.minimum_size) {
@@ -803,6 +805,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		});
 
 		this.mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
+			container.style.zIndex = '1';
 			this.resizerMouseup(container, isTopResizer, appointment);
 		});
 	}
@@ -826,7 +829,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		return calendarEndInMin - appointmentEndInMin;
 	}
 
-	private updateAppointmentDuration(appointment, isExtend, container, isTopResizer, minutes, divHieght, divTop) {
+	private updateAppointmentDuration(appointment:Appointment, isExtend: boolean, container:HTMLDivElement, isTopResizer: boolean, minutes: number, divHieght: number, divTop: number): void {
 		let amountofMinutes =
 			isExtend && isTopResizer && divTop / this.pixelPerMinute < minutes
 				? divTop / this.pixelPerMinute
@@ -844,7 +847,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		} as UpdateDurationRequestData;
 
 		container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-		return this.appointmentApiSvc.updateAppointmentDuration$(requestData).subscribe({
+		this.appointmentApiSvc.updateAppointmentDuration$(requestData).subscribe({
 			next: (res) => {
 				this.notificationSvc.showSuccess(Translate.AppointmentUpdatedSuccessfully[this.selectedLang]);
 			},
@@ -857,7 +860,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		});
 	}
 
-	private resizerMouseup(container, isTopResizer, appointment) {
+	private resizerMouseup(container: HTMLDivElement, isTopResizer: boolean, appointment: Appointment): void {
 		const minutes = Math.round(Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute / 5) * 5;
 		const isExtend = parseInt(container?.style.height) > this.original_height;
 

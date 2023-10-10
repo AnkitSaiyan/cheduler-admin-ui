@@ -29,7 +29,8 @@ h3 {
 		flex-direction: column;
 		width: 100%;
 		// padding-right: 16px;
-		overflow: auto;
+		overflow: scroll;
+		-webkit-overflow-scrolling: touch;
 
 		&::-webkit-scrollbar {
 			display: none;
@@ -103,7 +104,7 @@ h3 {
 
 .calendar-week-view-body-container {
 	//max-height: calc(100vh - 368px);
-	overflow: auto;
+	// overflow: auto;
 	height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
 	max-height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
 	overflow-y: auto;
@@ -150,7 +151,8 @@ h3 {
 		}
 
 		.calendar-week-view-events-container-main {
-			overflow-x: auto;
+			overflow-x: scroll;
+			-webkit-overflow-scrolling: touch;
 			//overflow-y: scroll;
 			display: flex;
 			align-items: flex-start;
