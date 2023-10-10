@@ -100,7 +100,7 @@
             [selectedDate]="selectedDate"
             [newDate$$]="newDate$$"
             (dateChange)="changeDate($event)"
-            [absenceData]="(absenceData$ | async) ?? {}"
+            [absenceData]="(absenceMonthViewData$ | async) ?? {}"
           >
           </dfm-calendar-month-view>
         </ng-container>
