@@ -303,6 +303,16 @@ h3 {
             height: 100%;
             width: 100%;
             //overflow-y: hidden;
+            &.drag-backdrop {
+                position: absolute;
+                top: 0;
+                z-index: -1;
+                opacity: .5;
+              }
+            
+              &.drag-started {
+                z-index: 999;
+              }
           }
         }
       }
