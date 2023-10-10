@@ -10,6 +10,8 @@ export class DraggableService {
 
 	private draggableContainer!: any;
 
+	private dragStarted!: boolean;
+
 	private dragStartElementRefData!: any;
 
 	private dragStartElementDeepCopy!: any;
@@ -37,6 +39,13 @@ export class DraggableService {
 
 	public set dragEndElementRef(element: ElementRef) {
 		this.dragEndElementReference = element;
+	}
+	public get isDragStarted() {
+		return this.dragStarted;
+	}
+
+	public set isDragStarted(value: boolean) {
+		this.dragStarted = value;
 	}
 
 	public get dragEndElementRef() {
@@ -108,7 +117,7 @@ export class DraggableService {
 		if (!this.dragStartElementParentReference || !this.dragEndElementRef || !this.dragStartElementDeepCopy) {
 			return;
 		}
-		
+
 		this.renderer?.appendChild(this.dragStartElementParentReference, this.dragStartElement?.event?.target);
 		this.dragEndElementRef?.nativeElement?.lastChild?.remove();
 		this.removeRef();
@@ -135,6 +144,9 @@ export class DraggableService {
 		element?.remove();
 	}
 }
+
+
+
 
 
 

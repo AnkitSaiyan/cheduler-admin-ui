@@ -119,7 +119,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		private translatePipe: TranslatePipe,
 		private translate: TranslateService,
 		private renderer: Renderer2,
-		private draggableSvc: DraggableService,
+		public draggableSvc: DraggableService,
 		private cdr: ChangeDetectorRef,
 		private route: ActivatedRoute,
 		private absenceApiSvc: AbsenceApiService,
