@@ -3,7 +3,7 @@
     <mat-icon>refresh</mat-icon>
   </button> -->
   <section class="list-page-section-1">
-    <!-- <dfm-button class="pr-li-title-buttons" color="link" size="lg" routerLink="./">{{"PrioritySlots" | translate}} </dfm-button> -->
+    <dfm-button class="pr-li-title-buttons" color="link" size="lg" routerLink="./">{{"PrioritySlots" | translate}} </dfm-button>
     <ng-container *ngIf="(calendarView$$ | async) === false; else space">
       <dfm-input
         class="flex-1 pr-li-search"
@@ -39,7 +39,7 @@
     </ng-container>
     <ng-template #space>
       <span class="d-flex flex-1">
-        <dfm-button class="pr-li-title-buttons" color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{"PrioritySlots" | translate}} </dfm-button>
+        <dfm-button class="pr-li-title-buttons-calendar" color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{"PrioritySlots" | translate}} </dfm-button>
       </span>
     </ng-template>
 
