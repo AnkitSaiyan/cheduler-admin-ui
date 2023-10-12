@@ -97,6 +97,14 @@
             <dfm-data-table-action *ngIf="!item.status" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Active }])" ></dfm-data-table-action>
             <dfm-data-table-action *ngIf="item.status" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusType.Inactive }])"></dfm-data-table-action>
             <dfm-data-table-action *dfmPermitted="Permission.UpdateExams" icon="pencil-02" tooltip="{{ 'Edit' | translate }}" (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'edit']" queryParamsHandling="preserve" [state]="{ comingFromRoute: 'exam', edit: true }"></dfm-data-table-action>
+            <dfm-data-table-action
+              (click)="$event.stopPropagation()" [routerLink]="['./', item.id, 'add']"
+              color="tertiary-gray"
+              icon="copy-03"
+              tooltip="{{ 'ClickToCopy' | translate }}"
+              queryParamsHandling="preserve"
+            >
+            </dfm-data-table-action>
             <dfm-data-table-action *dfmPermitted="Permission.DeleteExams" icon="trash-01" tooltip="{{ 'Delete' | translate }}" (click)="$event.stopPropagation(); deleteExam(item.id)"></dfm-data-table-action>
           </ng-template>
         </dfm-data-table-action-cell>
