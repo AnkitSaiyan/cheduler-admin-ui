@@ -33,6 +33,11 @@ const examRoutes: Routes = [
         data: { routeType: RouteType.Add, routeName: RouteName.Exam },
       },
       {
+        path: `:${EXAM_ID}/add`,
+        component: AddExamComponent,
+        data: { routeType: RouteType.Add, routeName: RouteName.Exam },
+      },
+      {
         path: '**',
         redirectTo: '',
         pathMatch: 'full',
