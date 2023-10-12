@@ -170,12 +170,112 @@
                 </div>
 
                 <ng-container *ngIf="formValues.practiceAvailabilityToggle">
-                    <dfm-time-slots
-                            [timeSlotData$$]="staffAvailabilityData$$"
-                            [practiceHourData$$]="practiceHourData$$"
-                            [emitEvents$$]="emitEvents$$"
-                            (formValuesEvent)="saveForm($event)"
-                    ></dfm-time-slots>
+                  <mat-tab-group [selectedIndex]="rangeArray$$.value.length" animationDuration="0ms">
+                    <mat-tab label="Default">
+                      <dfm-time-slots
+                              [timeSlotData$$]="staffAvailabilityData$$"
+                              [practiceHourData$$]="practiceHourData$$"
+                              [emitEvents$$]="emitEvents$$"
+                              (formValuesEvent)="saveForm($event)"
+                      ></dfm-time-slots>
+                    </mat-tab>
+
+                    <mat-tab *ngFor="let range of rangeArray$$.value; let i = index" [label]="'Range ' + (i+1)">
+                      <div class="d-flex dfm-gap-16 date-range">
+                        <div class="ad-ab-from-date max-w-5">
+                          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
+                            {{ 'From' | translate }} *
+                          </div>
+
+                          <div class="d-flex align-items-start dfm-gap-16 flex-1">
+                              <div class="flex-1 d-flex flex-column">
+                                <div class="dfm-button-group-wrapper h-fit flex-1">
+                                  <div class="input-as-dfm-input">
+                                    <input
+                                    placeholder="{{'dateFormat' | translate}}"
+                                    required  [matDatepicker]="picker"  readonly class="w-full min-w-128">
+                                  </div>
+                                  <dfm-button-icon
+                                    color="secondary-gray"
+                                    size="md"
+                                    icon="calendar-date"
+                                    ngbPopover="{{ 'Calendar' | translate }}"
+                                    triggers="mouseenter:mouseleave"
+                                    popoverClass="popover-p-8"
+                                    [openDelay]="200"
+                                    (click)="picker.open()"
+                                  ></dfm-button-icon>
+                                  <mat-datepicker #picker></mat-datepicker>
+                                </div>
+                              </div>
+
+                          </div>
+                        </div>
+                        <div class="ad-ab-from-date max-w-5">
+                          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
+                            {{ 'To' | translate }} *
+                          </div>
+
+                          <div class="d-flex align-items-start dfm-gap-16 flex-1">
+                              <div class="flex-1 d-flex flex-column">
+                                <div class="dfm-button-group-wrapper h-fit flex-1">
+                                  <div class="input-as-dfm-input">
+                                    <input
+                                    placeholder="{{'dateFormat' | translate}}"
+                                    required  [matDatepicker]="picker2"  readonly class="w-full min-w-128">
+                                  </div>
+                                  <dfm-button-icon
+                                    color="secondary-gray"
+                                    size="md"
+                                    icon="calendar-date"
+                                    ngbPopover="{{ 'Calendar' | translate }}"
+                                    triggers="mouseenter:mouseleave"
+                                    popoverClass="popover-p-8"
+                                    [openDelay]="200"
+                                    (click)="picker2.open()"
+                                  ></dfm-button-icon>
+                                  <mat-datepicker #picker2></mat-datepicker>
+                                </div>
+                              </div>
+
+                          </div>
+                        </div>
+                      </div>
+                      <dfm-time-slots
+                              [timeSlotData$$]="staffAvailabilityData$$"
+                              [practiceHourData$$]="practiceHourData$$"
+                              [emitEvents$$]="emitEvents$$"
+                              (formValuesEvent)="saveForm($event)"
+                      ></dfm-time-slots>
+                    </mat-tab>
+
+                    <mat-tab disabled>
+                      <ng-template mat-tab-label>
+                          <button mat-icon-button (click)="addMoreRange()">
+                            <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+                          </button>
+                      </ng-template>
+                    </mat-tab>
+                    <!-- <mat-tab label="Range 1">
+                      <dfm-time-slots
+                              [timeSlotData$$]="staffAvailabilityData$$"
+                              [practiceHourData$$]="practiceHourData$$"
+                              [emitEvents$$]="emitEvents$$"
+                              (formValuesEvent)="saveForm($event)"
+                      ></dfm-time-slots>
+                    </mat-tab>
+                    <mat-tab label="Range 2">
+                      <dfm-time-slots
+                              [timeSlotData$$]="staffAvailabilityData$$"
+                              [practiceHourData$$]="practiceHourData$$"
+                              [emitEvents$$]="emitEvents$$"
+                              (formValuesEvent)="saveForm($event)"
+                      ></dfm-time-slots>
+                    </mat-tab> -->
+                    <button>test</button>
+                  </mat-tab-group>
+
+
                 </ng-container>
             </div>
         </form>

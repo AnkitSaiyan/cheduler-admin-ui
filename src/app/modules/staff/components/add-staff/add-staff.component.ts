@@ -75,6 +75,8 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
 	private selectedLang: string = ENG_BE;
 
+	public rangeArray$$ = new BehaviorSubject<any[]>([]);
+
 	constructor(
 		private fb: FormBuilder,
 		private userApiSvc: UserApiService,
@@ -410,5 +412,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			this.addStaffForm.get('userType')?.setValue(staffDetails?.userType);
 			this.addStaffForm.get('userType')?.markAsUntouched();
 		}, 0);
+	}
+
+	public addMoreRange() {
+		this.rangeArray$$.next([...this.rangeArray$$.value, 'a']);
 	}
 }
