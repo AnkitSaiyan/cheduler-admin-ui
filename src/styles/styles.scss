@@ -1374,4 +1374,20 @@ angular-editor-toolbar button i {
       border-radius: 0;
     }
   }
-}
+        .mat-tab-label-content {
+    
+          >dfm-button-icon {
+            display: none;
+            position: absolute;
+            right: 4px;
+          }
+        }
+        &:hover {
+          .mat-tab-label-content {
+            >dfm-button-icon {
+              display: block;
+            }
+          }
+    
+        }
+        }

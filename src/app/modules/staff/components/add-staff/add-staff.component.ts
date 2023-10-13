@@ -417,4 +417,8 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 	public addMoreRange() {
 		this.rangeArray$$.next([...this.rangeArray$$.value, 'a']);
 	}
+
+	public removeRange(i: number) {
+		this.rangeArray$$.next([...this.rangeArray$$.value.slice(0, i), ...this.rangeArray$$.value.slice(i + 1)]);
+	}
 }
