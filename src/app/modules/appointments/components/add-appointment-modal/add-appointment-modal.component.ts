@@ -158,7 +158,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 				const hour = `0${Math.floor(minutes / 60)}`.slice(-2);
 				const min = `0${roundedMin % 60}`.slice(-2);
-				// this.selectedTimeInUTC = this.utcToLocalPipe.transform(`${hour}:${min}`, true) + ':00';
 				this.selectedTimeInUTCOrig = `${hour}:${min}:00`;
 				this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
 			} else if (this.modalData?.appointment?.startedAt) {
@@ -371,7 +370,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				this.modalSvc.close(true);
 			},
 			error: (err) => {
-				// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 				this.submitting$$.next(false);
 			},
 		});
@@ -408,7 +406,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				this.modalSvc.close(true);
 			},
 			error: (err) => {
-				// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 				this.submitting$$.next(false);
 			},
 		});

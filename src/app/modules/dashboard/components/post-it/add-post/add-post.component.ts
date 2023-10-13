@@ -37,8 +37,6 @@ export class AddPostComponent extends DestroyableComponent implements OnInit, On
       if (data.confirmButtonText) this.dialogData.confirmButtonText = data.confirmButtonText;
       if (data.cancelButtonText) this.dialogData.cancelButtonText = data.cancelButtonText;
     });
-
-    // this.postItMessage.
   }
 
   public override ngOnDestroy() {

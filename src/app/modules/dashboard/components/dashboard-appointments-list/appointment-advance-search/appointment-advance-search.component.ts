@@ -17,7 +17,6 @@ import {
 	SlotModified,
 } from '../../../../../shared/models/appointment.model';
 import { COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../../shared/utils/const';
-import { AppointmentStatus } from '../../../../../shared/models/status.model';
 import { SiteManagementApiService } from '../../../../../core/services/site-management-api.service';
 import { DateTimeUtils } from '../../../../../shared/utils/date-time.utils';
 import { GeneralUtils } from '../../../../../shared/utils/general.utils';
@@ -252,10 +251,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			const endDate = DateTimeUtils.DateToDateDistributed(data?.endedAt);
 			data['endedAt'] = `${endDate?.year}-${endDate?.month}-${endDate?.day} ${data?.endTime}:00`;
 		}
-		// if (data?.startedAt) data['startedAt'] = `${data?.startedAt?.year}-${data?.startedAt?.month}-${data?.startedAt?.day} ${data?.startTime}:00`;
-		// else data['startedAt'] = '';
-		// if (data?.endedAt) data['endedAt'] = `${data?.endedAt?.year}-${data?.endedAt?.month}-${data?.endedAt?.day} ${data?.endTime}:00`;
-		// else data['endedAt'] = '';
 		this.dialogSvc.close(data);
 	}
 

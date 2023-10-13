@@ -15,7 +15,6 @@ h3 {
 		justify-content: end;
 		vertical-align: middle;
 		min-width: 64px;
-		//max-width: 80px;
 		font-size: 0.7rem;
 
 		div {
@@ -28,7 +27,6 @@ h3 {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		// padding-right: 16px;
 		overflow: scroll;
 		-webkit-overflow-scrolling: touch;
 
@@ -46,7 +44,6 @@ h3 {
 				height: 100%;
 				align-self: end;
 				-webkit-align-self: flex-end;
-				//border-right: 1px solid var(--dfm-main-200);;
 			}
 
 			.calendar-week-view-weekday {
@@ -69,7 +66,6 @@ h3 {
 					border-left: 1px solid var(--dfm-main-200);
 					bottom: 0;
 					height: 100%;
-					//margin-left: -8px;
 					position: absolute;
 				}
 
@@ -103,8 +99,6 @@ h3 {
 }
 
 .calendar-week-view-body-container {
-	//max-height: calc(100vh - 368px);
-	// overflow: auto;
 	height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
 	max-height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
 	overflow-y: auto;
@@ -125,7 +119,6 @@ h3 {
 			position: absolute;
 			width: 100%;
 			border-bottom: 1px solid var(--dfm-main-300);
-			//left: 96px;
 		}
 
 		.calendar-week-view-time-slot-container {
@@ -153,7 +146,6 @@ h3 {
 		.calendar-week-view-events-container-main {
 			overflow-x: scroll;
 			-webkit-overflow-scrolling: touch;
-			//overflow-y: scroll;
 			display: flex;
 			align-items: flex-start;
 			-webkit-align-items: flex-start;
@@ -164,15 +156,10 @@ h3 {
 				display: inline-flex;
 				vertical-align: top;
 				cursor: pointer;
-				//position: relative;
 
 				.calendar-week-view-horizontal-line {
-					//position: absolute;
-					//width: calc(100vw - 128px);
 					height: 60px;
 					cursor: pointer;
-					//top: -12px;
-					//left: 64px;
 
 					&:first-child::after {
 						content: '';
@@ -183,7 +170,6 @@ h3 {
 						content: '';
 						position: absolute;
 						width: 100%;
-						// margin-top: -4px;
 						z-index: 1;
 						pointer-events: none;
 						border-bottom: 1px solid var(--dfm-main-300);
@@ -219,7 +205,6 @@ h3 {
 				.calendar-week-view-events-left-vertical-line {
 					width: 8px;
 					min-width: 8px;
-					//border-right: 1px solid var(--dfm-main-200);
 				}
 
 				.calendar-week-view-body-grid-column {
@@ -227,7 +212,6 @@ h3 {
 					width: 100%;
 					flex: 1;
 					border-left: 1px solid var(--dfm-main-200);
-					// padding-right: 12px;
 					position: relative;
 
           &[data-holiday="true"] {
@@ -303,14 +287,6 @@ h3 {
 				display: flex;
 				flex-direction: column;
 
-				//.calendar-week-view-e vent-patient-details {
-				//  display: flex;
-				//  flex-direction: column;
-				//  padding: 8px;
-				//  //&:hover {
-				//  //  background: var(--dfm-main-100);
-				//  //}
-				//}
 
 				.calendar-week-view-event-patient-details-divider {
 					border-bottom: 1px solid var(--dfm-main-200);
@@ -343,7 +319,6 @@ h3 {
 	.calendar-week-view-event-details-container {
 		display: flex;
 		flex-direction: column;
-		//justify-content: center;
 		width: calc(100% - 12px);
 		padding: 12px 8px;
 		font-size: 0.9rem;
@@ -480,10 +455,8 @@ h3 {
 .priority-slot-percentage {
 	width: 100%;
 	position: absolute;
-	// top: 12px;
 	display: flex;
 	flex-direction: column;
-	// padding: 8px;
 	opacity: 1;
 	align-items: center;
 }
@@ -514,7 +487,6 @@ h3 {
 
 .calender-month-view-day-exam-event-details {
   display: flex;
-  // flex-direction: column;
   justify-content: space-between;
   width: 100%;
   padding: 2px 8px;
@@ -578,8 +550,6 @@ h3 {
   .calender-month-view-day-exam-event-title {
     min-height: 12px;
     font-size: 10px !important;
-    // font-weight: 600;
-    // color: ;
   }
 
   .calender-month-view-day-exam-event-time {
@@ -616,14 +586,6 @@ h3 {
         display: flex;
         flex-direction: column;
 
-        //.calender-month-view-day-exam-details-expanded-patient-details {
-        //  display: flex;
-        //  flex-direction: column;
-        //  padding: 8px !important;
-        //  //&:hover {
-        //  //  background: var(--dfm-main-100);
-        //  //}
-        //}
 
         .calender-month-view-day-exam-details-expanded-patient-details-divider {
           border-bottom: 1px solid var(--dfm-main-200);

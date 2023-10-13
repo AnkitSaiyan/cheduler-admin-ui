@@ -148,11 +148,6 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 
 		this.userApiSvc.staffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (staffBase) => {
-				// if (this.paginationData && this.paginationData.pageNo < staffBase?.metaData?.pagination.pageNo) {
-				// } else {
-				// 	this.staffs$$.next(staffBase.data);
-				// }
-
 				this.staffs$$.next([...this.staffs$$.value, ...staffBase.data]);
 				this.paginationData = staffBase?.metaData?.pagination || 1;
 				this.isLoading = false;

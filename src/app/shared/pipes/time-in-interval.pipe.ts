@@ -22,9 +22,8 @@ export class TimeInIntervalPipe implements PipeTransform {
       let time: string;
 
       if (formatted) {
-        time = `${hourString[0] === '0' ? hourString[1] : hourString}${
-          interval === 60 && (minuteString === '00' || minuteString === '0') ? '' : `:${minuteString}`
-        } `;
+        time = `${hourString[0] === '0' ? hourString[1] : hourString}${interval === 60 && (minuteString === '00' || minuteString === '0') ? '' : `:${minuteString}`
+          } `;
       } else {
         time = `${hourString}:${minuteString}`;
       }
@@ -35,15 +34,6 @@ export class TimeInIntervalPipe implements PipeTransform {
 
       times.push(time);
     }
-
-    // if (format === 24) {
-    //   times.push('24:00');
-    // } else if (formatted) {
-    //   times.push('24:00 PM');
-    // } else {
-    //   times.push('24:00PM');
-    // }
-
     return times;
   }
 }

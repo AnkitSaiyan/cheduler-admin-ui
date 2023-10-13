@@ -3,18 +3,17 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, combineLatest, debounceTime, filter, map, mergeMap, Observable, of, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, map, Observable, of, switchMap, take, takeUntil } from 'rxjs';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { RepeatType } from 'src/app/shared/models/absence.model';
 import { getDateOfMonth } from 'src/app/shared/models/calendar.model';
-import { NextSlotOpenPercentageData, PrioritySlot } from 'src/app/shared/models/priority-slots.model';
+import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { SignalrService } from 'src/app/core/services/signalr.service';
-import { merge } from 'chart.js/dist/helpers/helpers.core';
 
 @Component({
 	selector: 'dfm-priority-slots-calendar-view',
@@ -173,7 +172,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			const newDate = new Date();
 			newDate.setDate(item[0]);
 			newDate.setMonth(item[1]);
-			newDate.setFullYear(item[2])
+			newDate.setFullYear(item[2]);
 			return this.datePipe.transform(newDate, 'yyyy-MM-dd');
 		});
 
@@ -189,7 +188,6 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			this.prioritySlotsCloseOpen$$.next(response);
 			this.currentDays = dates;
 			this.prioritySlotOpenAndCloseMap();
-			//
 		});
 	}
 
@@ -329,7 +327,6 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			});
 
 		this.prioritySlots$$.next({ ...myPrioritySlots });
-		// this.prioritySlotOpenAndCloseMap();
 		if (Object.keys(this.prioritySlotsCloseOpen$$.value).length) this.getOpenCloseSlotData(this.currentDays);
 	}
 

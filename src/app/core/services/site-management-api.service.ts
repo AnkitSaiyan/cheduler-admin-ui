@@ -71,7 +71,6 @@ export class SiteManagementApiService extends DestroyableComponent {
     return this.http.post<BaseResponse<SiteManagement>>(`${environment.schedulerApiUrl}/sitesetting`, formData).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
-      // tap(() => this.refreshSiteManagement$.next()),
     );
   }
 

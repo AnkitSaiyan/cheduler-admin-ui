@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, combineLatest, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, interval, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,7 +17,7 @@ import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
 import { ShareDataService } from '../../../../core/services/share-data.service';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Translate } from '../../../../shared/models/translate.model';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
@@ -44,8 +44,6 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 	@ViewChild('showMoreButtonIcon') private showMoreBtn!: ElementRef;
 
 	@ViewChild('optionsMenu') private optionMenu!: NgbDropdown;
-
-	// @ViewChild('actionsMenuButton') private actionsMenuButton!: ButtonComponent;
 
 	private physicians$$: BehaviorSubject<Physician[]>;
 
@@ -101,15 +99,14 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 		private downloadSvc: DownloadService,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
-		private translatePipe: TranslatePipe,
 		private translate: TranslateService,
 		public permissionSvc: PermissionService,
 	) {
 		super();
 		this.physicians$$ = new BehaviorSubject<any[]>([]);
 		this.filteredPhysicians$$ = new BehaviorSubject<any[]>([]);
-    this.physicianApiSvc.pageNo = 1;
-    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+		this.physicianApiSvc.pageNo = 1;
+		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: () => {
 				if (
 					this.permissionSvc.isPermitted([Permission.UpdatePhysicians, Permission.DeletePhysicians]) &&
@@ -171,7 +168,6 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
 			},
 		});
-
 
 		this.downloadDropdownControl.valueChanges
 			.pipe(
@@ -290,7 +286,6 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
 				next: () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`),
-				// error: (err) => this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER),
 			});
 	}
 
@@ -330,11 +325,11 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
 
-				if (!this.filteredPhysicians$$.value.length) {
-					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
-					this.clipboardData = '';
-					return;
-				}
+			if (!this.filteredPhysicians$$.value.length) {
+				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.clipboardData = '';
+				return;
+			}
 
 			this.filteredPhysicians$$.value.forEach((physician: Physician) => {
 				dataString += `${physician.firstname}\t${physician.lastname}\t ${physician.email}\t ${StatusToName[+physician.status]}\n`;

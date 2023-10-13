@@ -86,13 +86,6 @@ export class GeneralUtils {
 	}
 
 	public static removeDuplicateData(list: Array<any>, key: any): Array<any> {
-		// const filtered = list.filter(
-		// 	(
-		// 		(s) => (o) =>
-		// 			((k) => !s.has(k) && s.add(k))(key.map((k) => o[k]).join('|'))
-		// 	)(new Set()),
-		// );
-
 		const filtered = list.filter((val, index, array) => array.findIndex((v) => v[key] == val[key]) == index);
 		return filtered;
 	}

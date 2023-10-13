@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {BehaviorSubject, combineLatest, debounceTime, filter, switchMap, take, takeUntil} from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -17,7 +17,6 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
@@ -288,37 +287,6 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 			},
 		});
 	}
-
-	// public openSearchModal() {
-	//   this.toggleMenu();
-
-	//   const modalRef = this.modalSvc.open(SearchModalComponent, {
-	//     options: { fullscreen: true },
-	//     data: {
-	//       items: [
-	//         ...this.prioritySlots$$.value.map(({ id, name }) => ({
-	//           name: `${name}`,
-	//           key: `${name}`,
-	//           value: id,
-	//         })),
-	//       ],
-	//       placeHolder: 'Search by Absence Name',
-	//     } as SearchModalData,
-	//   });
-
-	//   modalRef.closed.pipe(take(1)).subscribe((result) => this.filterAbsence(result));
-	// }
-
-	// private filterAbsence(result: { name: string; value: string }[]) {
-	//   if (!result?.length) {
-	//     this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value]);
-	//     return;
-	//   }
-
-	//   const ids = new Set<number>();
-	//   result.forEach((item) => ids.add(+item.value));
-	//   this.filteredPrioritySlots$$.next([...this.prioritySlots$$.value.filter((absence: Absence) => ids.has(+absence.id))]);
-	// }
 
 	public toggleView(): void {
 		this.router.navigate([], {
