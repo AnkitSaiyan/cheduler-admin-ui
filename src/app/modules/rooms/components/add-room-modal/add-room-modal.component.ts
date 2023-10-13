@@ -1,5 +1,5 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import { BehaviorSubject, debounceTime, filter, of, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, of, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -9,8 +9,6 @@ import { TimeSlot } from '../../../../shared/models/calendar.model';
 import { AddRoomRequestData, Room, RoomType } from '../../../../shared/models/rooms.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
-import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { Status } from '../../../../shared/models/status.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
@@ -19,12 +17,12 @@ import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 
 interface FormValues {
-    name: string;
-    description: string;
-    type: RoomType;
-    placeInAgenda: number;
-    placeInAgendaIndex: number;
-    practiceAvailabilityToggle: boolean;
+	name: string;
+	description: string;
+	type: RoomType;
+	placeInAgenda: number;
+	placeInAgendaIndex: number;
+	practiceAvailabilityToggle: boolean;
 }
 
 @Component({
@@ -54,9 +52,6 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 		private fb: FormBuilder,
 		private notificationSvc: NotificationDataService,
 		private roomApiSvc: RoomsApiService,
-		private nameValuePipe: NameValuePairPipe,
-		private timeInIntervalPipe: TimeInIntervalPipe,
-		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		private practiceHourApiSvc: PracticeHoursApiService,
 	) {
@@ -124,10 +119,9 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
 	public closeModal(res: boolean) {
 		this.modalSvc.close(res);
-		// this.ngOnDestroy();
 	}
 
-	public handle(e: Event) {}
+	public handle(e: any) {}
 
 	public saveRoom() {
 		if (!this.formValues.practiceAvailabilityToggle) {
@@ -140,7 +134,6 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
 	public saveForm(timeSlotFormValues?: { isValid: boolean; values: TimeSlot[] }) {
 		if (this.addRoomForm.invalid) {
-			// this.addRoomForm.markAllAsTouched();
 			const requiredKeys: string[] = ['name', 'type'];
 			requiredKeys.forEach((key) => {
 				if (this.addRoomForm.get(key)?.invalid) {

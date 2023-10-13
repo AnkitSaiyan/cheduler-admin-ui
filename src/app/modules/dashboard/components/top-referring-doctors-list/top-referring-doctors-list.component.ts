@@ -9,43 +9,6 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
   styleUrls: ['./top-referring-doctors-list.component.scss'],
 })
 export class TopReferringDoctorsListComponent extends DestroyableComponent implements OnInit, OnDestroy{
-  // public top10Doctors = [
-  //   {
-  //     name: 'Templeton Pack',
-  //     post: 'Radiologist',
-  //     avatar: '',
-  //   },
-  //   {
-  //     name: 'Kate Tanner',
-  //     post: 'Cardiologist',
-  //     avatar: '',
-  //   },
-  //   {
-  //     name: 'Dori Doreau',
-  //     post: 'Physician',
-  //     avatar: '',
-  //   },
-  //   {
-  //     name: 'Dr. Bonnie Barstow',
-  //     post: 'Surgeon',
-  //     avatar: '',
-  //   },
-  //   {
-  //     name: 'Templeton Pack',
-  //     post: 'Cardiologist',
-  //     avatar: '',
-  //   },
-  //   {
-  //     name: 'Templeton Pack',
-  //     post: 'Cardiologist',
-  //     avatar: '',
-  //   },
-  //   {
-  //     name: 'Templeton Pack',
-  //     post: 'Cardiologist',
-  //     avatar: '',
-  //   },
-  // ];
 
   private topTenDoctors$$: BehaviorSubject<any[]>;
 

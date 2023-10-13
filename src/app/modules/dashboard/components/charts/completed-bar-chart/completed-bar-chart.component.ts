@@ -72,7 +72,6 @@ export class CompletedBarChartComponent extends DestroyableComponent implements 
 				datasets: [
 					{
 						barPercentage: 0.5,
-						// categoryPercentage: 1.0,
 						data: dataset,
 						backgroundColor: ['#F7B27A'],
 						hoverBackgroundColor: ['#EF6820'],
@@ -107,8 +106,4 @@ export class CompletedBarChartComponent extends DestroyableComponent implements 
 		});
 	}
 
-	// this.doughnutChartDatasets = [{
-	//   data: {
-	//   }
-	// }]
 }

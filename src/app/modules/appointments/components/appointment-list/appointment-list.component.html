@@ -1,7 +1,4 @@
 <div class="d-flex flex-column dfm-gap-16 position-relative ap-ls-main-wrapper">
-  <!-- <button  mat-mini-fab color="primary" *ngIf="(calendarView$$ | async) === false" class="refresh-btn" (click)="isResetBtnDisable ? $event.preventDefault() : onRefresh();">
-    <mat-icon>refresh</mat-icon>
-  </button> -->
   <section>
     <div class="d-flex align-items-center dfm-gap-8 flex-1 ap-li-section-1" *ngIf="(calendarView$$ | async) === false">
       <dfm-button class="hidden ap-li-title-buttons" color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{ 'Appointment' | translate }} </dfm-button>
@@ -29,16 +26,6 @@
       </div>
 
       <div class="d-flex align-items-center ap-li-button-dropdown-group-border">
-        <!-- <div >
-          <dfm-input
-            size="sm"
-            placeholder="{{ 'AdvancedSearch' | translate }}"
-            icon="search-sm"
-            class="flex-1"
-            (click)="openAdvancePopup()"
-            [readonly]="true"
-          ></dfm-input>
-        </div> -->
         <div >
           <dfm-button-icon
             class=""
@@ -90,9 +77,6 @@
           ></dfm-input-dropdown>
         </div>
 
-        <!-- <div class="dfm-button-icon-bg-transparent">
-          <dfm-button-icon color="tertiary-gray" size="md" icon="calendar-date" (click)="toggleView()"></dfm-button-icon>
-        </div> --> <!--Calendar Button removed, Actually it was attached with Copy and Downlaod Button-->
       </div>
 
       <div class="d-flex dfm-gap-8 align-items-center">
@@ -140,9 +124,6 @@
         </dfm-button>
 
 
-        <!-- <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="add-app-btn-mv hidden" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
-          >{{ 'Add' | translate }}
-        </dfm-button> -->
       </div>
     </div>
     </ng-container>
@@ -209,8 +190,6 @@
           <dfm-data-table-action-cell *dfmPermitted="[Permission.UpdatePhysicians, Permission.DeletePhysicians]">
             <ng-container *ngIf="item.isEditable">
               <ng-template #actionCellTemplate *dfmPermitted="[Permission.UpdateAppointments, Permission.DeleteAppointments]">
-                <!-- <dfm-data-table-action *ngIf="!item.confirm" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()" ></dfm-data-table-action>
-                        <dfm-data-table-action *ngIf="item.confirm" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation()"></dfm-data-table-action> -->
                 <dfm-data-table-action icon="pencil-02" tooltip="{{ 'Edit' | translate }}"
                   *dfmPermitted="Permission.UpdateAppointments" (click)="$event.stopPropagation()"
                   [routerLink]="['/appointment', item.id, 'edit']" queryParamsHandling="merge"
@@ -261,24 +240,7 @@
     </ng-container>
   </section>
 
-  <!--  <div ngbDropdown #optionsMenu="ngbDropdown">-->
-  <!--    <div class="shadow-lg ap-li-plus-btn-menu ap-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual">-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()">-->
-  <!--        <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-  <!--        <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--      <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">-->
-  <!--        <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
 
-  <!--  <dfm-button color="secondary" size="md" class="hidden shadow-lg ap-li-plus-btn rounded-2"-->
-  <!--              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">-->
-  <!--    <dfm-icon #showMoreButtonIcon name="plus" class="ap-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>-->
-  <!--  </dfm-button>-->
 </div>
 
 <dfm-confirm-status-change-banner

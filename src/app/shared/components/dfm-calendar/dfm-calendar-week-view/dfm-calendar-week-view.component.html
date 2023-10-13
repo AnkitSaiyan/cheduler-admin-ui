@@ -76,10 +76,6 @@
                   </div>
                 </ng-template>
               </div>
-
-              <!-- <div class="calender-month-view-day-exam-event-details more-btn" [ngbPopover]="eventDetails" #popOver="ngbPopover" triggers="click" [autoClose]="false" container="body" *ngIf="parentElement.scrollHeight > parentElement.clientHeight">
-                <span class="calender-month-view-day-exam-event-title text-truncate">View more</span>
-              </div> -->
               <div *ngIf="parentAbsenceElement.scrollHeight > parentAbsenceElement.clientHeight" class="calender-month-view-day-exam-event-details more-btn" [matMenuTriggerFor]="absenceEventDetail">
                 <span class="calender-month-view-day-exam-event-title text-truncate">View more</span>
 
@@ -173,7 +169,6 @@
 					<div class="calendar-week-view-events-left-vertical-line"></div>
           <div *ngFor="let day of daysOfWeekArr; let weekday = index" role="gridcell" class="calendar-week-view-body-grid-column" #gridCell [attr.data-holiday]="!!holidayData$$.value[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]?.length"
           dfmDragAreaEvent [day]="day" (editAppointment)="editAppointment($event)">
-            <!-- <div class="calendar-week-view-body-grid-absolute"></div> -->
             <ng-container
               *ngIf="gridCell.getAttribute('data-holiday') === 'false'">
               <div
@@ -193,12 +188,6 @@
                       }"
                       (dblclick)="onDblClick($event, eventsContainer, day, false, getTop(groupedData)); $event.stopPropagation()"
                     >
-
-
-                      <!-- <div class="calendar-week-view-event-circle-icon" [ngClass]="{ 'calendar-week-view-event-circle-icon-sm': eventHeight <= 20 }">
-                        {{ groupedData.length }}
-                      </div> -->
-
                       <div
                         class="calendar-week-view-event-details-container"
                         [ngClass]="{ 'justify-content-center p-0': getHeight([data]) <= 40 }"
@@ -247,8 +236,6 @@
 
                                     <ng-template ngbPanelContent>
                                       <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                                        <!-- <span class="font-weight-medium"> {{ 'Instructions' | translate }} </span>
-                                        <span *ngIf="data.exams?.length" class="dfm-instruction">{{ data.exams?.[0].instruction | dashIfNothing}}</span> -->
                                         <span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
                                         <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
                                         <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>

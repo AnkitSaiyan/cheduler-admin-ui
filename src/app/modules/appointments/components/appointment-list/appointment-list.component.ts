@@ -4,7 +4,7 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ColumnSort, DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
-import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil, withLatestFrom } from 'rxjs';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
@@ -17,7 +17,6 @@ import { DownloadAsType, DownloadService } from '../../../../core/services/downl
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { RouterStateService } from '../../../../core/services/router-state.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
@@ -74,15 +73,15 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	];
 
 	public tableHeaders: DfmTableHeader[] = [
-		{ id: '1', title: 'StartedAt', isSortable: true, sort : 'Asc' },
-		{ id: '2', title: 'EndedAt'},
-		{ id: '3', title: 'PatientName'},
-		{ id: '4', title: 'Exam'},
-		{ id: '5', title: 'Physician'},
-		{ id: '6', title: 'ReferralNote'},
-		{ id: '7', title: 'AppointmentNo'},
-		{ id: '8', title: 'AppliedOn'},
-		{ id: '9', title: 'Status'},
+		{ id: '1', title: 'StartedAt', isSortable: true, sort: 'Asc' },
+		{ id: '2', title: 'EndedAt' },
+		{ id: '3', title: 'PatientName' },
+		{ id: '4', title: 'Exam' },
+		{ id: '5', title: 'Physician' },
+		{ id: '6', title: 'ReferralNote' },
+		{ id: '7', title: 'AppointmentNo' },
+		{ id: '8', title: 'AppliedOn' },
+		{ id: '9', title: 'Status' },
 	];
 
 	public pastTableHeaders: DfmTableHeader[] = [...this.tableHeaders];
@@ -152,9 +151,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	private fileSize!: number;
 
-	private sortType: undefined | ColumnSort = 'Asc'
+	private sortType: undefined | ColumnSort = 'Asc';
 
-	private sortTypePast: undefined | ColumnSort = 'Asc'
+	private sortTypePast: undefined | ColumnSort = 'Asc';
 
 	public isLoading: boolean = true;
 	
@@ -169,7 +168,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		private datePipe: DatePipe,
 		private cdr: ChangeDetectorRef,
 		private titleCasePipe: TitleCasePipe,
-		private routerStateSvc: RouterStateService,
 		private shareDataSvc: ShareDataService,
 		private translate: TranslateService,
 		public permissionSvc: PermissionService,
@@ -229,7 +227,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.filteredAppointments$$
 			.pipe(
 				takeUntil(this.destroy$$),
-				map((appointments) => (GeneralUtils.SortArray(appointments, this.isUpcomingAppointments ?this.sortType : this.sortTypePast, 'startedAt'))),
+				map((appointments) => GeneralUtils.SortArray(appointments, this.isUpcomingAppointments ? this.sortType : this.sortTypePast, 'startedAt')),
 				map((data) => [data.filter((item) => item.isEditable), data.filter((item) => !item.isEditable)]),
 			)
 			.subscribe({
@@ -253,23 +251,18 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			next: (appointment) => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
-		this.appointmentApiSvc.appointment$
-			.pipe(
-				takeUntil(this.destroy$$),
-				// map((appointmentsBase) => ({ data: GeneralUtils.SortArray(appointmentsBase.data, 'Asc', 'startedAt'), metaData: appointmentsBase.metaData })),
-			)
-			.subscribe({
-				next: (appointmentsBase) => {
-					if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
-						this.appointments$$.next([...this.appointments$$.value, ...appointmentsBase.data]);
-					} else {
-						this.appointments$$.next(appointmentsBase.data);
-					}
-					this.paginationData = appointmentsBase?.metaData?.pagination || 1;
-					this.isLoading = false;
-				},
-				error: () => this.filteredAppointments$$.next([]),
-			});
+		this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (appointmentsBase) => {
+				if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
+					this.appointments$$.next([...this.appointments$$.value, ...appointmentsBase.data]);
+				} else {
+					this.appointments$$.next(appointmentsBase.data);
+				}
+				this.paginationData = appointmentsBase?.metaData?.pagination || 1;
+				this.isLoading = false;
+			},
+			error: () => this.filteredAppointments$$.next([]),
+		});
 
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
 			this.searchControl.setValue(search);
@@ -293,7 +286,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			)
 			.subscribe((value) => {
 				const data: any[] = this.isUpcomingAppointments ? this.upcomingTableData$$.value.items : this.pastTableData$$.value.items;
-				
+
 				if (!data.length) {
 					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
 					this.clearDownloadDropdown();
@@ -311,7 +304,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 						this.titleCasePipe.transform(ap?.doctor),
 						ap?.id?.toString(),
 						ap?.createdAt?.toString(),
-						// ap.readStatus ? 'Yes' : 'No',
 						this.translatePipe.transform(AppointmentStatusToName[+ap.approval]),
 					]),
 					'appointment',
@@ -387,7 +379,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				this.isUpcomingAppointments = value == 'upcoming';
 			}
 			this.selectedAppointmentIDs = [];
-			this.filteredAppointments$$.next([...this.appointments$$.value])
+			this.filteredAppointments$$.next([...this.appointments$$.value]);
 		});
 		setTimeout(() => {
 			this.appointmentViewControl.setValue(this.isUpcomingAppointments ? 'upcoming' : 'past');
@@ -397,13 +389,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	public override ngOnDestroy() {
 		super.ngOnDestroy();
 	}
-
-	// public manageActionColumn([...data]): Array<any> {
-	// 	if (data.find(({ title }) => title === 'Actions' || title === 'Acties')) {
-	// 		data.pop();
-	// 	}
-	// 	return data;
-	// }
 
 	public handleCheckboxSelection(selected: string[]) {
 		this.selectedAppointmentIDs = [...selected];
@@ -560,7 +545,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	private groupAppointmentsForCalendar(...appointments: Appointment[]) {
 		let startDate: Date;
 		let endDate: Date;
-		// let group: number;
 		let sameGroup: boolean;
 		let groupedAppointments: Appointment[] = [];
 		let lastDateString: string;
@@ -584,7 +568,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 						startDate = new Date(appointment.startedAt);
 						endDate = new Date(appointment.endedAt);
-						// group = 0;
 						sameGroup = false;
 					} else {
 						const currSD = new Date(appointment.startedAt);
@@ -608,8 +591,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 					}
 
 					if (!sameGroup) {
-						// group++;
-
 						if (index !== 0) {
 							this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
 							groupedAppointments = [];
@@ -628,15 +609,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	private groupAppointmentByDateAndRoom(...appointments: Appointment[]) {
-		// const groupBy: {
-		//   [key: string]: {
-		//     [key: number]: {
-		//       appointment: Appointment;
-		//       exam: Exam[];
-		//     };
-		//   };
-		// } = {};
-
 		appointments.forEach((appointment) => {
 			const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
 
@@ -681,7 +653,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	public onSort(e: DfmTableHeader, table = 'upcoming'): void {
-		table == 'past' ? this.sortTypePast = e.sort : this.sortType = e.sort
+		table == 'past' ? (this.sortTypePast = e.sort) : (this.sortType = e.sort);
 		this.filteredAppointments$$.next(GeneralUtils.SortArray(this.filteredAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 

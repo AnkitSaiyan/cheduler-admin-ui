@@ -83,7 +83,6 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 
   public closeModal(res: boolean) {
     this.modalSvc.close(res);
-    // this.ngOnDestroy();
   }
 
   public savePhysician() {

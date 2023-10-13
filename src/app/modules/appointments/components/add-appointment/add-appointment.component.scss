@@ -9,9 +9,7 @@
     height: 46px;
   }
 
-  .ad-ap-section2 {
-    // viewport - nav - padding - sec1 height - sec gap - extra
-    //max-height: calc(100vh - 48px - 24px - 40px - 16px - 16px);
+    .ad-ap-section2 {
     overflow-y: auto;
   }
 }
@@ -51,8 +49,6 @@
   transition: 200ms all ease-in-out;
 
   &:hover {
-    //background: var(--dfm-main-200);
-    //color: var(--dfm-primary);
     cursor: pointer;
   }
 }

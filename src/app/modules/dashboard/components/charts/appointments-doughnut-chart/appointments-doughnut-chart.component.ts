@@ -60,7 +60,6 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
 		this.doughnutChartLabels = [];
 		chartData.forEach((data) => {
 			this.appointmentDetails[data.label] = data.value;
-			// this.doughnutChartLabels.push(data.label === 'Approved' ? 'Confirmed' : data.label);
 			this.doughnutChartLabels.push(Translate.AppointmentStatus[data.label][this.selectedLang]);
 		});		
 

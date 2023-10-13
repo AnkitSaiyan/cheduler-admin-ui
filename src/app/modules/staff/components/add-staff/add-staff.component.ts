@@ -207,92 +207,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 		}
 
 		this.emitEvents$$.next();
-		// const requiredKeys: string[] = ['firstname', 'lastname', 'email', 'userType'];
-		// let valid = true;
-		//
-		// requiredKeys.forEach((key) => {
-		//   if (this.addStaffForm.get(key)?.invalid) {
-		//     this.addStaffForm.get(key)?.markAsTouched();
-		//     if (valid) {
-		//       valid = false;
-		//     }
-		//   }
-		// });
-		//
-		// const controlArrays: FormArray[] = this.practiceAvailabilityWeekWiseControlsArray(true);
-		//
-		// if (valid) {
-		//   valid = !this.isPracticeFormInvalid(controlArrays);
-		// }
-		//
-		// if (!valid) {
-		//   this.notificationSvc.showNotification(Translate.FormInvalidSimple[this.selectedLang], NotificationType.WARNING);
-		//   return;
-		// }
-		//
-		// this.submitting$$.next(true);
-		//
-		// const { practiceAvailabilityToggle, practiceAvailability, selectedWeekday, ...rest } = this.formValues;
-		// const addStaffReqData: AddStaffRequestData = {
-		//   ...rest,
-		//   availabilityType: +!!practiceAvailabilityToggle,
-		//   practiceAvailability: practiceAvailabilityToggle
-		//     ? [
-		//         ...this.practiceAvailabilityWeekWiseControlsArray(true).reduce(
-		//           (acc, formArray) => [
-		//             ...acc,
-		//             ...formArray.controls.reduce((a, control) => {
-		//               if (control.value.dayStart && control.value.dayEnd) {
-		//                 return [
-		//                   ...a,
-		//                   {
-		//                     weekday: control.value.weekday,
-		//                     dayStart: control.value.dayStart,
-		//                     dayEnd: control.value.dayEnd,
-		//                   },
-		//                 ];
-		//               }
-		//               return a;
-		//             }, [] as PracticeAvailability[]),
-		//           ],
-		//           [] as PracticeAvailability[],
-		//         ),
-		//       ]
-		//     : [],
-		// };
-		//
-		// if (!addStaffReqData.info) {
-		//   delete addStaffReqData.info;
-		// }
-		//
-		// if (!addStaffReqData.address) {
-		//   delete addStaffReqData.address;
-		// }
-		//
-		// if (!addStaffReqData.practiceAvailability?.length) {
-		//   addStaffReqData.availabilityType = AvailabilityType.Unavailable;
-		// }
-		//
-		// addStaffReqData.id = Number.isNaN(+this.staffID) ? 0 : +this.staffID;
-		//
-		// this.staffApiSvc
-		//   .addNewStaff$(addStaffReqData)
-		//   .pipe(takeUntil(this.destroy$$))
-		//   .subscribe(() => {
-		//     if (this.staffID) {
-		//       this.notificationSvc.showNotification(Translate.SuccessMessage.StaffUpdated[this.selectedLang]);
-		//     } else {
-		//       this.notificationSvc.showNotification(Translate.SuccessMessage.StaffAdded[this.selectedLang]);
-		//     }
-		//     let route: string;
-		//     if (this.comingFromRoute === 'view') {
-		//       route = '../view';
-		//     } else {
-		//       route = this.edit ? '/staff' : '../';
-		//     }
-		//
-		//     this.router.navigate([route], { relativeTo: this.route });
-		//   });
 	}
 
 	public handleEmailInput(e: Event): void {
@@ -386,7 +300,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			telephone: [null, []],
 			userType: [null, [Validators.required]],
 			info: [null, []],
-			// examList: [null, []],
 			status: [null ?? Status.Active, []],
 			availabilityType: [AvailabilityType.Unavailable, []],
 			practiceAvailabilityToggle: [false, []],
@@ -400,7 +313,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			email: staffDetails?.email,
 			telephone: staffDetails?.telephone,
 			info: staffDetails?.info,
-			// examList: [staffDetails?.exams?.map((exam) => exam?.id?.toString()), []],
 			status: staffDetails?.status ?? Status.Active,
 			availabilityType: !!staffDetails?.availabilityType,
 			practiceAvailabilityToggle: !!staffDetails?.practiceAvailability?.length,

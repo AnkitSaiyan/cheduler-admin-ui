@@ -24,12 +24,10 @@ export class PermissionService {
 
 	public setPermissionType(value: UserRoleEnum) {
 		this.permissionType$$.next(value);
-		// localStorage.setItem('userRole', value);
 	}
 
 	public removePermissionType() {
 		this.permissionType$$.next(undefined);
-		// localStorage.removeItem('userRole');
 	}
 
 	public get isNotReader() {

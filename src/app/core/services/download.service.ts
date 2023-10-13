@@ -142,13 +142,11 @@ export class DownloadService extends DestroyableComponent implements OnDestroy {
 
   private async generateExcel(headers: string[], data: string[][]) {
     const workBook = new Excel.Workbook();
-    // const workBook = new Workbook();
 
     workBook.created = new Date();
     const workSheet = workBook.addWorksheet();
 
     const headerIndex = 1;
-    // let colIndex = 1;
 
     headers.forEach((header, index) => {
       workSheet.getRow(headerIndex).getCell(index + 1).value = header;

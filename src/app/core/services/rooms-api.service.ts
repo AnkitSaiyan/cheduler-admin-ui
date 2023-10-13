@@ -120,7 +120,6 @@ export class RoomsApiService extends DestroyableComponent {
 
 	public getRoomByID(roomID: number): Observable<Room> {
 		this.loaderSvc.spinnerActivate();
-		// return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(() => of(this.rooms.find((room) => +room.id === +roomID))));
 		return combineLatest([this.refreshRooms$$.pipe(startWith(''))]).pipe(
 			switchMap(() => {
 				return this.http.get<BaseResponse<Room>>(`${this.roomUrl}/${roomID}`).pipe(

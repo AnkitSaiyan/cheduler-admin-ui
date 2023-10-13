@@ -252,10 +252,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 					// eslint-disable-next-line default-case
 					switch (lang) {
 						case ENG_BE:
-							// this.statuses = Statuses;
 							break;
 						case DUTCH_BE:
-							// this.statuses = StatusesNL;
 							break;
 					}
 				},
@@ -286,7 +284,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		try {
 			if (this.appointmentForm.invalid) {
 				this.notificationSvc.showNotification(`${Translate.FormInvalid[this.selectedLang]}.`, NotificationType.WARNING);
-				// this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 				this.appointmentForm.markAllAsTouched();
 				return;
 			}
@@ -347,7 +344,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 							this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 						},
 						error: (err) => {
-							// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 							this.submitting$$.next(false);
 						},
 					});
@@ -374,7 +370,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 							this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 						},
 						error: (err) => {
-							// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 							this.submitting$$.next(false);
 						},
 					});
@@ -426,7 +421,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 					},
 					error: (err) => {
-						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
 					},
 				});
@@ -594,7 +588,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 						} as SlotModified);
 
 					if (appointment?.exams?.length) {
-						// const exams = this.isCombinable ? [appointment.exams[0]] : [...appointment.exams];
 						const exams = [...appointment.exams];
 
 						exams.forEach((exam) => {
@@ -641,19 +634,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		this.examIdToAppointmentSlots = examIdToSlots;
 		this.slots = newSlots;
 
-		// if (newSlots?.length) {
-		//   const appointment = this.appointment$$.value;
-		//   if (appointment && this.edit && !this.isSlotUpdated) {
-		//     this.isSlotUpdated = true;
-		//     this.toggleSlotSelection({
-		//       examId: appointment?.exams[0]?.id,
-		//       start: appointment?.startedAt?.toString().slice(-8),
-		//       end: appointment?.endedAt?.toString().slice(-8),
-		//       userList: newSlots.find((slot) => +slot.examId === +appointment?.exams[0]?.id)?.userList ?? [],
-		//       roomList: newSlots.find((slot) => +slot.examId === +appointment?.exams[0]?.id)?.roomList ?? []
-		//     });
-		//   }
-		// }
 	}
 
 	public onDateChange(value: string, controlName: string) {

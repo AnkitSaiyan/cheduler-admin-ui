@@ -2,7 +2,6 @@
   <section class="d-flex justify-content-between dfm-gap-8 align-items-start" >
     <header>
       <span class="dfm-text-main-400">{{"Completed" | translate}}</span>
-<!--       <h2 class="card-value-text" *ngIf="status$$ | async as status">{{ status?.count }}</h2>-->
     </header>
     <div class="d-flex" *ngIf="status$$ | async as status">
       <div class="chart-arrow-down" [ngClass]="{ 'chart-arrow-up': status?.isUp, 'chart-arrow-down': !status?.isUp }">

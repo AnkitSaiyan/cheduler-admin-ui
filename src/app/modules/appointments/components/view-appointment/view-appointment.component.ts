@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { RouterStateService } from '../../../../core/services/router-state.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { APPOINTMENT_ID, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
@@ -38,7 +37,6 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 
 	constructor(
 		private appointmentApiSvc: AppointmentApiService,
-		private routerStateSvc: RouterStateService,
 		private notificationSvc: NotificationDataService,
 		private router: Router,
 		private modalSvc: ModalService,
@@ -73,11 +71,6 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 						});
 					}
 				}),
-				// switchMap((appointment) => {
-				//   if (appointment && appointment.id) {
-				//
-				//   }
-				// }),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe((appointment) => {});

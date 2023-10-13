@@ -125,7 +125,6 @@
             formControlName = "socialSecurityNumber"
           >
           </dfm-input>
-          <!-- <small *ngIf="!appointmentForm.get('socialSecurityNumber')?.valid" class="validation-error">{{ 'InvalidSocialSecurityNumber' | translate }}</small> -->
           </div>
 
         <div class="flex-1 w-full min-w-128" *ngIf="(isDoctorConsentDisable$$ | async) === false">
@@ -230,8 +229,6 @@
               {{ 'RequiredField' | translate }}</span>
 
             </div>
-
-          <!-- <div *ngIf="!isOutside" class="flex-1 temp-element"></div> -->
         </div>
       </div>
 
@@ -345,12 +342,6 @@
         </p>
       </div>
     </div>
-
-      <!-- <dfm-text-area *ngIf="edit"
-        label="{{ 'CommentsClinicalData' | translate }}"
-        placeholder="{{ 'EnterComments' | translate }}"
-        formControlName="comments"
-      ></dfm-text-area> -->
     </form>
   </section>
 </div>

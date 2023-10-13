@@ -57,24 +57,6 @@
 					></dfm-input-dropdown>
 				</div>
 			</div>
-
-			<!-- <div class="d-flex align-items-center dfm-button-group-wrapper hidden un-hl-mv-buttons">
-        <div>
-          <dfm-button-icon
-            color="tertiary-gray"
-            size="md"
-            icon="copy-03"
-            ngbPopover="{{ 'ClickToCopy' | translate }}"
-            triggers="mouseenter:mouseleave"
-            popoverClass="popover-p-8"
-            [openDelay]="200"
-          ></dfm-button-icon>
-        </div>
-
-        <div>
-          <dfm-button-icon color="tertiary-gray" size="md" icon="download-01"></dfm-button-icon>
-        </div>
-      </div> -->
 		</div>
 	</section>
 
@@ -87,7 +69,7 @@
 			[stickyCheckbox]="true"
 			[stickyFirstColumn]="false"
 			[headers]="tableHeaders"
-			(scrolled)="onScroll($event)"
+			(scrolled)="onScroll()"
 			(sorted)="onSort($event)"
 			(rowClicked)="navigateToView($event)"
 		>

@@ -68,11 +68,6 @@ import { ENG_BE } from '../utils/const';
 				}
 			}
 
-			//.show-banner {
-			//  bottom: 0;
-			//  opacity: 1;
-			//}
-
 			@media (max-width: 680px) {
 				.confirm-banner {
 					transition: all ease 200ms;

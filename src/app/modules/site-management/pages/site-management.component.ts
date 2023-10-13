@@ -9,7 +9,7 @@ import { NotificationDataService } from '../../../core/services/notification-dat
 import { SiteManagementApiService } from '../../../core/services/site-management-api.service';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
 import { EMAIL_REGEX } from '../../../shared/utils/const';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../shared/utils/const';
+import { ENG_BE } from '../../../shared/utils/const';
 import { Translate } from '../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 
@@ -277,7 +277,6 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 				},
 				(err) => {
 					this.submitting$$.next(false);
-					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 				},
 			);
 	}
