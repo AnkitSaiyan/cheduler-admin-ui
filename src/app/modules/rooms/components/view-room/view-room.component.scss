@@ -5,16 +5,7 @@ section.rm-vw-section2 {
   }
 }
 
-section.rm-vw-section3  {
-  // sec is section
-  // page height - top nav - content padding - sec1 height - sec gap - sec2 height - sec gap - extra space
-  //max-height: calc(100dvh - 64px - 24px - 24px - 24px - 256px - 24px - 24px);
-}
-
 @media (max-width: 1440px) {
-  section.rm-vw-section3 {
-    //max-height: calc(100dvh - 36px - 24px - 24px - 24px - 256px - 24px - 24px);
-  }
 
   section.rm-vw-section2 {
     flex-wrap: wrap;

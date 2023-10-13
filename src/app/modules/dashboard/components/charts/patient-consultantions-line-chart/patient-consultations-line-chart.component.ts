@@ -93,34 +93,5 @@ export class PatientConsultationsLineChartComponent extends DestroyableComponent
 				};
 			},
 		});
-
-		// this.lineChartOptions = {
-		//   elements: {
-		//     line: {
-		//       tension: 0.5,
-		//     },
-		//   },
-		//   scales: {
-		//     // We use this empty structure as a placeholder for dynamic theming.
-		//     y: {
-		//       position: 'left',
-		//     },
-		//     y1: {
-		//       position: 'right',
-		//       grid: {
-		//         color: 'rgba(255,0,0,0.3)',
-		//       },
-		//       ticks: {
-		//         color: 'red',
-		//       },
-		//     },
-		//   },
-		//
-		//   plugins: {
-		//     legend: {
-		//       display: true,
-		//     },
-		//   },
-		// };
 	}
 }

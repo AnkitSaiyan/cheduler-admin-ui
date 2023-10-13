@@ -176,7 +176,6 @@ export interface CreateAppointmentFormValues {
 	startTime: string;
 	doctorId: number;
 	userId: number;
-	// roomType: RoomType;
 	examList: number[];
 	comments: string;
 	socialSecurityNumber: number;

@@ -107,7 +107,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		private nameValuePairPipe: NameValuePairPipe,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
-		private downloadSvc: DownloadService,
 	) {
 		super();
 
@@ -120,7 +119,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			.subscribe((lang) => {
 				this.selectedLang = lang;
 				this.repeatEvery = {
-					// daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
 					weekly: [...this.getRepeatEveryItems(RepeatType.Weekly)],
 					monthly: [...this.getRepeatEveryItems(RepeatType.Daily)],
 				};
@@ -192,7 +190,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
 	public closeModal(res: boolean) {
 		this.modalSvc.close(res);
-		// this.ngOnDestroy();
 	}
 
 	public savePrioritySlot() {
@@ -249,14 +246,20 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		const addPriorityReqData: PrioritySlot = {
 			...rest,
 			startedAt: this.datePipe.transform(
-				DateTimeUtils.LocalDateToUTCDate(new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${slotStartTime}:00`.replace(/-/g, '/')), true),
+				DateTimeUtils.LocalDateToUTCDate(
+					new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${slotStartTime}:00`.replace(/-/g, '/')),
+					true,
+				),
 				'yyyy-MM-dd HH:mm:ss',
 			) as string,
 			endedAt:
 				this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat
 					? null
 					: (this.datePipe.transform(
-							DateTimeUtils.LocalDateToUTCDate(new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${slotEndTime}:00`.replace(/-/g, '/')), true),
+							DateTimeUtils.LocalDateToUTCDate(
+								new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${slotEndTime}:00`.replace(/-/g, '/')),
+								true,
+							),
 							'yyyy-MM-dd HH:mm:ss',
 					  ) as string),
 
@@ -293,7 +296,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 						this.closeModal(true);
 					},
 					(err) => {
-						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
 					},
 				);
@@ -308,7 +310,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 						this.closeModal(true);
 					},
 					(err) => {
-						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 						this.submitting$$.next(false);
 					},
 				);
@@ -406,32 +407,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			}
 			this.endDateControl.setValue(date);
 		}
-
-		// let slotStartTime;
-		// let slotEndTime;
-		//
-		// if (prioritySlotDetails?.startedAt) {
-		//   const date = new Date(prioritySlotDetails.startedAt);
-		//   slotStartTime = this.datePipe.transform(date, 'HH:mm');
-		//
-		//   if (slotStartTime && !this.startTimes.find((time) => time.value === slotStartTime)) {
-		//     this.startTimes.push({ name: slotStartTime, value: slotStartTime });
-		//   }
-		// }
-		//
-		// if (prioritySlotDetails?.endedAt) {
-		//   const date = new Date(prioritySlotDetails.endedAt);
-		//   slotEndTime = this.datePipe.transform(date, 'HH:mm');
-		//
-		//
-		//   if (slotEndTime && !this.endTimes.find((time) => time.value === slotEndTime)) {
-		//     this.endTimes.push({ name: slotEndTime, value: slotEndTime });
-		//   }
-		// }
-		//
-		// if (prioritySlotDetails?.slotEndTime) {
-		//   slotEndTime = prioritySlotDetails?.slotEndTime.slice(0, -3);
-		// }
 
 		const radiologists: string[] = [];
 
@@ -624,8 +599,6 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
 				return;
 			}
-
-			// this.cdr.detectChanges();
 		}
 
 		toggleControlError(this.prioritySlotForm.get('slotStartTime'), 'time', false);
@@ -636,34 +609,3 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

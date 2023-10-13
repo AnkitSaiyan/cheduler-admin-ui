@@ -15,57 +15,10 @@
 		</div>
 	</section>
 
-	<!-- <section class="d-flex dfm-gap-8 align-items-center justify-content-between dfm-mb-16 dfm-mx-16 dfm-gap-32">
-    <dfm-input class="flex-grow-1" size="md" placeholder="{{'SearchPostIt' | translate}}" class="post-search-it-placeholder" icon="search-sm"></dfm-input>
-
-    <div class="d-flex flex-row justify-content-between dfm-gap-16">
-      <dfm-input size="md" placeholder="{{'Search' | translate}}" class="post-search-placeholder flex-grow-1" icon="search-sm"></dfm-input>
-    </div>
-  </section> -->
 
 	<section id="here" class="h-100 container-mv" *ngIf="filteredPosts$$ | async as posts">
 		<ng-container *ngIf="(isLoading$$ | async) === false; else loading">
 			<ng-container *ngIf="posts?.length">
-				<!-- <mdb-carousel [animation]="'slide'" [controls]="posts.length > 1" [indicators]="posts.length > 1" [dark]="true" [wrap]="posts.length > 1">
-					<mdb-carousel-item *ngFor="let post of posts; let i = index" class="h-100">
-						<div
-							class="d-flex flex-column dfm-gap-16 dfm-px-24 dfm-pt-16 dfm-pb-24 justify-content-between rounded-3 shadow-sm post-it-card"
-							[ngStyle]="{ background: i % 2 === 0 ? '#EBE9FE' : '#FDF8F2' }"
-						>
-							<header class="overflow-y-auto hide-scrollbar">
-								<div class="d-flex flex-column dfm-gap-16 h-100">
-									<div class="d-flex dfm-gap-16 align-items-center justify-content-between">
-										<span class="font-weight-medium" [ngStyle]="{ color: i % 2 === 0 ? '#5720B7' : '#531422' }"
-											>{{ i + 1 }} / {{ posts.length }}
-										</span>
-
-										<dfm-button-icon
-											color="secondary-gray"
-											size="sm"
-											icon="trash-01"
-											ngbPopover="{{ 'Delete' | translate }}"
-											triggers="mouseenter:mouseleave"
-											popoverClass="popover-p-8"
-											[openDelay]="200"
-											(click)="reomvePost(post.id)"
-										></dfm-button-icon>
-									</div>
-
-									<span class="text-xs">
-										{{ post?.message }}
-									</span>
-								</div>
-							</header>
-
-							<div class="d-flex align-items-center dfm-gap-8 carousel-footer-content">
-								<div class="d-flex flex-column text-sm">
-									<div class="d-flex align-items-center flex-wrap"></div>
-									<span class="text-xs dfm-text-main-600">{{ 'CreatedOn' | translate }}- {{ post?.createdAt | dfmUtcToLocal | dfmDefaultDate }}</span>
-								</div>
-							</div>
-						</div>
-					</mdb-carousel-item>
-				</mdb-carousel> -->
         <ngb-carousel *ngIf="posts?.length">
           <ng-template ngbSlide *ngFor="let post of posts; let i = index" class="h-100">
             <div
@@ -116,7 +69,6 @@
 		</ng-container>
 		<ng-template #loading>
 			<div class="h-100 d-flex justify-content-center align-items-center carousel-inner">
-				<!-- <mat-progress-spinner class="example-margin" color="primary" mode="indeterminate" [diameter]="50"> </mat-progress-spinner> -->
 			</div>
 		</ng-template>
 	</section>

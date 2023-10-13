@@ -74,7 +74,6 @@ export class ExamApiService {
     return this.http.delete<BaseResponse<Boolean>>(`${this.examUrl}/${examID}`).pipe(
       map((response) => response.data),
       tap(() => {
-        // this.refreshExams$$.next();
         this.loaderSvc.deactivate();
       }),
     );
@@ -84,13 +83,12 @@ export class ExamApiService {
     this.loaderSvc.activate();
     this.loaderSvc.spinnerActivate();
     return this.http.get<BaseResponse<Exam>>(`${this.examUrl}/${examID}`).pipe(
-      map((response) => response.data),
-      tap(() => {
-        // this.refreshExams$$.next();
-        this.loaderSvc.deactivate();
-        this.loaderSvc.spinnerDeactivate();
-      }),
-    );
+			map((response) => response.data),
+			tap(() => {
+				this.loaderSvc.deactivate();
+				this.loaderSvc.spinnerDeactivate();
+			}),
+		);
   }
 
   public createExam$(requestData: CreateExamRequestData): Observable<Exam> {
@@ -134,7 +132,6 @@ export class ExamApiService {
   }
 
   private searchExam(value:string, id:number) {
-	// debounce
 	return timer(1000).pipe(
 		switchMap(() => {
       		let queryParams = new HttpParams();
@@ -150,7 +147,6 @@ public examValidator(id): AsyncValidatorFn {
 		return this.searchExam(control.value, id).pipe(
 			map((res) => {
 				if (res.data === '') {
-					// return error
 					return { userNameExists: true };
 				}
 				return null;

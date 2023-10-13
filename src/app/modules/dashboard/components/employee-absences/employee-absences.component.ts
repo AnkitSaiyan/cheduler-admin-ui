@@ -1,19 +1,17 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { DfmDatasource, DfmTableHeader, NotificationType } from 'diflexmo-angular-design';
+import { DfmDatasource, NotificationType } from 'diflexmo-angular-design';
 import { BehaviorSubject, debounceTime, takeUntil } from 'rxjs';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
-import { ModalService } from 'src/app/core/services/modal.service';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { Absence } from 'src/app/shared/models/absence.model';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
-import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ABSENCE_TYPE, ABSENCE_TYPE_ARRAY, ENG_BE } from '../../../../shared/utils/const';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ABSENCE_TYPE_ARRAY, ENG_BE } from '../../../../shared/utils/const';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'dfm-employee-absences',
@@ -44,7 +42,6 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 	constructor(
 		private absenceApiService: AbsenceApiService,
 		private notificationSvc: NotificationDataService,
-		private modalSvc: ModalService,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		private datePipe: DatePipe,
@@ -53,7 +50,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 		super();
 		this.absences$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAbsence$$ = new BehaviorSubject<any[]>([]);
-    this.absenceApiService.pageNoOnDashboard = 1;
+		this.absenceApiService.pageNoOnDashboard = 1;
 	}
 
 	async ngOnInit(): Promise<void> {
@@ -94,7 +91,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 				} else {
 					this.filteredAbsence$$.next([...this.absences$$.value]);
 				}
-			}
+			},
 		});
 
 		this.shareDataSvc
@@ -104,7 +101,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 				next: (lang) => {
 					this.selectedLang = lang;
 					this.columns = [Translate.Title[lang], Translate.StartDate[lang], Translate.EndDate[lang], Translate.AbsenceInfo[lang]];
-				}
+				},
 			});
 	}
 
@@ -154,11 +151,9 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 		}
 	}
 
-	public navigateToViewStaff(id: number): void{
+	public navigateToViewStaff(id: number): void {
 		if (id) {
-			this.router.navigate([`/absence/staff/${id}/view`]
-				// , { relativeTo: this.route, queryParamsHandling: 'preserve' }
-			);
+			this.router.navigate([`/absence/staff/${id}/view`]);
 		}
 	}
 }

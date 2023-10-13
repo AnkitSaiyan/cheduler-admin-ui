@@ -363,15 +363,6 @@ dfm-input-dropdown {
 	input {
 		border: none !important;
 	}
-
-	//div.selected-items.selected-items-with-dropdown-icon {
-	//  left: 0 !important;
-	//  top: 48px !important;
-	//  width: fit-content;
-	//  justify-content: flex-start !important;
-	//  flex-wrap: nowrap !important;
-	//  max-width: 90% !important;
-	//}
 }
 
 // button group wrapper
@@ -556,15 +547,6 @@ dfm-notification {
 		}
 	}
 }
-
-//@keyframes fromRight {
-//  0% {
-//    right: -128px !important;
-//  }
-//  100% {
-//    right: 32px !important;
-//  }
-//}
 
 // Third party library styling ========================================================
 ngb-timepicker {
@@ -1193,26 +1175,6 @@ $percentages: (
 .align-self-start {
 	align-self: flex-start;
 }
-//input[type="time"]::-webkit-calendar-picker-indicator{
-//  filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);
-//}
-//
-//input[type="time"]:focus{
-//  outline: none;
-//}
-
-//.input-dropdown[_ngcontent-cob-c76] .selected-items[_ngcontent-cob-c76] {
-//  position: absolute;
-//  /* top: 7px; */
-//  /* right: 8px; */
-//  left: 0;
-//  bottom: 0;
-//  display: flex;
-//  justify-content: flex-end;
-//  flex-wrap: wrap;
-//  gap: 8px;
-//  max-width: calc(100% - 200px);
-//}
 
 .High {
 	dfm-badge {

@@ -47,9 +47,6 @@
 				<dfm-button-icon color="tertiary-gray" size="md" icon="copy-03" (click)="copyToClipboard()"></dfm-button-icon>
 			</div>
 
-			<!-- <div>
-        <dfm-button-icon color="tertiary-gray" size="md" icon="download-01"></dfm-button-icon>
-      </div> -->
 		</div>
 	</section>
 
@@ -82,21 +79,6 @@
 				<dfm-table-body-cell>{{ item.doctor | titlecase | dashIfNothing }}</dfm-table-body-cell>
 				<dfm-table-body-cell>{{ item.startedAt | dfmUtcToLocal | dfmDefaultDate }}</dfm-table-body-cell>
 
-				<!-- <dfm-table-body-cell>
-          <div class="d-flex dfm-gap-16">
-            <dfm-button
-              color="link-gray"
-              size="sm"
-              trailingIcon="pencil-02"
-            ></dfm-button>
-            <dfm-button
-              color="link-gray"
-              size="sm"
-              trailingIcon="trash-01"
-              (click)="deletePatient(item.id)"
-            ></dfm-button>
-          </div>
-        </dfm-table-body-cell> -->
 			</ng-template>
 		</dfm-table>
 		<div class="no-data-found-wrapper justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!recentPatients.length">

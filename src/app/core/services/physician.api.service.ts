@@ -106,7 +106,6 @@ export class PhysicianApiService {
 		return this.http.delete<BaseResponse<Boolean>>(`${environment.schedulerApiUrl}/doctor/${physicianID}`).pipe(
 			map((response) => response.data),
 			tap(() => {
-				// this.refreshPhysicians$$.next();
 				this.loaderSvc.deactivate();
 			}),
 		);

@@ -1,7 +1,3 @@
-.rounded{
-    // width :24%!important;
-}
-
 .no-data-found {
   height: inherit;
   display: flex;
@@ -16,7 +12,6 @@
 div section:last-child {
   overflow-y: scroll;
   max-height: 280px;
-  // height: inherit;
 
   div.upcoming-events-container {
     border-left: 1px solid var(--dfm-input-border);
@@ -69,10 +64,7 @@ table .name-td, .exam-td, .room-td{
   }
 }
 
-@media (min-width:320px) and (max-width:525px){
-  .patient-title{
-    // margin-left:25px!important;
-  }
+@media (min-width:320px) and (max-width:525px) {
   .exam-title{
     margin-left: 10px!important;
   }
@@ -82,11 +74,6 @@ table .name-td, .exam-td, .room-td{
   .exam-name{
     word-break: break-word;
   }
-  // table th,td{
-  //  white-space: nowrap;
-  //  word-break: break-all;
-  //  width: 150px;
-  // }
 }
 @media (min-width:568px) and (max-width:680px){
   .patient-title{
@@ -95,29 +82,6 @@ table .name-td, .exam-td, .room-td{
   .exam-title{
     margin-left: 40px!important;
   }
-}
-// @media(max-width:568px){
-//   .exam-title{
-// margin-left: 28px!important;
-// }
-// }
-
-@media(min-width:425px)and (max-width: 534px) {
-  // .patient-title{
-  // margin: 0px 0px 0px 60px!important;
-  // }
-  // .exam-title{
-  //   margin: 0px 0px 0px 50px!important;
-  // }
-
-}
-@media(min-width:1301px) and (max-width:1920px){
-  // .patient-title{
-  // margin-left:51px!important;
-  // }
-  // .exam-title{
-  //   margin-left: -10px!important;
-  // }
 }
 .cursor-pointer {
   cursor: pointer;

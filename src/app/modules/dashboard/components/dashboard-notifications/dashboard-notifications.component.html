@@ -6,13 +6,6 @@
       </div>
       <span class="font-weight-medium">{{"Notifications" | translate}} ({{ notifications.length }})</span>
     </header>
-
-    <!-- <div>
-      <dfm-button
-        size="md"
-        color="secondary"
-      >{{"ViewAll" | translate}}</dfm-button>
-    </div> -->
   </section>
 
   <section class="d-flex flex-column doctor-list-wrapper" *ngIf="filteredNotifications$$ | async as notifications" infiniteScroll [scrollWindow]="false" (scrolled)="onScroll()">

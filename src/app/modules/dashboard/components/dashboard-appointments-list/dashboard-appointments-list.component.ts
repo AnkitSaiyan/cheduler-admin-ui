@@ -1,9 +1,9 @@
 import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil, withLatestFrom} from 'rxjs';
-import {ActivatedRoute, Router} from '@angular/router';
+import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil, withLatestFrom } from 'rxjs';
+import { Router } from '@angular/router';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
-import { DatePipe, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
@@ -19,11 +19,9 @@ import { Exam } from '../../../../shared/models/exam.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { RouterStateService } from '../../../../core/services/router-state.service';
 import { AppointmentAdvanceSearchComponent } from './appointment-advance-search/appointment-advance-search.component';
 import { TranslateService } from '@ngx-translate/core';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
@@ -61,7 +59,18 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public downloadDropdownControl = new FormControl('', []);
 
-	public columns: string[] = ['StartedAt', 'EndedAt', 'PatientName', 'Exam', 'Physician', 'ReferralNote', 'AppointmentNo', 'AppliedOn', 'Status', 'Actions'];
+	public columns: string[] = [
+		'StartedAt',
+		'EndedAt',
+		'PatientName',
+		'Exam',
+		'Physician',
+		'ReferralNote',
+		'AppointmentNo',
+		'AppliedOn',
+		'Status',
+		'Actions',
+	];
 
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'StartedAt', isSortable: true },
@@ -146,13 +155,10 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		private appointmentApiSvc: AppointmentApiService,
 		private notificationSvc: NotificationDataService,
 		private router: Router,
-		private route: ActivatedRoute,
 		private modalSvc: ModalService,
 		private roomApiSvc: RoomsApiService,
-		private datePipe: DatePipe,
 		private cdr: ChangeDetectorRef,
 		private titleCasePipe: TitleCasePipe,
-		private routerStateSvc: RouterStateService,
 		private shareDataSvc: ShareDataService,
 		private translate: TranslateService,
 		public permissionSvc: PermissionService,
@@ -183,25 +189,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				}
 			},
 		});
-
-		// this.routerStateSvc
-		//   .listenForQueryParamsChanges$()
-		//   .pipe(debounceTime(100))
-		//   .subscribe({
-		//     next: (params) => {
-		//       if (params['v']) {
-		//         this.calendarView$$.next(params['v'] !== 't');
-		//       } else {
-		//         this.router.navigate([], {
-		//           replaceUrl: true,
-		//           queryParams: {
-		//             v: 'w',
-		//           },
-		//         });
-		//         this.calendarView$$.next(true);
-		//       }
-		//     }
-		//   });
 
 		this.appointmentApiSvc.appointmentListData$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => {
@@ -241,13 +228,9 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				},
 			});
 
-		this.appointments$$
-			.pipe(
-				takeUntil(this.destroy$$),
-			)
-			.subscribe({
-				next: (appointment) => this.filteredAppointments$$.next([...appointment]),
-			});
+		this.appointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (appointment) => this.filteredAppointments$$.next([...appointment]),
+		});
 
 		this.appointmentApiSvc.appointment$
 			.pipe(
@@ -285,7 +268,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			.subscribe({
 				next: (value) => {
 					const data: any[] = this.isUpcomingAppointmentsDashboard ? this.upcomingTableData$$.value.items : this.pastTableData$$.value.items;
-					
+
 					if (!data.length) {
 						this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.WARNING);
 						this.clearDownloadDropdown();
@@ -303,7 +286,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 							this.titleCasePipe.transform(ap?.doctor),
 							ap?.id.toString(),
 							ap.createdAt.toString(),
-							// ap.readStatus ? 'Yes' : 'No',
 							this.translatePipe.transform(AppointmentStatusToName[+ap?.approval]),
 						]),
 						'appointments',
@@ -360,7 +342,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 						...h,
 						title: Translate[this.columns[i]][lang],
 					}));
-					// eslint-disable-next-line default-case
 					switch (lang) {
 						case ENG_BE:
 							this.statuses = Statuses;
@@ -396,8 +377,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	}
 
 	public handleCheckboxSelection(selected: string[]) {
-		// this.toggleMenu(true);
-
 		this.selectedAppointmentIDs = [...selected];
 	}
 
@@ -429,7 +408,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	}
 
 	public onRefresh(): void {
-		// this.appointmentApiSvc.refresh();
 		this.isResetBtnDisable = true;
 		this.appointmentApiSvc.appointmentPageNo = 1;
 	}
@@ -593,19 +571,9 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			)
 			.subscribe({
 				next: (appointments) => {
-					//
 					this.appointments$$.next(appointments?.data);
 					this.filteredAppointments$$.next(appointments?.data);
 					this.isResetBtnDisable = false;
-
-					// appointments.sort((ap1, ap2) => new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime());
-					//
-					//
-					//
-					// this.groupAppointmentsForCalendar(...appointments);
-					// this.groupAppointmentByDateAndRoom(...appointments);
-					//
-					//
 				},
 			});
 	}
@@ -615,7 +583,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		}, 0);
 	}
 
-	public onScroll(e: any): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.appointmentApiSvc.appointmentPageNo = this.appointmentApiSvc.appointmentPageNo + 1;
 			this.upcomingTableData$$.value.isLoadingMore = true;
@@ -628,16 +596,16 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public openDocumentModal(id: number) {
 		this.modalSvc.open(DocumentViewModalComponent, {
-			  data: {
-				id
-			  },
-			  options: {
-			    size: 'xl',
-			    backdrop: true,
-			    centered: true,
-			    modalDialogClass: 'ad-ap-modal-shadow',
-			  },
-			})
+			data: {
+				id,
+			},
+			options: {
+				size: 'xl',
+				backdrop: true,
+				centered: true,
+				modalDialogClass: 'ad-ap-modal-shadow',
+			},
+		});
 	}
 
 	public manageActionColumn([...data]): Array<string> {
@@ -670,7 +638,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 			if (files && files?.length) {
 				const reader = new FileReader();
-				reader.onload = (e: any) => {
+				reader.onload = () => {
 					resolve(files[0]);
 				};
 				reader.readAsDataURL(files[0]);
@@ -683,11 +651,11 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	private uploadDocument(file: any, id) {
 		this.appointmentApiSvc.uploadDocumnet(file, '', id).subscribe({
-			next: (res) => {
+			next: () => {
 				this.notificationSvc.showNotification(`${Translate.documentUploadSuccessfully[this.selectedLang]}`, NotificationType.SUCCESS);
 				this.onRefresh();
 			},
-			error: (err) => this.notificationSvc.showNotification(`${Translate.Error.FailedToUpload[this.selectedLang]}`, NotificationType.DANGER),
+			error: () => this.notificationSvc.showNotification(`${Translate.Error.FailedToUpload[this.selectedLang]}`, NotificationType.DANGER),
 		});
 	}
 }
