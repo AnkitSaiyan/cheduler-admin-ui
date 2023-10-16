@@ -41,10 +41,10 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 	});
 
 	public tableHeaders: DfmTableHeader[] = [
-		{ id: '1', title: 'AppointmentNo', isSortable: true },
-		{ id: '2', title: 'PatientName', isSortable: true },
-		{ id: '3', title: 'StartDate', isSortable: true },
-		{ id: '4', title: 'EndDate', isSortable: true },
+		{ id: '1', title: 'AppointmentNo', isSortable: false },
+		{ id: '2', title: 'PatientName', isSortable: false },
+		{ id: '3', title: 'StartDate', isSortable: false },
+		{ id: '4', title: 'EndDate', isSortable: false },
 	];
 
 	constructor(
@@ -59,7 +59,6 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 	}
 
 	public ngOnInit(): void {
-		this.getAppointmentListModified();
 		this.route.data
 			.pipe(
 				filter((data) => !!data[ABSENCE_TYPE]),
@@ -78,6 +77,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 			)
 			.subscribe((absenceDetails) => {
 				this.absenceDetails$$.next(absenceDetails);
+				this.getAppointmentListModified(this.absenceDetails$$?.value?.impactedAppointmentDetails);
 			});
 
 		this.shareDataService
@@ -147,60 +147,8 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 		});
 	}
 
-	private getAppointmentListModified() {
-		const impactedAppointmentDetails = [
-			{
-				appointmentId: 263,
-				patientFname: 'niti',
-				patientLname: 'yadav',
-				examDetails: [
-					{
-						examId: 39,
-						roomId: 0,
-						startedAt: '2024-02-10 11:50:00',
-						endedAt: '2024-02-10 12:00:00',
-					},
-				],
-			},
-			{
-				appointmentId: 265,
-				patientFname: 'niti',
-				patientLname: 'yadav',
-				examDetails: [
-					{
-						examId: 39,
-						roomId: 0,
-						startedAt: '2024-02-10 10:30:00',
-						endedAt: '2024-02-10 10:45:00',
-					},
-					{
-						examId: 40,
-						roomId: 0,
-						startedAt: '2024-02-10 10:40:00',
-						endedAt: '2024-02-10 10:55:00',
-					},
-				],
-			},
-			{
-				appointmentId: 264,
-				patientFname: 'niti',
-				patientLname: 'yadav',
-				examDetails: [
-					{
-						examId: 39,
-						roomId: 0,
-						startedAt: '2024-02-10 10:30:00',
-						endedAt: '2024-02-10 10:40:00',
-					},
-					{
-						examId: 40,
-						roomId: 0,
-						startedAt: '2024-02-10 10:40:00',
-						endedAt: '2024-02-10 10:55:00',
-					},
-				],
-			},
-		];
+	private getAppointmentListModified(impactedAppointments) {
+		const impactedAppointmentDetails = [...impactedAppointments];
 		this.effectedAppointments$$.next(impactedAppointmentDetails.map((appointment) => this.getAppointmentModified(appointment)));
 	}
 
