@@ -514,13 +514,17 @@
 	"On": "Op",
 	"YELLOW_REPRESENTS_HOLIDAY": "Geel staat voor feestdagen.",
 	"BLUE_REPRESENTS_NORMAL_LAB_EVENT": "Blauw staat voor normale.",
+	"RED_REPRESENTS_IMPACTED_ABSENCE":"Rood staat voor getroffen afwezigheid",
 	"Loading": "Laden...",
 	"Close": "Sluiten",
 	"Weekly": "Wekelijks",
 	"Monthly": "Maandelijks",
 	"THE_EVENT_WILL_RUN_UNTIL_REACHES_A_SPECIFIC_DATE": "Het prioriteitsslot loopt tot een specifieke datum wordt bereikt",
 	"AbsenceReminder": "Afwezigheidsherinnering",
-	"AffectedAppointments": "Affected Afspraak",
-	"AffectedAbsence": "Getroffen afwezigheid"
+	"AffectedAppointments": "Getroffen Afspraak",
+	"AffectedAbsence": "Getroffen afwezigheid",
+	"BLUE_REPRESENTS_NORMAL_APPOINTMENT": "Blauw staat voor een normale afspraak.",
+	"RED_REPRESENTS_AFFECTED_APPOINTMENT":"Rood staat voor de getroffen afspraak."
+
 
 }

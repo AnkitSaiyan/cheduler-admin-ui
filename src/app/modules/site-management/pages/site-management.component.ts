@@ -122,29 +122,12 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 				const data = this.getMinutesInHoursOrDay(siteManagementData.cancelAppointmentTime);
 				duration = data.duration;
 				durationType = data.durationType
-				// duration = siteManagementData.cancelAppointmentTime;
-				// if (duration >= 1440 && duration % 1440 === 0) {
-				// 	duration /= 1440;
-				// 	durationType = 'Days';
-				// } else if (duration >= 60 && duration % 60 === 0) {
-				// 	duration /= 60;
-				// 	durationType = 'Hours';
-				// }
 			}
 
 			if (siteManagementData.reminderTime) {
 				const data = this.getMinutesInHoursOrDay(siteManagementData.cancelAppointmentTime);
 				reminderDuration = data.duration;
 				reminderDurationTYpe = data.durationType
-
-				// reminderDuration = siteManagementData.reminderTime;
-				// if (reminderDuration >= 1440 && reminderDuration % 1440 === 0) {
-				// 	reminderDuration /= 1440;
-				// 	reminderDurationTYpe = 'Days';
-				// } else if (reminderDuration >= 60 && reminderDuration % 60 === 0) {
-				// 	reminderDuration /= 60;
-				// 	reminderDurationTYpe = 'Hours';
-				// }
 			}
 			if (siteManagementData.absenceImpactAlertInterval) {
 				const data = this.getMinutesInHoursOrDay(siteManagementData.absenceImpactAlertInterval);
@@ -246,27 +229,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			file: file.fileBlob,
 			disableWarningText: rest.disableAppointment ? rest.disableWarningText : null,
 			cancelAppointmentTime: this.getDurationInMinutes(rest.cancelAppointmentTime, cancelAppointmentType),
-			// 	(function () {
-			// 	switch (cancelAppointmentType) {
-			// 		case 'Hours':
-			// 			return rest.cancelAppointmentTime * 60;
-			// 		case 'Days':
-			// 			return rest.cancelAppointmentTime * 1440;
-			// 		default:
-			// 			return rest.cancelAppointmentTime;
-			// 	}
-			// })(),
 			reminderTime: this.getDurationInMinutes(rest.reminderTime, reminderTimeType),
-			// 	(function () {
-			// 	switch (reminderTimeType) {
-			// 		case 'Hours':
-			// 			return rest.reminderTime * 60;
-			// 		case 'Days':
-			// 			return rest.reminderTime * 1440;
-			// 		default:
-			// 			return rest.reminderTime;
-			// 	}
-			// })(),
 			absenceImpactAlertInterval: this.getDurationInMinutes(rest.absenceImpactAlertInterval, absenceImpactAlertIntervalType),
 			introductoryTextEnglish: '',
 		};

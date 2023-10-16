@@ -25,7 +25,12 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 
 	public examDetails$$ = new BehaviorSubject<any[]>([]);
 
+	public absence$$ = new BehaviorSubject<any[]>([]);
+
 	public columns = ['Name', 'Expensive', 'Room', 'StartDate', 'EndDate'];
+
+	public absenceColumns = ['Titel', 'StartDate', 'EndDate', 'AbsenceInfo'];
+
 
 	private selectedLang: string = ENG_BE;
 
@@ -55,6 +60,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 				tap((appointment) => {
 					this.appointment$$.next(appointment);
 					this.examDetails$$.next(appointment?.exams ?? []);
+					this.absence$$.next(appointment?.absenceDetails ?? []);
 
 					if (appointment?.exams?.length) {
 						const roomIdToName: { [key: string]: string } = {};
@@ -125,5 +131,14 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 				modalDialogClass: 'ad-ap-modal-shadow',
 			},
 		});
+	}
+
+	public natigateToAbsence(e) {
+		if (e?.id) {
+			if(e.rooms?.length)
+				this.router.navigate([`/absence/rooms/${e.id}/view`], { replaceUrl: true });
+			else
+				this.router.navigate([`/absence/staff/${e.id}/view`], { replaceUrl: true });	
+		}
 	}
 }
