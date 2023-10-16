@@ -38,6 +38,8 @@ interface FormValues {
 	isAppointmentAutoconfirmAdmin: boolean;
 	documentSize: number;
 	editUploadedDocument: boolean;
+	AbsenceImpactAlertInterval: number;
+	AbsenceImpactAlertIntervalType: TimeDurationType;
 }
 
 @Component({
@@ -98,6 +100,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 	private createForm(siteManagementData?: SiteManagement | undefined): void {
 		let duration = 0;
 		let reminderDuration = 0;
+		let absenceReminder = 0;
+		let absenceReminderType: TimeDurationType = 'Minutes' 
 		let durationType: TimeDurationType = 'Minutes';
 		let reminderDurationTYpe: TimeDurationType = 'Minutes';
 		let introductoryTextObj;
@@ -115,25 +119,37 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
 		if (siteManagementData) {
 			if (siteManagementData.cancelAppointmentTime) {
-				duration = siteManagementData.cancelAppointmentTime;
-				if (duration >= 1440 && duration % 1440 === 0) {
-					duration /= 1440;
-					durationType = 'Days';
-				} else if (duration >= 60 && duration % 60 === 0) {
-					duration /= 60;
-					durationType = 'Hours';
-				}
+				const data = this.getMinutesInHoursOrDay(siteManagementData.cancelAppointmentTime);
+				duration = data.duration;
+				durationType = data.durationType
+				// duration = siteManagementData.cancelAppointmentTime;
+				// if (duration >= 1440 && duration % 1440 === 0) {
+				// 	duration /= 1440;
+				// 	durationType = 'Days';
+				// } else if (duration >= 60 && duration % 60 === 0) {
+				// 	duration /= 60;
+				// 	durationType = 'Hours';
+				// }
 			}
 
 			if (siteManagementData.reminderTime) {
-				reminderDuration = siteManagementData.reminderTime;
-				if (reminderDuration >= 1440 && reminderDuration % 1440 === 0) {
-					reminderDuration /= 1440;
-					reminderDurationTYpe = 'Days';
-				} else if (reminderDuration >= 60 && reminderDuration % 60 === 0) {
-					reminderDuration /= 60;
-					reminderDurationTYpe = 'Hours';
-				}
+				const data = this.getMinutesInHoursOrDay(siteManagementData.cancelAppointmentTime);
+				reminderDuration = data.duration;
+				reminderDurationTYpe = data.durationType
+
+				// reminderDuration = siteManagementData.reminderTime;
+				// if (reminderDuration >= 1440 && reminderDuration % 1440 === 0) {
+				// 	reminderDuration /= 1440;
+				// 	reminderDurationTYpe = 'Days';
+				// } else if (reminderDuration >= 60 && reminderDuration % 60 === 0) {
+				// 	reminderDuration /= 60;
+				// 	reminderDurationTYpe = 'Hours';
+				// }
+			}
+			if (siteManagementData.AbsenceImpactAlertInterval) {
+				const data = this.getMinutesInHoursOrDay(siteManagementData.AbsenceImpactAlertInterval);
+                absenceReminder = data.duration;
+				absenceReminderType = data.durationType
 			}
 
 			if (siteManagementData.introductoryText) {
@@ -177,6 +193,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			isAppointmentAutoconfirmAdmin: [!!siteManagementData?.isAppointmentAutoconfirmAdmin, [Validators.required]],
 			documentSize: [5, [Validators.required]],
 			editUploadedDocument: [!!siteManagementData?.editUploadedDocument, [Validators.required]],
+			AbsenceImpactAlertInterval: [absenceReminder, []],
+			AbsenceImpactAlertIntervalType: [absenceReminderType, []],
 		});
 
 		setTimeout(() => {
@@ -184,6 +202,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 				reminderTimeType: reminderDurationTYpe,
 				cancelAppointmentType: durationType,
 				documentSize: siteManagementData?.documentSizeInKb ? siteManagementData?.documentSizeInKb / 1024 : 5,
+				AbsenceImpactAlertIntervalType: absenceReminderType,
 			});
 		}, 0);
 
@@ -218,6 +237,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			file,
 			cancelAppointmentType,
 			reminderTimeType,
+			AbsenceImpactAlertIntervalType,
 			...rest
 		} = this.formValues;
 
@@ -225,26 +245,29 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			...rest,
 			file: file.fileBlob,
 			disableWarningText: rest.disableAppointment ? rest.disableWarningText : null,
-			cancelAppointmentTime: (function () {
-				switch (cancelAppointmentType) {
-					case 'Hours':
-						return rest.cancelAppointmentTime * 60;
-					case 'Days':
-						return rest.cancelAppointmentTime * 1440;
-					default:
-						return rest.cancelAppointmentTime;
-				}
-			})(),
-			reminderTime: (function () {
-				switch (reminderTimeType) {
-					case 'Hours':
-						return rest.reminderTime * 60;
-					case 'Days':
-						return rest.reminderTime * 1440;
-					default:
-						return rest.reminderTime;
-				}
-			})(),
+			cancelAppointmentTime: this.getDurationInMinutes(rest.cancelAppointmentTime, cancelAppointmentType),
+			// 	(function () {
+			// 	switch (cancelAppointmentType) {
+			// 		case 'Hours':
+			// 			return rest.cancelAppointmentTime * 60;
+			// 		case 'Days':
+			// 			return rest.cancelAppointmentTime * 1440;
+			// 		default:
+			// 			return rest.cancelAppointmentTime;
+			// 	}
+			// })(),
+			reminderTime: this.getDurationInMinutes(rest.reminderTime, reminderTimeType),
+			// 	(function () {
+			// 	switch (reminderTimeType) {
+			// 		case 'Hours':
+			// 			return rest.reminderTime * 60;
+			// 		case 'Days':
+			// 			return rest.reminderTime * 1440;
+			// 		default:
+			// 			return rest.reminderTime;
+			// 	}
+			// })(),
+			AbsenceImpactAlertInterval: this.getDurationInMinutes(rest.AbsenceImpactAlertInterval, AbsenceImpactAlertIntervalType),
 			introductoryTextEnglish: '',
 		};
 
@@ -327,6 +350,31 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			});
 		} else {
 			this.siteManagementForm.get('email')?.setErrors(null);
+		}
+	}
+
+	private getMinutesInHoursOrDay(minutes): {durationType:TimeDurationType, duration: number} {
+		let durationType: TimeDurationType = 'Minutes';
+		let duration = minutes;
+
+		if (duration >= 1440 && duration % 1440 === 0) {
+			duration /= 1440;
+			durationType = 'Days';
+		} else if (duration >= 60 && duration % 60 === 0) {
+			duration /= 60;
+			durationType = 'Hours';
+		}
+		return {durationType, duration}
+	}
+
+	private getDurationInMinutes(duration: number, durationType: TimeDurationType):number {
+		switch (durationType) {
+			case 'Hours':
+				return duration * 60;
+			case 'Days':
+				return duration * 1440;
+			default:
+				return duration;
 		}
 	}
 }

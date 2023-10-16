@@ -63,7 +63,8 @@ export class SiteManagementApiService extends DestroyableComponent {
     formData.append('isAppointmentAutoconfirm', String(requestData.isAppointmentAutoconfirm));
     formData.append('isAppointmentAutoconfirmAdmin', String(requestData.isAppointmentAutoconfirmAdmin));
     formData.append('editUploadedDocument', String(requestData.editUploadedDocument));
-    formData.append('documentSizeInKb', String(requestData.documentSize*1024));
+    formData.append('documentSizeInKb', String(requestData.documentSize * 1024));
+    formData.append('AbsenceImpactAlertInterval', String(requestData.AbsenceImpactAlertInterval));
     if (requestData.file) {
       formData.append('File', requestData.file);
     }

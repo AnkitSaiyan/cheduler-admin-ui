@@ -38,6 +38,7 @@ export interface Appointment {
 	socialSecurityNumber: number;
 	documentCount?: number;
 	isEditable: boolean;
+	absenceDetails?:[]
 }
 
 export interface AddAppointmentRequestData {

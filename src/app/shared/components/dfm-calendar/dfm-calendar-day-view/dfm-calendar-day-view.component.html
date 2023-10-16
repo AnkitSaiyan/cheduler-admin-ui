@@ -362,10 +362,16 @@
                         <ng-container
                           *ngFor="let data of roomData;">
                           <ng-container *ngIf="getHeight([data.appointment]) as eventHeight" >
-                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight && getTop([data.appointment]) >= 0" #eventContainer class="calender-day-view-event-container resizable" triggers="hover" [ngbPopover]="eventDetails"
-                                     [autoClose]="'outside'" container="body" #popover="ngbPopover" [ngbPopoverDrag]="popover"   [draggable]="!((data.appointment.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [calendarType]="calendarType.Day" [draggedElData]="data.appointment" [headerType]="h.name" (dblclick)="$event.preventDefault()"
-                               [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
-                          >
+                          <div *ngIf="calendarView.offsetHeight >= getTop([data.appointment]) + eventHeight && getTop([data.appointment]) >= 0"
+                            #eventContainer class="calender-day-view-event-container resizable" triggers="hover" [ngbPopover]="eventDetails"
+                            [autoClose]="'outside'" container="body" #popover="ngbPopover" [ngbPopoverDrag]="popover"
+                            [draggable]="!((data.appointment.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent
+                            [calendarType]="calendarType.Day" [draggedElData]="data.appointment" [headerType]="h.name"
+                            (dblclick)="$event.preventDefault()" [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
+                            [ngClass]="{
+                            'effectedAppointments': data.appointment.absenceDetails?.length
+                          }"
+                            >
                           <div class='resizers' id="resizers">
                             <div class='resizer top'
                             *ngIf="!isMobile && data.appointment.isEditable" #topResizer (mousedown)="resize($event, topResizer, data.appointment, eventContainer)"></div>
