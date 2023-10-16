@@ -6,6 +6,11 @@ td {
 	border-collapse: collapse;
 }
 
+.effectedAppointments {
+	border-left: 2px solid #E57373 !important;
+ 	background: #FFEBEE !important;
+}
+
 .calender-month-view {
 	transition: all 200ms linear;
 	width: 100%;
