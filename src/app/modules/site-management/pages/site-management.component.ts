@@ -101,7 +101,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 		let duration = 0;
 		let reminderDuration = 0;
 		let absenceReminder = 0;
-		let absenceReminderType: TimeDurationType = 'Minutes' 
+		let absenceReminderType: TimeDurationType = 'Minutes';
 		let durationType: TimeDurationType = 'Minutes';
 		let reminderDurationTYpe: TimeDurationType = 'Minutes';
 		let introductoryTextObj;
@@ -121,18 +121,18 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			if (siteManagementData.cancelAppointmentTime) {
 				const data = this.getMinutesInHoursOrDay(siteManagementData.cancelAppointmentTime);
 				duration = data.duration;
-				durationType = data.durationType
+				durationType = data.durationType;
 			}
 
 			if (siteManagementData.reminderTime) {
 				const data = this.getMinutesInHoursOrDay(siteManagementData.cancelAppointmentTime);
 				reminderDuration = data.duration;
-				reminderDurationTYpe = data.durationType
+				reminderDurationTYpe = data.durationType;
 			}
 			if (siteManagementData.absenceImpactAlertInterval) {
 				const data = this.getMinutesInHoursOrDay(siteManagementData.absenceImpactAlertInterval);
-                absenceReminder = data.duration;
-				absenceReminderType = data.durationType
+				absenceReminder = data.duration;
+				absenceReminderType = data.durationType;
 			}
 
 			if (siteManagementData.introductoryText) {
@@ -316,7 +316,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 		}
 	}
 
-	private getMinutesInHoursOrDay(minutes): {durationType:TimeDurationType, duration: number} {
+	private getMinutesInHoursOrDay(minutes): { durationType: TimeDurationType; duration: number } {
 		let durationType: TimeDurationType = 'Minutes';
 		let duration = minutes;
 
@@ -327,10 +327,10 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			duration /= 60;
 			durationType = 'Hours';
 		}
-		return {durationType, duration}
+		return { durationType, duration };
 	}
 
-	private getDurationInMinutes(duration: number, durationType: TimeDurationType):number {
+	private getDurationInMinutes(duration: number, durationType: TimeDurationType): number {
 		switch (durationType) {
 			case 'Hours':
 				return duration * 60;
