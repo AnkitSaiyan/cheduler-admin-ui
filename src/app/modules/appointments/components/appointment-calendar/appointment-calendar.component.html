@@ -83,6 +83,7 @@
           [headerList]="headerList"
           [timeSlot]="selectedSlot$$ | async"
           [format24Hour]="true"
+          [prioritySlots]="prioritySlots$$ | async"
           [dataGroupedByDateAndRoom]="appointmentGroupedByDateAndRoom"
         ></dfm-calendar-day-view>
       </ng-container>
