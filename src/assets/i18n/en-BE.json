@@ -520,7 +520,7 @@
 	"THE_EVENT_WILL_RUN_UNTIL_REACHES_A_SPECIFIC_DATE": "The event will run until reaches a specific date",
 	"AbsenceReminder": "Absence reminder",
 	"AffectedAppointments": "Affected Appointments",
-	"AffectedAbsence": "Affected Absence",
+	"AffectedAbsence": "Affected by Absence",
 	"BLUE_REPRESENTS_NORMAL_APPOINTMENT": "Blue represents normal appointment.",
 	"RED_REPRESENTS_AFFECTED_APPOINTMENT":"Red represents affected appointment."
 
