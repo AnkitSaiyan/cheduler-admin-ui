@@ -79,7 +79,7 @@
                       <div class="calender-month-view-day-exam-event-details" [ngbPopover]="appointmentDetails"  triggers="click" [autoClose]="'outside'" container="body"  [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [draggedElData]="data" [ngbPopoverDrag]="popover" #popover="ngbPopover"
                         [calendarType]="calendarType.Month"
                         [ngClass]="{
-                          'effectedAppointments': data.absenceDetails?.length
+                          'affectedAppointments': data.absenceDetails?.length
                         }"
                         >
                         <span class="calender-month-view-day-exam-event-title text-truncate"
@@ -134,7 +134,7 @@
                       </ng-template>
                       <div class="calender-month-view-day-exam-event-details" [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" 
                       [ngClass]="{
-                        'effectedAppointments': data.impactedAppointmentDetails?.length
+                        'affectedAppointments': data.impactedAppointmentDetails?.length
                       }"
                       >
                         <span class="calender-month-view-day-exam-event-title text-truncate ">
@@ -216,7 +216,7 @@
               <div class="calender-month-view-day-exam-event-details" [ngbPopover]="appointmentDetails"  triggers="click" [autoClose]="'outside'" container="body" [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [draggedElData]="data" [calendarType]="calendarType.Month" #popover="ngbPopover"
                [ngbPopoverDrag]="popover"
                [ngClass]="{
-                'effectedAppointments': data.absenceDetails?.length
+                'affectedAppointments': data.absenceDetails?.length
               }"
                >
                 <span class="calender-month-view-day-exam-event-title text-truncate ">
@@ -265,7 +265,7 @@
 
               <div class="calender-month-view-day-exam-event-details"  [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" 
               [ngClass]="{
-                'effectedAppointments': data.impactedAppointmentDetails?.length
+                'affectedAppointments': data.impactedAppointmentDetails?.length
               }"
               >
                 <span class="calender-month-view-day-exam-event-title text-truncate ">
