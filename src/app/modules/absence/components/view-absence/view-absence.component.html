@@ -126,12 +126,12 @@
     </section>
     <ng-container *ngIf="absenceType !== 'public-holiday'">
       <section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16"
-        *ngIf="effectedAppointments$$ | async as effectedAppointments">
+        *ngIf="affectedAppointments$$ | async as affectedAppointments">
       <header class="d-flex align-items-center dfm-gap-8">
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
         </div>
-        <span class="font-weight-medium">{{ 'EffectedAppointments' | translate }}</span>
+        <span class="font-weight-medium">{{ 'AffectedAppointments' | translate }}</span>
       </header>
       <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [stickyActions]="false"
         noDataMessage="{{ ('NoDataFound') | translate }}" [rowClickable]="true" [stickyCheckbox]="false"

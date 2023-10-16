@@ -520,5 +520,7 @@
 	"Monthly": "Maandelijks",
 	"THE_EVENT_WILL_RUN_UNTIL_REACHES_A_SPECIFIC_DATE": "Het prioriteitsslot loopt tot een specifieke datum wordt bereikt",
 	"AbsenceReminder": "Afwezigheidsherinnering",
-	"EffectedAppointments": "Effected Appointments"
+	"AffectedAppointments": "Affected Afspraak",
+	"AffectedAbsence": "Getroffen afwezigheid"
+
 }

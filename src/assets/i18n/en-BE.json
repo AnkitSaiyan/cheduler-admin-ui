@@ -518,5 +518,6 @@
 	"Monthly": "Monthly",
 	"THE_EVENT_WILL_RUN_UNTIL_REACHES_A_SPECIFIC_DATE": "The event will run until reaches a specific date",
 	"AbsenceReminder": "Absence reminder",
-	"EffectedAppointments": "Effected Appointments"
+	"AffectedAppointments": "Affected Appointments",
+	"AffectedAbsence": "Affected Absence"
 }
