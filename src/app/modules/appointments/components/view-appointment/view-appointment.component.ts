@@ -29,7 +29,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 
 	public columns = ['Name', 'Expensive', 'Room', 'StartDate', 'EndDate'];
 
-	public absenceColumns = ['Titel', 'StartDate', 'EndDate', 'AbsenceInfo'];
+	public absenceColumns = ['Title', 'StartDate', 'EndDate', 'AbsenceInfo'];
 
 
 	private selectedLang: string = ENG_BE;
