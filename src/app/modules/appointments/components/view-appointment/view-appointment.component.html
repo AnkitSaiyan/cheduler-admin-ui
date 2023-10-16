@@ -165,6 +165,34 @@
 			</div>
 		</div>
 	</section>
+	<ng-container  *ngIf="(absence$$ | async)?.length">
+	<section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16 vw-ap-sec2-card" *ngIf="absence$$ | async as absence">
+		<header class="d-flex align-items-center dfm-gap-8">
+			<div class="dfm-button-gray-400">
+				<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
+			</div>
+			<span class="font-weight-medium">{{ 'AffectedAbsence' | translate }}</span>
+		</header>
+
+		<div class="overflow-y-auto h-fit h-fit">
+			<dfm-table [items]="absence" *ngIf="absence?.length" (rowClicked)="natigateToAbsence($event)">
+				<ng-template #headerRowTemplate>
+					<dfm-table-header-cell *ngFor="let column of absenceColumns">{{ column | translate }}</dfm-table-header-cell>
+				</ng-template>
+
+				<ng-template #bodyRowTemplate let-item>
+					<dfm-table-body-cell>{{ item.name | titlecase | dashIfNothing }}</dfm-table-body-cell>
+					<dfm-table-row-cell >{{ (item.isHoliday ? item?.startedAt   : (item?.startedAt | dfmUtcToLocal : false : !item.isHoliday)) | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
+					<dfm-table-row-cell >{{ (item.isHoliday ? item?.endedAt  : (item?.endedAt | dfmUtcToLocal : false : !item.isHoliday)) | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
+					<dfm-table-row-cell >{{ item.info | dashIfNothing }}</dfm-table-row-cell>
+				</ng-template>
+			</dfm-table>
+			<div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom dfm-text-main-600" *ngIf="!absence?.length">
+				{{ 'NoDataFound' | translate }}
+			</div>
+		</div>
+	</section>
+</ng-container>
 	<div class="hidden bg-white vw-ap-action-buttons-mv" *dfmPermitted="[Permission.UpdateAppointments, Permission.DeleteAppointments]">
 		<ng-container *ngIf="appointment.isEditable">
 		<dfm-button color="secondary" size="sm" *dfmPermitted="Permission.DeleteAppointments" (click)="deleteAppointment(appointment.id)">{{
