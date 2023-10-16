@@ -510,12 +510,13 @@
 	"Week(s)": "Week(s)",
 	"Month(s)": "Month(s)",
 	"On": "On",
-	"YELLOW_REPRESENTS_HOLIDAY":"Yellow represents holidays.",
-	"BLUE_REPRESENTS_NORMAL_LAB_EVENT":"Blue represents normal lab events.",
+	"YELLOW_REPRESENTS_HOLIDAY": "Yellow represents holidays.",
+	"BLUE_REPRESENTS_NORMAL_LAB_EVENT": "Blue represents normal lab events.",
 	"Loading": "Loading...",
 	"Close": "Close",
 	"Weekly": "Weekly",
 	"Monthly": "Monthly",
 	"THE_EVENT_WILL_RUN_UNTIL_REACHES_A_SPECIFIC_DATE": "The event will run until reaches a specific date",
-	"AbsenceReminder": "Absence reminder"
+	"AbsenceReminder": "Absence reminder",
+	"EffectedAppointments": "Effected Appointments"
 }
