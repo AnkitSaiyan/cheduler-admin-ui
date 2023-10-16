@@ -306,7 +306,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			}))
 			?.forEach((absence: any) => {
 				let { repeatFrequency } = absence;
-				const { absenceId, name, info, startedAt, endedAt, roomName, userName, isHoliday } = absence;
+				const { absenceId, name, info, startedAt, endedAt, roomName, userName, isHoliday, impactedAppointmentDetails } = absence;
 				const startDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
 				let firstDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
 				const lastDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.endedAt), true)).toDateString());
@@ -328,6 +328,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 								roomName,
 								userName,
 								isHoliday,
+								impactedAppointmentDetails
 							};
 							absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 							firstDate.setDate(firstDate.getDate() + repeatFrequency);
@@ -354,6 +355,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 										roomName,
 										userName,
 										isHoliday,
+										impactedAppointmentDetails
 									};
 									absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 								}
@@ -381,6 +383,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 											roomName,
 											userName,
 											isHoliday,
+											impactedAppointmentDetails
 										};
 										absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 									}
