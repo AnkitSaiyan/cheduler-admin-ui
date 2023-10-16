@@ -110,20 +110,18 @@
   ></dfm-input>
 
   <section class="list-page-content-height" *ngIf="filteredAbsences$$ | async as absences">
-
-
-
-
-
-
-
-
     <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}"  [stickyActions]="false"
                     noDataMessage="{{ (isLoading ? 'Loading' : 'NoDataFound') | translate }}" [rowClickable]="true" [stickyCheckbox]="true"
                     (rowClicked)="navigateToViewAbsence($event)" [stickyFirstColumn]="false" [headers]="tableHeaders"
                     (scrolled)="onScroll($event)" (sorted)="onSort($event)">
       <ng-template #bodyRowTemplate let-item>
-        <dfm-table-row-cell >{{ item.name | titlecase | dashIfNothing }}</dfm-table-row-cell>
+        <dfm-table-row-cell >
+          <span class="d-flex">
+            <dfm-icon *ngIf="item?.impactedAppointmentDetails?.length" class="alert-icon" name="alert-circle">
+            </dfm-icon>
+            {{ item.name | titlecase | dashIfNothing }}
+          </span>
+        </dfm-table-row-cell>
         <dfm-table-row-cell >{{ (item.isHoliday ? item?.startedAt   : (item?.startedAt | dfmUtcToLocal : false : !item.isHoliday)) | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-row-cell >{{ (item.isHoliday ? item?.endedAt  : (item?.endedAt | dfmUtcToLocal : false : !item.isHoliday)) | dfmDefaultDate | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-row-cell >{{ item.info | dashIfNothing }}</dfm-table-row-cell>
