@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DfmDatasource } from 'diflexmo-angular-design';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BehaviorSubject, interval, takeUntil } from 'rxjs';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
-import { Appointment } from 'src/app/shared/models/appointment.model';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 
@@ -32,7 +31,6 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 		this.upcomingAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredUpcomingAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.appointmentApiService.pageNo = 1;
-
 	}
 
 	ngOnInit(): void {
@@ -51,20 +49,9 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 			next: (absences) => this.filteredUpcomingAppointments$$.next([...absences]),
 		});
 
-		this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointmentsBase) => {
-				if (appointmentsBase.data.length > 0) {
-					if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
-						this.upcomingAppointments$$.next([...this.upcomingAppointments$$.value, ...appointmentsBase.data]);
-					} else {
-						this.upcomingAppointments$$.next(appointmentsBase.data);
-					}
-					this.paginationData = appointmentsBase?.metaData?.pagination || 1;
-				} else {
-					this.noDataFound = true;
-				}
-			}
-		});
+		this.getData();
+
+		interval(120000).pipe(takeUntil(this.destroy$$)).subscribe(() => this.getData());
 	}
 
 	public navigateToView(appointment: any) {
@@ -83,21 +70,24 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 		}
 	}
 
-	public sortAppointment([...appointment]:any):Array<any> {
-		return appointment.sort(
-			(a: any, b: any) =>
-				new Date(b.startedAt) ? -1
-					: new Date(a.startedAt) ? 1 : 0
-		)
+	public sortAppointment([...appointment]: any): Array<any> {
+		return appointment.sort((a: any, b: any) => (new Date(b.startedAt) ? -1 : new Date(a.startedAt) ? 1 : 0));
+	}
+
+	private getData() {
+		this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (appointmentsBase) => {
+				if (appointmentsBase.data.length > 0) {
+					if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
+						this.upcomingAppointments$$.next([...this.upcomingAppointments$$.value, ...appointmentsBase.data]);
+					} else {
+						this.upcomingAppointments$$.next(appointmentsBase.data);
+					}
+					this.paginationData = appointmentsBase?.metaData?.pagination || 1;
+				} else {
+					this.noDataFound = true;
+				}
+			},
+		});
 	}
 }
-
-
-
-
-
-
-
-
-
-
