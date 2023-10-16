@@ -312,9 +312,9 @@
 				<div class="d-flex flex-column dfm-gap-16 flex-1 w-full st-mg-appointment-cancellation">
 					<span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'AbsenceReminder' | translate }} *</span>
 					<div class="w-fit d-flex flex-1 justify-content-between dfm-gap-24">
-						<dfm-input type="number" size="sm"></dfm-input>
+						<dfm-input type="number" size="sm" formControlName="AbsenceImpactAlertInterval"></dfm-input>
 						<div class="st-mg-time-duration-type">
-							<dfm-input-dropdown [items]="timeDurations" size="sm" ></dfm-input-dropdown>
+							<dfm-input-dropdown [items]="timeDurations" size="sm" formControlName="AbsenceImpactAlertIntervalType"></dfm-input-dropdown>
 						</div>
 					</div>
 				</div>
