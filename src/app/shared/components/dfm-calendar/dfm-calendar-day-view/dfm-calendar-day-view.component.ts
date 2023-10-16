@@ -60,6 +60,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	@Input()
 	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 	@Input()
+	public prioritySlots!: { [key: string]: any[] };
+	@Input()
 	public timeSlot!: CalenderTimeSlot;
 	@Input()
 	public dataGroupedByDateAndRoom: {
@@ -109,6 +111,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	public hideAppointmentData = {};
 	public hideAbsenceData = {};
 	public isHoliday$$ = new BehaviorSubject<Boolean>(false);
+	public day: any = [];
 	constructor(
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,
@@ -132,6 +135,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			)
 			.subscribe(({ d }) => {
 				const date = d.split('-');
+				this.day = [date[2], date[1], date[0]];
 				this.selectedDate = new Date(date?.[0], date?.[1] - 1, date?.[2], 0, 0, 0, 0);
 			});
 	}
