@@ -28,7 +28,8 @@
                   <div class="dfm-card-container">
                     <ng-container *ngFor="let data of dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" >
                       <ng-template #appointmentDetails>
-                        <div class="calendar-week-view-event-details-expanded">
+                        <div class="calendar-week-view-event-details-expanded"
+                        >
                           <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
                             <b>{{data.id}}</b> - {{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}
                           </span>
@@ -76,8 +77,13 @@
                           </div>
                       </ng-template>
                       <div class="calender-month-view-day-exam-event-details" [ngbPopover]="appointmentDetails"  triggers="click" [autoClose]="'outside'" container="body"  [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [draggedElData]="data" [ngbPopoverDrag]="popover" #popover="ngbPopover"
-                        [calendarType]="calendarType.Month">
-                        <span class="calender-month-view-day-exam-event-title text-truncate ">
+                        [calendarType]="calendarType.Month"
+                        [ngClass]="{
+                          'effectedAppointments': data.absenceDetails?.length
+                        }"
+                        >
+                        <span class="calender-month-view-day-exam-event-title text-truncate"
+                        >
                           {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
                           -
                           {{ data?.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}
@@ -89,7 +95,8 @@
                     <ng-container *ngIf="(holidayData$$ | async) as holiday ">
 
                       <ng-container *ngFor="let data of holiday[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" >
-                        <div class="calender-month-view-day-exam-event-details holiday"  >
+                        <div class="calender-month-view-day-exam-event-details holiday" 
+                        >
                           <span class="calender-month-view-day-exam-event-title text-truncate ">
 
                             <b>{{(data?.name | titlecase)}}</b>
@@ -125,7 +132,11 @@
                           </div>
                         </div>
                       </ng-template>
-                      <div class="calender-month-view-day-exam-event-details" [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
+                      <div class="calender-month-view-day-exam-event-details" [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" 
+                      [ngClass]="{
+                        'effectedAppointments': data.impactedAppointmentDetails?.length
+                      }"
+                      >
                         <span class="calender-month-view-day-exam-event-title text-truncate ">
                           <span >{{ data?.start }}
                             -
@@ -144,7 +155,8 @@
 
             <ng-container *ngFor="let data of dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]">
               <ng-template #appointmentDetails>
-                <div class="calendar-week-view-event-details-expanded">
+                <div class="calendar-week-view-event-details-expanded"
+                >
                   <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
                     <b>{{data.id}}</b> - {{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}
                   </span>
@@ -202,7 +214,11 @@
               </ng-template>
 
               <div class="calender-month-view-day-exam-event-details" [ngbPopover]="appointmentDetails"  triggers="click" [autoClose]="'outside'" container="body" [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [draggedElData]="data" [calendarType]="calendarType.Month" #popover="ngbPopover"
-               [ngbPopoverDrag]="popover">
+               [ngbPopoverDrag]="popover"
+               [ngClass]="{
+                'effectedAppointments': data.absenceDetails?.length
+              }"
+               >
                 <span class="calender-month-view-day-exam-event-title text-truncate ">
                   {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
                   -
@@ -247,7 +263,11 @@
                 </div>
               </ng-template>
 
-              <div class="calender-month-view-day-exam-event-details"  [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" >
+              <div class="calender-month-view-day-exam-event-details"  [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" 
+              [ngClass]="{
+                'effectedAppointments': data.impactedAppointmentDetails?.length
+              }"
+              >
                 <span class="calender-month-view-day-exam-event-title text-truncate ">
                   <span >{{ data?.start }}
                   -
@@ -261,7 +281,8 @@
 
 
 
-            <div class="calender-month-view-day-exam-event-details more-btn" [ngbPopover]="eventDetails" #popOver="ngbPopover" triggers="click" [autoClose]="'outside'" container="body" *ngIf="parentElement.scrollHeight > parentElement.clientHeight">
+            <div class="calender-month-view-day-exam-event-details more-btn" [ngbPopover]="eventDetails" #popOver="ngbPopover" triggers="click" [autoClose]="'outside'" container="body" *ngIf="parentElement.scrollHeight > parentElement.clientHeight"
+              >
               <span class="calender-month-view-day-exam-event-title text-truncate ">View more</span>
             </div>
 

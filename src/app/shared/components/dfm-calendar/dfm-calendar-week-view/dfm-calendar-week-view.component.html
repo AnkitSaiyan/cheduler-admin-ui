@@ -190,7 +190,9 @@
                     >
                       <div
                         class="calendar-week-view-event-details-container"
-                        [ngClass]="{ 'justify-content-center p-0': getHeight([data]) <= 40 }"
+                        [ngClass]="{ 'justify-content-center p-0': getHeight([data]) <= 40 ,
+                        'effectedAppointments': data?.absenceDetails?.length
+                      }"
                         [ngStyle]="{
                           'margin-top.px': getDurationMinutes(groupedData?.[0].startedAt, data.startedAt) * 4,
                           'height.px': getDurationMinutes(data.startedAt, data.endedAt) * 4
