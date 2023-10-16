@@ -79,6 +79,12 @@
       background: var(--dfm-blue);
     }
   }
+
+  >div:nth-child(3) {
+    >div {
+      background: #FFEBEE;
+    }
+  }
 }
 .calendar-header {
   display: flex;

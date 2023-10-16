@@ -177,7 +177,6 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
 	public navigateToView(e: any) {
 		if (e?.appointmentId) {
-			// localStorage.setItem('previousPagefromView', 'dashboard');
 			this.router.navigate([`/appointment/${e.appointmentId}/view`], { replaceUrl: true });
 		}
 	}

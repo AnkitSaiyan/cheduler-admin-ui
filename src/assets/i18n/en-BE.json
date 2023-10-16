@@ -512,6 +512,7 @@
 	"On": "On",
 	"YELLOW_REPRESENTS_HOLIDAY": "Yellow represents holidays.",
 	"BLUE_REPRESENTS_NORMAL_LAB_EVENT": "Blue represents normal lab events.",
+	"RED_REPRESENTS_IMPACTED_ABSENCE":"Red represents impacted absence",
 	"Loading": "Loading...",
 	"Close": "Close",
 	"Weekly": "Weekly",
@@ -519,5 +520,9 @@
 	"THE_EVENT_WILL_RUN_UNTIL_REACHES_A_SPECIFIC_DATE": "The event will run until reaches a specific date",
 	"AbsenceReminder": "Absence reminder",
 	"AffectedAppointments": "Affected Appointments",
-	"AffectedAbsence": "Affected Absence"
+	"AffectedAbsence": "Affected Absence",
+	"BLUE_REPRESENTS_NORMAL_APPOINTMENT": "Blue represents normal appointment.",
+	"RED_REPRESENTS_AFFECTED_APPOINTMENT":"Red represents affected appointment."
+
+
 }
