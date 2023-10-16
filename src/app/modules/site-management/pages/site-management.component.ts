@@ -38,8 +38,8 @@ interface FormValues {
 	isAppointmentAutoconfirmAdmin: boolean;
 	documentSize: number;
 	editUploadedDocument: boolean;
-	AbsenceImpactAlertInterval: number;
-	AbsenceImpactAlertIntervalType: TimeDurationType;
+	absenceImpactAlertInterval: number;
+	absenceImpactAlertIntervalType: TimeDurationType;
 }
 
 @Component({
@@ -146,8 +146,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 				// 	reminderDurationTYpe = 'Hours';
 				// }
 			}
-			if (siteManagementData.AbsenceImpactAlertInterval) {
-				const data = this.getMinutesInHoursOrDay(siteManagementData.AbsenceImpactAlertInterval);
+			if (siteManagementData.absenceImpactAlertInterval) {
+				const data = this.getMinutesInHoursOrDay(siteManagementData.absenceImpactAlertInterval);
                 absenceReminder = data.duration;
 				absenceReminderType = data.durationType
 			}
@@ -193,8 +193,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			isAppointmentAutoconfirmAdmin: [!!siteManagementData?.isAppointmentAutoconfirmAdmin, [Validators.required]],
 			documentSize: [5, [Validators.required]],
 			editUploadedDocument: [!!siteManagementData?.editUploadedDocument, [Validators.required]],
-			AbsenceImpactAlertInterval: [absenceReminder, []],
-			AbsenceImpactAlertIntervalType: [absenceReminderType, []],
+			absenceImpactAlertInterval: [absenceReminder, []],
+			absenceImpactAlertIntervalType: [absenceReminderType, []],
 		});
 
 		setTimeout(() => {
@@ -202,7 +202,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 				reminderTimeType: reminderDurationTYpe,
 				cancelAppointmentType: durationType,
 				documentSize: siteManagementData?.documentSizeInKb ? siteManagementData?.documentSizeInKb / 1024 : 5,
-				AbsenceImpactAlertIntervalType: absenceReminderType,
+				absenceImpactAlertIntervalType: absenceReminderType,
 			});
 		}, 0);
 
@@ -237,7 +237,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			file,
 			cancelAppointmentType,
 			reminderTimeType,
-			AbsenceImpactAlertIntervalType,
+			absenceImpactAlertIntervalType,
 			...rest
 		} = this.formValues;
 
@@ -267,7 +267,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			// 			return rest.reminderTime;
 			// 	}
 			// })(),
-			AbsenceImpactAlertInterval: this.getDurationInMinutes(rest.AbsenceImpactAlertInterval, AbsenceImpactAlertIntervalType),
+			absenceImpactAlertInterval: this.getDurationInMinutes(rest.absenceImpactAlertInterval, absenceImpactAlertIntervalType),
 			introductoryTextEnglish: '',
 		};
 
