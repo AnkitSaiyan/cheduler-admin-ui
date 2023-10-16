@@ -174,7 +174,7 @@
 			<span class="font-weight-medium">{{ 'AffectedAbsence' | translate }}</span>
 		</header>
 
-		<div class="overflow-y-auto h-fit h-fit">
+		<div class="overflow-y-auto h-fit h-fit" role="button">
 			<dfm-table [items]="absence" *ngIf="absence?.length" (rowClicked)="natigateToAbsence($event)">
 				<ng-template #headerRowTemplate>
 					<dfm-table-header-cell *ngFor="let column of absenceColumns">{{ column | translate }}</dfm-table-header-cell>
