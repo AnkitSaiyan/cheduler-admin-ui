@@ -369,7 +369,7 @@
                             [calendarType]="calendarType.Day" [draggedElData]="data.appointment" [headerType]="h.name"
                             (dblclick)="$event.preventDefault()" [ngStyle]="{ 'top.px': getTop([data.appointment]), 'height.px': eventHeight }"
                             [ngClass]="{
-                            'effectedAppointments': data.appointment.absenceDetails?.length
+                            'affectedAppointments': data.appointment.absenceDetails?.length
                           }"
                             >
                           <div class='resizers' id="resizers">

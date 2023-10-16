@@ -32,7 +32,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
 	public absenceType$$ = new BehaviorSubject<(typeof ABSENCE_TYPE_ARRAY)[number]>(ABSENCE_TYPE_ARRAY[0]);
 
-	effectedAppointments$$: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
+	affectedAppointments$$: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
 
 	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
@@ -91,7 +91,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 				}));
 			});
 
-		this.effectedAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
+		this.affectedAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (value) => {
 				this.tableData$$.next({
 					items: value,
@@ -149,7 +149,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
 	private getAppointmentListModified(impactedAppointments) {
 		const impactedAppointmentDetails = [...impactedAppointments];
-		this.effectedAppointments$$.next(impactedAppointmentDetails.map((appointment) => this.getAppointmentModified(appointment)));
+		this.affectedAppointments$$.next(impactedAppointmentDetails.map((appointment) => this.getAppointmentModified(appointment)));
 	}
 
 	private getAppointmentModified(appointment) {
