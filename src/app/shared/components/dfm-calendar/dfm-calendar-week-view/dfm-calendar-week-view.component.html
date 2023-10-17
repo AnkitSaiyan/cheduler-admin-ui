@@ -76,10 +76,6 @@
                   </div>
                 </ng-template>
               </div>
-
-              <!-- <div class="calender-month-view-day-exam-event-details more-btn" [ngbPopover]="eventDetails" #popOver="ngbPopover" triggers="click" [autoClose]="false" container="body" *ngIf="parentElement.scrollHeight > parentElement.clientHeight">
-                <span class="calender-month-view-day-exam-event-title text-truncate">View more</span>
-              </div> -->
               <div *ngIf="parentAbsenceElement.scrollHeight > parentAbsenceElement.clientHeight" class="calender-month-view-day-exam-event-details more-btn" [matMenuTriggerFor]="absenceEventDetail">
                 <span class="calender-month-view-day-exam-event-title text-truncate">View more</span>
 
@@ -173,7 +169,6 @@
 					<div class="calendar-week-view-events-left-vertical-line"></div>
           <div *ngFor="let day of daysOfWeekArr; let weekday = index" role="gridcell" class="calendar-week-view-body-grid-column" #gridCell [attr.data-holiday]="!!holidayData$$.value[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]?.length"
           dfmDragAreaEvent [day]="day" (editAppointment)="editAppointment($event)">
-            <!-- <div class="calendar-week-view-body-grid-absolute"></div> -->
             <ng-container
               *ngIf="gridCell.getAttribute('data-holiday') === 'false'">
               <div
@@ -193,15 +188,11 @@
                       }"
                       (dblclick)="onDblClick($event, eventsContainer, day, false, getTop(groupedData)); $event.stopPropagation()"
                     >
-
-
-                      <!-- <div class="calendar-week-view-event-circle-icon" [ngClass]="{ 'calendar-week-view-event-circle-icon-sm': eventHeight <= 20 }">
-                        {{ groupedData.length }}
-                      </div> -->
-
                       <div
                         class="calendar-week-view-event-details-container"
-                        [ngClass]="{ 'justify-content-center p-0': getHeight([data]) <= 40 }"
+                        [ngClass]="{ 'justify-content-center p-0': getHeight([data]) <= 40 ,
+                        'affectedAppointments': data?.absenceDetails?.length
+                      }"
                         [ngStyle]="{
                           'margin-top.px': getDurationMinutes(groupedData?.[0].startedAt, data.startedAt) * 4,
                           'height.px': getDurationMinutes(data.startedAt, data.endedAt) * 4
@@ -247,8 +238,6 @@
 
                                     <ng-template ngbPanelContent>
                                       <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                                        <!-- <span class="font-weight-medium"> {{ 'Instructions' | translate }} </span>
-                                        <span *ngIf="data.exams?.length" class="dfm-instruction">{{ data.exams?.[0].instruction | dashIfNothing}}</span> -->
                                         <span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
                                         <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
                                         <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
@@ -355,51 +344,51 @@
 
 
                 <ng-container *ngIf="prioritySlots">
-                <ng-container *ngIf="prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
-                  <ng-container *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]; let i = index">
-                    <div
-                      *ngIf="getAbsenceTop([prioritySlot]) >= 0 && getAbsenceHeight([prioritySlot]) as eventHeight"
-                      [ngbPopover]="priorityCardDetail"
-                      triggers="mouseenter:mouseleave"
-                      triggers="mouseenter:mouseleave"
-                      [class]="'priority-slots-area ' + prioritySlotsVariant"
-                      [ngClass]="prioritySlot.priority"
-                      [ngStyle]="{
-                        'top.px': getAbsenceTop([prioritySlot]),
-                        'height.px': eventHeight
-                      }"
-                    >
-                      <div class="priority-slot-percentage" [ngStyle]="{'top': eventHeight>20 ? '12px':'0', 'padding': eventHeight>20 ? '12px':'0'}" >
-                        <div class="txt-slot-percentage"*ngIf="eventHeight>99">
-                          <ng-container *ngIf="slotPercentage?.length">
-                            <span style="font-size: 14px; font-weight: 500; color: black">{{'SlotFilled%' | translate}}:</span>
-                            <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday]?.percentage?.[prioritySlot.id] ?? 0 }}</span>
+                  <ng-container *ngIf="prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
+                    <ng-container *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]; let i = index">
+                      <div
+                        *ngIf="getAbsenceTop([prioritySlot]) >= 0 && getAbsenceHeight([prioritySlot]) as eventHeight"
+                        [ngbPopover]="priorityCardDetail"
+                        triggers="mouseenter:mouseleave"
+                        triggers="mouseenter:mouseleave"
+                        [class]="'priority-slots-area ' + prioritySlotsVariant"
+                        [ngClass]="prioritySlot.priority"
+                        [ngStyle]="{
+                          'top.px': getAbsenceTop([prioritySlot]),
+                          'height.px': eventHeight
+                        }"
+                      >
+                        <div class="priority-slot-percentage" [ngStyle]="{'top': eventHeight>20 ? '12px':'0', 'padding': eventHeight>20 ? '12px':'0'}" >
+                          <div class="txt-slot-percentage"*ngIf="eventHeight>99">
+                            <ng-container *ngIf="slotPercentage?.length">
+                              <span style="font-size: 14px; font-weight: 500; color: black">{{'SlotFilled%' | translate}}:</span>
+                              <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday]?.percentage?.[prioritySlot.id] ?? 0 }}</span>
+                            </ng-container>
+                          </div>
+
+                          <ng-container *ngIf="!(DateTimeUtils.DateDistributedToDate({year: selectedDate.getFullYear(), month: day[1] + 1, day: day[0]}) | isPreviousDay) && slotPercentage?.length">
+                            <mat-slide-toggle class="percentageToggle" *ngIf="prioritySlot.isClose !== undefined; else showAnotherToggle "[ngStyle]="{'font-size': eventHeight>20 ? '16px':'14px', 'margin-top': eventHeight>20 ? '':'-2px'}"color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)">Open</mat-slide-toggle>
+                            <ng-template #showAnotherToggle>
+                              <mat-slide-toggle class="percentageToggle"  [ngStyle]="{'font-size': eventHeight>20 ? '16px':'14px', 'margin-top': eventHeight>20 ? '':'-2px'}"  color="primary" #toggle [checked]="slotPercentage.length && prioritySlot
+                              | showSlotPercentage
+                                : slotPercentage[weekday]
+                                : prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !toggle.checked)">Open</mat-slide-toggle>
+                            </ng-template>
                           </ng-container>
+
                         </div>
-
-                        <ng-container *ngIf="!(DateTimeUtils.DateDistributedToDate({year: selectedDate.getFullYear(), month: day[1] + 1, day: day[0]}) | isPreviousDay) && slotPercentage?.length">
-                          <mat-slide-toggle class="percentageToggle" *ngIf="prioritySlot.isClose !== undefined; else showAnotherToggle "[ngStyle]="{'font-size': eventHeight>20 ? '16px':'14px', 'margin-top': eventHeight>20 ? '':'-2px'}"color="primary" [checked]="!prioritySlot.isClose" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !prioritySlot.isClose)">Open</mat-slide-toggle>
-                          <ng-template #showAnotherToggle>
-                            <mat-slide-toggle class="percentageToggle"  [ngStyle]="{'font-size': eventHeight>20 ? '16px':'14px', 'margin-top': eventHeight>20 ? '':'-2px'}"  color="primary" #toggle [checked]="slotPercentage.length && prioritySlot
-                            | showSlotPercentage
-                              : slotPercentage[weekday]
-                              : prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]" (change)="prioritySlotOpenAndClose(slotPercentage[weekday], prioritySlot, !toggle.checked)">Open</mat-slide-toggle>
-                          </ng-template>
-                        </ng-container>
-
+                        <ng-template #priorityCardDetail>
+                          <div class="txt-slot-percentage"*ngIf="eventHeight < 99">
+                            <ng-container *ngIf="slotPercentage?.length">
+                              <span style="font-size: 14px; font-weight: 500; color: black">{{'SlotFilled%' | translate}}: </span>
+                              <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday]?.percentage?.[prioritySlot.id] ?? 0 }}</span>
+                            </ng-container>
+                          </div>
+                          <span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end }}</span>
+                        </ng-template>
                       </div>
-                      <ng-template #priorityCardDetail>
-                        <div class="txt-slot-percentage"*ngIf="eventHeight < 99">
-                          <ng-container *ngIf="slotPercentage?.length">
-                            <span style="font-size: 14px; font-weight: 500; color: black">{{'SlotFilled%' | translate}}: </span>
-                            <span style="font-size: 24px; font-weight: 300">{{ slotPercentage[weekday]?.percentage?.[prioritySlot.id] ?? 0 }}</span>
-                          </ng-container>
-                        </div>
-                        <span style="white-space: nowrap">{{ prioritySlot.start }} - {{ prioritySlot.end }}</span>
-                      </ng-template>
-                    </div>
+                    </ng-container>
                   </ng-container>
-                </ng-container>
                 </ng-container>
               </div>
               <div

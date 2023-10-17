@@ -358,8 +358,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		controlArrays.forEach((formArray) => {
 			const controls = formArray.controls;
 			if (formArray.length > 1) {
-				// const sortedControls = [...controls].sort((a, b) => DateTimeUtils.TimeToNumber(a.value.daysStart) - DateTimeUtils.TimeToNumber(b.value.dayStart));
-
 				for (let i = 0; i < formArray.length - 1; i++) {
 					const compareWithControl = controls[i];
 

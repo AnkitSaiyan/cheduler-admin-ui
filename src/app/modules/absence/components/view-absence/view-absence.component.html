@@ -123,58 +123,36 @@
           </div>
         </div>
       </div>
-
-      <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">
-        <header class="d-flex align-items-center dfm-gap-8">
-          <div class="dfm-button-gray-400">
-            <dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
-          </div>
-          <span class="font-weight-medium">{{ (absenceType === 'public-holiday' ? 'PublicHolidayInformation' :'AbsenceInformation') | translate }}</span>
-        </header>
-
-        <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-          <span class="text-break" style="white-space: pre-wrap">{{ absenceDetails.info || ('NoDataFound' | translate)}}</span>
-        </div>
-      </div>
     </section>
-
-    <section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16 vw-ap-sec2-card" *ngIf="effectedAppointments$$ | async as effectedAppointments">
+    <ng-container *ngIf="absenceType !== 'public-holiday'">
+      <section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16"
+        *ngIf="affectedAppointments$$ | async as affectedAppointments">
       <header class="d-flex align-items-center dfm-gap-8">
         <div class="dfm-button-gray-400">
           <dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
         </div>
-        <span class="font-weight-medium">{{ (absenceType === 'public-holiday' ? 'Public-holidayDetails' : 'AbsenceDetails') | translate }}</span>
+        <span class="font-weight-medium">{{ 'AffectedAppointments' | translate }}</span>
       </header>
-
-      <div class="overflow-y-auto h-fit h-fit">
-        <dfm-table [items]="effectedAppointments" *ngIf="effectedAppointments?.length">
-          <ng-template #headerRowTemplate>
-            <dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
-          </ng-template>
-
-          <ng-template #bodyRowTemplate let-item>
-            <dfm-table-body-cell>{{ item.id | dashIfNothing }}</dfm-table-body-cell>
-            <dfm-table-body-cell>{{ item.exam | dashIfNothing }}</dfm-table-body-cell>
-            <dfm-table-body-cell>
-              <div class="d-flex dfm-gap-8">
-                <span> {{ item.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }} </span>
-              </div>
-            </dfm-table-body-cell>
-            <dfm-table-body-cell>
-              <div class="d-flex dfm-gap-8">
-                <span> {{ item.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing}} </span>
-              </div>
-            </dfm-table-body-cell>
-            <dfm-table-body-cell>{{ item.patient | dashIfNothing }}</dfm-table-body-cell>
-            <dfm-table-body-cell>{{ item.edit | dashIfNothing }}</dfm-table-body-cell>
-          </ng-template>
-        </dfm-table>
-        <div class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom dfm-text-main-600" *ngIf="!effectedAppointments?.length">
-          {{ 'NoDataFound' | translate }}
-        </div>
-      </div>
+      <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [stickyActions]="false"
+        noDataMessage="{{ ('NoDataFound') | translate }}" [rowClickable]="true" [stickyCheckbox]="false"
+        (rowClicked)="navigateToView($event)" [stickyFirstColumn]="false" [headers]="tableHeaders">
+        <ng-template #bodyRowTemplate let-item>
+          <dfm-table-body-cell>{{ item.appointmentId | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>{{ item.patientFullName | dashIfNothing }}</dfm-table-body-cell>
+          <dfm-table-body-cell>
+            <div class="d-flex dfm-gap-8">
+              <span> {{ item.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing }} </span>
+            </div>
+          </dfm-table-body-cell>
+          <dfm-table-body-cell>
+            <div class="d-flex dfm-gap-8">
+              <span> {{ item.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing}} </span>
+            </div>
+          </dfm-table-body-cell>
+        </ng-template>
+      </dfm-data-table>
     </section>
-
+    </ng-container>
     <div class="hidden bg-white ab-vw-action-buttons-mv" *dfmPermitted="[Permission.UpdateAbsences, Permission.DeleteAbsences]">
       <dfm-button color="secondary" size="sm" (click)="deleteAbsence(absenceDetails.id)" *dfmPermitted="Permission.DeleteAbsences">{{
         'Delete' | translate
@@ -183,8 +161,6 @@
         'Edit' | translate
       }}</dfm-button>
     </div>
-
-
   </div>
 </ng-container>
 

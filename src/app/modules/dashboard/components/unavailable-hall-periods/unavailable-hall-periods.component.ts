@@ -1,21 +1,16 @@
-import { DatePipe, TitleCasePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
+import { BehaviorSubject, debounceTime, filter, takeUntil } from 'rxjs';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DownloadAsType, DownloadService } from 'src/app/core/services/download.service';
-import { ModalService } from 'src/app/core/services/modal.service';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
-import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
-import { RouterStateService } from 'src/app/core/services/router-state.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { NameValue } from 'src/app/shared/components/search-modal.component';
-import { Appointment } from 'src/app/shared/models/appointment.model';
-import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DfmDatasource, DfmTableHeader, NotificationType } from 'diflexmo-angular-design';
 import { Translate } from 'src/app/shared/models/translate.model';
-import { DUTCH_BE, ENG_BE, ROOM_ID, Statuses, StatusesNL } from 'src/app/shared/utils/const';
+import { ENG_BE, Statuses } from 'src/app/shared/utils/const';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
@@ -61,92 +56,16 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 	private paginationData: PaginationData | undefined;
 
-	// public downloadItems: NameValue[] = [];
-
-	// public recentPatients: any = [
-	//   {
-	//     roomName: 'Maaike',
-	//     absenceName: 'Hannibal Smith',
-	//     end: new Date(),
-	//     getStarted: new Date(),
-	//   },
-	//   {
-	//     roomName: 'Maaike',
-	//     absenceName: 'Bannie Smith',
-	//     end: new Date(),
-	//     getStarted: new Date(),
-	//   },
-	//   {
-	//     roomName: 'Maaike',
-	//     absenceName: 'Kate Smith',
-	//     end: new Date(),
-	//     getStarted: new Date(),
-	//   },
-	//   {
-	//     roomName: 'Maaike',
-	//     absenceName: 'Hannibal Smith',
-	//     end: new Date(),
-	//     getStarted: new Date(),
-	//   },
-	//   {
-	//     roomName: 'Maaike',
-	//     absenceName: 'Hannibal Smith',
-	//     end: new Date(),
-	//     getStarted: new Date(),
-	//   },
-	//   {
-	//     roomName: 'Maaike',
-	//     absenceName: 'Hannibal Smith',
-	//     end: new Date(),
-	//     getStarted: new Date(),
-	//   },
-	//   {
-	//     roomName: 'Maaike',
-	//     absenceName: 'Hannibal Smith',
-	//     end: new Date(),
-	//     getStarted: new Date(),
-	//   },
-	// ];
-
 	public clipboardData: string = '';
 
 	public downloadItems: NameValue[] = [];
-
-	// public downloadItems: any[] = [
-	//   {
-	//     name: 'Excel',
-	//     value: 'xls',
-	//     description: 'Download as Excel',
-	//   },
-	//   {
-	//     name: 'PDF',
-	//     value: 'pdf',
-	//     description: 'Download as PDF',
-	//   },
-	//   {
-	//     name: 'CSV',
-	//     value: 'csv',
-	//     description: 'Download as CSV',
-	//   },
-	//   {
-	//     name: 'Print',
-	//     value: 'print',
-	//     description: 'Print appointments',
-	//   },
-	// ];
 
 	constructor(
 		private dashboardApiService: DashboardApiService,
 		private downloadSvc: DownloadService,
 		private notificationSvc: NotificationDataService,
 		private router: Router,
-		private route: ActivatedRoute,
-		private modalSvc: ModalService,
-		private roomApiSvc: RoomsApiService,
-		private datePipe: DatePipe,
 		private cdr: ChangeDetectorRef,
-		private titleCasePipe: TitleCasePipe,
-		private routerStateSvc: RouterStateService,
 		private shareDataSvc: ShareDataService,
 	) {
 		super();
@@ -160,7 +79,6 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 		this.filteredRoomAbsence$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => {
-				//
 				this.tableData$$.next({
 					items,
 					isInitialLoading: false,
@@ -230,9 +148,9 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 			.subscribe((lang) => {
 				this.selectedLang = lang;
 				this.tableHeaders = this.tableHeaders.map((h, i) => ({
-          ...h,
-          title: Translate[this.columns[i]][lang],
-        }));
+					...h,
+					title: Translate[this.columns[i]][lang],
+				}));
 			});
 	}
 
@@ -257,12 +175,11 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 				.slice(2)
 				.join('\t\t')}\n`;
 
-				if (!this.filteredRoomAbsence$$.value.length) {
-					this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
-					this.clipboardData = '';
-					return;
-				}
-
+			if (!this.filteredRoomAbsence$$.value.length) {
+				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.clipboardData = '';
+				return;
+			}
 
 			this.filteredRoomAbsence$$.value.forEach((ap: any) => {
 				dataString += `${ap?.roomName?.toString()}\t${ap?.startDate?.toString()}\t\t${ap.endDate.toString()}\t\t${ap.absenceName.toString()}\n`;
@@ -277,7 +194,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 		}
 	}
 
-	public onScroll(e: undefined): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.dashboardApiService.roomAbsencePageNo = this.dashboardApiService.roomAbsencePageNo + 1;
 			this.tableData$$.value.isLoadingMore = true;
@@ -290,27 +207,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 	public navigateToView(e: any) {
 		if (e?.roomId) {
-			this.router.navigate([`/absence/rooms/${e.roomId}/view`]
-				// , { relativeTo: this.route, queryParamsHandling: 'preserve' }
-			);
+			this.router.navigate([`/absence/rooms/${e.roomId}/view`]);
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

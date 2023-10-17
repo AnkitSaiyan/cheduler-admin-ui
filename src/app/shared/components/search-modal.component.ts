@@ -13,7 +13,6 @@ export interface NameValue {
 
 export interface SearchModalData {
   items: NameValue[];
-  // searchByKeys: string[];
   placeHolder?: string;
 }
 
@@ -52,13 +51,6 @@ export interface SearchModalData {
           padding: 16px;
         }
       }
-
-      //@media (max-width: 680px) {
-      //  dfm-button {
-      //    height: 44px;
-      //    flex: 1;
-      //  }
-      //}
     `,
   ],
 })
@@ -68,8 +60,6 @@ export class SearchModalComponent extends DestroyableComponent implements OnInit
   public filteredItems$$ = new BehaviorSubject<NameValue[]>([]);
 
   public placeholder = 'Search';
-
-  // public searchControl = new FormControl('', []);
 
   constructor(private dialogSvc: ModalService) {
     super();
@@ -83,10 +73,6 @@ export class SearchModalComponent extends DestroyableComponent implements OnInit
         this.placeholder = data?.placeHolder ?? this.placeholder;
       }
     });
-    //
-    // this.searchControl.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe((searchText) => {
-    //   this.handleSearch(searchText?.toString()?.toLowerCase());
-    // });
   }
 
   public override ngOnDestroy() {

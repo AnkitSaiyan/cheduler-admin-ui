@@ -73,6 +73,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	public absenceWeekViewData$!: Observable<any>;
 
+	public absenceMonthViewData$!: Observable<any>;
+
 	private isDayView$$ = new BehaviorSubject<Boolean>(false);
 
 	public todayEvent$$ = new BehaviorSubject<any[]>([]);
@@ -208,6 +210,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		);
 
 		this.absenceWeekViewData$ = this.absenceData$.pipe(map(this.dataModificationForWeek.bind(this)));
+
+		this.absenceMonthViewData$ = this.absenceData$.pipe(map(this.dataModificationForMonth));
 	}
 
 	public override ngOnDestroy(): void {
@@ -302,7 +306,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			}))
 			?.forEach((absence: any) => {
 				let { repeatFrequency } = absence;
-				const { absenceId, name, info, startedAt, endedAt, roomName, userName, isHoliday } = absence;
+				const { absenceId, name, info, startedAt, endedAt, roomName, userName, isHoliday, impactedAppointmentDetails } = absence;
 				const startDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
 				let firstDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.startedAt), true)).toDateString());
 				const lastDate = new Date(new Date(DateTimeUtils.UTCDateToLocalDate(new Date(absence.endedAt), true)).toDateString());
@@ -324,6 +328,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 								roomName,
 								userName,
 								isHoliday,
+								impactedAppointmentDetails
 							};
 							absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 							firstDate.setDate(firstDate.getDate() + repeatFrequency);
@@ -350,6 +355,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 										roomName,
 										userName,
 										isHoliday,
+										impactedAppointmentDetails
 									};
 									absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 								}
@@ -377,6 +383,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 											roomName,
 											userName,
 											isHoliday,
+											impactedAppointmentDetails
 										};
 										absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 									}
@@ -413,8 +420,20 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		let endDate: string;
 		let sameGroup: boolean;
 		let absenceGroupedByDate = {};
-
+		let modifiedAbsence = {};
 		Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
+			const filterAbsence = {};
+			const name = absence?.[0].userName ? 'userName' : 'roomName';
+			absence.forEach((item) => {
+				if (filterAbsence?.[item.id]) {
+					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: filterAbsence[item.id][name] + ', ' + item[name] };
+				} else {
+					filterAbsence[item.id] = item;
+				}
+			});
+			modifiedAbsence[key] = Object.values(filterAbsence);
+		});
+		Object.entries(modifiedAbsence).forEach(([key, absence]: [string, any]) => {
 			let groupedAbsence: any[] = [];
 			absence
 				.sort((s1, s2) => (DateTimeUtils.TimeToNumber(s1.start) > DateTimeUtils.TimeToNumber(s2.start) ? 1 : -1))
@@ -467,6 +486,23 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 				});
 		});
 		return absenceGroupedByDate;
+	}
+
+	private dataModificationForMonth(absenceSlot: { [key: string]: Absence[] }) {
+		let modifiedAbsence = {};
+		Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
+			const filterAbsence = {};
+			const name = absence?.[0].userName ? 'userName' : 'roomName';
+			absence.forEach((item) => {
+				if (filterAbsence?.[item.id]) {
+					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: filterAbsence[item.id][name] + ', ' + item[name] };
+				} else {
+					filterAbsence[item.id] = item;
+				}
+			});
+			modifiedAbsence[key] = Object.values(filterAbsence);
+		});
+		return modifiedAbsence;
 	}
 
 	public setForm(event: FormControl<Date>) {
@@ -645,6 +681,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 }
+
 
 
 

@@ -164,10 +164,6 @@ export function getDurationMinutes(start: Date, end: Date, isAbsolute: boolean =
 		const startH = startDate.getHours();
 		const endH = endDate.getHours();
 
-		// if (endH === 0) {
-		//   endH = 24;
-		// }
-
 		if (startH === endH) {
 			return endDate.getMinutes() - startDate.getMinutes();
 		}

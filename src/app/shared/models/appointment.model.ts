@@ -38,6 +38,7 @@ export interface Appointment {
 	socialSecurityNumber: number;
 	documentCount?: number;
 	isEditable: boolean;
+	absenceDetails?:[]
 }
 
 export interface AddAppointmentRequestData {
@@ -176,7 +177,6 @@ export interface CreateAppointmentFormValues {
 	startTime: string;
 	doctorId: number;
 	userId: number;
-	// roomType: RoomType;
 	examList: number[];
 	comments: string;
 	socialSecurityNumber: number;

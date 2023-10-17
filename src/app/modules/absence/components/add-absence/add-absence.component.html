@@ -104,11 +104,9 @@
             </div>
           </div>
 
-          <!-- <small class="validation-error" *ngIf="startTime.control.hasError('time')">{{"RequiredField" | translate}}</small> -->
         </div>
 
         <div class="ad-ab-to-date max-w-5">
-          <!--          <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">{{ formValues.isRepeat ? ('Until' | translate) : ("EndTimeRequired" | translate) }} *</div>-->
           <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6" *ngIf="!(modalData.absenceType === ABSENCE_TYPE_ARRAY[2] && formValues.isRepeat)">{{ 'EndTimeRequired' | translate }} *</div>
 
           <div class="d-flex align-items-start dfm-gap-16 flex-1">
@@ -162,28 +160,7 @@
       <ng-container *ngIf="formValues.isRepeat">
         <dfm-repeat-form [form]="absenceForm">
           <div class="d-flex flex-column dfm-gap-16 flex-1 mt-4 endDate">
-            <!-- <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'Ends' | translate }} *</span> -->
             <div class="w-fit d-flex justify-content-between dfm-gap-24 align-items-start flex-wrap">
-              <!-- <dfm-radio-button
-                class="font-weight-normal"
-                label="{{ 'Never' | translate }}"
-                [formControl]="endDateTypeControl"
-                [checkedValue]="EndDateType.Never"
-                hint="the event repeat indefinitely"
-                size="sm"
-              ></dfm-radio-button> -->
-              <!-- <div class="d-flex align-items-start dfm-gap-16"> -->
-                <!-- <dfm-radio-button
-                  class="font-weight-normal max-w-192 "
-                  label="{{ 'Until' | translate }}"
-                  [formControl]="endDateTypeControl"
-                  [checkedValue]="EndDateType.Until"
-                  hint="The event will run until reaches a specific date"
-                  size="sm"
-                >
-
-                </dfm-radio-button> -->
-                <!-- <div *ngIf="endDateTypeControl.value === EndDateType.Until"> -->
                   <div class="flex-1 d-flex dfm-gap-8 flex-column">
                     <span class="text-sm font-weight-medium dfm-text-main-700">{{ "Until" | translate }}*</span>
                   <div class="dfm-button-group-wrapper flex-1 max-w-256" >
@@ -212,8 +189,6 @@
                     {{ 'RequiredField' | translate }}
                   </div>
                 </div>
-                <!-- </div> -->
-              <!-- </div> -->
             </div>
           </div>
         </dfm-repeat-form>
@@ -269,33 +244,12 @@
       <div [ngClass]="{ 'dfm-mt-8': formValues.userList?.length || formValues.roomList?.length }">
         <dfm-text-area label="Info" placeholder="{{ 'EnterAbsenceInfo' | translate }}" formControlName="info"></dfm-text-area>
       </div>
-      <!--      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">-->
-      <!--        <dfm-input class="flex-1" size="md" placeholder="Enter first name" label="First Name *" formControlName="firstname">-->
-      <!--        </dfm-input>-->
 
-      <!--        <dfm-input class="flex-1" size="md" placeholder="Enter last name" label="Last Name *" formControlName="lastname">-->
-      <!--        </dfm-input>-->
-      <!--      </div>-->
 
-      <!--      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">-->
-      <!--        <dfm-input class="flex-1" size="md" placeholder="Enter email" label="Email *" formControlName="email">-->
-      <!--        </dfm-input>-->
 
-      <!--        <dfm-input class="flex-1" size="md" placeholder="Enter rizv no" label="Rizv Number *" formControlName="rizivNumber">-->
-      <!--        </dfm-input>-->
-      <!--      </div>-->
 
-      <!--      <div class="d-flex dfm-gap-32 align-items-center flex-wrap">-->
-      <!--        <dfm-input type="number" class="flex-1" size="md" placeholder="Enter telephone" label="Telephone *" formControlName="telephone">-->
-      <!--        </dfm-input>-->
 
-      <!--        <dfm-input class="flex-1" size="md" placeholder="Enter GSM" label="GSM *" formControlName="gsm">-->
-      <!--        </dfm-input>-->
-      <!--      </div>-->
 
-      <!--      <div>-->
-      <!--        <dfm-checkbox formControlName="notifyDoctor" label="Email the doctor if a patient makes an appointment that he has prescribed."></dfm-checkbox>-->
-      <!--      </div>-->
     </form>
   </section>
 

@@ -1,3 +1,10 @@
+.pr-li-title-buttons {
+  display: none;
+}
+.pr-li-title-buttons-calendar {
+  display: block;
+}
+
 .pr-li-button-dropdown-group {
     background: transparent;
 
@@ -35,6 +42,10 @@
 
     .pr-li-title-buttons {
       display: block;
+    }
+
+    .pr-li-title-buttons-calendar {
+      display: none;
     }
 
     .pr-li-plus-btn {

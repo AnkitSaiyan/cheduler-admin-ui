@@ -105,23 +105,6 @@
 				</ng-container>
 			</div>
 		</div>
-
-		<!--    <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16">-->
-		<!--      <header class="d-flex align-items-center dfm-gap-8">-->
-		<!--        <div class="dfm-button-gray-400">-->
-		<!--          <dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>-->
-		<!--        </div>-->
-		<!--        <span class="font-weight-medium text-break">Rights</span>-->
-		<!--      </header>-->
-
-		<!--      <div class="d-flex flex-column dfm-gap-16 overflow-y-auto">-->
-		<!--        <div class="d-flex dfm-gap-8 justify-content-between" *ngFor="let rights of userDetails.rights;">-->
-		<!--          &lt;!&ndash;          <span>{{ }}</span>&ndash;&gt;-->
-		<!--        </div>-->
-
-		<!--        <span class="dfm-text-main-600" *ngIf="!userDetails?.rights?.length">No rights found</span>-->
-		<!--      </div>-->
-		<!--    </div>-->
 	</section>
 
 	<div class="hidden bg-white us-vw-action-buttons-mv" *dfmPermitted="[Permission.UpdateUser, Permission.DeleteUser]">
@@ -129,12 +112,7 @@
       <dfm-button color="secondary" size="sm" *dfmPermitted="Permission.DeleteUser" (click)="deleteUser(userDetails.id)">{{
         'Delete' | translate
       }}</dfm-button>
-    </ng-container>
-		<!-- <ng-container >
-			<dfm-button color="primary" size="sm" (click)="openEditUserModal()" *dfmPermitted="Permission.UpdateUser">{{
-				'EditUser' | translate
-			}}</dfm-button>
-		</ng-container> -->
+	</ng-container>
 	</div>
 </div>
 

@@ -7,6 +7,22 @@
       <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : ' yyyy' }}</ng-template></h4>
 
     <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper align-items-center">
+      <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper align-items-center">
+        <div #menuTrigger="matMenuTrigger"
+          (mouseover)="menuTrigger.openMenu(); $event.stopPropagation(); $event.preventDefault()" (mouseleave)="menuTrigger.closeMenu(); $event.stopPropagation(); $event.preventDefault()"   [matMenuTriggerFor]="infoDetail">
+          <dfm-button-icon color="secondary-gray" size="sm" icon="info-circle" ></dfm-button-icon>
+          <mat-menu #infoDetail="matMenu" [hasBackdrop]="false">
+            <div class="card-info">
+              <div>
+                <div></div><h1 class="mat-caption dfm-text-main-500">{{'BLUE_REPRESENTS_NORMAL_APPOINTMENT' | translate}}</h1>
+              </div>
+              <div>
+                <div></div><h1 class="mat-caption dfm-text-main-500">{{'RED_REPRESENTS_AFFECTED_APPOINTMENT' | translate}}</h1>
+              </div>
+            </div>
+          </mat-menu>
+        </div>
+      </div>
       <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown">
         <dfm-input-dropdown
           size="sm"
@@ -83,6 +99,7 @@
           [headerList]="headerList"
           [timeSlot]="selectedSlot$$ | async"
           [format24Hour]="true"
+          [prioritySlots]="prioritySlots$$ | async"
           [dataGroupedByDateAndRoom]="appointmentGroupedByDateAndRoom"
         ></dfm-calendar-day-view>
       </ng-container>

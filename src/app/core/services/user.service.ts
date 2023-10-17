@@ -76,7 +76,6 @@ export class UserService {
 						}
 
 						if (user.properties['extension_ProfileIsIncomplete']) {
-							// this.authUser$$.next(new AuthUser(user.mail, user.givenName, user.id, user.surname, user.displayName, user.email, {}, []))
 							this.router.navigate(['/complete-profile']);
 						}
 					}),

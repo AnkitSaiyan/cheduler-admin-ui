@@ -9,7 +9,7 @@ import { NotificationDataService } from '../../../core/services/notification-dat
 import { SiteManagementApiService } from '../../../core/services/site-management-api.service';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
 import { EMAIL_REGEX } from '../../../shared/utils/const';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../shared/utils/const';
+import { ENG_BE } from '../../../shared/utils/const';
 import { Translate } from '../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 
@@ -38,6 +38,8 @@ interface FormValues {
 	isAppointmentAutoconfirmAdmin: boolean;
 	documentSize: number;
 	editUploadedDocument: boolean;
+	absenceImpactAlertInterval: number;
+	absenceImpactAlertIntervalType: TimeDurationType;
 }
 
 @Component({
@@ -98,6 +100,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 	private createForm(siteManagementData?: SiteManagement | undefined): void {
 		let duration = 0;
 		let reminderDuration = 0;
+		let absenceReminder = 0;
+		let absenceReminderType: TimeDurationType = 'Minutes';
 		let durationType: TimeDurationType = 'Minutes';
 		let reminderDurationTYpe: TimeDurationType = 'Minutes';
 		let introductoryTextObj;
@@ -115,25 +119,20 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
 		if (siteManagementData) {
 			if (siteManagementData.cancelAppointmentTime) {
-				duration = siteManagementData.cancelAppointmentTime;
-				if (duration >= 1440 && duration % 1440 === 0) {
-					duration /= 1440;
-					durationType = 'Days';
-				} else if (duration >= 60 && duration % 60 === 0) {
-					duration /= 60;
-					durationType = 'Hours';
-				}
+				const data = this.getMinutesInHoursOrDay(siteManagementData.cancelAppointmentTime);
+				duration = data.duration;
+				durationType = data.durationType;
 			}
 
 			if (siteManagementData.reminderTime) {
-				reminderDuration = siteManagementData.reminderTime;
-				if (reminderDuration >= 1440 && reminderDuration % 1440 === 0) {
-					reminderDuration /= 1440;
-					reminderDurationTYpe = 'Days';
-				} else if (reminderDuration >= 60 && reminderDuration % 60 === 0) {
-					reminderDuration /= 60;
-					reminderDurationTYpe = 'Hours';
-				}
+				const data = this.getMinutesInHoursOrDay(siteManagementData.cancelAppointmentTime);
+				reminderDuration = data.duration;
+				reminderDurationTYpe = data.durationType;
+			}
+			if (siteManagementData.absenceImpactAlertInterval) {
+				const data = this.getMinutesInHoursOrDay(siteManagementData.absenceImpactAlertInterval);
+				absenceReminder = data.duration;
+				absenceReminderType = data.durationType;
 			}
 
 			if (siteManagementData.introductoryText) {
@@ -177,6 +176,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			isAppointmentAutoconfirmAdmin: [!!siteManagementData?.isAppointmentAutoconfirmAdmin, [Validators.required]],
 			documentSize: [5, [Validators.required]],
 			editUploadedDocument: [!!siteManagementData?.editUploadedDocument, [Validators.required]],
+			absenceImpactAlertInterval: [absenceReminder, []],
+			absenceImpactAlertIntervalType: [absenceReminderType, []],
 		});
 
 		setTimeout(() => {
@@ -184,6 +185,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 				reminderTimeType: reminderDurationTYpe,
 				cancelAppointmentType: durationType,
 				documentSize: siteManagementData?.documentSizeInKb ? siteManagementData?.documentSizeInKb / 1024 : 5,
+				absenceImpactAlertIntervalType: absenceReminderType,
 			});
 		}, 0);
 
@@ -218,6 +220,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			file,
 			cancelAppointmentType,
 			reminderTimeType,
+			absenceImpactAlertIntervalType,
 			...rest
 		} = this.formValues;
 
@@ -225,26 +228,9 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			...rest,
 			file: file.fileBlob,
 			disableWarningText: rest.disableAppointment ? rest.disableWarningText : null,
-			cancelAppointmentTime: (function () {
-				switch (cancelAppointmentType) {
-					case 'Hours':
-						return rest.cancelAppointmentTime * 60;
-					case 'Days':
-						return rest.cancelAppointmentTime * 1440;
-					default:
-						return rest.cancelAppointmentTime;
-				}
-			})(),
-			reminderTime: (function () {
-				switch (reminderTimeType) {
-					case 'Hours':
-						return rest.reminderTime * 60;
-					case 'Days':
-						return rest.reminderTime * 1440;
-					default:
-						return rest.reminderTime;
-				}
-			})(),
+			cancelAppointmentTime: this.getDurationInMinutes(rest.cancelAppointmentTime, cancelAppointmentType),
+			reminderTime: this.getDurationInMinutes(rest.reminderTime, reminderTimeType),
+			absenceImpactAlertInterval: this.getDurationInMinutes(rest.absenceImpactAlertInterval, absenceImpactAlertIntervalType),
 			introductoryTextEnglish: '',
 		};
 
@@ -277,7 +263,6 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 				},
 				(err) => {
 					this.submitting$$.next(false);
-					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 				},
 			);
 	}
@@ -328,6 +313,31 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			});
 		} else {
 			this.siteManagementForm.get('email')?.setErrors(null);
+		}
+	}
+
+	private getMinutesInHoursOrDay(minutes): { durationType: TimeDurationType; duration: number } {
+		let durationType: TimeDurationType = 'Minutes';
+		let duration = minutes;
+
+		if (duration >= 1440 && duration % 1440 === 0) {
+			duration /= 1440;
+			durationType = 'Days';
+		} else if (duration >= 60 && duration % 60 === 0) {
+			duration /= 60;
+			durationType = 'Hours';
+		}
+		return { durationType, duration };
+	}
+
+	private getDurationInMinutes(duration: number, durationType: TimeDurationType): number {
+		switch (durationType) {
+			case 'Hours':
+				return duration * 60;
+			case 'Days':
+				return duration * 1440;
+			default:
+				return duration;
 		}
 	}
 }

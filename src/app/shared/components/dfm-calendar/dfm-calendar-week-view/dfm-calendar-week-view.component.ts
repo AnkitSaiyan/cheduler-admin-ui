@@ -35,25 +35,6 @@ import { CalendarType } from 'src/app/shared/utils/const';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { ActivatedRoute, Params } from '@angular/router';
-// @Pipe({
-//   name: 'calendarEventHeight',
-//   standalone: true
-// })
-// class CalendarEventHeightPipe implements PipeTransform {
-//   public transform(value: any[], pixelsPerMin: number): any {
-//     let endDate: Date = value[0].endedAt;
-//
-//     value.forEach((data) => {
-//       if (data.endedAt > endDate) {
-//         endDate = data.endedAt;
-//       }
-//     });
-//
-//     const durationMinutes = getDurationMinutes(value[0].startedAt, endDate);
-//
-//     return durationMinutes * pixelsPerMin;
-//   }
-// }
 
 @Component({
 	selector: 'dfm-calendar-week-view',
@@ -225,15 +206,11 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	}
 
 	public ngAfterViewInit() {
-		// this.renderEvents();
 		this.rendered = true;
 	}
 
 	public ngAfterViewChecked() {
 		if (!this.rendered) {
-			// this.rendered = true;
-			// this.renderEvents();
-			// this.cdr.markForCheck();
 		}
 	}
 
@@ -319,93 +296,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		this.dayViewEvent.emit(date);
 	}
 
-	private renderEvents(): void {
-		//   // debugger;
-		//   if (this.dataGroupedByDateAndTime) {
-		//
-		//     this.eventContainer.forEach((elementRef) => {
-		//       const div = elementRef.nativeElement as HTMLDivElement;
-		//       const dataArray = this.dataGroupedByDateAndTime[div.id] as { group: number; data: any }[];
-		//
-		//       if (dataArray?.length) {
-		//
-		//         const pixelsPerMin = 4;
-		//         const barHeight = 1;
-		//         const title = 'Appointments';
-		//         let groupNo = 1;
-		//         let count = 0;
-		//         let startedAt: Date;
-		//         let endDate: Date | null;
-		//
-		//         dataArray.forEach(({ group, data }, index) => {
-		//           if (group === groupNo) {
-		//             count++;
-		//             if (!endDate || new Date(data.endedAt) > endDate) {
-		//               endDate = new Date(data.endedAt);
-		//             }
-		//           }
-		//
-		//           if (
-		//             dataArray.length === 1 ||
-		//             index === dataArray.length - 1 ||
-		//             (index + 1 < dataArray.length - 1 && dataArray[index + 1].group !== groupNo)
-		//           ) {
-		//             // Calculating height for event card
-		//             const totalMinutes = getDurationMinutes(startedAt ?? data.startedAt, data.endedAt);
-		//             const height = totalMinutes * pixelsPerMin;
-		//
-		//             //  Calculating top for event card
-		//             const startHour = new Date(startedAt ?? data.startedAt).getHours();
-		//             const startMinute = new Date(startedAt ?? data.startedAt).getMinutes();
-		//             // Number of horizontal bars in between
-		//             const horizontalBarHeight = (height / (pixelsPerMin * this.timeInterval)) * barHeight;
-		//             const top = (startMinute + startHour * 60) * pixelsPerMin - horizontalBarHeight;
-		//
-		//             // Event elements
-		//             const eventTitle = document.createElement('span');
-		//             const titleTextNode = document.createTextNode(title);
-		//             eventTitle.classList.add('calender-week-view-event-title');
-		//             eventTitle.appendChild(titleTextNode);
-		//
-		//             const eventTime = document.createElement('span');
-		//             const timeText = `${this.datePipe.transform(startedAt ?? data.startedAt, 'HH:mm')} - ${this.datePipe.transform(endDate, 'HH:mm')}`;
-		//             const timeTextNode = document.createTextNode(timeText);
-		//             eventTime.classList.add('calender-week-view-event-time');
-		//             eventTime.appendChild(timeTextNode);
-		//
-		//             const eventDetailsContainer = document.createElement('div');
-		//             eventDetailsContainer.classList.add('calender-week-view-event-details-container');
-		//             eventDetailsContainer.append(eventTitle, eventTime);
-		//
-		//             const circleIcon = document.createElement('div');
-		//             const countTextNode = document.createTextNode(count.toString());
-		//             circleIcon.classList.add('calender-week-view-event-circle-icon');
-		//             circleIcon.appendChild(countTextNode);
-		//
-		//             const eventContainer = document.createElement('div');
-		//             eventContainer.classList.add('calender-week-view-event-container');
-		//             eventContainer.style.top = `${top}px`;
-		//             eventContainer.style.height = `${height}px`;
-		//             eventContainer.append(circleIcon, eventDetailsContainer);
-		//
-		//             div.appendChild(eventContainer);
-		//
-		//             count = 0;
-		//
-		//             if (index + 1 < dataArray.length - 1 && dataArray[index + 1].group !== groupNo) {
-		//               groupNo = dataArray[index + 1].group;
-		//               startedAt = new Date(dataArray[index + 1].data.startedAt);
-		//             } else {
-		//               groupNo = 1;
-		//             }
-		//
-		//             endDate = null;
-		//           }
-		//         });
-		//       }
-		//     });
-		//   }
-	}
+	private renderEvents(): void {}
 
 	public getHeight(groupedData: any[]): number {
 		let endDate: Date = groupedData[0].endedAt;
@@ -540,7 +431,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 		const top = (startMinute + startHour * 60) * this.pixelsPerMin - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
 
-		// if (top < 0) return 0;
 		if (top % 20) {
 			return Math.floor(top / 20) * 20 + 20;
 		}

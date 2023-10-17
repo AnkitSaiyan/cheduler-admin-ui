@@ -249,8 +249,6 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public handleCheckboxSelection(roomID: number) {
-		// this.toggleMenu(true);
-
 		if (roomID !== -1) {
 			const index = this.selectedRooms.indexOf(roomID);
 

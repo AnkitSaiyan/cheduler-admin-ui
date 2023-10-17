@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { RouterStateService } from '../../../../core/services/router-state.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { APPOINTMENT_ID, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
@@ -26,7 +25,12 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 
 	public examDetails$$ = new BehaviorSubject<any[]>([]);
 
+	public absence$$ = new BehaviorSubject<any[]>([]);
+
 	public columns = ['Name', 'Expensive', 'Room', 'StartDate', 'EndDate'];
+
+	public absenceColumns = ['Title', 'StartDate', 'EndDate', 'AbsenceInfo'];
+
 
 	private selectedLang: string = ENG_BE;
 
@@ -38,7 +42,6 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 
 	constructor(
 		private appointmentApiSvc: AppointmentApiService,
-		private routerStateSvc: RouterStateService,
 		private notificationSvc: NotificationDataService,
 		private router: Router,
 		private modalSvc: ModalService,
@@ -57,6 +60,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 				tap((appointment) => {
 					this.appointment$$.next(appointment);
 					this.examDetails$$.next(appointment?.exams ?? []);
+					this.absence$$.next(appointment?.absenceDetails ?? []);
 
 					if (appointment?.exams?.length) {
 						const roomIdToName: { [key: string]: string } = {};
@@ -73,11 +77,6 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 						});
 					}
 				}),
-				// switchMap((appointment) => {
-				//   if (appointment && appointment.id) {
-				//
-				//   }
-				// }),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe((appointment) => {});
@@ -132,5 +131,14 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 				modalDialogClass: 'ad-ap-modal-shadow',
 			},
 		});
+	}
+
+	public natigateToAbsence(e) {
+		if (e?.id) {
+			if(e.rooms?.length)
+				this.router.navigate([`/absence/rooms/${e.id}/view`], { replaceUrl: true });
+			else
+				this.router.navigate([`/absence/staff/${e.id}/view`], { replaceUrl: true });	
+		}
 	}
 }

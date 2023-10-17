@@ -20,6 +20,7 @@ export interface SiteManagement {
 	isAppointmentAutoconfirmAdmin: boolean;
 	editUploadedDocument: boolean;
 	documentSizeInKb: number;
+	absenceImpactAlertInterval: number;
 }
 
 export type SiteManagementRequestData = Prettify<PartialBy<Omit<SiteManagement, 'logo' | 'documentSizeInKb'>, 'id'> & { documentSize: number }>;
