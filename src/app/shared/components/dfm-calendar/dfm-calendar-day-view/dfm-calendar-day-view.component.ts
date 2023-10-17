@@ -135,7 +135,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			)
 			.subscribe(({ d }) => {
 				const date = d.split('-');
-				this.day = [date[2], date[1], date[0]];
+				this.day = [+date[2], +date[1], date[0]];
 				this.selectedDate = new Date(date?.[0], date?.[1] - 1, date?.[2], 0, 0, 0, 0);
 			});
 	}
@@ -164,7 +164,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});
 		}
 		this.cdr.detectChanges();
-		console.log(this.headerList, 'header');
 	}
 
 	public ngOnInit(): void {
