@@ -28,8 +28,6 @@
   transition: 200ms all ease-in-out;
 
   &:hover {
-    //background: var(--dfm-main-200);
-    //color: var(--dfm-primary);
     cursor: pointer;
   }
 }
@@ -177,11 +175,6 @@
         overflow-x: scroll !important;
       }
     }
-
-    //.pr-hr-save-changes-btn-mv {
-    //  display: flex;
-    //  margin-left: auto;
-    //}
   }
   .email-temp-field-mv{
     width: 100%;

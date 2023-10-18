@@ -87,24 +87,6 @@
   --dfm-priority-slot-medium-color: #{$diflexmo-priority-slot-medium};
   --dfm-priority-slot-low-color: #{$diflexmo-priority-slot-low};
 
-
-  //  Navbar
-  //   --dfm-navbar-item-selected-bg: #{$diflexmo-primary};
-  //   --dfm-navbar-bg: #{$diflexmo-primary-text};
-  //   --dfm-navbar-item-color: #{$gray-modern-25};
-  //   --dfm-navbar-item-bg: transparent;
-  //   --dfm-navbar-item-hover-bg: #{$diflexmo-secondary};
-  //   --dfm-navbar-item-hover-color: #{$diflexmo-secondary};
-
-  //badge
-  // --dfm-badge-secondary-bg: #{$diflexmo-secondary};
-  // --dfm-badge-success-color: #{$success-700};
-  // --dfm-badge-success-bg: #{$success-50};
-  // --dfm-badge-primary-dark-color: #{$danger-100};
-  // --dfm-badge-primary-dark-bg: #{$danger-500};
-  // --dfm-badge-primary-color: #{$danger-700};
-  // --dfm-badge-primary-bg: #{$danger-50};
-  // --dfm-badge-primary-bg: #{$diflexmo-gray-bg};
   --dfm-badge-primary-color: #{$danger-700};
   --dfm-badge-secondary-color: #{rgba(83, 20, 34, 0.7)};
   --dfm-badge-secondary-bg: var(--dfm-secondary);
@@ -112,14 +94,6 @@
 
   //tag
 
-  // --dfm-tag-close-color: #{$diflexmo-primary-text};
-  // --dfm-tag-count-bg: #{$gray-modern-100};
-  // --dfm-tag-color: #{$gray-modern-700};
-  // --dfm-tag-bg: #{$diflexmo-white};
-  // --dfm-tag-border: #{$gray-modern-300};
-  // --dfm-tag-icon-color: #{$gray-modern-500};
-  // --dfm-tag-default-border: #{$gray-modern-300};
-  // --dfm-tag-primary-border: var(--dfm-secondary);
   --dfm-tag-primary-bg:#{$diflexmo-tag-bg};
   --dfm-tag-primary-color: #{$diflexmo-primary-text};
 

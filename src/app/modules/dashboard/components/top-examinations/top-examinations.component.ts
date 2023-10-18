@@ -9,19 +9,6 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
   styleUrls: ['./top-examinations.component.scss'],
 })
 export class TopExaminationsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  // public topExaminations: string[] = [
-  //   'Maatname',
-  //   'Levering steunzolen',
-  //   'Anpassing steunzolen',
-  //   'Kinebehandeling',
-  //   'Loopanalyse',
-  //   'Maatname',
-  //   'Levering steunzolen',
-  //   'Anpassing steunzolen',
-  //   'Kinebehandeling',
-  //   'Loopanalyse',
-  //   'X-ray',
-  // ];
 
 
   private exams$$: BehaviorSubject<any[]>;

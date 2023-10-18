@@ -60,6 +60,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	@Input()
 	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 	@Input()
+	public prioritySlots!: { [key: string]: any[] };
+	@Input()
 	public timeSlot!: CalenderTimeSlot;
 	@Input()
 	public dataGroupedByDateAndRoom: {
@@ -109,6 +111,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	public hideAppointmentData = {};
 	public hideAbsenceData = {};
 	public isHoliday$$ = new BehaviorSubject<Boolean>(false);
+	public day: any = [];
 	constructor(
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,
@@ -132,6 +135,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			)
 			.subscribe(({ d }) => {
 				const date = d.split('-');
+				this.day = [+date[2], +date[1], date[0]];
 				this.selectedDate = new Date(date?.[0], date?.[1] - 1, date?.[2], 0, 0, 0, 0);
 			});
 	}
@@ -160,7 +164,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});
 		}
 		this.cdr.detectChanges();
-		console.log(this.headerList, 'header');
 	}
 
 	public ngOnInit(): void {
@@ -261,7 +264,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			}
 		});
 
-		// debugger;
 		const durationMinutes = getDurationMinutes(groupedData[0].startedAt, endDate);
 		return durationMinutes * this.pixelsPerMin;
 	}
@@ -282,11 +284,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	}
 
 	public getTop(groupedData: any[], storeHiddenAppointment: boolean = false): number {
-		// const startHour = new Date(groupedData[0].startedAt).getHours();
-		// const startMinute = new Date(groupedData[0].startedAt).getMinutes();
-		// const barHeight = 1;
-		// const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-		// const top = (startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight;
 		const start = this.myDate(this.timeSlot?.timings?.[0]);
 		start.setDate(this.selectedDate.getDate());
 		start.setMonth(this.selectedDate.getMonth());
@@ -346,9 +343,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				}
 			}
 		}
-		// if (start.getTime() > end.getTime() ) {
-		// 	return 0;
-		// }
 
 		const minutes = getDurationMinutes(DateTimeUtils.UTCDateToLocalDate(start, true), DateTimeUtils.UTCDateToLocalDate(end, true), false);
 		if (minutes < 0 && DateTimeUtils.UTCDateToLocalDate(start)?.getTime() < DateTimeUtils.UTCDateToLocalDate(endAbsenceDate)?.getTime()) {
@@ -356,36 +350,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		}
 		return minutes * this.pixelsPerMin;
 	}
-
-	// public getAbsenceHeight(groupedData: any[]): number {
-	// 	let endDate: Date = groupedData[0].endedAt;
-	// 	groupedData.forEach((data) => {
-	// 		if (data.endedAt > endDate) {
-	// 			endDate = data.endedAt;
-	// 		}
-	// 	});
-
-	// 	const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
-
-	// 	const startDate =
-	// 		this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
-	// 			? this.myDate(this.limit.min)
-	// 			: new Date(groupedData[0].startedAt);
-
-	// 	const groupEndDate = this.datePipe.transform(new Date(endDate), 'HH:mm:ss') ?? '';
-	// 	if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
-	// 		return 0;
-	// 	}
-
-	// 	if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
-	// 		return 0;
-	// 	}
-	// 	const finalEndDate =
-	// 		this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
-
-	// 	const durationMinutes = getDurationMinutes(startDate, finalEndDate);
-	// 	return durationMinutes * this.pixelsPerMin;
-	// }
 
 	public toggleMoreMenu(moreMenu: NgbDropdown) {
 		moreMenu.toggle();
@@ -452,24 +416,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			.pipe(
 				filter((res) => !!res),
 				switchMap((res) => {
-					// Handled at backend will be removed once verified
-					// const startedAt = new Date(appointment.startedAt);
-					// const endedAt = new Date(appointment.endedAt);
-					// const hour = Math.floor(+res.minutes / 60);
-					// const min = +res.minutes % 60;
-					//
-					// if (res.top) {
-					//   startedAt.setMinutes(startedAt.getMinutes() + min * (extend ? -1 : 1));
-					//   if (hour) {
-					//     startedAt.setHours(startedAt.getHours() + hour * (extend ? -1 : 1));
-					//   }
-					// } else {
-					//   endedAt.setMinutes(endedAt.getMinutes() + min * (extend ? 1 : -1));
-					//   if (hour) {
-					//     endedAt.setHours(endedAt.getHours() + hour * (extend ? 1 : -1));
-					//   }
-					// }
-
 					const requestData = {
 						amountofMinutes: +res.minutes,
 						extensionType: extend ? 'extend' : 'shorten',
@@ -489,7 +435,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 					this.notificationSvc.showSuccess(Translate.AppointmentUpdatedSuccessfully[this.selectedLang]);
 				},
 				error: (err) => {
-					// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 					if (eventContainer) {
 						// eslint-disable-next-line no-param-reassign
 						eventContainer.style.top = divTop ? divTop + 'px' : top;
@@ -705,7 +650,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		eventCard.style.top = `${top}px`;
 
 		const appointmentText = document.createElement('span');
-		// const textNode = document.createTextNode('Appointment');
 
 		appointmentText.innerText = this.translate.instant('Appointment');
 
@@ -829,7 +773,15 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		return calendarEndInMin - appointmentEndInMin;
 	}
 
-	private updateAppointmentDuration(appointment:Appointment, isExtend: boolean, container:HTMLDivElement, isTopResizer: boolean, minutes: number, divHieght: number, divTop: number): void {
+	private updateAppointmentDuration(
+		appointment: Appointment,
+		isExtend: boolean,
+		container: HTMLDivElement,
+		isTopResizer: boolean,
+		minutes: number,
+		divHieght: number,
+		divTop: number,
+	): void {
 		let amountofMinutes =
 			isExtend && isTopResizer && divTop / this.pixelPerMinute < minutes
 				? divTop / this.pixelPerMinute

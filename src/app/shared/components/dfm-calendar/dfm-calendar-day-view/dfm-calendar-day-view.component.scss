@@ -3,6 +3,11 @@
   position: relative;
 }
 
+.affectedAppointments {
+	border-left: 2px solid #E57373 !important;
+  background: #FFEBEE !important;
+}
+
 .font-10{
   font-size: 10px !important;
 }
@@ -42,7 +47,6 @@ h3 {
     justify-content: end;
     vertical-align: middle;
     min-width: 64px;
-    //max-width: 80px;
     font-size: 0.7rem;
 
     div {
@@ -67,15 +71,12 @@ h3 {
         height: 100%;
         align-self: end;
         -webkit-align-self: flex-end;
-        //border-right: 1px solid var(--dfm-main-200);;
       }
 
       .calender-day-view-weekday-alt {
         text-align: center;
         text-align: -webkit-center;
-        //width: 256px;
         min-width: 128px;
-        //max-width: 256px;
         color: var(--dfm-main-500);
         padding: 8px 0;
         position: relative;
@@ -98,18 +99,12 @@ h3 {
           line-height: 40px;
           font-size: 1.5rem;
 
-          //&:hover {
-          //  cursor: pointer;
-          //  background: var(--dfm-main-200);
-          //  color: black;
-          //}
         }
 
         .calender-day-view-header-cell-left-line {
           border-left: 1px solid var(--dfm-main-200);
           bottom: 0;
           height: 100%;
-          //margin-left: -8px;
           position: absolute;
         }
 
@@ -122,7 +117,6 @@ h3 {
       .calender-day-view-weekday {
         text-align: center;
         text-align: -webkit-center;
-        //width: 256px;
         min-width: 128px;
         width: 128px;
         color: var(--dfm-main-500);
@@ -143,7 +137,6 @@ h3 {
           border-left: 1px solid var(--dfm-main-200);
           bottom: 0;
           height: 100%;
-          //margin-left: -8px;
           position: absolute;
         }
 
@@ -155,11 +148,6 @@ h3 {
           line-height: 40px;
           font-size: 1.5rem;
 
-          //&:hover {
-          //  cursor: pointer;
-          //  background: var(--dfm-main-200);
-          //  color: black;
-          //}
         }
 
         .calender-day-view-date-today {
@@ -172,7 +160,6 @@ h3 {
 }
 
 .calender-day-view-body-container {
-  //max-height: calc(100vh - 368px);
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -187,7 +174,6 @@ h3 {
       position: absolute;
       width: 100%;
       border-bottom: 1px solid var(--dfm-main-300);
-      //left: 96px;
     }
 
     .calender-day-view-time-slot-container {
@@ -197,6 +183,7 @@ h3 {
       display: flex;
       flex-direction: column;
       margin-top: 4px;
+      position: relative;
 
       .calender-day-view-time-slot {
         min-height: 60px;
@@ -225,14 +212,9 @@ h3 {
         display: inline-flex;
         vertical-align: top;
         cursor: pointer;
-        // position: relative;
 
         .calender-day-view-horizontal-line {
-          //position: absolute;
-          //width: calc(100vw - 128px);
           height: 60px;
-          //top: -12px;
-          //left: 64px;
 
           &:first-child::after {
             margin-top: -4px;
@@ -242,7 +224,6 @@ h3 {
             content: "";
             position: absolute;
             width: 100%;
-            //margin-top: -4px;
             z-index: 1;
             pointer-events: none;
             border-bottom: 1px solid var(--dfm-main-300);
@@ -277,18 +258,15 @@ h3 {
         .calender-day-view-events-left-vertical-line {
           width: 8px;
           min-width: 8px;
-          //border-right: 1px solid var(--dfm-main-200);
         }
 
         .calender-day-view-body-grid-column {
-          //width: 256px;
           min-width: 128px;
           width: 128px;
           flex: 1;
           border-left: 1px solid var(--dfm-main-200);
           padding-right: 12px;
           position: relative;
-          //overflow: hidden;
 
           .calender-day-view-body-grid-absolute {
             position: absolute;
@@ -302,14 +280,13 @@ h3 {
             position: relative;
             height: 100%;
             width: 100%;
-            //overflow-y: hidden;
             &.drag-backdrop {
                 position: absolute;
                 top: 0;
                 z-index: -1;
                 opacity: .5;
               }
-            
+
               &.drag-started {
                 z-index: 999;
               }
@@ -370,9 +347,6 @@ h3 {
           display: flex;
           flex-direction: column;
           padding: 8px;
-          //&:hover {
-          //  background: var(--dfm-main-100);
-          //}
         }
 
         .calender-day-view-event-patient-details-divider {
@@ -391,13 +365,10 @@ h3 {
   .calender-day-view-event-details-container {
     display: flex;
     flex-direction: column;
-    //justify-content: start;
-    //align-items: center;
     gap: 4px;
     width: 100%;
     height: 100%;
     max-height: fit-content;
-    //height: fit-content;
     padding: 16px 8px 8px 8px;
     font-size: 0.9rem;
 
@@ -420,18 +391,14 @@ h3 {
   }
 
   .calender-day-view-event-more-button {
-    // top: calc(50% - 20px);
     top : 2px;
     width: 1px;
     height: 1px;
-    // margin-top: 10px;
-    // padding: 8px;
     border-radius: 50%;
     color: var(--dfm-primary) !important;
     position: absolute;
     bottom: 2px;
     right: 25px;
-    //align-self: end;
 
     svg {
       color: var(--dfm-primary) !important;
@@ -456,7 +423,6 @@ h3 {
   button {
     display: flex;
     padding: 8px 16px;
-    /* align-items: center; */
     gap: 8px;
 
     &:active {
@@ -482,6 +448,38 @@ h3 {
   }
 }
 
+.gray-out-area-week {
+  background: var(--dfm-main-200);
+  width: 100%;
+  position: absolute;
+  opacity: 0.5;
+}
+
+.priority-slots-area {
+  position: absolute;
+
+  display: flex;
+  z-index: 1;
+  transition: 200ms all linear;
+  overflow: hidden;
+
+  &.small {
+    width: 4px;
+    right: 0;
+  }
+
+  &.High {
+    background: var(--dfm-priority-slot-high-color);
+  }
+
+  &.Medium {
+    background: var(--dfm-priority-slot-medium-color);
+  }
+
+  &.Low {
+    background: var(--dfm-priority-slot-low-color);
+  }
+}
 .gray-out-area {
   background: var(--dfm-main-200);
   width: 100%;
@@ -496,18 +494,14 @@ h3 {
 }
 
 .resizable {
-  // background: white;
   height: 100px;
   position: absolute;
-  // top: 100px;
-  // left: 100px;
 }
 
 .resizable .resizers .resizer {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  /*magic to turn square into circle*/
   background: #4286f4;
   border: 3px solid #4286f4;
   position: absolute;
@@ -545,33 +539,9 @@ h3 {
   max-height: 40px;
 }
 
-// start css for alert circle on appointment
 
-// .calendar-week-view-event-circle-icon-sm {
-//   width: 20px !important;
-//   height: 20px !important;
-//   left: -12px !important;
-//   top: unset !important;
-//   font-size: 0.7rem !important;
-//   line-height: 20px !important;
-// }
 
-// .calendar-week-view-event-circle-icon {
-//   position: absolute;
-//   width: 22px;
-//   height: 22px;
-//   border-radius: 50%;
-//   left: -13px;
-//   top: -8px;
-//   background: var(--dfm-blue);
-//   color: white;
-//   text-align: center;
-//   font-size: 0.8rem;
-//   font-weight: 600;
-//   line-height: 22px;
-// }
 
-// end css for alert circle on appointment
 
 .dfm-card-container {
   display: flex;
@@ -581,7 +551,6 @@ h3 {
 
 .calender-month-view-day-exam-event-details {
   display: flex;
-  // flex-direction: column;
   justify-content: space-between;
   width: 100%;
   padding: 2px 8px;
@@ -634,8 +603,6 @@ h3 {
   .calender-month-view-day-exam-event-title {
     min-height: 12px;
     font-size: 10px !important;
-    // font-weight: 600;
-    // color: ;
   }
 
   .calender-month-view-day-exam-event-time {
@@ -672,14 +639,6 @@ h3 {
         display: flex;
         flex-direction: column;
 
-        //.calender-month-view-day-exam-details-expanded-patient-details {
-        //  display: flex;
-        //  flex-direction: column;
-        //  padding: 8px !important;
-        //  //&:hover {
-        //  //  background: var(--dfm-main-100);
-        //  //}
-        //}
 
         .calender-month-view-day-exam-details-expanded-patient-details-divider {
           border-bottom: 1px solid var(--dfm-main-200);

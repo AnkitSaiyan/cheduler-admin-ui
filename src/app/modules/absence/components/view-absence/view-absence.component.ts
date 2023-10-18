@@ -1,18 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { RouterStateService } from '../../../../core/services/router-state.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { Absence, RepeatType } from '../../../../shared/models/absence.model';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ABSENCE_ID, ABSENCE_TYPE, ABSENCE_TYPE_ARRAY, ENG_BE } from '../../../../shared/utils/const';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
+import { DfmDatasource, DfmTableHeader } from 'diflexmo-angular-design';
 
 @Component({
 	selector: 'dfm-view-absence',
@@ -28,15 +28,27 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 
 	public readonly Permission = Permission;
 
-	public columns = ['AppointmentNo', 'Exam', 'StartDate', 'EndDate', 'PatientName', 'Edit'];
+	public columns = ['AppointmentNo', 'PatientName', 'StartDate', 'EndDate'];
 
 	public absenceType$$ = new BehaviorSubject<(typeof ABSENCE_TYPE_ARRAY)[number]>(ABSENCE_TYPE_ARRAY[0]);
 
-	effectedAppointments$$: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
+	affectedAppointments$$: BehaviorSubject<any> = new BehaviorSubject<any[]>([]);
+
+	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
+
+	public tableHeaders: DfmTableHeader[] = [
+		{ id: '1', title: 'AppointmentNo', isSortable: false },
+		{ id: '2', title: 'PatientName', isSortable: false },
+		{ id: '3', title: 'StartDate', isSortable: false },
+		{ id: '4', title: 'EndDate', isSortable: false },
+	];
 
 	constructor(
 		private absenceApiSvc: AbsenceApiService,
-		private routerStateSvc: RouterStateService,
 		private notificationSvc: NotificationDataService,
 		private router: Router,
 		private modalSvc: ModalService,
@@ -47,7 +59,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 	}
 
 	public ngOnInit(): void {
-    this.route.data
+		this.route.data
 			.pipe(
 				filter((data) => !!data[ABSENCE_TYPE]),
 				map((data) => data[ABSENCE_TYPE]),
@@ -65,12 +77,30 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 			)
 			.subscribe((absenceDetails) => {
 				this.absenceDetails$$.next(absenceDetails);
+				this.getAppointmentListModified(this.absenceDetails$$?.value?.impactedAppointmentDetails);
 			});
 
 		this.shareDataService
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe((lang) => (this.selectedLang = lang));
+			.subscribe((lang) => {
+				this.selectedLang = lang;
+				this.tableHeaders = this.tableHeaders.map((h, i) => ({
+					...h,
+					title: Translate[this.columns[i]][lang],
+				}));
+			});
+
+		this.affectedAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (value) => {
+				this.tableData$$.next({
+					items: value,
+					isInitialLoading: false,
+					isLoading: false,
+					isLoadingMore: false,
+				});
+			},
+		});
 	}
 
 	public deleteAbsence(id: number) {
@@ -115,5 +145,39 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 				keyboard: false,
 			},
 		});
+	}
+
+	private getAppointmentListModified(impactedAppointments) {
+		const impactedAppointmentDetails = [...impactedAppointments];
+		this.affectedAppointments$$.next(impactedAppointmentDetails.map((appointment) => this.getAppointmentModified(appointment)));
+	}
+
+	private getAppointmentModified(appointment) {
+		let startedAt;
+		let endedAt;
+
+		let { patientFname, patientLname, ...rest } = appointment;
+
+		appointment.examDetails.forEach((exam) => {
+			if (exam.startedAt && (!startedAt || new Date(exam.startedAt) < startedAt)) {
+				startedAt = new Date(exam.startedAt);
+			}
+
+			if (exam.endedAt && (!endedAt || new Date(exam.endedAt) > endedAt)) {
+				endedAt = new Date(exam.endedAt);
+			}
+		});
+		return {
+			...rest,
+			patientFullName: `${patientFname} ${patientLname}`,
+			startedAt: startedAt,
+			endedAt: endedAt,
+		};
+	}
+
+	public navigateToView(e: any) {
+		if (e?.appointmentId) {
+			this.router.navigate([`/appointment/${e.appointmentId}/view`], { replaceUrl: true });
+		}
 	}
 }

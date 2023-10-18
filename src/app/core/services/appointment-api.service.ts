@@ -245,7 +245,6 @@ export class AppointmentApiService extends DestroyableComponent {
 		this.loaderSvc.activate();
 		this.loaderSvc.spinnerActivate();
 
-		// return combineLatest([this.refreshAppointment$$.pipe(startWith(''))]).pipe(
 		return combineLatest([this.appointmentPageNo$$]).pipe(
 			switchMap(() => this.http.get<BaseResponse<Appointment>>(`${this.appointmentUrl}/${appointmentID}`)),
 			switchMap((response) =>
@@ -339,7 +338,6 @@ export class AppointmentApiService extends DestroyableComponent {
 		const customRequestData = { ...requestData, date: requestData.fromDate };
 		delete customRequestData?.fromDate;
 		delete customRequestData?.toDate;
-		// this.loaderSvc.spinnerActivate();
 		return this.http.post<BaseResponse<AppointmentSlot>>(`${environment.schedulerApiUrl}/appointment/slots`, customRequestData).pipe(
 			map((res) => [
 				{
@@ -375,30 +373,12 @@ export class AppointmentApiService extends DestroyableComponent {
 		const examIdToRooms: { [key: number]: Room[] } = {};
 		const examIdToUsers: { [key: number]: User[] } = {};
 
-		// const examIdToStartEndTime: {
-		// 	[key: number]: {
-		// 		startedAt: Date;
-		// 		endedAt: Date;
-		// 	}
-		// }
 
 		if (appointment.roomsDetail?.length) {
 			appointment?.roomsDetail?.forEach((room) => {
 				const examId = +room.examId;
 				if (!examIdToRooms[examId]) {
 					examIdToRooms[examId] = [];
-					// if (!examIdToStartEndTime[examId]) {
-					// 	examIdToStartEndTime[examId] = {
-					// 		startedAt: new Date(room.startedAt as string),
-					// 		endedAt: new Date(room.startedAt as string),
-					// 	}
-					// } else {
-					// 	const startedAt = new Date(room.startedAt as string)
-					// 	const endedAt = new Date()
-					// 	if (new Date(room.startedAt as string).getTime() < examIdToStartEndTime[examId].startedAt.getTime()) {
-					//
-					// 	}
-					// }
 				}
 				examIdToRooms[+room.examId].push(room);
 			});
@@ -519,7 +499,6 @@ export class AppointmentApiService extends DestroyableComponent {
 		formData.append('ApmtQRCodeId', uniqueId);
 		formData.append('FileData', '');
 		formData.append('FileName', '');
-		// formData.append('AppointmentId', (localStorage.getItem('appointmentId') ?? 0).toString());
 		formData.append('AppointmentId', appointmentId);
 		return this.http.post<any>(`${environment.schedulerApiUrl}/qrcode/upload`, formData).pipe(
 		  map((response) => response.data),

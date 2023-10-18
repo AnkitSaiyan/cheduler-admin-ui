@@ -1,9 +1,6 @@
 <div class="d-flex flex-column dfm-gap-16 position-relative">
-  <!-- <button  mat-mini-fab color="primary" class="refresh-btn" (click)="onRefresh()">
-    <mat-icon>refresh</mat-icon>
-  </button> -->
   <section class="list-page-section-1">
-    <!-- <dfm-button class="pr-li-title-buttons" color="link" size="lg" routerLink="./">{{"PrioritySlots" | translate}} </dfm-button> -->
+    <dfm-button class="pr-li-title-buttons" color="link" size="lg" routerLink="./">{{"PrioritySlots" | translate}} </dfm-button>
     <ng-container *ngIf="(calendarView$$ | async) === false; else space">
       <dfm-input
         class="flex-1 pr-li-search"
@@ -39,7 +36,7 @@
     </ng-container>
     <ng-template #space>
       <span class="d-flex flex-1">
-        <dfm-button class="pr-li-title-buttons" color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{"PrioritySlots" | translate}} </dfm-button>
+        <dfm-button class="pr-li-title-buttons-calendar" color="link" size="lg" routerLink="./" queryParamsHandling="merge">{{"PrioritySlots" | translate}} </dfm-button>
       </span>
     </ng-template>
 
@@ -110,23 +107,5 @@
     <dfm-priority-slots-calendar-view></dfm-priority-slots-calendar-view>
   </ng-template>
 
-  <!-- <div ngbDropdown #optionsMenu="ngbDropdown">
-    <div class="shadow-lg pr-li-plus-btn-menu pr-li-menus" ngbDropdownMenu aria-labelledby="dropdownManual"> -->
-  <!-- <div ngbDropdownItem (click)="$event.stopPropagation(); openSearchModal()"> -->
-  <!-- <div ngbDropdownItem (click)="$event.stopPropagation();">
-    <dfm-button trailingIcon="search-sm" color="link-gray"></dfm-button>
-  </div>
-  <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-    <dfm-button trailingIcon="copy-03" color="link-gray"></dfm-button>
-  </div>
-  <div ngbDropdownItem (click)="$event.stopPropagation(); toggleMenu()">
-    <dfm-button trailingIcon="download-01" color="link-gray"></dfm-button>
-  </div>
-</div>
-</div> -->
 
-  <!-- <dfm-button color="secondary" size="md" class="hidden shadow-lg pr-li-plus-btn rounded-2"
-              (click)="$event.stopPropagation(); optionsMenu.open(); toggleMenu()">
-    <dfm-icon #showMoreButtonIcon name="plus" class="pr-li-plus-btn-icon rotate-z-0 position-absolute"></dfm-icon>
-  </dfm-button> -->
 </div>

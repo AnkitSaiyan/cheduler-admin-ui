@@ -19,8 +19,7 @@ export class HeaderInterceptor implements HttpInterceptor {
 		const sessionExp = localStorage.getItem('sessionExp');
 
 		if (sessionExp && +sessionExp < new Date().getTime()) {
-			// const lang = localStorage.getItem('lang');
-			// this.notificationSvc.showError(Translate.sessionExp[lang!]);
+			
 			localStorage.setItem('isSessionExpired', 'true')
 			setTimeout(() => {
 				this.userSvc.logout();
@@ -31,18 +30,9 @@ export class HeaderInterceptor implements HttpInterceptor {
 
 		GeneralUtils.saveSessionExpTime();
 
-		// let currentTenantId = GeneralUtils.TenantID;
-		// const tenantIds = this.userSvc.getCurrentUser()?.tenantIds ?? [];
-		// if (!tenantIds.find((tenantId) => currentTenantId)) {
-		//     currentTenantId = this.userSvc.getCurrentUser()?.tenantIds[0] as string;
-		// }
-
 		const newRequest = request.clone({
 			setHeaders: {
 				SubDomain,
-				// ...(usersUrl === request.url ? {
-				//     'Context-Tenant-Id': currentTenantId
-				// } : {})
 			},
 		});
 

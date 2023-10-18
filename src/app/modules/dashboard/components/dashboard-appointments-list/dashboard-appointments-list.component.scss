@@ -1,3 +1,10 @@
+.alert-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--dfm-yellow);
+  margin-right: 5px;
+}
+
 .ap-li-main-wrapper {
   height: inherit;
 
@@ -100,10 +107,9 @@
   .appointment-list-download-icon-placeholder{
     display: block;
   }
-    .table-wrapper {
-      // max-height: calc(80vh - 250px);
-      max-height: 240px;
-    }
+  .table-wrapper {
+    max-height: 240px;
+  }
 
 }
 

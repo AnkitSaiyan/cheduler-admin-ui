@@ -63,7 +63,9 @@ export class SiteManagementApiService extends DestroyableComponent {
     formData.append('isAppointmentAutoconfirm', String(requestData.isAppointmentAutoconfirm));
     formData.append('isAppointmentAutoconfirmAdmin', String(requestData.isAppointmentAutoconfirmAdmin));
     formData.append('editUploadedDocument', String(requestData.editUploadedDocument));
-    formData.append('documentSizeInKb', String(requestData.documentSize*1024));
+    formData.append('documentSizeInKb', String(requestData.documentSize * 1024));
+    formData.append('absenceImpactAlertInterval', String(requestData.absenceImpactAlertInterval
+));
     if (requestData.file) {
       formData.append('File', requestData.file);
     }
@@ -71,7 +73,6 @@ export class SiteManagementApiService extends DestroyableComponent {
     return this.http.post<BaseResponse<SiteManagement>>(`${environment.schedulerApiUrl}/sitesetting`, formData).pipe(
       map((response) => response.data),
       tap(() => this.loaderSvc.deactivate()),
-      // tap(() => this.refreshSiteManagement$.next()),
     );
   }
 

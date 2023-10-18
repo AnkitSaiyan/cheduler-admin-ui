@@ -59,7 +59,6 @@ interface FormValues {
 	templateUrl: './add-absence.component.html',
 	styleUrls: ['./add-absence.component.scss'],
 	providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
-	// changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddAbsenceComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public absenceForm!: FormGroup;
@@ -135,7 +134,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			.subscribe((lang) => {
 				this.selectedLang = lang;
 				this.repeatEvery = {
-					// daily: [...this.getRepeatEveryItems(RepeatType.Daily)],
 					weekly: [...this.getRepeatEveryItems(RepeatType.Weekly)],
 					monthly: [...this.getRepeatEveryItems(RepeatType.Daily)],
 				};
@@ -154,14 +152,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	public get formValues(): FormValues {
 		return this.absenceForm.value;
 	}
-
-	// public ngAfterViewInit(): void {
-	//   this.loaderService.isSpinnerActive$.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
-	//     this.isSpinnerActive$$.next(value);
-	//     this.cdr.detectChanges();
-	//   });
-	// }
-
+	
 	public get controls() {
 		return this.absenceForm.controls;
 	}
@@ -213,17 +204,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			.subscribe({
 				next: (lang) => {
 					this.selectedLang = lang;
-					// this.columns = [
-					//   Translate.FirstName[lang],
-					//   Translate.LastName[lang],
-					//   Translate.Email[lang],
-					//   Translate.Telephone[lang],
-					//   Translate.Category[lang],
-					//   Translate.Status[lang],
-					//   Translate.Actions[lang],
-					// ];
 
-					// eslint-disable-next-line default-case
 					switch (lang) {
 						case ENG_BE:
 							this.statuses = Statuses;
@@ -386,9 +367,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 						),
 						'yyyy-MM-dd HH:mm:ss',
 				  ) as string),
-			// endedAt: rest.isRepeat
-			//   ? `${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`
-			//   : `${startedAt.year}-${startedAt.month}-${startedAt.day} ${endTime}:00`,
 			endedAt:
 				this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat
 					? null
@@ -467,7 +445,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 						);
 						this.submitting$$.next(false);
 						this.closeModal(true);
-						// this.activeModal.close(true);
 					},
 					error: (err) => {
 						if (err?.error?.message == 'MSG_400_APMT_AFFECTS') this.openModal();
@@ -668,21 +645,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		const { startedAt, endedAt, startTime, endTime } = this.formValues;
 
-		// if (!this.formValues.isRepeat) {
-		//   if (timeToNumber(startTime) >= timeToNumber(endTime)) {
-		//     toggleControlError(this.absenceForm.get('startTime'), 'time');
-		//     toggleControlError(this.absenceForm.get('endTime'), 'time');
-		//   } else {
-		//     toggleControlError(this.absenceForm.get('startTime'), 'time', false);
-		//     toggleControlError(this.absenceForm.get('endTime'), 'time', false);
-		//   }
-		//
-		//   return;
-		// }
-		//
-		// if (!endedAt) {
-		//   return;
-		// }
 
 		if (startedAt?.day === endedAt?.day && startedAt?.month === endedAt?.month && startedAt?.year === endedAt?.year) {
 			if (DateTimeUtils.TimeToNumber(startTime) >= DateTimeUtils.TimeToNumber(endTime)) {
@@ -692,7 +654,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				return;
 			}
 
-			// this.cdr.detectChanges();
 		}
 
 		toggleControlError(this.absenceForm.get('startTime'), 'time', false);

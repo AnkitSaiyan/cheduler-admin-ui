@@ -165,26 +165,7 @@
       <ng-container *ngIf="formValues.isRepeat">
         <dfm-repeat-form [form]="prioritySlotForm">
           <div class="d-flex flex-column dfm-gap-16 flex-1 mt-4 endDate">
-            <!-- <span class="text-sm font-weight-medium dfm-text-main-700 text-nowrap">{{ 'Ends' | translate }} *</span> -->
             <div class="w-fit d-flex justify-content-between dfm-gap-24 align-items-start flex-wrap">
-              <!-- <dfm-radio-button
-                class="font-weight-normal"
-                label="{{ 'Never' | translate }}"
-                [formControl]="endDateTypeControl"
-                [checkedValue]="EndDateType.Never"
-                hint="the event repeat indefinitely"
-                size="sm"
-              ></dfm-radio-button>-->
-              <!-- <div class="d-flex align-items-start dfm-gap-16 flex-wrap"> -->
-               <!-- <dfm-radio-button
-                  class="font-weight-normal max-w-192 "
-                  label="{{ 'Until' | translate }}"
-                  [formControl]="endDateTypeControl"
-                  [checkedValue]="EndDateType.Until"
-                  hint="The event will run until reaches a specific date"
-                  size="sm">
-                </dfm-radio-button> -->
-                <!-- <div *ngIf="endDateTypeControl.value === EndDateType.Until"> -->
 
 
                 <div class="flex-1 d-flex dfm-gap-8 flex-column">
@@ -207,8 +188,6 @@
                     {{ 'RequiredField' | translate }}
                   </div>
                 </div>
-                <!-- </div> -->
-              <!-- </div> -->
             </div>
           </div>
         </dfm-repeat-form>

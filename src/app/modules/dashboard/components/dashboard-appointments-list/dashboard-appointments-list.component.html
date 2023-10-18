@@ -31,16 +31,6 @@
 					</div>
 
 				<div class="d-flex align-items-center ap-li-button-dropdown-group-border">
-					<!-- <div class="dfm-dropdown-border-none">
-						<dfm-input
-							size="md"
-							placeholder="{{ 'AdvancedSearch' | translate }}"
-							icon="search-sm"
-							class="flex-1"
-							(click)="openAdvancePopup()"
-							[readonly]="true"
-						></dfm-input>
-					</div> -->
 					<div>
 						<dfm-button-icon class="" color="secondary-gray" size="md" icon="filter-funnel-01"
 							ngbPopover="{{ 'AdvancedSearch' | translate }}" triggers="mouseenter:mouseleave" popoverClass="popover-p-8"
@@ -85,15 +75,7 @@
 					</div>
 				</div>
 
-				<!-- <dfm-button
-        color="secondary"
-        size="md"
-      >{{"Confirm" | translate}}
-      </dfm-button> -->
 
-				<!-- <dfm-button color="primary" size="md" class="text-nowrap" routerLink="/appointment/add" [state]="{ comingFromRoute: 'dashboard' }"
-					>{{ 'AddAppointment' | translate }}
-				</dfm-button> -->
 			</div>
 
 			<div class="hidden align-items-center dfm-gap-8 dfm-px-8 justify-content-center ap-li-section2-action-bar-mv hide-scrollbar overflow-x-auto">
@@ -126,18 +108,8 @@
 						></dfm-button-icon>
 					</div>
 
-					<!-- <div>
-            <dfm-button-icon color="tertiary-gray" size="md" icon="download-01"></dfm-button-icon>
-          </div> -->
 				</div>
 
-				<!-- <dfm-button-icon
-					color="secondary-gray"
-					size="md"
-					icon="calendar-date"
-					routerLink="/appointment"
-					[state]="{ comingFromRoute: 'dashboard' }"
-				></dfm-button-icon> -->
 				<dfm-button
 					color="primary"
 					size="md"
@@ -158,10 +130,16 @@
 						<dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
 					</ng-template>
 					<ng-template #bodyRowTemplate let-item>
-						<dfm-table-body-cell>{{
+						<dfm-table-body-cell>
+							<span class="d-flex">
+								<dfm-icon *ngIf="item.absenceDetails.length" class="alert-icon" name="alert-circle">
+								</dfm-icon>
+								{{
 							item?.exams.length ? (item.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing) : ('' |
 							dashIfNothing)
-							}}</dfm-table-body-cell>
+							}}
+							</span>
+							</dfm-table-body-cell>
 						<dfm-table-body-cell>{{
 							item?.exams.length ? (item.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing) : ('' |
 							dashIfNothing)
@@ -189,9 +167,6 @@
 						<dfm-table-body-cell>{{ item?.id }}</dfm-table-body-cell>
 						<dfm-table-body-cell>{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing
 							}}</dfm-table-body-cell>
-						<!-- <dfm-table-body-cell>
-		            <span>{{ item.readStatus === readStatus.Read ? 'Yes' : 'No' }}</span>
-		          </dfm-table-body-cell> -->
 						<dfm-table-body-cell>
 							<dfm-badge *ngIf="item.approval === statusType.Approved" color="success" size="sm"
 								fontWeight="medium">
@@ -208,22 +183,6 @@
 						</dfm-table-body-cell>
 						<dfm-table-body-cell *dfmPermitted="[Permission.UpdateAppointments, Permission.DeleteAppointments]">
 							<div class="d-flex align-items-center dfm-gap-14" *ngIf="item.isEditable">
-								<!-- <dfm-button
-		              *ngIf="!item.confirm"
-		              color="link-gray"
-		              size="md"
-		              trailingIcon="check-circle"
-		              ngbPopover="{{ 'ChangeStatus' | translate }}"
-		              triggers="mouseenter:mouseleave"
-		              popoverClass="popover-p-8"
-		              [openDelay]="200"
-		            ></dfm-button>
-		            <dfm-button
-		              *ngIf="item.confirm"
-		              color="link-gray"
-		              size="md"
-		              trailingIcon="x-circle"
-		            ></dfm-button> -->
 								<dfm-button color="link-gray" size="md" trailingIcon="pencil-02"
 									ngbPopover="{{ 'Edit' | translate }}" triggers="mouseenter:mouseleave"
 									popoverClass="popover-p-8" [openDelay]="300" (click)="$event.stopPropagation()"

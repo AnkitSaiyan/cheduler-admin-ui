@@ -144,7 +144,6 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 						this.staffsGroupedByTypes.secretaries.push(nameValue);
 						break;
 					default:
-					// this.staffsGroupedByTypes.mandatory.push(nameValue);
 				}
 			}
 		});

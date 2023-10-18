@@ -116,9 +116,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		this.prioritySlots$$ = new BehaviorSubject<any>({});
 		this.appointmentApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => {
-				//
 				this.calendarViewType = items;
-				// this.ngOnInit();
 			},
 		});
 	}
@@ -216,7 +214,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				this.updateQuery(value[0]);
 			});
 
-		// this.calendarViewFormControl.setValue('day');
 
 		this.roomApiSvc.allRooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
 			this.headerList = rooms.map(({ name, id }) => ({ name, value: id }));
@@ -252,10 +249,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				this.selectedLang = lang;
 				switch (lang) {
 					case ENG_BE:
-						// this.statuses = Statuses;
 						break;
 					case DUTCH_BE:
-						// this.statuses = StatusesNL;
 						break;
 				}
 			});
@@ -297,7 +292,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	public changeToDayView(date: Date) {
 		this.calendarViewFormControl.setValue('day');
-		// const newDate = new Date(this.selectedDate$$.value.setDate(date));
 		this.newDate$$.next({ date, isWeekChange: false });
 		this.selectedDate$$.next(date);
 	}
@@ -311,7 +305,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	private groupAppointmentsForCalendar(...appointments: Appointment[]) {
 		let startDate: Date;
 		let endDate: Date;
-		// let group: number;
 		let sameGroup: boolean;
 		let groupedAppointments: Appointment[] = [];
 		let lastDateString: string;
@@ -335,13 +328,12 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 						startDate = new Date(appointment.startedAt);
 						endDate = new Date(appointment.endedAt);
-						// group = 0;
 						sameGroup = false;
 					} else {
 						const currSD = new Date(appointment.startedAt);
 						const currED = new Date(appointment.endedAt);
 
-						if (currSD >= startDate && currSD <= endDate) {
+						if (currSD >= startDate && currSD < endDate) {
 							sameGroup = true;
 							if (currED > endDate) {
 								endDate = currED;
@@ -359,8 +351,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					}
 
 					if (!sameGroup) {
-						// group++;
-
 						if (index !== 0 && lastDateString) {
 							this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
 							groupedAppointments = [];
@@ -482,13 +472,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		}
 
 		const { e, eventsContainer, day, isOutside, appointment } = event;
-		// const currentDate = new Date();
-		// currentDate.setDate(currentDate.getDate() - 1);
-		// const selectedDate = new Date(this.selectedDate$$.value.getFullYear(), day[1], day[0]);
-		// if (selectedDate.getTime() < currentDate.getTime()) {
-		// 	this.notificationSvc.showWarning(Translate.ErrorMessage.CanNotAddAppointmentInPostDate[this.selectedLang]);
-		// 	return;
-		// }
 
 		const currentDate = new Date();
 
@@ -589,7 +572,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		eventCard.style.top = `${top}px`;
 
 		const appointmentText = document.createElement('span');
-		// const textNode = document.createTextNode('Appointment');
 
 		appointmentText.innerText = this.translate.instant('Appointment');
 

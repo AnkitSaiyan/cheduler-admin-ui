@@ -9,12 +9,9 @@ import { Router } from "@angular/router";
 import { ModalService } from "../../../core/services/modal.service";
 import { ConfirmActionModalComponent, ConfirmActionModalData } from "../confirm-action-modal.component";
 import { UserService } from "../../../core/services/user.service";
-import { RouterStateService } from 'src/app/core/services/router-state.service';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { TranslateService } from '@ngx-translate/core';
 import defaultLanguage from '../../../../../src/assets/i18n/en-BE.json';
 import dutchLangauge from '../../../../../src/assets/i18n/nl-BE.json';
-import { UserApiService } from 'src/app/core/services/user-api.service';
 import { Translate } from '../../models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 
@@ -42,13 +39,10 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 	constructor(
 		private userManagementApiSvc: UserManagementApiService,
 		private userSvc: UserService,
-		private userApiSvc: UserApiService,
 		private modalSvc: ModalService,
 		private notificationSvc: NotificationDataService,
 		private router: Router,
-		private routerStateSvc: RouterStateService,
-		private authSvc: AuthService,
-		private translateService: TranslateService, // private landingService: LandingService,
+		private translateService: TranslateService,
 		private shareDataSvc: ShareDataService,
 	) {
 		super();
@@ -112,7 +106,7 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 					this.notificationSvc.showSuccess(Translate.SuccessMessage.ProfileSavedSuccessfully[this.selectedLang]);
 					this.router.navigate(['/']);
 				},
-				error: (e) => {
+				error: () => {
 					this.notificationSvc.showError(Translate.ErrorMessage.FailedToSaveProfile[this.selectedLang]);
 					this.submitting$$.next(false);
 				},

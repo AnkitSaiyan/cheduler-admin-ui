@@ -1,20 +1,14 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { DatePipe, TitleCasePipe } from '@angular/common';
 import { FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, debounceTime, filter, groupBy, map, Subject, switchMap, take, takeUntil } from 'rxjs';
-import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
+import { BehaviorSubject, debounceTime, filter, takeUntil } from 'rxjs';
 import { DownloadAsType, DownloadService } from 'src/app/core/services/download.service';
-import { ModalService } from 'src/app/core/services/modal.service';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
-import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
-import { RouterStateService } from 'src/app/core/services/router-state.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { NameValue } from 'src/app/shared/components/search-modal.component';
-import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DfmDatasource, DfmTableHeader, NotificationType } from 'diflexmo-angular-design';
 import { Translate } from 'src/app/shared/models/translate.model';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from 'src/app/shared/utils/const';
+import { ENG_BE, Statuses } from 'src/app/shared/utils/const';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
@@ -40,83 +34,6 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 	private selectedLang: string = ENG_BE;
 
 	public statuses = Statuses;
-
-	// public downloadItems: NameValue[] = [];
-
-	// public recentPatients: any = [
-	//   {
-	//     patientName: 'Maaike',
-	//     emailId: 'maaike@diflexmo.be',
-	//     doctor: 'Hannibal Smith',
-	//     appointmentDate: new Date(),
-	//     avatar: '',
-	//   },
-	//   {
-	//     patientName: 'Maaike',
-	//     emailId: 'maaike@diflexmo.be',
-	//     doctor: 'Bannie Smith',
-	//     appointmentDate: new Date(),
-	//     avatar: '',
-	//   },
-	//   {
-	//     patientName: 'Maaike',
-	//     emailId: 'maaike@diflexmo.be',
-	//     doctor: 'Kate Smith',
-	//     appointmentDate: new Date(),
-	//     avatar: '',
-	//   },
-	//   {
-	//     patientName: 'Maaike',
-	//     emailId: 'maaike@diflexmo.be',
-	//     doctor: 'Hannibal Smith',
-	//     appointmentDate: new Date(),
-	//     avatar: '',
-	//   },
-	//   {
-	//     patientName: 'Maaike',
-	//     emailId: 'maaike@diflexmo.be',
-	//     doctor: 'Hannibal Smith',
-	//     appointmentDate: new Date(),
-	//     avatar: '',
-	//   },
-	//   {
-	//     patientName: 'Maaike',
-	//     emailId: 'maaike@diflexmo.be',
-	//     doctor: 'Hannibal Smith',
-	//     appointmentDate: new Date(),
-	//     avatar: '',
-	//   },
-	//   {
-	//     patientName: 'Maaike',
-	//     emailId: 'maaike@diflexmo.be',
-	//     doctor: 'Hannibal Smith',
-	//     appointmentDate: new Date(),
-	//     avatar: '',
-	//   },
-	// ];
-
-	// public downloadItems: any[] = [
-	//   {
-	//     name: 'Excel',
-	//     value: 'xls',
-	//     description: 'Download as Excel',
-	//   },
-	//   {
-	//     name: 'PDF',
-	//     value: 'pdf',
-	//     description: 'Download as PDF',
-	//   },
-	//   {
-	//     name: 'CSV',
-	//     value: 'csv',
-	//     description: 'Download as CSV',
-	//   },
-	//   {
-	//     name: 'Print',
-	//     value: 'print',
-	//     description: 'Print appointments',
-	//   },
-	// ];
 
 	public downloadItems: NameValue[] = [];
 
@@ -145,14 +62,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 		private appointmentApiService: AppointmentApiService,
 		private downloadSvc: DownloadService,
 		private notificationSvc: NotificationDataService,
-		private router: Router,
-		private route: ActivatedRoute,
-		private modalSvc: ModalService,
-		private roomApiSvc: RoomsApiService,
-		private datePipe: DatePipe,
 		private cdr: ChangeDetectorRef,
-		private titleCasePipe: TitleCasePipe,
-		private routerStateSvc: RouterStateService,
 		private shareDataSvc: ShareDataService,
 	) {
 		super();
@@ -188,7 +98,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 				}
 				this.paginationData = recentPatientBase?.metaData?.pagination || 1;
 			},
-			error: (e) => this.recentPatients$$.next([]),
+			error: () => this.recentPatients$$.next([]),
 		});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
@@ -282,7 +192,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 		}
 	}
 
-	public onScroll(e: any): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.appointmentApiService.recentPatientPageNo = this.appointmentApiService.recentPatientPageNo + 1;
 			this.tableData$$.value.isLoadingMore = true;
