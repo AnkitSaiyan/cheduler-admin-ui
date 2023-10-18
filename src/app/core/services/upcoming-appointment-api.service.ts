@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, interval, map, switchMap, take } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription, combineLatest, interval, map, startWith, switchMap, take } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
@@ -13,6 +13,8 @@ import { AppointmentApiService } from './appointment-api.service';
 export class UpcomingAppointmentApiService {
 	private todaysAppointments$$ = new BehaviorSubject<Appointment[]>([]);
 
+	private refreshUpcomingAppointments$$ = new Subject<void>();
+
 	private timer$: Subscription;
 
 	constructor(private http: HttpClient, private utcPipe: UtcToLocalPipe, private appointmentApiService: AppointmentApiService) {
@@ -20,8 +22,8 @@ export class UpcomingAppointmentApiService {
 			next: (res) => this.todaysAppointments$$.next(res),
 		});
 
-		this.timer$ = interval(1000 * 60 * 5).subscribe({
-			next: () => this.updateTodaysAppointments(),
+		this.timer$ = interval(1000 * 60).subscribe({
+			next: () => this.refreshUpcomingAppointments$$.next(),
 		});
 	}
 
@@ -42,13 +44,9 @@ export class UpcomingAppointmentApiService {
 		});
 	}
 
-	private updateTodaysAppointments() {
-		this.todaysAppointments$$.next(this.filterAppointmentsIn4HourRange(this.todaysAppointments$$.value));
-	}
-
 	public get upcomingAppointmentsIn4Hours$(): Observable<Appointment[]> {
-		return this.todaysAppointments$$.asObservable().pipe(
-			map((appointments) => this.filterAppointmentsIn4HourRange(appointments)),
+		return combineLatest([this.todaysAppointments$$, this.refreshUpcomingAppointments$$.pipe(startWith(''))]).pipe(
+			map(([appointments]) => this.filterAppointmentsIn4HourRange(appointments)),
 			switchMap((appointments) => this.appointmentApiService.AttachPatientDetails(appointments)),
 		);
 	}
@@ -63,5 +61,7 @@ export class UpcomingAppointmentApiService {
 
 	public endTimer() {
 		this.timer$.unsubscribe();
+		this.refreshUpcomingAppointments$$.complete();
+		this.todaysAppointments$$.unsubscribe();
 	}
 }
