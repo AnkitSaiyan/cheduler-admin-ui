@@ -18,7 +18,7 @@ export class UpcomingAppointmentApiService {
 	private timer$: Subscription;
 
 	constructor(private http: HttpClient, private utcPipe: UtcToLocalPipe, private appointmentApiService: AppointmentApiService) {
-		this.upcomingAppointments$.pipe(take(1)).subscribe({
+		this.upcomingAppointments$.pipe().subscribe({
 			next: (res) => this.todaysAppointments$$.next(res),
 		});
 

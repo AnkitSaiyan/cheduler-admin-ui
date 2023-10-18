@@ -87,6 +87,7 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 			.subscribe({
 				next: (list) => {
 					console.log(list);
+					if(list?.length)
 					this.upcomingAppointmentApiService.todaysAppointments = list;
 				},
 			});
