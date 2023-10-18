@@ -34,7 +34,7 @@ export class UpcomingAppointmentApiService {
 	}
 
 	private filterAppointmentsIn4HourRange(appointments: Appointment[]): Appointment[] {
-		return appointments.filter((ap) => {
+		return appointments?.filter((ap) => {
 			const startedAt = ap?.exam?.startedAt ? ap.exam.startedAt : ap.startedAt;
 
 			const dateIn4Hours = new Date();
@@ -44,7 +44,7 @@ export class UpcomingAppointmentApiService {
 		});
 	}
 
-	public get upcomingAppointmentsIn4Hours$(): Observable<Appointment[]> {
+	public get upcomingAppointmentsIn4Hours$(): Observable<any> {
 		return combineLatest([this.todaysAppointments$$, this.refreshUpcomingAppointments$$.pipe(startWith(''))]).pipe(
 			map(([appointments]) => this.filterAppointmentsIn4HourRange(appointments)),
 			switchMap((appointments) => this.appointmentApiService.AttachPatientDetails(appointments)),
@@ -60,8 +60,8 @@ export class UpcomingAppointmentApiService {
 	}
 
 	public endTimer() {
-		this.timer$.unsubscribe();
-		this.refreshUpcomingAppointments$$.complete();
-		this.todaysAppointments$$.unsubscribe();
+		// this.timer$.unsubscribe();
+		// this.refreshUpcomingAppointments$$.complete();
+		// this.todaysAppointments$$.unsubscribe();
 	}
 }

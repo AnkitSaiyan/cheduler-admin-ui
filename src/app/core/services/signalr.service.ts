@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { IHttpConnectionOptions } from '@microsoft/signalr';
-import { BehaviorSubject, Observable, Subject, of, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, switchMap } from 'rxjs';
 import { AppointmentApiService } from './appointment-api.service';
 import { NotificationDataService } from './notification-data.service';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { ShareDataService } from './share-data.service';
 import { environment } from '../../../environments/environment';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { Appointment } from 'src/app/shared/models/appointment.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -17,6 +18,8 @@ export class SignalrService {
 	private appointmentsModuleData$$ = new Subject<string>();
 
 	private priorityModuleData$$ = new Subject<string>();
+
+	private upcomingAppointments$$ = new BehaviorSubject<Appointment[]>([]);
 
 	private hubConnection!: signalR.HubConnection;
 
@@ -31,6 +34,7 @@ export class SignalrService {
 		this.createConnection();
 		this.registerForAppointmentModule();
 		this.registerForPriorityModule();
+		this.registerUpcomingAppointments();
 		this.startConnection();
 
 		this.shareDataSvc.getLanguage$().subscribe({
@@ -46,6 +50,10 @@ export class SignalrService {
 
 	public get priorityModuleData$(): Observable<any> {
 		return this.priorityModuleData$$.asObservable();
+	}
+
+	public get latestUpcomingAppointments$(): Observable<Appointment[]> {
+		return this.upcomingAppointments$$.asObservable();
 	}
 
 	private createConnection() {
@@ -103,10 +111,15 @@ export class SignalrService {
 		});
 	}
 
+	private registerUpcomingAppointments(): void {
+		this.hubConnection.on('UpcomingAppointments', (param: any) => {
+			this.upcomingAppointments$$.next(param);
+		});
+	}
+
 	private sendConnectionId(connectionId: string) {
 		this.http
 			.post<BaseResponse<any>>(`${environment.schedulerApiUrl}/signalr?connectionId=${connectionId}`, null)
 			.subscribe((res) => console.log('Data send successfully'));
 	}
 }
-

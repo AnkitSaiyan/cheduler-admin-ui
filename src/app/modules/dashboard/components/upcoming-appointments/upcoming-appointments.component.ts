@@ -1,13 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DfmDatasource } from 'diflexmo-angular-design';
-import { BehaviorSubject, takeUntil, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, filter, takeUntil, withLatestFrom } from 'rxjs';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { SignalrService } from 'src/app/core/services/signalr.service';
 import { UpcomingAppointmentApiService } from 'src/app/core/services/upcoming-appointment-api.service';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { Appointment } from 'src/app/core/models/appointment.model';
 
 @Component({
 	selector: 'dfm-upcoming-appointments',
@@ -58,7 +59,9 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 		});
 
 		this.upcomingAppointmentApiService.upcomingAppointmentsIn4Hours$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointments) => this.upcomingAppointments$$.next(appointments),
+			next: (appointments) => {
+				this.upcomingAppointments$$.next(appointments);
+			},
 		});
 
 		// this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -76,12 +79,15 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 		// 	},
 		// });
 
-		this.signalRService.latestAppointmentInfo$
-			.pipe(withLatestFrom(this.upcomingAppointmentApiService.todaysAppointments$), takeUntil(this.destroy$$))
+		this.signalRService.latestUpcomingAppointments$
+			.pipe(
+				filter((res) => !!res),
+				takeUntil(this.destroy$$),
+			)
 			.subscribe({
-				next: ([item, list]) => {
-					const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
-					this.upcomingAppointmentApiService.todaysAppointments = modifiedList;
+				next: (list) => {
+					console.log(list);
+					this.upcomingAppointmentApiService.todaysAppointments = list;
 				},
 			});
 	}
