@@ -3,12 +3,12 @@ h3 {
 }
 
 .affectedAppointments {
-	border-left: 2px solid #E57373 !important;
-    background: #FFEBEE !important;
+	border-left: 2px solid #e57373 !important;
+	background: #ffebee !important;
 }
 
 .font-10 {
-  font-size: 10px !important;
+	font-size: 10px !important;
 }
 .calendar-week-view-header {
 	box-sizing: border-box;
@@ -219,16 +219,11 @@ h3 {
 					border-left: 1px solid var(--dfm-main-200);
 					position: relative;
 
-          &[data-holiday="true"] {
-              opacity: .7;
-              cursor: not-allowed;
-              background: repeating-linear-gradient(34deg,
-                  transparent,
-                  transparent 6px,
-                  var(--dfm-main-300) 3px,
-                  var(--dfm-main-300) 12px);
-
-            }
+					&[data-holiday='true'] {
+						opacity: 0.7;
+						cursor: not-allowed;
+						background: repeating-linear-gradient(34deg, transparent, transparent 6px, var(--dfm-main-300) 3px, var(--dfm-main-300) 12px);
+					}
 					.calendar-week-view-body-grid-absolute {
 						position: absolute;
 						top: 0;
@@ -241,16 +236,16 @@ h3 {
 						position: relative;
 						height: 100%;
 						width: 100%;
-            &.drag-backdrop {
-                position: absolute;
-                top: 0;
-                z-index: -1;
-                opacity: .5;
-              }
+						&.drag-backdrop {
+							position: absolute;
+							top: 0;
+							z-index: -1;
+							opacity: 0.5;
+						}
 
-              &.drag-started {
-                z-index: 999;
-              }
+						&.drag-started {
+							z-index: 999;
+						}
 					}
 				}
 			}
@@ -266,7 +261,7 @@ h3 {
 	border-bottom-left-radius: 4px;
 	z-index: 1;
 	gap: 4px;
-  overflow: hidden;
+	overflow: hidden;
 
 	.calendar-week-view-event-details-expanded {
 		min-width: 300px;
@@ -291,7 +286,6 @@ h3 {
 			.calendar-week-view-event-patients-container {
 				display: flex;
 				flex-direction: column;
-
 
 				.calendar-week-view-event-patient-details-divider {
 					border-bottom: 1px solid var(--dfm-main-200);
@@ -319,7 +313,7 @@ h3 {
 		font-size: 0.8rem;
 		font-weight: 600;
 		line-height: 22px;
-		z-index: 11	;
+		z-index: 11;
 	}
 
 	.calendar-week-view-event-details-container {
@@ -336,11 +330,11 @@ h3 {
 		cursor: pointer;
 		// overflow: hidden;
 
-    &.holiday {
-        border-left: 2px solid var(--dfm-yellow);
-        background: var(--dfm-yellow-light);
-        cursor: default;
-      }
+		&.holiday {
+			border-left: 2px solid var(--dfm-yellow);
+			background: var(--dfm-yellow-light);
+			cursor: default;
+		}
 		&:hover {
 			z-index: 2;
 			box-shadow: 0 0.125rem 1.25rem rgb(30 30 28 / 10%);
@@ -378,7 +372,7 @@ h3 {
 	display: flex;
 	z-index: 1;
 	transition: 200ms all linear;
-  overflow: hidden;
+	overflow: hidden;
 
 	&.small {
 		width: 4px;
@@ -388,7 +382,7 @@ h3 {
 	&.large {
 		left: 0px;
 		right: 0px;
-    width: 100%;
+		width: 100%;
 	}
 
 	&.High {
@@ -492,117 +486,116 @@ h3 {
 }
 
 .calender-month-view-day-exam-event-details {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 2px 8px;
-  font-size: 0.9rem;
-  border-left: 2px solid var(--dfm-blue);
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  background: var(--dfm-blue-light);
-  cursor: pointer;
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	padding: 2px 8px;
+	font-size: 0.9rem;
+	border-left: 2px solid var(--dfm-blue);
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+	background: var(--dfm-blue-light);
+	cursor: pointer;
 
-  &.holiday {
-      border-left: 2px solid var(--dfm-yellow);
-      background: var(--dfm-yellow-light);
-      cursor: default;
-    }
-  &.more-btn {
-    position: absolute;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    border: unset;
-    border-radius: unset;
-    background: #f7f5f5;
-    cursor: pointer;
-    width: 100%;
+	&.holiday {
+		border-left: 2px solid var(--dfm-yellow);
+		background: var(--dfm-yellow-light);
+		cursor: default;
+	}
+	&.more-btn {
+		position: absolute;
+		bottom: 0;
+		display: flex;
+		align-items: center;
+		border: unset;
+		border-radius: unset;
+		background: #f7f5f5;
+		cursor: pointer;
+		width: 100%;
 
-    &:hover {
-      font-weight: 600;
-    }
-  }
+		&:hover {
+			font-weight: 600;
+		}
+	}
 }
 
 .dfm-card-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 }
 .calender-month-view-day-exam-event-container {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  overflow: hidden;
-  width: 100%;
-  max-height: 40px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	overflow: hidden;
+	width: 100%;
+	max-height: 40px;
 
-  .calender-month-view-event-circle-icon {
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    left: -13px;
-    top: -8px;
-    background: var(--dfm-blue);
-    color: white;
-    text-align: center;
-    font-size: 0.6rem;
-    font-weight: 600;
-    line-height: 22px;
-  }
+	.calender-month-view-event-circle-icon {
+		position: absolute;
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		left: -13px;
+		top: -8px;
+		background: var(--dfm-blue);
+		color: white;
+		text-align: center;
+		font-size: 0.6rem;
+		font-weight: 600;
+		line-height: 22px;
+	}
 
-  .calender-month-view-day-exam-event-title {
-    min-height: 12px;
-    font-size: 10px !important;
-  }
+	.calender-month-view-day-exam-event-title {
+		min-height: 12px;
+		font-size: 10px !important;
+	}
 
-  .calender-month-view-day-exam-event-time {
-    font-size: 0.6rem;
-    font-weight: 500;
-    color: var(--dfm-main-500);
-  }
+	.calender-month-view-day-exam-event-time {
+		font-size: 0.6rem;
+		font-weight: 500;
+		color: var(--dfm-main-500);
+	}
 
-  .calender-month-view-day-exam-details-expanded {
-    min-width: 300px;
-    display: flex;
-    flex-direction: column;
-    row-gap: 8px;
+	.calender-month-view-day-exam-details-expanded {
+		min-width: 300px;
+		display: flex;
+		flex-direction: column;
+		row-gap: 8px;
 
-    .calender-month-view-day-exam-details-expanded-title {
-      font-weight: 600;
+		.calender-month-view-day-exam-details-expanded-title {
+			font-weight: 600;
 
-      &.date {
-        margin-top: -8px;
-      }
-    }
+			&.date {
+				margin-top: -8px;
+			}
+		}
 
-    .calender-month-view-day-exam-details-expanded-patients-container {
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      max-height: 40vh;
+		.calender-month-view-day-exam-details-expanded-patients-container {
+			display: flex;
+			flex-direction: column;
+			overflow-y: auto;
+			max-height: 40vh;
 
-      &::-webkit-scrollbar {
-        width: 12px;
-      }
+			&::-webkit-scrollbar {
+				width: 12px;
+			}
 
-      .calender-month-view-day-exam-details-expanded-patient-details-container {
-        display: flex;
-        flex-direction: column;
+			.calender-month-view-day-exam-details-expanded-patient-details-container {
+				display: flex;
+				flex-direction: column;
 
-
-        .calender-month-view-day-exam-details-expanded-patient-details-divider {
-          border-bottom: 1px solid var(--dfm-main-200);
-          margin: 0 8px;
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          z-index: 1;
-        }
-      }
-    }
-  }
+				.calender-month-view-day-exam-details-expanded-patient-details-divider {
+					border-bottom: 1px solid var(--dfm-main-200);
+					margin: 0 8px;
+					position: absolute;
+					bottom: 0;
+					left: 0;
+					right: 0;
+					z-index: 1;
+				}
+			}
+		}
+	}
 }

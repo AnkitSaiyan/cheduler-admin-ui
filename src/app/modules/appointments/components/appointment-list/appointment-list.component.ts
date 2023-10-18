@@ -156,7 +156,11 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	private sortTypePast: undefined | ColumnSort = 'Asc';
 
 	public isLoading: boolean = true;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> uat
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,

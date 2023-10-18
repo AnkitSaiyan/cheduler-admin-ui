@@ -83,9 +83,9 @@ import { DfmAutoScrollInViewDirective } from './directives/dfm-auto-scroll-in-vi
 import { RepeatFormComponent } from './components/repeat-form/repeat-form.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { ShowBodyPartPipe } from './pipes/show-body-part.pipe';
 import { SsnInputDirective } from './directives/ssn-input.directive';
 import { ShareDataService } from '../core/services/share-data.service';
-import { ShowBodyPartPipe } from './pipes/show-body-part.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
