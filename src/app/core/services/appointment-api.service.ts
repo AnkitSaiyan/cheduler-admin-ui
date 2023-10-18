@@ -24,7 +24,6 @@ import { LoaderService } from './loader.service';
 import { PhysicianApiService } from './physician.api.service';
 import { ShareDataService } from './share-data.service';
 import { UserManagementApiService } from './user-management-api.service';
-import { SignalrService } from './signalr.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -116,10 +115,14 @@ export class AppointmentApiService extends DestroyableComponent {
 		return combineLatest([this.appointmentPageNo$$]).pipe(
 			switchMap(([pageNo]) => {
 				return this.fetchAllAppointments$(pageNo).pipe(
-					switchMap((appointments) => this.AttachPatientDetails(appointments.data).pipe(map((data) => {
-						this.loaderSvc.deactivate();
-						return ({ ...appointments, data })
-					}))),
+					switchMap((appointments) =>
+						this.AttachPatientDetails(appointments.data).pipe(
+							map((data) => {
+								this.loaderSvc.deactivate();
+								return { ...appointments, data };
+							}),
+						),
+					),
 				);
 			}),
 		);
@@ -180,7 +183,6 @@ export class AppointmentApiService extends DestroyableComponent {
 			if (data?.LastName) queryParams['LastName'] = data.LastName;
 			if (data?.userId) queryParams['userId'] = data.userId;
 			if (data?.approval == 0 || data.approval) queryParams['approval'] = data.approval;
-
 
 			return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
 				map((response) => {
@@ -373,7 +375,6 @@ export class AppointmentApiService extends DestroyableComponent {
 		const examIdToRooms: { [key: number]: Room[] } = {};
 		const examIdToUsers: { [key: number]: User[] } = {};
 
-
 		if (appointment.roomsDetail?.length) {
 			appointment?.roomsDetail?.forEach((room) => {
 				const examId = +room.examId;
@@ -493,7 +494,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public uploadDocumnet(file: any, uniqueId: string, appointmentId = '0' ): Observable<any> {
+	public uploadDocumnet(file: any, uniqueId: string, appointmentId = '0'): Observable<any> {
 		const formData = new FormData();
 		formData.append('File', file);
 		formData.append('ApmtQRCodeId', uniqueId);
@@ -501,28 +502,28 @@ export class AppointmentApiService extends DestroyableComponent {
 		formData.append('FileName', '');
 		formData.append('AppointmentId', appointmentId);
 		return this.http.post<any>(`${environment.schedulerApiUrl}/qrcode/upload`, formData).pipe(
-		  map((response) => response.data),
-		  tap(),
+			map((response) => response.data),
+			tap(),
 		);
-	  }
-	
-	  public getDocumentById$(id: any, isPreview:boolean): Observable<any> {
+	}
+
+	public getDocumentById$(id: any, isPreview: boolean): Observable<any> {
 		let params = new HttpParams();
 		const idType = isNaN(id) ? 'qrCodeId' : 'appointmentId';
 		params = params.append(idType, id);
 		params = params.append('isPreview', isPreview);
-			return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, {params}).pipe(
-			  map((response) => response.data),
-			  tap(() => {}),
-			);
-	  }
-	  
-	  public deleteDocument(qrId: string): Observable<any> {
-		return this.http.delete<any>(`${environment.schedulerApiUrl}/qrcode/${qrId}`).pipe(
-		  map((response) => response.statusCode),
-		  tap(),
+		return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, { params }).pipe(
+			map((response) => response.data),
+			tap(() => {}),
 		);
-	  }
+	}
+
+	public deleteDocument(qrId: string): Observable<any> {
+		return this.http.delete<any>(`${environment.schedulerApiUrl}/qrcode/${qrId}`).pipe(
+			map((response) => response.statusCode),
+			tap(),
+		);
+	}
 
 	public refresh(): void {
 		this.refreshAppointment$$.next();

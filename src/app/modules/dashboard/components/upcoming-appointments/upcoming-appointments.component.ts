@@ -1,10 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DfmDatasource } from 'diflexmo-angular-design';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BehaviorSubject, takeUntil, withLatestFrom } from 'rxjs';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
+import { SignalrService } from 'src/app/core/services/signalr.service';
+import { UpcomingAppointmentApiService } from 'src/app/core/services/upcoming-appointment-api.service';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
 @Component({
 	selector: 'dfm-upcoming-appointments',
@@ -24,13 +27,18 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 
 	public noDataFound: boolean = false;
 
-	private paginationData: PaginationData | undefined;
+	// private paginationData: PaginationData | undefined;
 
-	constructor(private appointmentApiService: AppointmentApiService, private router: Router) {
+	constructor(
+		// private appointmentApiService: AppointmentApiService,
+		private upcomingAppointmentApiService: UpcomingAppointmentApiService,
+		private router: Router,
+		private signalRService: SignalrService,
+	) {
 		super();
 		this.upcomingAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredUpcomingAppointments$$ = new BehaviorSubject<any[]>([]);
-		this.appointmentApiService.pageNo = 1;
+		// this.appointmentApiService.pageNo = 1;
 	}
 
 	ngOnInit(): void {
@@ -49,20 +57,37 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 			next: (absences) => this.filteredUpcomingAppointments$$.next([...absences]),
 		});
 
-		this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointmentsBase) => {
-				if (appointmentsBase.data.length > 0) {
-					if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
-						this.upcomingAppointments$$.next([...this.upcomingAppointments$$.value, ...appointmentsBase.data]);
-					} else {
-						this.upcomingAppointments$$.next(appointmentsBase.data);
-					}
-					this.paginationData = appointmentsBase?.metaData?.pagination || 1;
-				} else {
-					this.noDataFound = true;
-				}
-			},
+		this.upcomingAppointmentApiService.upcomingAppointmentsIn4Hours$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (appointments) => this.upcomingAppointments$$.next(appointments),
 		});
+
+		// this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe({
+		// 	next: (appointmentsBase) => {
+		// 		if (appointmentsBase.data.length > 0) {
+		// 			if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
+		// 				this.upcomingAppointments$$.next([...this.upcomingAppointments$$.value, ...appointmentsBase.data]);
+		// 			} else {
+		// 				this.upcomingAppointments$$.next(appointmentsBase.data);
+		// 			}
+		// 			this.paginationData = appointmentsBase?.metaData?.pagination || 1;
+		// 		} else {
+		// 			this.noDataFound = true;
+		// 		}
+		// 	},
+		// });
+
+		this.signalRService.latestAppointmentInfo$
+			.pipe(withLatestFrom(this.upcomingAppointmentApiService.todaysAppointments$), takeUntil(this.destroy$$))
+			.subscribe({
+				next: ([item, list]) => {
+					const modifiedList = GeneralUtils.modifyListData(list, item[0], item[0].action.toLowerCase(), 'id');
+					this.upcomingAppointmentApiService.todaysAppointments = modifiedList;
+				},
+			});
+	}
+
+	public override ngOnDestroy() {
+		this.upcomingAppointmentApiService.endTimer();
 	}
 
 	public navigateToView(appointment: any) {
@@ -76,9 +101,9 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.appointmentApiService.pageNo = this.appointmentApiService.pageNo + 1;
-		}
+		// if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		// 	this.appointmentApiService.pageNo = this.appointmentApiService.pageNo + 1;
+		// }
 	}
 
 	public sortAppointment([...appointment]: any): Array<any> {

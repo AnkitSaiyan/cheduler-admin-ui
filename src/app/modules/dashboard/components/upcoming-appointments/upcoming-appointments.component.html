@@ -19,22 +19,28 @@
 		></dfm-button-icon>
 	</section>
 
-	<section *ngIf="filteredUpcomingAppointments$$ | async as upcomingAppointments" class="h-92" infiniteScroll [scrollWindow]="false" (scrolled)="onScroll()">
+	<section
+		*ngIf="filteredUpcomingAppointments$$ | async as upcomingAppointments"
+		class="h-92"
+		infiniteScroll
+		[scrollWindow]="false"
+		(scrolled)="onScroll()"
+	>
 		<div *ngIf="!noDataFound" class="d-flex flex-column dfm-gap-16 upcoming-events-container">
 			<table>
 				<thead class="text-xs">
 					<th class="mx-1"></th>
-					<th class="mx-1">{{"Time" | translate}}</th>
+					<th class="mx-1">{{ 'Time' | translate }}</th>
 					<th class="mx-1"></th>
-					<th class="text-start mx-1">{{"Patient" | translate}}</th>
-					<th class="text-start mx-1">{{"Exam" | translate}}</th>
-					<th class="text-start mx-1">{{"Room" | translate}}</th>
+					<th class="text-start mx-1">{{ 'Patient' | translate }}</th>
+					<th class="text-start mx-1">{{ 'Exam' | translate }}</th>
+					<th class="text-start mx-1">{{ 'Room' | translate }}</th>
 				</thead>
 				<tbody>
 					<tr *ngFor="let appointment of sortAppointment(upcomingAppointments)" class="position-relative text-xs">
 						<div class="circle-icon"></div>
 						<td class="mx-3">
-							<span>{{ appointment?.exam?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
+							<span>{{ appointment?.exam?.startedAt ?? appointment.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
 						</td>
 						<td class="mx-3">
 							<div class="rounded-circle avatar-container d-flex justify-content-center">
@@ -47,15 +53,15 @@
 							<span class="font-weight-medium"> {{ appointment?.patientFname | titlecase }} {{ appointment?.patientLname | titlecase }} </span>
 						</td>
 						<td class="mx-3 exam-td">
-							<span class="font-weight-medium"> {{ appointment?.exam?.name | titlecase }}</span>
+							<span class="font-weight-medium"> {{ appointment?.exam?.name ?? (appointment.exams | joinWithAnd : 'name') | titlecase }}</span>
 						</td>
 						<td class="mx-3 room-td">
-							<span class="font-weight-medium">{{ appointment.rooms | joinWithAnd : 'name' | dashIfNothing }}</span>
+							<span class="font-weight-medium">{{ appointment.rooms ?? appointment.roomsDetail | joinWithAnd : 'name' | dashIfNothing }}</span>
 						</td>
 					</tr>
 				</tbody>
-</table>
-</div>
+			</table>
+		</div>
 
 		<div class="chart-wrapper align-self-center dfm-mb-16 no-data-found" *ngIf="noDataFound">
 			<span class="dfm-text-main-400">{{ 'NoDataFound' | translate }}</span>
