@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, Subscription, combineLatest, interval, map, startWith, switchMap, take } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription, combineLatest, interval, map, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { Appointment } from 'src/app/shared/models/appointment.model';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { AppointmentApiService } from './appointment-api.service';
+import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 
 @Injectable({
 	providedIn: 'root',
 })
-export class UpcomingAppointmentApiService {
+export class UpcomingAppointmentApiService extends DestroyableComponent {
 	private todaysAppointments$$ = new BehaviorSubject<Appointment[]>([]);
 
 	private refreshUpcomingAppointments$$ = new Subject<void>();
@@ -18,7 +19,8 @@ export class UpcomingAppointmentApiService {
 	private timer$: Subscription;
 
 	constructor(private http: HttpClient, private utcPipe: UtcToLocalPipe, private appointmentApiService: AppointmentApiService) {
-		this.upcomingAppointments$.pipe().subscribe({
+		super();
+		this.upcomingAppointments$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (res) => this.todaysAppointments$$.next(res),
 		});
 
