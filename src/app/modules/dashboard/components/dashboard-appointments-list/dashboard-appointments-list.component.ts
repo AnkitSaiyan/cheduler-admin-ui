@@ -215,7 +215,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			)
 			.subscribe({
 				next: (items) => {
-					this.upcomingAppointmentApiSvc.upComingAppointments.next(items[0])
+					this.upcomingAppointmentApiSvc.upComingAppointments.next(items[0]);
 					this.upcomingTableData$$.next({
 						items: items[0],
 						isInitialLoading: false,
