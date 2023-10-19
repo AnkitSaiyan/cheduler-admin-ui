@@ -24,7 +24,6 @@
 		class="h-92"
 		infiniteScroll
 		[scrollWindow]="false"
-		(scrolled)="onScroll()"
 	>
 		<div *ngIf="!noDataFound" class="d-flex flex-column dfm-gap-16 upcoming-events-container">
 			<table>
@@ -37,7 +36,7 @@
 					<th class="text-start mx-1">{{ 'Room' | translate }}</th>
 				</thead>
 				<tbody>
-					<tr *ngFor="let appointment of sortAppointment(upcomingAppointments)" class="position-relative text-xs">
+					<tr *ngFor="let appointment of upcomingAppointments" class="position-relative text-xs">
 						<div class="circle-icon"></div>
 						<td class="mx-3">
 							<span>{{ appointment?.exam?.startedAt ?? appointment.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
@@ -45,18 +44,18 @@
 						<td class="mx-3">
 							<div class="rounded-circle avatar-container d-flex justify-content-center">
 								<div class="circle-gray-200-40 d-flex justify-content-center align-items-center">
-									{{ appointment?.patientFname?.toString()[0].toUpperCase() }}
+									{{ appointment?.patientFullName?.toString()[0].toUpperCase() }}
 								</div>
 							</div>
 						</td>
 						<td class="mx-3 name-td">
-							<span class="font-weight-medium"> {{ appointment?.patientFname | titlecase }} {{ appointment?.patientLname | titlecase }} </span>
+							<span class="font-weight-medium"> {{ appointment?.patientFullName | titlecase }}</span>
 						</td>
 						<td class="mx-3 exam-td">
-							<span class="font-weight-medium"> {{ appointment?.exam?.name ?? (appointment.exams | joinWithAnd : 'name') | titlecase }}</span>
+							<span class="font-weight-medium"> {{ appointment?.examName| titlecase }}</span>
 						</td>
 						<td class="mx-3 room-td">
-							<span class="font-weight-medium">{{ appointment.rooms ?? appointment.roomsDetail | joinWithAnd : 'name' | dashIfNothing }}</span>
+							<span class="font-weight-medium">{{ appointment.roomName | dashIfNothing }}</span>
 						</td>
 					</tr>
 				</tbody>

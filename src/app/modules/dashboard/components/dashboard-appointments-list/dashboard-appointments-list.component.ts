@@ -33,6 +33,7 @@ import { SignalrService } from 'src/app/core/services/signalr.service';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 import { SiteManagementApiService } from 'src/app/core/services/site-management-api.service';
+import { UpcomingAppointmentApiService } from 'src/app/core/services/upcoming-appointment-api.service';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -169,6 +170,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		private signalRSvc: SignalrService,
 		private dashBoardSvc: DashboardApiService,
 		private siteManagementApiSvc: SiteManagementApiService,
+		private upcomingAppointmentApiSvc : UpcomingAppointmentApiService,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -213,6 +215,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			)
 			.subscribe({
 				next: (items) => {
+					this.upcomingAppointmentApiSvc.upComingAppointments.next(items[0])
 					this.upcomingTableData$$.next({
 						items: items[0],
 						isInitialLoading: false,

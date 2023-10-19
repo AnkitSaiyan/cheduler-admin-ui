@@ -1,14 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DfmDatasource } from 'diflexmo-angular-design';
-import { BehaviorSubject, filter, takeUntil, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, filter, takeUntil } from 'rxjs';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
-import { PaginationData } from 'src/app/shared/models/base-response.model';
-import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { SignalrService } from 'src/app/core/services/signalr.service';
 import { UpcomingAppointmentApiService } from 'src/app/core/services/upcoming-appointment-api.service';
-import { GeneralUtils } from 'src/app/shared/utils/general.utils';
-import { Appointment } from 'src/app/core/models/appointment.model';
 
 @Component({
 	selector: 'dfm-upcoming-appointments',
@@ -45,6 +41,8 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 	ngOnInit(): void {
 		this.filteredUpcomingAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => {
+				if(!items.length)return
+				console.log("items", items);
 				this.tableData$$.next({
 					items,
 					isInitialLoading: false,
@@ -55,29 +53,19 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 		});
 
 		this.upcomingAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (absences) => this.filteredUpcomingAppointments$$.next([...absences]),
-		});
-
-		this.upcomingAppointmentApiService.upcomingAppointmentsIn4Hours$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointments) => {
-				this.upcomingAppointments$$.next(appointments);
+			next: (absences) => {
+				console.log([...absences]);
+				this.filteredUpcomingAppointments$$.next([...absences])
 			},
 		});
 
-		// this.appointmentApiService.upcomingAppointment$.pipe(takeUntil(this.destroy$$)).subscribe({
-		// 	next: (appointmentsBase) => {
-		// 		if (appointmentsBase.data.length > 0) {
-		// 			if (this.paginationData && this.paginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
-		// 				this.upcomingAppointments$$.next([...this.upcomingAppointments$$.value, ...appointmentsBase.data]);
-		// 			} else {
-		// 				this.upcomingAppointments$$.next(appointmentsBase.data);
-		// 			}
-		// 			this.paginationData = appointmentsBase?.metaData?.pagination || 1;
-		// 		} else {
-		// 			this.noDataFound = true;
-		// 		}
-		// 	},
-		// });
+		this.upcomingAppointmentApiService.upcomingAppointmentsIn4Hours$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (appointments) => {	
+				if (appointments.length) {
+					this.upcomingAppointments$$.next(appointments);
+				}
+			},
+		});
 
 		this.signalRService.latestUpcomingAppointments$
 			.pipe(
@@ -87,8 +75,6 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 			.subscribe({
 				next: (list) => {
 					console.log(list);
-					if(list?.length)
-					this.upcomingAppointmentApiService.todaysAppointments = list;
 				},
 			});
 	}
@@ -105,12 +91,6 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 
 	redirectToCalender() {
 		this.router.navigate(['/', 'appointment']);
-	}
-
-	public onScroll(): void {
-		// if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-		// 	this.appointmentApiService.pageNo = this.appointmentApiService.pageNo + 1;
-		// }
 	}
 
 	public sortAppointment([...appointment]: any): Array<any> {
