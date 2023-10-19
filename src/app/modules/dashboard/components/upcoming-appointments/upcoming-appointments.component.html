@@ -39,7 +39,7 @@
 					<tr *ngFor="let appointment of upcomingAppointments" class="position-relative text-xs">
 						<div class="circle-icon"></div>
 						<td class="mx-3">
-							<span>{{ appointment?.exam?.startedAt ?? appointment.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
+							<span>{{ appointment.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}</span>
 						</td>
 						<td class="mx-3">
 							<div class="rounded-circle avatar-container d-flex justify-content-center">

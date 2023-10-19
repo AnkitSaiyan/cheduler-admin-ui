@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DfmDatasource } from 'diflexmo-angular-design';
-import { BehaviorSubject, filter, takeUntil } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
-import { SignalrService } from 'src/app/core/services/signalr.service';
 import { UpcomingAppointmentApiService } from 'src/app/core/services/upcoming-appointment-api.service';
 
 @Component({
@@ -24,25 +23,15 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 
 	public noDataFound: boolean = false;
 
-	// private paginationData: PaginationData | undefined;
-
-	constructor(
-		// private appointmentApiService: AppointmentApiService,
-		private upcomingAppointmentApiService: UpcomingAppointmentApiService,
-		private router: Router,
-		private signalRService: SignalrService,
-	) {
+	constructor(private upcomingAppointmentApiService: UpcomingAppointmentApiService, private router: Router) {
 		super();
 		this.upcomingAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredUpcomingAppointments$$ = new BehaviorSubject<any[]>([]);
-		// this.appointmentApiService.pageNo = 1;
 	}
 
 	ngOnInit(): void {
 		this.filteredUpcomingAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (items) => {
-				if(!items.length)return
-				console.log("items", items);
 				this.tableData$$.next({
 					items,
 					isInitialLoading: false,
@@ -54,29 +43,17 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 
 		this.upcomingAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (absences) => {
-				console.log([...absences]);
-				this.filteredUpcomingAppointments$$.next([...absences])
+				this.filteredUpcomingAppointments$$.next([...absences]);
 			},
 		});
 
 		this.upcomingAppointmentApiService.upcomingAppointmentsIn4Hours$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointments) => {	
+			next: (appointments) => {
 				if (appointments.length) {
 					this.upcomingAppointments$$.next(appointments);
 				}
 			},
 		});
-
-		this.signalRService.latestUpcomingAppointments$
-			.pipe(
-				filter((res) => !!res),
-				takeUntil(this.destroy$$),
-			)
-			.subscribe({
-				next: (list) => {
-					console.log(list);
-				},
-			});
 	}
 
 	public override ngOnDestroy() {
@@ -91,9 +68,5 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 
 	redirectToCalender() {
 		this.router.navigate(['/', 'appointment']);
-	}
-
-	public sortAppointment([...appointment]: any): Array<any> {
-		return appointment.sort((a: any, b: any) => (new Date(b.startedAt) ? -1 : new Date(a.startedAt) ? 1 : 0));
 	}
 }
