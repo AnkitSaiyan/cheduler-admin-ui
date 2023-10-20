@@ -24,8 +24,8 @@ export class JoinWithAndPipe implements PipeTransform {
         return key ? arr[0][key]+' '+arr[0][key2] : arr[0];
       }
       if (key) {
-        firsts = arr.map((value) => value[key]+' '+arr[0][key2]).slice(0, arr.length - 1);
-        last = arr[arr.length - 1][key]+' '+arr[0][key2];
+        firsts = arr.map((value) => value[key]+' '+value[key2]).slice(0, arr.length - 1);
+        last = arr[arr.length - 1][key]+' '+arr[arr.length - 1][key2];
       } else {
         firsts = arr.slice(0, arr.length - 1);
         last = arr[arr.length - 1];
