@@ -250,9 +250,9 @@
 
                                   <small class="validation-error" *ngIf="assistantDropdown.control.hasError('assistantCount')">
                                       {{
-                                    formValues.assistantCount.toString() === '0'
+                                    formValues.roomsForExam[rowIndex].assistantCount.toString() === '0'
                                       ? 'Please deselect Assistants'
-                                      : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.assistantCount + ' ' + ('Assistant(s)' | translate)+'.'
+                                      : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.roomsForExam[rowIndex].assistantCount + ' ' + ('Assistant(s)' | translate)+'.'
                                       }}
                                   </small>
                               </div>
@@ -292,9 +292,9 @@
                                   <small class="validation-error"
                                         *ngIf="radiologistDropdown.control.hasError('radiologistCount')">
                                       {{
-                                    formValues.radiologistCount.toString() === '0'
+                                    formValues.roomsForExam[rowIndex].radiologistCount.toString() === '0'
                                       ? 'Please deselect Radiologists'
-                                      : ('PleaseSelectAtLeast' | translate) + ' ' + (formValues.radiologistCount) + ' ' + ('Radiologist(s)' | translate) + '.'
+                                      : ('PleaseSelectAtLeast' | translate) + ' ' + (formValues.roomsForExam[rowIndex].radiologistCount) + ' ' + ('Radiologist(s)' | translate) + '.'
                                       }}
                                   </small>
                               </div>
@@ -333,9 +333,9 @@
 
                                   <small class="validation-error" *ngIf="nursingDropdown.control.hasError('nursingCount')">
                                       {{
-                                    formValues.nursingCount.toString() === '0'
+                                    formValues.roomsForExam[rowIndex].nursingCount.toString() === '0'
                                       ? 'Please deselect Nursing'
-                                      : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.nursingCount + ' ' + (' Nursing' | translate)
+                                      : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.roomsForExam[rowIndex].nursingCount + ' ' + (' Nursing' | translate)
                                       }}
                                   </small>
                               </div>
@@ -375,13 +375,29 @@
 
                                   <small class="validation-error" *ngIf="secretaryDropdown.control.hasError('secretaryCount')">
                                       {{
-                                    formValues.secretaryCount.toString() === '0'
+                                    formValues.roomsForExam[rowIndex].secretaryCount.toString() === '0'
                                       ? 'Please deselect Secretaries'
-                                      : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.secretaryCount + ' ' + ('Secretary(s)' | translate)+'.'
+                                      : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.roomsForExam[rowIndex].secretaryCount + ' ' + ('Secretary(s)' | translate)+'.'
                                       }}
                                   </small>
                               </div>
                             </div>
+                            <div class="d-flex flex-1 dfm-gap-24">
+                              <div class="flex-1">
+                                  <dfm-input-dropdown
+                                    #mandatoryStaffsDropdown
+                                    size="md"
+                                    [multiple]="true"
+                                    [typeToSearch]="true"
+                                    (searchInput)="handleDropdownSearch($event, 'mandatory')"
+                                    [placeholder]="((mandatoryStaffsDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
+                                    label="{{ 'MandatoryStaffs' | translate }}"
+                                    [items]="filteredMandatoryStaffs$$.value"
+                                    formControlName="mandatoryStaffs"
+                                  >
+                                  </dfm-input-dropdown>
+                              </div>
+                          </div>
                           </div>
 
                         </mat-tab>
@@ -398,9 +414,6 @@
 
                     </div>
 
-                    <small *ngIf="formErrors.selectRoomErr" class="validation-error">
-                        {{ 'PleaseSelectAtLeastOneRoom' | translate }}
-                    </small>
                     <small *ngIf="formErrors.expensiveErr && !formErrors.selectRoomErr" class="validation-error">
                         {{"ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame" | translate}}
                     </small>
@@ -431,21 +444,6 @@
                           label="{{ 'Uncombinable' | translate }}"
                           [items]="filteredExams$$.value"
                           formControlName="uncombinables"
-                        >
-                        </dfm-input-dropdown>
-                    </div>
-
-                    <div class="flex-1">
-                        <dfm-input-dropdown
-                          #mandatoryStaffsDropdown
-                          size="md"
-                          [multiple]="true"
-                          [typeToSearch]="true"
-                          (searchInput)="handleDropdownSearch($event, 'mandatory')"
-                          [placeholder]="((mandatoryStaffsDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
-                          label="{{ 'MandatoryStaffs' | translate }}"
-                          [items]="filteredMandatoryStaffs$$.value"
-                          formControlName="mandatoryStaffs"
                         >
                         </dfm-input-dropdown>
                     </div>

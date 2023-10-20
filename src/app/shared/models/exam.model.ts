@@ -49,19 +49,21 @@ export interface CreateExamRequestData {
 	expensive: number;
 	bodyType: string;
 	bodyPart: string[] | number[];
-	roomsForExam: {
-		roomId: number;
-		duration: number;
+	resourcesBatch: {
+		batchName: string;
+		roomOrder: number;
+		roomList: number[] | string[];
+		roomduration: number;
+		assistantCount: number;
+		radiologistCount: number;
+		nursingCount: number;
+		secretaryCount: number;
+		usersList: number[];
+		mandatoryUsers: number[];
 	}[];
 	info?: string;
 	instructions?: string;
 	uncombinables?: number[];
-	assistantCount: number;
-	radiologistCount: number;
-	nursingCount: number;
-	secretaryCount: number;
-	usersList: number[];
-	mandatoryUsers: number[];
 	availabilityType: AvailabilityType;
 	practiceAvailability: TimeSlot[];
 	status: Status;
