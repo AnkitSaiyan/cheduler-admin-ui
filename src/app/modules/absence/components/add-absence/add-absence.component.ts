@@ -639,14 +639,14 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	}
 
 	private handleTimeChange() {
-		if (!this.formValues.startTime || !this.formValues.startedAt?.day || !this.formValues.endTime || !this.formValues.endTime) {
+		if (!this.formValues.startTime || !this.formValues.startedAt?.day || !this.formValues.endTime) {
 			return;
 		}
 
-		const { startedAt, endedAt, startTime, endTime } = this.formValues;
+		const { startedAt, endedAt, startTime, endTime, isRepeat } = this.formValues;
 
 
-		if (startedAt?.day === endedAt?.day && startedAt?.month === endedAt?.month && startedAt?.year === endedAt?.year) {
+		if ((startedAt?.day === endedAt?.day && startedAt?.month === endedAt?.month && startedAt?.year === endedAt?.year) || isRepeat) {
 			if (DateTimeUtils.TimeToNumber(startTime) >= DateTimeUtils.TimeToNumber(endTime)) {
 				toggleControlError(this.absenceForm.get('startTime'), 'time');
 				toggleControlError(this.absenceForm.get('endTime'), 'time');
@@ -655,6 +655,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			}
 
 		}
+
+		
+
+		// formValues.isRepeat
 
 		toggleControlError(this.absenceForm.get('startTime'), 'time', false);
 		toggleControlError(this.absenceForm.get('endTime'), 'time', false);
