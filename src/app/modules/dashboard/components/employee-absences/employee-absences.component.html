@@ -40,7 +40,7 @@
       <div class="d-flex flex-column text-sm">
         <div class="d-flex align-items-center dfm-gap-8">
           <span class="font-weight-medium">{{ employee.name }}</span>
-          <span class="text-xs dfm-text-main-400">({{ employee.info }})</span>
+          <span class="text-xs dfm-text-main-400" *ngIf="employee.info">({{ employee.info }})</span>
         </div>
         <span class="text-xs dfm-text-main-500">{{ employee?.startedAt | dfmUtcToLocal: false : true | dfmDefaultDate }} - {{ employee?.endedAt | dfmUtcToLocal : false : true | dfmDefaultDate }}</span>
       </div>
