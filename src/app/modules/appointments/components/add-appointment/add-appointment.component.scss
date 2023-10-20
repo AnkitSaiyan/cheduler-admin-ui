@@ -62,8 +62,8 @@
 }
 
 .time-slot-selected-text {
-  background: var(--dfm-primary);
-  color: white;
+  background: var(--dfm-primary) !important;
+  color: white !important;
 }
 
 .time-text {
@@ -151,6 +151,10 @@
   }
   .input-field-mv{
     width: 100%;
+  }
+
+  .time-slot-text {
+    background-color: white;
   }
 }
 
