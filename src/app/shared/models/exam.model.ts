@@ -38,12 +38,12 @@ export interface ResourceBatch {
 	examId: number;
 	batchName: string;
 	roomOrder: number;
-	roomduration: number;
+	roomDuration: number;
 	assistantCount: number;
 	radiologistCount: number;
 	nursingCount: number;
 	secretaryCount: number;
-	usersList: number[];
+	userList: number[];
 	users: User[];
 	roomList: number[];
 	rooms: Room[];
@@ -69,7 +69,7 @@ export interface CreateExamRequestData {
 		radiologistCount: number;
 		nursingCount: number;
 		secretaryCount: number;
-		usersList: number[];
+		userList: number[];
 		mandatoryUsers: number[];
 	}[];
 	info?: string;

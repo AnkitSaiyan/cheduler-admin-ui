@@ -465,19 +465,19 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 						nursingCount: +nursingCount ?? 0,
 						radiologistCount: +radiologistCount ?? 0,
 						secretaryCount: +secretaryCount ?? 0,
-						mandatoryUsers: [...(mandatoryStaffs.map((value) => +value) ?? [])],
-						usersList: [
-							...(assistants.map((value) => +value) ?? []),
-							...(nursing.map((value) => +value) ?? []),
-							...(radiologists.map((value) => +value) ?? []),
-							...(secretaries.map((value) => +value) ?? []),
+						mandatoryUsers: [...(mandatoryStaffs?.map((value) => +value) ?? [])],
+						userList: [
+							...(assistants?.map((value) => +value) ?? []),
+							...(nursing?.map((value) => +value) ?? []),
+							...(radiologists?.map((value) => +value) ?? []),
+							...(secretaries?.map((value) => +value) ?? []),
 						],
 					}),
 				),
-			].sort((a, b) => (+a.roomOrder < +b.roomOrder ? -1 : 1)),
+			]?.sort((a, b) => (+a.roomOrder < +b.roomOrder ? -1 : 1)),
 			status: this.formValues.status,
 			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues?.values?.length : 0,
-			uncombinables: this.formValues.uncombinables.map((value) => +value) ?? [],
+			uncombinables: this.formValues.uncombinables?.map((value) => +value) ?? [],
 			practiceAvailability: timeSlotFormValues?.values || [],
 		};
 
@@ -626,16 +626,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	}
 
 	private updateForm(examDetails?: Exam): void {
-		// assistantCount: examDetails?.assistantCount?.toString() ?? '0',
-		// 	radiologistCount: examDetails?.radiologistCount?.toString() ?? '0',
-		// 	nursingCount: examDetails?.nursingCount?.toString() ?? '0',
-		// 	secretaryCount: examDetails?.secretaryCount?.toString() ?? '0',
-		// 	assistants,
-		// 	nursing,
-		// 	secretaries,
-		// 	radiologists,
-		// 	mandatoryStaffs: mandatory,
-
 		this.examForm.patchValue({
 			name: examDetails?.name,
 			expensive: examDetails?.expensive,
@@ -671,7 +661,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 	private addRoomForm(batch?: ResourceBatch): FormGroup {
 		const fg = this.fb.group({
-			duration: [batch?.roomduration, [Validators.required]],
+			duration: [batch?.roomDuration, [Validators.required]],
 			sortOrder: [null, [Validators.required]],
 			roomName: [[], []],
 			selectRoom: [null, []],
