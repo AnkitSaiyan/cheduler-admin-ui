@@ -150,238 +150,17 @@
                     </div>
                 </div>
 
-                <div class="d-flex dfm-gap-8 flex-column" *ngIf="!!examForm.get('roomType')?.value">
+                <div class="d-flex dfm-gap-8 flex-column" *ngIf="!!examForm.get('roomType')?.value && roomsForExam.length">
                     <span class="text-sm font-weight-medium dfm-text-main-700">{{ formValues.roomType | titlecase | translate }} {{ 'Rooms' | translate }}
                         *</span>
 
                     <div class="d-flex flex-column fm-gap-24 flex-wrap" formArrayName="roomsForExam">
-                        <div
-                                [formGroupName]="rowIndex"
-                                *ngFor="let roomForExamControl of roomsForExamControls; let rowIndex = index"
-                                class="d-flex flex-row dfm-gap-8 align-items-baseline ad-ex-room-list"
-                        >
+                      <mat-tab-group [selectedIndex]="roomsForExam.length -1" animationDuration="0ms">
 
-                          <mat-accordion>
-                            <mat-expansion-panel (opened)="panelOpenState = true"
-                                                (closed)="panelOpenState = false">
-                              <mat-expansion-panel-header>
-                                <mat-panel-title>
-                                  Room {{rowIndex + 1}}
-                                </mat-panel-title>
-
-                              </mat-expansion-panel-header>
-                                <div class="d-flex flex-row dfm-gap-8 align-items-baseline ad-ex-room-list">
-
-                                  <div class="">
-                                    <dfm-input-dropdown
-                                            class="flex-1"
-                                            #bodyPartDropdown
-                                            size="md"
-                                            [placeholder]="((bodyPartDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'Select Room') | async) ?? ''"
-                                            formControlName="roomName"
-                                            [items]="(availableRooms$$.value[examForm.get('roomType')?.value]) ?? []"
-                                            [multiple]="true"
-                                    ></dfm-input-dropdown>
-                                  </div>
-
-
-                                  <div class="ad-ex-duration">
-                                      <dfm-input
-                                        #duration
-                                        [dfmNumberInput]="duration"
-                                        type="text"
-                                        size="sm"
-                                        placeholder="{{ 'DurationMins' | translate }}"
-                                        formControlName="duration"
-                                        (focusout)="handleExpenseInput($event, duration, roomForExamControl.get('duration'))"
-                                      >
-                                      </dfm-input>
-                                  </div>
-                                  <div class="order" *ngIf="orderOption$$ | async as orderOption">
-                                      <dfm-input-dropdown
-                                              size="sm"
-                                              formControlName="sortOrder"
-                                              placeholder="{{ 'Order' | translate }}"
-                                              [items]="orderOption | numberArray : 1 | nameValuePair "
-                                      >
-                                      </dfm-input-dropdown>
-                                      <small *ngIf="roomsForExamControls[rowIndex]?.value?.sortOrder | sortOrderValidation : examForm?.value : rowIndex"  class="validation-error">
-                                        {{ 'OrderingNotValid' | translate }}
-                                    </small>
-                                  </div>
-                                </div>
-                                <div class="ad-ex-general-staff">
-                                  <div class="d-flex flex-column flex-1">
-                                      <div class="d-flex dfm-gap-16">
-                                          <div class="ad-ex-count-dropdown">
-                                              <dfm-input-dropdown
-                                                      class="flex-1"
-                                                      size="md"
-                                                      label="{{ 'SelectNo' | translate }}"
-                                                      placeholder="{{ 'Select' | translate }}"
-                                                      formControlName="assistantCount"
-                                                      [items]="filteredAssistants$$.value.length | numberArray : 0 | nameValuePair"
-                                              >
-                                              </dfm-input-dropdown>
-                                          </div>
-
-                                          <div class="ad-ex-general-staff-dropdown">
-                                              <div class="add-exam-dropdown">
-                                                  <dfm-input-dropdown
-                                                    #assistantDropdown
-                                                    size="md"
-                                                    label="{{ 'Assistant' | translate }}"
-                                                    placeholder="{{ 'SelectAssistant' | translate }}"
-                                                    [multiple]="true"
-                                                    formControlName="assistants"
-                                                    [typeToSearch]="true"
-                                                    (searchInput)="handleDropdownSearch($event, 'assistant')"
-                                                    [placeholder]="((assistantDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectAssistant') | async) ?? ''"
-                                                    [items]="filteredAssistants$$.value"
-                                                  >
-                                                  </dfm-input-dropdown>
-                                              </div>
-                                          </div>
-                                      </div>
-
-                                      <small class="validation-error" *ngIf="assistantDropdown.control.hasError('assistantCount')">
-                                          {{
-                                        formValues.assistantCount.toString() === '0'
-                                          ? 'Please deselect Assistants'
-                                          : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.assistantCount + ' ' + ('Assistant(s)' | translate)+'.'
-                                          }}
-                                      </small>
-                                  </div>
-
-                                  <div class="d-flex flex-column flex-1">
-                                      <div class="d-flex dfm-gap-16">
-                                          <div class="ad-ex-count-dropdown">
-                                              <dfm-input-dropdown
-                                                      size="md"
-                                                      label="{{ 'SelectNo' | translate }}"
-                                                      placeholder="{{'Select'| translate}}"
-                                                      formControlName="radiologistCount"
-                                                      [items]="filteredRadiologists$$.value.length | numberArray : 0 | nameValuePair"
-                                              >
-                                              </dfm-input-dropdown>
-                                          </div>
-
-                                          <div class="ad-ex-general-staff-dropdown">
-                                              <div class="add-exam-dropdown">
-                                                  <dfm-input-dropdown
-                                                    #radiologistDropdown
-                                                    size="md"
-                                                    label="{{ 'Radiologist' | translate }}"
-                                                    placeholder="{{ 'SelectRadiologist' | translate }}"
-                                                    [typeToSearch]="true"
-                                                    (searchInput)="handleDropdownSearch($event, 'radio')"
-                                                    [multiple]="true"
-                                                    formControlName="radiologists"
-                                                    [placeholder]="((radiologistDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRadiologist') | async) ?? ''"
-                                                    [items]="filteredRadiologists$$.value"
-                                                  >
-                                                  </dfm-input-dropdown>
-                                              </div>
-                                          </div>
-                                      </div>
-
-                                      <small class="validation-error"
-                                            *ngIf="radiologistDropdown.control.hasError('radiologistCount')">
-                                          {{
-                                        formValues.radiologistCount.toString() === '0'
-                                          ? 'Please deselect Radiologists'
-                                          : ('PleaseSelectAtLeast' | translate) + ' ' + (formValues.radiologistCount) + ' ' + ('Radiologist(s)' | translate) + '.'
-                                          }}
-                                      </small>
-                                  </div>
-
-                                  <div class="d-flex flex-column flex-1">
-                                      <div class="d-flex dfm-gap-16">
-                                          <div class="ad-ex-count-dropdown">
-                                              <dfm-input-dropdown
-                                                      size="md"
-                                                      label="{{ 'SelectNo' | translate }}"
-                                                      placeholder="{{ 'Select' | translate }}"
-                                                      formControlName="nursingCount"
-                                                      [items]="filteredNursing$$.value.length | numberArray : 0 | nameValuePair"
-                                              >
-                                              </dfm-input-dropdown>
-                                          </div>
-
-                                          <div class="ad-ex-general-staff-dropdown">
-                                              <div class="add-exam-dropdown">
-                                                  <dfm-input-dropdown
-                                                    #nursingDropdown
-                                                    size="md"
-                                                    label="{{ 'Nursing' | translate }}"
-                                                    placeholder="{{ 'SelectNursing' | translate }}"
-                                                    [multiple]="true"
-                                                    formControlName="nursing"
-                                                    [typeToSearch]="true"
-                                                    (searchInput)="handleDropdownSearch($event, 'nursing')"
-                                                    [placeholder]="((nursingDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectNursing') | async) ?? ''"
-                                                    [items]="filteredNursing$$.value"
-                                                  >
-                                                  </dfm-input-dropdown>
-                                              </div>
-                                          </div>
-                                      </div>
-
-                                      <small class="validation-error" *ngIf="nursingDropdown.control.hasError('nursingCount')">
-                                          {{
-                                        formValues.nursingCount.toString() === '0'
-                                          ? 'Please deselect Nursing'
-                                          : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.nursingCount + ' ' + (' Nursing' | translate)
-                                          }}
-                                      </small>
-                                  </div>
-
-                                  <div class="d-flex flex-column flex-1">
-                                      <div class="d-flex dfm-gap-16">
-                                          <div class="ad-ex-count-dropdown">
-                                              <dfm-input-dropdown
-                                                      size="md"
-                                                      label="{{ 'SelectNo' | translate }}"
-                                                      placeholder="{{ 'Select' | translate }}"
-                                                      formControlName="secretaryCount"
-                                                      [items]="filteredSecretaries$$.value.length | numberArray : 0 | nameValuePair"
-                                              >
-                                              </dfm-input-dropdown>
-                                          </div>
-
-                                          <div class="ad-ex-general-staff-dropdown">
-                                              <div class="add-exam-dropdown">
-                                                  <dfm-input-dropdown
-                                                    #secretaryDropdown
-                                                    size="md"
-                                                    label="{{ 'Secretary' | translate }}"
-                                                    placeholder="{{ 'SelectSecretary' | translate }}"
-                                                    [multiple]="true"
-                                                    formControlName="secretaries"
-                                                    [typeToSearch]="true"
-                                                    (searchInput)="handleDropdownSearch($event, 'secretary')"
-                                                    [placeholder]="((secretaryDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectSecretary') | async) ?? ''"
-                                                    [items]="filteredSecretaries$$.value"
-                                                    class="add-exam-dropdown"
-                                                  >
-                                                  </dfm-input-dropdown>
-                                              </div>
-                                          </div>
-                                      </div>
-
-                                      <small class="validation-error" *ngIf="secretaryDropdown.control.hasError('secretaryCount')">
-                                          {{
-                                        formValues.secretaryCount.toString() === '0'
-                                          ? 'Please deselect Secretaries'
-                                          : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.secretaryCount + ' ' + ('Secretary(s)' | translate)+'.'
-                                          }}
-                                      </small>
-                                  </div>
-                                </div>
-                            </mat-expansion-panel>
-                          </mat-accordion>
-
-                          <div class="dfm-mt-32 trash-btn" *ngIf="roomsForExam.length > 1">
+                        <mat-tab [formGroupName]="rowIndex"
+                        *ngFor="let roomForExamControl of roomsForExamControls; let rowIndex = index" >
+                          <ng-template mat-tab-label>
+                            Room {{rowIndex + 1}}
                             <dfm-button-icon
                               size="sm"
                               icon="trash-01"
@@ -389,28 +168,234 @@
                               triggers="mouseenter:mouseleave"
                               popoverClass="popover-p-8"
                               [openDelay]="200"
+                              color="tertiary"
                               (click)="removeRoomForm(rowIndex)"
-                              color="tertiary"
+                              *ngIf="roomsForExam.length > 1"
                             ></dfm-button-icon>
-                          </div>
+                          </ng-template>
+                          <div class="room-container">
+                            <div class="d-flex flex-row dfm-gap-8 align-items-baseline ad-ex-room-list dfm-mt-16 ">
+
+                              <div class="">
+                                <dfm-input-dropdown
+                                        class="flex-1"
+                                        #bodyPartDropdown
+                                        size="md"
+                                        [placeholder]="((bodyPartDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'Select Room') | async) ?? ''"
+                                        formControlName="roomName"
+                                        [items]="(availableRoomsOption$$.value[examForm.get('roomType')?.value]) ?? []"
+                                        [multiple]="true"
+                                ></dfm-input-dropdown>
+                              </div>
 
 
-                          <div class="dfm-mt-32 trash-btn" *ngIf="roomsForExam.length === rowIndex + 1">
-                            <dfm-button-icon
-                              size="sm"
-                              icon="plus"
-                              ngbPopover="Add more room"
-                              triggers="mouseenter:mouseleave"
-                              popoverClass="popover-p-8"
-                              [openDelay]="200"
-                              (click)="addMoreRoomForm()"
-                              color="tertiary"
-                            ></dfm-button-icon>
+                              <div class="ad-ex-duration">
+                                  <dfm-input
+                                    #duration
+                                    [dfmNumberInput]="duration"
+                                    type="text"
+                                    size="sm"
+                                    placeholder="{{ 'DurationMins' | translate }}"
+                                    formControlName="duration"
+                                    (focusout)="handleExpenseInput($event, duration, roomForExamControl.get('duration'))"
+                                  >
+                                  </dfm-input>
+                              </div>
+                              <div class="order" *ngIf="orderOption$$ | async as orderOption">
+                                  <dfm-input-dropdown
+                                          size="sm"
+                                          formControlName="sortOrder"
+                                          placeholder="{{ 'Order' | translate }}"
+                                          [items]="orderOption | numberArray : 1 | nameValuePair "
+                                  >
+                                  </dfm-input-dropdown>
+                                  <small *ngIf="roomsForExamControls[rowIndex]?.value?.sortOrder | sortOrderValidation : examForm?.value : rowIndex"  class="validation-error">
+                                    {{ 'OrderingNotValid' | translate }}
+                                </small>
+                              </div>
+                            </div>
+                            <div class="ad-ex-general-staff">
+                              <div class="d-flex flex-column flex-1">
+                                  <div class="d-flex dfm-gap-16">
+                                      <div class="ad-ex-count-dropdown">
+                                          <dfm-input-dropdown
+                                                  class="flex-1"
+                                                  size="md"
+                                                  label="{{ 'SelectNo' | translate }}"
+                                                  placeholder="{{ 'Select' | translate }}"
+                                                  formControlName="assistantCount"
+                                                  [items]="filteredAssistants$$.value.length | numberArray : 0 | nameValuePair"
+                                          >
+                                          </dfm-input-dropdown>
+                                      </div>
+
+                                      <div class="ad-ex-general-staff-dropdown">
+                                          <div class="add-exam-dropdown">
+                                              <dfm-input-dropdown
+                                                #assistantDropdown
+                                                size="md"
+                                                label="{{ 'Assistant' | translate }}"
+                                                placeholder="{{ 'SelectAssistant' | translate }}"
+                                                [multiple]="true"
+                                                formControlName="assistants"
+                                                [typeToSearch]="true"
+                                                (searchInput)="handleDropdownSearch($event, 'assistant')"
+                                                [placeholder]="((assistantDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectAssistant') | async) ?? ''"
+                                                [items]="filteredAssistants$$.value"
+                                              >
+                                              </dfm-input-dropdown>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <small class="validation-error" *ngIf="assistantDropdown.control.hasError('assistantCount')">
+                                      {{
+                                    formValues.assistantCount.toString() === '0'
+                                      ? 'Please deselect Assistants'
+                                      : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.assistantCount + ' ' + ('Assistant(s)' | translate)+'.'
+                                      }}
+                                  </small>
+                              </div>
+
+                              <div class="d-flex flex-column flex-1">
+                                  <div class="d-flex dfm-gap-16">
+                                      <div class="ad-ex-count-dropdown">
+                                          <dfm-input-dropdown
+                                                  size="md"
+                                                  label="{{ 'SelectNo' | translate }}"
+                                                  placeholder="{{'Select'| translate}}"
+                                                  formControlName="radiologistCount"
+                                                  [items]="filteredRadiologists$$.value.length | numberArray : 0 | nameValuePair"
+                                          >
+                                          </dfm-input-dropdown>
+                                      </div>
+
+                                      <div class="ad-ex-general-staff-dropdown">
+                                          <div class="add-exam-dropdown">
+                                              <dfm-input-dropdown
+                                                #radiologistDropdown
+                                                size="md"
+                                                label="{{ 'Radiologist' | translate }}"
+                                                placeholder="{{ 'SelectRadiologist' | translate }}"
+                                                [typeToSearch]="true"
+                                                (searchInput)="handleDropdownSearch($event, 'radio')"
+                                                [multiple]="true"
+                                                formControlName="radiologists"
+                                                [placeholder]="((radiologistDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectRadiologist') | async) ?? ''"
+                                                [items]="filteredRadiologists$$.value"
+                                              >
+                                              </dfm-input-dropdown>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <small class="validation-error"
+                                        *ngIf="radiologistDropdown.control.hasError('radiologistCount')">
+                                      {{
+                                    formValues.radiologistCount.toString() === '0'
+                                      ? 'Please deselect Radiologists'
+                                      : ('PleaseSelectAtLeast' | translate) + ' ' + (formValues.radiologistCount) + ' ' + ('Radiologist(s)' | translate) + '.'
+                                      }}
+                                  </small>
+                              </div>
+
+                              <div class="d-flex flex-column flex-1">
+                                  <div class="d-flex dfm-gap-16">
+                                      <div class="ad-ex-count-dropdown">
+                                          <dfm-input-dropdown
+                                                  size="md"
+                                                  label="{{ 'SelectNo' | translate }}"
+                                                  placeholder="{{ 'Select' | translate }}"
+                                                  formControlName="nursingCount"
+                                                  [items]="filteredNursing$$.value.length | numberArray : 0 | nameValuePair"
+                                          >
+                                          </dfm-input-dropdown>
+                                      </div>
+
+                                      <div class="ad-ex-general-staff-dropdown">
+                                          <div class="add-exam-dropdown">
+                                              <dfm-input-dropdown
+                                                #nursingDropdown
+                                                size="md"
+                                                label="{{ 'Nursing' | translate }}"
+                                                placeholder="{{ 'SelectNursing' | translate }}"
+                                                [multiple]="true"
+                                                formControlName="nursing"
+                                                [typeToSearch]="true"
+                                                (searchInput)="handleDropdownSearch($event, 'nursing')"
+                                                [placeholder]="((nursingDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectNursing') | async) ?? ''"
+                                                [items]="filteredNursing$$.value"
+                                              >
+                                              </dfm-input-dropdown>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <small class="validation-error" *ngIf="nursingDropdown.control.hasError('nursingCount')">
+                                      {{
+                                    formValues.nursingCount.toString() === '0'
+                                      ? 'Please deselect Nursing'
+                                      : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.nursingCount + ' ' + (' Nursing' | translate)
+                                      }}
+                                  </small>
+                              </div>
+
+                              <div class="d-flex flex-column flex-1">
+                                  <div class="d-flex dfm-gap-16">
+                                      <div class="ad-ex-count-dropdown">
+                                          <dfm-input-dropdown
+                                                  size="md"
+                                                  label="{{ 'SelectNo' | translate }}"
+                                                  placeholder="{{ 'Select' | translate }}"
+                                                  formControlName="secretaryCount"
+                                                  [items]="filteredSecretaries$$.value.length | numberArray : 0 | nameValuePair"
+                                          >
+                                          </dfm-input-dropdown>
+                                      </div>
+
+                                      <div class="ad-ex-general-staff-dropdown">
+                                          <div class="add-exam-dropdown">
+                                              <dfm-input-dropdown
+                                                #secretaryDropdown
+                                                size="md"
+                                                label="{{ 'Secretary' | translate }}"
+                                                placeholder="{{ 'SelectSecretary' | translate }}"
+                                                [multiple]="true"
+                                                formControlName="secretaries"
+                                                [typeToSearch]="true"
+                                                (searchInput)="handleDropdownSearch($event, 'secretary')"
+                                                [placeholder]="((secretaryDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectSecretary') | async) ?? ''"
+                                                [items]="filteredSecretaries$$.value"
+                                                class="add-exam-dropdown"
+                                              >
+                                              </dfm-input-dropdown>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <small class="validation-error" *ngIf="secretaryDropdown.control.hasError('secretaryCount')">
+                                      {{
+                                    formValues.secretaryCount.toString() === '0'
+                                      ? 'Please deselect Secretaries'
+                                      : ('PleaseSelectAtLeast' | translate) + ' ' + formValues.secretaryCount + ' ' + ('Secretary(s)' | translate)+'.'
+                                      }}
+                                  </small>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        <!-- <div class="room-message"
-                             *ngIf="!roomsForExamControls.length">{{"NoRoomsAreAvailable" | translate}}
-                        </div> -->
+
+                        </mat-tab>
+
+                        <mat-tab disabled>
+                          <ng-template mat-tab-label>
+                              <button mat-icon-button (click)="addMoreRoomForm()">
+                                <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
+                              </button>
+
+                          </ng-template>
+                        </mat-tab>
+                      </mat-tab-group>
+
                     </div>
 
                     <small *ngIf="formErrors.selectRoomErr" class="validation-error">

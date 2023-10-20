@@ -69,6 +69,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 	public examDetails$$ = new BehaviorSubject<Exam | undefined>(undefined);
 	public availableRooms$$ = new BehaviorSubject<RoomsGroupedByType>({ private: [], public: [] });
+	public availableRoomsOption$$ = new BehaviorSubject<RoomsGroupedByType>({ private: [], public: [] });
 	public loading$$ = new BehaviorSubject(false);
 	public submitting$$ = new BehaviorSubject(false);
 	public filteredAssistants$$ = new BehaviorSubject<NameValue[]>([]);
@@ -240,7 +241,13 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			});
 
 		this.roomApiSvc.roomsGroupedByType$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (rooms) => this.availableRooms$$.next(rooms),
+			next: (rooms) => {
+				this.availableRooms$$.next(rooms);
+				this.availableRoomsOption$$.next({
+					private: rooms.private?.map((room) => ({ ...room, value: room.id })),
+					public: rooms.public?.map((room) => ({ ...room, value: room.id })),
+				});
+			},
 		});
 
 		this.shareDataSvc
@@ -844,10 +851,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 			setTimeout(() => {
 				fa.controls.forEach((control) => {
-					const room: any = this.availableRooms$$.value[roomType].find((room) => +room.id === +control.value.roomId);
-					if (control.get('selectRoom')?.value && room) {
-						control.get('sortOrder')?.setValue(control.value.sortOrder.toString());
-					}
+					// const room: any = this.availableRooms$$.value[roomType].find((room) => +room.id === +control.value.roomId);
+					// if (control.get('selectRoom')?.value && room) {
+					// 	control.get('sortOrder')?.setValue(control.value.sortOrder.toString());
+					// }
 				});
 			}, 0);
 		}
