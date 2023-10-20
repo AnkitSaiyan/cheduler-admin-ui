@@ -561,6 +561,22 @@ export const Translate = Object.freeze({
 			[DUTCH_BE]: 'Secretaresse',
 		},
 	},
+	Radiologist: {
+		[ENG_BE]: 'Radiologist',
+		[DUTCH_BE]: 'Radioloog',
+	},
+	Nursing: {
+		[ENG_BE]: 'Nursing',
+		[DUTCH_BE]: 'Verpleging',
+	},
+	Assistant: {
+		[ENG_BE]: 'Assistant',
+		[DUTCH_BE]: 'Assistent',
+	},
+	Secretary: {
+		[ENG_BE]: 'Secretary',
+		[DUTCH_BE]: 'Secretaresse',
+	},
 
 	PrioritySlots: {
 		[ENG_BE]: 'Priority Slots',
@@ -849,7 +865,23 @@ export const Translate = Object.freeze({
 		[ENG_BE]: 'Downloading in progress...',
 		[DUTCH_BE]: 'Bezig met downloaden...',
 	},
+	BatchName: {
+		[ENG_BE]: 'Batch Name',
+		[DUTCH_BE]: 'Batch Name',
+	},
+	Mandatory: {
+		[ENG_BE]: 'Mandatory',
+		[DUTCH_BE]: 'Mandatory',
+	},
+	RoomDuration: {
+		[ENG_BE]: 'Room Duration',
+		[DUTCH_BE]: 'Room Duration',
+	},
 });
+
+
+
+
 
 
 

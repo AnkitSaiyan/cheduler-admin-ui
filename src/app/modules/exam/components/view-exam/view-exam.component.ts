@@ -1,24 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { User, UserType } from '../../../../shared/models/user.model';
-import { TimeSlot, Weekday, WeekWisePracticeAvailability } from '../../../../shared/models/calendar.model';
-import { RouterStateService } from '../../../../core/services/router-state.service';
+import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { ENG_BE, EXAM_ID } from '../../../../shared/utils/const';
-import { PracticeAvailability } from '../../../../shared/models/practice.model';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { TimeSlot, WeekWisePracticeAvailability, Weekday } from '../../../../shared/models/calendar.model';
 import { Exam, Uncombinables } from '../../../../shared/models/exam.model';
-import { RoomsApiService } from '../../../../core/services/rooms-api.service';
-import { NameValue } from '../../../../shared/components/search-modal.component';
+import { PracticeAvailability } from '../../../../shared/models/practice.model';
+import { User, UserType } from '../../../../shared/models/user.model';
+import { ENG_BE, EXAM_ID } from '../../../../shared/utils/const';
 
-import { Translate } from '../../../../shared/models/translate.model';
+import { DfmDatasource, DfmTableHeader } from 'diflexmo-angular-design';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { Translate } from '../../../../shared/models/translate.model';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 
 @Component({
 	selector: 'dfm-view-exam',
@@ -30,20 +28,6 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 
 	public uncombinablesExam$$ = new BehaviorSubject<Uncombinables[]>([]);
 
-	public staffsGroupedByTypes: {
-		mandatory: NameValue[];
-		radiologists: NameValue[];
-		assistants: NameValue[];
-		nursing: NameValue[];
-		secretaries: NameValue[];
-	} = {
-		mandatory: [],
-		radiologists: [],
-		assistants: [],
-		nursing: [],
-		secretaries: [],
-	};
-
 	public practiceAvailability$$ = new BehaviorSubject<any[]>([]);
 
 	public columns: Weekday[] = [Weekday.MON, Weekday.TUE, Weekday.WED, Weekday.THU, Weekday.FRI, Weekday.SAT, Weekday.SUN];
@@ -52,11 +36,27 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 
 	public readonly Permission = Permission;
 
+	private batchColumns: string[] = ['BatchName', 'Room', 'Expensive', 'Assistant', 'Radiologist', 'Nursing', 'Secretary', 'Mandatory'];
+
+	public tableHeaders: DfmTableHeader[] = [
+		{ id: '1', title: 'Batch Name', isSortable: false },
+		{ id: '2', title: 'Rooms', isSortable: false },
+		{ id: '3', title: 'Expensive', isSortable: false },
+		{ id: '4', title: 'Assistants', isSortable: false },
+		{ id: '5', title: 'Radiologist', isSortable: false },
+		{ id: '6', title: 'Nursing', isSortable: false },
+		{ id: '7', title: 'Secretary', isSortable: false },
+		{ id: '8', title: 'Mandatory', isSortable: false },
+	];
+
+	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
+		items: [],
+		isInitialLoading: true,
+		isLoadingMore: false,
+	});
+
 	constructor(
 		private examApiService: ExamApiService,
-		private roomApiService: RoomsApiService,
-		private routerStateSvc: RouterStateService,
-		private examApiSvc: ExamApiService,
 		private notificationSvc: NotificationDataService,
 		private router: Router,
 		private modalSvc: ModalService,
@@ -78,12 +78,48 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 				next: (exam) => {
 					this.examDetails$$.next(exam);
 					this.uncombinablesExam$$.next(exam?.uncombinablesExam ?? []);
+					this.tableData$$.next({
+						items:
+							exam?.resourcesBatch.map((item) => {
+								const assistants: User[] = [];
+								const radiologists: User[] = [];
+								const nursing: User[] = [];
+								const secretaries: User[] = [];
+								const mandatory: User[] = [];
+
+								if (item?.users?.length) {
+									item.users.forEach((u) => {
+										if (u.isMandate) {
+											mandatory.push(u);
+										} else {
+											switch (u.userType) {
+												case UserType.Assistant:
+													assistants.push(u);
+													break;
+												case UserType.Radiologist:
+													radiologists.push(u);
+													break;
+												case UserType.Nursing:
+													nursing.push(u);
+													break;
+												case UserType.Secretary:
+													secretaries.push(u);
+													break;
+												default:
+											}
+										}
+									});
+								}
+								return { ...item, id: item.batchId, assistants, radiologists, nursing, secretaries, mandatory };
+							}) ?? [],
+						isInitialLoading: false,
+						isLoading: false,
+						isLoadingMore: false,
+					});
+
+					console.log(this.tableData$$.value);
 					if (exam?.practiceAvailability?.length) {
 						this.practiceAvailability$$.next([...this.getPracticeAvailability(exam.practiceAvailability)]);
-					}
-
-					if (exam?.users?.length) {
-						this.saveStaffDetails(exam.users);
 					}
 				},
 			});
@@ -92,7 +128,13 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: (lang) => (this.selectedLang = lang),
+				next: (lang) => {
+					this.selectedLang = lang;
+					this.tableHeaders = this.tableHeaders.map((h, i) => ({
+						...h,
+						title: Translate[this.batchColumns[i]][lang],
+					}));
+				},
 			});
 	}
 
@@ -118,35 +160,6 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 					this.router.navigate(['/', 'exam'], { queryParamsHandling: 'merge', relativeTo: this.route });
 				},
 			});
-	}
-
-	private saveStaffDetails(users: User[]) {
-		users.forEach((user) => {
-			const nameValue: NameValue = {
-				name: `${user.firstname} ${user.lastname}`,
-				value: user.id,
-			};
-			if (user.isMandate) {
-				this.staffsGroupedByTypes.mandatory.push(nameValue);
-			} else {
-				switch (user.userType) {
-					case UserType.Assistant:
-						this.staffsGroupedByTypes.assistants.push(nameValue);
-						break;
-					case UserType.Radiologist:
-						this.staffsGroupedByTypes.radiologists.push(nameValue);
-						break;
-					case UserType.Nursing:
-						this.staffsGroupedByTypes.nursing.push(nameValue);
-						break;
-					case UserType.Secretary:
-					case UserType.Scheduler:
-						this.staffsGroupedByTypes.secretaries.push(nameValue);
-						break;
-					default:
-				}
-			}
-		});
 	}
 
 	private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): WeekWisePracticeAvailability[] {
