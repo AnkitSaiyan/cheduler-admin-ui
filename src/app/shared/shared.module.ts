@@ -86,6 +86,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ShowBodyPartPipe } from './pipes/show-body-part.pipe';
 import { SsnInputDirective } from './directives/ssn-input.directive';
 import { ShareDataService } from '../core/services/share-data.service';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -175,6 +176,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatSlideToggleModule,
 		MatTabsModule,
 		MatButtonToggleModule,
+		MatExpansionModule,
 	],
 	exports: [
 		DesignSystemModule,
@@ -244,6 +246,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatTabsModule,
 		MatButtonToggleModule,
 		SsnInputDirective,
+		MatExpansionModule,
 	],
 	providers: [
 		TranslatePipe,
