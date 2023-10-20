@@ -1,8 +1,7 @@
 import { AvailabilityType, User } from './user.model';
 import { Status } from './status.model';
 import { Room, RoomType } from './rooms.model';
-import {TimeSlot, Weekday} from './calendar.model';
-import { PracticeAvailability } from './practice.model';
+import { TimeSlot, Weekday } from './calendar.model';
 import { BodyType } from '../utils/const';
 import { BodyPart } from './body-part.model';
 
@@ -13,17 +12,11 @@ export interface Exam {
 	bodyPart: string;
 	bodyType: BodyType;
 	info: string;
-	assistantCount: number;
-	radiologistCount: number;
-	nursingCount: number;
-	secretaryCount: number;
 	availabilityType: AvailabilityType;
 	bodyPartDetails: BodyPart[];
 	count?: number;
 	status: Status;
 	users?: User[];
-	usersList: number[];
-	mandatoryUsers: number[];
 	roomsForExam: {
 		duration: number;
 		roomId: number;
@@ -37,6 +30,24 @@ export interface Exam {
 	practiceAvailability?: any[];
 	instructions: string;
 	allUsers?: User[];
+	resourcesBatch: ResourceBatch[];
+}
+
+export interface ResourceBatch {
+	batchId: number;
+	examId: number;
+	batchName: string;
+	roomOrder: number;
+	roomduration: number;
+	assistantCount: number;
+	radiologistCount: number;
+	nursingCount: number;
+	secretaryCount: number;
+	usersList: number[];
+	users: User[];
+	roomList: number[];
+	rooms: Room[];
+	mandatoryUsers: User[];
 }
 
 export interface Uncombinables {
