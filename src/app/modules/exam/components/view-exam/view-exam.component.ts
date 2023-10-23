@@ -85,29 +85,29 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 								const radiologists: User[] = [];
 								const nursing: User[] = [];
 								const secretaries: User[] = [];
-								const mandatory: User[] = [];
+								const mandatory: User[] = [...(item.mandatoryUsers ?? [])];
 
 								if (item?.users?.length) {
 									item.users.forEach((u) => {
-										if (u.isMandate) {
-											mandatory.push(u);
-										} else {
-											switch (u.userType) {
-												case UserType.Assistant:
-													assistants.push(u);
-													break;
-												case UserType.Radiologist:
-													radiologists.push(u);
-													break;
-												case UserType.Nursing:
-													nursing.push(u);
-													break;
-												case UserType.Secretary:
-													secretaries.push(u);
-													break;
-												default:
-											}
+										// if (u.isMandate) {
+										// 	mandatory.push(u);
+										// } else {
+										switch (u.userType) {
+											case UserType.Assistant:
+												assistants.push(u);
+												break;
+											case UserType.Radiologist:
+												radiologists.push(u);
+												break;
+											case UserType.Nursing:
+												nursing.push(u);
+												break;
+											case UserType.Secretary:
+												secretaries.push(u);
+												break;
+											default:
 										}
+										// }
 									});
 								}
 								return { ...item, id: item.batchId, assistants, radiologists, nursing, secretaries, mandatory };

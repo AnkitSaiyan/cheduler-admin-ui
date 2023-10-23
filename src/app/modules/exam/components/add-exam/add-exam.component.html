@@ -176,7 +176,7 @@
 												size="md"
 												[placeholder]="(roomDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'Select Room' | async) ?? ''"
 												formControlName="roomName"
-												[items]="availableRoomsOption$$.value[examForm.get('roomType')?.value] ?? []"
+												[items]="roomForExamControl?.get('filteredRooms')?.value ?? []"
 												[multiple]="true"
 											></dfm-input-dropdown>
 										</div>
@@ -186,7 +186,7 @@
 												#duration
 												[dfmNumberInput]="duration"
 												type="text"
-												size="sm"
+												size="md"
 												placeholder="{{ 'DurationMins' | translate }}"
 												formControlName="duration"
 												(focusout)="handleExpenseInput($event, duration, roomForExamControl.get('duration'))"
@@ -195,7 +195,7 @@
 										</div>
 										<div class="order" *ngIf="orderOption$$ | async as orderOption">
 											<dfm-input-dropdown
-												size="sm"
+												size="md"
 												formControlName="sortOrder"
 												placeholder="{{ 'Order' | translate }}"
 												[items]="orderOption | numberArray : 1 | nameValuePair"
@@ -397,7 +397,7 @@
 											</small>
 										</div>
 									</div>
-									<div class="d-flex flex-1 dfm-gap-24">
+									<div class="d-flex flex-1 dfm-gap-24 dfm-mb-16">
 										<div class="flex-1">
 											<dfm-input-dropdown
 												#mandatoryStaffsDropdown
@@ -463,8 +463,6 @@
 						</dfm-input-dropdown>
 					</div>
 				</div>
-
-				<span class="text-sm font-weight-medium dfm-text-main-700 dfm-mt-16">{{ 'GeneralStaff' | translate }}</span>
 			</div>
 
 			<div class="d-flex flex-column dfm-gap-16">

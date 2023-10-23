@@ -649,6 +649,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					this.cdr.detectChanges();
 
 					const fa = this.examForm.get('roomsForExam') as FormArray;
+
 					setTimeout(() => {
 						fa.clear();
 						examDetails.resourcesBatch.forEach((batch) => {
@@ -660,7 +661,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	}
 
 	private addRoomForm(batch?: ResourceBatch): FormGroup {
+		const roomsByType = this.availableRoomsOption$$.value[this.examForm.value.roomType];
+
 		const fg = this.fb.group({
+			formId: [Math.floor(Math.random() * 100000)],
 			duration: [batch?.roomDuration, [Validators.required]],
 			sortOrder: [null, [Validators.required]],
 			roomName: [[], []],
@@ -674,34 +678,35 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			secretaryCount: [null, []],
 			secretaries: [[], []],
 			mandatoryStaffs: [[], []],
+			filteredRooms: [[...roomsByType]],
 		});
 
 		const assistants: string[] = [];
 		const radiologists: string[] = [];
 		const nursing: string[] = [];
 		const secretaries: string[] = [];
-		const mandatory: string[] = [];
+		// const mandatory: string[] = [];
 
 		if (batch?.users?.length) {
 			batch.users.forEach((u) => {
-				if (u.isMandate) {
-					mandatory.push(u.id.toString());
-				} else {
-					switch (u.userType) {
-						case UserType.Assistant:
-							assistants.push(u.id.toString());
-							break;
-						case UserType.Radiologist:
-							radiologists.push(u.id.toString());
-							break;
-						case UserType.Nursing:
-							nursing.push(u.id.toString());
-							break;
-						case UserType.Secretary:
-							secretaries.push(u.id.toString());
-							break;
-						default:
-					}
+				// if (u.isMandate) {
+				// 	mandatory.push(u.id.toString());
+				// } else {
+				switch (u.userType) {
+					case UserType.Assistant:
+						assistants.push(u.id.toString());
+						break;
+					case UserType.Radiologist:
+						radiologists.push(u.id.toString());
+						break;
+					case UserType.Nursing:
+						nursing.push(u.id.toString());
+						break;
+					case UserType.Secretary:
+						secretaries.push(u.id.toString());
+						break;
+					default:
+					// }
 				}
 			});
 		}
@@ -718,7 +723,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 				nursing,
 				secretaries,
 				radiologists,
-				mandatoryStaffs: mandatory,
+				mandatoryStaffs: batch?.mandatoryUsers ?? [],
 			} as any);
 		}, 100);
 
@@ -745,19 +750,54 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			.subscribe(() => {
 				this.checkStaffCountValidity(fg.get('secretaries'), fg.get('secretaryCount'), 'secretaryCount');
 			});
+
 		fg.get('duration')
 			?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
-			.subscribe(() => this.toggleExpensiveError(+this.formValues.expensive));
+			.subscribe({
+				next: () => this.toggleExpensiveError(+this.formValues.expensive),
+			});
+
+		fg.get('roomName')
+			?.valueChanges?.pipe(debounceTime(500))
+			.subscribe({
+				next: () => this.filterBatchRooms(),
+			});
+
 		return fg;
 	}
+
+	// TODO: Needs to Optimize this solution
+	public filterBatchRooms(): void {
+		const roomsByType = this.availableRoomsOption$$.value[this.examForm.value?.roomType] ?? [];
+
+		for (let control of this.roomsForExamControls) {
+			const roomIDsSet = new Set();
+			for (let currControl of this.roomsForExamControls) {
+				if (currControl.value.formId === control.value.formId) {
+					continue;
+				}
+				currControl.value.roomName?.forEach((id: number | string) => roomIDsSet.add(id));
+			}
+
+			control.patchValue(
+				{
+					filteredRooms: roomsByType.filter((room: NameValue) => !roomIDsSet.has(room.value)),
+				},
+				{ emitEvent: false },
+			);
+		}
+	}
+
 	public addMoreRoomForm() {
 		const fa = this.examForm.get('roomsForExam') as FormArray;
-		fa.push(this.addRoomForm());
+		const fg = this.addRoomForm();
+		fa.push(fg);
 	}
 
 	public removeRoomForm(index: number) {
 		const fa = this.examForm.get('roomsForExam') as FormArray;
 		fa.removeAt(index);
+		this.filterBatchRooms();
 	}
 
 	private getRoomsForExamFormGroup(room: Room): FormGroup {
