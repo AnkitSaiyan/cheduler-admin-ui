@@ -176,7 +176,7 @@
 												size="md"
 												[placeholder]="(roomDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'Select Room' | async) ?? ''"
 												formControlName="roomName"
-												[items]="availableRoomsOption$$.value[examForm.get('roomType')?.value] ?? []"
+												[items]="roomForExamControl?.get('filteredRooms')?.value ?? []"
 												[multiple]="true"
 											></dfm-input-dropdown>
 										</div>
