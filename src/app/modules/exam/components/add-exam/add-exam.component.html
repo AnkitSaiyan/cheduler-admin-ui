@@ -126,6 +126,9 @@
 							{{ 'RequiredField' | translate }}
 						</div>
 						<small class="validation-error" *ngIf="expensive.control.hasError('min')">{{ 'PleaseEnterAtLeastFiveMin' | translate }}</small>
+            <small *ngIf="!expensive.control.hasError('min') && !examForm.get('expensive')?.hasError('required')&& formErrors.expensiveErr && !formErrors.selectRoomErr" class="validation-error">
+              {{ 'ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame' | translate }}
+            </small>
 					</div>
 
 					<div class="exam-form-mv">
@@ -179,6 +182,9 @@
 												[items]="roomForExamControl?.get('filteredRooms')?.value ?? []"
 												[multiple]="true"
 											></dfm-input-dropdown>
+                      <div class="validation-error" *ngIf="roomForExamControl?.get('roomName')?.hasError('required') && roomForExamControl?.get('roomName')?.touched">
+                        {{ 'RequiredField' | translate }}
+                      </div>
 										</div>
 
 										<div class="ad-ex-duration">
@@ -192,6 +198,10 @@
 												(focusout)="handleExpenseInput($event, duration, roomForExamControl.get('duration'))"
 											>
 											</dfm-input>
+                      <div class="validation-error" *ngIf="roomForExamControl?.get('duration')?.hasError('required') && roomForExamControl?.get('duration')?.touched">
+                        {{ 'RequiredField' | translate }}
+                      </div>
+
 										</div>
 										<div class="order" *ngIf="orderOption$$ | async as orderOption">
 											<dfm-input-dropdown
@@ -425,10 +435,6 @@
 							</mat-tab>
 						</mat-tab-group>
 					</div>
-
-					<small *ngIf="formErrors.expensiveErr && !formErrors.selectRoomErr" class="validation-error">
-						{{ 'ExpensiveOfTheExamAndTotalMinutesOfRoomsShouldBeTheSame' | translate }}
-					</small>
 				</div>
 				<div class="d-flex dfm-gap-24">
 					<div class="flex-1">
