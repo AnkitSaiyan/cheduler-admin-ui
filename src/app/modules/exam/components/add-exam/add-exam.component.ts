@@ -182,6 +182,13 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 				},
 			});
 
+    this.examForm
+			.get('expensive')
+			?.valueChanges.pipe(takeUntil(this.destroy$$))
+			.subscribe((value) => this.toggleExpensiveError(+value));
+
+
+
 		this.userApiSvc.allStaffs$.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe({
 			next: (staffs) => {
 				const radiologists: NameValue[] = [];
@@ -364,15 +371,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		let valid = true;
 
 		if (!this.examForm.valid) {
-			['name', 'expensive', 'roomType', 'bodyPart', 'bodyType'].forEach((value) => {
-				this.examForm.controls[value].markAsTouched();
-			});
-			(this.examForm.controls['roomsForExam'] as FormArray).controls.forEach((control) => {
-				if (control.get('selectRoom')?.value) {
-					control.markAllAsTouched();
-				}
-			});
-			// this.examForm.markAllAsTouched();
+      this.examForm.markAllAsTouched();
 			valid = false;
 		}
 
@@ -667,7 +666,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			formId: [Math.floor(Math.random() * 100000)],
 			duration: [batch?.roomDuration, [Validators.required]],
 			sortOrder: [null, [Validators.required]],
-			roomName: [[], []],
+			roomName: [[], [Validators.required]],
 			selectRoom: [null, []],
 			assistantCount: [null, []],
 			assistants: [[], []],
@@ -711,21 +710,24 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			});
 		}
 
-		setTimeout(() => {
-			fg.patchValue({
-				roomName: batch?.rooms.map(({ id }) => id),
-				sortOrder: batch?.roomOrder.toString(),
-				assistantCount: batch?.assistantCount?.toString() ?? '0',
-				radiologistCount: batch?.radiologistCount?.toString() ?? '0',
-				nursingCount: batch?.nursingCount?.toString() ?? '0',
-				secretaryCount: batch?.secretaryCount?.toString() ?? '0',
-				assistants,
-				nursing,
-				secretaries,
-				radiologists,
-				mandatoryStaffs: batch?.mandatoryUsers ?? [],
-			} as any);
-		}, 100);
+		if (batch) {
+			setTimeout(() => {
+				fg.patchValue({
+					roomName: batch?.rooms.map(({ id }) => id),
+					sortOrder: batch?.roomOrder.toString(),
+					assistantCount: batch?.assistantCount?.toString() ?? '0',
+					radiologistCount: batch?.radiologistCount?.toString() ?? '0',
+					nursingCount: batch?.nursingCount?.toString() ?? '0',
+					secretaryCount: batch?.secretaryCount?.toString() ?? '0',
+					assistants,
+					nursing,
+					secretaries,
+					radiologists,
+					mandatoryStaffs: batch?.mandatoryUsers ?? [],
+				} as any);
+			}, 100);
+		}
+
 
 		combineLatest([fg?.get('assistants')?.valueChanges?.pipe(startWith('')), fg?.get('assistantCount')?.valueChanges])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
