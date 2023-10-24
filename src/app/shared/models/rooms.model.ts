@@ -1,13 +1,13 @@
-import {AvailabilityType} from './user.model';
-import {Status} from './status.model';
-import {PracticeAvailability} from './practice.model';
-import {TimeSlot} from "./calendar.model";
-import {Exam} from './exam.model';
+import { AvailabilityType, User } from './user.model';
+import { Status } from './status.model';
+import { PracticeAvailability } from './practice.model';
+import { TimeSlot } from './calendar.model';
+import { Exam } from './exam.model';
 import { PartialBy, Prettify } from '../utils/types';
 
 export enum RoomType {
-    Private = 'private',
-    Public = 'public',
+	Private = 'private',
+	Public = 'public',
 }
 
 export interface Room {
@@ -25,6 +25,7 @@ export interface Room {
 	examId: number;
 	examLists?: number[];
 	exams: Exam[];
+	users?: User[];
 }
 
 export type AddRoomRequestData = Prettify<
@@ -34,11 +35,11 @@ export type AddRoomRequestData = Prettify<
 >;
 
 export interface RoomsGroupedByType {
-    public: Room[];
-    private: Room[];
+	public: Room[];
+	private: Room[];
 }
 
 export interface UpdateRoomPlaceInAgendaRequestData {
-    id: number;
-    placeInAgenda: number;
+	id: number;
+	placeInAgenda: number;
 }

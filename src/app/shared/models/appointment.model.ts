@@ -1,5 +1,5 @@
 import { Room, RoomType } from './rooms.model';
-import { Exam } from './exam.model';
+import { Exam, ResourceBatch } from './exam.model';
 import { User } from './user.model';
 import { AppointmentStatus, ReadStatus } from './status.model';
 
@@ -40,6 +40,58 @@ export interface Appointment {
 	documentCount?: number;
 	isEditable: boolean;
 	absenceDetails?: [];
+	examDetail: Array<{
+		id: number;
+		name: string;
+		expensive: number;
+		info: string;
+		instructions: string;
+		assistantCount: number;
+		radiologistCount: number;
+		nursingCount: number;
+		secretaryCount: number;
+		availabilityType: number;
+		availabilityText: string;
+		status: number;
+		bodyType: string;
+		statusText: string;
+		count: number;
+		startedAt: string;
+		endedAt: string;
+		usersList: User[];
+		mandatoryUsers: User[];
+		uncombinables: any;
+		uncombinablesExam: any;
+		practiceAvailability: any;
+		resourcesBatch: ResourceBatch[];
+		users: User[];
+	}>;
+	examBatchDetail?: Array<{
+		id: number;
+		name: string;
+		expensive: number;
+		info: string;
+		instructions: string;
+		assistantCount: number;
+		radiologistCount: number;
+		nursingCount: number;
+		secretaryCount: number;
+		availabilityType: number;
+		availabilityText: string;
+		status: number;
+		bodyType: string;
+		statusText: string;
+		count: number;
+		startedAt: string;
+		endedAt: string;
+		usersList: User[];
+		mandatoryUsers: User[];
+		uncombinables: any;
+		uncombinablesExam: any;
+		practiceAvailability: any;
+		resourcesBatch: ResourceBatch[];
+		users: User[];
+	}>;
 }
 
 export interface AddAppointmentRequestData {
@@ -50,13 +102,7 @@ export interface AddAppointmentRequestData {
 	patientEmail: string;
 	patientTel: number;
 	comments: string;
-	examDetails: Array<{
-		examId: number;
-		startedAt: string;
-		endedAt: string;
-		roomList?: number[];
-		userList?: number[];
-	}>;
+
 	exams: Array<{
 		examId: number;
 		startedAt: string;
