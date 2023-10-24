@@ -261,14 +261,14 @@ export class AppointmentApiService extends DestroyableComponent {
 				}
 				if (userDetail) {
 					return {
-						...this.getAppointmentModified(response.data),
+						...this.getAppointmentModified({ ...response?.data, examDetail: response?.data?.examBatchDetail } as any),
 						patientFname: userDetail?.givenName,
 						patientLname: userDetail?.surname,
 						patientTel: userDetail.properties?.['extension_PhoneNumber'],
 						patientEmail: userDetail.email,
 					};
 				}
-				return this.getAppointmentModified({ ...response.data, examDetail: response.data?.examBatchDetail } as any);
+				return this.getAppointmentModified({ ...response?.data, examDetail: response?.data?.examBatchDetail } as any);
 			}),
 			tap(() => {
 				this.loaderSvc.deactivate();
@@ -390,11 +390,11 @@ export class AppointmentApiService extends DestroyableComponent {
 			appointment?.examDetail?.forEach((examDetail) => {
 				examDetail?.resourcesBatch?.forEach((batch) => {
 					roomIdToUsers[batch?.rooms?.[0]?.id] = batch.users;
-					batch.users.forEach((user) => {
+					batch?.users?.forEach((user) => {
 						if (!examIdToUsers[+examDetail.id]) {
 							examIdToUsers[+examDetail.id] = [];
 						}
-						examIdToUsers[+examDetail.id].push(user);
+						examIdToUsers[+examDetail.id]?.push(user);
 					});
 				});
 			});
@@ -405,7 +405,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
 		const ap = {
 			...appointment,
-			exams: appointment.examDetail.map((exam) => {
+			exams: appointment?.examDetail?.map((exam) => {
 				if (exam.startedAt && (!startedAt || new Date(exam.startedAt) < startedAt)) {
 					startedAt = new Date(exam.startedAt);
 				}
@@ -416,7 +416,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
 				return {
 					...exam,
-					rooms: examIdToRooms[+exam.id].map((room) => ({ ...room, users: roomIdToUsers[room.id] })),
+					rooms: examIdToRooms[+exam.id]?.map((room) => ({ ...room, users: roomIdToUsers[room.id] })),
 					allUsers: exam?.users?.filter((user, index, rest) => rest.findIndex((restUser) => restUser.id === user.id) === index) ?? [],
 					users: examIdToUsers[+exam.id]?.filter((user, index, rest) => rest.findIndex((restUser) => restUser.id === user.id) === index),
 				};
