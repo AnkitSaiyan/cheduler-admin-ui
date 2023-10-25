@@ -529,14 +529,16 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			this.endDateControl.setValue(date);
 		}
 
+		const startedAt = absenceDetails?.startedAt || this.selectedDate;
+
 		this.absenceForm = this.fb.group({
 			name: [absenceDetails?.name ?? '', [Validators.required]],
 			startedAt: [
-				absenceDetails?.startedAt
+				startedAt
 					? {
-							year: new Date(absenceDetails?.startedAt).getFullYear(),
-							month: new Date(absenceDetails?.startedAt).getMonth() + 1,
-							day: new Date(absenceDetails?.startedAt).getDate(),
+							year: new Date(startedAt).getFullYear(),
+							month: new Date(startedAt).getMonth() + 1,
+							day: new Date(startedAt).getDate(),
 					  }
 					: null,
 				[Validators.required],
