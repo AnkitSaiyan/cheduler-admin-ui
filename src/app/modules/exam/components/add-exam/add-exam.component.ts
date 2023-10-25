@@ -725,7 +725,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					nursing,
 					secretaries,
 					radiologists,
-					mandatoryStaffs: batch?.mandatoryUsers ?? [],
+					mandatoryStaffs: batch?.mandatoryUsers.map((id) => id.toString()) ?? [],
 				} as any);
 			}, 100);
 		}
