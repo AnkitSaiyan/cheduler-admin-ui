@@ -272,16 +272,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			.subscribe({
 				next: (lang) => {
 					this.selectedLang = lang;
-					// this.columns = [
-					//   Translate.FirstName[lang],
-					//   Translate.LastName[lang],
-					//   Translate.Email[lang],
-					//   Translate.Telephone[lang],
-					//   Translate.Category[lang],
-					//   Translate.Status[lang],
-					//   Translate.Actions[lang],
-					// ];
-
 					// eslint-disable-next-line default-case
 					switch (lang) {
 						case ENG_BE:
@@ -604,7 +594,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		this.examForm
 			.get('roomType')
-			?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
+			?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
 			.subscribe((roomType) => {
 				this.createRoomsForExamFormArray(roomType);
 			});
