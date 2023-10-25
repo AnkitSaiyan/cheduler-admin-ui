@@ -3,7 +3,9 @@
     <dfm-absence-table-view ></dfm-absence-table-view>
   </ng-container>
   <ng-template #calendar>
-    <dfm-absence-calendar-view>
+    <dfm-absence-calendar-view 
+    (dateChange)="changeDate($event)" 
+    >       
       <div id="top-action" class="d-flex dfm-gap-8 align-items-center justify-content-between mb-16">
         <div>
           <dfm-button class="ap-li-title-buttons" color="link" size="lg" *ngIf="absenceType !== 'public-holiday'" routerLink="./">{{absenceType | titlecase | translate}} {{ 'Absence' | translate }} </dfm-button>
