@@ -2,7 +2,21 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
-import { BehaviorSubject, Subject, combineLatest, debounceTime, filter, first, map, of, startWith, switchMap, take, takeUntil } from 'rxjs';
+import {
+	BehaviorSubject,
+	Subject,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	first,
+	map,
+	of,
+	startWith,
+	switchMap,
+	take,
+	takeUntil,
+} from 'rxjs';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
@@ -182,12 +196,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 				},
 			});
 
-    this.examForm
+		this.examForm
 			.get('expensive')
 			?.valueChanges.pipe(takeUntil(this.destroy$$))
 			.subscribe((value) => this.toggleExpensiveError(+value));
-
-
 
 		this.userApiSvc.allStaffs$.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe({
 			next: (staffs) => {
@@ -260,16 +272,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			.subscribe({
 				next: (lang) => {
 					this.selectedLang = lang;
-					// this.columns = [
-					//   Translate.FirstName[lang],
-					//   Translate.LastName[lang],
-					//   Translate.Email[lang],
-					//   Translate.Telephone[lang],
-					//   Translate.Category[lang],
-					//   Translate.Status[lang],
-					//   Translate.Actions[lang],
-					// ];
-
 					// eslint-disable-next-line default-case
 					switch (lang) {
 						case ENG_BE:
@@ -371,7 +373,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		let valid = true;
 
 		if (!this.examForm.valid) {
-      this.examForm.markAllAsTouched();
+			this.examForm.markAllAsTouched();
 			valid = false;
 		}
 
@@ -592,7 +594,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		this.examForm
 			.get('roomType')
-			?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
+			?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
 			.subscribe((roomType) => {
 				this.createRoomsForExamFormArray(roomType);
 			});
@@ -728,7 +730,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			}, 100);
 		}
 
-
 		combineLatest([fg?.get('assistants')?.valueChanges?.pipe(startWith('')), fg?.get('assistantCount')?.valueChanges])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
 			.subscribe(() => {
@@ -760,9 +761,19 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			});
 
 		fg.get('roomName')
-			?.valueChanges?.pipe(debounceTime(500))
+			?.valueChanges?.pipe(
+				debounceTime(10),
+				distinctUntilChanged((pre: any, curr: any) => {
+					if (pre?.length !== curr?.length) return false;
+					const roomIdSet = new Set(pre);
+					return curr.every((id) => roomIdSet.has(id));
+				}),
+				takeUntil(this.destroy$$),
+			)
 			.subscribe({
-				next: () => this.filterBatchRooms(),
+				next: () => {
+					this.filterBatchRooms();
+				},
 			});
 
 		return fg;
@@ -781,10 +792,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 				currControl.value.roomName?.forEach((id: number | string) => roomIDsSet.add(id));
 			}
 
-			control.patchValue(
-				{
-					filteredRooms: roomsByType.filter((room: NameValue) => !roomIDsSet.has(room.value)),
-				},
+			control.get('filteredRooms')?.setValue(
+				roomsByType.filter((room: NameValue) => !roomIDsSet.has(room.value)),
 				{ emitEvent: false },
 			);
 		}
@@ -794,6 +803,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		const fa = this.examForm.get('roomsForExam') as FormArray;
 		const fg = this.addRoomForm();
 		fa.push(fg);
+		this.filterBatchRooms();
 	}
 
 	public removeRoomForm(index: number) {
