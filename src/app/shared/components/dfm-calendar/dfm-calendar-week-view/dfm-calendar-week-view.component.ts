@@ -327,6 +327,37 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		return durationMinutes * this.pixelsPerMin;
 	}
 
+	public getGroupHeight(groupedData: any[][]): number {
+		let groupStartDate = this.datePipe.transform(new Date(groupedData?.[0]?.[0].startedAt), 'HH:mm:ss') ?? '';
+		let groupEndDate = this.datePipe.transform(new Date(groupedData?.[0]?.[0].endedAt), 'HH:mm:ss') ?? '';
+		groupedData.forEach((data) => {
+			const startDate = this.datePipe.transform(new Date(data?.[0]?.startedAt), 'HH:mm:ss')!;
+			const sortedData = [...data].sort((s1, s2) => (s1.endedAt.getTime() > s2.endedAt.getTime() ? -1 : 1));
+			const endDate = this.datePipe.transform(new Date(sortedData?.[0]?.endedAt), 'HH:mm:ss')!;
+			if (DateTimeUtils.TimeToNumber(groupStartDate) > DateTimeUtils.TimeToNumber(startDate)) {
+				groupStartDate = startDate;
+			}
+			if (DateTimeUtils.TimeToNumber(groupEndDate) < DateTimeUtils.TimeToNumber(endDate)) {
+				groupEndDate = endDate;
+			}
+		});
+		const startDate =
+			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime() ? this.myDate(this.limit.min) : this.myDate(groupStartDate);
+
+		if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
+			return 0;
+		}
+
+		if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
+			return 0;
+		}
+		const finalEndDate =
+			this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : this.myDate(groupEndDate);
+
+		const durationMinutes = getDurationMinutes(startDate, finalEndDate);
+		return durationMinutes * this.pixelsPerMin;
+	}
+
 	public getAbsenceHeight(groupedData: any[]): number {
 		let endDate: Date = groupedData[0].endedAt;
 		let endTime: string = groupedData[0]?.end;
@@ -364,24 +395,51 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		return durationMinutes * this.pixelsPerMin;
 	}
 
-	public getTop(groupedData: any[]): number {
-		const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
+	public getTop(groupedData: any[][]): number {
+		let groupStartDate = this.datePipe.transform(new Date(groupedData?.[0]?.[0].startedAt), 'HH:mm:ss') ?? '';
+		let groupEndDate = this.datePipe.transform(new Date(groupedData?.[0]?.[0].endedAt), 'HH:mm:ss') ?? '';
+		groupedData.forEach((data) => {
+			const startDate = this.datePipe.transform(new Date(data?.[0]?.startedAt), 'HH:mm:ss')!;
+
+			const endDate = this.datePipe.transform(new Date(data?.[0]?.endedAt), 'HH:mm:ss')!;
+			if (DateTimeUtils.TimeToNumber(groupStartDate) > DateTimeUtils.TimeToNumber(startDate)) {
+				groupStartDate = startDate;
+			}
+			if (DateTimeUtils.TimeToNumber(groupEndDate) < DateTimeUtils.TimeToNumber(endDate)) {
+				groupEndDate = endDate;
+			}
+		});
 		const startDate =
-			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
-				? this.myDate(this.limit.min)
-				: new Date(groupedData[0].startedAt);
+			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime() ? this.myDate(this.limit.min) : this.myDate(groupStartDate);
 		const startHour = startDate.getHours();
 		const startMinute = startDate.getMinutes();
 		const startCalendarDate = this.myDate(this.limit.min);
 		const startCalendarHour = startCalendarDate.getHours();
 		const startCalendarMinute = startCalendarDate.getMinutes();
 		const barHeight = 1;
-		const horizontalBarHeight = (this.getHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
+
+		let height = 0;
+		const finalEndDate =
+			this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : this.myDate(groupEndDate);
+		const durationMinutes = getDurationMinutes(startDate, finalEndDate);
+
+		height = durationMinutes * this.pixelsPerMin;
+		if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
+			height = 0;
+		}
+
+		if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
+			height = 0;
+		}
+
+		const horizontalBarHeight = (height / (this.pixelsPerMin * this.timeInterval)) * barHeight;
+
 		const top =
 			(startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
 		if (top % 20) {
 			return Math.floor(top / 20) * 20 + 20;
 		}
+
 		return top;
 	}
 

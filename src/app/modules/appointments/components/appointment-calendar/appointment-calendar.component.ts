@@ -352,7 +352,41 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 					if (!sameGroup) {
 						if (index !== 0 && lastDateString) {
-							this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
+							groupedAppointments.sort((s1, s2) =>
+								s1.endedAt.getTime() - s1.startedAt.getTime() > s2?.endedAt.getTime() - s2?.startedAt.getTime() ? 1 : -1,
+							);
+							const modifiedGroupedAppointment: any = [[]];
+							groupedAppointments.forEach((appointment) => {
+								let pushed = true;
+								for (let items of modifiedGroupedAppointment) {
+									if (
+										items.every(
+											(item: any) =>
+												!DateTimeUtils.CheckTimeRangeOverlapping(
+													this.datePipe.transform(item.startedAt, 'HH:mm:ss')!,
+													this.datePipe.transform(item.endedAt, 'HH:mm:ss')!,
+													this.datePipe.transform(appointment.startedAt, 'HH:mm:ss')!,
+													this.datePipe.transform(appointment.endedAt, 'HH:mm:ss')!,
+												),
+										)
+									) {
+										items.push(appointment);
+										pushed = false;
+										break;
+									}
+								}
+								if (pushed) {
+									modifiedGroupedAppointment.push([appointment]);
+								}
+							});
+							const finalAppointment = modifiedGroupedAppointment
+								.map((items) => {
+									const sortedData = items.sort((s1, s2) => s1.startedAt - s2.startedAt);
+									return sortedData;
+								})
+								.sort((s1, s2) => s1?.[0]?.startedAt - s2?.[0]?.startedAt);
+
+							this.appointmentsGroupedByDateAndTIme[lastDateString].push(finalAppointment);
 							groupedAppointments = [];
 						}
 					}
