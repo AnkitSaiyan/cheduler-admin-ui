@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, filter, map } from 'rxjs';
+import { Observable, filter, map, takeUntil } from 'rxjs';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { Permission } from 'src/app/shared/models/permission.model';
@@ -19,6 +19,8 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 	public absenceType$!: Observable<(typeof ABSENCE_TYPE_ARRAY)[number]>;
 
 	public readonly Permission = Permission;
+
+	public selectedDate: Date | undefined = new Date();
 
 	constructor(private route: ActivatedRoute, private router: Router, private modalSvc: ModalService, private datePipe: DatePipe) {
 		super();
@@ -38,6 +40,12 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 			filter((data) => !!data[ABSENCE_TYPE]),
 			map((data) => data[ABSENCE_TYPE]),
 		);
+
+		this.absenceViewType$
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe((res) =>
+				(res == 'table' ? this.changeDate(undefined) : null)
+			);
 	}
 
 	public override ngOnDestroy() {
@@ -46,7 +54,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 
 	public openAddAbsenceModal(absenceType: (typeof ABSENCE_TYPE_ARRAY)[number]) {
 		this.modalSvc.open(AddAbsenceComponent, {
-			data: { absenceType },
+			data: { absenceType, selectedDate: this.selectedDate },
 			options: {
 				size: 'xl',
 				centered: true,
@@ -67,5 +75,9 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 			},
 			queryParamsHandling: 'merge',
 		});
+	}
+
+	public changeDate(date: Date | undefined) {
+		this.selectedDate = date;
 	}
 }
