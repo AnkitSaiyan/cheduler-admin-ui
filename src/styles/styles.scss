@@ -1337,7 +1337,7 @@ angular-editor-toolbar button i {
     }
   }
         .mat-tab-label-content {
-    
+
           >dfm-button-icon {
             display: none;
             position: absolute;
@@ -1350,6 +1350,12 @@ angular-editor-toolbar button i {
               display: block;
             }
           }
-    
+
         }
         }
+.input-dropdown-menu-pos-rel {
+  .input-dropdown-menu {
+    position: relative !important;
+    transform: none !important;
+  }
+}
