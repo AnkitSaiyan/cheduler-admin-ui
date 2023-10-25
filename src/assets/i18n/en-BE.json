@@ -369,6 +369,7 @@
 	"Calendar": "Calendar",
 	"ListView": "List view",
 	"NoExceptionFound": "No exception found",
+	"NoBatchFound": "No batch found",
 	"NoMandatoryStaffFound": "No mandatory staff found",
 	"NoGeneralStafFfound": "No general staff found",
 	"UserDeleted": "User deleted successfully",
@@ -512,7 +513,7 @@
 	"On": "On",
 	"YELLOW_REPRESENTS_HOLIDAY": "Yellow represents holidays.",
 	"BLUE_REPRESENTS_NORMAL_LAB_EVENT": "Blue represents normal lab events.",
-	"RED_REPRESENTS_IMPACTED_ABSENCE":"Red represents impacted absence",
+	"RED_REPRESENTS_IMPACTED_ABSENCE": "Red represents impacted absence",
 	"Loading": "Loading...",
 	"Close": "Close",
 	"Weekly": "Weekly",
@@ -522,7 +523,9 @@
 	"AffectedAppointments": "Affected Appointments",
 	"AffectedAbsence": "Affected by Absence",
 	"BLUE_REPRESENTS_NORMAL_APPOINTMENT": "Blue represents normal appointment.",
-	"RED_REPRESENTS_AFFECTED_APPOINTMENT":"Red represents affected appointment."
-
-
+	"RED_REPRESENTS_AFFECTED_APPOINTMENT": "Red represents affected appointment.",
+	"BatchDetails": "Batch Details"
 }
+
+
+

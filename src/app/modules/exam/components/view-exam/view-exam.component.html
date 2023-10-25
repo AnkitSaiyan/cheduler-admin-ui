@@ -14,7 +14,7 @@
 				size="md"
 				leadingIcon="pencil-02"
 				[routerLink]="['../', 'edit']"
-        queryParamsHandling="merge"
+				queryParamsHandling="merge"
 				[state]="{ comingFromRoute: 'view', edit: true }"
 				*dfmPermitted="Permission.UpdateExams"
 				>{{ 'EditExam' | translate }}
@@ -57,19 +57,21 @@
 					<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
 						<div class="d-flex dfm-gap-8 justify-content-between">
 							<span class="flex-1">{{ 'Name' | translate }}</span>
-							<span class="font-weight-medium flex-1">{{ examDetails.name  }}</span>
+							<span class="font-weight-medium flex-1">{{ examDetails.name }}</span>
 						</div>
-            <div class="d-flex dfm-gap-8 justify-content-between">
+						<div class="d-flex dfm-gap-8 justify-content-between">
 							<span class="flex-1">{{ 'BodyType' | translate }}</span>
-							<span class="font-weight-medium flex-1 d-flex flex-wrap gap-2 ">
-                <ng-container *ngFor="let type of examDetails.bodyType.split(',')">
-                  <span class="type">{{ type | titlecase | dashIfNothing | translate }}</span>
-                </ng-container>
-              </span>
+							<span class="font-weight-medium flex-1 d-flex flex-wrap gap-2">
+								<ng-container *ngFor="let type of examDetails.bodyType.split(',')">
+									<span class="type">{{ type | titlecase | dashIfNothing | translate }}</span>
+								</ng-container>
+							</span>
 						</div>
-            <div class="d-flex dfm-gap-8 justify-content-between">
+						<div class="d-flex dfm-gap-8 justify-content-between">
 							<span class="flex-1">{{ 'BodyPart' | translate }}</span>
-							<span class="font-weight-medium flex-1">{{ examDetails?.bodyPartDetails | bodyPartDetail : shareDataService.getLanguage()| dashIfNothing | translate  }}</span>
+							<span class="font-weight-medium flex-1">{{
+								examDetails?.bodyPartDetails | bodyPartDetail : shareDataService.getLanguage() | dashIfNothing | translate
+							}}</span>
 						</div>
 
 						<div class="d-flex dfm-gap-8 justify-content-between">
@@ -97,6 +99,24 @@
 						<div class="dfm-button-gray-400">
 							<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
 						</div>
+						<span class="font-weight-medium">{{ 'ExamInstructions' | translate }}</span>
+					</header>
+
+					<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
+						<span class="font-weight-medium flex-1" *ngIf="examDetails.instructions?.length; else noInstructionData">{{
+							examDetails.instructions | titlecase
+						}}</span>
+						<ng-template #noInstructionData>
+							<span class="dfm-text-main-600">{{ 'NoDataFound' | translate }}</span>
+						</ng-template>
+					</div>
+				</div>
+
+				<!-- <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
+					<header class="d-flex align-items-center dfm-gap-8">
+						<div class="dfm-button-gray-400">
+							<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
+						</div>
 						<span class="font-weight-medium text-break">{{ 'RoomsInvolvingTheExam' | translate }}</span>
 					</header>
 
@@ -107,7 +127,7 @@
 
 						<span class="dfm-text-main-600" *ngIf="!examDetails.roomsForExam?.length">No rooms found</span>
 					</div>
-				</div>
+				</div> -->
 
 				<div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
 					<header class="d-flex align-items-center dfm-gap-8">
@@ -120,91 +140,43 @@
 					<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
 						<span *ngIf="examDetails.info; else noInstructionData" class="font-weight-medium flex-1">{{ examDetails.info | titlecase }}</span>
 					</div>
-
-
 				</div>
-        <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
-          <header class="d-flex align-items-center dfm-gap-8">
-						<div class="dfm-button-gray-400">
-							<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
-						</div>
-						<span class="font-weight-medium">{{ 'ExamInstructions' | translate }}</span>
-					</header>
-
-					<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-						<span class="font-weight-medium flex-1" *ngIf="examDetails.instructions?.length; else noInstructionData">{{ examDetails.instructions | titlecase }}</span>
-            <ng-template #noInstructionData>
-              <span
-                class="dfm-text-main-600"
-                >{{ 'NoDataFound' | translate }}</span
-              >
-            </ng-template>
+			</div>
+			<div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
+				<header class="d-flex align-items-center dfm-gap-8">
+					<div class="dfm-button-gray-400">
+						<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
 					</div>
+					<span class="font-weight-medium">{{ 'BatchDetails' | translate }}</span>
+				</header>
+				<div class="overflow-y-auto h-fit h-fit w-full">
+					<dfm-data-table
+						[data]="(tableData$$ | async) ?? { items: [] }"
+						noDataMessage="{{ 'NoExceptionFound' | translate }}"
+						[stickyFirstColumn]="false"
+						[headers]="tableHeaders"
+					>
+						<ng-template #bodyRowTemplate let-item>
+							<dfm-table-row-cell [fullContent]="item.batchName">{{ item.batchName }}</dfm-table-row-cell>
+							<dfm-table-row-cell [fullContent]="item.rooms">{{ item.rooms | joinWithAnd : 'name' | dashIfNothing }}</dfm-table-row-cell>
+							<dfm-table-row-cell [fullContent]="item.roomDuration">{{ item.roomDuration | dashIfNothing }}</dfm-table-row-cell>
+							<dfm-table-row-cell [fullContent]="item.assistants">{{
+								item.assistants | joinWithAnd : 'firstname' | dashIfNothing
+							}}</dfm-table-row-cell>
+							<dfm-table-row-cell [fullContent]="item.radiologists">{{
+								item.radiologists | joinWithAnd : 'firstname' | dashIfNothing
+							}}</dfm-table-row-cell>
+							<dfm-table-row-cell [fullContent]="item.nursing">{{ item.nursing | joinWithAnd : 'firstname' | dashIfNothing }}</dfm-table-row-cell>
+							<dfm-table-row-cell [fullContent]="item.secretaries">{{
+								item.secretaries | joinWithAnd : 'firstname' | dashIfNothing
+							}}</dfm-table-row-cell>
+							<dfm-table-row-cell [fullContent]="item.mandatory">{{ item.mandatory | joinWithAnd : 'firstname' | dashIfNothing }}</dfm-table-row-cell>
+						</ng-template>
+					</dfm-data-table>
 				</div>
 			</div>
 
 			<div class="d-flex dfm-gap-24">
-
-				<div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
-					<header class="d-flex align-items-center dfm-gap-8">
-						<div class="dfm-button-gray-400">
-							<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
-						</div>
-						<span class="font-weight-medium text-break">{{ 'MandatoryStaffs' | translate }}</span>
-					</header>
-
-					<div class="d-flex flex-column dfm-gap-16 overflow-y-auto" *ngIf="staffsGroupedByTypes.mandatory?.length">
-						<div class="d-flex dfm-gap-8 justify-content-between">
-							<span class="flex-1">{{ 'Staff' | translate }}</span>
-							<span class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.mandatory | joinWithAnd : 'name' | dashIfNothing }}</span>
-						</div>
-					</div>
-
-					<span class="dfm-text-main-600" *ngIf="!staffsGroupedByTypes.mandatory.length">{{ 'NoMandatoryStaffFound' | translate }}</span>
-				</div>
-
-        <div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
-					<header class="d-flex align-items-center dfm-gap-8">
-						<div class="dfm-button-gray-400">
-							<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
-						</div>
-						<span class="font-weight-medium text-break">{{ 'GeneralStaff' | translate }}</span>
-					</header>
-
-					<div class="d-flex flex-column dfm-gap-16 overflow-y-auto">
-						<div class="d-flex dfm-gap-8 justify-content-between" *ngIf="staffsGroupedByTypes.assistants.length">
-							<span class="flex-1">Assistants</span>
-							<span class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.assistants | joinWithAnd : 'name' | dashIfNothing }}</span>
-						</div>
-
-						<div class="d-flex dfm-gap-8 justify-content-between" *ngIf="staffsGroupedByTypes.radiologists.length">
-							<span class="flex-1">{{ 'Radiologist' | translate }}</span>
-							<span class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.radiologists | joinWithAnd : 'name' | dashIfNothing }}</span>
-						</div>
-
-						<div class="d-flex dfm-gap-8 justify-content-between" *ngIf="staffsGroupedByTypes.nursing.length">
-							<span class="flex-1">{{ 'Nursing' | translate }}</span>
-							<span class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.nursing | joinWithAnd : 'name' | dashIfNothing }}</span>
-						</div>
-
-						<div class="d-flex dfm-gap-8 justify-content-between" *ngIf="staffsGroupedByTypes.secretaries.length">
-							<span class="flex-1">{{ 'Secretary' | translate }}</span>
-							<span class="flex-1 font-weight-medium">{{ staffsGroupedByTypes.secretaries | joinWithAnd : 'name' | dashIfNothing }}</span>
-						</div>
-
-						<span
-							class="dfm-text-main-600"
-							*ngIf="
-								!staffsGroupedByTypes.secretaries.length &&
-								!staffsGroupedByTypes.nursing.length &&
-								!staffsGroupedByTypes.radiologists.length &&
-								!staffsGroupedByTypes.assistants.length
-							"
-							>{{ 'NoGeneralStafFfound' | translate }}</span
-						>
-					</div>
-				</div>
-
 				<div class="dfm-card d-flex flex-column dfm-gap-16 dfm-p-16 vw-ex-sec2-card">
 					<header class="d-flex align-items-center dfm-gap-8">
 						<div class="dfm-button-gray-400">
@@ -221,85 +193,84 @@
 			</div>
 		</section>
 
-    <ng-container *ngIf="examDetails.practiceAvailability?.length">
-      <section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16" *ngIf="practiceAvailability$$ | async as practiceAvailability">
-        <header class="d-flex align-items-center dfm-gap-8">
-          <div class="dfm-button-gray-400">
-            <dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
-          </div>
-          <span class="font-weight-medium">{{ 'ExamAvailabilityData' | translate }}</span>
-        </header>
+		<ng-container *ngIf="examDetails.practiceAvailability?.length">
+			<section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16" *ngIf="practiceAvailability$$ | async as practiceAvailability">
+				<header class="d-flex align-items-center dfm-gap-8">
+					<div class="dfm-button-gray-400">
+						<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
+					</div>
+					<span class="font-weight-medium">{{ 'ExamAvailabilityData' | translate }}</span>
+				</header>
 
-        <div class="overflow-y-auto h-fit h-fit">
-          <dfm-table [items]="practiceAvailability" *ngIf="examDetails?.practiceAvailability?.length">
-            <ng-template #headerRowTemplate>
-              <dfm-table-header-cell>{{ 'SlotNo' | translate }}</dfm-table-header-cell>
-              <dfm-table-header-cell *ngFor="let column of columns">{{ column | weekdayToName | translate }}</dfm-table-header-cell>
-            </ng-template>
+				<div class="overflow-y-auto h-fit h-fit">
+					<dfm-table [items]="practiceAvailability" *ngIf="examDetails?.practiceAvailability?.length">
+						<ng-template #headerRowTemplate>
+							<dfm-table-header-cell>{{ 'SlotNo' | translate }}</dfm-table-header-cell>
+							<dfm-table-header-cell *ngFor="let column of columns">{{ column | weekdayToName | translate }}</dfm-table-header-cell>
+						</ng-template>
 
-            <ng-template #bodyRowTemplate let-item>
-              <dfm-table-body-cell>{{ item.slotNo }}</dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.monday.dayStart && item.monday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.monday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.monday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.tuesday.dayStart && item.tuesday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.tuesday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.tuesday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.wednesday.dayStart && item.wednesday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.wednesday.dayStart | dfmUtcToLocal: true : true  }} </span>
-                  -
-                  <span> {{ item.wednesday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.thursday.dayStart && item.thursday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.thursday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.thursday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.friday.dayStart && item.friday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.friday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.friday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.saturday.dayStart && item.saturday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.saturday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.saturday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.sunday.dayStart && item.sunday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.sunday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.sunday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-            </ng-template>
-          </dfm-table>
-          <div
-            class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom dfm-text-main-600"
-            *ngIf="!examDetails?.practiceAvailability?.length"
-          >
-            {{ 'NoExceptionFound' | translate }}
-          </div>
-        </div>
-      </section>
-    </ng-container>
-
+						<ng-template #bodyRowTemplate let-item>
+							<dfm-table-body-cell>{{ item.slotNo }}</dfm-table-body-cell>
+							<dfm-table-body-cell>
+								<div *ngIf="item.monday.dayStart && item.monday.dayEnd; else dash" class="d-flex dfm-gap-8">
+									<span> {{ item.monday.dayStart | dfmUtcToLocal : true : true }} </span>
+									-
+									<span> {{ item.monday.dayEnd | dfmUtcToLocal : true : true }} </span>
+								</div>
+							</dfm-table-body-cell>
+							<dfm-table-body-cell>
+								<div *ngIf="item.tuesday.dayStart && item.tuesday.dayEnd; else dash" class="d-flex dfm-gap-8">
+									<span> {{ item.tuesday.dayStart | dfmUtcToLocal : true : true }} </span>
+									-
+									<span> {{ item.tuesday.dayEnd | dfmUtcToLocal : true : true }} </span>
+								</div>
+							</dfm-table-body-cell>
+							<dfm-table-body-cell>
+								<div *ngIf="item.wednesday.dayStart && item.wednesday.dayEnd; else dash" class="d-flex dfm-gap-8">
+									<span> {{ item.wednesday.dayStart | dfmUtcToLocal : true : true }} </span>
+									-
+									<span> {{ item.wednesday.dayEnd | dfmUtcToLocal : true : true }} </span>
+								</div>
+							</dfm-table-body-cell>
+							<dfm-table-body-cell>
+								<div *ngIf="item.thursday.dayStart && item.thursday.dayEnd; else dash" class="d-flex dfm-gap-8">
+									<span> {{ item.thursday.dayStart | dfmUtcToLocal : true : true }} </span>
+									-
+									<span> {{ item.thursday.dayEnd | dfmUtcToLocal : true : true }} </span>
+								</div>
+							</dfm-table-body-cell>
+							<dfm-table-body-cell>
+								<div *ngIf="item.friday.dayStart && item.friday.dayEnd; else dash" class="d-flex dfm-gap-8">
+									<span> {{ item.friday.dayStart | dfmUtcToLocal : true : true }} </span>
+									-
+									<span> {{ item.friday.dayEnd | dfmUtcToLocal : true : true }} </span>
+								</div>
+							</dfm-table-body-cell>
+							<dfm-table-body-cell>
+								<div *ngIf="item.saturday.dayStart && item.saturday.dayEnd; else dash" class="d-flex dfm-gap-8">
+									<span> {{ item.saturday.dayStart | dfmUtcToLocal : true : true }} </span>
+									-
+									<span> {{ item.saturday.dayEnd | dfmUtcToLocal : true : true }} </span>
+								</div>
+							</dfm-table-body-cell>
+							<dfm-table-body-cell>
+								<div *ngIf="item.sunday.dayStart && item.sunday.dayEnd; else dash" class="d-flex dfm-gap-8">
+									<span> {{ item.sunday.dayStart | dfmUtcToLocal : true : true }} </span>
+									-
+									<span> {{ item.sunday.dayEnd | dfmUtcToLocal : true : true }} </span>
+								</div>
+							</dfm-table-body-cell>
+						</ng-template>
+					</dfm-table>
+					<div
+						class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom dfm-text-main-600"
+						*ngIf="!examDetails?.practiceAvailability?.length"
+					>
+						{{ 'NoExceptionFound' | translate }}
+					</div>
+				</div>
+			</section>
+		</ng-container>
 	</div>
 
 	<div class="hidden bg-white vw-ex-action-buttons-mv" *dfmPermitted="[Permission.UpdateExams, Permission.DeleteExams]">
@@ -310,7 +281,7 @@
 			color="primary"
 			size="sm"
 			[routerLink]="['../', 'edit']"
-      queryParamsHandling="merge"
+			queryParamsHandling="merge"
 			[state]="{ comingFromRoute: 'view', edit: true }"
 			*dfmPermitted="Permission.UpdateExams"
 			>{{ 'Edit' | translate }}
@@ -321,4 +292,3 @@
 <ng-template #dash>
 	<span> {{ '' | dashIfNothing }} </span>
 </ng-template>
-

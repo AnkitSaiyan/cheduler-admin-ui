@@ -1312,3 +1312,50 @@ angular-editor-toolbar button i {
     z-index: 100;
   }
 }
+.mat-tab-label {
+  max-width: 260px;
+
+  &.mat-tab-label-active {
+    background: var(--dfm-badge-secondary-bg);
+    color: var(--dfm-btn-secondary-color)
+  }
+
+  &:last-of-type {
+    all: unset;
+    width: 48px;
+    display: flex;
+    padding: 0 8px;
+
+    button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 48px;
+      background: var(--dfm-badge-gray-bg);
+      border-radius: 0;
+    }
+  }
+        .mat-tab-label-content {
+
+          >dfm-button-icon {
+            display: none;
+            position: absolute;
+            right: 4px;
+          }
+        }
+        &:hover {
+          .mat-tab-label-content {
+            >dfm-button-icon {
+              display: block;
+            }
+          }
+
+        }
+        }
+.input-dropdown-menu-pos-rel {
+  .input-dropdown-menu {
+    position: relative !important;
+    transform: none !important;
+  }
+}

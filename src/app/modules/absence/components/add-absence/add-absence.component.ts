@@ -67,7 +67,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	public submitting$$ = new BehaviorSubject<boolean>(false);
 	public absence$$ = new BehaviorSubject<Absence | null>(null);
 	public isAbsenceStaffRoomInvalid = new BehaviorSubject<boolean>(false);
-	public modalData!: { absenceType: (typeof ABSENCE_TYPE_ARRAY)[number]; edit: boolean; absenceID: number };
+	public modalData!: { absenceType: (typeof ABSENCE_TYPE_ARRAY)[number]; edit: boolean; absenceID: number, selectedDate?: Date };
 	public priorityType = PriorityType;
 	public repeatTypes: any[] = [];
 	public startTimes: NameValue[];
@@ -104,6 +104,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	public ABSENCE_TYPE_ARRAY = ABSENCE_TYPE_ARRAY;
 
 	public practiceHourMinMax$$ = new BehaviorSubject<{ min: string; max: string; grayOutMin: string; grayOutMax: string } | null>(null);
+
+	private selectedDate: Date | undefined;
 
 	constructor(
 		private modalSvc: ModalService,
@@ -178,6 +180,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			.subscribe({
 				next: (absence) => {
 					this.absence$$.next(absence);
+					this.selectedDate = this.modalData.selectedDate;
 					this.createForm(absence);
 				},
 			});
@@ -260,7 +263,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			}
 		}
 		minMaxValue = { ...minMaxValue, grayOutMin: min, grayOutMax: max };
-		console.log(minMaxValue, 'test');
+		// console.log(minMaxValue, 'test');
 		this.practiceHourMinMax$$.next(minMaxValue);
 	}
 
@@ -514,7 +517,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				this.startTimes.push({ name: startTime, value: startTime });
 			}
 			this.startDateControl.setValue(date);
-		}
+		} else this.startDateControl.setValue(this.selectedDate);
 
 		if (absenceDetails?.endedAt) {
 			const date = new Date(absenceDetails.endedAt);
@@ -526,14 +529,16 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			this.endDateControl.setValue(date);
 		}
 
+		const startedAt = absenceDetails?.startedAt || this.selectedDate;
+
 		this.absenceForm = this.fb.group({
 			name: [absenceDetails?.name ?? '', [Validators.required]],
 			startedAt: [
-				absenceDetails?.startedAt
+				startedAt
 					? {
-							year: new Date(absenceDetails?.startedAt).getFullYear(),
-							month: new Date(absenceDetails?.startedAt).getMonth() + 1,
-							day: new Date(absenceDetails?.startedAt).getDate(),
+							year: new Date(startedAt).getFullYear(),
+							month: new Date(startedAt).getMonth() + 1,
+							day: new Date(startedAt).getDate(),
 					  }
 					: null,
 				[Validators.required],
