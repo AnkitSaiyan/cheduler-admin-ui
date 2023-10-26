@@ -9,7 +9,6 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { TimeSlot, WeekWisePracticeAvailability, Weekday } from '../../../../shared/models/calendar.model';
 import { Exam, Uncombinables } from '../../../../shared/models/exam.model';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
-import { User, UserType } from '../../../../shared/models/user.model';
 import { ENG_BE, EXAM_ID } from '../../../../shared/utils/const';
 
 import { DfmDatasource, DfmTableHeader } from 'diflexmo-angular-design';
@@ -17,6 +16,7 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { Translate } from '../../../../shared/models/translate.model';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { UserUtils } from 'src/app/shared/utils/user.utils';
 
 @Component({
 	selector: 'dfm-view-exam',
@@ -81,35 +81,7 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 					this.tableData$$.next({
 						items:
 							exam?.resourcesBatch.map((item) => {
-								const assistants: User[] = [];
-								const radiologists: User[] = [];
-								const nursing: User[] = [];
-								const secretaries: User[] = [];
-								const mandatory: User[] = [...(item.mandatoryUsers ?? [])];
-
-								if (item?.users?.length) {
-									item.users.forEach((u) => {
-										// if (u.isMandate) {
-										// 	mandatory.push(u);
-										// } else {
-										switch (u.userType) {
-											case UserType.Assistant:
-												assistants.push(u);
-												break;
-											case UserType.Radiologist:
-												radiologists.push(u);
-												break;
-											case UserType.Nursing:
-												nursing.push(u);
-												break;
-											case UserType.Secretary:
-												secretaries.push(u);
-												break;
-											default:
-										}
-										// }
-									});
-								}
+								const { assistants, radiologists, nursing, secretaries, mandatory } = UserUtils.GroupUsersByType(item.users);
 								return { ...item, id: item.batchId, assistants, radiologists, nursing, secretaries, mandatory };
 							}) ?? [],
 						isInitialLoading: false,
