@@ -161,16 +161,20 @@
 							<dfm-table-row-cell [fullContent]="item.rooms">{{ item.rooms | joinWithAnd : 'name' | dashIfNothing }}</dfm-table-row-cell>
 							<dfm-table-row-cell [fullContent]="item.roomDuration">{{ item.roomDuration | dashIfNothing }}</dfm-table-row-cell>
 							<dfm-table-row-cell [fullContent]="item.assistants">{{
-								item.assistants | joinWithAnd : 'firstname' | dashIfNothing
+								item.assistants | joinWithAnd : 'firstname' : 'lastname' | dashIfNothing
 							}}</dfm-table-row-cell>
 							<dfm-table-row-cell [fullContent]="item.radiologists">{{
-								item.radiologists | joinWithAnd : 'firstname' | dashIfNothing
+								item.radiologists | joinWithAnd : 'firstname' : 'lastname' | dashIfNothing
 							}}</dfm-table-row-cell>
-							<dfm-table-row-cell [fullContent]="item.nursing">{{ item.nursing | joinWithAnd : 'firstname' | dashIfNothing }}</dfm-table-row-cell>
+							<dfm-table-row-cell [fullContent]="item.nursing">{{
+								item.nursing | joinWithAnd : 'firstname' : 'lastname' | dashIfNothing
+							}}</dfm-table-row-cell>
 							<dfm-table-row-cell [fullContent]="item.secretaries">{{
-								item.secretaries | joinWithAnd : 'firstname' | dashIfNothing
+								item.secretaries | joinWithAnd : 'firstname' : 'lastname' | dashIfNothing
 							}}</dfm-table-row-cell>
-							<dfm-table-row-cell [fullContent]="item.mandatory">{{ item.mandatory | joinWithAnd : 'firstname' | dashIfNothing }}</dfm-table-row-cell>
+							<dfm-table-row-cell [fullContent]="item.mandatory">{{
+								item.mandatory | joinWithAnd : 'firstname' : 'lastname' | dashIfNothing
+							}}</dfm-table-row-cell>
 						</ng-template>
 					</dfm-data-table>
 				</div>
@@ -292,3 +296,4 @@
 <ng-template #dash>
 	<span> {{ '' | dashIfNothing }} </span>
 </ng-template>
+
