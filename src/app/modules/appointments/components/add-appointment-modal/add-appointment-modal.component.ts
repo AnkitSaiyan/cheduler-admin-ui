@@ -132,156 +132,158 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	public ngOnInit(): void {
-		this.siteManagementApiSvc.siteManagementData$.pipe(take(1)).subscribe((siteSettings) => {
-			this.isCombinable = siteSettings.isSlotsCombinable;
-			this.fileSize = siteSettings.documentSizeInKb / 1024;
-			this.isDoctorConsentDisable$$.next(siteSettings.doctorReferringConsent === 1);
-		});
-
-		this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
-			this.modalData = data;
-
-      this.isOutside = this.modalData.isOutside;
-			if (this.modalData?.event?.offsetY) {
-				let minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
-				if (this.modalData?.limit) {
-					minutes += getDurationMinutes(this.myDate('00:00:00'), this.myDate(this.modalData.limit.min));
-				}
-
-				// In case if calendar start time is not 00:00 then adding extra minutes
-				if (this.modalData?.startTime) {
-					const startTime = this.modalData.startTime.split(':');
-					minutes += DateTimeUtils.DurationInMinFromHour(+startTime[0], +startTime[1]);
-				}
-
-				const roundedMin = minutes - (minutes % 5);
-
-				const hour = `0${Math.floor(minutes / 60)}`.slice(-2);
-				const min = `0${roundedMin % 60}`.slice(-2);
-				this.selectedTimeInUTCOrig = `${hour}:${min}:00`;
-				this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
-			} else if (this.modalData?.appointment?.startedAt) {
-				const date = new Date(this.modalData?.appointment?.startedAt);
-				const time = this.datePipe.transform(date, 'hh:mm');
-				this.selectedTimeInUTCOrig = time + ':00';
-				this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
-			}
-		});
-
-		this.createForm();
-
-		if (this.modalData.appointment?.id) {
-			this.loading$$.next(true);
-			this.edit = true;
-			this.appointmentApiSvc
-				.getAppointmentByID$(this.modalData.appointment.id)
-				.pipe(take(1))
-				.subscribe({
-					next: (appointment) => this.updateForm(appointment as Appointment),
-				});
-			if (this.modalData.appointment?.id && this.modalData.appointment.documentCount) this.getDocument(this.modalData.appointment.id);
-		}
-
-		combineLatest([this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length))])
-			.pipe(debounceTime(0), takeUntil(this.destroy$$))
-			.subscribe((res) => {});
-
-		this.appointmentForm
-			.get('startedAt')
-			?.valueChanges.pipe(takeUntil(this.destroy$$))
-			.subscribe((selectedDate) => {
-				const newDate = new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day);
-				this.shareDataSvc.setDate(newDate);
+		try {
+			this.siteManagementApiSvc.siteManagementData$.pipe(take(1)).subscribe((siteSettings) => {
+				this.isCombinable = siteSettings.isSlotsCombinable;
+				this.fileSize = siteSettings.documentSizeInKb / 1024;
+				this.isDoctorConsentDisable$$.next(siteSettings.doctorReferringConsent === 1);
 			});
 
-		this.examApiService.allExams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
-			const keyValueExams = this.nameValuePipe.transform(exams, 'name', 'id');
-			this.filteredExamList = [...keyValueExams];
-			this.examList = [...keyValueExams];
+			this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
+				this.modalData = data;
 
-			exams.forEach((exam) => {
-				if (!this.examIdToDetails[+exam.id]) {
-					this.examIdToDetails[+exam.id] = {
-						name: exam.name,
-						expensive: exam.expensive,
-					};
+				this.isOutside = this.modalData.isOutside;
+				if (this.modalData?.event?.offsetY) {
+					let minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
+					if (this.modalData?.limit) {
+						minutes += getDurationMinutes(this.myDate('00:00:00'), this.myDate(this.modalData.limit.min));
+					}
+
+					// In case if calendar start time is not 00:00 then adding extra minutes
+					if (this.modalData?.startTime) {
+						const startTime = this.modalData.startTime.split(':');
+						minutes += DateTimeUtils.DurationInMinFromHour(+startTime[0], +startTime[1]);
+					}
+
+					const roundedMin = minutes - (minutes % 5);
+
+					const hour = `0${Math.floor(minutes / 60)}`.slice(-2);
+					const min = `0${roundedMin % 60}`.slice(-2);
+					this.selectedTimeInUTCOrig = `${hour}:${min}:00`;
+					this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
+				} else if (this.modalData?.appointment?.startedAt) {
+					const date = new Date(this.modalData?.appointment?.startedAt);
+					const time = this.datePipe.transform(date, 'hh:mm');
+					this.selectedTimeInUTCOrig = time + ':00';
+					this.selectedTimeInUTC = this.selectedTimeInUTCOrig;
 				}
 			});
-		});
 
-		this.physicianApiSvc.allPhysicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
-			const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
-			this.filteredPhysicianList = [...keyValuePhysicians];
-			this.physicianList = [...keyValuePhysicians];
-		});
+			this.createForm();
 
-
-
-		this.appointmentForm
-			.get('startedAt')
-			?.valueChanges.pipe(
-				debounceTime(0),
-				filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
-				tap(() => this.loadingSlots$$.next(true)),
-				map((date) => {
-					this.clearSlotDetails();
-					return AppointmentUtils.GenerateSlotRequestData(date, this.formValues.examList);
-				}),
-				switchMap((reqData) => this.appointmentApiSvc.getSlots$({...reqData, AppointmentId: this.modalData?.appointment?.id ?? 0})),
-			)
-			.subscribe((slots) => {
-				this.setSlots(slots[0].slots, slots[0]?.isCombined);
-				this.loadingSlots$$.next(false);
-			});
-
-		const examListSubscription = this.appointmentForm
-			.get('examList')
-			?.valueChanges.pipe(
-				debounceTime(0),
-				tap(() => this.updateEventCard()),
-				filter((examList) => examList?.length && this.formValues.startedAt?.day),
-				tap(() => this.loadingSlots$$.next(true)),
-				map((examList) => {
-					this.clearSlotDetails();
-					return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
-				}),
-				switchMap((reqData) => this.appointmentApiSvc.getSlots$({...reqData, AppointmentId: this.modalData?.appointment?.id ?? 0})),
-			)
-			.subscribe((data) => {
-				const { slots }: any = data[0];
-
-				const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTimeInUTC);
-				// Show selected slot in case of one exam or if the case is combinable
-				if (matchedSlot && (this.formValues.examList.length === 1 || this.isCombinable)) {
-					this.setSlots([matchedSlot], this.isCombinable);
-					this.slots.forEach((value) => {
-						this.handleSlotSelectionToggle(value);
+			if (this.modalData.appointment?.id) {
+				this.loading$$.next(true);
+				this.edit = true;
+				this.appointmentApiSvc
+					.getAppointmentByID$(this.modalData.appointment.id)
+					.pipe(take(1))
+					.subscribe({
+						next: (appointment) => this.updateForm(appointment as Appointment),
 					});
-				} else {
-					this.setSlots(slots, this.isCombinable);
-				}
-        this.setSlots(slots, this.isCombinable);
-				this.loadingSlots$$.next(false);
+				if (this.modalData.appointment?.id && this.modalData.appointment.documentCount) this.getDocument(this.modalData.appointment.id);
+			}
+
+			combineLatest([this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length))])
+				.pipe(debounceTime(0), takeUntil(this.destroy$$))
+				.subscribe((res) => {});
+
+			this.appointmentForm
+				.get('startedAt')
+				?.valueChanges.pipe(takeUntil(this.destroy$$))
+				.subscribe((selectedDate) => {
+					const newDate = new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day);
+					this.shareDataSvc.setDate(newDate);
+				});
+
+			this.examApiService.allExams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
+				const keyValueExams = this.nameValuePipe.transform(exams, 'name', 'id');
+				this.filteredExamList = [...keyValueExams];
+				this.examList = [...keyValueExams];
+
+				exams.forEach((exam) => {
+					if (!this.examIdToDetails[+exam.id]) {
+						this.examIdToDetails[+exam.id] = {
+							name: exam.name,
+							expensive: exam.expensive,
+						};
+					}
+				});
 			});
 
-		this.shareDataSvc
-			.getLanguage$()
-			.pipe(takeUntil(this.destroy$$))
-			.subscribe((lang) => (this.selectedLang = lang));
+			this.physicianApiSvc.allPhysicians$.pipe(takeUntil(this.destroy$$)).subscribe((physicians) => {
+				const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'fullName', 'id');
+				this.filteredPhysicianList = [...keyValuePhysicians];
+				this.physicianList = [...keyValuePhysicians];
+			});
 
-		this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (staffs) => {
-				const keyValueExams = this.nameValuePipe.transform(staffs, 'fullName', 'id');
-				this.staffs = [...keyValueExams];
-				this.filteredUserList = [...keyValueExams];
-				this.userList = [...keyValueExams];
-				this.filteredStaffs = [...this.staffs];
-			},
-		});
+			this.appointmentForm
+				.get('startedAt')
+				?.valueChanges.pipe(
+					debounceTime(0),
+					filter((startedAt) => startedAt?.day && this.formValues.examList?.length),
+					tap(() => this.loadingSlots$$.next(true)),
+					map((date) => {
+						this.clearSlotDetails();
+						return AppointmentUtils.GenerateSlotRequestData(date, this.formValues.examList);
+					}),
+					switchMap((reqData) => this.appointmentApiSvc.getSlots$({ ...reqData, AppointmentId: this.modalData?.appointment?.id ?? 0 })),
+				)
+				.subscribe((slots) => {
+					this.setSlots(slots[0].slots, slots[0]?.isCombined);
+					this.loadingSlots$$.next(false);
+				});
 
-		if (this.isOutside) {
-			this.appointmentForm.addControl('userList', new FormControl([]));
-			examListSubscription?.unsubscribe();
+			const examListSubscription = this.appointmentForm
+				.get('examList')
+				?.valueChanges.pipe(
+					debounceTime(0),
+					tap(() => this.updateEventCard()),
+					filter((examList) => examList?.length && this.formValues.startedAt?.day),
+					tap(() => this.loadingSlots$$.next(true)),
+					map((examList) => {
+						this.clearSlotDetails();
+						return AppointmentUtils.GenerateSlotRequestData(this.formValues.startedAt, examList);
+					}),
+					switchMap((reqData) => this.appointmentApiSvc.getSlots$({ ...reqData, AppointmentId: this.modalData?.appointment?.id ?? 0 })),
+				)
+				.subscribe((data) => {
+					const { slots }: any = data[0];
+
+					const matchedSlot = slots?.find((slotData) => slotData.start === this.selectedTimeInUTC);
+					// Show selected slot in case of one exam or if the case is combinable
+					if (matchedSlot && (this.formValues.examList.length === 1 || this.isCombinable)) {
+						this.setSlots([matchedSlot], this.isCombinable);
+						this.slots.forEach((value) => {
+							this.handleSlotSelectionToggle(value);
+						});
+					} else {
+						this.setSlots(slots, this.isCombinable);
+					}
+					this.setSlots(slots, this.isCombinable);
+					this.loadingSlots$$.next(false);
+				});
+
+			this.shareDataSvc
+				.getLanguage$()
+				.pipe(takeUntil(this.destroy$$))
+				.subscribe((lang) => (this.selectedLang = lang));
+
+			this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
+				next: (staffs) => {
+					const keyValueExams = this.nameValuePipe.transform(staffs, 'fullName', 'id');
+					this.staffs = [...keyValueExams];
+					this.filteredUserList = [...keyValueExams];
+					this.userList = [...keyValueExams];
+					this.filteredStaffs = [...this.staffs];
+				},
+			});
+
+			if (this.isOutside) {
+				this.appointmentForm.addControl('userList', new FormControl([]));
+				examListSubscription?.unsubscribe();
+			}
+		} catch (e) {
+			console.log(e);
 		}
 	}
 
@@ -298,7 +300,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	public handleSlotSelectionToggle(slots: SlotModified) {
-
 		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
 		let smallestStartTime = '';
 		Object.values(this.selectedTimeSlot).forEach((slot) => {
@@ -463,13 +464,11 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		formattedDate.setHours(+splitDate[0]);
 		formattedDate.setMinutes(+splitDate[1]);
 		formattedDate.setSeconds(0);
-    formattedDate.setMilliseconds(0);
+		formattedDate.setMilliseconds(0);
 		return formattedDate;
 	}
 
 	private createForm() {
-
-
 		this.appointmentForm = this.fb.group({
 			patientFname: [null, [Validators.required]],
 			patientLname: [null, [Validators.required]],
@@ -631,7 +630,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	private uploadDocument(file: any) {
-		this.appointmentApiSvc.uploadDocumnet(file, '', (this.modalData?.appointment?.id ?? 0)+'').subscribe({
+		this.appointmentApiSvc.uploadDocumnet(file, '', (this.modalData?.appointment?.id ?? 0) + '').subscribe({
 			next: (res) => {
 				this.documentStage = this.uploadFileName;
 				this.appointmentForm.patchValue({
@@ -662,15 +661,15 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		this.documentStage = '';
 	}
 
-	private getDocument(id:number) {
+	private getDocument(id: number) {
 		this.appointmentApiSvc
-          .getDocumentById$(id, true)
-          .pipe(takeUntil(this.destroy$$))
+			.getDocumentById$(id, true)
+			.pipe(takeUntil(this.destroy$$))
 			.subscribe((res) => {
 				this.documentStage = res.fileName;
 				this.appointmentForm.patchValue({
 					qrCodeId: res?.apmtQRCodeId,
 				});
-          });
+			});
 	}
 }
