@@ -754,70 +754,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		const fa = this.examForm.get('roomsForExam') as FormArray;
 		fa.removeAt(index);
 		this.filterBatchRooms();
-	}
-
-	private getRoomsForExamFormGroup(room: Room): FormGroup {
-		let roomForExam;
-
-		if (this.examDetails$$.value?.roomsForExam?.length) {
-			roomForExam = this.examDetails$$.value?.roomsForExam.find((examRoom) => examRoom?.roomId?.toString() === room?.id?.toString());
-		}
-
-		const fg = this.fb.group({
-			roomId: [room.id, []],
-			duration: [
-				{
-					value: roomForExam?.duration ?? null,
-					disabled: !roomForExam?.duration,
-				},
-				[Validators.required, Validators.min(1)],
-			],
-			sortOrder: [
-				{
-					value: roomForExam?.sortOrder ?? null,
-					disabled: !roomForExam?.duration,
-				},
-				[Validators.required],
-			],
-			roomName: [room.name, []],
-			selectRoom: [!!roomForExam?.duration, []],
-		});
-
-		fg.get('selectRoom')
-			?.valueChanges.pipe(takeUntil(this.destroy$$))
-			.subscribe((value) => {
-				if (value) {
-					fg.get('duration')?.enable();
-					fg.get('sortOrder')?.enable();
-					this.formErrors.selectRoomErr = false;
-				} else {
-					this.updateSortOrder(fg.value?.roomId, fg.value?.sortOrder);
-					fg.patchValue({
-						duration: null,
-						sortOrder: null,
-					});
-
-					fg.get('duration')?.disable();
-					fg.get('sortOrder')?.disable();
-				}
-			});
-
-		fg.get('duration')
-			?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
-			.subscribe(() => this.toggleExpensiveError(+this.formValues.expensive));
-
-		return fg;
-	}
-
-	private updateSortOrder(id: number | null | undefined, sortOrder: number) {
-		// if (id && sortOrder) {
-		// 	const fa = this.examForm.get('roomsForExam') as FormArray;
-		// 	fa.controls.forEach((control) => {
-		// 		if (+control.value?.roomId !== +id && control.value.sortOrder && +control.value.sortOrder > sortOrder) {
-		// 			control.patchValue({ sortOrder: (+control.value.sortOrder - 1).toString() });
-		// 		}
-		// 	});
-		// }
+		this.toggleExpensiveError(this.formValues.expensive);
 	}
 
 	private createRoomsForExamFormArray(roomType: RoomType) {
