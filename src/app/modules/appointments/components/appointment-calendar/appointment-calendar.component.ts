@@ -404,16 +404,16 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	private groupAppointmentByDateAndRoom(...appointmentsProps: Appointment[]) {
 		const appointments: Appointment[] = [];
-		appointmentsProps.forEach((appointment: Appointment) => {
-			appointment.exams.forEach((exam) => {
-				exam.rooms?.forEach((room: any) => {
+		appointmentsProps?.forEach((appointment: Appointment) => {
+			appointment?.exams?.forEach((exam) => {
+				exam?.rooms?.forEach((room: any) => {
 					appointments.push({ ...appointment, startedAt: room.startedAt, endedAt: room.endedAt, exams: [{ ...exam, rooms: [room] }] });
 				});
 			});
 		});
 
-		appointments.forEach((appointment) => {
-			if (appointment.startedAt) {
+		appointments?.forEach((appointment) => {
+			if (appointment?.startedAt) {
 				const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
 
 				if (dateString) {
@@ -421,7 +421,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 						this.appointmentGroupedByDateAndRoom[dateString] = {};
 					}
 
-					appointment.exams?.forEach((exam) => {
+					appointment?.exams?.forEach((exam) => {
 						exam.rooms?.forEach((room) => {
 							if (!this.appointmentGroupedByDateAndRoom[dateString][room.id]) {
 								this.appointmentGroupedByDateAndRoom[dateString][room.id] = [];
@@ -558,7 +558,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				fromDate: date,
 				toDate: date,
 				date: date,
-				exams: appointment.exams.map(({ id }) => id + ''),
+				exams: appointment?.exams?.map(({ id }) => id + ''),
 				AppointmentId: appointment?.id,
 			};
 			const isSlotAvailable = await firstValueFrom(this.appointmentApiSvc.getSlots$(reqData).pipe(map((data) => !!data?.[0]?.slots?.length)));

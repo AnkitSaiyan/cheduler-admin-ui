@@ -374,7 +374,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				switchMap((ids: number[]) => {
 					const requestData = {
 						appointmentId: appointment.id,
-						examId: appointment.exams[0].id,
+						examId: appointment?.exams?.[0].id,
 						userId: ids,
 					} as UpdateRadiologistRequestData;
 
@@ -421,8 +421,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 						extensionType: extend ? 'extend' : 'shorten',
 						from: res.top ? 'AtTheTop' : 'AtTheBottom',
 						appointmentId: appointment.id,
-						examId: appointment.exams[0].id,
-						roomId: appointment.exams[0]?.rooms?.length ? appointment.exams[0]?.rooms[0]?.id : null,
+						examId: appointment?.exams?.[0].id,
+						roomId: appointment?.exams?.[0]?.rooms?.length ? appointment?.exams?.[0]?.rooms[0]?.id : null,
 					} as UpdateDurationRequestData;
 
 					eventContainer?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -548,7 +548,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				fromDate: date,
 				toDate: date,
 				date: date,
-				exams: appointment.exams.map(({ id }) => id + ''),
+				exams: appointment?.exams?.map(({ id }) => id + '') ?? [],
 				AppointmentId: appointment?.id,
 			};
 			this.cdr.detectChanges();
@@ -794,8 +794,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			extensionType: isExtend ? 'extend' : 'shorten',
 			from: isTopResizer ? 'AtTheTop' : 'AtTheBottom',
 			appointmentId: appointment.id,
-			examId: appointment.exams[0].id,
-			roomId: appointment.exams[0]?.rooms?.length ? appointment.exams[0]?.rooms[0]?.id : null,
+			examId: appointment?.exams?.[0].id,
+			roomId: appointment?.exams?.[0]?.rooms?.length ? appointment?.exams?.[0]?.rooms?.[0]?.id : null,
 		} as UpdateDurationRequestData;
 
 		container?.scrollIntoView({ behavior: 'smooth', block: 'start' });

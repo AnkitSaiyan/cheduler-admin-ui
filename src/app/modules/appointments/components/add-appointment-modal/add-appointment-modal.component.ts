@@ -199,7 +199,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			this.filteredExamList = [...keyValueExams];
 			this.examList = [...keyValueExams];
 
-			exams.forEach((exam) => {
+			exams?.forEach((exam) => {
 				if (!this.examIdToDetails[+exam.id]) {
 					this.examIdToDetails[+exam.id] = {
 						name: exam.name,
@@ -509,8 +509,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 		if (appointment?.startedAt) {
 			date = new Date(appointment.startedAt);
-		} else if (appointment?.exams[0]?.startedAt) {
-			date = new Date(appointment?.exams[0]?.startedAt);
+		} else if (appointment?.exams?.[0]?.startedAt) {
+			date = new Date(appointment?.exams?.[0]?.startedAt);
 		}
 
 		const dateDistributed = DateTimeUtils.DateToDateDistributed(date);
