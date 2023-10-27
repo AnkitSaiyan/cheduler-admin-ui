@@ -93,6 +93,7 @@ section.ad-ex-section2 {
 
   .ad-ex-duration {
     flex: 1;
+    min-width: 60px;
   }
 
   .ad-ex-action-buttons {
@@ -159,7 +160,7 @@ section.ad-ex-section2 {
 
 .order {
   max-width: 144px;
-  min-width: 144px;
+  min-width: 100px;
 }
 
 .room-container {
