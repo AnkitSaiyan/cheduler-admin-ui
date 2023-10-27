@@ -1,6 +1,6 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, debounceTime, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
@@ -8,31 +8,34 @@ import { AvailabilityType, User, UserType } from '../../../../shared/models/user
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
-import { TimeSlot, Weekday } from '../../../../shared/models/calendar.model';
+import { TimeSlot } from '../../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AddStaffRequestData } from '../../../../shared/models/staff.model';
 import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { RouterStateService } from '../../../../core/services/router-state.service';
 import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { Status } from '../../../../shared/models/status.model';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { Translate } from '../../../../shared/models/translate.model';
-import { UtcToLocalPipe } from '../../../../shared/pipes/utc-to-local.pipe';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 
 interface FormValues {
-    firstname: string;
-    lastname: string;
-    email: string;
-    telephone: string;
-    address: string;
-    userType: UserType;
-    practiceAvailabilityToggle?: boolean;
-    examList: number[];
-    info: string;
+	firstname: string;
+	lastname: string;
+	email: string;
+	telephone: string;
+	address: string;
+	userType: UserType;
+	practiceAvailabilityToggle?: boolean;
+	examList: number[];
+	info: string;
+}
+
+interface dateRangeArray {
+	min: null | Date;
+	max: null | Date;
 }
 
 @Component({
@@ -77,6 +80,8 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
 	public rangeArray$$ = new BehaviorSubject<any[]>([]);
 
+	public selectedIndex: number = 0;
+
 	constructor(
 		private fb: FormBuilder,
 		private userApiSvc: UserApiService,
@@ -84,10 +89,8 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 		private notificationSvc: NotificationDataService,
 		private router: Router,
 		private route: ActivatedRoute,
-		private routerStateSvc: RouterStateService,
 		private nameValuePipe: NameValuePairPipe,
 		private timeInIntervalPipe: TimeInIntervalPipe,
-		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		private practiceHourApiSvc: PracticeHoursApiService,
 	) {
@@ -327,10 +330,25 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public addMoreRange() {
-		this.rangeArray$$.next([...this.rangeArray$$.value, 'a']);
+		let obj: dateRangeArray = {
+			min: null,
+			max: null,
+		};
+		this.rangeArray$$.next([...this.rangeArray$$.value, obj]);
 	}
 
 	public removeRange(i: number) {
 		this.rangeArray$$.next([...this.rangeArray$$.value.slice(0, i), ...this.rangeArray$$.value.slice(i + 1)]);
+	}
+
+	public dateFilter(d: Date | null): boolean {
+		const day = (d || new Date()).getDay();
+		// Prevent all days accept Mondays.
+		return day == 1;
+	}
+
+	public dateChange(date: Date | null, index: number, place: number, obj: dateRangeArray): void {
+		place == 1 ? (obj.min = date) : (obj.max = date);
+		this.rangeArray$$.next(this.rangeArray$$.value.map((data, i) => (i === index ? obj : data)));
 	}
 }
