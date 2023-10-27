@@ -87,6 +87,8 @@ import { ShowBodyPartPipe } from './pipes/show-body-part.pipe';
 import { SsnInputDirective } from './directives/ssn-input.directive';
 import { ShareDataService } from '../core/services/share-data.service';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { WeekViewAppointmentCardTopPipe } from './pipes/weekview-appointment-card-top.pipe';
+import { WeekViewAppointmentCardGroupHeightPipe } from './pipes/weekview-appointment-card-group-height.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -145,6 +147,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		RemoveDuplicateDataPipe,
 		RepeatFormComponent,
 		SsnInputDirective,
+		WeekViewAppointmentCardTopPipe,
+		WeekViewAppointmentCardGroupHeightPipe,
 	],
 	imports: [
 		CommonModule,
@@ -247,6 +251,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatButtonToggleModule,
 		SsnInputDirective,
 		MatExpansionModule,
+		WeekViewAppointmentCardTopPipe,
+		WeekViewAppointmentCardGroupHeightPipe,
 	],
 	providers: [
 		TranslatePipe,

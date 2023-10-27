@@ -179,11 +179,12 @@
               >
                 <ng-container *ngIf="dataGroupedByDateAndTime[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                   <ng-container *ngFor="let groupedData of dataGroupedByDateAndTime[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
+
                     <div
-                      *ngIf="getGroupHeight(groupedData) as eventHeight"
+                      *ngIf="groupedData | weekViewAppointmentCardGroupHeight : limit.min : limit.max as eventHeight"
                       class="calendar-week-view-event-container"
                       [ngStyle]="{
-                        'top.px': getTop(groupedData),
+                        'top.px': groupedData | weekViewAppointmentCardTop : limit.min : limit.max,
                         'height.px': eventHeight
                       }"
                       (dblclick)="onDblClick($event, eventsContainer, day, false, getTop(groupedData)); $event.stopPropagation()"

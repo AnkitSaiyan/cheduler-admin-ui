@@ -28,8 +28,8 @@ export interface Appointment {
 	user: User;
 	userId: number;
 	examList: number[];
-	exam?: Exam;
-	exams: Exam[];
+	exam: Exam;
+	exams?: Exam[];
 	apmtId: number;
 	isCombineExam: boolean;
 	roomsDetail: Room[];
@@ -40,32 +40,40 @@ export interface Appointment {
 	documentCount?: number;
 	isEditable: boolean;
 	absenceDetails?: [];
-	examDetail: Array<{
-		id: number;
-		name: string;
-		expensive: number;
-		info: string;
-		instructions: string;
-		assistantCount: number;
-		radiologistCount: number;
-		nursingCount: number;
-		secretaryCount: number;
-		availabilityType: number;
-		availabilityText: string;
-		status: number;
-		bodyType: string;
-		statusText: string;
-		count: number;
-		startedAt: string;
-		endedAt: string;
-		usersList: User[];
-		mandatoryUsers: User[];
-		uncombinables: any;
-		uncombinablesExam: any;
-		practiceAvailability: any;
-		resourcesBatch: ResourceBatch[];
-		users: User[];
-	}>;
+	examDetail: Array<
+		| {
+				id: number;
+				name: string;
+				expensive: number;
+				info: string;
+				instructions: string;
+				assistantCount: number;
+				radiologistCount: number;
+				nursingCount: number;
+				secretaryCount: number;
+				availabilityType: number;
+				availabilityText: string;
+				status: number;
+				statusText: string;
+				count: number;
+				startedAt: string;
+				endedAt: string;
+				usersList: User[];
+				mandatoryUsers: User[];
+				uncombinables: any;
+				uncombinablesExam: any;
+				practiceAvailability: any;
+				resourcesBatch: ResourceBatch[];
+				users: User[];
+				bodyType: string;
+				bodyPart?: any;
+				bodyPartDetails?: any;
+				roomsList?: any;
+				roomsForExam?: any;
+				rooms?: any;
+		  }
+		| any
+	>;
 	examBatchDetail?: Array<{
 		id: number;
 		name: string;
