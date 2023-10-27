@@ -61,7 +61,7 @@ export class UpcomingAppointmentApiService extends DestroyableComponent {
 	private getSaperatedExamData(appointment: Appointment): UpcomingAppointments[] {
 		if (!appointment) return [];
 		let examsArr: any[] = [];
-		appointment?.exams.forEach((exam) => {
+		appointment?.exams?.forEach((exam) => {
 			let obj: UpcomingAppointments = {
 				startedAt: '',
 				patientFullName: '',
