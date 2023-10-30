@@ -197,8 +197,8 @@
                             'affectedAppointments': data?.absenceDetails?.length
                           }"
                           [ngStyle]="{
-                            'top.px': getDurationMinutes(groupedData?.[0]?.[0].startedAt, data.startedAt) * 4,
-                            'height.px': getDurationMinutes(data.startedAt, data.endedAt) * 4
+                            'top.px': (groupedData?.[0]?.[0].startedAt | durationInMinutes : data.startedAt) * 4,
+                            'height.px': (data.startedAt | durationInMinutes : data.endedAt) * 4
                           }"
                           triggers="click"
                           container="body"
@@ -232,7 +232,7 @@
                                               {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
                                               -
                                               {{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
-                                              ({{ getDurationFn(data.startedAt, data.endedAt) }} min)
+                                              ({{ (data.startedAt | durationInMinutes : data.endedAt) }} min)
                                             </span>
                                           </div>
                                         </div>
@@ -285,10 +285,10 @@
                 <ng-container *ngIf="absenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                   <ng-container *ngFor="let groupedData of absenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                     <div
-                      *ngIf="getAbsenceTop(groupedData) >= 0 && getAbsenceHeight(groupedData) as eventHeight"
+                      *ngIf="(groupedData | weekViewAbsenceTop : limit) >= 0 && getAbsenceHeight(groupedData) as eventHeight"
                       class="calendar-week-view-event-container"
                       [ngStyle]="{
-                        'top.px': getAbsenceTop(groupedData),
+                        'top.px': (groupedData | weekViewAbsenceTop : limit),
                         'height.px': eventHeight
                       }"
                     >
@@ -350,14 +350,14 @@
                   <ng-container *ngIf="prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                     <ng-container *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]; let i = index">
                       <div
-                        *ngIf="getAbsenceTop([prioritySlot]) >= 0 && getAbsenceHeight([prioritySlot]) as eventHeight"
+                        *ngIf="([prioritySlot]  | weekViewAbsenceTop : limit) >= 0 && getAbsenceHeight([prioritySlot]) as eventHeight"
                         [ngbPopover]="priorityCardDetail"
                         triggers="mouseenter:mouseleave"
                         triggers="mouseenter:mouseleave"
                         [class]="'priority-slots-area ' + prioritySlotsVariant"
                         [ngClass]="prioritySlot.priority"
                         [ngStyle]="{
-                          'top.px': getAbsenceTop([prioritySlot]),
+                          'top.px': [prioritySlot]  | weekViewAbsenceTop : limit,
                           'height.px': eventHeight
                         }"
                       >
