@@ -89,6 +89,12 @@ import { ShareDataService } from '../core/services/share-data.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { WeekViewAppointmentCardTopPipe } from './pipes/weekview-appointment-card-top.pipe';
 import { WeekViewAppointmentCardGroupHeightPipe } from './pipes/weekview-appointment-card-group-height.pipe';
+import { DayViewAppointmentHeightPipe } from './pipes/day-view-appointment-height.pipe';
+import { DayViewAppointmentTopPipe } from './pipes/day-view-appointment-top.pipe';
+import { DayViewAbsenceHeightPipe } from './pipes/day-view-absence-height.pipe';
+import { DayViewAbsenceTopPipe } from './pipes/day-view-absence-top.pipe';
+import { DurationInMinutesPipe } from './pipes/duration-in-minutes.pipe';
+import { WeekViewAbsenceTopPipe } from './pipes/week-view-absence-top.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -149,6 +155,12 @@ export function HttpLoaderFactory(http: HttpClient) {
 		SsnInputDirective,
 		WeekViewAppointmentCardTopPipe,
 		WeekViewAppointmentCardGroupHeightPipe,
+		DayViewAppointmentHeightPipe,
+		DayViewAppointmentTopPipe,
+		DayViewAbsenceHeightPipe,
+		DayViewAbsenceTopPipe,
+		DurationInMinutesPipe,
+		WeekViewAbsenceTopPipe,
 	],
 	imports: [
 		CommonModule,
@@ -253,6 +265,12 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatExpansionModule,
 		WeekViewAppointmentCardTopPipe,
 		WeekViewAppointmentCardGroupHeightPipe,
+		DayViewAppointmentHeightPipe,
+		DayViewAppointmentTopPipe,
+		DayViewAbsenceHeightPipe,
+		DayViewAbsenceTopPipe,
+		DurationInMinutesPipe,
+		WeekViewAbsenceTopPipe,
 	],
 	providers: [
 		TranslatePipe,
