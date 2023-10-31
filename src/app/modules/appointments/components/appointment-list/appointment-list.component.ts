@@ -609,7 +609,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	private groupAppointmentByDateAndRoom(...appointments: Appointment[]) {
-		appointments.forEach((appointment) => {
+		appointments?.forEach((appointment) => {
 			const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
 
 			if (dateString) {
@@ -617,7 +617,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 					this.appointmentGroupedByDateAndRoom[dateString] = {};
 				}
 
-				appointment.exams?.forEach((exam) => {
+				appointment?.exams?.forEach((exam) => {
 					exam.rooms?.forEach((room) => {
 						if (!this.appointmentGroupedByDateAndRoom[dateString][room.id]) {
 							this.appointmentGroupedByDateAndRoom[dateString][room.id] = [];

@@ -1,3 +1,4 @@
+import { Appointment } from '../models/appointment.model';
 import { DateDistributed } from '../models/calendar.model';
 
 export class DateTimeUtils {
@@ -222,32 +223,28 @@ export class DateTimeUtils {
 		const day = String(date.getDate()).padStart(2, '0');
 		const hours = String(date.getHours()).padStart(2, '0');
 		const minutes = String(date.getMinutes()).padStart(2, '0');
-		const seconds = String(date.getSeconds()).padStart(2, '0');		
-		
+		const seconds = String(date.getSeconds()).padStart(2, '0');
+
 		return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 	}
+
+	public static timeStingToDate(date: string): Date {
+		const formattedDate = new Date();
+		const splitDate = date?.split(':');
+		formattedDate.setHours(+splitDate[0]);
+		formattedDate.setMinutes(+splitDate[1]);
+		formattedDate.setSeconds(0);
+		formattedDate.setMilliseconds(0);
+		return formattedDate;
+	}
+
+	public static extendMinutesInBottom(appointment: Appointment, timeSlot: any): number {
+		const appointmentEnd = DateTimeUtils.UTCTimeToLocalTimeString(appointment.endedAt.toString().split(' ')[1]).split(':');
+		const calendarEnd = DateTimeUtils.UTCTimeToLocalTimeString(timeSlot?.intervals[timeSlot.intervals.length - 1].dayEnd).split(':');
+		const appointmentEndInMin = DateTimeUtils.DurationInMinFromHour(+appointmentEnd[0], +appointmentEnd[1]);
+		let calendarEndInMin = DateTimeUtils.DurationInMinFromHour(+calendarEnd[0], +calendarEnd[1]);
+		calendarEndInMin = calendarEndInMin + 120 > 1440 ? 1440 : calendarEndInMin + 120;
+		return calendarEndInMin - appointmentEndInMin;
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

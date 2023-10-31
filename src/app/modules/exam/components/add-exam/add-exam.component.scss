@@ -93,6 +93,7 @@ section.ad-ex-section2 {
 
   .ad-ex-duration {
     flex: 1;
+    min-width: 60px;
   }
 
   .ad-ex-action-buttons {
@@ -138,8 +139,8 @@ section.ad-ex-section2 {
   }
 
   .ad-ex-room-list{
-    display: grid!important;
-    grid-template-columns: 8fr 5fr 1fr;
+    display: flex !important;
+      flex-wrap: nowrap;
 
     dfm-checkbox {
       text-overflow: ellipsis;
@@ -159,7 +160,7 @@ section.ad-ex-section2 {
 
 .order {
   max-width: 144px;
-  min-width: 144px;
+  min-width: 100px;
 }
 
 .room-container {
@@ -167,5 +168,5 @@ section.ad-ex-section2 {
   padding: 0 16px;
 }
 .select-room {
-  max-width: 280px;
+  max-width: min(50%, 280px);
 }

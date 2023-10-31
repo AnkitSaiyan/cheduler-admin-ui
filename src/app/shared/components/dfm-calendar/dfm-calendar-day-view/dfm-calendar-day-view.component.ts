@@ -159,7 +159,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		if (this.dataGroupedByDateAndRoom[date]) {
 			Object.values(this.dataGroupedByDateAndRoom[date]).forEach((data) => {
 				data.forEach(({ appointment }) => {
-					this.getTop([appointment], true);
+					this.getTop(appointment, true);
 				});
 			});
 		}
@@ -255,99 +255,29 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		}
 	}
 
-	public getHeight(groupedData: any[]): number {
-		let endDate: Date = groupedData[0].endedAt;
-
-		groupedData.forEach((data) => {
-			if (data.endedAt > endDate) {
-				endDate = data.endedAt;
-			}
-		});
-
-		const durationMinutes = getDurationMinutes(groupedData[0].startedAt, endDate);
-		return durationMinutes * this.pixelsPerMin;
-	}
-
-	public getAbsenceHeight(groupedData: any): number {
-		const [startHour, startMinute] = groupedData.start.split(':');
-		const [endHour, endMinute] = groupedData.end.split(':');
-
-		const startDate = new Date();
-		startDate.setHours(+startHour);
-		startDate.setMinutes(+startMinute);
-
-		const endDate = new Date();
-		endDate.setHours(+endHour);
-		endDate.setMinutes(+endMinute);
-		const durationMinutes = getDurationMinutes(startDate, endDate);
-		return durationMinutes * this.pixelsPerMin;
-	}
-
-	public getTop(groupedData: any[], storeHiddenAppointment: boolean = false): number {
+	public getTop(groupedData: any, storeHiddenAppointment: boolean = false): number {
 		const start = this.myDate(this.timeSlot?.timings?.[0]);
 		start.setDate(this.selectedDate.getDate());
 		start.setMonth(this.selectedDate.getMonth());
 		start.setFullYear(this.selectedDate.getFullYear());
-		const end = new Date(groupedData[0].startedAt);
+		const end = new Date(groupedData.startedAt);
 		end.setMilliseconds(0);
-		const isHiddenAppointmentInBottom = this.extendMinutesInBottom(groupedData[0]) < 0;
+		const isHiddenAppointmentInBottom = this.extendMinutesInBottom(groupedData) < 0;
 		if (start.getTime() > end.getTime() || isHiddenAppointmentInBottom) {
 			if (storeHiddenAppointment) {
-				if (this.hideAppointmentData[groupedData?.[0]?.exams?.[0]?.rooms?.[0]?.name]) {
-					this.hideAppointmentData[groupedData?.[0]?.exams?.[0]?.rooms?.[0]?.name] = [
-						...this.hideAppointmentData[groupedData?.[0]?.exams?.[0]?.rooms?.[0]?.name],
-						groupedData?.[0],
+				if (this.hideAppointmentData[groupedData?.exams?.[0]?.rooms?.[0]?.name]) {
+					this.hideAppointmentData[groupedData?.exams?.[0]?.rooms?.[0]?.name] = [
+						...this.hideAppointmentData[groupedData?.exams?.[0]?.rooms?.[0]?.name],
+						groupedData,
 					];
 				} else {
-					this.hideAppointmentData[groupedData?.[0]?.exams?.[0]?.rooms?.[0]?.name] = [groupedData?.[0]];
+					this.hideAppointmentData[groupedData?.exams?.[0]?.rooms?.[0]?.name] = [groupedData];
 				}
 			}
 
 			return -1;
 		}
 		const minutes = getDurationMinutes(start, end);
-		return minutes * this.pixelsPerMin;
-	}
-
-	public getAbsenceTop(groupedData: any[], storeHiddenAppointment: boolean = false): number {
-		const start = this.myDate(this.timeSlot?.timings?.[0]);
-		start.setDate(this.selectedDate.getDate());
-		start.setMonth(this.selectedDate.getMonth());
-		start.setFullYear(this.selectedDate.getFullYear());
-
-		const timingEnd = this.myDate(this.timeSlot?.timings?.[this.timeSlot?.timings?.length - 1]);
-		timingEnd.setDate(this.selectedDate.getDate());
-		timingEnd.setMonth(this.selectedDate.getMonth());
-		timingEnd.setFullYear(this.selectedDate.getFullYear());
-
-		const end = new Date(groupedData[0].startedAt);
-		end.setDate(this.selectedDate.getDate());
-		end.setMonth(this.selectedDate.getMonth());
-		end.setFullYear(this.selectedDate.getFullYear());
-
-		const endAbsenceDate = new Date(groupedData[0].endedAt);
-		endAbsenceDate.setDate(this.selectedDate.getDate());
-		endAbsenceDate.setMonth(this.selectedDate.getMonth());
-		endAbsenceDate.setFullYear(this.selectedDate.getFullYear());
-
-		if (
-			DateTimeUtils.UTCDateToLocalDate(start)?.getTime() > DateTimeUtils.UTCDateToLocalDate(endAbsenceDate)?.getTime() ||
-			DateTimeUtils.UTCDateToLocalDate(timingEnd)?.getTime() < DateTimeUtils.UTCDateToLocalDate(end, true)?.getTime()
-		) {
-			if (storeHiddenAppointment) {
-				const key = groupedData?.[0]?.roomName || groupedData?.[0]?.userName;
-				if (this.hideAbsenceData?.[key]) {
-					this.hideAbsenceData[key] = [...this.hideAbsenceData[key], groupedData?.[0]];
-				} else {
-					this.hideAbsenceData[key] = [...groupedData];
-				}
-			}
-		}
-
-		const minutes = getDurationMinutes(DateTimeUtils.UTCDateToLocalDate(start, true), DateTimeUtils.UTCDateToLocalDate(end, true), false);
-		if (minutes < 0 && DateTimeUtils.UTCDateToLocalDate(start)?.getTime() < DateTimeUtils.UTCDateToLocalDate(endAbsenceDate)?.getTime()) {
-			return this.pixelPerMinute;
-		}
 		return minutes * this.pixelsPerMin;
 	}
 
@@ -374,7 +304,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				switchMap((ids: number[]) => {
 					const requestData = {
 						appointmentId: appointment.id,
-						examId: appointment.exams[0].id,
+						examId: appointment?.exams?.[0].id,
 						userId: ids,
 					} as UpdateRadiologistRequestData;
 
@@ -421,8 +351,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 						extensionType: extend ? 'extend' : 'shorten',
 						from: res.top ? 'AtTheTop' : 'AtTheBottom',
 						appointmentId: appointment.id,
-						examId: appointment.exams[0].id,
-						roomId: appointment.exams[0]?.rooms?.length ? appointment.exams[0]?.rooms[0]?.id : null,
+						examId: appointment?.exams?.[0].id,
+						roomId: appointment?.exams?.[0]?.rooms?.length ? appointment?.exams?.[0]?.rooms[0]?.id : null,
 					} as UpdateDurationRequestData;
 
 					eventContainer?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -548,7 +478,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				fromDate: date,
 				toDate: date,
 				date: date,
-				exams: appointment.exams.map(({ id }) => id + ''),
+				exams: appointment?.exams?.map(({ id }) => id + '') ?? [],
 				AppointmentId: appointment?.id,
 			};
 			this.cdr.detectChanges();
@@ -794,8 +724,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			extensionType: isExtend ? 'extend' : 'shorten',
 			from: isTopResizer ? 'AtTheTop' : 'AtTheBottom',
 			appointmentId: appointment.id,
-			examId: appointment.exams[0].id,
-			roomId: appointment.exams[0]?.rooms?.length ? appointment.exams[0]?.rooms[0]?.id : null,
+			examId: appointment?.exams?.[0].id,
+			roomId: appointment?.exams?.[0]?.rooms?.length ? appointment?.exams?.[0]?.rooms?.[0]?.id : null,
 		} as UpdateDurationRequestData;
 
 		container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
