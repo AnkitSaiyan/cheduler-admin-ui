@@ -443,38 +443,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		return top;
 	}
 
-	public getAbsenceTop(groupedData: any[]): number {
-		const groupStartDate = this.datePipe.transform(new Date(groupedData[0]?.startedAt), 'HH:mm:ss') ?? '';
-		const startDate =
-			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
-				? this.myDate(this.limit.min)
-				: new Date(groupedData[0].startedAt);
-		const startHour = startDate.getHours();
-		const startMinute = startDate.getMinutes();
-		const startCalendarDate = this.myDate(this.limit.min);
-		const startCalendarHour = startCalendarDate.getHours();
-		const startCalendarMinute = startCalendarDate.getMinutes();
-		const barHeight = 1;
-		const horizontalBarHeight = (this.getAbsenceHeight(groupedData) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
-		const top = (startMinute + startHour * 60) * this.pixelsPerMin - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
-		if (
-			DateTimeUtils.TimeToNumber(groupedData?.[0].end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
-			DateTimeUtils.TimeToNumber(groupedData?.[0].start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
-		) {
-			return -1;
-		}
-		if (
-			DateTimeUtils.TimeToNumber(groupedData?.[0]?.start) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) &&
-			DateTimeUtils.TimeToNumber(groupedData?.[0]?.end) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min))
-		) {
-			return 0;
-		}
-		if (top % 20) {
-			return Math.floor(top / 20) * 20 + 20;
-		}
-		return top;
-	}
-
 	public getPrioritySlotTop(prioritySlot: any): number {
 		const min = DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min);
 		const startDate = this.myDate(

@@ -17,27 +17,29 @@ export enum UserType {
 }
 
 export interface User {
-  id: number;
-  firstname: string;
-  lastname: string;
-  fullName: string;
-  email: string;
-  telephone: string | number;
-  address: string;
-  availabilityType: AvailabilityType | null;
-  gsm: string;
-  status: Status;
-  deletedBy: number | null;
-  userType: UserType;
-  examList: number[];
-  practiceAvailability: PracticeAvailability[];
-  info?: string;
-  exams?: Exam[];
-  rights?: any[];
-  rizivNumber?: string;
-  isMandate: boolean;
-  examId: number;
-  userAzureId: string | null;
+	id: number;
+	firstname: string;
+	lastname: string;
+	fullName: string;
+	email: string;
+	telephone: string | number;
+	address: string;
+	availabilityType: AvailabilityType | null;
+	gsm: string;
+	status: Status;
+	deletedBy: number | null;
+	userType: UserType;
+	examList: number[];
+	practiceAvailability: PracticeAvailability[];
+	info?: string;
+	exams?: Exam[];
+	rights?: any[];
+	rizivNumber?: string;
+	isMandate: boolean;
+	examId: number;
+	userAzureId: string | null;
+	userRole?: any;
+	gblUserTypeId?: number;
 }
 
 export enum UserRoleEnum {

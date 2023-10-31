@@ -31,6 +31,15 @@ export interface Exam {
 	instructions: string;
 	allUsers?: User[];
 	resourcesBatch: ResourceBatch[];
+	assistantCount?: number;
+	radiologistCount?: number;
+	nursingCount?: number;
+	secretaryCount?: number;
+	availabilityText?: any;
+	usersList?: any;
+	mandatoryUsers?: any;
+	roomsList?: any;
+	statusText?: any;
 }
 
 export interface ResourceBatch {

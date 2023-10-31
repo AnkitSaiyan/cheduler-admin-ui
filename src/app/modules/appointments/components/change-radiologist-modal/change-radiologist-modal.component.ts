@@ -27,8 +27,8 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 	public ngOnInit(): void {
 		this.dialogSvc.dialogData$.pipe(take(1)).subscribe((data: Appointment) => {
-			const allUsers = data.exams[0].allUsers || [];
-			const users = data.exams[0].users || [];
+			const allUsers = data?.exams?.[0]?.allUsers || [];
+			const users = data?.exams?.[0]?.users || [];
 			if (data.isOutside) {
 				this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 					next: (allUsers) => {

@@ -32,7 +32,7 @@ import { PracticeAvailabilityServer } from '../../../../shared/models/practice.m
 import { Room, RoomType, RoomsGroupedByType } from '../../../../shared/models/rooms.model';
 import { Status } from '../../../../shared/models/status.model';
 import { Translate } from '../../../../shared/models/translate.model';
-import { AvailabilityType, UserType } from '../../../../shared/models/user.model';
+import { AvailabilityType } from '../../../../shared/models/user.model';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { BodyType, COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
@@ -40,7 +40,7 @@ import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
 import { BodyPartService } from 'src/app/core/services/body-part.service';
-import { BodyPart } from 'src/app/shared/models/body-part.model';
+import { UserUtils } from 'src/app/shared/utils/user.utils';
 
 interface FormValues {
 	name: string;
@@ -203,35 +203,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 		this.userApiSvc.allStaffs$.pipe(debounceTime(0), takeUntil(this.destroy$$)).subscribe({
 			next: (staffs) => {
-				const radiologists: NameValue[] = [];
-				const assistants: NameValue[] = [];
-				const nursing: NameValue[] = [];
-				const secretaries: NameValue[] = [];
-				const mandatory: NameValue[] = [];
-
-				staffs.forEach((staff) => {
-					const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff?.id?.toString() };
-					switch (staff.userType) {
-						case UserType.Assistant:
-							mandatory.push({ ...nameValue });
-							assistants.push({ ...nameValue });
-							break;
-						case UserType.Radiologist:
-							mandatory.push({ ...nameValue });
-							radiologists.push({ ...nameValue });
-							break;
-						// case UserType.Scheduler:
-						case UserType.Secretary:
-							mandatory.push({ ...nameValue });
-							secretaries.push({ ...nameValue });
-							break;
-						case UserType.Nursing:
-							mandatory.push({ ...nameValue });
-							nursing.push({ ...nameValue });
-							break;
-						default:
-					}
-				});
+				const { radiologists, assistants, nursing, secretaries, mandatory } = UserUtils.GroupUsersByType(staffs, true, true);
 
 				this.filteredRadiologists$$.next([...radiologists]);
 				this.filteredAssistants$$.next([...assistants]);
@@ -682,35 +654,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			filteredRooms: [[...roomsByType]],
 		});
 
-		const assistants: string[] = [];
-		const radiologists: string[] = [];
-		const nursing: string[] = [];
-		const secretaries: string[] = [];
-		// const mandatory: string[] = [];
-
-		if (batch?.users?.length) {
-			batch.users.forEach((u) => {
-				// if (u.isMandate) {
-				// 	mandatory.push(u.id.toString());
-				// } else {
-				switch (u.userType) {
-					case UserType.Assistant:
-						assistants.push(u.id.toString());
-						break;
-					case UserType.Radiologist:
-						radiologists.push(u.id.toString());
-						break;
-					case UserType.Nursing:
-						nursing.push(u.id.toString());
-						break;
-					case UserType.Secretary:
-						secretaries.push(u.id.toString());
-						break;
-					default:
-					// }
-				}
-			});
-		}
+		const { assistants, mandatory, nursing, radiologists, secretaries } = UserUtils.GroupUsersByType(batch?.users ?? [], false, false, true);
 
 		if (batch) {
 			setTimeout(() => {
@@ -725,7 +669,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					nursing,
 					secretaries,
 					radiologists,
-					mandatoryStaffs: batch?.mandatoryUsers.map((id) => id.toString()) ?? [],
+					mandatoryStaffs: mandatory,
 				} as any);
 			}, 100);
 		}
@@ -810,70 +754,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		const fa = this.examForm.get('roomsForExam') as FormArray;
 		fa.removeAt(index);
 		this.filterBatchRooms();
-	}
-
-	private getRoomsForExamFormGroup(room: Room): FormGroup {
-		let roomForExam;
-
-		if (this.examDetails$$.value?.roomsForExam?.length) {
-			roomForExam = this.examDetails$$.value?.roomsForExam.find((examRoom) => examRoom?.roomId?.toString() === room?.id?.toString());
-		}
-
-		const fg = this.fb.group({
-			roomId: [room.id, []],
-			duration: [
-				{
-					value: roomForExam?.duration ?? null,
-					disabled: !roomForExam?.duration,
-				},
-				[Validators.required, Validators.min(1)],
-			],
-			sortOrder: [
-				{
-					value: roomForExam?.sortOrder ?? null,
-					disabled: !roomForExam?.duration,
-				},
-				[Validators.required],
-			],
-			roomName: [room.name, []],
-			selectRoom: [!!roomForExam?.duration, []],
-		});
-
-		fg.get('selectRoom')
-			?.valueChanges.pipe(takeUntil(this.destroy$$))
-			.subscribe((value) => {
-				if (value) {
-					fg.get('duration')?.enable();
-					fg.get('sortOrder')?.enable();
-					this.formErrors.selectRoomErr = false;
-				} else {
-					this.updateSortOrder(fg.value?.roomId, fg.value?.sortOrder);
-					fg.patchValue({
-						duration: null,
-						sortOrder: null,
-					});
-
-					fg.get('duration')?.disable();
-					fg.get('sortOrder')?.disable();
-				}
-			});
-
-		fg.get('duration')
-			?.valueChanges.pipe(debounceTime(0), takeUntil(this.destroy$$))
-			.subscribe(() => this.toggleExpensiveError(+this.formValues.expensive));
-
-		return fg;
-	}
-
-	private updateSortOrder(id: number | null | undefined, sortOrder: number) {
-		// if (id && sortOrder) {
-		// 	const fa = this.examForm.get('roomsForExam') as FormArray;
-		// 	fa.controls.forEach((control) => {
-		// 		if (+control.value?.roomId !== +id && control.value.sortOrder && +control.value.sortOrder > sortOrder) {
-		// 			control.patchValue({ sortOrder: (+control.value.sortOrder - 1).toString() });
-		// 		}
-		// 	});
-		// }
+		this.toggleExpensiveError(this.formValues.expensive);
 	}
 
 	private createRoomsForExamFormArray(roomType: RoomType) {
