@@ -179,14 +179,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			.asObservable()
 			.pipe(
 				distinctUntilChanged((pre, curr) => {
-					const preDate = new Date(pre?.date ?? '');
-					preDate.setMilliseconds(0);
-					const currDate = new Date(curr?.date ?? '');
-					currDate.setMilliseconds(0);
-					currDate.setMinutes(0);
-					currDate.setHours(0);
-					currDate.setSeconds(0);
-					return preDate.getTime() === currDate.getTime();
+					return pre.date?.toLocaleDateString() === curr.date?.toLocaleDateString();
 				}),
 				takeUntil(this.destroy$$),
 			)
