@@ -352,11 +352,11 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 					if (!sameGroup) {
 						if (index !== 0 && lastDateString) {
-							groupedAppointments.sort((s1, s2) =>
+							groupedAppointments?.sort((s1, s2) =>
 								s1.endedAt.getTime() - s1.startedAt.getTime() > s2?.endedAt.getTime() - s2?.startedAt.getTime() ? 1 : -1,
 							);
 							const modifiedGroupedAppointment: any = [[]];
-							groupedAppointments.forEach((appointment) => {
+							groupedAppointments?.forEach((appointment) => {
 								let pushed = true;
 								for (let items of modifiedGroupedAppointment) {
 									if (
@@ -397,12 +397,9 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					this.appointmentsGroupedByDate[dateString].push(appointment);
 				}
 			} else if (lastDateString) {
-				this.appointmentsGroupedByDateAndTIme[lastDateString].push([groupedAppointments]);
+				this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments.map((value) => [value]));
 			}
 		});
-		console.log("this.appointmentsGroupedByDateAndTIme",this.appointmentsGroupedByDateAndTIme);
-
-
 	}
 
 	private groupAppointmentByDateAndRoom(...appointmentsProps: Appointment[]) {
