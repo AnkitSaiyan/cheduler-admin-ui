@@ -86,6 +86,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ShowBodyPartPipe } from './pipes/show-body-part.pipe';
 import { SsnInputDirective } from './directives/ssn-input.directive';
 import { ShareDataService } from '../core/services/share-data.service';
+import { DfmTimeInputDropdownComponent } from './components/dfm-time-input-dropdown/dfm-time-input-dropdown.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -113,6 +114,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DfmCalendarMonthViewComponent,
 		DfmCalendarWeekViewComponent,
 		DfmCalendarDayViewComponent,
+		DfmTimeInputDropdownComponent,
 		NumberToDatePipe,
 		LargestPipe,
 		NameInputDirective,
@@ -143,7 +145,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		FindSelectedSlotPipe,
 		RemoveDuplicateDataPipe,
 		RepeatFormComponent,
-  		SsnInputDirective,
+		SsnInputDirective,
 	],
 	imports: [
 		CommonModule,
@@ -208,6 +210,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DfmCalendarMonthViewComponent,
 		DfmCalendarWeekViewComponent,
 		DfmCalendarDayViewComponent,
+		DfmTimeInputDropdownComponent,
 		NumberToDatePipe,
 		NgbPopoverModule,
 		NgbAccordionModule,
@@ -253,7 +256,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 })
 export class SharedModule {
 	constructor(private _adapter: DateAdapter<any>, private shareDataSvc: ShareDataService) {
-		this.shareDataSvc.getLanguage$().subscribe((lang) =>this._adapter.setLocale(lang))
+		this.shareDataSvc.getLanguage$().subscribe((lang) => this._adapter.setLocale(lang));
 	}
 	static forRoot(): ModuleWithProviders<SharedModule> {
 		return {

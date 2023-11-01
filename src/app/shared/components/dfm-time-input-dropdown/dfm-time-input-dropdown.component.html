@@ -1,0 +1,15 @@
+<dfm-input-dropdown
+  #start
+  [items]="filteredTimes"
+  [typeToSearch]="true"
+  [typeToSearchText]="start.value"
+  (searchInput)="handleTimeInput($event)"
+  (focusout)="handleTimeFocusOut(start.search)"
+  [label]="label"
+  [formControl]="control"
+  [size]="size"
+  [placeholder]="placeholder"
+  (click)="appendItems$$.next()"
+  >
+</dfm-input-dropdown>
+<small class="validation-error" *ngIf="control?.hasError(invalidTimeError)">{{ 'InvalidTime' | translate }}</small>

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, debounceTime, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -77,10 +77,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 	public statuses = Statuses;
 
 	private selectedLang: string = ENG_BE;
-
-	public rangeArray$$ = new BehaviorSubject<any[]>([]);
-
-	public selectedIndex: number = 0;
 
 	constructor(
 		private fb: FormBuilder,
@@ -241,7 +237,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 			return;
 		}
-
 		this.submitting$$.next(true);
 
 		const { practiceAvailabilityToggle, ...rest } = this.formValues;
@@ -308,7 +303,21 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			status: [null ?? Status.Active, []],
 			availabilityType: [AvailabilityType.Unavailable, []],
 			practiceAvailabilityToggle: [false, []],
+			practiceAvailabilityArray: this.fb.array([this.practiceAvailabilityGroup(0)]),
 		});
+	}
+
+	private practiceAvailabilityGroup(isRange: 0 | 1, rangeFromDate?: Date | string, rangeToDate?: Date | string): FormGroup {
+		return this.fb.group({
+			isRange: [isRange],
+			rangeFromDate: [rangeFromDate ?? null, Validators.required],
+			rangeToDate: [rangeToDate ?? null, Validators.required],
+			practiceAvailability: this.fb.array([]),
+		});
+	}
+
+	public get practiceAvailabilityArray(): FormArray {
+		return this.addStaffForm.get('practiceAvailabilityArray') as FormArray;
 	}
 
 	private updateForm(staffDetails?: User): void {
@@ -330,25 +339,16 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public addMoreRange() {
-		let obj: dateRangeArray = {
-			min: null,
-			max: null,
-		};
-		this.rangeArray$$.next([...this.rangeArray$$.value, obj]);
+		this.practiceAvailabilityArray.push(this.practiceAvailabilityGroup(1));
 	}
 
 	public removeRange(i: number) {
-		this.rangeArray$$.next([...this.rangeArray$$.value.slice(0, i), ...this.rangeArray$$.value.slice(i + 1)]);
+		this.practiceAvailabilityArray.removeAt(i);
 	}
 
 	public dateFilter(d: Date | null): boolean {
 		const day = (d || new Date()).getDay();
 		// Prevent all days accept Mondays.
 		return day == 1;
-	}
-
-	public dateChange(date: Date | null, index: number, place: number, obj: dateRangeArray): void {
-		place == 1 ? (obj.min = date) : (obj.max = date);
-		this.rangeArray$$.next(this.rangeArray$$.value.map((data, i) => (i === index ? obj : data)));
 	}
 }
