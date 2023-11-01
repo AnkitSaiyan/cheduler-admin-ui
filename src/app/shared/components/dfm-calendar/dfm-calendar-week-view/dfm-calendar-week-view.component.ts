@@ -200,7 +200,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 				takeUntil(this.destroy$$),
 			)
 			.subscribe((data) => {
-				console.log(data);
+				// console.log(data);
 				this.holidayData$$.next(data);
 			});
 	}
