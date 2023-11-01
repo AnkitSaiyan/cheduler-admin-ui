@@ -397,9 +397,12 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					this.appointmentsGroupedByDate[dateString].push(appointment);
 				}
 			} else if (lastDateString) {
-				this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
+				this.appointmentsGroupedByDateAndTIme[lastDateString].push([groupedAppointments]);
 			}
 		});
+		console.log("this.appointmentsGroupedByDateAndTIme",this.appointmentsGroupedByDateAndTIme);
+
+
 	}
 
 	private groupAppointmentByDateAndRoom(...appointmentsProps: Appointment[]) {
