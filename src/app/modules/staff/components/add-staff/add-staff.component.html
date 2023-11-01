@@ -167,22 +167,12 @@
                         ></dfm-radio-button>
                     </div>
                 </div>
-
-                <ng-container *ngIf="formValues.practiceAvailabilityToggle">
-                  <mat-tab-group [selectedIndex]="rangeArray$$.value.length" (selectedIndexChange)="selectedIndex = $event" animationDuration="0ms">
-                    <mat-tab label="Default">
-                      <dfm-time-slots
-                              *ngIf="selectedIndex == 0"
-                              [timeSlotData$$]="staffAvailabilityData$$"
-                              [practiceHourData$$]="practiceHourData$$"
-                              [emitEvents$$]="emitEvents$$"
-                              (formValuesEvent)="saveForm($event)"
-                      ></dfm-time-slots>
-                    </mat-tab>
-                    <ng-container *ngFor="let range of rangeArray$$.value; let i = index" >
-                      <mat-tab >
-                        <ng-template mat-tab-label>
-                          {{'Range ' + (i+1)}}
+                <ng-container *ngIf="formValues.practiceAvailabilityToggle" formArrayName="practiceAvailabilityArray">
+                  <mat-tab-group [selectedIndex]="practiceAvailabilityArray.length -1" animationDuration="0ms">
+                    <mat-tab [formGroupName]="rowIndex" *ngFor="let control of practiceAvailabilityArray.controls; let rowIndex = index">
+                      <ng-template mat-tab-label>
+                        <ng-container *ngIf="rowIndex;else defaultLabel">
+                          {{'Range ' + rowIndex}}
                           <dfm-button-icon
                             size="sm"
                             icon="trash-01"
@@ -191,85 +181,86 @@
                             popoverClass="popover-p-8"
                             [openDelay]="200"
                             color="tertiary"
-                            (click)="removeRange(i)"
+                            (click)="removeRange(rowIndex)"
                           ></dfm-button-icon>
-                        </ng-template>
-                        <ng-container *ngIf="selectedIndex == i+1">
-                        <div class="d-flex dfm-gap-16 date-range">
-                          <div class="ad-ab-from-date max-w-5">
-                            <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
-                              {{ 'From' | translate }} *
-                            </div>
-  
-                            <div class="d-flex align-items-start dfm-gap-16 flex-1">
-                                <div class="flex-1 d-flex flex-column">
-                                  <div class="dfm-button-group-wrapper h-fit flex-1">
-                                    <div class="input-as-dfm-input">
-                                      <input
-                                      placeholder="{{'dateFormat' | translate}}"
-                                      required  [matDatepicker]="picker" [matDatepickerFilter]="dateFilter" readonly class="w-full min-w-128"
-                                      (dateChange)="dateChange($event.target.value, i, 1, range)"
-                                      [max]="range.max"
-                                      >
+                        </ng-container>
+                        <ng-template #defaultLabel>Default</ng-template>
+                      </ng-template>
+                      <ng-template matTabContent>
+                        <ng-container *ngIf="rowIndex">
+                          <div class="d-flex dfm-gap-16 date-range">
+                            <div class="ad-ab-from-date max-w-5">
+                              <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
+                                {{ 'From' | translate }} *
+                              </div>
+
+                              <div class="d-flex align-items-start dfm-gap-16 flex-1">
+                                  <div class="flex-1 d-flex flex-column">
+                                    <div class="dfm-button-group-wrapper h-fit flex-1">
+                                      <div class="input-as-dfm-input">
+                                        <input
+                                        placeholder="{{'dateFormat' | translate}}"
+                                        required  [matDatepicker]="picker" [matDatepickerFilter]="dateFilter" readonly class="w-full min-w-128"
+                                        formControlName="rangeFromDate"
+                                        >
+                                      </div>
+                                      <dfm-button-icon
+                                        color="secondary-gray"
+                                        size="md"
+                                        icon="calendar-date"
+                                        ngbPopover="{{ 'Calendar' | translate }}"
+                                        triggers="mouseenter:mouseleave"
+                                        popoverClass="popover-p-8"
+                                        [openDelay]="200"
+                                        (click)="picker.open()"
+                                      ></dfm-button-icon>
+                                      <mat-datepicker #picker></mat-datepicker>
                                     </div>
-                                    <dfm-button-icon
-                                      color="secondary-gray"
-                                      size="md"
-                                      icon="calendar-date"
-                                      ngbPopover="{{ 'Calendar' | translate }}"
-                                      triggers="mouseenter:mouseleave"
-                                      popoverClass="popover-p-8"
-                                      [openDelay]="200"
-                                      (click)="picker.open()"
-                                    ></dfm-button-icon>
-                                    <mat-datepicker #picker></mat-datepicker>
                                   </div>
-                                </div>
-  
+
+                              </div>
+                            </div>
+                            <div class="ad-ab-from-date max-w-5">
+                              <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
+                                {{ 'To' | translate }} *
+                              </div>
+
+                              <div class="d-flex align-items-start dfm-gap-16 flex-1">
+                                  <div class="flex-1 d-flex flex-column">
+                                    <div class="dfm-button-group-wrapper h-fit flex-1">
+                                      <div class="input-as-dfm-input">
+                                        <input
+                                        placeholder="{{'dateFormat' | translate}}"
+                                        required  [matDatepicker]="picker2" [matDatepickerFilter]="dateFilter"  readonly class="w-full min-w-128"
+                                        formControlName="rangeToDate"
+                                        >
+                                      </div>
+                                      <dfm-button-icon
+                                        color="secondary-gray"
+                                        size="md"
+                                        icon="calendar-date"
+                                        ngbPopover="{{ 'Calendar' | translate }}"
+                                        triggers="mouseenter:mouseleave"
+                                        popoverClass="popover-p-8"
+                                        [openDelay]="200"
+                                        (click)="picker2.open()"
+                                      ></dfm-button-icon>
+                                      <mat-datepicker #picker2></mat-datepicker>
+                                    </div>
+                                  </div>
+
+                              </div>
                             </div>
                           </div>
-                          <div class="ad-ab-from-date max-w-5">
-                            <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
-                              {{ 'To' | translate }} *
-                            </div>
-  
-                            <div class="d-flex align-items-start dfm-gap-16 flex-1">
-                                <div class="flex-1 d-flex flex-column">
-                                  <div class="dfm-button-group-wrapper h-fit flex-1">
-                                    <div class="input-as-dfm-input">
-                                      <input
-                                      placeholder="{{'dateFormat' | translate}}"
-                                      required  [matDatepicker]="picker2" [matDatepickerFilter]="dateFilter"  readonly class="w-full min-w-128"
-                                      (dateChange)="dateChange($event.target.value, i, 2, range)"
-                                      [min]="range.min"
-                                      >
-                                    </div>
-                                    <dfm-button-icon
-                                      color="secondary-gray"
-                                      size="md"
-                                      icon="calendar-date"
-                                      ngbPopover="{{ 'Calendar' | translate }}"
-                                      triggers="mouseenter:mouseleave"
-                                      popoverClass="popover-p-8"
-                                      [openDelay]="200"
-                                      (click)="picker2.open()"
-                                    ></dfm-button-icon>
-                                    <mat-datepicker #picker2></mat-datepicker>
-                                  </div>
-                                </div>
-  
-                            </div>
-                          </div>
-                        </div>
+                        </ng-container>
                         <dfm-time-slots
                                 [timeSlotData$$]="staffAvailabilityData$$"
                                 [practiceHourData$$]="practiceHourData$$"
                                 [emitEvents$$]="emitEvents$$"
                                 (formValuesEvent)="saveForm($event)"
                         ></dfm-time-slots>
-                      </ng-container>
-                      </mat-tab>
-                    </ng-container>
+                      </ng-template>
+                    </mat-tab>
 
                     <mat-tab disabled>
                       <ng-template mat-tab-label>
@@ -279,23 +270,6 @@
 
                       </ng-template>
                     </mat-tab>
-                    <!-- <mat-tab label="Range 1">
-                      <dfm-time-slots
-                              [timeSlotData$$]="staffAvailabilityData$$"
-                              [practiceHourData$$]="practiceHourData$$"
-                              [emitEvents$$]="emitEvents$$"
-                              (formValuesEvent)="saveForm($event)"
-                      ></dfm-time-slots>
-                    </mat-tab>
-                    <mat-tab label="Range 2">
-                      <dfm-time-slots
-                              [timeSlotData$$]="staffAvailabilityData$$"
-                              [practiceHourData$$]="practiceHourData$$"
-                              [emitEvents$$]="emitEvents$$"
-                              (formValuesEvent)="saveForm($event)"
-                      ></dfm-time-slots>
-                    </mat-tab> -->
-                    <!-- <button>test</button> -->
                   </mat-tab-group>
 
 

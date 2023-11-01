@@ -1,21 +1,18 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Weekday } from '../../models/calendar.model';
-import { getNumberArray } from '../../utils/getNumberArray';
-import { NameValuePairPipe } from '../../pipes/name-value-pair.pipe';
-import { TimeInIntervalPipe } from '../../pipes/time-in-interval.pipe';
-import { NameValue } from '../search-modal.component';
-import { DestroyableComponent } from '../destroyable.component';
-import { BehaviorSubject, debounceTime, filter, Subject, takeUntil } from 'rxjs';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
-import { GeneralUtils } from '../../utils/general.utils';
-import { toggleControlError } from '../../utils/toggleControlError';
-import { ENG_BE, TIME_24 } from '../../utils/const';
+import { BehaviorSubject, Subject, debounceTime, filter, takeUntil } from 'rxjs';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
-import { Translate } from '../../models/translate.model';
 import { ShareDataService } from '../../../core/services/share-data.service';
-import { DateTimeUtils } from '../../utils/date-time.utils';
 import { timeSlotRequiredValidator } from '../../customValidators/time-slot-required.validator';
+import { Weekday } from '../../models/calendar.model';
+import { Translate } from '../../models/translate.model';
+import { ENG_BE, TIME_24 } from '../../utils/const';
+import { DateTimeUtils } from '../../utils/date-time.utils';
+import { getNumberArray } from '../../utils/getNumberArray';
+import { toggleControlError } from '../../utils/toggleControlError';
+import { DestroyableComponent } from '../destroyable.component';
+import { NameValue } from '../search-modal.component';
 
 interface TimeSlotFormValues {
 	selectedWeekday: Weekday;
@@ -46,10 +43,6 @@ interface TimeSlot {
 export class TimeSlotsComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public timeSlotForm!: FormGroup;
 
-	private timings: NameValue[] = [];
-
-	private filteredTimings: NameValue[] = [];
-
 	public weekdayEnum = Weekday;
 
 	public readonly invalidTimeError: string = 'invalidTime';
@@ -72,8 +65,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
 	constructor(
 		private fb: FormBuilder,
-		private nameValuePipe: NameValuePairPipe,
-		private timeInIntervalPipe: TimeInIntervalPipe,
 		private cdr: ChangeDetectorRef,
 		private notificationSvc: NotificationDataService,
 		private shareDataSvc: ShareDataService,
@@ -82,9 +73,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 	}
 
 	public ngOnInit(): void {
-		this.timings = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
-		this.filteredTimings = [...this.timings];
-
 		this.createForm();
 
 		this.timeSlotData$$
@@ -151,8 +139,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 				weekday: [weekday.toString(), []],
 				dayStart: ['', []],
 				dayEnd: ['', []],
-				startTimings: [[...this.filteredTimings], []],
-				endTimings: [[...this.filteredTimings], []],
 			},
 			{ validator: timeSlotRequiredValidator },
 		);
@@ -266,7 +252,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 				}, 0);
 			}
 		});
-
 		this.cdr.detectChanges();
 	}
 
@@ -304,20 +289,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		}
 
 		control?.setValue(formattedTime);
-	}
-
-	private searchTime(time: string, timingValueControl: AbstractControl | null | undefined) {
-		timingValueControl?.setValue([...GeneralUtils.FilterArray(this.timings, time, 'value')]);
-	}
-
-	public handleTimeInput(
-		time: string,
-		control: AbstractControl | null | undefined,
-		timingValueControl: AbstractControl | null | undefined,
-		eleRef: InputDropdownComponent,
-	) {
-		this.formatInputTime(time, control, timingValueControl, eleRef);
-		this.searchTime(time, timingValueControl);
 	}
 
 	private handleInvalidTimeError(time: string, control: AbstractControl | null | undefined) {
@@ -405,10 +376,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		}
 	}
 
-	public handleTimeFocusOut(time: string, control: AbstractControl | null | undefined, weekday: string | number) {
-		this.handleError(time, control, weekday);
-	}
-
 	public isFormValid(): boolean {
 		const formArrays = this.allFormArrays;
 		for (let i = 0; i < formArrays.length; i++) {
@@ -447,15 +414,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		return timeSlots;
 	}
 }
-
-
-
-
-
-
-
-
-
 
 
 
