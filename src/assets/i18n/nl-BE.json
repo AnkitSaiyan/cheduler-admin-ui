@@ -107,6 +107,7 @@
 	"InvalidTime": "Ongeldige tijd",
 	"StartTimeLessThanEndTime": "Begintijd moet kleiner zijn dan eindtijd",
 	"SlotOverlapsOtherSlots": "Tijdslot overlapt met andere tijdslots",
+	"RangeOverlapsOtherRange": "Range date overlaps other Range",
 	"AddPrioritySlots": "Prioritair slot toevoegen",
 	"RoomView": "Zaal bekijk",
 	"RoomDetails": "Details zaal",
@@ -514,7 +515,7 @@
 	"On": "Op",
 	"YELLOW_REPRESENTS_HOLIDAY": "Geel staat voor feestdagen.",
 	"BLUE_REPRESENTS_NORMAL_LAB_EVENT": "Blauw staat voor normale.",
-	"RED_REPRESENTS_IMPACTED_ABSENCE":"Rood staat voor getroffen afwezigheid",
+	"RED_REPRESENTS_IMPACTED_ABSENCE": "Rood staat voor getroffen afwezigheid",
 	"Loading": "Laden...",
 	"Close": "Sluiten",
 	"Weekly": "Wekelijks",
@@ -524,7 +525,6 @@
 	"AffectedAppointments": "Getroffen Afspraak",
 	"AffectedAbsence": "Beïnvloed door afwezigheid",
 	"BLUE_REPRESENTS_NORMAL_APPOINTMENT": "Blauw staat voor een normale afspraak.",
-	"RED_REPRESENTS_AFFECTED_APPOINTMENT":"Rood staat voor de getroffen afspraak."
-
-
+	"RED_REPRESENTS_AFFECTED_APPOINTMENT": "Rood staat voor de getroffen afspraak."
 }
+

@@ -87,6 +87,7 @@ import { ShowBodyPartPipe } from './pipes/show-body-part.pipe';
 import { SsnInputDirective } from './directives/ssn-input.directive';
 import { ShareDataService } from '../core/services/share-data.service';
 import { DfmTimeInputDropdownComponent } from './components/dfm-time-input-dropdown/dfm-time-input-dropdown.component';
+import { MaxDatePipe } from './pipes/max-date.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -146,6 +147,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		RemoveDuplicateDataPipe,
 		RepeatFormComponent,
 		SsnInputDirective,
+		MaxDatePipe,
 	],
 	imports: [
 		CommonModule,
@@ -247,6 +249,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatTabsModule,
 		MatButtonToggleModule,
 		SsnInputDirective,
+		MaxDatePipe,
 	],
 	providers: [
 		TranslatePipe,

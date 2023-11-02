@@ -123,8 +123,6 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 			this.filteredTimes.splice(0, 0, nameValue);
 		}
 
-		console.log('time', time);
-
 		this.control.setValue(formattedTime, { emitEvent: false, onlySelf: true });
 	}
 	public handleTimeFocusOut(time: string) {

@@ -168,7 +168,7 @@
                     </div>
                 </div>
                 <ng-container *ngIf="formValues.practiceAvailabilityToggle" formArrayName="practiceAvailabilityArray">
-                  <mat-tab-group [selectedIndex]="practiceAvailabilityArray.length -1" animationDuration="0ms">
+                  <mat-tab-group [(selectedIndex)]="selectedIndex" animationDuration="0ms">
                     <mat-tab [formGroupName]="rowIndex" *ngFor="let control of practiceAvailabilityArray.controls; let rowIndex = index">
                       <ng-template mat-tab-label>
                         <ng-container *ngIf="rowIndex;else defaultLabel">
@@ -181,85 +181,96 @@
                             popoverClass="popover-p-8"
                             [openDelay]="200"
                             color="tertiary"
-                            (click)="removeRange(rowIndex)"
+                            (click)="removeRange(rowIndex); $event.stopPropagation()"
                           ></dfm-button-icon>
                         </ng-container>
                         <ng-template #defaultLabel>Default</ng-template>
                       </ng-template>
-                      <ng-template matTabContent>
-                        <ng-container *ngIf="rowIndex">
-                          <div class="d-flex dfm-gap-16 date-range">
-                            <div class="ad-ab-from-date max-w-5">
-                              <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
-                                {{ 'From' | translate }} *
-                              </div>
+                      <ng-container *ngIf="rowIndex">
+                        <div class="d-flex dfm-gap-16 date-range">
+                          <div class="ad-ab-from-date max-w-5">
+                            <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
+                              {{ 'From' | translate }} *
+                            </div>
 
-                              <div class="d-flex align-items-start dfm-gap-16 flex-1">
-                                  <div class="flex-1 d-flex flex-column">
-                                    <div class="dfm-button-group-wrapper h-fit flex-1">
-                                      <div class="input-as-dfm-input">
-                                        <input
+                            <div class="d-flex align-items-start dfm-gap-16 flex-1">
+                                <div class="flex-1 d-flex flex-column">
+                                  <div class="dfm-button-group-wrapper h-fit flex-1">
+                                    <div class="input-as-dfm-input">
+                                      <input
                                         placeholder="{{'dateFormat' | translate}}"
                                         required  [matDatepicker]="picker" [matDatepickerFilter]="dateFilter" readonly class="w-full min-w-128"
                                         formControlName="rangeFromDate"
-                                        >
-                                      </div>
-                                      <dfm-button-icon
-                                        color="secondary-gray"
-                                        size="md"
-                                        icon="calendar-date"
-                                        ngbPopover="{{ 'Calendar' | translate }}"
-                                        triggers="mouseenter:mouseleave"
-                                        popoverClass="popover-p-8"
-                                        [openDelay]="200"
-                                        (click)="picker.open()"
-                                      ></dfm-button-icon>
-                                      <mat-datepicker #picker></mat-datepicker>
+                                        [min]="today"
+                                      >
                                     </div>
+                                    <dfm-button-icon
+                                      color="secondary-gray"
+                                      size="md"
+                                      icon="calendar-date"
+                                      ngbPopover="{{ 'Calendar' | translate }}"
+                                      triggers="mouseenter:mouseleave"
+                                      popoverClass="popover-p-8"
+                                      [openDelay]="200"
+                                      (click)="picker.open()"
+                                    ></dfm-button-icon>
+                                    <mat-datepicker #picker></mat-datepicker>
                                   </div>
+                                  <small class="validation-error" *ngIf="control.get('rangeFromDate')?.touched && control.get('rangeFromDate')?.hasError('required')">
+                                    {{ 'RequiredField' | translate }}
+                                  </small>
+                                  <small class="validation-error" *ngIf="control.get('rangeToDate')?.touched && control.get('rangeToDate')?.hasError('dateRangeOverlap')">
+                                    {{ 'RangeOverlapsOtherRange' | translate }}
+                                  </small>
+                                </div>
 
-                              </div>
                             </div>
-                            <div class="ad-ab-from-date max-w-5">
-                              <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
-                                {{ 'To' | translate }} *
-                              </div>
+                          </div>
+                          <div class="ad-ab-from-date max-w-5">
+                            <div class="text-sm font-weight-medium dfm-text-main-700 dfm-mb-6">
+                              {{ 'To' | translate }} *
+                            </div>
 
-                              <div class="d-flex align-items-start dfm-gap-16 flex-1">
-                                  <div class="flex-1 d-flex flex-column">
-                                    <div class="dfm-button-group-wrapper h-fit flex-1">
-                                      <div class="input-as-dfm-input">
-                                        <input
+                            <div class="d-flex align-items-start dfm-gap-16 flex-1">
+                                <div class="flex-1 d-flex flex-column">
+                                  <div class="dfm-button-group-wrapper h-fit flex-1">
+                                    <div class="input-as-dfm-input">
+                                      <input
                                         placeholder="{{'dateFormat' | translate}}"
                                         required  [matDatepicker]="picker2" [matDatepickerFilter]="dateFilter"  readonly class="w-full min-w-128"
                                         formControlName="rangeToDate"
-                                        >
-                                      </div>
-                                      <dfm-button-icon
-                                        color="secondary-gray"
-                                        size="md"
-                                        icon="calendar-date"
-                                        ngbPopover="{{ 'Calendar' | translate }}"
-                                        triggers="mouseenter:mouseleave"
-                                        popoverClass="popover-p-8"
-                                        [openDelay]="200"
-                                        (click)="picker2.open()"
-                                      ></dfm-button-icon>
-                                      <mat-datepicker #picker2></mat-datepicker>
+                                        [min]="(control.get('rangeFromDate')?.value | maxDate : 1)"
+                                        [max]="control.get('rangeFromDate')?.value | maxDate : 7"
+                                      >
                                     </div>
+                                    <dfm-button-icon
+                                      color="secondary-gray"
+                                      size="md"
+                                      icon="calendar-date"
+                                      ngbPopover="{{ 'Calendar' | translate }}"
+                                      triggers="mouseenter:mouseleave"
+                                      popoverClass="popover-p-8"
+                                      [openDelay]="200"
+                                      (click)="picker2.open()"
+                                    ></dfm-button-icon>
+                                    <mat-datepicker #picker2></mat-datepicker>
                                   </div>
+                                  <small class="validation-error" *ngIf="control.get('rangeToDate')?.touched && control.get('rangeToDate')?.hasError('required')">
+                                    {{ 'RequiredField' | translate }}
+                                  </small>
 
-                              </div>
+                                </div>
+
                             </div>
                           </div>
-                        </ng-container>
-                        <dfm-time-slots
-                                [timeSlotData$$]="staffAvailabilityData$$"
-                                [practiceHourData$$]="practiceHourData$$"
-                                [emitEvents$$]="emitEvents$$"
-                                (formValuesEvent)="saveForm($event)"
-                        ></dfm-time-slots>
-                      </ng-template>
+                        </div>
+                      </ng-container>
+                      <dfm-time-slots
+                              [timeSlotData$$]="staffAvailabilityData$$"
+                              [practiceHourData$$]="practiceHourData$$"
+                              [dynamicRendering]="selectedIndex === rowIndex"
+                              [controlKey]="CONTROL_KEY"
+                      ></dfm-time-slots>
                     </mat-tab>
 
                     <mat-tab disabled>
