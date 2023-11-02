@@ -1,4 +1,4 @@
-<div class="d-flex flex-column dfm-gap-24 overflow-hidden  ">
+<div class="d-flex flex-column dfm-gap-24 overflow-hidden" *ngIf="dynamicRendering">
   <section class="d-flex flex-column dfm-gap-8">
     <span class="text-sm font-weight-semi-bold">{{ 'ChooseDay' | translate }}</span>
     <div class="d-flex dfm-gap-16 weekday-header overflow-x-auto hide-scrollbar align-items-center">
@@ -41,7 +41,7 @@
   </section>
 
   <section>
-    <div [formGroup]="timeSlotForm">
+    <div [formGroupName]="controlKey">
       <div formGroupName="timeSlotGroup" class="d-flex dfm-gap-32 flex-wrap">
         <div class="d-flex flex-column dfm-gap-32 flex-1" [ngClass]="{ 'hidden-slot': ![1, 2, 3, 4, 7].includes(formValues.selectedWeekday) }">
           <ng-container [formArrayName]="weekday" *ngFor="let weekday of 4 | numberArray : 1">
@@ -219,7 +219,7 @@
                   <div class="d-flex flex-column w-full">
                     <div class="flex-1 pr-hr-time-dropdown min-w-128">
                       <dfm-time-input-dropdown
-                        formControlName="startTimings"
+                        formControlName="dayStart"
                         label="{{ 'StartTime' | translate }}"
                         placeholder="{{ 'hh:mm' | translate }}"
                       >
@@ -230,7 +230,7 @@
                   <div class="d-flex flex-column w-full">
                     <div class="flex-1 pr-hr-time-dropdown min-w-128">
                       <dfm-time-input-dropdown
-                        formControlName="endTimings"
+                        formControlName="dayEnd"
                         label="{{ 'EndTime' | translate }}"
                         placeholder="{{ 'hh:mm' | translate }}"
                       >

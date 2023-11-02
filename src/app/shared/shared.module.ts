@@ -96,6 +96,7 @@ import { DayViewAbsenceTopPipe } from './pipes/day-view-absence-top.pipe';
 import { DurationInMinutesPipe } from './pipes/duration-in-minutes.pipe';
 import { WeekViewAbsenceTopPipe } from './pipes/week-view-absence-top.pipe';
 import { DfmTimeInputDropdownComponent } from './components/dfm-time-input-dropdown/dfm-time-input-dropdown.component';
+import { MaxDatePipe } from './pipes/max-date.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -163,6 +164,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DayViewAbsenceTopPipe,
 		DurationInMinutesPipe,
 		WeekViewAbsenceTopPipe,
+		MaxDatePipe,
 	],
 	imports: [
 		CommonModule,
@@ -274,6 +276,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DayViewAbsenceTopPipe,
 		DurationInMinutesPipe,
 		WeekViewAbsenceTopPipe,
+		MaxDatePipe,
 	],
 	providers: [
 		TranslatePipe,

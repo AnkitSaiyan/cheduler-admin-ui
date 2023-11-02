@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, SkipSelf, inject } from '@angular/core';
+import { AbstractControl, ControlContainer, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
 import { BehaviorSubject, Subject, debounceTime, filter, takeUntil } from 'rxjs';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
@@ -12,37 +12,20 @@ import { DateTimeUtils } from '../../utils/date-time.utils';
 import { getNumberArray } from '../../utils/getNumberArray';
 import { toggleControlError } from '../../utils/toggleControlError';
 import { DestroyableComponent } from '../destroyable.component';
-import { NameValue } from '../search-modal.component';
-
-interface TimeSlotFormValues {
-	selectedWeekday: Weekday;
-	timeSlotGroup: {
-		[key: string]: {
-			id?: number;
-			weekday: Weekday;
-			dayStart: string;
-			dayEnd: string;
-			startTimings: NameValue[];
-			endTimings: NameValue[];
-		}[];
-	};
-}
-
-interface TimeSlot {
-	id?: number;
-	weekday: Weekday;
-	dayStart: string;
-	dayEnd: string;
-}
+import { TimeSlot, TimeSlotFormValues } from '../../models/time-slot.model';
 
 @Component({
 	selector: 'dfm-time-slots',
 	templateUrl: './time-slots.component.html',
 	styleUrls: ['./time-slots.component.scss'],
+	viewProviders: [
+		{
+			provide: ControlContainer,
+			useFactory: () => inject(ControlContainer, { skipSelf: true }),
+		},
+	],
 })
 export class TimeSlotsComponent extends DestroyableComponent implements OnInit, OnDestroy {
-	public timeSlotForm!: FormGroup;
-
 	public weekdayEnum = Weekday;
 
 	public readonly invalidTimeError: string = 'invalidTime';
@@ -55,9 +38,13 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
 	@Input() public interval = 5;
 
+	@Input() controlKey: string = 'timeSlotForm';
+
 	@Input() public timeSlotData$$ = new BehaviorSubject<TimeSlot[]>([]);
 
 	@Input() public practiceHourData$$ = new BehaviorSubject<TimeSlot[]>([]);
+
+	@Input() public dynamicRendering: boolean = true;
 
 	@Input() public emitEvents$$ = new Subject<void>();
 
@@ -68,13 +55,13 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		private cdr: ChangeDetectorRef,
 		private notificationSvc: NotificationDataService,
 		private shareDataSvc: ShareDataService,
+		@SkipSelf() private parentContainer: ControlContainer,
 	) {
 		super();
 	}
 
 	public ngOnInit(): void {
 		this.createForm();
-
 		this.timeSlotData$$
 			.pipe(
 				takeUntil(this.destroy$$),
@@ -107,14 +94,25 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
 	public override ngOnDestroy() {
 		super.ngOnDestroy();
+		this.parentControl.removeControl(this.controlKey);
+	}
+
+	private get parentControl() {
+		return this.parentContainer.control as FormGroup;
+	}
+
+	public get timeSlotForm() {
+		return this.parentControl.get(this.controlKey) as FormGroup;
 	}
 
 	private createForm() {
-		this.timeSlotForm = this.fb.group({
-			selectedWeekday: [Weekday.ALL, []],
-			timeSlotGroup: this.getTimeSlotFormGroup(),
-		});
-
+		this.parentControl.addControl(
+			this.controlKey,
+			this.fb.group({
+				selectedWeekday: [Weekday.ALL, []],
+				timeSlotGroup: this.getTimeSlotFormGroup(),
+			}),
+		);
 		this.timeSlotForm.patchValue({ selectedWeekday: Weekday.ALL });
 	}
 
@@ -414,6 +412,14 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		return timeSlots;
 	}
 }
+
+
+
+
+
+
+
+
 
 
 
