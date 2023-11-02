@@ -24,7 +24,6 @@ import { LoaderService } from './loader.service';
 import { PhysicianApiService } from './physician.api.service';
 import { ShareDataService } from './share-data.service';
 import { UserManagementApiService } from './user-management-api.service';
-import { SignalrService } from './signalr.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -116,10 +115,14 @@ export class AppointmentApiService extends DestroyableComponent {
 		return combineLatest([this.appointmentPageNo$$]).pipe(
 			switchMap(([pageNo]) => {
 				return this.fetchAllAppointments$(pageNo).pipe(
-					switchMap((appointments) => this.AttachPatientDetails(appointments.data).pipe(map((data) => {
-						this.loaderSvc.deactivate();
-						return ({ ...appointments, data })
-					}))),
+					switchMap((appointments) =>
+						this.AttachPatientDetails(appointments.data).pipe(
+							map((data) => {
+								this.loaderSvc.deactivate();
+								return { ...appointments, data };
+							}),
+						),
+					),
 				);
 			}),
 		);
@@ -180,7 +183,6 @@ export class AppointmentApiService extends DestroyableComponent {
 			if (data?.LastName) queryParams['LastName'] = data.LastName;
 			if (data?.userId) queryParams['userId'] = data.userId;
 			if (data?.approval == 0 || data.approval) queryParams['approval'] = data.approval;
-
 
 			return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
 				map((response) => {
@@ -259,14 +261,14 @@ export class AppointmentApiService extends DestroyableComponent {
 				}
 				if (userDetail) {
 					return {
-						...this.getAppointmentModified(response.data),
+						...this.getAppointmentModified({ ...response?.data, examDetail: response?.data?.examBatchDetail } as any),
 						patientFname: userDetail?.givenName,
 						patientLname: userDetail?.surname,
 						patientTel: userDetail.properties?.['extension_PhoneNumber'],
 						patientEmail: userDetail.email,
 					};
 				}
-				return this.getAppointmentModified(response.data);
+				return this.getAppointmentModified({ ...response?.data, examDetail: response?.data?.examBatchDetail } as any);
 			}),
 			tap(() => {
 				this.loaderSvc.deactivate();
@@ -372,9 +374,9 @@ export class AppointmentApiService extends DestroyableComponent {
 	public getAppointmentModified(appointment: Appointment): Appointment {
 		const examIdToRooms: { [key: number]: Room[] } = {};
 		const examIdToUsers: { [key: number]: User[] } = {};
+		const roomIdToUsers: { [key: number]: User[] } = {};
 
-
-		if (appointment.roomsDetail?.length) {
+		if (appointment?.roomsDetail?.length) {
 			appointment?.roomsDetail?.forEach((room) => {
 				const examId = +room.examId;
 				if (!examIdToRooms[examId]) {
@@ -384,12 +386,17 @@ export class AppointmentApiService extends DestroyableComponent {
 			});
 		}
 
-		if (appointment.usersDetail?.length) {
-			appointment?.usersDetail?.forEach((user) => {
-				if (!examIdToUsers[+user.examId]) {
-					examIdToUsers[+user.examId] = [];
-				}
-				examIdToUsers[+user.examId].push(user);
+		if (appointment?.examDetail?.length) {
+			appointment?.examDetail?.forEach((examDetail) => {
+				examDetail?.resourcesBatch?.forEach((batch) => {
+					roomIdToUsers[batch?.rooms?.[0]?.id] = batch.users;
+					batch?.users?.forEach((user) => {
+						if (!examIdToUsers[+examDetail.id]) {
+							examIdToUsers[+examDetail.id] = [];
+						}
+						examIdToUsers[+examDetail.id]?.push(user);
+					});
+				});
 			});
 		}
 
@@ -398,7 +405,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
 		const ap = {
 			...appointment,
-			exams: appointment.exams.map((exam) => {
+			exams: appointment?.examDetail?.map((exam) => {
 				if (exam.startedAt && (!startedAt || new Date(exam.startedAt) < startedAt)) {
 					startedAt = new Date(exam.startedAt);
 				}
@@ -409,7 +416,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
 				return {
 					...exam,
-					rooms: examIdToRooms[+exam.id],
+					rooms: examIdToRooms[+exam.id]?.map((room) => ({ ...room, users: roomIdToUsers[room.id] })),
 					allUsers: exam?.users?.filter((user, index, rest) => rest.findIndex((restUser) => restUser.id === user.id) === index) ?? [],
 					users: examIdToUsers[+exam.id]?.filter((user, index, rest) => rest.findIndex((restUser) => restUser.id === user.id) === index),
 				};
@@ -418,8 +425,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
 		ap.startedAt = startedAt;
 		ap.endedAt = endedAt;
-
-		return ap;
+		return ap as any;
 	}
 
 	public AttachPatientDetails(appointments: Appointment[]): Observable<Appointment[]> {
@@ -493,7 +499,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public uploadDocumnet(file: any, uniqueId: string, appointmentId = '0' ): Observable<any> {
+	public uploadDocumnet(file: any, uniqueId: string, appointmentId = '0'): Observable<any> {
 		const formData = new FormData();
 		formData.append('File', file);
 		formData.append('ApmtQRCodeId', uniqueId);
@@ -501,28 +507,28 @@ export class AppointmentApiService extends DestroyableComponent {
 		formData.append('FileName', '');
 		formData.append('AppointmentId', appointmentId);
 		return this.http.post<any>(`${environment.schedulerApiUrl}/qrcode/upload`, formData).pipe(
-		  map((response) => response.data),
-		  tap(),
+			map((response) => response.data),
+			tap(),
 		);
-	  }
-	
-	  public getDocumentById$(id: any, isPreview:boolean): Observable<any> {
+	}
+
+	public getDocumentById$(id: any, isPreview: boolean): Observable<any> {
 		let params = new HttpParams();
 		const idType = isNaN(id) ? 'qrCodeId' : 'appointmentId';
 		params = params.append(idType, id);
 		params = params.append('isPreview', isPreview);
-			return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, {params}).pipe(
-			  map((response) => response.data),
-			  tap(() => {}),
-			);
-	  }
-	  
-	  public deleteDocument(qrId: string): Observable<any> {
-		return this.http.delete<any>(`${environment.schedulerApiUrl}/qrcode/${qrId}`).pipe(
-		  map((response) => response.statusCode),
-		  tap(),
+		return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, { params }).pipe(
+			map((response) => response.data),
+			tap(() => {}),
 		);
-	  }
+	}
+
+	public deleteDocument(qrId: string): Observable<any> {
+		return this.http.delete<any>(`${environment.schedulerApiUrl}/qrcode/${qrId}`).pipe(
+			map((response) => response.statusCode),
+			tap(),
+		);
+	}
 
 	public refresh(): void {
 		this.refreshAppointment$$.next();

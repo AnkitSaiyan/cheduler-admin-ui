@@ -179,101 +179,104 @@
               >
                 <ng-container *ngIf="dataGroupedByDateAndTime[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                   <ng-container *ngFor="let groupedData of dataGroupedByDateAndTime[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
+
                     <div
-                      *ngIf="getHeight(groupedData) as eventHeight"
+                      *ngIf="groupedData | weekViewAppointmentCardGroupHeight : limit.min : limit.max as eventHeight"
                       class="calendar-week-view-event-container"
                       [ngStyle]="{
-                        'top.px': getTop(groupedData),
+                        'top.px': groupedData | weekViewAppointmentCardTop : limit.min : limit.max,
                         'height.px': eventHeight
                       }"
                       (dblclick)="onDblClick($event, eventsContainer, day, false, getTop(groupedData)); $event.stopPropagation()"
                     >
-                      <div
-                        class="calendar-week-view-event-details-container"
-                        [ngClass]="{ 'justify-content-center p-0': getHeight([data]) <= 40 ,
-                        'affectedAppointments': data?.absenceDetails?.length
-                      }"
-                        [ngStyle]="{
-                          'margin-top.px': getDurationMinutes(groupedData?.[0].startedAt, data.startedAt) * 4,
-                          'height.px': getDurationMinutes(data.startedAt, data.endedAt) * 4
-                        }"
-                        triggers="click"
-                        container="body"
-                        *ngFor="let data of groupedData"
-                        [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)"
-                        dfmDragEvent
-                        [draggedElData]="data"
-                        triggers="click"
-                        container="body"
-                        [ngbPopover]="eventDetails"
-                        #popover="ngbPopover"
-                        [ngbPopoverDrag]="popover"
-                        [autoClose]="'outside'"
-                      >
-                        <!-- POP OVER -->
-                        <ng-template #eventDetails>
-                          <div class="calendar-week-view-event-details-expanded">
-                            <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
-                              <b>{{data.id}}</b> - {{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}
-                            </span>
+                      <div *ngFor="let items of groupedData" class="calendar-week-view-event-details-container parent">
+                        <div
+                          class="calendar-week-view-event-details-container child"
+                          *ngFor="let data of items"
+                          [ngClass]="{ 'justify-content-center p-0': getHeight([data]) <= 40 ,
+                            'affectedAppointments': data?.absenceDetails?.length
+                          }"
+                          [ngStyle]="{
+                            'top.px': (groupedData?.[0]?.[0].startedAt | durationInMinutes : data.startedAt) * 4,
+                            'height.px': (data.startedAt | durationInMinutes : data.endedAt) * 4
+                          }"
+                          triggers="click"
+                          container="body"
+                          [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)"
+                          dfmDragEvent
+                          [draggedElData]="data"
+                          triggers="click"
+                          container="body"
+                          [ngbPopover]="eventDetails"
+                          #popover="ngbPopover"
+                          [ngbPopoverDrag]="popover"
+                          [autoClose]="'outside'"
+                        >
+                          <!-- POP OVER -->
+                          <ng-template #eventDetails>
+                            <div class="calendar-week-view-event-details-expanded">
+                              <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
+                                <b>{{data.id}}</b> - {{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}
+                              </span>
 
-                              <div class="calendar-week-view-event-patients-container accordion-content">
-                                <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
-                                  <ngb-panel>
-                                    <ng-template ngbPanelTitle>
-                                      <div class="calendar-week-view-event-patients-container">
-                                        <div class="d-flex flex-column dfm-p-8">
-                                          <span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
-                                            data.exams | joinWithAnd : 'name'
-                                          }}</span>
-                                          <span class="text-sm dfm-text-main-500">
-                                            {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
-                                            -
-                                            {{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
-                                            ({{ getDurationFn(data.startedAt, data.endedAt) }} min)
-                                          </span>
+                                <div class="calendar-week-view-event-patients-container accordion-content">
+                                  <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+                                    <ngb-panel>
+                                      <ng-template ngbPanelTitle>
+                                        <div class="calendar-week-view-event-patients-container">
+                                          <div class="d-flex flex-column dfm-p-8">
+                                            <span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
+                                              data.exams | joinWithAnd : 'name'
+                                            }}</span>
+                                            <span class="text-sm dfm-text-main-500">
+                                              {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
+                                              -
+                                              {{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
+                                              ({{ (data.startedAt | durationInMinutes : data.endedAt) }} min)
+                                            </span>
+                                          </div>
                                         </div>
-                                      </div>
-                                    </ng-template>
+                                      </ng-template>
 
-                                    <ng-template ngbPanelContent>
-                                      <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                                        <span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
-                                        <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
-                                        <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
+                                      <ng-template ngbPanelContent>
+                                        <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
+                                          <span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
+                                          <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
+                                          <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
 
-                                        <ng-container *ngIf="data.exams | isData : 'users'; else dash">
-                                          <div *ngFor="let user of data.exams | removeDuplicateData: ['id', 'users']" class="dfm-ps-4 dfm-pt-4">
-                                            <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
-                                              <div class="circle-gray-200-40">
-                                                {{ user?.firstname[0] | uppercase }}
-                                              </div>
-                                              <div class="d-flex flex-column">
-                                                <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
-                                                <span class="dfm-text-main-500">{{ user?.userType | titlecase | translate }}</span>
+                                          <ng-container *ngIf="data.exams | isData : 'users'; else dash">
+                                            <div *ngFor="let user of data.exams | removeDuplicateData: ['id', 'users']" class="dfm-ps-4 dfm-pt-4">
+                                              <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
+                                                <div class="circle-gray-200-40">
+                                                  {{ user?.firstname[0] | uppercase }}
+                                                </div>
+                                                <div class="d-flex flex-column">
+                                                  <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
+                                                  <span class="dfm-text-main-500">{{ user?.userType | titlecase | translate }}</span>
+                                                </div>
                                               </div>
                                             </div>
-                                          </div>
-                                        </ng-container>
+                                          </ng-container>
 
-                                        <ng-template #dash>
-                                          <span>{{ '' | dashIfNothing }}</span>
-                                        </ng-template>
-                                      </div>
-                                    </ng-template>
-                                  </ngb-panel>
-                                </ngb-accordion>
+                                          <ng-template #dash>
+                                            <span>{{ '' | dashIfNothing }}</span>
+                                          </ng-template>
+                                        </div>
+                                      </ng-template>
+                                    </ngb-panel>
+                                  </ngb-accordion>
+                                </div>
                               </div>
-                            </div>
-                        </ng-template>
-                        <!-- POP OVER ENDS -->
-                        <ng-container *ngIf="getHeight([data]) as childEventHeight">
-                          <span class="calendar-week-view-event-title" *ngIf="childEventHeight >= 60">{{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}</span>
-                          <span class="calendar-week-view-event-time" [ngClass]="{ 'dfm-ms-12': childEventHeight <= 40, 'dfm-ms-16': childEventHeight <= 20 }">
-                            <b>{{data.id}}</b> - {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }} -
-                            {{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
-                          </span>
-                        </ng-container>
+                          </ng-template>
+                          <!-- POP OVER ENDS -->
+                          <ng-container *ngIf="getHeight([data]) as childEventHeight">
+                            <span class="calendar-week-view-event-title" *ngIf="childEventHeight >= 60">{{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}</span>
+                            <span class="calendar-week-view-event-time" [ngClass]="{ 'dfm-ms-12': childEventHeight <= 40, 'dfm-ms-16': childEventHeight <= 20 }">
+                              <b>{{data.id}}</b> - {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }} -
+                              {{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
+                            </span>
+                          </ng-container>
+                        </div>
                       </div>
                     </div>
                   </ng-container>
@@ -282,15 +285,15 @@
                 <ng-container *ngIf="absenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                   <ng-container *ngFor="let groupedData of absenceData[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                     <div
-                      *ngIf="getAbsenceTop(groupedData) >= 0 && getAbsenceHeight(groupedData) as eventHeight"
+                      *ngIf="(groupedData | weekViewAbsenceTop : limit) >= 0 && getAbsenceHeight(groupedData) as eventHeight"
                       class="calendar-week-view-event-container"
                       [ngStyle]="{
-                        'top.px': getAbsenceTop(groupedData),
+                        'top.px': (groupedData | weekViewAbsenceTop : limit),
                         'height.px': eventHeight
                       }"
                     >
                       <div
-                        class="calendar-week-view-event-details-container"
+                        class="calendar-week-view-event-details-container child"
                         *ngFor="let data of groupedData"
                         [ngClass]="{ 'justify-content-center p-0': getAbsenceHeight([data]) <= 40}"
 
@@ -347,14 +350,14 @@
                   <ng-container *ngIf="prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]">
                     <ng-container *ngFor="let prioritySlot of prioritySlots[day[0] + '-' + (day[1] + 1) + '-' + selectedDate.getFullYear()]; let i = index">
                       <div
-                        *ngIf="getAbsenceTop([prioritySlot]) >= 0 && getAbsenceHeight([prioritySlot]) as eventHeight"
+                        *ngIf="([prioritySlot]  | weekViewAbsenceTop : limit) >= 0 && getAbsenceHeight([prioritySlot]) as eventHeight"
                         [ngbPopover]="priorityCardDetail"
                         triggers="mouseenter:mouseleave"
                         triggers="mouseenter:mouseleave"
                         [class]="'priority-slots-area ' + prioritySlotsVariant"
                         [ngClass]="prioritySlot.priority"
                         [ngStyle]="{
-                          'top.px': getAbsenceTop([prioritySlot]),
+                          'top.px': [prioritySlot]  | weekViewAbsenceTop : limit,
                           'height.px': eventHeight
                         }"
                       >

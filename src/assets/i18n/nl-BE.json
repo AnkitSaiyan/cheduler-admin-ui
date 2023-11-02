@@ -372,6 +372,7 @@
 	"Calendar": "Agenda",
 	"ListView": "Lijstweergave",
 	"NoExceptionFound": "Geen uitzonderingen gevonden",
+	"NoBatchFound": "No batch found",
 	"NoMandatoryStaffFound": "Geen verplicht personeel gevonden",
 	"NoGeneralStafFfound": "Geen generale staf gevonden",
 	"UserDeleted": "Gebruiker succesvol verwijderd",
@@ -514,7 +515,7 @@
 	"Month(s)": "Maanden",
 	"On": "Op",
 	"YELLOW_REPRESENTS_HOLIDAY": "Geel staat voor feestdagen.",
-	"BLUE_REPRESENTS_NORMAL_LAB_EVENT": "Blauw staat voor normale.",
+	"BLUE_REPRESENTS_NORMAL_LAB_EVENT": "Blauw staat voor normale afwezigheid.",
 	"RED_REPRESENTS_IMPACTED_ABSENCE": "Rood staat voor getroffen afwezigheid",
 	"Loading": "Laden...",
 	"Close": "Sluiten",
@@ -525,6 +526,8 @@
 	"AffectedAppointments": "Getroffen Afspraak",
 	"AffectedAbsence": "Beïnvloed door afwezigheid",
 	"BLUE_REPRESENTS_NORMAL_APPOINTMENT": "Blauw staat voor een normale afspraak.",
-	"RED_REPRESENTS_AFFECTED_APPOINTMENT": "Rood staat voor de getroffen afspraak."
+	"RED_REPRESENTS_AFFECTED_APPOINTMENT": "Rood staat voor de getroffen afspraak.",
+	"BatchDetails": "Batch Details"
 }
+
 

@@ -396,7 +396,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 			const requestData: AddOutSideOperatingHoursAppointmentRequest = {
 				...rest,
-				startedAt: appointment.exams[0].startedAt,
+				startedAt: appointment?.exams?.[0].startedAt,
 				rejectReason: '',
 				fromPatient: false,
 				id: appointment.id,
@@ -522,8 +522,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		});
 		if (appointment?.startedAt) {
 			date = new Date(appointment.startedAt);
-		} else if (appointment?.exams[0]?.startedAt) {
-			date = new Date(appointment?.exams[0]?.startedAt);
+		} else if (appointment?.exams?.[0]?.startedAt) {
+			date = new Date(appointment?.exams?.[0]?.startedAt);
 		}
 
 		dateDistributed = DateTimeUtils.DateToDateDistributed(date);

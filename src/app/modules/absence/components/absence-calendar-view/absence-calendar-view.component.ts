@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import {
@@ -85,6 +85,9 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	@ViewChild('sidePanel') sidePanel!: ElementRef;
 
+	@Output()
+	private dateChange: EventEmitter<Date> = new EventEmitter();
+
 	private paramsToCalendarView = {
 		m: 'month',
 		w: 'week',
@@ -130,6 +133,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 							this.updateToToday();
 						} else {
 							this.selectedDate$$.next(date);
+							this.emitDate(date)
 							this.newDate$$.next({ date, isWeekChange: false });
 						}
 					} else {
@@ -680,185 +684,9 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	public sidePanelViewToggle() {
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
+
+	private emitDate(date: Date){
+		this.dateChange.emit(date)
+	}
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

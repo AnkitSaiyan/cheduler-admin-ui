@@ -72,3 +72,7 @@ export enum CalendarType {
 	Week = 'week',
 	Month = 'month',
 }
+
+//appointment card
+export const TIME_INTERVAL: number = 15;
+export const PIXELS_PER_MIN: number = 4;

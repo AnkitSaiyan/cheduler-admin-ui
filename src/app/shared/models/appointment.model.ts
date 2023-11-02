@@ -1,7 +1,7 @@
-import {Room, RoomType} from './rooms.model';
-import {Exam} from './exam.model';
-import {User} from './user.model';
-import {AppointmentStatus, ReadStatus} from './status.model';
+import { Room, RoomType } from './rooms.model';
+import { Exam, ResourceBatch } from './exam.model';
+import { User } from './user.model';
+import { AppointmentStatus, ReadStatus } from './status.model';
 
 export interface Appointment {
 	action?: any;
@@ -28,7 +28,8 @@ export interface Appointment {
 	user: User;
 	userId: number;
 	examList: number[];
-	exams: Exam[];
+	exam: Exam;
+	exams?: Exam[];
 	apmtId: number;
 	isCombineExam: boolean;
 	roomsDetail: Room[];
@@ -38,7 +39,67 @@ export interface Appointment {
 	socialSecurityNumber: number;
 	documentCount?: number;
 	isEditable: boolean;
-	absenceDetails?:[]
+	absenceDetails?: [];
+	examDetail: Array<
+		| {
+				id: number;
+				name: string;
+				expensive: number;
+				info: string;
+				instructions: string;
+				assistantCount: number;
+				radiologistCount: number;
+				nursingCount: number;
+				secretaryCount: number;
+				availabilityType: number;
+				availabilityText: string;
+				status: number;
+				statusText: string;
+				count: number;
+				startedAt: string;
+				endedAt: string;
+				usersList: User[];
+				mandatoryUsers: User[];
+				uncombinables: any;
+				uncombinablesExam: any;
+				practiceAvailability: any;
+				resourcesBatch: ResourceBatch[];
+				users: User[];
+				bodyType: string;
+				bodyPart?: any;
+				bodyPartDetails?: any;
+				roomsList?: any;
+				roomsForExam?: any;
+				rooms?: any;
+		  }
+		| any
+	>;
+	examBatchDetail?: Array<{
+		id: number;
+		name: string;
+		expensive: number;
+		info: string;
+		instructions: string;
+		assistantCount: number;
+		radiologistCount: number;
+		nursingCount: number;
+		secretaryCount: number;
+		availabilityType: number;
+		availabilityText: string;
+		status: number;
+		bodyType: string;
+		statusText: string;
+		count: number;
+		startedAt: string;
+		endedAt: string;
+		usersList: User[];
+		mandatoryUsers: User[];
+		uncombinables: any;
+		uncombinablesExam: any;
+		practiceAvailability: any;
+		resourcesBatch: ResourceBatch[];
+		users: User[];
+	}>;
 }
 
 export interface AddAppointmentRequestData {
@@ -49,13 +110,7 @@ export interface AddAppointmentRequestData {
 	patientEmail: string;
 	patientTel: number;
 	comments: string;
-	examDetails: Array<{
-		examId: number;
-		startedAt: string;
-		endedAt: string;
-		roomList?: number[];
-		userList?: number[];
-	}>;
+
 	exams: Array<{
 		examId: number;
 		startedAt: string;
@@ -97,57 +152,57 @@ export type ExtensionType = 'shorten' | 'extend';
 export type ChangePosition = 'AtTheTop' | 'AtTheBottom';
 
 export interface UpdateDurationRequestData {
-  appointmentId: number;
-  examId: number;
-  amountofMinutes: number;
-  from: ChangePosition;
-  extensionType: ExtensionType;
+	appointmentId: number;
+	examId: number;
+	amountofMinutes: number;
+	from: ChangePosition;
+	extensionType: ExtensionType;
 }
 
 //  Appointment SLots Models
 
 export interface Slot {
-  start: string;
-  end: string;
-  isCombined: boolean;
-  exams: {
-      start: string;
-      end: string;
-    examId: number;
-    roomId?: number[];
-    userId?: number[];
-  }[];
+	start: string;
+	end: string;
+	isCombined: boolean;
+	exams: {
+		start: string;
+		end: string;
+		examId: number;
+		roomId?: number[];
+		userId?: number[];
+	}[];
 }
 
 export interface SlotModified {
-  start: string;
-  end: string;
+	start: string;
+	end: string;
 
-  exams?: any[];
-  examId: number;
-  userList?: number[];
-  roomList?: any[];
-  slot: string;
+	exams?: any[];
+	examId: number;
+	userList?: number[];
+	roomList?: any[];
+	slot: string;
 }
 
 export interface AppointmentSlot {
-  title: string;
-  start: string;
-  end: string;
-  workStatus: WorkStatusesEnum;
-  workStatusText: WorkStatuses;
-  isAvailable: boolean;
-  isCombined: boolean;
-  slots: Slot[];
+	title: string;
+	start: string;
+	end: string;
+	workStatus: WorkStatusesEnum;
+	workStatusText: WorkStatuses;
+	isAvailable: boolean;
+	isCombined: boolean;
+	slots: Slot[];
 }
 
 export type WorkStatuses = 'Working' | 'Holiday' | 'Off' | 'Past';
 
 export enum WorkStatusesEnum {
-  Working = 1,
-  Holiday,
-  Off,
-  Past,
+	Working = 1,
+	Holiday,
+	Off,
+	Past,
 }
 
 export interface AppointmentSlotsRequestData {
@@ -159,13 +214,13 @@ export interface AppointmentSlotsRequestData {
 }
 
 export interface SelectedSlots {
-  [key: number]: {
-    slot: string;
-    examId: number;
-    exams?:any[]
-    userList: number[];
-    roomList: number[];
-  }
+	[key: number]: {
+		slot: string;
+		examId: number;
+		exams?: any[];
+		userList: number[];
+		roomList: number[];
+	};
 }
 
 export interface CreateAppointmentFormValues {
@@ -185,7 +240,7 @@ export interface CreateAppointmentFormValues {
 }
 
 export interface UpdateRadiologistRequestData {
-  appointmentId: number;
-  examId: number;
-  userId: number[];
+	appointmentId: number;
+	examId: number;
+	userId: number[];
 }

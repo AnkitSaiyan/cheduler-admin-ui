@@ -1336,20 +1336,28 @@ angular-editor-toolbar button i {
       border-radius: 0;
     }
   }
-        .mat-tab-label-content {
-    
-          >dfm-button-icon {
-            display: none;
-            position: absolute;
-            right: 4px;
-          }
-        }
-        &:hover {
-          .mat-tab-label-content {
-            >dfm-button-icon {
-              display: block;
-            }
-          }
-    
-        }
-        }
+
+  .mat-tab-label-content {
+    >dfm-button-icon {
+      display: none;
+      position: absolute;
+      right: 4px;
+    }
+  }
+
+  &:hover {
+    .mat-tab-label-content {
+      >dfm-button-icon {
+        display: block;
+      }
+    }
+
+  }
+}
+
+.input-dropdown-menu-pos-rel {
+  .input-dropdown-menu {
+    position: relative !important;
+    transform: none !important;
+  }
+}

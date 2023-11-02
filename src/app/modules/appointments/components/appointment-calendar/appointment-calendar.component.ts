@@ -352,7 +352,41 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 					if (!sameGroup) {
 						if (index !== 0 && lastDateString) {
-							this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
+							groupedAppointments?.sort((s1, s2) =>
+								s1.endedAt.getTime() - s1.startedAt.getTime() > s2?.endedAt.getTime() - s2?.startedAt.getTime() ? 1 : -1,
+							);
+							const modifiedGroupedAppointment: any = [[]];
+							groupedAppointments?.forEach((appointment) => {
+								let pushed = true;
+								for (let items of modifiedGroupedAppointment) {
+									if (
+										items.every(
+											(item: any) =>
+												!DateTimeUtils.CheckTimeRangeOverlapping(
+													this.datePipe.transform(item.startedAt, 'HH:mm:ss')!,
+													this.datePipe.transform(item.endedAt, 'HH:mm:ss')!,
+													this.datePipe.transform(appointment.startedAt, 'HH:mm:ss')!,
+													this.datePipe.transform(appointment.endedAt, 'HH:mm:ss')!,
+												),
+										)
+									) {
+										items.push(appointment);
+										pushed = false;
+										break;
+									}
+								}
+								if (pushed) {
+									modifiedGroupedAppointment.push([appointment]);
+								}
+							});
+							const finalAppointment = modifiedGroupedAppointment
+								.map((items) => {
+									const sortedData = items.sort((s1, s2) => s1.startedAt - s2.startedAt);
+									return sortedData;
+								})
+								.sort((s1, s2) => s1?.[0]?.startedAt - s2?.[0]?.startedAt);
+
+							this.appointmentsGroupedByDateAndTIme[lastDateString].push(finalAppointment);
 							groupedAppointments = [];
 						}
 					}
@@ -363,23 +397,23 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					this.appointmentsGroupedByDate[dateString].push(appointment);
 				}
 			} else if (lastDateString) {
-				this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments);
+				this.appointmentsGroupedByDateAndTIme[lastDateString].push(groupedAppointments.map((value) => [value]));
 			}
 		});
 	}
 
 	private groupAppointmentByDateAndRoom(...appointmentsProps: Appointment[]) {
 		const appointments: Appointment[] = [];
-		appointmentsProps.forEach((appointment: Appointment) => {
-			appointment.exams.forEach((exam) => {
-				exam.rooms?.forEach((room: any) => {
+		appointmentsProps?.forEach((appointment: Appointment) => {
+			appointment?.exams?.forEach((exam) => {
+				exam?.rooms?.forEach((room: any) => {
 					appointments.push({ ...appointment, startedAt: room.startedAt, endedAt: room.endedAt, exams: [{ ...exam, rooms: [room] }] });
 				});
 			});
 		});
 
-		appointments.forEach((appointment) => {
-			if (appointment.startedAt) {
+		appointments?.forEach((appointment) => {
+			if (appointment?.startedAt) {
 				const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
 
 				if (dateString) {
@@ -387,7 +421,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 						this.appointmentGroupedByDateAndRoom[dateString] = {};
 					}
 
-					appointment.exams?.forEach((exam) => {
+					appointment?.exams?.forEach((exam) => {
 						exam.rooms?.forEach((room) => {
 							if (!this.appointmentGroupedByDateAndRoom[dateString][room.id]) {
 								this.appointmentGroupedByDateAndRoom[dateString][room.id] = [];
@@ -524,7 +558,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				fromDate: date,
 				toDate: date,
 				date: date,
-				exams: appointment.exams.map(({ id }) => id + ''),
+				exams: appointment?.exams?.map(({ id }) => id + ''),
 				AppointmentId: appointment?.id,
 			};
 			const isSlotAvailable = await firstValueFrom(this.appointmentApiSvc.getSlots$(reqData).pipe(map((data) => !!data?.[0]?.slots?.length)));
