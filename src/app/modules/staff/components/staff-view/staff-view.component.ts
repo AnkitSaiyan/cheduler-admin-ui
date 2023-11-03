@@ -1,21 +1,21 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, first, map, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { User } from '../../../../shared/models/user.model';
-import { ENG_BE, STAFF_ID } from '../../../../shared/utils/const';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { TimeSlot, WeekWisePracticeAvailability, Weekday } from '../../../../shared/models/calendar.model';
-import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { PracticeAvailability } from '../../../../shared/models/practice.model';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { ModalService } from '../../../../core/services/modal.service';
-import { Translate } from '../../../../shared/models/translate.model';
+import { BehaviorSubject, filter, first, map, switchMap, take, takeUntil } from 'rxjs';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
-import { UserApiService } from '../../../../core/services/user-api.service';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { WeekdayTimeSlot } from 'src/app/shared/models/time-slot.model';
+import { ExamApiService } from '../../../../core/services/exam-api.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { UserApiService } from '../../../../core/services/user-api.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { TimeSlot, WeekWisePracticeAvailability } from '../../../../shared/models/calendar.model';
+import { PracticeAvailability } from '../../../../shared/models/practice.model';
+import { Translate } from '../../../../shared/models/translate.model';
+import { User } from '../../../../shared/models/user.model';
+import { ENG_BE, STAFF_ID } from '../../../../shared/utils/const';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 
 @Component({
 	selector: 'dfm-staff-view',
@@ -102,7 +102,6 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 
 	private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): Array<WeekWisePracticeAvailability[]> {
 		// const weekdayToSlotsObj: { [key: string]: TimeSlot[] } = {};
-
 		const weekdayTimeSlots: WeekdayTimeSlot<TimeSlot[]>[] = [];
 
 		// creating week-wise slots
@@ -165,8 +164,13 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 					practiceAvailability[index] = [];
 				}
 
+				const { rangeFromDate, rangeToDate, isRange } = practiceAvailabilities?.find((practice) => practice.rangeIndex === index)!;
+
 				practiceAvailability[index].push({
 					slotNo,
+					rangeFromDate: rangeFromDate ? DateTimeUtils.UTCDateToLocalDate(new Date(rangeFromDate), true) : null,
+					rangeToDate: rangeToDate ? DateTimeUtils.UTCDateToLocalDate(new Date(rangeToDate), true) : null,
+					isRange,
 					monday: { ...(allWeekTimeSlots['1'] ?? {}) },
 					tuesday: { ...(allWeekTimeSlots['2'] ?? {}) },
 					wednesday: { ...(allWeekTimeSlots['3'] ?? {}) },
@@ -177,9 +181,6 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 				});
 			}
 		});
-
-		console.log(practiceAvailability);
-
 		return practiceAvailability;
 	}
 }
