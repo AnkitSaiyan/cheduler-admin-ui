@@ -1320,7 +1320,7 @@ angular-editor-toolbar button i {
     color: var(--dfm-btn-secondary-color)
   }
 
-  &:last-of-type {
+&.mat-tab-disabled {
     all: unset;
     width: 48px;
     display: flex;

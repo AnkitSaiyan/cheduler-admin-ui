@@ -6,7 +6,7 @@
   left: 50%;
   z-index: 10;
   display: block;
-  backdrop-filter: blur(1px); 
+  backdrop-filter: blur(1px);
 }
 
 .ad-sf-action-buttons {
@@ -102,4 +102,8 @@ section.ad-sf-section2 {
   .staff-name-mv, .staff-email-mv, .staff-phone-mv{
     width: 100%;
   }
+}
+
+.date-range {
+  margin: 16px 0;
 }
