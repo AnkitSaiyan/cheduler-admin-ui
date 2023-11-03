@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, first, map, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../../../../shared/models/user.model';
-import { RouterStateService } from '../../../../core/services/router-state.service';
 import { ENG_BE, STAFF_ID } from '../../../../shared/utils/const';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { Weekday } from '../../../../shared/models/calendar.model';
+import { TimeSlot, WeekWisePracticeAvailability, Weekday } from '../../../../shared/models/calendar.model';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -16,23 +15,7 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { Permission } from 'src/app/shared/models/permission.model';
-
-interface TimeSlot {
-	id?: number;
-	dayStart: string;
-	dayEnd: string;
-}
-
-interface WeekWisePracticeAvailability {
-	slotNo: number;
-	monday: TimeSlot;
-	tuesday: TimeSlot;
-	wednesday: TimeSlot;
-	thursday: TimeSlot;
-	friday: TimeSlot;
-	saturday: TimeSlot;
-	sunday: TimeSlot;
-}
+import { WeekdayTimeSlot } from 'src/app/shared/models/time-slot.model';
 
 @Component({
 	selector: 'dfm-staff-view',
@@ -44,9 +27,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 
 	public examIdToNameMap = new Map<number, string>();
 
-	public practiceAvailability$$ = new BehaviorSubject<any[]>([]);
-
-	public columns: Weekday[] = [Weekday.MON, Weekday.TUE, Weekday.WED, Weekday.THU, Weekday.FRI, Weekday.SAT, Weekday.SUN];
+	public practiceAvailability$$ = new BehaviorSubject<Array<WeekWisePracticeAvailability[]>>([]);
 
 	private selectedLang: string = ENG_BE;
 
@@ -54,7 +35,6 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 
 	constructor(
 		private userApiService: UserApiService,
-		private routerStateSvc: RouterStateService,
 		private examApiSvc: ExamApiService,
 		private notificationSvc: NotificationDataService,
 		private router: Router,
@@ -70,20 +50,23 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 			.pipe(
 				filter((params) => params[STAFF_ID]),
 				map((params) => params[STAFF_ID]),
+				first(),
 				switchMap((staffID) => this.userApiService.getUserByID$(+staffID)),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe((staffDetails) => {
-				this.staffDetails$$.next(staffDetails);
+			.subscribe({
+				next: (staffDetails) => {
+					this.staffDetails$$.next(staffDetails);
 
-				if (staffDetails?.practiceAvailability?.length) {
-					this.practiceAvailability$$.next([...this.getPracticeAvailability(staffDetails.practiceAvailability)]);
-				}
+					if (staffDetails?.practiceAvailability?.length) {
+						this.practiceAvailability$$.next([...this.getPracticeAvailability(staffDetails.practiceAvailability)]);
+					}
+				},
 			});
 
-		this.examApiSvc.allExams$
-			.pipe(takeUntil(this.destroy$$))
-			.subscribe((exams) => exams.forEach((exam) => this.examIdToNameMap.set(+exam.id, exam.name)));
+		this.examApiSvc.allExams$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (exams) => exams.forEach((exam) => this.examIdToNameMap.set(+exam.id, exam.name)),
+		});
 
 		this.shareDataService
 			.getLanguage$()
@@ -117,66 +100,85 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 			});
 	}
 
-	private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): WeekWisePracticeAvailability[] {
-		const weekdayToSlotsObj: { [key: string]: TimeSlot[] } = {};
+	private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): Array<WeekWisePracticeAvailability[]> {
+		// const weekdayToSlotsObj: { [key: string]: TimeSlot[] } = {};
 
-		const practiceAvailability: WeekWisePracticeAvailability[] = [];
+		const weekdayTimeSlots: WeekdayTimeSlot<TimeSlot[]>[] = [];
 
 		// creating week-wise slots
 		practiceAvailabilities.forEach((practice) => {
+			const weekdayString: string = practice.weekday + '';
+			const rangeIndex: number = practice.rangeIndex;
+
+			if (!weekdayTimeSlots[rangeIndex]) {
+				weekdayTimeSlots[rangeIndex] = {};
+			}
+
+			if (!weekdayTimeSlots[rangeIndex][weekdayString]?.length) {
+				weekdayTimeSlots[rangeIndex][weekdayString] = [];
+			}
+
 			const timeSlot: TimeSlot = {
 				dayStart: DateTimeUtils.TimeStringIn24Hour(practice.dayStart),
 				dayEnd: DateTimeUtils.TimeStringIn24Hour(practice.dayEnd),
 				id: practice.id,
 			};
-
-			if (!weekdayToSlotsObj[practice.weekday.toString()] && !weekdayToSlotsObj[practice.weekday.toString()]?.length) {
-				weekdayToSlotsObj[practice.weekday.toString()] = [];
-			}
-
-			weekdayToSlotsObj[practice.weekday.toString()].push(timeSlot);
+			weekdayTimeSlots[rangeIndex][weekdayString].push(timeSlot);
 		});
 
-		// sorting slots by start time
-		for (let weekday = 0; weekday < 7; weekday++) {
-			if (weekdayToSlotsObj[weekday.toString()]?.length) {
-				weekdayToSlotsObj[weekday.toString()].sort((a, b) => DateTimeUtils.TimeToNumber(a.dayStart) - DateTimeUtils.TimeToNumber(b.dayStart));
-			}
-		}
+		const practiceAvailability: Array<WeekWisePracticeAvailability[]> = [];
 
-		let slotNo = 0;
-
-		while (true) {
-			const allWeekTimeSlots: { [key: string]: TimeSlot } = {};
-
-			let done = true;
-
+		weekdayTimeSlots.forEach((weekdayTimeSlotObject: WeekdayTimeSlot<TimeSlot[]>, index: number) => {
+			// sorting slots by start time
 			for (let weekday = 0; weekday < 7; weekday++) {
-				if (weekdayToSlotsObj[weekday.toString()]?.length > slotNo) {
-					allWeekTimeSlots[weekday.toString()] = { ...allWeekTimeSlots, ...weekdayToSlotsObj[weekday.toString()][slotNo] };
-					if (done) {
-						done = false;
-					}
+				const weekdayString: string = weekday + '';
+				if (weekdayTimeSlotObject[weekdayString]?.length) {
+					weekdayTimeSlotObject[weekdayString].sort((a, b) => DateTimeUtils.TimeToNumber(a.dayStart) - DateTimeUtils.TimeToNumber(b.dayStart));
 				}
 			}
 
-			if (done) {
-				break;
+			// creating weekday-wise slot data
+			let slotNo = 0;
+
+			while (true) {
+				const allWeekTimeSlots: WeekdayTimeSlot<TimeSlot> = {};
+
+				let done = true;
+
+				for (let weekday = 0; weekday < 7; weekday++) {
+					const weekdayString: string = weekday + '';
+					if (weekdayTimeSlotObject[weekdayString]?.length > slotNo) {
+						allWeekTimeSlots[weekdayString] = { ...(allWeekTimeSlots[weekdayString] ?? {}), ...weekdayTimeSlotObject[weekdayString][slotNo] };
+						if (done) {
+							done = false;
+						}
+					}
+				}
+
+				if (done) {
+					break;
+				}
+
+				slotNo++;
+
+				if (!practiceAvailability[index]?.length) {
+					practiceAvailability[index] = [];
+				}
+
+				practiceAvailability[index].push({
+					slotNo,
+					monday: { ...(allWeekTimeSlots['1'] ?? {}) },
+					tuesday: { ...(allWeekTimeSlots['2'] ?? {}) },
+					wednesday: { ...(allWeekTimeSlots['3'] ?? {}) },
+					thursday: { ...(allWeekTimeSlots['4'] ?? {}) },
+					friday: { ...(allWeekTimeSlots['5'] ?? {}) },
+					saturday: { ...(allWeekTimeSlots['6'] ?? {}) },
+					sunday: { ...(allWeekTimeSlots['0'] ?? {}) },
+				});
 			}
+		});
 
-			slotNo++;
-
-			practiceAvailability.push({
-				slotNo,
-				monday: { ...allWeekTimeSlots['1'] },
-				tuesday: { ...allWeekTimeSlots['2'] },
-				wednesday: { ...allWeekTimeSlots['3'] },
-				thursday: { ...allWeekTimeSlots['4'] },
-				friday: { ...allWeekTimeSlots['5'] },
-				saturday: { ...allWeekTimeSlots['6'] },
-				sunday: { ...allWeekTimeSlots['0'] },
-			});
-		}
+		console.log(practiceAvailability);
 
 		return practiceAvailability;
 	}

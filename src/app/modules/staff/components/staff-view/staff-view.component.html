@@ -15,7 +15,7 @@
 				leadingIcon="pencil-02"
 				*dfmPermitted="Permission.UpdateStaffs"
 				[routerLink]="['../', 'edit']"
-        queryParamsHandling="merge"
+				queryParamsHandling="merge"
 				[state]="{ comingFromRoute: 'view', edit: true }"
 				>{{ 'EditStaff' | translate }}
 			</dfm-button>
@@ -126,85 +126,28 @@
 			</div>
 		</section>
 
-    <ng-container *ngIf="staffDetails.practiceAvailability?.length">
-      <section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16 sf-vw-section3" *ngIf="practiceAvailability$$ | async as practiceAvailability">
-        <header class="d-flex align-items-center dfm-gap-8">
-          <div class="dfm-button-gray-400">
-            <dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
-          </div>
-          <span class="font-weight-medium">{{ 'PracticeAvailabilityData' | translate }}</span>
-        </header>
+		<ng-container *ngIf="staffDetails.practiceAvailability?.length">
+			<section class="d-flex flex-column dfm-gap-16 dfm-card dfm-p-16 sf-vw-section3" *ngIf="practiceAvailability$$ | async as practiceAvailability">
+				<header class="d-flex align-items-center dfm-gap-8">
+					<div class="dfm-button-gray-400">
+						<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
+					</div>
+					<span class="font-weight-medium">{{ 'PracticeAvailabilityData' | translate }}</span>
+				</header>
 
-        <div class="overflow-y-auto h-fit h-fit fix-height">
-          <dfm-table [items]="practiceAvailability" *ngIf="staffDetails?.practiceAvailability?.length">
-            <ng-template #headerRowTemplate>
-              <dfm-table-header-cell>{{ 'SlotNo' | translate }}</dfm-table-header-cell>
-              <dfm-table-header-cell *ngFor="let column of columns">{{ column | weekdayToName | translate }}</dfm-table-header-cell>
-            </ng-template>
-
-            <ng-template #bodyRowTemplate let-item>
-              <dfm-table-body-cell>{{ item.slotNo }}</dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.monday.dayStart && item.monday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.monday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.monday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.tuesday.dayStart && item.tuesday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.tuesday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.tuesday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.wednesday.dayStart && item.wednesday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.wednesday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.wednesday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.thursday.dayStart && item.thursday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.thursday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.thursday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.friday.dayStart && item.friday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.friday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.friday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.saturday.dayStart && item.saturday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.saturday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.saturday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-              <dfm-table-body-cell>
-                <div *ngIf="item.sunday.dayStart && item.sunday.dayEnd; else dash" class="d-flex dfm-gap-8">
-                  <span> {{ item.sunday.dayStart | dfmUtcToLocal: true : true }} </span>
-                  -
-                  <span> {{ item.sunday.dayEnd | dfmUtcToLocal: true : true }} </span>
-                </div>
-              </dfm-table-body-cell>
-            </ng-template>
-          </dfm-table>
-          <div
-            class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom dfm-text-main-600"
-            *ngIf="!staffDetails?.practiceAvailability?.length"
-          >
-            {{ 'NoExceptionFound' | translate }}
-          </div>
-        </div>
-      </section>
-    </ng-container>
-
+				<div class="">
+					<div *ngFor="let practice of practiceAvailability">
+						<dfm-time-slots-table *ngIf="" [weekWisePracticeAvailability]="practice"></dfm-time-slots-table>
+					</div>
+				</div>
+			</section>
+			<div
+				class="d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom dfm-text-main-600"
+				*ngIf="!staffDetails?.practiceAvailability?.length"
+			>
+				{{ 'NoExceptionFound' | translate }}
+			</div>
+		</ng-container>
 
 		<div class="hidden bg-white sf-vw-action-buttons-mv" *dfmPermitted="[Permission.UpdateStaffs, Permission.DeleteStaffs]">
 			<dfm-button color="secondary" size="sm" *dfmPermitted="Permission.DeleteStaffs" (click)="deleteStaff(staffDetails.id)">{{
@@ -215,7 +158,7 @@
 				size="sm"
 				*dfmPermitted="Permission.UpdateStaffs"
 				[routerLink]="['../', 'edit']"
-        queryParamsHandling="merge"
+				queryParamsHandling="merge"
 				[state]="{ comingFromRoute: 'view', edit: true }"
 				>{{ 'Edit' | translate }}</dfm-button
 			>

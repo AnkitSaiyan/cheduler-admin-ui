@@ -97,6 +97,7 @@ import { DayViewAbsenceHeightPipe } from './pipes/day-view-absence-height.pipe';
 import { DayViewAbsenceTopPipe } from './pipes/day-view-absence-top.pipe';
 import { DurationInMinutesPipe } from './pipes/duration-in-minutes.pipe';
 import { WeekViewAbsenceTopPipe } from './pipes/week-view-absence-top.pipe';
+import { TimeSlotsTableComponent } from './components/time-slots-table/time-slots-table.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -165,6 +166,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DayViewAbsenceTopPipe,
 		DurationInMinutesPipe,
 		WeekViewAbsenceTopPipe,
+		TimeSlotsTableComponent,
 	],
 	imports: [
 		CommonModule,
@@ -277,6 +279,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DayViewAbsenceTopPipe,
 		DurationInMinutesPipe,
 		WeekViewAbsenceTopPipe,
+		TimeSlotsTableComponent,
 	],
 	providers: [
 		TranslatePipe,
