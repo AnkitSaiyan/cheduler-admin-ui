@@ -273,9 +273,12 @@
                       ></dfm-time-slots>
                     </mat-tab>
 
-                    <mat-tab disabled>
-                      <ng-template mat-tab-label>
-                          <button mat-icon-button (click)="addMoreRange()">
+                    <mat-tab disabled >
+                      <ng-template mat-tab-label >
+                          <button mat-icon-button (click)="addMoreRange()" ngbPopover="{{ 'AddRange' | translate }}"
+                          triggers="mouseenter:mouseleave"
+                          popoverClass="popover-p-8"
+                          [openDelay]="200" >
                             <div class="dfm-bg-primary rounded-circle text-white text-center icon-24">&plus;</div>
                           </button>
 

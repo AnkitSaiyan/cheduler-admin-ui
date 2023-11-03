@@ -430,7 +430,12 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public addMoreRange() {
-		this.practiceAvailabilityArray.push(this.practiceAvailabilityGroup(true));
+    const fg = this.practiceAvailabilityGroup(true);
+		const defaultPractice = Object.values(this.practiceAvailabilityArray?.controls?.[0]?.get(this.CONTROL_KEY)?.value?.timeSlotGroup).flatMap(
+			(value) => value,
+		);
+		fg.get('practice')?.setValue(new BehaviorSubject(defaultPractice));
+		this.practiceAvailabilityArray.push(fg);
 		this.selectedIndex = this.practiceAvailabilityArray.length - 1;
 	}
 
