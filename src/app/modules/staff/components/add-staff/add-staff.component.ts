@@ -35,7 +35,7 @@ interface FormValues {
 }
 
 interface PracticeAvailability {
-	isRange: 0 | 1;
+	isRange: boolean;
 	rangeFromDate?: Date | null;
 	rangeToDate?: Date | null;
 	practiceAvailability: TimeSlotFormValues;
@@ -144,17 +144,48 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 					this.updateForm(staffDetails);
 
 					if (staffDetails?.practiceAvailability?.length) {
-						const practice = [
-							...staffDetails.practiceAvailability.map((availability) => {
-								return {
-									...availability,
-									dayStart: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayStart),
-									dayEnd: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayEnd),
+						const practice = {};
+						staffDetails.practiceAvailability.forEach(({ rangeFromDate, rangeToDate, isRange, rangeIndex, ...availability }) => {
+							if (practice?.[rangeIndex]) {
+								practice[rangeIndex] = {
+									...practice?.[rangeIndex],
+									practice: [
+										...practice?.[rangeIndex]?.practice,
+										{
+											...availability,
+											dayStart: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayStart),
+											dayEnd: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayEnd),
+										},
+									],
 								};
-							}),
-						];
-
-						this.staffAvailabilityData$$.next(practice);
+							} else {
+								practice[rangeIndex] = {
+									rangeFromDate: rangeFromDate ? DateTimeUtils.UTCDateToLocalDate(new Date(rangeFromDate), true) : null,
+									rangeToDate: rangeToDate ? DateTimeUtils.UTCDateToLocalDate(new Date(rangeToDate), true) : null,
+									isRange,
+									rangeIndex,
+									practice: [
+										{
+											...availability,
+											dayStart: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayStart),
+											dayEnd: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayEnd),
+										},
+									],
+								};
+							}
+						});
+						Object.values(practice).forEach((value: any) => {
+							if (value.isRange) {
+								this.practiceAvailabilityArray.push(
+									this.practiceAvailabilityGroup(value.isRange, value.rangeFromDate, value.rangeToDate, value.practice),
+								);
+							} else {
+								this.practiceAvailabilityArray.controls?.[0].patchValue({
+									isRange: value.isRange,
+									practice: new BehaviorSubject(value.practice),
+								});
+							}
+						});
 					}
 				}
 
@@ -335,15 +366,16 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			status: [null ?? Status.Active, []],
 			availabilityType: [AvailabilityType.Unavailable, []],
 			practiceAvailabilityToggle: [false, []],
-			practiceAvailabilityArray: this.fb.array([this.practiceAvailabilityGroup(0)]),
+			practiceAvailabilityArray: this.fb.array([this.practiceAvailabilityGroup(false)]),
 		});
 	}
 
-	private practiceAvailabilityGroup(isRange: 0 | 1, rangeFromDate?: Date | string, rangeToDate?: Date | string): FormGroup {
+	private practiceAvailabilityGroup(isRange: boolean, rangeFromDate?: Date | string, rangeToDate?: Date | string, practice?: any[]): FormGroup {
 		const practiceAvailability = this.fb.group({
 			isRange: [isRange],
 			rangeFromDate: [rangeFromDate ?? null, [Validators.required]],
 			rangeToDate: [rangeToDate ?? null, [Validators.required]],
+			practice: [new BehaviorSubject(practice ?? [])],
 		});
 		if (!isRange) {
 			practiceAvailability.get('rangeFromDate')?.removeValidators(Validators.required);
@@ -426,7 +458,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public addMoreRange() {
-		this.practiceAvailabilityArray.push(this.practiceAvailabilityGroup(1));
+		this.practiceAvailabilityArray.push(this.practiceAvailabilityGroup(true));
 		this.selectedIndex = this.practiceAvailabilityArray.length - 1;
 	}
 

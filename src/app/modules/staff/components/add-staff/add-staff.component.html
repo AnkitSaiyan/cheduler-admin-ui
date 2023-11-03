@@ -266,7 +266,7 @@
                         </div>
                       </ng-container>
                       <dfm-time-slots
-                              [timeSlotData$$]="staffAvailabilityData$$"
+                              [timeSlotData$$]="control.get('practice')?.value"
                               [practiceHourData$$]="practiceHourData$$"
                               [dynamicRendering]="selectedIndex === rowIndex"
                               [controlKey]="CONTROL_KEY"
