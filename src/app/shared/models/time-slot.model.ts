@@ -1,4 +1,3 @@
-import { NameValue } from '../components/search-modal.component';
 import { Weekday } from './calendar.model';
 
 export interface TimeSlotFormValues {
@@ -31,7 +30,18 @@ export interface TimeSlot {
 	weekday: Weekday;
 }
 
+export interface WeekWisePracticeAvailability {
+	slotNo: number;
+	monday: TimeSlot;
+	tuesday: TimeSlot;
+	wednesday: TimeSlot;
+	thursday: TimeSlot;
+	friday: TimeSlot;
+	saturday: TimeSlot;
+	sunday: TimeSlot;
+}
 
-
-
+export interface WeekdayTimeSlot<T> {
+	[key: string]: T;
+}
 
