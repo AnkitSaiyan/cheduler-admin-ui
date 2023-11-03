@@ -18,7 +18,7 @@ export interface TimeSlotStaff {
 	weekday: Weekday;
 	dayStart: string;
 	dayEnd: string;
-	isRange: 0 | 1;
+	isRange: boolean;
 	rangeIndex: number;
 	rangeFromDate?: Date | null;
 	rangeToDate?: Date | null;
@@ -30,6 +30,7 @@ export interface TimeSlot {
 	dayEnd: string;
 	weekday: Weekday;
 }
+
 
 
 
