@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import {BehaviorSubject, Subject, take, takeUntil} from 'rxjs';
 import {BadgeColor, InputDropdownComponent, NotificationType} from 'diflexmo-angular-design';
 import {DestroyableComponent} from '../../../shared/components/destroyable.component';
@@ -45,73 +45,74 @@ interface ExceptionFormValues {
 }
 
 @Component({
-  selector: 'dfm-practice-hours',
-  templateUrl: './practice-hours.component.html',
-  styleUrls: ['./practice-hours.component.scss'],
+	selector: 'dfm-practice-hours',
+	templateUrl: './practice-hours.component.html',
+	styleUrls: ['./practice-hours.component.scss'],
 })
 export class PracticeHoursComponent extends DestroyableComponent implements OnInit, OnDestroy {
-  public practiceHoursData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
+	public practiceHoursData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
 
-  public submitting$$ = new BehaviorSubject<boolean>(false);
+	public submitting$$ = new BehaviorSubject<boolean>(false);
 
-  public emitEvents$$ = new Subject<void>();
+	public emitEvents$$ = new Subject<void>();
 
-  private selectedLang!: string;
+	private selectedLang!: string;
 
-  constructor(
-    private fb: FormBuilder,
-    private notificationSvc: NotificationDataService,
-    private practiceHourApiSvc: PracticeHoursApiService,
-    private cdr: ChangeDetectorRef,
-    private shareDataSvc: ShareDataService,
-  ) {
-    super();
+	public practiceForm!: FormGroup;
 
-    this.shareDataSvc
-      .getLanguage$()
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe((lang) => (this.selectedLang = lang));
-  }
+	constructor(
+		private fb: FormBuilder,
+		private notificationSvc: NotificationDataService,
+		private practiceHourApiSvc: PracticeHoursApiService,
+		private cdr: ChangeDetectorRef,
+		private shareDataSvc: ShareDataService,
+	) {
+		super();
 
-  public ngOnInit(): void {
-    this.practiceHourApiSvc.practiceHoursWithTimeConversion$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe((lang) => (this.selectedLang = lang));
+	}
+
+	public ngOnInit(): void {
+		this.practiceForm = new FormGroup({});
+		this.practiceHourApiSvc.practiceHoursWithTimeConversion$.pipe(takeUntil(this.destroy$$)).subscribe((practiceHours) => {
 			this.practiceHoursData$$.next(practiceHours);
 		});
-  }
+	}
 
-  public override ngOnDestroy() {
-    super.ngOnDestroy();
-  }
+	public override ngOnDestroy() {
+		super.ngOnDestroy();
+	}
 
-  prv
+	public savePracticeHours(): void {
+		this.emitEvents$$.next();
+	}
 
-  public savePracticeHours(): void {
-    this.emitEvents$$.next();
-  }
+	public saveForm(formValues: { isValid: boolean; values: TimeSlot[] }) {
+		if (!formValues.isValid) {
+			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+			return;
+		}
 
-  public saveForm(formValues: { isValid: boolean; values: TimeSlot[] }) {
-    if (!formValues.isValid) {
-      this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-      return;
-    }
+		this.submitting$$.next(true);
 
-    this.submitting$$.next(true);
+		const { values } = formValues;
 
-    const { values } = formValues;
-
-    this.practiceHourApiSvc
-      .savePracticeHours$(values)
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: () => {
-          if (this.practiceHoursData$$.value?.length) {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.PracticeHoursUpdated[this.selectedLang]);
-          } else {
-            this.notificationSvc.showNotification(Translate.SuccessMessage.PracticeHoursAdded[this.selectedLang]);
-          }
-          this.submitting$$.next(false);
-        },
-        error: () => this.submitting$$.next(false),
-      });
-  }
+		this.practiceHourApiSvc
+			.savePracticeHours$(values)
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: () => {
+					if (this.practiceHoursData$$.value?.length) {
+						this.notificationSvc.showNotification(Translate.SuccessMessage.PracticeHoursUpdated[this.selectedLang]);
+					} else {
+						this.notificationSvc.showNotification(Translate.SuccessMessage.PracticeHoursAdded[this.selectedLang]);
+					}
+					this.submitting$$.next(false);
+				},
+				error: () => this.submitting$$.next(false),
+			});
+	}
 }
