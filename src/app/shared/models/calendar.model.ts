@@ -23,6 +23,9 @@ export interface TimeSlot {
 
 export interface WeekWisePracticeAvailability {
 	slotNo: number;
+	rangeFromDate?: Date | null;
+	rangeToDate?: Date | null;
+	isRange?: boolean;
 	monday: TimeSlot;
 	tuesday: TimeSlot;
 	wednesday: TimeSlot;

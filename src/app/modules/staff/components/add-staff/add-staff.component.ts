@@ -20,6 +20,7 @@ import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { StaffUtils } from 'src/app/shared/utils/staff.utils';
 
 interface FormValues {
 	firstname: string;
@@ -144,36 +145,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 					this.updateForm(staffDetails);
 
 					if (staffDetails?.practiceAvailability?.length) {
-						const practice = {};
-						staffDetails.practiceAvailability.forEach(({ rangeFromDate, rangeToDate, isRange, rangeIndex, ...availability }) => {
-							if (practice?.[rangeIndex]) {
-								practice[rangeIndex] = {
-									...practice?.[rangeIndex],
-									practice: [
-										...practice?.[rangeIndex]?.practice,
-										{
-											...availability,
-											dayStart: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayStart),
-											dayEnd: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayEnd),
-										},
-									],
-								};
-							} else {
-								practice[rangeIndex] = {
-									rangeFromDate: rangeFromDate ? DateTimeUtils.UTCDateToLocalDate(new Date(rangeFromDate), true) : null,
-									rangeToDate: rangeToDate ? DateTimeUtils.UTCDateToLocalDate(new Date(rangeToDate), true) : null,
-									isRange,
-									rangeIndex,
-									practice: [
-										{
-											...availability,
-											dayStart: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayStart),
-											dayEnd: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayEnd),
-										},
-									],
-								};
-							}
-						});
+						const practice = StaffUtils.StaffDataModification(staffDetails.practiceAvailability);
 						Object.values(practice).forEach((value: any) => {
 							if (value.isRange) {
 								this.practiceAvailabilityArray.push(
