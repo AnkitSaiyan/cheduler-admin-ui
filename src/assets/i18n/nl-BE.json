@@ -527,7 +527,9 @@
 	"AffectedAbsence": "Beïnvloed door afwezigheid",
 	"BLUE_REPRESENTS_NORMAL_APPOINTMENT": "Blauw staat voor een normale afspraak.",
 	"RED_REPRESENTS_AFFECTED_APPOINTMENT": "Rood staat voor de getroffen afspraak.",
-	"BatchDetails": "Batch Details"
+	"BatchDetails": "Batch Details",
+	"AddRange": "Bereik toevoegen"
 }
+
 
 

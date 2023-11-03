@@ -525,8 +525,10 @@
 	"AffectedAbsence": "Affected by Absence",
 	"BLUE_REPRESENTS_NORMAL_APPOINTMENT": "Blue represents normal appointment.",
 	"RED_REPRESENTS_AFFECTED_APPOINTMENT": "Red represents affected appointment.",
-	"BatchDetails": "Batch Details"
+	"BatchDetails": "Batch Details",
+	"AddRange": "Add Range"
 }
+
 
 
 
