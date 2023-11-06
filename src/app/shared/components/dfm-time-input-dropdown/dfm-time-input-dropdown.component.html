@@ -10,6 +10,7 @@
   [size]="size"
   [placeholder]="placeholder"
   (click)="appendItems$$.next()"
+  (menuClosed)="menuClosed()"
   >
 </dfm-input-dropdown>
 <small class="validation-error" *ngIf="control?.hasError(invalidTimeError)">{{ 'InvalidTime' | translate }}</small>
