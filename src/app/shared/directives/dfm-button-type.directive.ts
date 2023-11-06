@@ -1,7 +1,7 @@
-import { Directive, ElementRef, Renderer2, Input, OnInit, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, Renderer2, Input, OnInit } from '@angular/core';
 
 @Directive({
-	selector: '[dfmButtonType]',
+	selector: '[dfmButtonType],dfm-button-icon',
 })
 export class DfmButtonTypeDirective implements OnInit {
 	@Input('dfmButtonType') buttonType: string = 'button';
