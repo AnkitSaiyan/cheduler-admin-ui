@@ -357,8 +357,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 		practiceAvailability
 			.get('rangeFromDate')
 			?.valueChanges.pipe(takeUntil(this.destroy$$))
-			.subscribe((value) => {
-				console.log(value);
+			.subscribe(() => {
 				practiceAvailability.get('rangeToDate')?.reset();
 			});
 
@@ -441,7 +440,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
 	public removeRange(i: number) {
 		this.practiceAvailabilityArray.removeAt(i);
-		this.selectedIndex = this.practiceAvailabilityArray.length - 1;
+    if (this.selectedIndex >= this.practiceAvailabilityArray.length) {
+			this.selectedIndex = this.practiceAvailabilityArray.length - 1;
+		}
 	}
 
 	public dateFilter(d: Date | null): boolean {
