@@ -51,7 +51,17 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 
 	writeValue(obj: any): void {
 		if (obj) {
-			this.appendItems$$.next();
+			const formattedTime = DateTimeUtils.FormatTime(obj, 24, 5);
+			if (!formattedTime) {
+				return;
+			}
+			const nameValue = {
+				name: formattedTime,
+				value: formattedTime,
+			};
+
+			this.times = [nameValue];
+			this.filteredTimes = [...this.times];
 		}
 		this.clearTimeOut.push(
 			setTimeout(() => {
@@ -79,7 +89,9 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 	ngOnInit() {
 		this.appendItems$$.pipe(take(1)).subscribe(() => {
 			this.times = [...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))];
-			this.filteredTimes = [...this.times];
+			if (!this.filteredTimes?.length) {
+				this.filteredTimes = [...this.times];
+			}
 		});
 
 		this.control.valueChanges
@@ -125,6 +137,15 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 
 		this.control.setValue(formattedTime, { emitEvent: false, onlySelf: true });
 	}
+
+	public menuClosed(): void {
+		const selectedValue = this.control.value;
+		if (selectedValue) {
+			const option = { name: selectedValue, value: selectedValue };
+			this.filteredTimes = [option];
+		}
+	}
+
 	public handleTimeFocusOut(time: string) {
 		this.handleError(time);
 	}
@@ -151,4 +172,11 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 		toggleControlError(this.control, this.invalidTimeError, false);
 	}
 }
+
+
+
+
+
+
+
 
