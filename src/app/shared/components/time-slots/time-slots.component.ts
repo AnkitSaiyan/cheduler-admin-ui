@@ -6,13 +6,13 @@ import { NotificationDataService } from '../../../core/services/notification-dat
 import { ShareDataService } from '../../../core/services/share-data.service';
 import { timeSlotRequiredValidator } from '../../customValidators/time-slot-required.validator';
 import { Weekday } from '../../models/calendar.model';
+import { TimeSlot, TimeSlotFormValues } from '../../models/time-slot.model';
 import { Translate } from '../../models/translate.model';
 import { ENG_BE, TIME_24 } from '../../utils/const';
 import { DateTimeUtils } from '../../utils/date-time.utils';
 import { getNumberArray } from '../../utils/getNumberArray';
 import { toggleControlError } from '../../utils/toggleControlError';
 import { DestroyableComponent } from '../destroyable.component';
-import { TimeSlot, TimeSlotFormValues } from '../../models/time-slot.model';
 
 @Component({
 	selector: 'dfm-time-slots',
@@ -412,17 +412,4 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		return timeSlots;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
