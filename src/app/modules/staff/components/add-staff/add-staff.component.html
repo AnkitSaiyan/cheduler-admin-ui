@@ -181,6 +181,7 @@
                             popoverClass="popover-p-8"
                             [openDelay]="200"
                             color="tertiary"
+                            dfmButtonType="button"
                             (click)="removeRange(rowIndex); $event.stopPropagation()"
                           ></dfm-button-icon>
                         </ng-container>
@@ -240,7 +241,6 @@
                                         required  [matDatepicker]="picker2" [matDatepickerFilter]="dateFilter"  readonly class="w-full min-w-128"
                                         formControlName="rangeToDate"
                                         [min]="(control.get('rangeFromDate')?.value | maxDate : 1)"
-                                        [max]="control.get('rangeFromDate')?.value | maxDate : 7"
                                       >
                                     </div>
                                     <dfm-button-icon
@@ -275,7 +275,7 @@
 
                     <mat-tab disabled >
                       <ng-template mat-tab-label >
-                          <button mat-icon-button (click)="addMoreRange()" ngbPopover="{{ 'AddRange' | translate }}"
+                          <button mat-icon-button type="button" (click)="addMoreRange()" ngbPopover="{{ 'AddRange' | translate }}"
                           triggers="mouseenter:mouseleave"
                           popoverClass="popover-p-8"
                           [openDelay]="200" >

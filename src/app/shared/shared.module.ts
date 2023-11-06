@@ -98,6 +98,7 @@ import { WeekViewAbsenceTopPipe } from './pipes/week-view-absence-top.pipe';
 import { DfmTimeInputDropdownComponent } from './components/dfm-time-input-dropdown/dfm-time-input-dropdown.component';
 import { MaxDatePipe } from './pipes/max-date.pipe';
 import { TimeSlotsTableComponent } from './components/time-slots-table/time-slots-table.component';
+import { DfmButtonTypeDirective } from './directives/dfm-button-type.directive';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -167,6 +168,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		WeekViewAbsenceTopPipe,
 		MaxDatePipe,
 		TimeSlotsTableComponent,
+		DfmButtonTypeDirective,
 	],
 	imports: [
 		CommonModule,
@@ -280,6 +282,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		WeekViewAbsenceTopPipe,
 		MaxDatePipe,
 		TimeSlotsTableComponent,
+		DfmButtonTypeDirective,
 	],
 	providers: [
 		TranslatePipe,

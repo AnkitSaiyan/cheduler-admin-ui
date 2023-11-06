@@ -107,7 +107,7 @@
 	"InvalidTime": "Ongeldige tijd",
 	"StartTimeLessThanEndTime": "Begintijd moet kleiner zijn dan eindtijd",
 	"SlotOverlapsOtherSlots": "Tijdslot overlapt met andere tijdslots",
-	"RangeOverlapsOtherRange": "Range date overlaps other Range",
+	"RangeOverlapsOtherRange": "Geselecteerde datums overlapt een ander datumbereik",
 	"AddPrioritySlots": "Prioritair slot toevoegen",
 	"RoomView": "Zaal bekijk",
 	"RoomDetails": "Details zaal",
@@ -530,6 +530,7 @@
 	"BatchDetails": "Batch Details",
 	"AddRange": "Bereik toevoegen"
 }
+
 
 
 
