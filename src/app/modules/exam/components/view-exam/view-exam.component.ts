@@ -88,8 +88,6 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 						isLoading: false,
 						isLoadingMore: false,
 					});
-
-					console.log(this.tableData$$.value);
 					if (exam?.practiceAvailability?.length) {
 						this.practiceAvailability$$.next([...this.getPracticeAvailability(exam.practiceAvailability)]);
 					}

@@ -94,7 +94,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
 	public override ngOnDestroy() {
 		super.ngOnDestroy();
-		this.parentControl.removeControl(this.controlKey);
 	}
 
 	private get parentControl() {
@@ -412,4 +411,5 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		return timeSlots;
 	}
 }
+
 
