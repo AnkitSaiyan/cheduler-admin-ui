@@ -1,20 +1,21 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, of, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NotificationType } from 'diflexmo-angular-design';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { BehaviorSubject, of, switchMap, take, takeUntil } from 'rxjs';
+import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TimeSlotUtils } from 'src/app/shared/utils/time-slots.utils';
 import { ModalService } from '../../../../core/services/modal.service';
-import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
-import { TimeSlot } from '../../../../shared/models/calendar.model';
-import { AddRoomRequestData, Room, RoomType } from '../../../../shared/models/rooms.model';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { TimeSlot } from '../../../../shared/models/calendar.model';
+import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
+import { AddRoomRequestData, Room, RoomType } from '../../../../shared/models/rooms.model';
 import { Status } from '../../../../shared/models/status.model';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
-import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 
 interface FormValues {
 	name: string;
@@ -41,10 +42,10 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
 	public submitting$$ = new BehaviorSubject<boolean>(false);
 
-	public emitEvents$$ = new Subject<void>();
-
 	public modalData!: { edit: boolean; roomID: number; placeInAgendaIndex: number };
+
 	public statuses = Statuses;
+
 	private selectedLang: string = ENG_BE;
 
 	constructor(
@@ -124,15 +125,6 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 	public handle(e: any) {}
 
 	public saveRoom() {
-		if (!this.formValues.practiceAvailabilityToggle) {
-			this.saveForm();
-			return;
-		}
-
-		this.emitEvents$$.next();
-	}
-
-	public saveForm(timeSlotFormValues?: { isValid: boolean; values: TimeSlot[] }) {
 		if (this.addRoomForm.invalid) {
 			const requiredKeys: string[] = ['name', 'type'];
 			requiredKeys.forEach((key) => {
@@ -140,13 +132,14 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 					this.addRoomForm.get(key)?.markAsTouched();
 				}
 			});
+			this.addRoomForm.markAllAsTouched();
 			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 			return;
 		}
 
-		if (this.formValues.practiceAvailabilityToggle && timeSlotFormValues && !timeSlotFormValues.isValid) {
-			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-			return;
+		let timeSlotFormValues: TimeSlot[] = [];
+		if (this.formValues.practiceAvailabilityToggle) {
+			timeSlotFormValues = TimeSlotUtils.getFormRequestBody(this.addRoomForm?.get('timeSlotForm')?.value);
 		}
 
 		this.submitting$$.next(true);
@@ -155,8 +148,8 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 
 		const addRoomReqData: AddRoomRequestData = {
 			...rest,
-			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues.values?.length : 0,
-			practiceAvailability: timeSlotFormValues ? timeSlotFormValues.values : [],
+			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues?.length : 0,
+			practiceAvailability: timeSlotFormValues,
 		};
 
 		if (this.modalData?.roomID) {

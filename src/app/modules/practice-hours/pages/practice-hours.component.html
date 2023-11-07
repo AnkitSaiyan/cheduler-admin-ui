@@ -9,7 +9,7 @@
       >{{'PracticeHours' | translate}}
       </dfm-button>
 
-      <dfm-button color="primary" size="md" (click)="savePracticeHours()" class="pr-hr-title-buttons"
+      <dfm-button color="primary" size="md" (click)="saveForm()" class="pr-hr-title-buttons"
                   [disabled]="(submitting$$ | async) === true">{{'SaveChanges' | translate}}
       </dfm-button>
     </ng-container>
@@ -20,18 +20,13 @@
         <dfm-button color="link" size="lg">{{'PracticeHours' | translate}}</dfm-button>
       </div>
 
-      <dfm-button color="primary" size="sm" (click)="savePracticeHours()"
+      <dfm-button color="primary" size="sm" (click)="saveForm()"
                   [disabled]="(submitting$$ | async) === true">{{"Save" | translate}}
       </dfm-button>
     </div>
   </section>
 
   <section class="dfm-card dfm-p-24 add-page-content-height pr-hr-section2 position-relative" [formGroup]="practiceForm">
-
-    <dfm-time-slots
-      [timeSlotData$$]="practiceHoursData$$"
-      [emitEvents$$]="emitEvents$$"
-      (formValuesEvent)="saveForm($event)"
-    ></dfm-time-slots>
+    <dfm-time-slots [timeSlotData$$]="practiceHoursData$$"></dfm-time-slots>
   </section>
 </div>
