@@ -550,7 +550,7 @@ export const Translate = Object.freeze({
 		},
 		Nursing: {
 			[ENG_BE]: 'Nursing',
-			[DUTCH_BE]: 'Verpleging',
+			[DUTCH_BE]: 'Verpleging/Beeldvormer',
 		},
 		Assistant: {
 			[ENG_BE]: 'Assistant',
