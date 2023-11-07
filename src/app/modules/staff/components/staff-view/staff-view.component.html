@@ -140,9 +140,9 @@
             <mat-tab  *ngFor="let practiceAvailability of practiceAvailability; let rowIndex = index">
               <ng-template mat-tab-label>
                 <ng-container *ngIf="rowIndex;else defaultLabel">
-                  {{'Range ' + rowIndex}}
+                  {{('Range' | translate)+ ' ' + rowIndex}}
                 </ng-container>
-                <ng-template #defaultLabel>Default</ng-template>
+                <ng-template #defaultLabel>{{'Default' | translate}}</ng-template>
               </ng-template>
               <ng-template matTabContent>
                 <div class="d-flex dfm-gap-16 date-range" *ngIf="rowIndex">
