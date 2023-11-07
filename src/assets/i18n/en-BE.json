@@ -229,7 +229,7 @@
 	"MandatoryStaffs": "Mandatory staffs",
 	"GeneralStaff": "General staff",
 	"SelectNo": "Select no.",
-	"Nursing": "Nursing",
+	"Nursing": "Nursing/Imager",
 	"Secretary": "Secretary",
 	"Radiologist": "Radiologist",
 	"AddPracticeData": "Add practice data",
@@ -239,7 +239,7 @@
 	"PleaseSelectAtLeastOneRoom": "Please select at least one room",
 	"Select": "Select",
 	"SelectRadiologist": "Select radiologist",
-	"SelectNursing": "Select nursing",
+	"SelectNursing": "Select nurse/imager",
 	"SelectSecretary": "Select secretary",
 	"CorrespondsToTheOpeningHoursOfThePractice": "Corresponds to the opening hours of the practice",
 	"SelectAssistant": "Select assistant",
@@ -526,7 +526,9 @@
 	"BLUE_REPRESENTS_NORMAL_APPOINTMENT": "Blue represents normal appointment.",
 	"RED_REPRESENTS_AFFECTED_APPOINTMENT": "Red represents affected appointment.",
 	"BatchDetails": "Batch Details",
-	"AddRange": "Add Range"
+	"AddRange": "Add Range",
+	"Range": "Range",
+	"Default": "Default"
 }
 
 

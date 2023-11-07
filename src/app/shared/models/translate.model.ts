@@ -549,8 +549,8 @@ export const Translate = Object.freeze({
 			[DUTCH_BE]: 'Radioloog',
 		},
 		Nursing: {
-			[ENG_BE]: 'Nursing',
-			[DUTCH_BE]: 'Verpleging',
+			[ENG_BE]: 'Nursing/Imager',
+			[DUTCH_BE]: 'Verpleging/Beeldvormer',
 		},
 		Assistant: {
 			[ENG_BE]: 'Assistant',
@@ -566,8 +566,8 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Radioloog',
 	},
 	Nursing: {
-		[ENG_BE]: 'Nursing',
-		[DUTCH_BE]: 'Verpleging',
+		[ENG_BE]: 'Nursing/Imager',
+		[DUTCH_BE]: 'Verpleging/Beeldvormer',
 	},
 	Assistant: {
 		[ENG_BE]: 'Assistant',

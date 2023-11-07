@@ -172,7 +172,7 @@
                     <mat-tab [formGroupName]="rowIndex" *ngFor="let control of practiceAvailabilityArray.controls; let rowIndex = index">
                       <ng-template mat-tab-label>
                         <ng-container *ngIf="rowIndex;else defaultLabel">
-                          {{'Range ' + rowIndex}}
+                          {{('Range' | translate)+ ' ' + rowIndex}}
                           <dfm-button-icon
                             size="sm"
                             icon="trash-01"
@@ -184,7 +184,7 @@
                             (click)="removeRange(rowIndex); $event.stopPropagation()"
                           ></dfm-button-icon>
                         </ng-container>
-                        <ng-template #defaultLabel>Default</ng-template>
+                        <ng-template #defaultLabel>{{'Default' | translate}}</ng-template>
                       </ng-template>
                       <ng-container *ngIf="rowIndex">
                         <div class="d-flex dfm-gap-16 date-range">
