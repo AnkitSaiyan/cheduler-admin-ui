@@ -1,38 +1,46 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
-import { NotificationType } from 'diflexmo-angular-design';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { AvailabilityType, User, UserType } from '../../../../shared/models/user.model';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { ExamApiService } from '../../../../core/services/exam-api.service';
-import { UserApiService } from '../../../../core/services/user-api.service';
-import { TimeSlot, Weekday } from '../../../../shared/models/calendar.model';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { AddStaffRequestData } from '../../../../shared/models/staff.model';
-import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { RouterStateService } from '../../../../core/services/router-state.service';
-import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
-import { NameValue } from '../../../../shared/components/search-modal.component';
-import { Status } from '../../../../shared/models/status.model';
-import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
-import { Translate } from '../../../../shared/models/translate.model';
-import { UtcToLocalPipe } from '../../../../shared/pipes/utc-to-local.pipe';
-import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { NotificationType } from 'diflexmo-angular-design';
+import { BehaviorSubject, Subject, debounceTime, map, of, switchMap, take, takeUntil, tap } from 'rxjs';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TimeSlotFormValues, TimeSlotStaff } from 'src/app/shared/models/time-slot.model';
+import { ExamApiService } from '../../../../core/services/exam-api.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { UserApiService } from '../../../../core/services/user-api.service';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
+import { AddStaffRequestData } from '../../../../shared/models/staff.model';
+import { Status } from '../../../../shared/models/status.model';
+import { Translate } from '../../../../shared/models/translate.model';
+import { AvailabilityType, User, UserType } from '../../../../shared/models/user.model';
+import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { StaffUtils } from 'src/app/shared/utils/staff.utils';
+import { DatePipe } from '@angular/common';
 
 interface FormValues {
-    firstname: string;
-    lastname: string;
-    email: string;
-    telephone: string;
-    address: string;
-    userType: UserType;
-    practiceAvailabilityToggle?: boolean;
-    examList: number[];
-    info: string;
+	firstname: string;
+	lastname: string;
+	email: string;
+	telephone: string;
+	address: string;
+	userType: UserType;
+	practiceAvailabilityToggle?: boolean;
+	examList: number[];
+	info: string;
+	practiceAvailabilityArray: PracticeAvailability[];
+}
+
+interface PracticeAvailability {
+	isRange: boolean;
+	rangeFromDate?: Date | null;
+	rangeToDate?: Date | null;
+	practiceAvailability: TimeSlotFormValues;
 }
 
 @Component({
@@ -75,6 +83,12 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
 	private selectedLang: string = ENG_BE;
 
+	public selectedIndex = 0;
+
+	public CONTROL_KEY = 'practiceAvailability';
+
+	public today = new Date();
+
 	constructor(
 		private fb: FormBuilder,
 		private userApiSvc: UserApiService,
@@ -82,12 +96,11 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 		private notificationSvc: NotificationDataService,
 		private router: Router,
 		private route: ActivatedRoute,
-		private routerStateSvc: RouterStateService,
 		private nameValuePipe: NameValuePairPipe,
 		private timeInIntervalPipe: TimeInIntervalPipe,
-		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		private practiceHourApiSvc: PracticeHoursApiService,
+		private datePipe: DatePipe,
 	) {
 		super();
 
@@ -134,17 +147,19 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 					this.updateForm(staffDetails);
 
 					if (staffDetails?.practiceAvailability?.length) {
-						const practice = [
-							...staffDetails.practiceAvailability.map((availability) => {
-								return {
-									...availability,
-									dayStart: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayStart),
-									dayEnd: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayEnd),
-								};
-							}),
-						];
-
-						this.staffAvailabilityData$$.next(practice);
+						const practice = StaffUtils.StaffDataModification(staffDetails.practiceAvailability);
+						Object.values(practice).forEach((value: any) => {
+							if (value.isRange) {
+								this.practiceAvailabilityArray.push(
+									this.practiceAvailabilityGroup(value.isRange, value.rangeFromDate, value.rangeToDate, value.practice),
+								);
+							} else {
+								this.practiceAvailabilityArray.controls?.[0].patchValue({
+									isRange: value.isRange,
+									practice: new BehaviorSubject(value.practice),
+								});
+							}
+						});
 					}
 				}
 
@@ -201,49 +216,32 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public saveStaff(): void {
-		if (!this.formValues.practiceAvailabilityToggle) {
-			this.saveForm();
-			return;
-		}
-
-		this.emitEvents$$.next();
-	}
-
-	public handleEmailInput(e: Event): void {
-		const inputText = (e.target as HTMLInputElement).value;
-
-		if (!inputText) {
-			return;
-		}
-
-		if (!inputText.match(EMAIL_REGEX)) {
-			this.addStaffForm.get('email')?.setErrors({
-				email: true,
-			});
-		} else {
-			this.addStaffForm.get('email')?.setErrors(null);
-		}
-	}
-
-	public saveForm(timeSlotFormValues?: { isValid: boolean; values: TimeSlot[] }) {
 		if (this.addStaffForm.invalid) {
 			this.addStaffForm.markAllAsTouched();
 			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 			return;
 		}
+		const { practiceAvailabilityToggle, practiceAvailabilityArray, ...rest } = this.formValues;
 
-		if (this.formValues.practiceAvailabilityToggle && timeSlotFormValues && !timeSlotFormValues.isValid) {
+		let timeSlotFormValues: TimeSlotStaff[] = [];
+
+		if (this.formValues.practiceAvailabilityToggle) {
+			timeSlotFormValues = practiceAvailabilityArray
+				?.map((practiceAvailability, index) => this.getFormRequestBody(practiceAvailability, index))
+				.flatMap((value) => value);
+		}
+
+		if (this.formValues.practiceAvailabilityToggle && !timeSlotFormValues?.length) {
 			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 			return;
 		}
 
 		this.submitting$$.next(true);
 
-		const { practiceAvailabilityToggle, ...rest } = this.formValues;
 		const addStaffReqData: AddStaffRequestData = {
 			...rest,
-			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues.values?.length : 0,
-			practiceAvailability: timeSlotFormValues ? timeSlotFormValues.values : [],
+			availabilityType: practiceAvailabilityToggle ? 1 : 0,
+			practiceAvailability: timeSlotFormValues,
 		};
 
 		if (!addStaffReqData.info) {
@@ -263,22 +261,65 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 		this.userApiSvc
 			.upsertUser$(addStaffReqData)
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe(() => {
-				if (this.staffID) {
-					this.notificationSvc.showNotification(Translate.SuccessMessage.StaffUpdated[this.selectedLang]);
-				} else {
-					this.notificationSvc.showNotification(Translate.SuccessMessage.StaffAdded[this.selectedLang]);
-				}
+			.subscribe({
+				next: () => {
+					if (this.staffID) {
+						this.notificationSvc.showNotification(Translate.SuccessMessage.StaffUpdated[this.selectedLang]);
+					} else {
+						this.notificationSvc.showNotification(Translate.SuccessMessage.StaffAdded[this.selectedLang]);
+					}
 
-				let route: string;
-				if (this.comingFromRoute === 'view') {
-					route = '../view';
-				} else {
-					route = this.edit ? '/staff' : '../';
-				}
+					let route: string;
+					if (this.comingFromRoute === 'view') {
+						route = '../view';
+					} else {
+						route = this.edit ? '/staff' : '../';
+					}
 
-				this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
+					this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
+				},
+				error: () => this.submitting$$.next(false),
 			});
+	}
+
+	private getFormRequestBody(practiceAvailabilityObj: PracticeAvailability, rangeIndex: number): TimeSlotStaff[] {
+		const { isRange, rangeFromDate, rangeToDate, practiceAvailability } = practiceAvailabilityObj;
+		const timeSlots: TimeSlotStaff[] = [];
+
+		Object.values(practiceAvailability.timeSlotGroup).forEach((values) => {
+			values.forEach((value) => {
+				if (value.dayStart && value.dayEnd) {
+					timeSlots.push({
+						// ...(value.id ? { id: value.id } : {}),
+						dayStart: DateTimeUtils.LocalToUTCTimeTimeString(value.dayStart),
+						dayEnd: DateTimeUtils.LocalToUTCTimeTimeString(value.dayEnd),
+						weekday: value.weekday,
+						isRange,
+						rangeIndex,
+						rangeFromDate: this.datePipe.transform(rangeFromDate, 'yyyy-MM-dd'),
+						rangeToDate: this.datePipe.transform(rangeToDate, 'yyyy-MM-dd'),
+					});
+				}
+			});
+		});
+
+		return timeSlots;
+	}
+
+	public handleEmailInput(e: Event): void {
+		const inputText = (e.target as HTMLInputElement).value;
+
+		if (!inputText) {
+			return;
+		}
+
+		if (!inputText.match(EMAIL_REGEX)) {
+			this.addStaffForm.get('email')?.setErrors({
+				email: true,
+			});
+		} else {
+			this.addStaffForm.get('email')?.setErrors(null);
+		}
 	}
 
 	private getComingFromRouteFromLocalStorage() {
@@ -303,7 +344,85 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			status: [null ?? Status.Active, []],
 			availabilityType: [AvailabilityType.Unavailable, []],
 			practiceAvailabilityToggle: [false, []],
+			practiceAvailabilityArray: this.fb.array([this.practiceAvailabilityGroup(false)]),
 		});
+	}
+
+	private practiceAvailabilityGroup(isRange: boolean, rangeFromDate?: Date | string, rangeToDate?: Date | string, practice?: any[]): FormGroup {
+		const practiceAvailability = this.fb.group({
+			isRange: [isRange],
+			rangeFromDate: [rangeFromDate ?? null, [Validators.required]],
+			rangeToDate: [rangeToDate ?? null, [Validators.required]],
+			practice: [new BehaviorSubject(practice ?? [])],
+		});
+
+		if (!isRange) {
+			practiceAvailability.get('rangeFromDate')?.removeValidators(Validators.required);
+			practiceAvailability.get('rangeToDate')?.removeValidators([Validators.required]);
+		}
+
+		practiceAvailability
+			.get('rangeFromDate')
+			?.valueChanges.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: () => practiceAvailability.get('rangeToDate')?.reset(),
+			});
+
+		practiceAvailability
+			.get('rangeToDate')
+			?.valueChanges.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: () => this.toggleOverlapError(),
+			});
+
+		return practiceAvailability;
+	}
+
+	private toggleOverlapError() {
+		let invalid = false;
+
+		const practiceFA = this.practiceAvailabilityArray;
+		const practiceFALength = practiceFA.length;
+
+		for (let i = 0; i < practiceFALength; i++) {
+			const firstControl = practiceFA.controls[i];
+			const isRange = firstControl.get('isRange')?.value;
+			if (!isRange) {
+				continue;
+			}
+
+			const rangeFromDate = firstControl.get('rangeFromDate')?.value;
+			const rangeToDate = firstControl.get('rangeToDate')?.value;
+			for (let j = i + 1; j < practiceFALength; j++) {
+				const secondControl = practiceFA.controls[j];
+
+				const isRange = secondControl.get('isRange')?.value;
+				if (!isRange) {
+					continue;
+				}
+
+				const otherRangeFromDate = secondControl.get('rangeFromDate')?.value;
+				const otherRangeToDate = secondControl.get('rangeToDate')?.value;
+				const startDate1 = new Date(rangeFromDate);
+				const endDate1 = new Date(rangeToDate);
+				const startDate2 = new Date(otherRangeFromDate);
+				const endDate2 = new Date(otherRangeToDate);
+
+				if (startDate1 < endDate2 && endDate1 > startDate2) {
+					secondControl.get('rangeToDate')?.setErrors({ dateRangeOverlap: true });
+					firstControl.get('rangeToDate')?.setErrors({ dateRangeOverlap: true });
+					invalid = true;
+				}
+			}
+
+			if (!invalid) {
+				firstControl.get('rangeToDate')?.setErrors(null);
+			}
+		}
+	}
+
+	public get practiceAvailabilityArray(): FormArray {
+		return this.addStaffForm.get('practiceAvailabilityArray') as FormArray;
 	}
 
 	private updateForm(staffDetails?: User): void {
@@ -322,5 +441,28 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			this.addStaffForm.get('userType')?.setValue(staffDetails?.userType);
 			this.addStaffForm.get('userType')?.markAsUntouched();
 		}, 0);
+	}
+
+	public addMoreRange() {
+		const fg = this.practiceAvailabilityGroup(true);
+		const defaultPractice = Object.values(this.practiceAvailabilityArray?.controls?.[0]?.get(this.CONTROL_KEY)?.value?.timeSlotGroup).flatMap(
+			(value) => value,
+		);
+		fg.get('practice')?.setValue(new BehaviorSubject(defaultPractice));
+		this.practiceAvailabilityArray.push(fg);
+		this.selectedIndex = this.practiceAvailabilityArray.length - 1;
+	}
+
+	public removeRange(i: number) {
+		this.practiceAvailabilityArray.removeAt(i);
+		if (this.selectedIndex >= this.practiceAvailabilityArray.length) {
+			this.selectedIndex = this.practiceAvailabilityArray.length - 1;
+		}
+	}
+
+	public dateFilter(d: Date | null): boolean {
+		const day = (d || new Date()).getDay();
+		// Prevent all days accept Mondays.
+		return day == 1;
 	}
 }

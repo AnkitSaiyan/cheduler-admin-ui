@@ -106,6 +106,7 @@
 	"InvalidTime": "Invalid time",
 	"StartTimeLessThanEndTime": "Start time should be smaller than end time",
 	"SlotOverlapsOtherSlots": "Slot overlaps other slots",
+	"RangeOverlapsOtherRange": "Selected dates overlaps other date range",
 	"AddPrioritySlots": "Add priority slot",
 	"PrioritySlots": "Priority slots",
 	"RoomView": "Room view",
@@ -524,8 +525,11 @@
 	"AffectedAbsence": "Affected by Absence",
 	"BLUE_REPRESENTS_NORMAL_APPOINTMENT": "Blue represents normal appointment.",
 	"RED_REPRESENTS_AFFECTED_APPOINTMENT": "Red represents affected appointment.",
-	"BatchDetails": "Batch Details"
+	"BatchDetails": "Batch Details",
+	"AddRange": "Add Range"
 }
+
+
 
 
 
