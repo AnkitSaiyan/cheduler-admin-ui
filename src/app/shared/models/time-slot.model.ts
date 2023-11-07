@@ -19,8 +19,8 @@ export interface TimeSlotStaff {
 	dayEnd: string;
 	isRange: boolean;
 	rangeIndex: number;
-	rangeFromDate?: Date | null;
-	rangeToDate?: Date | null;
+	rangeFromDate?: Date | string | null;
+	rangeToDate?: Date | string | null;
 }
 
 export interface TimeSlot {
