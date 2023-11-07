@@ -16,7 +16,7 @@ export class PhoneNumberDirective{
 	@Input()
 	public dfmPhoneNumber!: InputComponent;
 
-	private numberOnly: RegExp = /^(\+)?\d+$/;
+	private numberOnly: RegExp = /^[\+\d\s,]*$/;
 
 	constructor() {}
 
