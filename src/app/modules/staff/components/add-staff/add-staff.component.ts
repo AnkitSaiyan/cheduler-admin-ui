@@ -21,6 +21,7 @@ import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pi
 import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { StaffUtils } from 'src/app/shared/utils/staff.utils';
+import { DatePipe } from '@angular/common';
 
 interface FormValues {
 	firstname: string;
@@ -99,6 +100,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 		private timeInIntervalPipe: TimeInIntervalPipe,
 		private shareDataSvc: ShareDataService,
 		private practiceHourApiSvc: PracticeHoursApiService,
+		private datePipe: DatePipe,
 	) {
 		super();
 
@@ -258,21 +260,24 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 		this.userApiSvc
 			.upsertUser$(addStaffReqData)
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe(() => {
-				if (this.staffID) {
-					this.notificationSvc.showNotification(Translate.SuccessMessage.StaffUpdated[this.selectedLang]);
-				} else {
-					this.notificationSvc.showNotification(Translate.SuccessMessage.StaffAdded[this.selectedLang]);
-				}
+			.subscribe({
+				next: () => {
+					if (this.staffID) {
+						this.notificationSvc.showNotification(Translate.SuccessMessage.StaffUpdated[this.selectedLang]);
+					} else {
+						this.notificationSvc.showNotification(Translate.SuccessMessage.StaffAdded[this.selectedLang]);
+					}
 
-				let route: string;
-				if (this.comingFromRoute === 'view') {
-					route = '../view';
-				} else {
-					route = this.edit ? '/staff' : '../';
-				}
+					let route: string;
+					if (this.comingFromRoute === 'view') {
+						route = '../view';
+					} else {
+						route = this.edit ? '/staff' : '../';
+					}
 
-				this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
+					this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
+				},
+				error: () => this.submitting$$.next(false),
 			});
 	}
 
@@ -290,8 +295,8 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 						weekday: value.weekday,
 						isRange,
 						rangeIndex,
-						rangeFromDate,
-						rangeToDate,
+						rangeFromDate: this.datePipe.transform(rangeFromDate, 'yyyy-MM-dd'),
+						rangeToDate: this.datePipe.transform(rangeToDate, 'yyyy-MM-dd'),
 					});
 				}
 			});
@@ -349,6 +354,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			rangeToDate: [rangeToDate ?? null, [Validators.required]],
 			practice: [new BehaviorSubject(practice ?? [])],
 		});
+
 		if (!isRange) {
 			practiceAvailability.get('rangeFromDate')?.removeValidators(Validators.required);
 			practiceAvailability.get('rangeToDate')?.removeValidators([Validators.required]);
@@ -357,15 +363,15 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 		practiceAvailability
 			.get('rangeFromDate')
 			?.valueChanges.pipe(takeUntil(this.destroy$$))
-			.subscribe(() => {
-				practiceAvailability.get('rangeToDate')?.reset();
+			.subscribe({
+				next: () => practiceAvailability.get('rangeToDate')?.reset(),
 			});
 
 		practiceAvailability
 			.get('rangeToDate')
 			?.valueChanges.pipe(takeUntil(this.destroy$$))
-			.subscribe(() => {
-				this.toggleOverlapError();
+			.subscribe({
+				next: () => this.toggleOverlapError(),
 			});
 
 		return practiceAvailability;
@@ -373,16 +379,22 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
 	private toggleOverlapError() {
 		let invalid = false;
-		for (let i = 0; i < (this.addStaffForm.get('practiceAvailabilityArray') as FormArray)?.controls?.length; i++) {
-			const firstControl = (this.addStaffForm.get('practiceAvailabilityArray') as FormArray)?.controls[i];
+
+		const practiceFA = this.practiceAvailabilityArray;
+		const practiceFALength = practiceFA.length;
+
+		for (let i = 0; i < practiceFALength; i++) {
+			const firstControl = practiceFA.controls[i];
 			const isRange = firstControl.get('isRange')?.value;
 			if (!isRange) {
 				continue;
 			}
+
 			const rangeFromDate = firstControl.get('rangeFromDate')?.value;
 			const rangeToDate = firstControl.get('rangeToDate')?.value;
-			for (let j = i + 1; j < (this.addStaffForm.get('practiceAvailabilityArray') as FormArray)?.controls?.length; j++) {
-				const secondControl = (this.addStaffForm.get('practiceAvailabilityArray') as FormArray)?.controls[j];
+			for (let j = i + 1; j < practiceFALength; j++) {
+				const secondControl = practiceFA.controls[j];
+
 				const isRange = secondControl.get('isRange')?.value;
 				if (!isRange) {
 					continue;
@@ -429,7 +441,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public addMoreRange() {
-    const fg = this.practiceAvailabilityGroup(true);
+		const fg = this.practiceAvailabilityGroup(true);
 		const defaultPractice = Object.values(this.practiceAvailabilityArray?.controls?.[0]?.get(this.CONTROL_KEY)?.value?.timeSlotGroup).flatMap(
 			(value) => value,
 		);
@@ -440,7 +452,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
 	public removeRange(i: number) {
 		this.practiceAvailabilityArray.removeAt(i);
-    if (this.selectedIndex >= this.practiceAvailabilityArray.length) {
+		if (this.selectedIndex >= this.practiceAvailabilityArray.length) {
 			this.selectedIndex = this.practiceAvailabilityArray.length - 1;
 		}
 	}
