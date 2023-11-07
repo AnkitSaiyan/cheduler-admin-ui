@@ -228,7 +228,7 @@
 	"MandatoryStaffs": "Verplichte medewerkers",
 	"GeneralStaff": "Algemene medewerkers",
 	"SelectNo": "Selecteer nr.",
-	"Nursing": "Verpleging",
+	"Nursing": "Verpleging/Beeldvormer",
 	"Secretary": "Secretaresse",
 	"Radiologist": "Radioloog",
 	"AddPracticeData": "Toevoegen beschikbaarheid",
@@ -239,7 +239,7 @@
 	"EnterInfo": "Voeg info toe",
 	"Select": "Selecteer",
 	"SelectRadiologist": "Selecteer radioloog",
-	"SelectNursing": "Selecteer verpleging",
+	"SelectNursing": "Selecteer Verpleging/Beeldvormer",
 	"SelectSecretary": "Selecteer secretaresse",
 	"CorrespondsToTheOpeningHoursOfThePractice": "Zelfde uren als de praktijk",
 	"SelectAssistant": "Selecteer assistent",
@@ -528,7 +528,9 @@
 	"BLUE_REPRESENTS_NORMAL_APPOINTMENT": "Blauw staat voor een normale afspraak.",
 	"RED_REPRESENTS_AFFECTED_APPOINTMENT": "Rood staat voor de getroffen afspraak.",
 	"BatchDetails": "Batch Details",
-	"AddRange": "Bereik toevoegen"
+	"AddRange": "Bereik toevoegen",
+	"Range": "Bereik",
+	"Default": "standaard"
 }
 
 
