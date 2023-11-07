@@ -86,6 +86,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ShowBodyPartPipe } from './pipes/show-body-part.pipe';
 import { SsnInputDirective } from './directives/ssn-input.directive';
 import { ShareDataService } from '../core/services/share-data.service';
+import { DfmTimeInputDropdownComponent } from './components/dfm-time-input-dropdown/dfm-time-input-dropdown.component';
+import { MaxDatePipe } from './pipes/max-date.pipe';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { WeekViewAppointmentCardTopPipe } from './pipes/weekview-appointment-card-top.pipe';
 import { WeekViewAppointmentCardGroupHeightPipe } from './pipes/weekview-appointment-card-group-height.pipe';
@@ -95,8 +97,6 @@ import { DayViewAbsenceHeightPipe } from './pipes/day-view-absence-height.pipe';
 import { DayViewAbsenceTopPipe } from './pipes/day-view-absence-top.pipe';
 import { DurationInMinutesPipe } from './pipes/duration-in-minutes.pipe';
 import { WeekViewAbsenceTopPipe } from './pipes/week-view-absence-top.pipe';
-import { DfmTimeInputDropdownComponent } from './components/dfm-time-input-dropdown/dfm-time-input-dropdown.component';
-import { MaxDatePipe } from './pipes/max-date.pipe';
 import { TimeSlotsTableComponent } from './components/time-slots-table/time-slots-table.component';
 import { DfmButtonTypeDirective } from './directives/dfm-button-type.directive';
 
@@ -158,6 +158,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		RemoveDuplicateDataPipe,
 		RepeatFormComponent,
 		SsnInputDirective,
+		MaxDatePipe,
 		WeekViewAppointmentCardTopPipe,
 		WeekViewAppointmentCardGroupHeightPipe,
 		DayViewAppointmentHeightPipe,
@@ -166,7 +167,6 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DayViewAbsenceTopPipe,
 		DurationInMinutesPipe,
 		WeekViewAbsenceTopPipe,
-		MaxDatePipe,
 		TimeSlotsTableComponent,
 		DfmButtonTypeDirective,
 	],
@@ -271,6 +271,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatTabsModule,
 		MatButtonToggleModule,
 		SsnInputDirective,
+		MaxDatePipe,
 		MatExpansionModule,
 		WeekViewAppointmentCardTopPipe,
 		WeekViewAppointmentCardGroupHeightPipe,
@@ -280,7 +281,6 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DayViewAbsenceTopPipe,
 		DurationInMinutesPipe,
 		WeekViewAbsenceTopPipe,
-		MaxDatePipe,
 		TimeSlotsTableComponent,
 		DfmButtonTypeDirective,
 	],
