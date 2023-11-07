@@ -102,7 +102,11 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
-				next: () => (this.filteredTimes = [...GeneralUtils.FilterArray(this.times, '', 'value')]),
+				next: () => {
+					this.filteredTimes = [
+						...GeneralUtils.FilterArray([...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))], '', 'value'),
+					];
+				},
 			});
 
 		this.control.valueChanges.pipe(debounceTime(0), filter(Boolean), distinctUntilChanged(), takeUntil(this.destroy$$)).subscribe({
@@ -172,6 +176,8 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 		toggleControlError(this.control, this.invalidTimeError, false);
 	}
 }
+
+
 
 
 

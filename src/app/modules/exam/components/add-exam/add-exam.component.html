@@ -22,7 +22,7 @@
 			<dfm-button color="secondary" size="md" [routerLink]="[comingFromRoute === 'view' ? '../view' : '/exam']" queryParamsHandling="merge"
 				>{{ 'Cancel' | translate }}
 			</dfm-button>
-			<dfm-button color="primary" size="md" class="text-nowrap" [disabled]="(submitting$$ | async) === true" (click)="saveExam()"
+			<dfm-button color="primary" size="md" class="text-nowrap" [disabled]="(submitting$$ | async) === true" (click)="saveForm()"
 				>{{ comingFromRoute ? ('SaveChanges' | translate) : ('AddExam' | translate) }}
 			</dfm-button>
 		</div>
@@ -500,8 +500,6 @@
 					<dfm-time-slots
 						[timeSlotData$$]="examAvailabilityData$$"
 						[practiceHourData$$]="practiceHourData$$"
-						[emitEvents$$]="emitEvents$$"
-						(formValuesEvent)="saveForm($event)"
 					></dfm-time-slots>
 				</ng-container>
 			</div>
