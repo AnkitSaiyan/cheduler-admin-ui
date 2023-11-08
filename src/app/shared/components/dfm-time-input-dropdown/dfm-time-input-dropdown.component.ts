@@ -131,6 +131,7 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 		this.searchTime(time);
 		const formattedTime = DateTimeUtils.FormatTime(time, 24, 5);
 		if (!formattedTime) {
+      this.onChange('');
 			return;
 		}
 
@@ -184,6 +185,7 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 		toggleControlError(this.control, this.invalidTimeError, false);
 	}
 }
+
 
 
 
