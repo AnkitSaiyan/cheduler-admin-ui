@@ -109,7 +109,7 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 				},
 			});
 
-		this.control.valueChanges.pipe(debounceTime(0), filter(Boolean), distinctUntilChanged(), takeUntil(this.destroy$$)).subscribe({
+		this.control.valueChanges.pipe(debounceTime(0), filter(Boolean), takeUntil(this.destroy$$)).subscribe({
 			next: (value) => {
 				if (typeof value === 'object') {
 					this.onChange(value?.['value']);
@@ -184,6 +184,11 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 		toggleControlError(this.control, this.invalidTimeError, false);
 	}
 }
+
+
+
+
+
 
 
 
