@@ -412,7 +412,8 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 					invalid = true;
 				}
 			}
-			if (!invalid) {
+
+			if (!invalid && firstControl.get('rangeToDate')?.valid) {
 				firstControl.get('rangeToDate')?.setErrors(null);
 			}
 		}
