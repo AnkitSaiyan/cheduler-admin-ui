@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, SkipSelf, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, SkipSelf, inject } from '@angular/core';
 import { AbstractControl, ControlContainer, FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { BadgeColor, InputDropdownComponent, NotificationType } from 'diflexmo-angular-design';
-import { BehaviorSubject, Subject, debounceTime, filter, takeUntil } from 'rxjs';
+import { BadgeColor, NotificationType } from 'diflexmo-angular-design';
+import { BehaviorSubject, debounceTime, filter, takeUntil } from 'rxjs';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
 import { ShareDataService } from '../../../core/services/share-data.service';
 import { timeSlotRequiredValidator } from '../../customValidators/time-slot-required.validator';
@@ -46,10 +46,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
 	@Input() public dynamicRendering: boolean = true;
 
-	@Input() public emitEvents$$ = new Subject<void>();
-
-	@Output() public formValuesEvent = new EventEmitter<{ isValid: boolean; values: TimeSlot[] }>();
-
 	constructor(
 		private fb: FormBuilder,
 		private cdr: ChangeDetectorRef,
@@ -72,18 +68,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 					this.updateForm(timeSlots);
 				},
 			});
-
-		this.emitEvents$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: () => {
-				this.formValuesEvent.emit({
-					isValid: this.isFormValid(),
-					values: this.getFormRequestBody(this.formValues),
-				});
-
-				this.timeSlotForm.markAllAsTouched();
-			},
-		});
-
 		this.shareDataSvc
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
@@ -158,10 +142,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
 	public getFormArray(weekday: number | string): FormArray {
 		return (this.timeSlotForm.get('timeSlotGroup') as FormGroup).get(weekday.toString()) as FormArray;
-	}
-
-	private get allFormArrays(): FormArray[] {
-		return getNumberArray(6, 0).map((num) => (this.timeSlotForm.get('timeSlotGroup') as FormGroup).get(num.toString()) as FormArray);
 	}
 
 	public get formValues(): TimeSlotFormValues {
@@ -264,30 +244,6 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		);
 	}
 
-	private formatInputTime(
-		time: string,
-		control: AbstractControl | null | undefined,
-		timingValueControl: AbstractControl | null | undefined,
-		eleRef: InputDropdownComponent,
-	) {
-		const formattedTime = DateTimeUtils.FormatTime(time, 24, 5);
-
-		if (!formattedTime) {
-			return;
-		}
-
-		const nameValue = {
-			name: formattedTime,
-			value: formattedTime,
-		};
-
-		if (!timingValueControl?.value?.find((t) => t?.value === formattedTime)) {
-			timingValueControl?.setValue(timingValueControl?.value?.splice(0, 0, nameValue));
-		}
-
-		control?.setValue(formattedTime);
-	}
-
 	private handleInvalidTimeError(time: string, control: AbstractControl | null | undefined) {
 		if (!time) {
 			toggleControlError(control, this.invalidTimeError, false);
@@ -372,44 +328,5 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 			this.handleSlotExistsError([controlArrays]);
 		}
 	}
-
-	public isFormValid(): boolean {
-		const formArrays = this.allFormArrays;
-		for (let i = 0; i < formArrays.length; i++) {
-			for (let j = 0; j < formArrays[i].length; j++) {
-				const controls = formArrays[i].controls[j] as AbstractControl;
-
-				if (controls.invalid) {
-					return false;
-				}
-
-				if ((controls.value.dayStart && !controls.value.dayEnd) || (!controls.value.dayStart && controls.value.dayEnd)) {
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	private getFormRequestBody(formValues: TimeSlotFormValues): TimeSlot[] {
-		const timeSlots: TimeSlot[] = [];
-
-		Object.values(formValues.timeSlotGroup).forEach((values) => {
-			values.forEach((value) => {
-				if (value.dayStart && value.dayEnd) {
-					timeSlots.push({
-						dayStart: DateTimeUtils.LocalToUTCTimeTimeString(value.dayStart),
-						dayEnd: DateTimeUtils.LocalToUTCTimeTimeString(value.dayEnd),
-						weekday: value.weekday,
-						...(value.id ? { id: value.id } : {}),
-					});
-				}
-			});
-		});
-
-		return timeSlots;
-	}
 }
-
 

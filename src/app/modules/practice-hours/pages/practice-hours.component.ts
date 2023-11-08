@@ -1,47 +1,47 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import {BehaviorSubject, Subject, take, takeUntil} from 'rxjs';
-import {BadgeColor, InputDropdownComponent, NotificationType} from 'diflexmo-angular-design';
-import {DestroyableComponent} from '../../../shared/components/destroyable.component';
-import {TimeSlot, Weekday} from '../../../shared/models/calendar.model';
-import {NotificationDataService} from '../../../core/services/notification-data.service';
-import {PracticeAvailabilityServer} from '../../../shared/models/practice.model';
-import {PracticeHoursApiService} from '../../../core/services/practice-hours-api.service';
-import {NameValue} from '../../../shared/components/search-modal.component';
-import {Translate} from '../../../shared/models/translate.model';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {ENG_BE} from '../../../shared/utils/const';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { NotificationType } from 'diflexmo-angular-design';
+import { BehaviorSubject, takeUntil } from 'rxjs';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TimeSlotUtils } from 'src/app/shared/utils/time-slots.utils';
+import { NotificationDataService } from '../../../core/services/notification-data.service';
+import { PracticeHoursApiService } from '../../../core/services/practice-hours-api.service';
+import { DestroyableComponent } from '../../../shared/components/destroyable.component';
+import { NameValue } from '../../../shared/components/search-modal.component';
+import { Weekday } from '../../../shared/models/calendar.model';
+import { PracticeAvailabilityServer } from '../../../shared/models/practice.model';
+import { Translate } from '../../../shared/models/translate.model';
 
 interface PracticeHourFormValues {
-  selectedWeekday: Weekday;
-  practiceHours: {
-    [key: string]: {
-      id?: number;
-      weekday: Weekday;
-      dayStart: string;
-      dayEnd: string;
-      startTimings: NameValue[];
-      endTimings: NameValue[];
-    }[];
-  };
+	selectedWeekday: Weekday;
+	practiceHours: {
+		[key: string]: {
+			id?: number;
+			weekday: Weekday;
+			dayStart: string;
+			dayEnd: string;
+			startTimings: NameValue[];
+			endTimings: NameValue[];
+		}[];
+	};
 }
 
 interface ExceptionFormValues {
-  exception: {
-    date: {
-      day: number;
-      month: number;
-      year: number;
-    };
-    startTime: {
-      hour: number;
-      minute: number;
-    };
-    endTime: {
-      hour: number;
-      minute: number;
-    };
-  }[];
+	exception: {
+		date: {
+			day: number;
+			month: number;
+			year: number;
+		};
+		startTime: {
+			hour: number;
+			minute: number;
+		};
+		endTime: {
+			hour: number;
+			minute: number;
+		};
+	}[];
 }
 
 @Component({
@@ -54,17 +54,13 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 
 	public submitting$$ = new BehaviorSubject<boolean>(false);
 
-	public emitEvents$$ = new Subject<void>();
-
 	private selectedLang!: string;
 
 	public practiceForm!: FormGroup;
 
 	constructor(
-		private fb: FormBuilder,
 		private notificationSvc: NotificationDataService,
 		private practiceHourApiSvc: PracticeHoursApiService,
-		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 	) {
 		super();
@@ -86,22 +82,18 @@ export class PracticeHoursComponent extends DestroyableComponent implements OnIn
 		super.ngOnDestroy();
 	}
 
-	public savePracticeHours(): void {
-		this.emitEvents$$.next();
-	}
-
-	public saveForm(formValues: { isValid: boolean; values: TimeSlot[] }) {
-		if (!formValues.isValid) {
+	public saveForm() {
+		if (this.practiceForm.invalid) {
 			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 			return;
 		}
 
+		const formValues = TimeSlotUtils.getFormRequestBody(this.practiceForm?.get('timeSlotForm')?.value);
+
 		this.submitting$$.next(true);
 
-		const { values } = formValues;
-
 		this.practiceHourApiSvc
-			.savePracticeHours$(values)
+			.savePracticeHours$(formValues)
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
 				next: () => {

@@ -3,23 +3,25 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '
 import { ActivatedRoute, Router } from '@angular/router';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import {
-	BehaviorSubject,
-	Subject,
-	combineLatest,
-	debounceTime,
-	distinctUntilChanged,
-	filter,
-	first,
-	map,
-	of,
-	startWith,
-	switchMap,
-	take,
-	takeUntil,
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  first,
+  map,
+  of,
+  startWith,
+  switchMap,
+  take,
+  takeUntil
 } from 'rxjs';
+import { BodyPartService } from 'src/app/core/services/body-part.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TimeSlotUtils } from 'src/app/shared/utils/time-slots.utils';
+import { UserUtils } from 'src/app/shared/utils/user.utils';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
@@ -29,7 +31,7 @@ import { NameValue } from '../../../../shared/components/search-modal.component'
 import { TimeSlot } from '../../../../shared/models/calendar.model';
 import { CreateExamRequestData, Exam, ResourceBatch } from '../../../../shared/models/exam.model';
 import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
-import { Room, RoomType, RoomsGroupedByType } from '../../../../shared/models/rooms.model';
+import { RoomType, RoomsGroupedByType } from '../../../../shared/models/rooms.model';
 import { Status } from '../../../../shared/models/status.model';
 import { Translate } from '../../../../shared/models/translate.model';
 import { AvailabilityType } from '../../../../shared/models/user.model';
@@ -39,8 +41,6 @@ import { BodyType, COMING_FROM_ROUTE, DUTCH_BE, EDIT, ENG_BE, EXAM_ID, Statuses,
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
-import { BodyPartService } from 'src/app/core/services/body-part.service';
-import { UserUtils } from 'src/app/shared/utils/user.utils';
 
 interface FormValues {
 	name: string;
@@ -82,42 +82,72 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public panelOpenState = false;
 
 	public examDetails$$ = new BehaviorSubject<Exam | undefined | any>(undefined);
+
 	public availableRooms$$ = new BehaviorSubject<RoomsGroupedByType>({ private: [], public: [] });
+
 	public availableRoomsOption$$ = new BehaviorSubject<RoomsGroupedByType>({ private: [], public: [] });
+
 	public loading$$ = new BehaviorSubject(false);
+
 	public submitting$$ = new BehaviorSubject(false);
+
 	public filteredAssistants$$ = new BehaviorSubject<NameValue[]>([]);
+
 	public filteredNursing$$ = new BehaviorSubject<NameValue[]>([]);
+
 	public filteredRadiologists$$ = new BehaviorSubject<NameValue[]>([]);
+
 	public filteredSecretaries$$ = new BehaviorSubject<NameValue[]>([]);
+
 	public filteredMandatoryStaffs$$ = new BehaviorSubject<NameValue[]>([]);
+
 	public filteredExams$$ = new BehaviorSubject<NameValue[]>([]);
+
 	public filteredBodyPart$$ = new BehaviorSubject<NameValue[]>([]);
+
 	public examAvailabilityData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
+
 	public practiceHourData$$ = new BehaviorSubject<PracticeAvailabilityServer[]>([]);
-	public emitEvents$$ = new Subject<void>();
+
 	public orderOption$$ = new BehaviorSubject<number>(0);
 
 	public comingFromRoute = '';
+
 	public edit = false;
+
 	public statuses = Statuses;
+
 	public formErrors = {
 		selectRoomErr: false,
 		expensiveErr: false,
 	};
+
 	public readonly interval: number = 5;
+
 	public examID!: string;
+
 	public roomTypes: any[] = [];
+
 	public bodyType: NameValue[] = [];
+
 	public bodyPart: NameValue[] = [];
+
 	public timings: NameValue[] = [];
+
 	public filteredTimings: NameValue[] = [];
+
 	private selectedLang: string = ENG_BE;
+
 	private assistants: NameValue[] = [];
+
 	private nursing: NameValue[] = [];
+
 	private radiologists: NameValue[] = [];
+
 	private secretaries: NameValue[] = [];
+
 	private mandatoryStaffs: NameValue[] = [];
+
 	private exams: NameValue[] = [];
 
 	constructor(
@@ -316,15 +346,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		this.examForm.patchValue({ practiceAvailabilityToggle: toggle }, { emitEvent: false });
 	}
 
-	public saveExam(): void {
-		if (!this.formValues.practiceAvailabilityToggle) {
-			this.saveForm();
-			return;
-		}
-
-		this.emitEvents$$.next();
-	}
-
 	public handleExpenseInput(e: Event, element: InputComponent, control: AbstractControl | null | undefined) {
 		if (!element.value && element.value < 5) {
 			e.preventDefault();
@@ -341,8 +362,13 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		}
 	}
 
-	public saveForm(timeSlotFormValues?: { isValid: boolean; values: TimeSlot[] }) {
+	public saveForm() {
 		let valid = true;
+
+		let timeSlotFormValues: TimeSlot[] = [];
+		if (this.formValues.practiceAvailabilityToggle) {
+			timeSlotFormValues = TimeSlotUtils.getFormRequestBody(this.examForm?.get('timeSlotForm')?.value);
+		}
 
 		if (!this.examForm.valid) {
 			this.examForm.markAllAsTouched();
@@ -364,10 +390,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			});
 		}
 
-		if (valid && this.formValues.practiceAvailabilityToggle && timeSlotFormValues && !timeSlotFormValues?.isValid) {
-			valid = false;
-		}
-
 		if (
 			this.formValues.roomsForExam
 				.map((value) => value.sortOrder)
@@ -383,26 +405,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		}
 
 		this.submitting$$.next(true);
-
-		// const requiredKeys: string[] = ['name', 'expensive', 'roomType'];
-		// let valid = true;
-		//
-		// requiredKeys.forEach((key) => {
-		//   if (this.examForm.get(key)?.invalid) {
-		//     this.examForm.get(key)?.markAsTouched();
-		//     if (valid) {
-		//       valid = false;
-		//     }
-		//   }
-		// });
-
-		// let controlArrays!: FormArray[];
-		//
-		// if (valid) {
-		//   controlArrays = this.practiceAvailabilityWeekWiseControlsArray(true);
-		//   valid = !this.isPracticeFormInvalid(controlArrays);
-		// }
-		//
 
 		const createExamRequestData: CreateExamRequestData = {
 			name: this.formValues.name,
@@ -449,9 +451,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 				),
 			]?.sort((a, b) => (+a.roomOrder < +b.roomOrder ? -1 : 1)),
 			status: this.formValues.status,
-			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues?.values?.length : 0,
+			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues?.length : 0,
 			uncombinables: this.formValues.uncombinables?.map((value) => +value) ?? [],
-			practiceAvailability: timeSlotFormValues?.values || [],
+			practiceAvailability: timeSlotFormValues,
 		};
 
 		if (this.examDetails$$.value?.id) {

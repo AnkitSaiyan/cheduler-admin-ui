@@ -102,12 +102,20 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
-				next: () => (this.filteredTimes = [...GeneralUtils.FilterArray(this.times, '', 'value')]),
+				next: () => {
+					this.filteredTimes = [
+						...GeneralUtils.FilterArray([...this.nameValuePipe.transform(this.timeInIntervalPipe.transform(this.interval))], '', 'value'),
+					];
+				},
 			});
 
-		this.control.valueChanges.pipe(debounceTime(0), filter(Boolean), distinctUntilChanged(), takeUntil(this.destroy$$)).subscribe({
+		this.control.valueChanges.pipe(debounceTime(0), filter(Boolean), takeUntil(this.destroy$$)).subscribe({
 			next: (value) => {
-				this.onChange(value);
+				if (typeof value === 'object') {
+					this.onChange(value?.['value']);
+				} else {
+					this.onChange(value);
+				}
 				this.onTouch();
 			},
 		});
@@ -123,6 +131,7 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 		this.searchTime(time);
 		const formattedTime = DateTimeUtils.FormatTime(time, 24, 5);
 		if (!formattedTime) {
+      this.onChange('');
 			return;
 		}
 
@@ -141,8 +150,12 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 	public menuClosed(): void {
 		const selectedValue = this.control.value;
 		if (selectedValue) {
-			const option = { name: selectedValue, value: selectedValue };
-			this.filteredTimes = [option];
+			if (typeof selectedValue === 'object') {
+				this.filteredTimes = [selectedValue];
+			} else {
+				const option = { name: selectedValue, value: selectedValue };
+				this.filteredTimes = [option];
+			}
 		}
 	}
 
@@ -172,6 +185,14 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 		toggleControlError(this.control, this.invalidTimeError, false);
 	}
 }
+
+
+
+
+
+
+
+
 
 
 
