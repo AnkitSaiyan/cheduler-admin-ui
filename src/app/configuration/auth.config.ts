@@ -14,9 +14,9 @@ export class AuthConfig {
 			scope: 'https://diflexmoauthdev.onmicrosoft.com/usermanagement.api/usermanagement.api',
 		},
 	];
-	static readonly fullAuthority: string = 'https://diflexmoauth.b2clogin.com/diflexmoauth.onmicrosoft.com';
+	static readonly fullAuthority: string = 'https://diflexmoauthdev.b2clogin.com/diflexmoauthdev.onmicrosoft.com';
 	static readonly authFlow: string = 'B2C_1_Cheduler_SignIn';
-	static readonly authority: string = 'diflexmoauth.b2clogin.com';
+	static readonly authority: string = 'diflexmoauthdev.b2clogin.com';
 	static readonly authClientId: string = environment.authClientId;
 }
 
@@ -41,8 +41,5 @@ export const MSALConfig: Configuration = Object.freeze({
 		},
 	},
 });
-
-
-
 
 
