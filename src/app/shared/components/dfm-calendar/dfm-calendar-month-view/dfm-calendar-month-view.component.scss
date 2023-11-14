@@ -7,8 +7,8 @@ td {
 }
 
 .affectedAppointments {
-	border-left: 2px solid #E57373 !important;
- 	background: #FFEBEE !important;
+	border-left: 2px solid var(--dfm-danger-500) !important;
+ 	background: var(--dfm-danger-200) !important;
 }
 
 .calender-month-view {

@@ -82,7 +82,7 @@
 
   >div:nth-child(3) {
     >div {
-      background: #FFEBEE;
+      background:  var(--dfm-danger-200);
     }
   }
 }
