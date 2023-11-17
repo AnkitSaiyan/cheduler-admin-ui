@@ -167,9 +167,9 @@
 								<input #fileInput type="file" class="hidden" accept="image/*, application/pdf"
 								(click)="$event.stopPropagation();"
 									(change)="uploadRefferingNote($event, item.id)" />
-                <span 
+                <span
                   class="upload-button"
-                 *ngIf="!item.documentCount" 
+                 *ngIf="!item.documentCount"
                  (click)="$event.stopPropagation(); fileInput.click();"
                   ngbPopover="{{ 'UploadReferralNote' | translate }}"
                   triggers="mouseenter:mouseleave"
@@ -242,7 +242,7 @@
     </ng-container>
 
     <ng-container *ngIf="calendarView$$ | async">
-      <dfm-appointment-calendar class="h-100" [appointmentData$$]="appointments$$"> </dfm-appointment-calendar>
+      <dfm-appointment-calendar class="h-100"> </dfm-appointment-calendar>
     </ng-container>
   </section>
 

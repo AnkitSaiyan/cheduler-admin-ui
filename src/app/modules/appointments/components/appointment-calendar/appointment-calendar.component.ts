@@ -1,35 +1,35 @@
 import { DatePipe } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, firstValueFrom, map, switchMap, take, takeUntil, tap } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { BehaviorSubject, Observable, debounceTime, distinctUntilChanged, filter, firstValueFrom, map, of, switchMap, take, takeUntil } from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
+import { DraggableService } from 'src/app/core/services/draggable.service';
+import { ModalService } from 'src/app/core/services/modal.service';
+import { NotificationDataService } from 'src/app/core/services/notification-data.service';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import { RepeatType } from 'src/app/shared/models/absence.model';
 import { getDateOfMonth, getDurationMinutes } from 'src/app/shared/models/calendar.model';
+import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
+import { Translate } from 'src/app/shared/models/translate.model';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { PracticeHoursApiService } from '../../../../core/services/practice-hours-api.service';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { Appointment, AppointmentSlotsRequestData } from '../../../../shared/models/appointment.model';
 import { Exam } from '../../../../shared/models/exam.model';
-import { ActivatedRoute, Router } from '@angular/router';
-import { PracticeHoursApiService } from '../../../../core/services/practice-hours-api.service';
-import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { DUTCH_BE, ENG_BE } from '../../../../shared/utils/const';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
-import { ModalService } from 'src/app/core/services/modal.service';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
-import { PermissionService } from 'src/app/core/services/permission.service';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
-import { NotificationDataService } from 'src/app/core/services/notification-data.service';
-import { DUTCH_BE, ENG_BE } from '../../../../shared/utils/const';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { Translate } from 'src/app/shared/models/translate.model';
-import { TranslateService } from '@ngx-translate/core';
-import { RepeatType } from 'src/app/shared/models/absence.model';
-import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
-import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
-import { DraggableService } from 'src/app/core/services/draggable.service';
 
 @Component({
 	selector: 'dfm-appointment-calendar',
@@ -39,7 +39,7 @@ import { DraggableService } from 'src/app/core/services/draggable.service';
 export class AppointmentCalendarComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public calendarViewFormControl = new FormControl();
 
-	public dataControl = new FormControl();
+	public dateControl = new FormControl();
 
 	public selectedDate$$: BehaviorSubject<Date> = new BehaviorSubject<Date>(new Date());
 
@@ -75,7 +75,9 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	public prioritySlots$$: BehaviorSubject<any>;
 
-	@Input() appointmentData$$!: BehaviorSubject<any[]>;
+	appointmentData$!: Observable<any[]>;
+
+	private isDayView$$ = new BehaviorSubject<Boolean>(false);
 
 	appointmentGroupedByDateAndRoom: {
 		[key: string]: {
@@ -122,22 +124,43 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	public ngOnInit(): void {
-		this.route.queryParams.pipe(debounceTime(100), take(1)).subscribe((params) => {
+		this.route.queryParams.pipe(debounceTime(100), takeUntil(this.destroy$$)).subscribe((params) => {
 			if (params['v'] !== 't') {
 				this.calendarViewFormControl.setValue(this.paramsToCalendarView[params['v']]);
 			}
-
 			if (!params['d']) {
-				this.updateQuery('', this.selectedDate$$.value);
+				this.updateQuery('', this.selectedDate$$.value, true);
 			} else {
 				const dateSplit = params['d'].split('-');
 				if (dateSplit.length === 3) {
 					const date = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2]);
-					this.newDate$$.next({ date, isWeekChange: false });
-					this.selectedDate$$.next(date);
+					if (isNaN(date.getTime())) {
+						this.updateToToday();
+					} else {
+						this.selectedDate$$.next(date);
+						this.newDate$$.next({ date, isWeekChange: false });
+					}
+				} else {
+					this.updateQuery('m', this.selectedDate$$.value, true);
 				}
 			}
+			setTimeout(() => {
+				if (!params['v']) {
+					this.calendarViewFormControl.setValue('week', { onlySelf: true, emitEvent: false });
+				} else {
+					this.calendarViewFormControl.setValue(this.paramsToCalendarView[params['v']], { onlySelf: true, emitEvent: false });
+				}
+			}, 0);
 		});
+
+		this.calendarViewFormControl.valueChanges
+			.pipe(
+				filter((v) => !!v),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe((value) => {
+				this.updateQuery(value[0]);
+			});
 
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe((prioritySlots) => {
 			this.setPrioritySlots(prioritySlots?.data);
@@ -186,62 +209,43 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			this.practiceHourMinMax$$.next(minMaxValue);
 		});
 
-		if (this.appointmentData$$) {
-			this.appointmentData$$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
-				this.appointments$$.next(appointments);
-				this.filteredAppointments$$.next(appointments);
+		// if (this.appointmentData$$) {
+		// 	this.appointmentData$$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
+		// 		this.appointments$$.next(appointments);
+		// 		this.filteredAppointments$$.next(appointments);
 
-				const filteredAps = [...appointments].sort((ap1, ap2) => {
-					if (ap1.startedAt && ap2.startedAt) {
-						return new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime();
-					}
+		// 		const filteredAps = [...appointments].sort((ap1, ap2) => {
+		// 			if (ap1.startedAt && ap2.startedAt) {
+		// 				return new Date(ap1?.startedAt).getTime() - new Date(ap2?.startedAt).getTime();
+		// 			}
 
-					return -1;
-				});
+		// 			return -1;
+		// 		});
 
-				this.groupAppointmentsForCalendar(...filteredAps);
-				this.groupAppointmentByDateAndRoom(...filteredAps);
-			});
-		}
+		// 		this.groupAppointmentsForCalendar(...filteredAps);
+		// 		this.groupAppointmentByDateAndRoom(...filteredAps);
+		// 	});
+		// }
 
-		this.calendarViewFormControl.valueChanges
+		this.weekdayToPractice$$
 			.pipe(
-				filter((v) => !!v),
+				switchMap(() => this.route.queryParams),
+				filter((queryParams) => !!queryParams['v'] && !!queryParams['d']),
+				distinctUntilChanged(this.distinctUntilChanged),
+				map(this.getFromAndToDate.bind(this)),
+				debounceTime(100),
+				switchMap(({ fromDate, toDate }) => {
+					return of({ fromDate, toDate });
+				}),
+				// map((data) => data.data),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe((value) => {
-				this.newDate$$.next({ date: this.selectedDate$$.value, isWeekChange: false });
-				this.updateQuery(value[0]);
-			});
-
+			.subscribe(console.log);
 
 		this.roomApiSvc.allRooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
 			this.headerList = rooms.map(({ name, id }) => ({ name, value: id }));
 		});
 
-		this.dataControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
-			const date = new Date(value);
-			this.updateDate(date);
-			this.newDate$$.next({ date, isWeekChange: false });
-		});
-
-		combineLatest([this.weekdayToPractice$$, this.route.queryParams, this.calendarViewFormControl.valueChanges])
-			.pipe(
-				filter(([weekdayToPractice]) => this.calendarViewFormControl.value === 'day' && weekdayToPractice),
-				takeUntil(this.destroy$$),
-			)
-			.subscribe(([_, queryParams]) => {
-				if (this.calendarViewFormControl.value === 'day' && !queryParams['d']) this.updateQuery('d', this.selectedDate$$.value);
-
-				const value = new Date(queryParams['d']);
-				const time = this.weekdayToPractice$$.value[value.getDay()];
-				this.selectedSlot$$.next({
-					...time,
-					timings: time?.timings?.filter(
-						(timing: any) => DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(timing)) > DateTimeUtils.TimeToNumber(timing),
-					),
-				});
-			});
 		this.shareDataSvc
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
@@ -261,8 +265,89 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	public updateDate(newDate: Date) {
-		this.selectedDate$$.next(new Date(newDate));
 		this.updateQuery('', newDate);
+	}
+
+	public setForm(event: FormControl<Date>) {
+		this.dateControl = event;
+		this.dateControl.setValue(this.selectedDate$$.value, { onlySelf: true, emitEvent: false });
+		this.dateControl.valueChanges.pipe(takeUntil(this.destroy$$), distinctUntilChanged()).subscribe({
+			next: (value) => {
+				this.updateQuery('', value);
+			},
+		});
+	}
+
+	private distinctUntilChanged(preQueryParam, currQueryParam): boolean {
+		if (preQueryParam['v'] !== currQueryParam['v']) return false;
+
+		const [currYear, currMonth, currDay] = currQueryParam['d'].split('-');
+
+		const [preYear, preMonth, preDay] = preQueryParam['d'].split('-');
+
+		const currDate = new Date(currYear, currMonth - 1, currDay, 0, 0, 0, 0);
+
+		const preDate = new Date(preYear, preMonth - 1, preDay, 0, 0, 0, 0);
+		switch (true) {
+			case currQueryParam['v'] === 'm':
+				if (currMonth !== preMonth || currYear !== preYear) {
+					return false;
+				}
+				return true;
+			case currQueryParam['v'] === 'w':
+				if (currMonth !== preMonth || currYear !== preYear) {
+					return false;
+				}
+				const firstDayOfPreWeek = new Date().setDate(preDate.getDate() - (preDate.getDay() ? preDate.getDay() : 7));
+
+				const firstDayOfCurrWeek = new Date().setDate(currDate.getDate() - (currDate.getDay() ? currDate.getDay() : 7));
+
+				if (firstDayOfPreWeek !== firstDayOfCurrWeek) {
+					return false;
+				}
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	private getFromAndToDate(queryParam) {
+		this.isDayView$$.next(false);
+		const [year, month, day] = queryParam['d'].split('-');
+
+		const currDate = new Date(+year, +month - 1, +day, 0, 0, 0, 0);
+
+		let fromDate: string;
+
+		let toDate: string;
+		switch (true) {
+			case queryParam['v'] === 'm':
+				fromDate = DateTimeUtils.DateDistributedToString(new Date(+year, +month - 1, 1), '-');
+
+				toDate = DateTimeUtils.DateDistributedToString(new Date(+year, +month, 0), '-');
+
+				return { fromDate, toDate };
+			case queryParam['v'] === 'w':
+				currDate.setDate(currDate.getDate() - (currDate.getDay() ? currDate.getDay() - 1 : 6));
+
+				fromDate = DateTimeUtils.DateDistributedToString(currDate, '-');
+
+				currDate.setDate(currDate.getDate() + 6);
+
+				toDate = DateTimeUtils.DateDistributedToString(currDate, '-');
+
+				return { fromDate, toDate };
+			default:
+				// const time = this.weekdayToPractice$$.value[currDate.getDay()];
+				// this.selectedSlot$$.next({
+				// 	...time,
+				// 	timings: time?.timings?.filter(
+				// 		(timing: any) => DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(timing)) > DateTimeUtils.TimeToNumber(timing),
+				// 	),
+				// });
+				this.isDayView$$.next(true);
+				return { fromDate: queryParam['d'], toDate: queryParam['d'] };
+		}
 	}
 
 	public changeDate(offset: number) {
@@ -291,15 +376,11 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	public changeToDayView(date: Date) {
-		this.calendarViewFormControl.setValue('day');
-		this.newDate$$.next({ date, isWeekChange: false });
-		this.selectedDate$$.next(date);
+		this.updateQuery('d', date);
 	}
 
 	public updateToToday() {
-		if (this.selectedDate$$.value?.toDateString() !== new Date().toDateString()) {
-			this.newDate$$.next({ date: new Date(), isWeekChange: false });
-		}
+		this.updateQuery('', new Date());
 	}
 
 	private groupAppointmentsForCalendar(...appointments: Appointment[]) {
@@ -438,15 +519,17 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		});
 	}
 
-	private updateQuery(queryStr?: string, date?: Date) {
-		this.router.navigate([], {
-			queryParams: {
-				...(queryStr ? { v: queryStr } : {}),
-				...(date ? { d: this.datePipe.transform(date, 'yyyy-MM-dd') } : {}),
-			},
-			queryParamsHandling: 'merge',
-			replaceUrl: true,
-		});
+	private updateQuery(queryStr?: string, date?: Date, replaceUrl: boolean = false) {
+		setTimeout(() => {
+			this.router.navigate([], {
+				queryParams: {
+					...(queryStr ? { v: queryStr } : {}),
+					...(date ? { d: this.datePipe.transform(date, 'yyyy-MM-dd') } : {}),
+				},
+				queryParamsHandling: 'merge',
+				replaceUrl,
+			});
+		}, 0);
 	}
 
 	private createTimeInterval(practiceHours: PracticeAvailabilityServer[]) {
@@ -623,7 +706,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		formattedDate.setHours(+splitDate[0]);
 		formattedDate.setMinutes(+splitDate[1]);
 		formattedDate.setSeconds(0);
-    formattedDate.setMilliseconds(0);
+		formattedDate.setMilliseconds(0);
 		return formattedDate;
 	}
 

@@ -3,21 +3,19 @@ import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, OnDestroy
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import {
-	BehaviorSubject,
-	Observable,
-	catchError,
-	combineLatest,
-	debounceTime,
-	distinctUntilChanged,
-	filter,
-	map,
-	of,
-	skip,
-	startWith,
-	switchMap,
-	take,
-	takeUntil,
-	tap,
+  BehaviorSubject,
+  Observable,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  of,
+  skip,
+  startWith,
+  switchMap,
+  takeUntil,
+  tap
 } from 'rxjs';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
@@ -43,7 +41,7 @@ import { getNumberArray } from 'src/app/shared/utils/getNumberArray';
 export class AbsenceCalendarViewComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public calendarViewFormControl = new FormControl('month', []);
 
-	public dataControl = new FormControl();
+	public dateControl = new FormControl();
 
 	public calendarViewType: NameValue[] = [];
 
@@ -133,7 +131,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 							this.updateToToday();
 						} else {
 							this.selectedDate$$.next(date);
-							this.emitDate(date)
+							this.emitDate(date);
 							this.newDate$$.next({ date, isWeekChange: false });
 						}
 					} else {
@@ -332,7 +330,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 								roomName,
 								userName,
 								isHoliday,
-								impactedAppointmentDetails
+								impactedAppointmentDetails,
 							};
 							absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 							firstDate.setDate(firstDate.getDate() + repeatFrequency);
@@ -359,7 +357,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 										roomName,
 										userName,
 										isHoliday,
-										impactedAppointmentDetails
+										impactedAppointmentDetails,
 									};
 									absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 								}
@@ -387,7 +385,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 											roomName,
 											userName,
 											isHoliday,
-											impactedAppointmentDetails
+											impactedAppointmentDetails,
 										};
 										absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 									}
@@ -510,9 +508,9 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	}
 
 	public setForm(event: FormControl<Date>) {
-		this.dataControl = event;
-		this.dataControl.setValue(this.selectedDate$$.value, { onlySelf: true, emitEvent: false });
-		this.dataControl.valueChanges.pipe(takeUntil(this.destroy$$), distinctUntilChanged()).subscribe({
+		this.dateControl = event;
+		this.dateControl.setValue(this.selectedDate$$.value, { onlySelf: true, emitEvent: false });
+		this.dateControl.valueChanges.pipe(takeUntil(this.destroy$$), distinctUntilChanged()).subscribe({
 			next: (value) => {
 				this.updateQuery('', value);
 			},
@@ -685,8 +683,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 
-	private emitDate(date: Date){
-		this.dateChange.emit(date)
+	private emitDate(date: Date) {
+		this.dateChange.emit(date);
 	}
-
 }
+

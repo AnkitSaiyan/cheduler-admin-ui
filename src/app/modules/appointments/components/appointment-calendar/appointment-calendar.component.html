@@ -50,7 +50,7 @@
     </div>
     </div>
     <div class="flex-1">
-      <dfm-calendar-picker [selectedDate]="(this.newDate$$ | async)?.date ?? null" (formControl)="dataControl = $event"></dfm-calendar-picker>
+      <dfm-calendar-picker [selectedDate]="selectedDate" (formControl)="setForm($event)"></dfm-calendar-picker>
     </div>
   </div>
   </section>
@@ -78,7 +78,6 @@
           (dayViewEvent)="changeToDayView($event)"
           (dateChange)="changeDate($event)"
           [newDate$$]="newDate$$"
-          [selectedDate]="selectedDate"
           [dataGroupedByDateAndTime]="appointmentsGroupedByDateAndTIme"
           (addAppointment)="addAppointment($event)"
           [format24Hour]="true"
