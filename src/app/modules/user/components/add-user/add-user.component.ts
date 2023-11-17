@@ -194,17 +194,21 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 					givenName: this.formValues.firstname,
 					surName: this.formValues.lastname,
 					email: this.formValues.email,
-					roleName,
+					roles: [roleName],
 					contextTenantId: this.userManagementApiSvc.tenantId,
 					redirect: {
 						redirectUrl: environment.redirectUrl,
 						clientId: environment.authClientId,
 					},
+					accountType: 'Local',
+					externalProviderName: null,
+					externalUserId: null,
 				})
-				.pipe(switchMap((user) => {
-					return this.userApiSvc.assignUserRole(user.id, this.formValues.userRole)
-						.pipe(map( _ => user));
-				}));
+				.pipe(
+					switchMap((user) => {
+						return this.userApiSvc.assignUserRole(user.id, this.formValues.userRole).pipe(map((_) => user));
+					}),
+				);
 		} else {
 			addUserObservable$ = this.userApiSvc.upsertUser$({
 				firstname: this.formValues.firstname,

@@ -14,12 +14,11 @@ export class HeaderInterceptor implements HttpInterceptor {
 
 	public intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 		const SubDomain: string = window.location.host.split('.')[0];
-		const usersUrl = environment.userManagementApiUrl + '/users';
 
 		const sessionExp = localStorage.getItem('sessionExp');
 
 		if (sessionExp && +sessionExp < new Date().getTime()) {
-			
+
 			localStorage.setItem('isSessionExpired', 'true')
 			setTimeout(() => {
 				this.userSvc.logout();
@@ -39,4 +38,5 @@ export class HeaderInterceptor implements HttpInterceptor {
 		return next.handle(newRequest);
 	}
 }
+
 

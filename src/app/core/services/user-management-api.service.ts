@@ -111,7 +111,7 @@ export class UserManagementApiService {
 	}
 
 	public createUserInvite(userInvite: UserInvite): Observable<UserInviteResponse> {
-		return this.httpClient.post<UserInviteResponse>(`${this.baseUrl}/users/invites`, userInvite);
+		return this.httpClient.post<UserInviteResponse>(`${this.baseUrl}/tenants/${this.tenantId}/user`, userInvite);
 	}
 
 	public getPropertiesPermits(userId: string): Observable<UserPropertiesPermitItem[]> {
@@ -135,7 +135,7 @@ export class UserManagementApiService {
 	}
 
 	public deleteUser(userId: string): Observable<{}> {
-		return this.httpClient.delete<{}>(`${this.baseUrl}/users/${userId}`).pipe(
+		return this.httpClient.delete<{}>(`${this.baseUrl}/tenants/${this.tenantId}/user/${userId}`).pipe(
 			tap(() => {
 				if (this.userIdToRoleMap.has(userId)) {
 					this.userIdToRoleMap.delete(userId);
@@ -147,16 +147,13 @@ export class UserManagementApiService {
 	public changeUserState(userId: string, state: boolean): Observable<any> {
 		this.loaderSvc.activate();
 
-		return this.httpClient
-			.put<any>(`${this.baseUrl}/users/${userId}/state`, { accountEnabled: state })
-			.pipe(tap(() => this.loaderSvc.deactivate()));
+		return this.httpClient.put<any>(`${this.baseUrl}/users/${userId}/state`, { accountEnabled: state }).pipe(tap(() => this.loaderSvc.deactivate()));
 	}
 
 	public changeUsersStates(stateRequest: Array<{ id: string; accountEnabled: boolean }>): Observable<any> {
 		this.loaderSvc.activate();
 
-		return this.httpClient.put<any>(`${this.baseUrl}/users/state`, { users: stateRequest })
-			.pipe(tap(() => this.loaderSvc.deactivate()));
+		return this.httpClient.put<any>(`${this.baseUrl}/users/state`, { users: stateRequest }).pipe(tap(() => this.loaderSvc.deactivate()));
 	}
 
 	public getPatientByIds$(patientIds: string[]): Observable<SchedulerUser[]> {
@@ -164,6 +161,7 @@ export class UserManagementApiService {
 		return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?ids=${ids}`).pipe(map((patientRes) => patientRes.items));
 	}
 }
+
 
 
 
