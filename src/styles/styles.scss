@@ -1324,6 +1324,7 @@ angular-editor-toolbar button i {
 }
 .mat-tab-label {
   max-width: 260px;
+  min-width: 160px !important;
 
   &.mat-tab-label-active {
     background: var(--dfm-badge-secondary-bg);
