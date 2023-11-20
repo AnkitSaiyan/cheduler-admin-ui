@@ -1311,6 +1311,16 @@ angular-editor-toolbar button i {
     top: 64px;
     z-index: 100;
   }
+
+  .mat-tab-label {
+	.mat-tab-label-content {
+		>dfm-button-icon {
+		  display: block !important;
+		  position: absolute;
+		  right: 4px;
+		}
+	  }
+  }
 }
 .mat-tab-label {
   max-width: 260px;

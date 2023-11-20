@@ -167,7 +167,7 @@
 										[openDelay]="200"
 										color="tertiary"
 										(click)="removeRoomForm(rowIndex)"
-										*ngIf="roomsForExam.length > 1"
+										*ngIf="roomsForExam.length > 1 && rowIndex"
 									></dfm-button-icon>
 								</ng-template>
 								<div class="room-container">
@@ -191,7 +191,7 @@
 											<dfm-input
 												#duration
 												[dfmNumberInput]="duration"
-												type="text"
+												type="number"
 												size="md"
 												placeholder="{{ 'DurationMins' | translate }}"
 												formControlName="duration"
