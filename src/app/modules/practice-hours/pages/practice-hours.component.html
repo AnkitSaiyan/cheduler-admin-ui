@@ -20,7 +20,7 @@
         <dfm-button color="link" size="lg">{{'PracticeHours' | translate}}</dfm-button>
       </div>
 
-      <dfm-button color="primary" size="sm" (click)="saveForm()"
+      <dfm-button class="m-t-2" color="primary" size="sm" (click)="saveForm()"
                   [disabled]="(submitting$$ | async) === true">{{"Save" | translate}}
       </dfm-button>
     </div>
