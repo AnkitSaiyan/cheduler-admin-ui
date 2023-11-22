@@ -12,6 +12,8 @@ import { ENG_BE, Statuses } from 'src/app/shared/utils/const';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 const ColumnIdToKey = {
 	1: 'patientFname',
 	2: 'patientEmail',
@@ -64,6 +66,8 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 		private notificationSvc: NotificationDataService,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
+		private defaultDatePipe: DefaultDatePipe,
+		private utcToLocalPipe: UtcToLocalPipe,
 	) {
 		super();
 		this.recentPatients$$ = new BehaviorSubject<any[]>([]);
@@ -124,9 +128,9 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 					this.tableHeaders.map(({ title }) => title).slice(0),
 					this.filteredRecentPatients$$.value.map((ap: any) => [
 						ap?.patientFname?.toString(),
-						ap?.patientEmail?.toString(),
-						ap?.doctor.toString(),
-						ap.startedAt.toString(),
+						ap?.patientEmail?.toString() || '-',
+						ap?.doctor.toString() || '-',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap.startedAt.toString())) ?? '',
 					]),
 					'recent-patients',
 				);

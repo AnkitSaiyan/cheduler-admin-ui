@@ -21,6 +21,8 @@ import { ABSENCE_TYPE, ABSENCE_TYPE_ARRAY, ENG_BE, Statuses, StatusesNL } from '
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
+import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 
 
 const ColumnIdToKey = {
@@ -89,6 +91,8 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		private modalSvc: ModalService,
 		private downloadSvc: DownloadService,
 		private datePipe: DatePipe,
+		private defaultDatePipe: DefaultDatePipe,
+		private utcToLocalPipe: UtcToLocalPipe,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
 		public permissionSvc: PermissionService,
@@ -192,9 +196,9 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 						this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
 						this.filteredAbsences$$.value.map((u: Absence) => [
 							u.name,
-							u.startedAt ? `${new Date(u?.startedAt)?.toDateString()} ${new Date(u?.startedAt)?.toLocaleTimeString()}` : '',
-							u.endedAt ? `${new Date(u?.endedAt)?.toDateString()} ${new Date(u?.endedAt)?.toLocaleTimeString()}` : '',
-							u.info,
+							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(u.startedAt?.toString())) ?? '-',
+							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(u.endedAt?.toString())) ?? '-',
+							u.info ?? '-',
 						]),
 						'absences',
 					);

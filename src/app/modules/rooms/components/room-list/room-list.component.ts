@@ -164,8 +164,8 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 						this.columns.filter((val) => val !== 'Actions'),
 						this.filteredRooms$$.value.map((u: Room) => [
 							u.name,
-							u.description,
-							this.roomPlaceInToIndexMap.get(u.placeInAgenda)?.toString(),
+							u.description ?? '-',
+							this.roomPlaceInToIndexMap.get(u.placeInAgenda)?.toString() ?? '-',
 							u.type?.toString(),
 							Translate[StatusToName[+u.status]][this.selectedLang],
 						]),

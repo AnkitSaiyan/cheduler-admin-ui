@@ -301,7 +301,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
 						`${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
 						this.joinWithAndPipe.transform(ap.exams, 'name'),
-						this.titleCasePipe.transform(ap?.doctor),
+						this.titleCasePipe.transform(ap?.doctor) ?? '-',
 						ap?.id?.toString(),
 						ap?.createdAt?.toString(),
 						this.translatePipe.transform(AppointmentStatusToName[+ap.approval]),

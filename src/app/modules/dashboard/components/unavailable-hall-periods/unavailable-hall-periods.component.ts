@@ -13,6 +13,8 @@ import { Translate } from 'src/app/shared/models/translate.model';
 import { ENG_BE, Statuses } from 'src/app/shared/utils/const';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 
 const ColumnIdToKey = {
 	1: 'roomName',
@@ -67,6 +69,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 		private router: Router,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
+		private defaultDatePipe: DefaultDatePipe,
+		private utcToLocalPipe: UtcToLocalPipe,
 	) {
 		super();
 		this.roomAbsence$$ = new BehaviorSubject<any[]>([]);
@@ -127,8 +131,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 					this.tableHeaders.map(({ title }) => title),
 					this.filteredRoomAbsence$$.value.map((ap: any) => [
 						ap?.roomName?.toString(),
-						ap.startDate.toString(),
-						ap.endDate.toString(),
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
 						ap?.absenceName?.toString(),
 					]),
 					'unavailable-hall-period',

@@ -19,6 +19,8 @@ import { Permission } from 'src/app/shared/models/permission.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -71,6 +73,8 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		private shareDataSvc: ShareDataService,
 		private translate: TranslateService,
 		public permissionSvc: PermissionService,
+		private defaultDatePipe: DefaultDatePipe,
+		private utcToLocalPipe: UtcToLocalPipe,
 	) {
 		super();
 		this.prioritySlots$$ = new BehaviorSubject<any[]>([]);
@@ -172,9 +176,10 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 					downloadAs as DownloadAsType,
 					this.columns.filter((value) => value !== 'Actions'),
 					this.filteredPrioritySlots$$.value.map((pr: PrioritySlot) => [
-						pr.startedAt,
-						pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`,
-						pr.priority,
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(pr?.startedAt?.toString())) ?? '',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform((pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`)?.toString())) ?? '',
+						// pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`,
+						pr.priority ?? '-',
 					]),
 					'priority slot details',
 				);
