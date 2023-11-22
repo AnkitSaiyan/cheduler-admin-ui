@@ -1,8 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { takeUntil } from 'rxjs';
 import { EndDateType, RepeatType } from '../../models/absence.model';
 import { DestroyableComponent } from '../destroyable.component';
-import { takeUntil } from 'rxjs';
 import { getNumberArray } from '../../utils/getNumberArray';
 
 @Component({
@@ -30,7 +30,3 @@ export class RepeatFormComponent extends DestroyableComponent implements OnInit,
 		super.ngOnDestroy();
 	}
 }
-
-
-
-

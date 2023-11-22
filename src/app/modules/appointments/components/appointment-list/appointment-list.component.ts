@@ -12,6 +12,10 @@ import { Permission } from 'src/app/shared/models/permission.model';
 import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { SignalrService } from 'src/app/core/services/signalr.service';
+import { AppointmentAdvanceSearchComponent } from 'src/app/modules/dashboard/components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
+import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
+import { SiteManagementApiService } from 'src/app/core/services/site-management-api.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -28,10 +32,6 @@ import { Translate } from '../../../../shared/models/translate.model';
 import { DefaultDatePipe } from '../../../../shared/pipes/default-date.pipe';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
-import { SignalrService } from 'src/app/core/services/signalr.service';
-import { AppointmentAdvanceSearchComponent } from 'src/app/modules/dashboard/components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
-import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
-import { SiteManagementApiService } from 'src/app/core/services/site-management-api.service';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -402,7 +402,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				if (appointment.approval === 1) status = this.translate.instant('Approved');
 				if (appointment.approval === 2) status = this.translate.instant('Canceled');
 				return (
-					(appointment.patientFname?.toLowerCase() + ' ' + appointment.patientLname?.toLowerCase())?.includes(searchText) ||
+					`${appointment.patientFname?.toLowerCase()} ${appointment.patientLname?.toLowerCase()}`?.includes(searchText) ||
 					appointment.doctor?.toLowerCase()?.includes(searchText) ||
 					appointment.id?.toString()?.includes(searchText) ||
 					status?.toLowerCase()?.startsWith(searchText)
@@ -711,11 +711,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public uploadRefferingNote(event: any, id: any) {
 		event.stopImmediatePropagation();
-		var extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
-		var allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
 		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
 		if (!event.target.files.length) {
-			return;
 		} else if (allowedExtensions.indexOf(extension) === -1) {
 			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
 		} else if (fileSize) {

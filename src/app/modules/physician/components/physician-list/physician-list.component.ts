@@ -4,6 +4,9 @@ import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'difl
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
@@ -17,19 +20,16 @@ import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
 import { ShareDataService } from '../../../../core/services/share-data.service';
-import { TranslateService } from '@ngx-translate/core';
 import { Translate } from '../../../../shared/models/translate.model';
-import { Permission } from 'src/app/shared/models/permission.model';
-import { PermissionService } from 'src/app/core/services/permission.service';
-import {PaginationData} from "../../../../shared/models/base-response.model";
-import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import { PaginationData } from '../../../../shared/models/base-response.model';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
 
 const ColumnIdToKey = {
-  1: 'firstname',
-  2: 'lastname',
-  3: 'email',
-  4: 'status',
-}
+	1: 'firstname',
+	2: 'lastname',
+	3: 'email',
+	4: 'status',
+};
 
 @Component({
 	selector: 'dfm-physician-list',
@@ -270,7 +270,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				if (!physician.status) status = this.translate.instant('Inactive');
 
 				return (
-					(physician.firstname?.toLowerCase() + ' ' + physician.lastname?.toLowerCase())?.includes(searchText) ||
+					`${physician.firstname?.toLowerCase()} ${physician.lastname?.toLowerCase()}`?.includes(searchText) ||
 					physician.firstname?.toLowerCase()?.includes(searchText) ||
 					physician.lastname?.toLowerCase()?.includes(searchText) ||
 					physician.email?.toLowerCase()?.includes(searchText) ||
@@ -419,6 +419,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 			}
 		}
 	}
+
 	private clearDownloadDropdown() {
 		const timeout = setTimeout(() => {
 			this.downloadDropdownControl.setValue('');

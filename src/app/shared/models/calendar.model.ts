@@ -1,7 +1,7 @@
 import { Params } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { DateTimeUtils } from '../utils/date-time.utils';
 import { Absence, RepeatType } from './absence.model';
-import { DatePipe } from '@angular/common';
 
 export enum Weekday {
 	SUN,
@@ -380,7 +380,7 @@ export function dataModificationForWeek(absenceSlot: { [key: string]: Absence[] 
 	let startDate: string;
 	let endDate: string;
 	let sameGroup: boolean;
-	let absenceGroupedByDate = {};
+	const absenceGroupedByDate = {};
 
 	Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
 		let groupedAbsence: any[] = [];

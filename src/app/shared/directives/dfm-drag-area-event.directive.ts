@@ -9,7 +9,9 @@ export class DfmDragAreaEventDirective {
 	constructor(private elementRef: ElementRef, private draggableSvc: DraggableService, private renderer: Renderer2) {}
 
 	@Input() day!: any;
+
 	@Input() calendarType: CalendarType = CalendarType.Week;
+
 	@Input() headerType!: string;
 
 	@Output() private editAppointment = new EventEmitter<any>();
@@ -31,6 +33,7 @@ export class DfmDragAreaEventDirective {
 		event.target.classList.remove('drag-area-border');
 		event.stopPropagation();
 	}
+
 	@HostListener('dragend', ['$event'])
 	onDragEnd() {
 		this.draggableSvc.isDragStarted = false;
@@ -58,7 +61,7 @@ export class DfmDragAreaEventDirective {
 			case CalendarType.Week:
 				this.draggableSvc.removeDragShadow(this.elementRef);
 				this.draggableSvc.weekViewDragComplete(event);
-        this.editAppointment.emit({
+				this.editAppointment.emit({
 					event: { ...event, offsetY: event.offsetY - this.draggableSvc.dragStartElement.event.offsetY },
 					data: { ...this.draggableSvc.dragStartElement.data },
 					day: this.day,
@@ -76,49 +79,9 @@ export class DfmDragAreaEventDirective {
 						data: { ...this.draggableSvc.dragStartElement.data },
 					});
 				}
-				return;
+
 			default:
 				break;
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

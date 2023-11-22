@@ -1,24 +1,24 @@
-import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-slots.component';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-slots.component';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { Translate } from '../../../../shared/models/translate.model';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -33,8 +33,11 @@ const ColumnIdToKey = {
 })
 export class ListPrioritySlotsComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	clipboardData: string = '';
+
 	public searchControl = new FormControl('', []);
+
 	public downloadDropdownControl = new FormControl('', []);
+
 	public columns: string[] = ['Start', 'End', 'Priority', 'Actions'];
 
 	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
@@ -48,12 +51,19 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		{ id: '2', title: 'End', isSortable: true },
 		{ id: '3', title: 'Priority', isSortable: true },
 	];
+
 	public downloadItems: DownloadType[] = [];
+
 	public filteredPrioritySlots$$: BehaviorSubject<any[]>;
+
 	public statuses = Statuses;
+
 	public calendarView$$ = new BehaviorSubject<boolean>(false);
+
 	public readonly Permission = Permission;
+
 	private prioritySlots$$: BehaviorSubject<any[]>;
+
 	private selectedLang: string = ENG_BE;
 
 	private paginationData: PaginationData | undefined;
@@ -336,42 +346,3 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		this.filteredPrioritySlots$$.next(GeneralUtils.SortArray(this.filteredPrioritySlots$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

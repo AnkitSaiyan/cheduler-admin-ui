@@ -1,35 +1,35 @@
 export enum Status {
-  Inactive,
-  Active,
+	Inactive,
+	Active,
 }
 
 export const StatusToName: { [key: number]: StatusName } = {
-  0: 'Inactive',
-  1: 'Active',
+	0: 'Inactive',
+	1: 'Active',
 };
 
 export type StatusName = 'Active' | 'Inactive';
 
 export const AppointmentStatusToName: { [key: number]: AppointmentStatusName } = {
-  0: 'Pending',
-  1: 'Approved',
-  2: 'Cancelled',
+	0: 'Pending',
+	1: 'Approved',
+	2: 'Cancelled',
 };
 
 export type AppointmentStatusName = 'Pending' | 'Approved' | 'Cancelled';
 
 export enum AppointmentStatus {
-  Pending,
-  Approved,
-  Cancelled,
+	Pending,
+	Approved,
+	Cancelled,
 }
 
 export enum ReadStatus {
-  Unread,
-  Read,
+	Unread,
+	Read,
 }
 
 export interface ChangeStatusRequestData {
-  id: number | string;
-  status: number;
+	id: number | string;
+	status: number;
 }

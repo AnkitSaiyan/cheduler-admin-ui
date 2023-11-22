@@ -10,9 +10,3 @@ export class ShowBodyPartPipe implements PipeTransform {
 		return value.map(({ bodypartName, bodypartNameNl }) => (lang === ENG_BE ? bodypartName : bodypartNameNl)).join(', ');
 	}
 }
-
-
-
-
-
-

@@ -1,17 +1,20 @@
+import { map } from 'rxjs';
 import {
-  AddAppointmentRequestData, Appointment, AppointmentSlotsRequestData,
-  CreateAppointmentFormValues,
-  SelectedSlots,
-  Slot,
-  SlotModified
-} from "../models/appointment.model";
-import {DateDistributed} from "../models/calendar.model";
-import {DateTimeUtils} from "./date-time.utils";
-import {map} from "rxjs";
-import {SchedulerUser} from "../models/user.model";
+	AddAppointmentRequestData,
+	Appointment,
+	AppointmentSlotsRequestData,
+	CreateAppointmentFormValues,
+	SelectedSlots,
+	Slot,
+	SlotModified,
+} from '../models/appointment.model';
+import { DateDistributed } from '../models/calendar.model';
+import { DateTimeUtils } from './date-time.utils';
+import { SchedulerUser } from '../models/user.model';
 
 export class AppointmentUtils {
 	constructor() {}
+
 	public static GetModifiedSlotData(
 		slots: Slot[],
 		isCombinable: boolean,
@@ -138,15 +141,15 @@ export class AppointmentUtils {
 
 								if (selectedTimeSlot[+examID]) {
 									const time: any = selectedTimeSlot[+examID];
-									examDetails['start'] = time.start;
-									examDetails['end'] = time.end;
+									examDetails.start = time.start;
+									examDetails.end = time.end;
 								} else {
 									const time: any = selectedTimeSlot[0];
 									const start = time?.start;
 									const end = time?.end;
 
-									examDetails['start'] = `${start[0]}:${start[1]}:00`;
-									examDetails['end'] = `${end[0]}:${end[1]}:00`;
+									examDetails.start = `${start[0]}:${start[1]}:00`;
+									examDetails.end = `${end[0]}:${end[1]}:00`;
 								}
 
 								return examDetails;
@@ -173,44 +176,3 @@ export class AppointmentUtils {
 		return requestData;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

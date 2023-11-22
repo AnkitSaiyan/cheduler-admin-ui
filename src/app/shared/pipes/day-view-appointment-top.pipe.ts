@@ -23,5 +23,3 @@ export class DayViewAppointmentTopPipe implements PipeTransform {
 		return minutes * PIXELS_PER_MIN;
 	}
 }
-
-

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { take, takeUntil } from 'rxjs';
 import { FormControl, Validators } from '@angular/forms';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -87,4 +87,3 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 		this.dialogSvc.close(this.radiologistFormControl.value);
 	}
 }
-;

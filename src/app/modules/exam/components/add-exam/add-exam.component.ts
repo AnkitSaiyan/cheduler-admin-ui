@@ -3,18 +3,18 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '
 import { ActivatedRoute, Router } from '@angular/router';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import {
-  BehaviorSubject,
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  first,
-  map,
-  of,
-  startWith,
-  switchMap,
-  take,
-  takeUntil
+	BehaviorSubject,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	first,
+	map,
+	of,
+	startWith,
+	switchMap,
+	take,
+	takeUntil,
 } from 'rxjs';
 import { BodyPartService } from 'src/app/core/services/body-part.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
@@ -729,9 +729,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	public filterBatchRooms(): void {
 		const roomsByType = this.availableRoomsOption$$.value[this.examForm.value?.roomType] ?? [];
 
-		for (let control of this.roomsForExamControls) {
+		for (const control of this.roomsForExamControls) {
 			const roomIDsSet = new Set();
-			for (let currControl of this.roomsForExamControls) {
+			for (const currControl of this.roomsForExamControls) {
 				if (currControl.value.formId === control.value.formId) {
 					continue;
 				}

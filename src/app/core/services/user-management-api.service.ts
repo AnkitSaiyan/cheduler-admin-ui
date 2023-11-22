@@ -1,16 +1,16 @@
-import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {catchError, combineLatest, forkJoin, map, Observable, of, pipe, startWith, Subject, switchMap, tap} from 'rxjs';
-import {environment} from 'src/environments/environment';
-import {UserPropertiesPermitItem} from '../../shared/models/user-properties-permit-item.model';
-import {UserInviteResponse} from '../../shared/models/user-invite-response.model';
-import {UserProperties} from '../../shared/models/user-properties.model';
-import {SchedulerUser, UserListResponse, UserRoleEnum} from '../../shared/models/user.model';
-import {UserTenantItem} from '../../shared/models/user-tenant.model';
-import {UserInvite} from '../../shared/models/invite.model';
-import {LoaderService} from "./loader.service";
-import {UserApiService} from "./user-api.service";
-import {TenantService} from "./tenant.service";
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { catchError, combineLatest, forkJoin, map, Observable, of, pipe, startWith, Subject, switchMap, tap } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { UserPropertiesPermitItem } from '../../shared/models/user-properties-permit-item.model';
+import { UserInviteResponse } from '../../shared/models/user-invite-response.model';
+import { UserProperties } from '../../shared/models/user-properties.model';
+import { SchedulerUser, UserListResponse, UserRoleEnum } from '../../shared/models/user.model';
+import { UserTenantItem } from '../../shared/models/user-tenant.model';
+import { UserInvite } from '../../shared/models/invite.model';
+import { LoaderService } from './loader.service';
+import { UserApiService } from './user-api.service';
+import { TenantService } from './tenant.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -157,25 +157,7 @@ export class UserManagementApiService {
 	}
 
 	public getPatientByIds$(patientIds: string[]): Observable<SchedulerUser[]> {
-		let ids = patientIds.join('&ids=');
+		const ids = patientIds.join('&ids=');
 		return this.httpClient.get<UserListResponse>(`${this.baseUrl}/users?ids=${ids}`).pipe(map((patientRes) => patientRes.items));
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

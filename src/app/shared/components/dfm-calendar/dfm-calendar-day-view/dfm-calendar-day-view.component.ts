@@ -55,14 +55,19 @@ import { NameValue } from '../../search-modal.component';
 export class DfmCalendarDayViewComponent extends DestroyableComponent implements OnInit, OnChanges, OnDestroy {
 	@Input()
 	public changeDate$$ = new BehaviorSubject<number>(0);
+
 	@Input()
 	public headerList: NameValue[] = [];
+
 	@Input()
 	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
+
 	@Input()
 	public prioritySlots!: { [key: string]: any[] };
+
 	@Input()
 	public timeSlot!: CalenderTimeSlot;
+
 	@Input()
 	public dataGroupedByDateAndRoom: {
 		[key: string]: {
@@ -75,43 +80,75 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 	@Input()
 	public absenceData: { [key: string]: any[] } = {};
+
 	@Input()
 	public format24Hour = false;
+
 	@Input()
 	public disableDblClick = false;
+
 	@Output()
 	public selectedDateEvent = new EventEmitter<Date>();
+
 	@Output()
 	public deleteAppointmentEvent = new EventEmitter<number>();
+
 	public calendarType = CalendarType;
+
 	public selectedDate!: Date;
+
 	public selectedDateOnly!: number;
+
 	public todayDate = new Date();
+
 	public dateString!: string;
+
 	public readonly timeInterval: number = 15;
+
 	public readonly pixelsPerMin: number = 4;
+
 	public lastOpenedMenuRef!: NgbDropdown | null;
+
 	public addingAppointment = false;
+
 	public grayOutSlot$$: BehaviorSubject<any[]> = new BehaviorSubject<Interval[]>([]);
+
 	private lastScrollTime: number = 0;
+
 	private requestId: number | null = null;
+
 	private selectedLang: string = ENG_BE;
+
 	private pixelPerMinute = 4;
 
 	private minimum_size = 20;
+
 	private original_height = 0;
+
 	private original_y = 0;
+
 	private original_mouse_y = 0;
+
 	private currentResizer!: HTMLDivElement;
+
 	private element!: HTMLDivElement;
+
 	private minutesInBottom!: number;
+
 	public isMobile: boolean = false;
+
 	private resizeListener: any;
+
 	private mouseUpEve: any;
+
 	public hideAppointmentData = {};
+
 	public hideAbsenceData = {};
+
 	public isHoliday$$ = new BehaviorSubject<Boolean>(false);
+
 	public day: any = [];
+
 	constructor(
 		private datePipe: DatePipe,
 		private appointmentApiSvc: AppointmentApiService,
@@ -338,8 +375,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		});
 
 		if (divHieght) {
-			eventContainer.style.top = divTop + 'px';
-			eventContainer.style.height = divHieght + 'px';
+			eventContainer.style.top = `${divTop}px`;
+			eventContainer.style.height = `${divHieght}px`;
 		}
 
 		modalRef.closed
@@ -367,9 +404,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				error: (err) => {
 					if (eventContainer) {
 						// eslint-disable-next-line no-param-reassign
-						eventContainer.style.top = divTop ? divTop + 'px' : top;
+						eventContainer.style.top = divTop ? `${divTop}px` : top;
 						// eslint-disable-next-line no-param-reassign
-						eventContainer.style.height = divHieght ? divHieght + 'px' : height;
+						eventContainer.style.height = divHieght ? `${divHieght}px` : height;
 					}
 				},
 			});
@@ -477,8 +514,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			const reqData: AppointmentSlotsRequestData = {
 				fromDate: date,
 				toDate: date,
-				date: date,
-				exams: appointment?.exams?.map(({ id }) => id + '') ?? [],
+				date,
+				exams: appointment?.exams?.map(({ id }) => `${id}`) ?? [],
 				AppointmentId: appointment?.id,
 			};
 			this.cdr.detectChanges();
@@ -667,13 +704,13 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			if (!isTopResizer) {
 				const height = this.original_height + (e.pageY - this.original_mouse_y);
 				if (height > this.minimum_size) {
-					this.element.style.height = height + 'px';
+					this.element.style.height = `${height}px`;
 				}
 			} else if (isTopResizer) {
 				const height = this.original_height - (e.pageY - this.original_mouse_y);
 				if (height > this.minimum_size && this.element.getBoundingClientRect().height != height) {
-					this.element.style.height = height + 'px';
-					this.element.style.top = this.original_y + (e.pageY - this.original_mouse_y) + 'px';
+					this.element.style.height = `${height}px`;
+					this.element.style.top = `${this.original_y + (e.pageY - this.original_mouse_y)}px`;
 				}
 			}
 		});
@@ -712,7 +749,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		divHieght: number,
 		divTop: number,
 	): void {
-		let amountofMinutes =
+		const amountofMinutes =
 			isExtend && isTopResizer && divTop / this.pixelPerMinute < minutes
 				? divTop / this.pixelPerMinute
 				: isExtend && !isTopResizer && this.minutesInBottom < +minutes
@@ -735,8 +772,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			},
 			error: (err) => {
 				if (container) {
-					container.style.top = divTop + 'px';
-					container.style.height = divHieght + 'px';
+					container.style.top = `${divTop}px`;
+					container.style.height = `${divHieght}px`;
 				}
 			},
 		});
@@ -753,16 +790,16 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 					if (confirmation) {
 						this.updateAppointmentDuration(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
 					} else {
-						this.element.style.height = this.original_height + 'px';
-						this.element.style.top = this.original_y + 'px';
+						this.element.style.height = `${this.original_height}px`;
+						this.element.style.top = `${this.original_y}px`;
 					}
 				} else {
 					this.updateAppointmentDuration(appointment, isExtend, container, isTopResizer, minutes, this.original_height, this.original_y);
 				}
 			})();
 		} else {
-			this.element.style.height = this.original_height + 'px';
-			this.element.style.top = this.original_y + 'px';
+			this.element.style.height = `${this.original_height}px`;
+			this.element.style.top = `${this.original_y}px`;
 		}
 		this.resizeListener();
 		this.resizeListener = () => {};
@@ -789,7 +826,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	private compareGrayoutAreaWithAppointment(container: HTMLElement, isExtend: boolean, isTopResizer: boolean): boolean {
 		if (isExtend && isTopResizer) {
 			const top = parseInt(container.style.top);
-			let grayAreaSlots: Array<any> = [];
+			const grayAreaSlots: Array<any> = [];
 			this.grayOutSlot$$.value.forEach((slot) => {
 				grayAreaSlots.push(`${+slot.top}-${+slot.top + +slot.height}`);
 			});

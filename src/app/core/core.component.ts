@@ -1,40 +1,29 @@
-import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import {
-    NavigationItem,
-    NavigationItemEvent,
-    NavigationItemEventType,
-    NavigationProfileData,
-    NavigationUser,
-    SelectItem,
+	NavigationItem,
+	NavigationItemEvent,
+	NavigationItemEventType,
+	NavigationProfileData,
+	NavigationUser,
+	SelectItem,
 } from 'diflexmo-angular-design';
-import {TranslateService} from '@ngx-translate/core';
-import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from '@azure/msal-angular';
-import {
-    BehaviorSubject,
-    catchError,
-    combineLatest,
-    filter,
-    map,
-    Subject,
-    switchMap,
-    take,
-    takeUntil,
-    throwError
-} from 'rxjs';
-import {DestroyableComponent} from '../shared/components/destroyable.component';
+import { TranslateService } from '@ngx-translate/core';
+import { MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
+import { BehaviorSubject, catchError, combineLatest, filter, map, Subject, switchMap, take, takeUntil, throwError } from 'rxjs';
+import { DestroyableComponent } from '../shared/components/destroyable.component';
 import { ABSENCE_TYPE_ARRAY, DUTCH_BE, ENG_BE } from '../shared/utils/const';
 import englishLanguage from '../../assets/i18n/en-BE.json';
 import dutchLanguage from '../../assets/i18n/nl-BE.json';
-import {ShareDataService} from './services/share-data.service';
-import {DashboardApiService} from './services/dashboard-api.service';
-import {LoaderService} from './services/loader.service';
-import {UserApiService} from './services/user-api.service';
-import {PermissionService} from './services/permission.service';
-import {AuthUser, UserRoleEnum} from '../shared/models/user.model';
-import {DateTimeUtils} from '../shared/utils/date-time.utils';
-import {NotificationDataService} from "./services/notification-data.service";
-import {UserService} from "./services/user.service";
-import {DefaultDatePipe} from "../shared/pipes/default-date.pipe";
+import { ShareDataService } from './services/share-data.service';
+import { DashboardApiService } from './services/dashboard-api.service';
+import { LoaderService } from './services/loader.service';
+import { UserApiService } from './services/user-api.service';
+import { PermissionService } from './services/permission.service';
+import { AuthUser, UserRoleEnum } from '../shared/models/user.model';
+import { DateTimeUtils } from '../shared/utils/date-time.utils';
+import { NotificationDataService } from './services/notification-data.service';
+import { UserService } from './services/user.service';
+import { DefaultDatePipe } from '../shared/pipes/default-date.pipe';
 import { ModalService } from './services/modal.service';
 import { ConfirmActionModalComponent } from '../shared/components/confirm-action-modal.component';
 import { Translate } from '../shared/models/translate.model';
@@ -71,6 +60,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		},
 		links: [],
 	};
+
 	public isLoaderActive$$ = new Subject<boolean>();
 
 	public navItems: NavigationItem[] = [];
@@ -97,6 +87,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 			new NavigationItem('Site Management', 'tool-01', '/site-management', false),
 		]),
 	];
+
 	private readerNavigationItems: NavigationItem[] = [
 		new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
 		new NavigationItem('Appointment', 'file-06', '/appointment', false),
@@ -114,6 +105,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 			new NavigationItem('Priority Slots', 'calendar-date', '/priority-slots', false),
 		]),
 	];
+
 	private navigationItemsNL: NavigationItem[] = [
 		new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
 		new NavigationItem('Afspraken', 'file-06', '/appointment', false),
@@ -134,6 +126,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 			new NavigationItem('Site Beheer', 'tool-01', '/site-management', false),
 		]),
 	];
+
 	private readerNavigationItemsNL: NavigationItem[] = [
 		new NavigationItem('Dashboard', 'home-03', '/dashboard', false),
 		new NavigationItem('Afspraken', 'file-06', '/appointment', false),
@@ -276,9 +269,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 				switchMap(([user, _]) => {
 					if (!user) {
 						const lang = localStorage.getItem('lang') || DUTCH_BE;
-						throw Error(
-							localStorage.getItem('isSessionExpired') === 'true' ? Translate.sessionExp[lang] : Translate.failesToFetchUserDetails[lang],
-						);
+						throw Error(localStorage.getItem('isSessionExpired') === 'true' ? Translate.sessionExp[lang] : Translate.failesToFetchUserDetails[lang]);
 					}
 					this.profileData = new NavigationProfileData(new NavigationUser(user.displayName, user.email, '', '', false), []);
 

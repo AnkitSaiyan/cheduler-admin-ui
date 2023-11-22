@@ -8,6 +8,7 @@ import { Exam } from 'src/app/shared/models/exam.model';
 import { Physician } from 'src/app/shared/models/physician.model';
 import { Room } from 'src/app/shared/models/rooms.model';
 import { AppointmentStatus } from 'src/app/shared/models/status.model';
+import { AppointmentChartDataType } from 'src/app/shared/models/dashboard.model';
 import { environment } from '../../../environments/environment';
 import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
@@ -16,7 +17,6 @@ import { Notification } from '../../shared/models/notification.model';
 import { AppointmentApiService } from './appointment-api.service';
 import { UserManagementApiService } from './user-management-api.service';
 import { SchedulerUser } from '../../shared/models/user.model';
-import { AppointmentChartDataType } from 'src/app/shared/models/dashboard.model';
 
 export interface PostIt {
 	id: number;
@@ -121,13 +121,9 @@ export class DashboardApiService extends DestroyableComponent {
 
 	private fetchAllAppointments(): Observable<Appointment[]> {
 		this.loaderSvc.activate();
-		return (
-			this.http
-				.get<BaseResponse<Appointment[]>>(`${environment.schedulerApiUrl}/appointment`)
-				.pipe(
-					map((response) => response.data),
-					tap(() => this.loaderSvc.deactivate()),
-				)
+		return this.http.get<BaseResponse<Appointment[]>>(`${environment.schedulerApiUrl}/appointment`).pipe(
+			map((response) => response.data),
+			tap(() => this.loaderSvc.deactivate()),
 		);
 	}
 
@@ -306,8 +302,6 @@ export class DashboardApiService extends DestroyableComponent {
 			.get<BaseResponse<{ yearlyappointments: AppointmentChartDataType[] }>>(`${environment.schedulerApiUrl}/dashboard/yearlyappointments`)
 			.pipe(map((response) => response?.data?.yearlyappointments ?? []));
 	}
-
-	
 
 	addPost(message: string): Observable<PostIt> {
 		this.loaderSvc.activate();

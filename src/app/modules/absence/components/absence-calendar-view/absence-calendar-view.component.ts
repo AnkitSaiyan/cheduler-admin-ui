@@ -133,7 +133,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 							this.updateToToday();
 						} else {
 							this.selectedDate$$.next(date);
-							this.emitDate(date)
+							this.emitDate(date);
 							this.newDate$$.next({ date, isWeekChange: false });
 						}
 					} else {
@@ -169,7 +169,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			.pipe(
 				filter(([data, queryParams]: [Params, Params]) => data[ABSENCE_TYPE] === ABSENCE_TYPE_ARRAY[0] && queryParams['v'] === 'd'),
 				distinctUntilChanged(([preParams, preQueryParam], [currParams, currQueryParam]) => {
-					return !Boolean(preParams[ABSENCE_TYPE] !== currParams[ABSENCE_TYPE] || preQueryParam['v'] !== currQueryParam['v']);
+					return !(preParams[ABSENCE_TYPE] !== currParams[ABSENCE_TYPE] || preQueryParam['v'] !== currQueryParam['v']);
 				}),
 				debounceTime(100),
 				switchMap(() => this.roomApiSvc.allRooms$),
@@ -225,23 +225,23 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	private distinctUntilChanged([preParams, preQueryParam], [currParams, currQueryParam]): boolean {
 		if (preParams[ABSENCE_TYPE] !== currParams[ABSENCE_TYPE]) return false;
 
-		if (preQueryParam['v'] !== currQueryParam['v']) return false;
+		if (preQueryParam.v !== currQueryParam.v) return false;
 
-		const [currYear, currMonth, currDay] = currQueryParam['d'].split('-');
+		const [currYear, currMonth, currDay] = currQueryParam.d.split('-');
 
-		const [preYear, preMonth, preDay] = preQueryParam['d'].split('-');
+		const [preYear, preMonth, preDay] = preQueryParam.d.split('-');
 
 		const currDate = new Date(currYear, currMonth - 1, currDay, 0, 0, 0, 0);
 
 		const preDate = new Date(preYear, preMonth - 1, preDay, 0, 0, 0, 0);
 
 		switch (true) {
-			case currQueryParam['v'] === 'm':
+			case currQueryParam.v === 'm':
 				if (currMonth !== preMonth || currYear !== preYear) {
 					return false;
 				}
 				return true;
-			case currQueryParam['v'] === 'w':
+			case currQueryParam.v === 'w':
 				if (currMonth !== preMonth || currYear !== preYear) {
 					return false;
 				}
@@ -260,7 +260,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	private getFromAndToDate([data, queryParam]) {
 		this.isDayView$$.next(false);
-		const [year, month, day] = queryParam['d'].split('-');
+		const [year, month, day] = queryParam.d.split('-');
 
 		const currDate = new Date(+year, +month - 1, +day, 0, 0, 0, 0);
 
@@ -268,13 +268,13 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 		let toDate: string;
 		switch (true) {
-			case queryParam['v'] === 'm':
+			case queryParam.v === 'm':
 				fromDate = DateTimeUtils.DateDistributedToString(new Date(+year, +month - 1, 1), '-');
 
 				toDate = DateTimeUtils.DateDistributedToString(new Date(+year, +month, 0), '-');
 
 				return [data[ABSENCE_TYPE], { fromDate, toDate }];
-			case queryParam['v'] === 'w':
+			case queryParam.v === 'w':
 				currDate.setDate(currDate.getDate() - (currDate.getDay() ? currDate.getDay() - 1 : 6));
 
 				fromDate = DateTimeUtils.DateDistributedToString(currDate, '-');
@@ -293,7 +293,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 					),
 				});
 				this.isDayView$$.next(true);
-				return [data[ABSENCE_TYPE], { fromDate: queryParam['d'], toDate: queryParam['d'] }];
+				return [data[ABSENCE_TYPE], { fromDate: queryParam.d, toDate: queryParam.d }];
 		}
 	}
 
@@ -332,7 +332,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 								roomName,
 								userName,
 								isHoliday,
-								impactedAppointmentDetails
+								impactedAppointmentDetails,
 							};
 							absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 							firstDate.setDate(firstDate.getDate() + repeatFrequency);
@@ -359,7 +359,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 										roomName,
 										userName,
 										isHoliday,
-										impactedAppointmentDetails
+										impactedAppointmentDetails,
 									};
 									absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 								}
@@ -387,7 +387,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 											roomName,
 											userName,
 											isHoliday,
-											impactedAppointmentDetails
+											impactedAppointmentDetails,
 										};
 										absenceSlot[dateString] = absenceSlot[dateString] ? [...absenceSlot[dateString], customPrioritySlot] : [customPrioritySlot];
 									}
@@ -423,14 +423,14 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		let startDate: string;
 		let endDate: string;
 		let sameGroup: boolean;
-		let absenceGroupedByDate = {};
-		let modifiedAbsence = {};
+		const absenceGroupedByDate = {};
+		const modifiedAbsence = {};
 		Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
 			const filterAbsence = {};
 			const name = absence?.[0].userName ? 'userName' : 'roomName';
 			absence.forEach((item) => {
 				if (filterAbsence?.[item.id]) {
-					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: filterAbsence[item.id][name] + ', ' + item[name] };
+					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: `${filterAbsence[item.id][name]}, ${item[name]}` };
 				} else {
 					filterAbsence[item.id] = item;
 				}
@@ -493,13 +493,13 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	}
 
 	private dataModificationForMonth(absenceSlot: { [key: string]: Absence[] }) {
-		let modifiedAbsence = {};
+		const modifiedAbsence = {};
 		Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
 			const filterAbsence = {};
 			const name = absence?.[0].userName ? 'userName' : 'roomName';
 			absence.forEach((item) => {
 				if (filterAbsence?.[item.id]) {
-					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: filterAbsence[item.id][name] + ', ' + item[name] };
+					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: `${filterAbsence[item.id][name]}, ${item[name]}` };
 				} else {
 					filterAbsence[item.id] = item;
 				}
@@ -670,12 +670,10 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)
 		) {
 			minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
+		} else if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
+			minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 		} else {
-			if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
-				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
-			} else {
-				minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
-			}
+			minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
 		}
 		minMaxValue = { ...minMaxValue, grayOutMin: min, grayOutMax: max };
 		this.practiceHourMinMax$$.next(minMaxValue);
@@ -685,8 +683,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.sidePanel.nativeElement.classList.toggle('side-panel-hide');
 	}
 
-	private emitDate(date: Date){
-		this.dateChange.emit(date)
+	private emitDate(date: Date) {
+		this.dateChange.emit(date);
 	}
-
 }

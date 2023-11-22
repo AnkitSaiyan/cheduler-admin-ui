@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { IHttpConnectionOptions } from '@microsoft/signalr';
 import { BehaviorSubject, Observable, Subject, switchMap } from 'rxjs';
-import { AppointmentApiService } from './appointment-api.service';
-import { NotificationDataService } from './notification-data.service';
 import { Translate } from 'src/app/shared/models/translate.model';
-import { ShareDataService } from './share-data.service';
-import { environment } from '../../../environments/environment';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { HttpClient } from '@angular/common/http';
 import { Appointment } from 'src/app/shared/models/appointment.model';
+import { AppointmentApiService } from './appointment-api.service';
+import { NotificationDataService } from './notification-data.service';
+import { ShareDataService } from './share-data.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
 	providedIn: 'root',
@@ -87,10 +87,7 @@ export class SignalrService {
 				`${
 					param.action == 'Add'
 						? Translate.AppointmentRecived[this.selectedLang]
-						: Translate.AppointmentNo[this.selectedLang] +
-						  ' ' +
-						  param.id +
-						  ' ' +
+						: `${Translate.AppointmentNo[this.selectedLang]} ${param.id} ` +
 						  `${
 								param.action == 'Delete'
 									? Translate.Delete[this.selectedLang]

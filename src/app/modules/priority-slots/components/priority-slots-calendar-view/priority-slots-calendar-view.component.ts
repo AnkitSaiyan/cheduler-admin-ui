@@ -10,10 +10,10 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
 import { RepeatType } from 'src/app/shared/models/absence.model';
 import { getDateOfMonth } from 'src/app/shared/models/calendar.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
-import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
-import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { SignalrService } from 'src/app/core/services/signalr.service';
+import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 
 @Component({
 	selector: 'dfm-priority-slots-calendar-view',
@@ -357,15 +357,3 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			});
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-

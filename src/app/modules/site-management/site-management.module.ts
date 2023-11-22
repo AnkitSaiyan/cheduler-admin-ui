@@ -7,7 +7,7 @@ import { SiteManagementComponent } from './pages/site-management.component';
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
-  declarations: [SiteManagementComponent],
-  imports: [CommonModule, SiteManagementRoutingModule, SharedModule, ReactiveFormsModule],
+	declarations: [SiteManagementComponent],
+	imports: [CommonModule, SiteManagementRoutingModule, SharedModule, ReactiveFormsModule],
 })
 export class SiteManagementModule {}

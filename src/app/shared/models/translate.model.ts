@@ -665,7 +665,7 @@ export const Translate = Object.freeze({
 		},
 	},
 
-	//title
+	// title
 	Dashboard: {
 		[ENG_BE]: 'Dashboard',
 		[DUTCH_BE]: 'Dashboard',
@@ -878,49 +878,3 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Room Duration',
 	},
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

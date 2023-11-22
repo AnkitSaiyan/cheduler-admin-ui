@@ -6,22 +6,12 @@ import { AppointmentApiService } from 'src/app/core/services/appointment-api.ser
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { getDateOfMonth, getDurationMinutes } from 'src/app/shared/models/calendar.model';
-import { NameValue } from '../../../../shared/components/search-modal.component';
-import { Appointment, AppointmentSlotsRequestData } from '../../../../shared/models/appointment.model';
-import { Exam } from '../../../../shared/models/exam.model';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PracticeHoursApiService } from '../../../../core/services/practice-hours-api.service';
-import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
-import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
-import { getNumberArray } from '../../../../shared/utils/getNumberArray';
-import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from 'src/app/shared/components/confirm-action-modal.component';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
-import { DUTCH_BE, ENG_BE } from '../../../../shared/utils/const';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { TranslateService } from '@ngx-translate/core';
@@ -30,6 +20,16 @@ import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { DraggableService } from 'src/app/core/services/draggable.service';
+import { DUTCH_BE, ENG_BE } from '../../../../shared/utils/const';
+import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
+import { getNumberArray } from '../../../../shared/utils/getNumberArray';
+import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
+import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
+import { PracticeHoursApiService } from '../../../../core/services/practice-hours-api.service';
+import { Exam } from '../../../../shared/models/exam.model';
+import { Appointment, AppointmentSlotsRequestData } from '../../../../shared/models/appointment.model';
+import { NameValue } from '../../../../shared/components/search-modal.component';
 
 @Component({
 	selector: 'dfm-appointment-calendar',
@@ -175,12 +175,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)
 			) {
 				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
+			} else if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
+				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 			} else {
-				if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
-					minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
-				} else {
-					minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
-				}
+				minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
 			}
 			minMaxValue = { ...minMaxValue, grayOutMin: min, grayOutMax: max };
 			this.practiceHourMinMax$$.next(minMaxValue);
@@ -213,7 +211,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				this.newDate$$.next({ date: this.selectedDate$$.value, isWeekChange: false });
 				this.updateQuery(value[0]);
 			});
-
 
 		this.roomApiSvc.allRooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
 			this.headerList = rooms.map(({ name, id }) => ({ name, value: id }));
@@ -358,7 +355,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 							const modifiedGroupedAppointment: any = [[]];
 							groupedAppointments?.forEach((appointment) => {
 								let pushed = true;
-								for (let items of modifiedGroupedAppointment) {
+								for (const items of modifiedGroupedAppointment) {
 									if (
 										items.every(
 											(item: any) =>
@@ -557,8 +554,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			const reqData: AppointmentSlotsRequestData = {
 				fromDate: date,
 				toDate: date,
-				date: date,
-				exams: appointment?.exams?.map(({ id }) => id + ''),
+				date,
+				exams: appointment?.exams?.map(({ id }) => `${id}`),
 				AppointmentId: appointment?.id,
 			};
 			const isSlotAvailable = await firstValueFrom(this.appointmentApiSvc.getSlots$(reqData).pipe(map((data) => !!data?.[0]?.slots?.length)));
@@ -623,7 +620,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		formattedDate.setHours(+splitDate[0]);
 		formattedDate.setMinutes(+splitDate[1]);
 		formattedDate.setSeconds(0);
-    formattedDate.setMilliseconds(0);
+		formattedDate.setMilliseconds(0);
 		return formattedDate;
 	}
 

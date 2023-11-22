@@ -28,23 +28,12 @@ import {
 	tap,
 	throttleTime,
 } from 'rxjs';
-import {
-	calendarDistinctUntilChanged,
-	dataModification,
-	getDateOfMonth,
-	getDaysOfMonth,
-	getDurationMinutes,
-	getFromAndToDate,
-	getWeekdayWiseDays,
-	Weekday,
-} from '../../../models/calendar.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { AddAppointmentModalComponent } from 'src/app/modules/appointments/components/add-appointment-modal/add-appointment-modal.component';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { CalendarType, DUTCH_BE, ENG_BE } from 'src/app/shared/utils/const';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
-import { DestroyableComponent } from '../../destroyable.component';
 import { AppointmentSlotsRequestData } from 'src/app/shared/models/appointment.model';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
@@ -56,6 +45,17 @@ import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { DatePipe } from '@angular/common';
 import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
+import { DestroyableComponent } from '../../destroyable.component';
+import {
+	calendarDistinctUntilChanged,
+	dataModification,
+	getDateOfMonth,
+	getDaysOfMonth,
+	getDurationMinutes,
+	getFromAndToDate,
+	getWeekdayWiseDays,
+	Weekday,
+} from '../../../models/calendar.model';
 
 @Component({
 	selector: 'dfm-calendar-month-view',
@@ -228,8 +228,8 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 			const reqData: AppointmentSlotsRequestData = {
 				fromDate: date,
 				toDate: date,
-				date: date,
-				exams: appointment?.exams?.map(({ id }) => id + '') ?? [],
+				date,
+				exams: appointment?.exams?.map(({ id }) => `${id}`) ?? [],
 				AppointmentId: appointment?.id,
 			};
 			const isSlotAvailable = await firstValueFrom(this.appointmentApiSvc.getSlots$(reqData).pipe(map((data) => !!data?.[0]?.slots?.length)));

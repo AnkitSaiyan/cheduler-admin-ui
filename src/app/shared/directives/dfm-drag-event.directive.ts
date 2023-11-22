@@ -2,6 +2,7 @@ import { Directive, ElementRef, HostListener, Input, OnChanges, SimpleChanges } 
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { CalendarType } from '../utils/const';
+
 @Directive({
 	selector: '[dfmDragEvent]',
 })
@@ -9,8 +10,11 @@ export class DfmDragEventDirective implements OnChanges {
 	constructor(private draggableSvc: DraggableService, private elementRef: ElementRef) {}
 
 	@Input() draggedElData!: any;
+
 	@Input() calendarType: CalendarType = CalendarType.Week;
+
 	@Input() headerType!: string;
+
 	@Input() ngbPopoverDrag!: NgbPopover;
 
 	ngOnChanges(changes: SimpleChanges): void {
@@ -50,4 +54,3 @@ export class DfmDragEventDirective implements OnChanges {
 		event.stopPropagation();
 	}
 }
-

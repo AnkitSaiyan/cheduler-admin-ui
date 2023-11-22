@@ -19,4 +19,3 @@ export class TimeSlotsTableComponent implements OnInit {
 
 	ngOnInit(): void {}
 }
-

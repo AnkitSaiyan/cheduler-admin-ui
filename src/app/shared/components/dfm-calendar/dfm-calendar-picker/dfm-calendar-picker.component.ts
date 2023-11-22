@@ -14,14 +14,10 @@ export class DfmCalendarPickerComponent implements OnInit {
 
 	@Output() formControl: EventEmitter<FormControl<Date>> = new EventEmitter<FormControl<Date>>();
 
-	constructor(
-		// private _adapter: DateAdapter<any>,
-		// private shareDataSvc: ShareDataService
-	) {}
+	constructor() {} // private shareDataSvc: ShareDataService // private _adapter: DateAdapter<any>,
 
 	ngOnInit(): void {
 		this.formControl.emit(this.dateControl);
 		// this.shareDataSvc.getLanguage$().subscribe((lang) =>this._adapter.setLocale(lang))
 	}
 }
-

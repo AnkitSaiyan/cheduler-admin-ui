@@ -1,33 +1,33 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {NotificationType} from 'diflexmo-angular-design';
-import {BehaviorSubject, catchError, map, Observable, switchMap, take, takeUntil} from 'rxjs';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ShareDataService} from 'src/app/core/services/share-data.service';
-import {DestroyableComponent} from '../../../../shared/components/destroyable.component';
-import {ModalService} from '../../../../core/services/modal.service';
-import {NotificationDataService} from '../../../../core/services/notification-data.service';
-import {User, UserRoleEnum, UserType} from '../../../../shared/models/user.model';
-import {getUserTypeEnum} from '../../../../shared/utils/getEnums';
-import {DUTCH_BE, EMAIL_REGEX, ENG_BE, Statuses, StatusesNL} from '../../../../shared/utils/const';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NotificationType } from 'diflexmo-angular-design';
+import { BehaviorSubject, catchError, map, Observable, switchMap, take, takeUntil } from 'rxjs';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { MsalService } from '@azure/msal-angular';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { User, UserRoleEnum, UserType } from '../../../../shared/models/user.model';
+import { getUserTypeEnum } from '../../../../shared/utils/getEnums';
+import { DUTCH_BE, EMAIL_REGEX, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 
-import {Translate} from '../../../../shared/models/translate.model';
-import {UserApiService} from "../../../../core/services/user-api.service";
-import {NameValue} from "../../../../shared/components/search-modal.component";
-import {UserManagementApiService} from "../../../../core/services/user-management-api.service";
-import {environment} from "../../../../../environments/environment";
-import {AuthService} from "../../../../core/services/auth.service";
-import {MsalService} from "@azure/msal-angular";
-import {Permission} from "../../../../shared/models/permission.model";
-import {PermissionService} from "../../../../core/services/permission.service";
-import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import { Translate } from '../../../../shared/models/translate.model';
+import { UserApiService } from '../../../../core/services/user-api.service';
+import { NameValue } from '../../../../shared/components/search-modal.component';
+import { UserManagementApiService } from '../../../../core/services/user-management-api.service';
+import { environment } from '../../../../../environments/environment';
+import { AuthService } from '../../../../core/services/auth.service';
+import { Permission } from '../../../../shared/models/permission.model';
+import { PermissionService } from '../../../../core/services/permission.service';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
 
 interface FormValues {
-    userType: UserType;
-    firstname: string;
-    lastname: string;
-    email: string;
-    userRole: UserRoleEnum;
-    tenantId: string;
+	userType: UserType;
+	firstname: string;
+	lastname: string;
+	email: string;
+	userRole: UserRoleEnum;
+	tenantId: string;
 }
 
 @Component({
@@ -36,7 +36,6 @@ interface FormValues {
 	styleUrls: ['./add-user.component.scss'],
 })
 export class AddUserComponent extends DestroyableComponent implements OnInit, OnDestroy {
-
 	public addUserForm!: FormGroup;
 
 	public modalData!: { edit: boolean; userDetails: User };

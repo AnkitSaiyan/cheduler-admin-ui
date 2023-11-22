@@ -7,7 +7,7 @@ import { PracticeHoursComponent } from './pages/practice-hours.component';
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
-  declarations: [PracticeHoursComponent],
-  imports: [CommonModule, PracticeHoursRoutingModule, SharedModule, ReactiveFormsModule],
+	declarations: [PracticeHoursComponent],
+	imports: [CommonModule, PracticeHoursRoutingModule, SharedModule, ReactiveFormsModule],
 })
 export class PracticeHoursModule {}

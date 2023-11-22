@@ -6,6 +6,8 @@ import { BehaviorSubject, Subject, debounceTime, map, of, switchMap, take, takeU
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { TimeSlotFormValues, TimeSlotStaff } from 'src/app/shared/models/time-slot.model';
+import { StaffUtils } from 'src/app/shared/utils/staff.utils';
+import { DatePipe } from '@angular/common';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
@@ -20,8 +22,6 @@ import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
-import { StaffUtils } from 'src/app/shared/utils/staff.utils';
-import { DatePipe } from '@angular/common';
 
 interface FormValues {
 	firstname: string;

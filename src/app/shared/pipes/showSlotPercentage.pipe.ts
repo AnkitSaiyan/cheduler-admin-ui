@@ -10,6 +10,7 @@ export class ShowSlotPercentagePipe implements PipeTransform {
 		Medium: 'mediumPriorityPercentage',
 		Low: 'lowPriorityPercentage',
 	};
+
 	transform(currentPrioritySlot: any, slotPercentage: NextSlotOpenPercentageData, prioritySlots: any[]): boolean {
 		if (prioritySlots.length === 1) return true;
 		if (currentPrioritySlot.priority === 'High') return true;
@@ -39,4 +40,3 @@ export class ShowSlotPercentagePipe implements PipeTransform {
 		return false;
 	}
 }
-

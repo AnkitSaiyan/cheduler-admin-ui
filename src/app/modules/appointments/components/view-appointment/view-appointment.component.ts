@@ -1,6 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
+import { Translate } from 'src/app/shared/models/translate.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -8,10 +12,6 @@ import { APPOINTMENT_ID, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../..
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
-import { Translate } from 'src/app/shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { Permission } from 'src/app/shared/models/permission.model';
-import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 
 @Component({
 	selector: 'dfm-view-appointment',
@@ -30,7 +30,6 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 	public columns = ['Name', 'Expensive', 'Room', 'StartDate', 'EndDate'];
 
 	public absenceColumns = ['Title', 'StartDate', 'EndDate', 'AbsenceInfo'];
-
 
 	private selectedLang: string = ENG_BE;
 
@@ -135,10 +134,8 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 
 	public natigateToAbsence(e) {
 		if (e?.id) {
-			if(e.rooms?.length)
-				this.router.navigate([`/absence/rooms/${e.id}/view`], { replaceUrl: true });
-			else
-				this.router.navigate([`/absence/staff/${e.id}/view`], { replaceUrl: true });	
+			if (e.rooms?.length) this.router.navigate([`/absence/rooms/${e.id}/view`], { replaceUrl: true });
+			else this.router.navigate([`/absence/staff/${e.id}/view`], { replaceUrl: true });
 		}
 	}
 }

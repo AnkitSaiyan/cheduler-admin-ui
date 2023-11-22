@@ -2,29 +2,29 @@ import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/
 import { InputComponent } from 'diflexmo-angular-design';
 
 @Directive({
-  selector: '[dfmNumberInput]',
+	selector: '[dfmNumberInput]',
 })
 export class NumberInputDirective {
-  @HostListener('input', ['$event'])
-  private onChange(e: InputEvent) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    this.handleChange(e);
-  }
+	@HostListener('input', ['$event'])
+	private onChange(e: InputEvent) {
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		e.stopPropagation();
+		this.handleChange(e);
+	}
 
-  @Input()
-  public dfmNumberInput!: InputComponent;
+	@Input()
+	public dfmNumberInput!: InputComponent;
 
-  private numberOnly: RegExp = /^\d+$/;
+	private numberOnly: RegExp = /^\d+$/;
 
-  constructor(private elementRef: ElementRef, private r: Renderer2) {}
+	constructor(private elementRef: ElementRef, private r: Renderer2) {}
 
-  private handleChange(e: InputEvent) {
-    const inputText = this.dfmNumberInput.value?.toString();
+	private handleChange(e: InputEvent) {
+		const inputText = this.dfmNumberInput.value?.toString();
 
-    if (inputText && !inputText.match(this.numberOnly)) {
-      this.dfmNumberInput.value = +inputText.slice(0, -1);
-    }
-  }
+		if (inputText && !inputText.match(this.numberOnly)) {
+			this.dfmNumberInput.value = +inputText.slice(0, -1);
+		}
+	}
 }

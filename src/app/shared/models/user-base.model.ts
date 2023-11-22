@@ -1,5 +1,7 @@
 export class UserBase {
-  email: string = '';
-  givenName: string = '';
-  id: string = '';
+	email: string = '';
+
+	givenName: string = '';
+
+	id: string = '';
 }

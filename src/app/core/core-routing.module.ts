@@ -1,8 +1,8 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
-import {CoreComponent} from './core.component';
-import {PermissionGuard} from './guard/permission.guard';
-import {RouteGuard} from "./guard/route.guard";
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { CoreComponent } from './core.component';
+import { PermissionGuard } from './guard/permission.guard';
+import { RouteGuard } from './guard/route.guard';
 
 const routes: Routes = [
 	{
@@ -96,8 +96,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
-export class CoreRoutingModule {
-}
+export class CoreRoutingModule {}

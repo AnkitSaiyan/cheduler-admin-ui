@@ -40,4 +40,3 @@ export class WeekViewAbsenceTopPipe implements PipeTransform {
 		return top;
 	}
 }
-

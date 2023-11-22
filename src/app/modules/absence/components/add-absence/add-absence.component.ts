@@ -6,6 +6,9 @@ import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { ConfirmActionModalComponent } from 'src/app/shared/components/confirm-action-modal.component';
+import { PracticeAvailabilityServer } from 'src/app/shared/models/practice.model';
+import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -25,9 +28,6 @@ import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
-import { ConfirmActionModalComponent } from 'src/app/shared/components/confirm-action-modal.component';
-import { PracticeAvailabilityServer } from 'src/app/shared/models/practice.model';
-import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 
 interface FormValues {
 	name: string;
@@ -62,33 +62,52 @@ interface FormValues {
 })
 export class AddAbsenceComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public absenceForm!: FormGroup;
+
 	public filteredRoomList$$ = new BehaviorSubject<NameValue[] | null>(null);
+
 	public filteredStaffs$$ = new BehaviorSubject<NameValue[] | null>(null);
+
 	public submitting$$ = new BehaviorSubject<boolean>(false);
+
 	public absence$$ = new BehaviorSubject<Absence | null>(null);
+
 	public isAbsenceStaffRoomInvalid = new BehaviorSubject<boolean>(false);
-	public modalData!: { absenceType: (typeof ABSENCE_TYPE_ARRAY)[number]; edit: boolean; absenceID: number, selectedDate?: Date };
+
+	public modalData!: { absenceType: (typeof ABSENCE_TYPE_ARRAY)[number]; edit: boolean; absenceID: number; selectedDate?: Date };
+
 	public priorityType = PriorityType;
+
 	public repeatTypes: any[] = [];
+
 	public startTimes: NameValue[];
+
 	public endTimes: NameValue[];
+
 	public statuses = Statuses;
+
 	public repeatEvery!: any;
+
 	public repeatTypeToName = {
 		daily: 'Days',
 		weekly: 'Weeks',
 		monthly: 'Months',
 	};
+
 	public minFromDate = {
 		year: new Date().getFullYear(),
 		month: new Date().getMonth() + 1,
 		day: new Date().getDate(),
 	};
+
 	@ViewChild('repeatFrequency')
 	private repeatFrequency!: InputComponent;
+
 	private roomList: NameValue[] = [];
+
 	private staffs: NameValue[] = [];
+
 	private times: NameValue[];
+
 	private selectedLang: string = ENG_BE;
 
 	public startDateControl = new FormControl();
@@ -154,7 +173,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	public get formValues(): FormValues {
 		return this.absenceForm.value;
 	}
-	
+
 	public get controls() {
 		return this.absenceForm.controls;
 	}
@@ -255,12 +274,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)
 		) {
 			minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
+		} else if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
+			minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 		} else {
-			if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
-				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
-			} else {
-				minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
-			}
+			minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
 		}
 		minMaxValue = { ...minMaxValue, grayOutMin: min, grayOutMax: max };
 		// console.log(minMaxValue, 'test');
@@ -353,11 +370,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
 
-
-
-		let addAbsenceReqData: AddAbsenceRequestData = {
+		const addAbsenceReqData: AddAbsenceRequestData = {
 			...rest,
-			isHoliday: isHoliday,
+			isHoliday,
 			startedAt: isHoliday
 				? (this.datePipe.transform(
 						new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} 00:00:00`.replace(/-/g, '/')),
@@ -408,11 +423,9 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			}, '');
 		}
 
-
 		if (this.modalData?.absenceID) {
 			addAbsenceReqData.id = this.modalData.absenceID;
 		}
-
 
 		this.submitting$$.next(true);
 
@@ -650,7 +663,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		const { startedAt, endedAt, startTime, endTime, isRepeat } = this.formValues;
 
-
 		if ((startedAt?.day === endedAt?.day && startedAt?.month === endedAt?.month && startedAt?.year === endedAt?.year) || isRepeat) {
 			if (DateTimeUtils.TimeToNumber(startTime) >= DateTimeUtils.TimeToNumber(endTime)) {
 				toggleControlError(this.absenceForm.get('startTime'), 'time');
@@ -658,10 +670,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 				return;
 			}
-
 		}
-
-		
 
 		// formValues.isRepeat
 
@@ -674,7 +683,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	}
 
 	private openModal() {
-		let modal = this.modalSvc.open(ConfirmActionModalComponent, {
+		const modal = this.modalSvc.open(ConfirmActionModalComponent, {
 			data: {
 				bodyText: 'APPOINTMENT_AFFECTS_ABSENCE',
 				closeActiveModal: true,

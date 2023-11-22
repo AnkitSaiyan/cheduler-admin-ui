@@ -9,10 +9,3 @@ export function timeSlotRequiredValidator(control: FormControl) {
 	}
 	return null;
 }
-
-
-
-
-
-
-

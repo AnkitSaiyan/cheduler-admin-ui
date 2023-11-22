@@ -21,6 +21,13 @@ import { DesignSystemModule, NgDfmDropdownModule, TableModule } from 'diflexmo-a
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { NgChartsModule } from 'ng2-charts';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatMenuModule } from '@angular/material/menu';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { ConfirmActionModalComponent } from './components/confirm-action-modal.component';
 import { ConfirmStatusChangeBannerComponent } from './components/confirm-status-change-banner.component';
 import { DestroyableComponent } from './components/destroyable.component';
@@ -51,9 +58,6 @@ import { WeekdayToNamePipe } from './pipes/weekday-to-name.pipe';
 import { TranslateLoader, TranslateModule, TranslatePipe } from '@ngx-translate/core';
 // eslint-disable-next-line import/order
 import { DateAdapter, MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatMenuModule } from '@angular/material/menu';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
 import { DfmCalendarPickerComponent } from './components/dfm-calendar/dfm-calendar-picker/dfm-calendar-picker.component';
 import { LoginFailedComponent } from './components/login-failed/login-failed.component';
@@ -71,7 +75,6 @@ import { UtcToLocalPipe } from './pipes/utc-to-local.pipe';
 import { DUTCH_BE } from './utils/const';
 import { CustomDatePickerAdapter } from './utils/date-adapter';
 
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { IsPreviousDayPipe } from './pipes/is-previous-day.pipe';
 import { DocumentViewModalComponent } from './components/document-view-modal/document-view-modal.component';
 import { DfmDragEventDirective } from './directives/dfm-drag-event.directive';
@@ -81,14 +84,11 @@ import { FindSelectedSlotPipe } from './pipes/find-selected-slot.pipe';
 import { RemoveDuplicateDataPipe } from './pipes/remove-duplicate-data.pipe';
 import { DfmAutoScrollInViewDirective } from './directives/dfm-auto-scroll-in-view.directive';
 import { RepeatFormComponent } from './components/repeat-form/repeat-form.component';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ShowBodyPartPipe } from './pipes/show-body-part.pipe';
 import { SsnInputDirective } from './directives/ssn-input.directive';
 import { ShareDataService } from '../core/services/share-data.service';
 import { DfmTimeInputDropdownComponent } from './components/dfm-time-input-dropdown/dfm-time-input-dropdown.component';
 import { MaxDatePipe } from './pipes/max-date.pipe';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { WeekViewAppointmentCardTopPipe } from './pipes/weekview-appointment-card-top.pipe';
 import { WeekViewAppointmentCardGroupHeightPipe } from './pipes/weekview-appointment-card-group-height.pipe';
 import { DayViewAppointmentHeightPipe } from './pipes/day-view-appointment-height.pipe';
@@ -170,7 +170,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		WeekViewAbsenceTopPipe,
 		TimeSlotsTableComponent,
 		DfmButtonTypeDirective,
-  		PhoneNumberDirective,
+		PhoneNumberDirective,
 	],
 	imports: [
 		CommonModule,
@@ -297,6 +297,7 @@ export class SharedModule {
 	constructor(private _adapter: DateAdapter<any>, private shareDataSvc: ShareDataService) {
 		this.shareDataSvc.getLanguage$().subscribe((lang) => this._adapter.setLocale(lang));
 	}
+
 	static forRoot(): ModuleWithProviders<SharedModule> {
 		return {
 			ngModule: SharedModule,

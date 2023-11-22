@@ -1,20 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'dfm-dashboard',
-    templateUrl: './dashboard.component.html',
-    styleUrls: ['./dashboard.component.scss'],
+	selector: 'dfm-dashboard',
+	templateUrl: './dashboard.component.html',
+	styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
+	public constructor() {}
 
-    public constructor(
-    ) {
-    }
+	public ngOnInit() {}
 
-    public ngOnInit() {
-    }
-
-    public handleClick() {
-        document.querySelector('#top')?.scrollIntoView({block: 'start', behavior: 'smooth'});
-    }
+	public handleClick() {
+		document.querySelector('#top')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+	}
 }

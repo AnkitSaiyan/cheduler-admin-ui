@@ -16,17 +16,6 @@ import {
 	ViewEncapsulation,
 } from '@angular/core';
 import { BehaviorSubject, Subject, debounceTime, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs';
-import { ModalService } from '../../../../core/services/modal.service';
-import {
-	calendarDistinctUntilChanged,
-	dataModification,
-	dataModificationForWeek,
-	getAllDaysOfWeek,
-	getDurationMinutes,
-	getFromAndToDate,
-} from '../../../models/calendar.model';
-import { DateTimeUtils } from '../../../utils/date-time.utils';
-import { DestroyableComponent } from '../../destroyable.component';
 
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
@@ -35,6 +24,17 @@ import { CalendarType } from 'src/app/shared/utils/const';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { ActivatedRoute, Params } from '@angular/router';
+import { DestroyableComponent } from '../../destroyable.component';
+import { DateTimeUtils } from '../../../utils/date-time.utils';
+import {
+	calendarDistinctUntilChanged,
+	dataModification,
+	dataModificationForWeek,
+	getAllDaysOfWeek,
+	getDurationMinutes,
+	getFromAndToDate,
+} from '../../../models/calendar.model';
+import { ModalService } from '../../../../core/services/modal.service';
 
 @Component({
 	selector: 'dfm-calendar-week-view',

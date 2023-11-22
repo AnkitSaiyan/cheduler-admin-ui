@@ -3,15 +3,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { SiteManagement, SiteManagementRequestData } from '../../../shared/models/site-management.model';
 import { TimeDurationType } from '../../../shared/models/calendar.model';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
 import { SiteManagementApiService } from '../../../core/services/site-management-api.service';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
-import { EMAIL_REGEX } from '../../../shared/utils/const';
-import { ENG_BE } from '../../../shared/utils/const';
+import { EMAIL_REGEX, ENG_BE } from '../../../shared/utils/const';
+
 import { Translate } from '../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 interface FormValues {
 	name: string;
@@ -72,7 +72,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 	}
 
 	public ngOnInit(): void {
-		for (let i = 1; i < 11; i++) this.documentSize.push({ name: i + ' MB', value: i });
+		for (let i = 1; i < 11; i++) this.documentSize.push({ name: `${i} MB`, value: i });
 
 		this.siteManagementApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.timeDurations = items));
 

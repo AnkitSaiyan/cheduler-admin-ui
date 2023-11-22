@@ -1,18 +1,18 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, filter, map, switchMap, takeUntil } from 'rxjs';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { EMAIL_TEMPLATE_ID } from '../../../../shared/utils/const';
-import { RouterStateService } from '../../../../core/services/router-state.service';
 import { EmailTemplateApiService } from 'src/app/core/services/email-template-api.service';
 import { Email } from 'src/app/shared/models/email-template.model';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { Status } from 'src/app/shared/models/status.model';
-import { ShareDataService } from '../../../../core/services/share-data.service';
-import { Translate } from '../../../../shared/models/translate.model';
 import { NotificationType } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { EMAIL_TEMPLATE_ID } from '../../../../shared/utils/const';
+import { RouterStateService } from '../../../../core/services/router-state.service';
+import { ShareDataService } from '../../../../core/services/share-data.service';
+import { Translate } from '../../../../shared/models/translate.model';
 
 interface FormValues {
 	title: string;
@@ -40,6 +40,7 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
 	public edit = false;
 
 	public content = '';
+
 	adminContent = '';
 
 	public contentConfig: AngularEditorConfig = {
@@ -175,8 +176,6 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
 			requestData.id = this.email$$.value.id;
 		}
 
-
-
 		this.emailTemplateApiSvc
 			.updateEmailTemplate(requestData)
 			.pipe(takeUntil(this.destroy$$))
@@ -190,7 +189,3 @@ export class EditEmailTemplateComponent extends DestroyableComponent implements 
 			});
 	}
 }
-
-
-
-

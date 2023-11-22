@@ -38,13 +38,15 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
 
 	constructor(private dashboardApiService: DashboardApiService, private shareDataSvc: ShareDataService) {
 		super();
-		this.shareDataSvc.getLanguage$().pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (lang) => {
-				this.selectedLang = lang;
-				if(this.chartData)this.createChartConfig(this.chartData);
-			},
-			
-		});
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: (lang) => {
+					this.selectedLang = lang;
+					if (this.chartData) this.createChartConfig(this.chartData);
+				},
+			});
 	}
 
 	public ngOnInit(): void {
@@ -61,7 +63,7 @@ export class AppointmentsDoughnutChartComponent extends DestroyableComponent imp
 		chartData.forEach((data) => {
 			this.appointmentDetails[data.label] = data.value;
 			this.doughnutChartLabels.push(Translate.AppointmentStatus[data.label][this.selectedLang]);
-		});		
+		});
 
 		if (this.appointmentDetails.Total === 0 && this.appointmentDetails.Pending === 0 && this.appointmentDetails.Approved === 0) {
 			this.noDataFound = false;

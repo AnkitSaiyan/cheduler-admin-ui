@@ -36,4 +36,3 @@ export class StaffUtils {
 		return practice;
 	}
 }
-

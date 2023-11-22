@@ -10,7 +10,7 @@ export const APPOINTMENT_ID = 'appointmentID';
 export const EMAIL_TEMPLATE_ID = 'emailID';
 export const PRIORITY_ID = 'priorityID';
 
-//params type array
+// params type array
 
 export const ABSENCE_TYPE_ARRAY = ['rooms', 'staff', 'public-holiday'] as const;
 
@@ -34,8 +34,10 @@ export const NUM_ONLY_REGEX: RegExp = /^\d+$/;
 
 // Cache Keys
 
-export const ChedulerCacheKey = 'cb4a17fd-d34c-48d3-bc5d-9525f9071c9a-b2c_1_cheduler_staff_signin.441c0f18-a9ce-4c55-99c1-4232715e39a5-diflexmoauth.b2clogin.com-accesstoken-d526e147-4713-4a0a-bf56-d8f500fb9a62--https://diflexmoauth.onmicrosoft.com/cheduler.api/cheduler.api--'
-export const UserManagementCacheKey = 'cb4a17fd-d34c-48d3-bc5d-9525f9071c9a-b2c_1_cheduler_staff_signin.441c0f18-a9ce-4c55-99c1-4232715e39a5-diflexmoauth.b2clogin.com-accesstoken-d526e147-4713-4a0a-bf56-d8f500fb9a62--https://diflexmoauth.onmicrosoft.com/usermanagement.api/usermanagement.api--'
+export const ChedulerCacheKey =
+	'cb4a17fd-d34c-48d3-bc5d-9525f9071c9a-b2c_1_cheduler_staff_signin.441c0f18-a9ce-4c55-99c1-4232715e39a5-diflexmoauth.b2clogin.com-accesstoken-d526e147-4713-4a0a-bf56-d8f500fb9a62--https://diflexmoauth.onmicrosoft.com/cheduler.api/cheduler.api--';
+export const UserManagementCacheKey =
+	'cb4a17fd-d34c-48d3-bc5d-9525f9071c9a-b2c_1_cheduler_staff_signin.441c0f18-a9ce-4c55-99c1-4232715e39a5-diflexmoauth.b2clogin.com-accesstoken-d526e147-4713-4a0a-bf56-d8f500fb9a62--https://diflexmoauth.onmicrosoft.com/usermanagement.api/usermanagement.api--';
 
 // Date Time Const
 
@@ -44,7 +46,7 @@ export const GlobalDateFormat = 'dd/MM/yyyy';
 export const GlobalDateTimeFormat = 'dd/MM/yyyy, HH:mm';
 
 // URL constants
-export const DEV_SUBDOMAIN = 'red-sea-08bb7b903'
+export const DEV_SUBDOMAIN = 'red-sea-08bb7b903';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const EXT_Patient_Tenant = 'NPXN';
@@ -73,6 +75,6 @@ export enum CalendarType {
 	Month = 'month',
 }
 
-//appointment card
+// appointment card
 export const TIME_INTERVAL: number = 15;
 export const PIXELS_PER_MIN: number = 4;

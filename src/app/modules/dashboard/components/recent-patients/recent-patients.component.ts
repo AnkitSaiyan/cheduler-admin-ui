@@ -9,9 +9,10 @@ import { NameValue } from 'src/app/shared/components/search-modal.component';
 import { DfmDatasource, DfmTableHeader, NotificationType } from 'diflexmo-angular-design';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { ENG_BE, Statuses } from 'src/app/shared/utils/const';
-import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
+
 const ColumnIdToKey = {
 	1: 'patientFname',
 	2: 'patientEmail',
@@ -156,7 +157,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 		this.filteredRecentPatients$$.next([
 			...this.recentPatients$$.value.filter((appointment) => {
 				return (
-					(appointment.patientFname?.toLowerCase() + ' ' + appointment.patientLname?.toLowerCase()).includes(searchText) ||
+					`${appointment.patientFname?.toLowerCase()} ${appointment.patientLname?.toLowerCase()}`.includes(searchText) ||
 					appointment.patientEmail?.toLowerCase()?.includes(searchText) ||
 					appointment.doctor?.toLowerCase()?.includes(searchText) ||
 					appointment.startedAt?.toString()?.includes(searchText)

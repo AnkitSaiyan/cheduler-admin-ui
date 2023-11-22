@@ -60,6 +60,7 @@ export class AppointmentApiService extends DestroyableComponent {
 	private selectedLang$$ = new BehaviorSubject<string>('');
 
 	private signalData!: Appointment[];
+
 	private appointmentUrl = `${environment.schedulerApiUrl}/appointment`;
 
 	private pageNo$$ = new BehaviorSubject<number>(1);
@@ -173,16 +174,16 @@ export class AppointmentApiService extends DestroyableComponent {
 
 		if (data) {
 			const queryParams = { pageNo: 1 };
-			if (data?.appointmentNumber) queryParams['id'] = data.appointmentNumber;
-			if (data?.roomsId) queryParams['roomId'] = data.roomsId;
-			if (data?.examList.length) queryParams['examId'] = data.examList;
-			if (data?.doctorId) queryParams['doctorId'] = data.doctorId;
-			if (data?.startedAt) queryParams['startDate'] = data.startedAt;
-			if (data?.endedAt) queryParams['endDate'] = data.endedAt;
-			if (data?.FirstName) queryParams['FirstName'] = data.FirstName;
-			if (data?.LastName) queryParams['LastName'] = data.LastName;
-			if (data?.userId) queryParams['userId'] = data.userId;
-			if (data?.approval == 0 || data.approval) queryParams['approval'] = data.approval;
+			if (data?.appointmentNumber) queryParams.id = data.appointmentNumber;
+			if (data?.roomsId) queryParams.roomId = data.roomsId;
+			if (data?.examList.length) queryParams.examId = data.examList;
+			if (data?.doctorId) queryParams.doctorId = data.doctorId;
+			if (data?.startedAt) queryParams.startDate = data.startedAt;
+			if (data?.endedAt) queryParams.endDate = data.endedAt;
+			if (data?.FirstName) queryParams.FirstName = data.FirstName;
+			if (data?.LastName) queryParams.LastName = data.LastName;
+			if (data?.userId) queryParams.userId = data.userId;
+			if (data?.approval == 0 || data.approval) queryParams.approval = data.approval;
 
 			return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
 				map((response) => {
@@ -264,7 +265,7 @@ export class AppointmentApiService extends DestroyableComponent {
 						...this.getAppointmentModified({ ...response?.data, examDetail: response?.data?.examBatchDetail } as any),
 						patientFname: userDetail?.givenName,
 						patientLname: userDetail?.surname,
-						patientTel: userDetail.properties?.['extension_PhoneNumber'],
+						patientTel: userDetail.properties?.extension_PhoneNumber,
 						patientEmail: userDetail.email,
 					};
 				}
@@ -306,13 +307,12 @@ export class AppointmentApiService extends DestroyableComponent {
 				map((response) => response.data),
 				tap(() => this.appointmentPageNo$$.next(1)),
 			);
-		} else {
-			const { id, ...restData } = requestData;
-			return this.http.put<BaseResponse<Appointment>>(`${this.appointmentUrl}/editappointment/${id}`, { ...restData, patientTimeZone }).pipe(
-				map((response) => response.data),
-				tap(() => this.appointmentPageNo$$.next(1)),
-			);
 		}
+		const { id, ...restData } = requestData;
+		return this.http.put<BaseResponse<Appointment>>(`${this.appointmentUrl}/editappointment/${id}`, { ...restData, patientTimeZone }).pipe(
+			map((response) => response.data),
+			tap(() => this.appointmentPageNo$$.next(1)),
+		);
 	}
 
 	public updateAppointment$(requestData: AddAppointmentRequestData): Observable<Appointment> {

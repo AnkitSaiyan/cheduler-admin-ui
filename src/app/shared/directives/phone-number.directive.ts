@@ -2,9 +2,9 @@ import { Directive, HostListener, Input } from '@angular/core';
 import { InputComponent } from 'diflexmo-angular-design';
 
 @Directive({
-  selector: '[dfmPhoneNumber]'
+	selector: '[dfmPhoneNumber]',
 })
-export class PhoneNumberDirective{
+export class PhoneNumberDirective {
 	@HostListener('input', ['$event'])
 	private onChange(e: InputEvent) {
 		e.preventDefault();

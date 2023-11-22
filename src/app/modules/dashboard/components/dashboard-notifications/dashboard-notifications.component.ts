@@ -4,7 +4,7 @@ import { BehaviorSubject, takeUntil } from 'rxjs';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
-import { Notification } from "../../../../shared/models/notification.model";
+import { Notification } from '../../../../shared/models/notification.model';
 
 @Component({
 	selector: 'dfm-dashboard-notifications',
@@ -28,7 +28,7 @@ export class DashboardNotificationsComponent extends DestroyableComponent implem
 		super();
 		this.notifications$$ = new BehaviorSubject<any[]>([]);
 		this.filteredNotifications$$ = new BehaviorSubject<any[]>([]);
-    this.dashboardApiService.notificationPageNo = 1;
+		this.dashboardApiService.notificationPageNo = 1;
 	}
 
 	public ngOnInit(): void {
@@ -55,7 +55,7 @@ export class DashboardNotificationsComponent extends DestroyableComponent implem
 					this.notifications$$.next(notificationsBase?.data);
 				}
 				this.paginationData = notificationsBase?.metaData?.pagination;
-			}
+			},
 		});
 	}
 

@@ -10,7 +10,7 @@ import { AddExamComponent } from './components/add-exam/add-exam.component';
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
-  declarations: [ExamComponent, ExamListComponent, ViewExamComponent, AddExamComponent],
-  imports: [CommonModule, ExamRoutingModule, SharedModule, ReactiveFormsModule],
+	declarations: [ExamComponent, ExamListComponent, ViewExamComponent, AddExamComponent],
+	imports: [CommonModule, ExamRoutingModule, SharedModule, ReactiveFormsModule],
 })
 export class ExamModule {}

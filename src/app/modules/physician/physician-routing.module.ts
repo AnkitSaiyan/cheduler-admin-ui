@@ -7,26 +7,26 @@ import { PHYSICIAN_ID } from '../../shared/utils/const';
 import { PhysicianViewComponent } from './components/physician-view/physician-view.component';
 
 const physicianRoutes: Routes = [
-  {
-    path: '',
-    component: PhysicianComponent,
-    children: [
-      {
-        path: '',
-        component: PhysicianListComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.Physicians },
-      },
-      {
-        path: `:${PHYSICIAN_ID}/view`,
-        component: PhysicianViewComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.Physicians },
-      },
-    ],
-  },
+	{
+		path: '',
+		component: PhysicianComponent,
+		children: [
+			{
+				path: '',
+				component: PhysicianListComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.Physicians },
+			},
+			{
+				path: `:${PHYSICIAN_ID}/view`,
+				component: PhysicianViewComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.Physicians },
+			},
+		],
+	},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(physicianRoutes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(physicianRoutes)],
+	exports: [RouterModule],
 })
 export class PhysicianRoutingModule {}

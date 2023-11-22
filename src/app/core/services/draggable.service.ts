@@ -1,7 +1,6 @@
 import { ElementRef, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { Appointment } from 'src/app/shared/models/appointment.model';
 
-
 @Injectable({
 	providedIn: 'root',
 })
@@ -21,6 +20,7 @@ export class DraggableService {
 	private dragStartElementParentReference!: any;
 
 	private dragEndElementReference!: any;
+
 	private headerTypeValue!: string | undefined;
 
 	constructor(rendererFactory: RendererFactory2) {
@@ -40,6 +40,7 @@ export class DraggableService {
 	public set dragEndElementRef(element: ElementRef) {
 		this.dragEndElementReference = element;
 	}
+
 	public get isDragStarted() {
 		return this.dragStarted;
 	}
@@ -85,6 +86,7 @@ export class DraggableService {
 		this.renderer.appendChild(this.dragEndElementRef?.nativeElement, cloneElement);
 		this.renderer?.removeChild(this.dragStartElementParentRef, this.dragStartElement?.event?.target);
 	}
+
 	public weekViewDragComplete(event: any) {
 		if (!this.dragStartElement || !this.dragEndElementRef) return;
 		const cloneElement = this.dragStartElement?.event?.target?.cloneNode(true);
@@ -144,62 +146,3 @@ export class DraggableService {
 		element?.remove();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, NgControl, Validators } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
@@ -7,6 +7,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { ModalService } from 'src/app/core/services/modal.service';
+import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -38,8 +40,6 @@ import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ModalService } from 'src/app/core/services/modal.service';
-import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 
 @Component({
 	selector: 'dfm-add-appointment',
@@ -57,14 +57,21 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	public loadingSlots$$ = new BehaviorSubject<boolean>(false);
 
 	public submitting$$ = new BehaviorSubject(false);
+
 	private selectedLang: string = ENG_BE;
 
 	public filteredUserList: NameValue[] = [];
+
 	public filteredExamList: NameValue[] = [];
+
 	public filteredPhysicianList: NameValue[] = [];
+
 	public roomType = RoomType;
+
 	public edit = false;
+
 	public comingFromRoute = '';
+
 	examsData = [
 		{
 			name: 'Aanpasing steunzolen',
@@ -79,28 +86,43 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			value: 3,
 		},
 	];
+
 	public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
+
 	public slots: SlotModified[] = [];
+
 	public selectedTimeSlot: SelectedSlots = {};
+
 	public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
+
 	public isSlotUpdated = false;
+
 	public slots$$ = new BehaviorSubject<any>(null);
+
 	public isCombinable: boolean = false;
 
 	public isDoctorConsentDisable$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
 	private userList: NameValue[] = [];
+
 	private examList: NameValue[] = [];
+
 	private physicianList: NameValue[] = [];
 
 	public dateControl = new FormControl();
+
 	public currentDate = new Date();
 
 	public isOutside: boolean | undefined = false;
+
 	private staffs: NameValue[] = [];
+
 	public filteredStaffs: NameValue[] = [];
+
 	public uploadFileName!: string;
+
 	private fileSize!: number;
+
 	public documentStage: string = '';
 
 	constructor(
@@ -277,7 +299,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	}
 
 	public getSlotData(reqData: AppointmentSlotsRequestData) {
-		return this.appointmentApiSvc.getSlots$({...reqData, AppointmentId: this.appointment$$?.value?.id ?? 0});
+		return this.appointmentApiSvc.getSlots$({ ...reqData, AppointmentId: this.appointment$$?.value?.id ?? 0 });
 	}
 
 	public saveAppointment(): void {
@@ -377,7 +399,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		} catch (e) {
 			this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}`, NotificationType.DANGER);
 			this.submitting$$.next(false);
-			return;
 		}
 	}
 
@@ -427,7 +448,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		} catch (e) {
 			this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}`, NotificationType.DANGER);
 			this.submitting$$.next(false);
-			return;
 		}
 	}
 
@@ -619,7 +639,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 					this.cdr.detectChanges();
 				});
 		}, 600);
-
 	}
 
 	private findSlot(examID: number, start: string, end: string): SlotModified | undefined {
@@ -633,7 +652,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 		this.examIdToAppointmentSlots = examIdToSlots;
 		this.slots = newSlots;
-
 	}
 
 	public onDateChange(value: string, controlName: string) {
@@ -642,11 +660,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 	public uploadRefferingNote(event: any) {
 		this.uploadFileName = event.target.files[0].name;
-		var extension = this.uploadFileName.substr(this.uploadFileName.lastIndexOf('.') + 1).toLowerCase();
-		var allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const extension = this.uploadFileName.substr(this.uploadFileName.lastIndexOf('.') + 1).toLowerCase();
+		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
 		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
 		if (!event.target.files.length) {
-			return;
 		} else if (allowedExtensions.indexOf(extension) === -1) {
 			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
 			this.documentStage = 'FAILED_TO_UPLOAD';
@@ -677,7 +694,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	}
 
 	private uploadDocument(file: any) {
-		this.appointmentApiSvc.uploadDocumnet(file, '', (this.appointment$$?.value?.id ?? 0)+'').subscribe({
+		this.appointmentApiSvc.uploadDocumnet(file, '', `${this.appointment$$?.value?.id ?? 0}`).subscribe({
 			next: (res) => {
 				this.documentStage = this.uploadFileName;
 

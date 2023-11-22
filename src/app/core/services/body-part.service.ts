@@ -5,8 +5,8 @@ import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { BodyPart } from 'src/app/shared/models/body-part.model';
 import { BodyType, DUTCH_BE, ENG_BE } from 'src/app/shared/utils/const';
 import { environment } from 'src/environments/environment';
-import { ShareDataService } from './share-data.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import { ShareDataService } from './share-data.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -48,6 +48,7 @@ export class BodyPartService extends DestroyableComponent implements OnDestroy {
 	public getBodyPartById(id: number): BodyPart {
 		return this.bodyPart.get(id) as BodyPart;
 	}
+
 	public getBodyPartByType(type: BodyType): BodyPart[] {
 		return this.bodyPart.get(type) as BodyPart[];
 	}
@@ -72,12 +73,3 @@ export class BodyPartService extends DestroyableComponent implements OnDestroy {
 			});
 	}
 }
-
-
-
-
-
-
-
-
-

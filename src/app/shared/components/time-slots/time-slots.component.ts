@@ -280,7 +280,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
 	private handleSlotExistsError(controlArrays: FormArray[]) {
 		controlArrays.forEach((formArray) => {
-			const controls = formArray.controls;
+			const { controls } = formArray;
 			if (formArray.length > 1) {
 				for (let i = 0; i < formArray.length - 1; i++) {
 					const compareWithControl = controls[i];
@@ -329,4 +329,3 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 		}
 	}
 }
-

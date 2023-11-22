@@ -11,9 +11,8 @@ export class GeneralUtils {
 					return d?.toString()?.toLowerCase().includes(filterText.toString().toLowerCase());
 				}),
 			];
-		} else {
-			return arr;
 		}
+		return arr;
 	}
 
 	public static saveSessionExpTime(): void {
@@ -75,10 +74,8 @@ export class GeneralUtils {
 						if (data[key] === item[key]) {
 							return item;
 						}
-					} else {
-						if (data.toString() === item.toString()) {
-							return item;
-						}
+					} else if (data.toString() === item.toString()) {
+						return item;
 					}
 					return data;
 				});
@@ -91,9 +88,9 @@ export class GeneralUtils {
 	}
 
 	private static sortDate([...arr]: readonly any[], sort: ColumnSort | undefined, key: string): any[] {
-		let trueData: any[] = [];
-		let falseData: any[] = [];
-		for (let val of arr) val[key] ? trueData.push(val) : falseData.push(val);
+		const trueData: any[] = [];
+		const falseData: any[] = [];
+		for (const val of arr) val[key] ? trueData.push(val) : falseData.push(val);
 
 		switch (sort) {
 			case 'Asc':

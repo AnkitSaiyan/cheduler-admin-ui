@@ -49,7 +49,7 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 
 		this.upcomingAppointmentApiService.upcomingAppointmentsIn4Hours$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (appointments) => {
-					this.upcomingAppointments$$.next(appointments);
+				this.upcomingAppointments$$.next(appointments);
 			},
 		});
 	}

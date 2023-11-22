@@ -27,7 +27,7 @@ export class UserUtils {
 				if (nameValue) {
 					newUser = { name: `${user.firstname} ${user.lastname}`, value: user.id.toString() };
 				} else if (idOnly) {
-					newUser = user.id + '';
+					newUser = `${user.id}`;
 				}
 
 				if (user?.isMandate && !allMandate) {
@@ -65,4 +65,3 @@ export class UserUtils {
 		};
 	}
 }
-

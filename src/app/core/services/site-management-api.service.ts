@@ -11,104 +11,103 @@ import { ShareDataService } from './share-data.service';
 import { Translate } from '../../shared/models/translate.model';
 
 @Injectable({
-  providedIn: 'root',
+	providedIn: 'root',
 })
 export class SiteManagementApiService extends DestroyableComponent {
-  private siteManagementData!: SiteManagement;
+	private siteManagementData!: SiteManagement;
 
-  public timeDurations: { name: TimeDurationType; value: TimeDurationType }[] = [
-    {
-      name: 'Minutes',
-      value: 'Minutes',
-    },
-    {
-      name: 'Hours',
-      value: 'Hours',
-    },
-    {
-      name: 'Days',
-      value: 'Days',
-    },
-  ];
+	public timeDurations: { name: TimeDurationType; value: TimeDurationType }[] = [
+		{
+			name: 'Minutes',
+			value: 'Minutes',
+		},
+		{
+			name: 'Hours',
+			value: 'Hours',
+		},
+		{
+			name: 'Days',
+			value: 'Days',
+		},
+	];
 
-  private refreshSiteManagement$ = new Subject<void>();
+	private refreshSiteManagement$ = new Subject<void>();
 
-  private selectedLang$$ = new BehaviorSubject<string>('');
+	private selectedLang$$ = new BehaviorSubject<string>('');
 
-  constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService) {
-    super();
-    this.shareDataSvc
-      .getLanguage$()
-      .pipe(takeUntil(this.destroy$$))
-      .subscribe({
-        next: (lang) => this.selectedLang$$.next(lang)
-      });
-  }
+	constructor(private shareDataSvc: ShareDataService, private http: HttpClient, private loaderSvc: LoaderService) {
+		super();
+		this.shareDataSvc
+			.getLanguage$()
+			.pipe(takeUntil(this.destroy$$))
+			.subscribe({
+				next: (lang) => this.selectedLang$$.next(lang),
+			});
+	}
 
-  public saveSiteManagementData$(requestData: SiteManagementRequestData): Observable<SiteManagement> {
-    this.loaderSvc.activate();
-    const formData = new FormData();
+	public saveSiteManagementData$(requestData: SiteManagementRequestData): Observable<SiteManagement> {
+		this.loaderSvc.activate();
+		const formData = new FormData();
 		formData.append('Name', requestData.name);
 		formData.append('DisableAppointment', String(requestData.disableAppointment));
 		formData.append('DisableWarningText', requestData.disableWarningText ? String(requestData.disableWarningText) : '');
-    formData.append('IntroductoryText', requestData.introductoryText);
-    formData.append('IntroductoryTextEnglish', requestData.introductoryTextEnglish);
-    formData.append('DoctorReferringConsent', String(requestData.doctorReferringConsent));
-    formData.append('Address', requestData.address);
-    formData.append('Email', requestData.email);
-    formData.append('Telephone', String(requestData.telephone));
-    formData.append('isSlotsCombinable', String(requestData.isSlotsCombinable));
-    formData.append('cancelAppointmentTime', String(requestData.cancelAppointmentTime));
-    formData.append('ReminderTime', String(requestData.reminderTime));
-    formData.append('isAppointmentAutoconfirm', String(requestData.isAppointmentAutoconfirm));
-    formData.append('isAppointmentAutoconfirmAdmin', String(requestData.isAppointmentAutoconfirmAdmin));
-    formData.append('editUploadedDocument', String(requestData.editUploadedDocument));
-    formData.append('documentSizeInKb', String(requestData.documentSize * 1024));
-    formData.append('absenceImpactAlertInterval', String(requestData.absenceImpactAlertInterval
-));
-    if (requestData.file) {
-      formData.append('File', requestData.file);
-    }
+		formData.append('IntroductoryText', requestData.introductoryText);
+		formData.append('IntroductoryTextEnglish', requestData.introductoryTextEnglish);
+		formData.append('DoctorReferringConsent', String(requestData.doctorReferringConsent));
+		formData.append('Address', requestData.address);
+		formData.append('Email', requestData.email);
+		formData.append('Telephone', String(requestData.telephone));
+		formData.append('isSlotsCombinable', String(requestData.isSlotsCombinable));
+		formData.append('cancelAppointmentTime', String(requestData.cancelAppointmentTime));
+		formData.append('ReminderTime', String(requestData.reminderTime));
+		formData.append('isAppointmentAutoconfirm', String(requestData.isAppointmentAutoconfirm));
+		formData.append('isAppointmentAutoconfirmAdmin', String(requestData.isAppointmentAutoconfirmAdmin));
+		formData.append('editUploadedDocument', String(requestData.editUploadedDocument));
+		formData.append('documentSizeInKb', String(requestData.documentSize * 1024));
+		formData.append('absenceImpactAlertInterval', String(requestData.absenceImpactAlertInterval));
+		if (requestData.file) {
+			formData.append('File', requestData.file);
+		}
 
-    return this.http.post<BaseResponse<SiteManagement>>(`${environment.schedulerApiUrl}/sitesetting`, formData).pipe(
-      map((response) => response.data),
-      tap(() => this.loaderSvc.deactivate()),
-    );
-  }
+		return this.http.post<BaseResponse<SiteManagement>>(`${environment.schedulerApiUrl}/sitesetting`, formData).pipe(
+			map((response) => response.data),
+			tap(() => this.loaderSvc.deactivate()),
+		);
+	}
 
-  get fileTypes$(): Observable<any[]> {
-    return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
-      switchMap(([lang]) => {
-        return of(this.timeDurations).pipe(
-          map((downloadTypeItems) => {
-            if (lang) {
-              return downloadTypeItems.map((downloadType) => {
-                return {
-                  ...downloadType,
-                  name: Translate[downloadType.name][lang],
-                };
-              });
-            }
-            return downloadTypeItems;
-          }),
-        );
-      }),
-    );
-  }
+	get fileTypes$(): Observable<any[]> {
+		return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
+			switchMap(([lang]) => {
+				return of(this.timeDurations).pipe(
+					map((downloadTypeItems) => {
+						if (lang) {
+							return downloadTypeItems.map((downloadType) => {
+								return {
+									...downloadType,
+									name: Translate[downloadType.name][lang],
+								};
+							});
+						}
+						return downloadTypeItems;
+					}),
+				);
+			}),
+		);
+	}
 
-  public get siteManagementData$(): Observable<SiteManagement> {
-    return combineLatest([this.refreshSiteManagement$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchSiteManagement()));
-  }
+	public get siteManagementData$(): Observable<SiteManagement> {
+		return combineLatest([this.refreshSiteManagement$.pipe(startWith(''))]).pipe(switchMap(() => this.fetchSiteManagement()));
+	}
 
-  private fetchSiteManagement(): Observable<SiteManagement> {
-    this.loaderSvc.spinnerActivate();
-    this.loaderSvc.activate();
-    return this.http.get<BaseResponse<SiteManagement>>(`${environment.schedulerApiUrl}/sitesetting`).pipe(
-      map((response) => response.data),
-      tap(() => {
-        this.loaderSvc.deactivate();
-        this.loaderSvc.spinnerDeactivate();
-      }),
-    );
-  }
+	private fetchSiteManagement(): Observable<SiteManagement> {
+		this.loaderSvc.spinnerActivate();
+		this.loaderSvc.activate();
+		return this.http.get<BaseResponse<SiteManagement>>(`${environment.schedulerApiUrl}/sitesetting`).pipe(
+			map((response) => response.data),
+			tap(() => {
+				this.loaderSvc.deactivate();
+				this.loaderSvc.spinnerDeactivate();
+			}),
+		);
+	}
 }

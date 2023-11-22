@@ -212,7 +212,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			.pipe(
 				map((value) => {
 					if (value?.proceed) {
-						return [...this.selectedUserIds.map((id) => ({ id: id, status: value.newStatus as number }))];
+						return [...this.selectedUserIds.map((id) => ({ id, status: value.newStatus as number }))];
 					}
 
 					return [];
@@ -459,7 +459,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				if (user.status === 1) status = this.translate.instant('Active');
 				if (user.status === 0) status = this.translate.instant('Inactive');
 				return (
-					(user.firstname?.toLowerCase() + ' ' + user.lastname?.toLowerCase())?.includes(searchText) ||
+					`${user.firstname?.toLowerCase()} ${user.lastname?.toLowerCase()}`?.includes(searchText) ||
 					user.firstname?.toLowerCase()?.includes(searchText) ||
 					user.lastname?.toLowerCase()?.includes(searchText) ||
 					user.email?.toLowerCase()?.includes(searchText) ||

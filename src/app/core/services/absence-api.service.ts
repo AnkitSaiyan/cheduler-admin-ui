@@ -134,7 +134,8 @@ export class AbsenceApiService {
 			return this.http
 				.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getroomabsencelist`, { params })
 				.pipe(tap(() => this.loaderSvc.deactivate()));
-		} else if (absenceType === ABSENCE_TYPE_ARRAY[1]) {
+		}
+		if (absenceType === ABSENCE_TYPE_ARRAY[1]) {
 			return this.http
 				.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getstaffabsencelist`, { params })
 				.pipe(tap(() => this.loaderSvc.deactivate()));
@@ -160,6 +161,7 @@ export class AbsenceApiService {
 			.get<BaseResponse<Absence[]>>(`${environment.schedulerApiUrl}/absences/getstaffabsence`, { params })
 			.pipe(tap(() => this.loaderSvc.deactivate()));
 	}
+
 	private fetchAllAbsenceHolidayForCalendar(fromDate: string, toDate: string): Observable<BaseResponse<Absence[]>> {
 		this.loaderSvc.activate();
 		const params = { toDate, fromDate };

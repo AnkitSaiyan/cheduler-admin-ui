@@ -22,12 +22,12 @@ import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { NextSlotOpenPercentageData, PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { environment } from 'src/environments/environment';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 import { LoaderService } from './loader.service';
 import { RepeatType } from '../../shared/models/absence.model';
 import { ShareDataService } from './share-data.service';
 import { Translate } from '../../shared/models/translate.model';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
-import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 
 @Injectable({
 	providedIn: 'root',
@@ -47,9 +47,13 @@ export class PrioritySlotApiService extends DestroyableComponent {
 			value: RepeatType.Monthly,
 		},
 	];
+
 	private readonly prioritySlots: string = `${environment.schedulerApiUrl}/priorityslot`;
+
 	private refreshPrioritySlots$$ = new Subject<void>();
+
 	private selectedLang$$ = new BehaviorSubject<string>('');
+
 	private pageNo$$ = new BehaviorSubject<number>(1);
 
 	constructor(
@@ -165,8 +169,8 @@ export class PrioritySlotApiService extends DestroyableComponent {
 
 	public savePrioritySlot$(requestData: PrioritySlot) {
 		this.loaderSvc.activate();
-		let { id, ...restData } = requestData;
-		let queryParams = new HttpParams();
+		const { id, ...restData } = requestData;
+		const queryParams = new HttpParams();
 		queryParams.append('id', 0);
 		requestData.id = id;
 
@@ -185,8 +189,8 @@ export class PrioritySlotApiService extends DestroyableComponent {
 
 	public updatePrioritySlot$(requestData: PrioritySlot) {
 		this.loaderSvc.activate();
-		let { id, ...restData } = requestData;
-		let queryParams = new HttpParams();
+		const { id, ...restData } = requestData;
+		const queryParams = new HttpParams();
 		queryParams.append('id', String(id));
 		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}?id=${id}`, restData).pipe(
 			map((response) => response.data),
@@ -252,43 +256,3 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		this.refreshPrioritySlots$$.next();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -60,21 +60,31 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 	public prioritySlotForm!: FormGroup;
 
 	public radiologist$$ = new BehaviorSubject<NameValue[] | null>(null);
+
 	public submitting$$ = new BehaviorSubject<boolean>(false);
+
 	public prioritySlot$$ = new BehaviorSubject<PrioritySlot | null | undefined>(null);
 
 	public modalData!: { edit: boolean; prioritySlotDetails: PrioritySlot };
+
 	public priorityType = PriorityType;
+
 	public repeatTypes: any[] = [];
+
 	public startTimes: NameValue[];
+
 	public endTimes: NameValue[];
+
 	public statuses = Statuses;
+
 	public repeatEvery!: any;
+
 	public repeatTypeToName = {
 		daily: 'Days',
 		weekly: 'Weeks',
 		monthly: 'Months',
 	};
+
 	public minFromDate = new Date();
 
 	@ViewChild('repeatFrequency')

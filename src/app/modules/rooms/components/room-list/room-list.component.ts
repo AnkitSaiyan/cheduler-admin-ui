@@ -5,6 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CheckboxComponent, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { TranslateService } from '@ngx-translate/core';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getEnums';
@@ -16,14 +21,9 @@ import { DownloadAsType, DownloadService } from '../../../../core/services/downl
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room, UpdateRoomPlaceInAgendaRequestData } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
-import { TranslateService } from '@ngx-translate/core';
 import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { Permission } from 'src/app/shared/models/permission.model';
-import { PermissionService } from 'src/app/core/services/permission.service';
-import { UserRoleEnum } from 'src/app/shared/models/user.model';
-import {PaginationData} from "../../../../shared/models/base-response.model";
+import { PaginationData } from '../../../../shared/models/base-response.model';
 
 @Component({
 	selector: 'dfm-room-list',
@@ -94,12 +94,12 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 		super();
 		this.rooms$$ = new BehaviorSubject<any[]>([]);
 		this.filteredRooms$$ = new BehaviorSubject<any[]>([]);
-    this.roomApiSvc.pageNo = 1;
+		this.roomApiSvc.pageNo = 1;
 	}
 
 	public ngOnInit(): void {
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (items) => (this.downloadItems = items)
+			next: (items) => (this.downloadItems = items),
 		});
 
 		this.rooms$$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -112,39 +112,36 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
-				next:
-					(roomsBase) => {
-						if (this.paginationData && this.paginationData.pageNo < roomsBase?.metaData?.pagination.pageNo) {
-							this.rooms$$.next([...this.rooms$$.value, ...roomsBase.data]);
-						} else {
-							this.rooms$$.next(roomsBase.data);
-						}
-						this.paginationData = roomsBase?.metaData?.pagination  || 1;
-						this.mapRoomPlaceInAgenda();
-						this.loading$$.next(false);
-					},
+				next: (roomsBase) => {
+					if (this.paginationData && this.paginationData.pageNo < roomsBase?.metaData?.pagination.pageNo) {
+						this.rooms$$.next([...this.rooms$$.value, ...roomsBase.data]);
+					} else {
+						this.rooms$$.next(roomsBase.data);
+					}
+					this.paginationData = roomsBase?.metaData?.pagination || 1;
+					this.mapRoomPlaceInAgenda();
+					this.loading$$.next(false);
+				},
 				error: () => {
 					this.rooms$$.next([]);
-					this.loading$$.next(false)
+					this.loading$$.next(false);
 				},
 			});
 
+		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
+			this.searchControl.setValue(search);
+			if (search) {
+				this.handleSearch(search.toLowerCase());
+			} else {
+				this.filteredRooms$$.next([...this.rooms$$.value]);
+			}
+		});
 
-      this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
-				this.searchControl.setValue(search);
-				if (search) {
-					this.handleSearch(search.toLowerCase());
-				} else {
-					this.filteredRooms$$.next([...this.rooms$$.value]);
-				}
-			});
-
-			this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
-				next: (searchText) => {
-					this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
-				},
-			});
-
+		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
+			next: (searchText) => {
+				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
+			},
+		});
 
 		this.downloadDropdownControl.valueChanges
 			.pipe(
@@ -176,14 +173,14 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 						this.notificationSvc.showNotification(Translate.DownloadSuccess(value)[this.selectedLang]);
 					}
 					this.clearDownloadDropdown();
-				}
+				},
 			});
 
 		this.clearSelected$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: () => {
 				this.selectedRooms = [];
 				this.toggleCheckboxes();
-			}
+			},
 		});
 
 		this.afterBannerClosed$$
@@ -207,13 +204,13 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 				next: (value) => {
 					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
 					this.clearSelected$$.next();
-				}
+				},
 			});
 
 		interval(0)
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe({
-				next: () => this.closeMenus()
+				next: () => this.closeMenus(),
 			});
 
 		combineLatest([this.shareDataSvc.getLanguage$(), this.permissionSvc.permissionType$])
@@ -240,7 +237,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 						default:
 							this.statuses = StatusesNL;
 					}
-				}
+				},
 			});
 	}
 
@@ -509,6 +506,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 			this.roomPlaceInToIndexMap.set(+room.placeInAgenda, index + 1);
 		});
 	}
+
 	private clearDownloadDropdown() {
 		const timeout = setTimeout(() => {
 			this.downloadDropdownControl.setValue('');

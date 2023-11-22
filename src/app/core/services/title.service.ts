@@ -35,4 +35,3 @@ export class AppTitlePrefix extends TitleStrategy implements OnDestroy {
 		this.destroy$$.complete();
 	}
 }
-

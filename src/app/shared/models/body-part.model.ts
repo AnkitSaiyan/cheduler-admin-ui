@@ -6,5 +6,3 @@ export interface BodyPart {
 	isMale: boolean;
 	isFemale: boolean;
 }
-
-

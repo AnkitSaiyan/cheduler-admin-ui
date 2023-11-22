@@ -3,11 +3,11 @@ import { Injectable } from '@angular/core';
 import { map, Observable, of, Subject, combineLatest, startWith, switchMap, tap, catchError } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 import { PracticeAvailabilityServer } from '../../shared/models/practice.model';
 import { TimeSlot } from '../../shared/models/calendar.model';
 import { LoaderService } from './loader.service';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
-import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 
 @Injectable({
 	providedIn: 'root',

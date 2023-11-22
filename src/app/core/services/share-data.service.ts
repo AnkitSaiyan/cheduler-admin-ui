@@ -122,6 +122,7 @@ export class ShareDataService {
 	public getLanguage$(): Observable<string> {
 		return this.language$$.asObservable();
 	}
+
 	public getLanguage(): string {
 		return this.language$$.value;
 	}
@@ -133,7 +134,7 @@ export class ShareDataService {
 	private fetchPatients(): Observable<any> {
 		return this.http.get<BaseResponse<any>>(`${this.patientsUrl}`).pipe(
 			map((response) => {
-				return response['data'];
+				return response.data;
 			}),
 		);
 	}

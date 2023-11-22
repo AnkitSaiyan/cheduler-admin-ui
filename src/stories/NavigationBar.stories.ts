@@ -4,23 +4,23 @@ import { Story, Meta } from '@storybook/angular/types-6-0';
 import { IconCoreModule, IconModule, NavigationBarModule, NavigationBarComponent } from 'diflexmo-angular-design';
 
 export default {
-  title: 'Design System/Navigation Bar',
-  component: NavigationBarComponent,
-  decorators: [
-    moduleMetadata({
-      imports: [IconModule, IconCoreModule, NavigationBarModule, RouterTestingModule],
-    }),
-  ],
-  argTypes: {
-    isCollapsed: {
-      type: 'boolean',
-    },
-  },
+	title: 'Design System/Navigation Bar',
+	component: NavigationBarComponent,
+	decorators: [
+		moduleMetadata({
+			imports: [IconModule, IconCoreModule, NavigationBarModule, RouterTestingModule],
+		}),
+	],
+	argTypes: {
+		isCollapsed: {
+			type: 'boolean',
+		},
+	},
 } as Meta;
 
 const NavigationTemplate: Story<NavigationBarComponent> = (args: NavigationBarComponent) => ({
-  props: args,
-  template: `<dfm-navigation-bar [content]="content">
+	props: args,
+	template: `<dfm-navigation-bar [content]="content">
   <ng-template #navigationItems>
     <dfm-navigation-item icon="home-03" title="Dashboard" routerLink="/" [exact]="true"></dfm-navigation-item>
     <dfm-navigation-item icon="anchor" title="Vessels" routerLink="/vessels"></dfm-navigation-item>
@@ -43,5 +43,5 @@ const NavigationTemplate: Story<NavigationBarComponent> = (args: NavigationBarCo
 
 export const NavigationBar = NavigationTemplate.bind({});
 NavigationBar.args = {
-  isCollapsed: false,
+	isCollapsed: false,
 };

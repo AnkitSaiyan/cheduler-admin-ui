@@ -4,57 +4,49 @@ import { GeneralUserPermission, ReaderPermission } from '../models/permission.mo
 import { UserRoleEnum } from '../models/user.model';
 
 @Directive({
-  selector: '[dfmPermitted]',
+	selector: '[dfmPermitted]',
 })
 export class IsPermittedDirective implements OnInit {
-  private elementPermission: string[] = [];
+	private elementPermission: string[] = [];
 
-  @Input() set dfmPermitted(permission: string | string[]) {
-    this.elementPermission = Array.isArray(permission) ? permission : [permission];
-    this.displayTemplate();
-  }
+	@Input() set dfmPermitted(permission: string | string[]) {
+		this.elementPermission = Array.isArray(permission) ? permission : [permission];
+		this.displayTemplate();
+	}
 
-  constructor(private templateRef: TemplateRef<unknown>, private vcr: ViewContainerRef, public permissionSvc: PermissionService) {}
+	constructor(private templateRef: TemplateRef<unknown>, private vcr: ViewContainerRef, public permissionSvc: PermissionService) {}
 
-  ngOnInit(): void {
-    this.displayTemplate();
-  }
+	ngOnInit(): void {
+		this.displayTemplate();
+	}
 
-  private displayTemplate() {
-    this.permissionSvc.permissionType$.subscribe({
-      next: (permissionType) => {
-        this.vcr.clear();
+	private displayTemplate() {
+		this.permissionSvc.permissionType$.subscribe({
+			next: (permissionType) => {
+				this.vcr.clear();
 
-        switch (permissionType) {
-          case UserRoleEnum.GeneralUser: {
-            if (this.elementPermission.some((permission) => Object.values(GeneralUserPermission).find((value) => value === permission))) {
-              this.createEmbeddedView();
-            }
-            break;
-          }
-          case UserRoleEnum.Reader: {
-            if (this.elementPermission.some((permission) => Object.values(ReaderPermission).find((value) => value === permission))) {
-              this.createEmbeddedView();
-            }
-            break;
-          }
-          default:
-            this.createEmbeddedView();
-            break;
-        }
-      }
-    });
-  }
+				switch (permissionType) {
+					case UserRoleEnum.GeneralUser: {
+						if (this.elementPermission.some((permission) => Object.values(GeneralUserPermission).find((value) => value === permission))) {
+							this.createEmbeddedView();
+						}
+						break;
+					}
+					case UserRoleEnum.Reader: {
+						if (this.elementPermission.some((permission) => Object.values(ReaderPermission).find((value) => value === permission))) {
+							this.createEmbeddedView();
+						}
+						break;
+					}
+					default:
+						this.createEmbeddedView();
+						break;
+				}
+			},
+		});
+	}
 
-  private createEmbeddedView() {
-    this.vcr.createEmbeddedView(this.templateRef);
-  }
+	private createEmbeddedView() {
+		this.vcr.createEmbeddedView(this.templateRef);
+	}
 }
-
-
-
-
-
-
-
-

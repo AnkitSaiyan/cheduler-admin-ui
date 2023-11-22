@@ -18,8 +18,7 @@ export class HeaderInterceptor implements HttpInterceptor {
 		const sessionExp = localStorage.getItem('sessionExp');
 
 		if (sessionExp && +sessionExp < new Date().getTime()) {
-
-			localStorage.setItem('isSessionExpired', 'true')
+			localStorage.setItem('isSessionExpired', 'true');
 			setTimeout(() => {
 				this.userSvc.logout();
 			}, 1500);
@@ -38,5 +37,3 @@ export class HeaderInterceptor implements HttpInterceptor {
 		return next.handle(newRequest);
 	}
 }
-
-

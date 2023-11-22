@@ -1,14 +1,14 @@
-import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap, take, tap, throwError} from 'rxjs';
-import {AuthUser} from "../../shared/models/user.model";
-import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
-import {UserManagementApiService} from "./user-management-api.service";
-import {Router} from "@angular/router";
-import {InteractionType} from "@azure/msal-browser";
-import {PermissionService} from "./permission.service";
+import { Inject, Injectable } from '@angular/core';
+import { BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap, take, tap, throwError } from 'rxjs';
+import { MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
+import { Router } from '@angular/router';
+import { InteractionType } from '@azure/msal-browser';
 import { EXT_Patient_Tenant } from 'src/app/shared/utils/const';
-import { NotificationDataService } from './notification-data.service';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { PermissionService } from './permission.service';
+import { NotificationDataService } from './notification-data.service';
+import { UserManagementApiService } from './user-management-api.service';
+import { AuthUser } from '../../shared/models/user.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -98,25 +98,3 @@ export class UserService {
 		this.permissionSvc.removePermissionType();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
