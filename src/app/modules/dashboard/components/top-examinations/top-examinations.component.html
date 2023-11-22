@@ -1,4 +1,4 @@
-<div class="d-flex flex-column dfm-gap-8 dfm-p-16 exams-list-wrapper">
+<div class="d-flex flex-column dfm-gap-8 dfm-p-16 top-referring-doctors-wrapper">
   <section class="d-flex justify-content-between align-items-center dfm-gap-32 dfm-mb-16">
     <header class="d-flex align-items-center dfm-gap-8">
       <div class="dfm-button-gray-400">
@@ -8,11 +8,18 @@
     </header>
   </section>
 
-  <section class="d-flex flex-column dfm-gap-8" *ngIf="filteredExams$$ | async as topExaminations">
-    <div *ngFor="let exam of topExaminations" class="d-flex dfm-gap-8 align-items-center">
-      <span>{{ exam.name }}</span>
+  <section class="d-flex flex-column dfm-gap-8" *ngIf="filteredExams$$ | async as exams">
+    <div *ngFor="let exam of exams" class="d-flex dfm-gap-12 align-items-center">
+      <div class="rounded-circle avatar-container">
+        <div class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+          {{ exam.name.toString()[0].toUpperCase() }}
+        </div>
+      </div>
+      <div class="text-sm d-flex flex-column">
+        <span class="font-weight-medium">{{ exam.name }}</span>
+      </div>
     </div>
-    <div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!topExaminations.length">
+    <div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!exams.length">
       {{ 'NoDataFound' | translate }}
     </div>
   </section>
