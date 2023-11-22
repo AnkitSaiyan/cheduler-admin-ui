@@ -59,16 +59,17 @@
             </div>
           </mat-menu>
         </div>
-        <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown" *ngIf="absenceType !== ABSENCE_TYPE_ARRAY[2]" >
-          <dfm-input-dropdown
-            size="sm"
-            [formControl]="calendarViewFormControl"
-            [showDescription]="false"
-            [items]="calendarViewType"
-          ></dfm-input-dropdown>
-        </div>
       </div>
 
+      <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown" *ngIf="absenceType !== ABSENCE_TYPE_ARRAY[2]" >
+        <dfm-input-dropdown
+          size="sm"
+          [formControl]="calendarViewFormControl"
+          [showDescription]="false"
+          [items]="calendarViewType"
+        ></dfm-input-dropdown>
+      </div>
+      
       <div class="d-flex dfm-gap-4">
         <div class="flex-1 calendar-date-buttons">
           <div class="d-flex gap-2 m-t-2">
