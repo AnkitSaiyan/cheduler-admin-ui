@@ -39,6 +39,11 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Inactief',
 	},
 
+	Default: {
+		[ENG_BE]: 'Default',
+		[DUTCH_BE]: 'Standaard',
+	},
+
 	Telephone: {
 		[ENG_BE]: 'Telephone',
 		[DUTCH_BE]: 'Telefoon',
