@@ -56,7 +56,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 
 	@Input()
-	public dataGroupedByDateAndTime: { [key: string]: any[][] } = {};
+	public appointmentData: { [key: string]: any[][] } = {};
 
 	@Input()
 	public absenceData: { [key: string]: any[] } = {};

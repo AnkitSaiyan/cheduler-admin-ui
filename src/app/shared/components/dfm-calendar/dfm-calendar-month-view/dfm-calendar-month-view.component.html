@@ -26,7 +26,7 @@
                     <b>{{day}}</b>
                   </span>
                   <div class="dfm-card-container">
-                    <ng-container *ngFor="let data of dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" >
+                    <ng-container *ngFor="let data of appointmentData[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" >
                       <ng-template #appointmentDetails>
                         <div class="calendar-week-view-event-details-expanded"
                         >
@@ -95,7 +95,7 @@
                     <ng-container *ngIf="(holidayData$$ | async) as holiday ">
 
                       <ng-container *ngFor="let data of holiday[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" >
-                        <div class="calender-month-view-day-exam-event-details holiday" 
+                        <div class="calender-month-view-day-exam-event-details holiday"
                         >
                           <span class="calender-month-view-day-exam-event-title text-truncate ">
 
@@ -132,7 +132,7 @@
                           </div>
                         </div>
                       </ng-template>
-                      <div class="calender-month-view-day-exam-event-details" [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" 
+                      <div class="calender-month-view-day-exam-event-details" [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body"
                       [ngClass]="{
                         'affectedAppointments': data.impactedAppointmentDetails?.length
                       }"
@@ -153,7 +153,7 @@
             </ng-template>
 
 
-            <ng-container *ngFor="let data of dataGroupedByDate[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]">
+            <ng-container *ngFor="let data of appointmentData[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]">
               <ng-template #appointmentDetails>
                 <div class="calendar-week-view-event-details-expanded"
                 >
@@ -263,7 +263,7 @@
                 </div>
               </ng-template>
 
-              <div class="calender-month-view-day-exam-event-details"  [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body" 
+              <div class="calender-month-view-day-exam-event-details"  [ngbPopover]="absenceDetails"  triggers="click" [autoClose]="'outside'" container="body"
               [ngClass]="{
                 'affectedAppointments': data.impactedAppointmentDetails?.length
               }"

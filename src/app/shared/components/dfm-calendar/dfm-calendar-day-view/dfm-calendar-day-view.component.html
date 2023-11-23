@@ -373,7 +373,7 @@
                   <div class="calender-day-view-body-grid-absolute"></div>
 
                   <div class="calender-day-view-body-events-container" role="presentation" #eventsContainer (dblclick)="addAppointment($event, eventsContainer)" >
-                    <ng-container *ngIf="dataGroupedByDateAndRoom[dateString] as dataGroupedByRoom">
+                    <ng-container *ngIf="appointmentData[dateString] as dataGroupedByRoom">
                       <ng-container
                         *ngIf="dataGroupedByRoom && dataGroupedByRoom[h.value] as roomData">
                         <ng-container
