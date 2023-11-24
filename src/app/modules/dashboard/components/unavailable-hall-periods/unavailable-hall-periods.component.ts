@@ -186,7 +186,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 			}
 
 			this.filteredRoomAbsence$$.value.forEach((ap: any) => {
-				dataString += `${ap?.roomName?.toString()}\t${this.utcToLocalPipe.transform(ap?.startDate?.toString())}\t\t${this.utcToLocalPipe.transform(ap?.endDate?.toString())}\t\t${ap.absenceName.toString()}\n`;
+				dataString += `${ap?.roomName?.toString()}\t${this.utcToLocalPipe.transform(ap?.startDate?.toString())}\t\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endDate?.toString()))}\t\t${ap.absenceName.toString()}\n`;
 			});
 
 			this.clipboardData = dataString;

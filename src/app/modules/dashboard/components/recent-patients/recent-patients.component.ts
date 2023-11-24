@@ -184,7 +184,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 			}
 
 			this.filteredRecentPatients$$.value.forEach((ap: any) => {
-				dataString += `${ap?.patientFname?.toString()}\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${ap.startedAt.toString()}\n`;
+				dataString += `${ap?.patientFname?.toString()}\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap.startedAt.toString()))}\n`;
 			});
 
 			this.clipboardData = dataString;
