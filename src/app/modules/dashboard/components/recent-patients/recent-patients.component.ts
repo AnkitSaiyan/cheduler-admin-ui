@@ -130,7 +130,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 						ap?.patientFname?.toString()+ ' ' + ap?.patientLname.toString(),
 						ap?.patientEmail?.toString() || '-',
 						ap?.doctor.toString() || '-',
-						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap.startedAt.toString())) ?? '',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap.startedAt.toString())) || '-',
 					]),
 					'recent-patients',
 				);

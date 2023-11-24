@@ -439,8 +439,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public copyToClipboard() {
 		try {
-			let dataString = `Started At\t\t\tEnded At\t\t\t`;
-			dataString += `${this.tableHeaders
+			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t\t')}\n`;
@@ -452,7 +451,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			}
 
 			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
-				dataString += `${this.appointmentApiSvc.convertUtcToLocalDate(ap?.startedAt)}\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.endedAt)}\t${this.titleCasePipe.transform(
+				dataString += `${this.appointmentApiSvc.convertUtcToLocalDate(ap?.startedAt)}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.endedAt)}\t\t${this.titleCasePipe.transform(
 					ap?.patientFname,
 				)} ${this.titleCasePipe.transform(ap?.patientLname)}\t\t${this.titleCasePipe.transform(
 					ap?.doctor,

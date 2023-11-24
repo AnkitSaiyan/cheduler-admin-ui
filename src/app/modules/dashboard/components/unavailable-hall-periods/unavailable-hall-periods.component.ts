@@ -135,7 +135,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endDate?.toString())) ?? '',
 						ap?.absenceName?.toString(),
 					]),
-					'unavailable-hall-period',
+					'unavailable-rooms-period',
 				);
 
 				if (value !== 'PRINT') {

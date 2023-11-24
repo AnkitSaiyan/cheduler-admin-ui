@@ -363,7 +363,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			}
 
 			this.filteredUsers$$.value.forEach((user: UserBase) => {
-				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user?.telephone ?? '—'}\t${user.userType ?? '—'}\t${
+				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.userType ?? '—'}\t${
 					StatusToName[+user.status]
 				}\n`;
 			});
