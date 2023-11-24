@@ -443,19 +443,21 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t\t')}\n`;
+			
+			const data: any[] = this.isUpcomingAppointmentsDashboard ? this.upcomingTableData$$.value.items : this.pastTableData$$.value.items;
 
-			if (!this.filteredAppointments$$.value.length) {
+			if (!data.length) {
 				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
 
-			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
+			data.forEach((ap: Appointment) => {
 				dataString += `${this.appointmentApiSvc.convertUtcToLocalDate(ap?.startedAt)}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.endedAt)}\t\t${this.titleCasePipe.transform(
 					ap?.patientFname,
 				)} ${this.titleCasePipe.transform(ap?.patientLname)}\t\t${this.joinWithAndPipe.transform(ap.exams, 'name')}\t\t${this.titleCasePipe.transform(ap?.doctor
 					// eslint-disable-next-line no-unsafe-optional-chaining
-				)}\t\t${ap.documentCount ? 'Yes' : 'No'}\t\t${ap?.id.toString()}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.createdAt)}\t\t${ap?.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap?.approval]}\n`;
+				) ||'-'}\t\t${ap.documentCount ? 'Yes' : 'No'}\t\t${ap?.id.toString()}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.createdAt)}\t\t${ap?.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap?.approval]}\n`;
 			});
 
 			this.clipboardData = dataString;
