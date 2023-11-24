@@ -70,7 +70,7 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 			setTimeout(() => {
 				this.radiologistFormControl.setValue(selected);
-			}, 200);
+			}, 500);
 		}
 	}
 
