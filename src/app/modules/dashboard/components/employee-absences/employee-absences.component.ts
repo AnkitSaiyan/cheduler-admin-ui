@@ -116,7 +116,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 			}
 
 			this.filteredAbsence$$.value.forEach((absence: Absence) => {
-				dataString += `${absence.name}\t${absence.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
+				dataString += `${absence.name}\t${absence.startedAt}\t${absence.endedAt}\n`;
 			});
 
 			this.clipboardData = dataString;

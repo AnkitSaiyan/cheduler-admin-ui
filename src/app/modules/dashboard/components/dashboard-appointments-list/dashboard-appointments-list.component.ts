@@ -453,8 +453,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
 				dataString += `${this.appointmentApiSvc.convertUtcToLocalDate(ap?.startedAt)}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.endedAt)}\t\t${this.titleCasePipe.transform(
 					ap?.patientFname,
-				)} ${this.titleCasePipe.transform(ap?.patientLname)}\t\t${this.titleCasePipe.transform(
-					ap?.doctor,
+				)} ${this.titleCasePipe.transform(ap?.patientLname)}\t\t${this.joinWithAndPipe.transform(ap.exams, 'name')}\t\t${this.titleCasePipe.transform(ap?.doctor
 					// eslint-disable-next-line no-unsafe-optional-chaining
 				)}\t\t${ap.documentCount ? 'Yes' : 'No'}\t\t${ap?.id.toString()}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.createdAt)}\t\t${ap?.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap?.approval]}\n`;
 			});

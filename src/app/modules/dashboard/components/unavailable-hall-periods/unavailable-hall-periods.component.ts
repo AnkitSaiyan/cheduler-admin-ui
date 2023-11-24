@@ -131,8 +131,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 					this.tableHeaders.map(({ title }) => title),
 					this.filteredRoomAbsence$$.value.map((ap: any) => [
 						ap?.roomName?.toString(),
-						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startDate?.toString())) ?? '',
-						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endDate?.toString())) ?? '',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startDate?.toString())) || '-',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endDate?.toString())) || '-',
 						ap?.absenceName?.toString(),
 					]),
 					'unavailable-rooms-period',
@@ -173,10 +173,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 	public copyToClipboard() {
 		try {
-			let dataString = `Room Name\t\t\tStarted At\t\t\t`;
-			dataString += `${this.tableHeaders
+			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
-				.slice(2)
 				.join('\t\t')}\n`;
 
 			if (!this.filteredRoomAbsence$$.value.length) {
@@ -186,7 +184,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 			}
 
 			this.filteredRoomAbsence$$.value.forEach((ap: any) => {
-				dataString += `${ap?.roomName?.toString()}\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startDate?.toString()))}\t\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endDate?.toString()))}\t\t${ap.absenceName.toString()}\n`;
+				dataString += `${ap?.roomName?.toString()}\t\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startDate?.toString()))}\t\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endDate?.toString()))}\t\t${ap.absenceName.toString()}\n`;
 			});
 
 			this.clipboardData = dataString;

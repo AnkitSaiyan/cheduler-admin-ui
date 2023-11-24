@@ -444,8 +444,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public copyToClipboard() {
 		try {
-			let dataString = `Started At\t\t\tEnded At\t\t\t`;
-			dataString += `${this.tableHeaders
+			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t\t')}\n`;
@@ -457,11 +456,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			}
 
 			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
-				dataString += `${this.appointmentApiSvc.convertUtcToLocalDate(ap.startedAt)}\t${this.appointmentApiSvc.convertUtcToLocalDate(ap.endedAt)}\t${this.titleCasePipe.transform(
+				dataString += `${this.appointmentApiSvc.convertUtcToLocalDate(ap.startedAt)}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap.endedAt)}\t\t${this.titleCasePipe.transform(
 					ap.patientFname,
-				)} ${this.titleCasePipe.transform(ap.patientLname)}\t\t${this.titleCasePipe.transform(
-					ap.doctor,
-				)}\t\t${ap.documentCount ? 'Yes' : 'No'}\t\t${ap.id.toString()}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap.createdAt)}\t\t${ap.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap.approval]}\n`;
+				)} ${this.titleCasePipe.transform(ap.patientLname)}\t\t${this.joinWithAndPipe.transform(ap.exams, 'name')}\t\t${this.titleCasePipe.transform(
+					ap.doctor)}\t\t${ap.documentCount ? 'Yes' : 'No'}\t\t${ap.id.toString()}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap.createdAt)}\t\t${ap.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap.approval]}\n`;
 			});
 
 			this.clipboardData = dataString;

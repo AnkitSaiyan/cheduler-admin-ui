@@ -171,10 +171,8 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
 	public copyToClipboard() {
 		try {
-			let dataString = `Patient Name\t\t\tEmail Id\t\t\t`;
-			dataString += `${this.tableHeaders
+			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
-				.slice(2)
 				.join('\t\t')}\n`;
 
 			if (!this.filteredRecentPatients$$.value.length) {
@@ -184,7 +182,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 			}
 
 			this.filteredRecentPatients$$.value.forEach((ap: any) => {
-				dataString += `${ap?.patientFname?.toString()}\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap.startedAt.toString()))}\n`;
+				dataString += `${ap?.patientFname?.toString()+ ' ' + ap?.patientLname?.toString()}\t\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap.startedAt.toString()))}\n`;
 			});
 
 			this.clipboardData = dataString;
