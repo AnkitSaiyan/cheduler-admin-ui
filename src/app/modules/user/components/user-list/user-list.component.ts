@@ -195,7 +195,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 							u.firstname,
 							u.lastname,
 							u.email,
-							...this.roleNamePipe.transform(this.userApiSvc.userIdToRoleMap.get(u.id.toString())),
+							this.roleNamePipe.transform(this.userApiSvc.userIdToRoleMap.get(u.id.toString())) || '-',
 							Translate[StatusToName[+u.status]][this.selectedLang],
 						]),
 						'users',

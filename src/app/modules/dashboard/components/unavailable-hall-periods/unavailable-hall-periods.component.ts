@@ -131,8 +131,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 					this.tableHeaders.map(({ title }) => title),
 					this.filteredRoomAbsence$$.value.map((ap: any) => [
 						ap?.roomName?.toString(),
-						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
-						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startDate?.toString())) ?? '',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endDate?.toString())) ?? '',
 						ap?.absenceName?.toString(),
 					]),
 					'unavailable-hall-period',
@@ -186,7 +186,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 			}
 
 			this.filteredRoomAbsence$$.value.forEach((ap: any) => {
-				dataString += `${ap?.roomName?.toString()}\t${ap?.startDate?.toString()}\t\t${ap.endDate.toString()}\t\t${ap.absenceName.toString()}\n`;
+				dataString += `${ap?.roomName?.toString()}\t${this.utcToLocalPipe.transform(ap?.startDate?.toString())}\t\t${this.utcToLocalPipe.transform(ap?.endDate?.toString())}\t\t${ap.absenceName.toString()}\n`;
 			});
 
 			this.clipboardData = dataString;

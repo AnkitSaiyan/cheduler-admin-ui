@@ -21,9 +21,10 @@ import { Translate } from '../../shared/models/translate.model';
 import { SchedulerUser, User } from '../../shared/models/user.model';
 import { DashboardApiService } from './dashboard-api.service';
 import { LoaderService } from './loader.service';
-import { PhysicianApiService } from './physician.api.service';
 import { ShareDataService } from './share-data.service';
 import { UserManagementApiService } from './user-management-api.service';
+import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 
 @Injectable({
 	providedIn: 'root',
@@ -93,13 +94,14 @@ export class AppointmentApiService extends DestroyableComponent {
 	}
 
 	constructor(
-		private physicianApiSvc: PhysicianApiService,
 		private http: HttpClient,
 		private dashboardApiService: DashboardApiService,
 		private loaderSvc: LoaderService,
 		private shareDataSvc: ShareDataService,
 		private userManagementSvc: UserManagementApiService,
 		private datePipe: DatePipe,
+		private defaultDatePipe: DefaultDatePipe,
+		private utcToLocalPipe: UtcToLocalPipe,
 	) {
 		super();
 		this.shareDataSvc
@@ -532,5 +534,9 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	public refresh(): void {
 		this.refreshAppointment$$.next();
+	}
+
+	public convertUtcToLocalDate(date: string | Date): string {
+		return date ? this.defaultDatePipe.transform(this.utcToLocalPipe.transform(date.toString())) : '-'
 	}
 }

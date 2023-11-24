@@ -295,7 +295,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 			}
 
 			this.filteredAbsences$$.value.forEach((absence: Absence) => {
-				dataString += `${absence.name}\t${absence?.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
+				dataString += `${absence.name}\t${this.utcToLocalPipe.transform(this.utcToLocalPipe.transform(absence?.startedAt?.toString()))}\t${this.utcToLocalPipe.transform(this.utcToLocalPipe.transform(absence?.endedAt?.toString()))}\t${absence.info}\n`;
 			});
 
 			this.clipboardData = dataString;

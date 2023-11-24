@@ -23,8 +23,6 @@ import { AppointmentAdvanceSearchComponent } from './appointment-advance-search/
 import { TranslateService } from '@ngx-translate/core';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { Permission } from 'src/app/shared/models/permission.model';
-import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
@@ -163,8 +161,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		private shareDataSvc: ShareDataService,
 		private translate: TranslateService,
 		public permissionSvc: PermissionService,
-		private defaultDatePipe: DefaultDatePipe,
-		private utcToLocalPipe: UtcToLocalPipe,
 		private joinWithAndPipe: JoinWithAndPipe,
 		private translatePipe: TranslatePipe,
 		private signalRSvc: SignalrService,
@@ -282,13 +278,14 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 						value as DownloadAsType,
 						this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
 						data.map((ap: Appointment) => [
-							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
-							this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
+							this.appointmentApiSvc.convertUtcToLocalDate(ap?.startedAt),
+							this.appointmentApiSvc.convertUtcToLocalDate(ap?.endedAt),
 							`${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
 							this.joinWithAndPipe.transform(ap.exams, 'name'),
 							this.titleCasePipe.transform(ap?.doctor) || '-',
+							ap.documentCount ? 'Yes' : 'No',
 							ap?.id.toString(),
-							ap.createdAt.toString(),
+							this.appointmentApiSvc.convertUtcToLocalDate(ap?.createdAt),
 							this.translatePipe.transform(AppointmentStatusToName[+ap?.approval]),
 						]),
 						'appointments',
@@ -455,12 +452,12 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			}
 
 			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
-				dataString += `${ap?.startedAt?.toString()}\t${ap?.endedAt?.toString()}\t${this.titleCasePipe.transform(
+				dataString += `${this.appointmentApiSvc.convertUtcToLocalDate(ap?.startedAt)}\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.endedAt)}\t${this.titleCasePipe.transform(
 					ap?.patientFname,
 				)} ${this.titleCasePipe.transform(ap?.patientLname)}\t\t${this.titleCasePipe.transform(
 					ap?.doctor,
 					// eslint-disable-next-line no-unsafe-optional-chaining
-				)}\t\t${ap?.id.toString()}\t\t${ap.createdAt.toString()}\t\t${ap?.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap?.approval]}\n`;
+				)}\t\t${ap.documentCount ? 'Yes' : 'No'}\t\t${ap?.id.toString()}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.createdAt)}\t\t${ap?.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap?.approval]}\n`;
 			});
 
 			this.clipboardData = dataString;
@@ -472,7 +469,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		}
 	}
 
-	public navigateToView(e: TableItem, appointments: any[]) {
+	public navigateToView(e: TableItem) {
 		if (e?.id) {
 			localStorage.setItem('previousPagefromView', 'dashboard');
 			this.router.navigate([`/appointment/${e.id}/view`], { replaceUrl: true });

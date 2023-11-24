@@ -245,7 +245,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 			let dataString = `${this.columns.filter((value) => value !== 'Actions').join('\t')}\n`;
 
 			this.filteredPrioritySlots$$.value.forEach((prioritySlot: PrioritySlot) => {
-				dataString += `${prioritySlot.startedAt}\t${prioritySlot.endedAt ? prioritySlot.endedAt : prioritySlot.startedAt.slice(0, -9)}\t${
+				dataString += `${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(prioritySlot?.startedAt?.toString()))}\t${prioritySlot.endedAt ? this.defaultDatePipe.transform(this.utcToLocalPipe.transform(prioritySlot?.endedAt?.toString())) : prioritySlot.startedAt.slice(0, -9)}\t${
 					prioritySlot.priority
 				}\n`;
 			});

@@ -127,7 +127,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 					value as DownloadAsType,
 					this.tableHeaders.map(({ title }) => title).slice(0),
 					this.filteredRecentPatients$$.value.map((ap: any) => [
-						ap?.patientFname?.toString(),
+						ap?.patientFname?.toString()+ ' ' + ap?.patientLname.toString(),
 						ap?.patientEmail?.toString() || '-',
 						ap?.doctor.toString() || '-',
 						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap.startedAt.toString())) ?? '',

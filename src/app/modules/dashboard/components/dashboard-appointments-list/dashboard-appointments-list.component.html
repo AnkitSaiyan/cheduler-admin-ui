@@ -125,7 +125,7 @@
 			<section class="table-wrapper" *ngIf="(upcomingTableData$$ | async)?.items as appointments">
 				<dfm-table [items]="appointments" [selectable]="permissionSvc.isNotReader"
 					(selected)="handleCheckboxSelection($event)" [clearSelected$]="clearSelected$$" [rowClickable]="true"
-					(rowClicked)="navigateToView($event, appointments)" class="dfm-table-wrapper">
+					(rowClicked)="navigateToView($event)" class="dfm-table-wrapper">
 					<ng-template #headerRowTemplate>
 						<dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
 					</ng-template>
@@ -208,7 +208,7 @@
 			<section class="table-wrapper" *ngIf="(pastTableData$$ | async)?.items as appointments">
 				<dfm-table [items]="appointments"
 					(selected)="handleCheckboxSelection($event)" [rowClickable]="true"
-					(rowClicked)="navigateToView($event, appointments)" class="dfm-table-wrapper">
+					(rowClicked)="navigateToView($event)" class="dfm-table-wrapper">
 					<ng-template #headerRowTemplate>
 						<dfm-table-header-cell *ngFor="let column of manageActionColumn(columns)">{{ column | translate }}</dfm-table-header-cell>
 					</ng-template>
