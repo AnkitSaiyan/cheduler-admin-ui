@@ -29,6 +29,8 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 		this.dialogSvc.dialogData$.pipe(take(1)).subscribe((data: Appointment) => {
 			const allUsers = data?.exams?.[0]?.allUsers || [];
 			const users = data?.exams?.[0]?.users || [];
+			console.log("allUsers", allUsers, 'users', users);
+			
 			if (data.isOutside) {
 				this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 					next: (allUsers) => {
@@ -70,7 +72,7 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 			setTimeout(() => {
 				this.radiologistFormControl.setValue(selected);
-			}, 500);
+			}, 800);
 		}
 	}
 
