@@ -8,6 +8,7 @@ import { Appointment } from '../../../../shared/models/appointment.model';
 import { UserType } from '../../../../shared/models/user.model';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { UserApiService } from '../../../../core/services/user-api.service';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
 @Component({
 	selector: 'dfm-change-radiologist-modal',
@@ -27,7 +28,7 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 	public ngOnInit(): void {
 		this.dialogSvc.dialogData$.pipe(take(1)).subscribe((data: Appointment) => {
-			const allUsers = data?.exams?.[0]?.allUsers || [];
+			const allUsers = GeneralUtils.removeDuplicateData(data?.exams?.[0]?.resourcesBatch.reduce((acc: any[], val: any) => [...acc, ...val.users], []) || [], 'id');
 			const users = data?.exams?.[0]?.users || [];
 			console.log("allUsers", allUsers, 'users', users);
 			
@@ -72,7 +73,7 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 			setTimeout(() => {
 				this.radiologistFormControl.setValue(selected);
-			}, 800);
+			}, 200);
 		}
 	}
 
