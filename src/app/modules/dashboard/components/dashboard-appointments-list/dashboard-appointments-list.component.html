@@ -9,7 +9,7 @@
 					<span class="font-weight-medium">{{ 'AppointmentsList' | translate }}</span>
 				</header>
 				<div class="ap-li-section2-action-bar">
-					<dfm-button color="primary" size="md" class="text-nowrap" routerLink="/appointment/add"
+					<dfm-button *dfmPermitted="Permission.CreateAppointments" color="primary" size="md" class="text-nowrap" routerLink="/appointment/add"
 						[state]="{ comingFromRoute: 'dashboard' }">{{ 'AddAppointment' | translate }}
 					</dfm-button>
 				</div>
@@ -111,6 +111,7 @@
 				</div>
 
 				<dfm-button
+					*dfmPermitted="Permission.CreateAppointments"
 					color="primary"
 					size="md"
 					class="text-nowrap"
@@ -153,9 +154,10 @@
 								<input #fileInput type="file" class="hidden" accept="image/*, application/pdf"
 								(click)="$event.stopPropagation();"
 									(change)="uploadRefferingNote($event, item.id)" />
-								<span 
+								<ng-container *ngIf="!item.documentCount">
+									<span 
 								class="upload-button" 
-								*ngIf="!item.documentCount" 
+								*dfmPermitted="Permission.UpdateAppointments"
 								(click)="$event.stopPropagation(); fileInput.click();"
 								ngbPopover="{{ 'UploadReferralNote' | translate }}"
 								triggers="mouseenter:mouseleave"
@@ -163,6 +165,8 @@
 								[openDelay]="200">
 									<img src="../../../../../assets/images/upload-icon.png" alt="" width="16px" />
 								</span>
+								<span *dfmPermitted="Permission.ReadAppointments">{{'—'}}</span>
+								</ng-container>
 							</dfm-table-body-cell>
 						<dfm-table-body-cell>{{ item?.id }}</dfm-table-body-cell>
 						<dfm-table-body-cell>{{ item?.createdAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing

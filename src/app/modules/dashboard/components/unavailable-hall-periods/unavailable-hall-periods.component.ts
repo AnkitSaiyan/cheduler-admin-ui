@@ -96,8 +96,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 			next: (roomAbsence) => this.filteredRoomAbsence$$.next([...roomAbsence]),
 		});
 
-		this.dashboardApiService.roomAbsence$.pipe(takeUntil(this.destroy$$)).subscribe(
-			(roomAbsenceBase) => {
+		this.dashboardApiService.roomAbsence$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (roomAbsenceBase) => {
 				if (this.paginationData && this.paginationData.pageNo < roomAbsenceBase?.metaData?.pagination.pageNo) {
 					this.roomAbsence$$.next([...this.roomAbsence$$.value, ...roomAbsenceBase.data]);
 				} else {
@@ -105,8 +105,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 				}
 				this.paginationData = roomAbsenceBase?.metaData?.pagination || 1;
 			},
-			() => this.filteredRoomAbsence$$.next([]),
-		);
+			error: () => this.filteredRoomAbsence$$.next([])
+		});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
 			if (searchText) {
@@ -208,8 +208,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 	}
 
 	public navigateToView(e: any) {
-		if (e?.roomId) {
-			this.router.navigate([`/absence/rooms/${e.roomId}/view`]);
+		if (e?.AbsenceId) {
+			this.router.navigate([`/absence/rooms/${e.AbsenceId}/view`]);
 		}
 	}
 }

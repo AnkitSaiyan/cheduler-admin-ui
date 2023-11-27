@@ -10,7 +10,6 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
@@ -25,7 +24,6 @@ import { getDurationMinutes } from '../../../../shared/models/calendar.model';
 import { Exam } from '../../../../shared/models/exam.model';
 import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
 import { Translate } from '../../../../shared/models/translate.model';
-import { DefaultDatePipe } from '../../../../shared/pipes/default-date.pipe';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
 import { SignalrService } from 'src/app/core/services/signalr.service';
@@ -652,7 +650,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	public onSort(e: DfmTableHeader, table = 'upcoming'): void {
-		table == 'past' ? (this.sortTypePast = e.sort) : (this.sortType = e.sort);
+
+		if (table == 'past') this.sortTypePast = e.sort;
+		else this.sortType = e.sort;
 		this.filteredAppointments$$.next(GeneralUtils.SortArray(this.filteredAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 
@@ -710,8 +710,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public uploadRefferingNote(event: any, id: any) {
 		event.stopImmediatePropagation();
-		var extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
-		var allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		let extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+		let allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
 		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
 		if (!event.target.files.length) {
 			return;
@@ -729,7 +729,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		new Promise((resolve) => {
 			const { files } = event.target as HTMLInputElement;
 
-			if (files && files?.length) {
+			if (files?.length) {
 				const reader = new FileReader();
 				reader.onload = (e: any) => {
 					resolve(files[0]);

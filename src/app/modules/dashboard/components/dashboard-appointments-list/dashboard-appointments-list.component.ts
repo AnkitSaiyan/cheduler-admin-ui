@@ -20,11 +20,10 @@ import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { AppointmentAdvanceSearchComponent } from './appointment-advance-search/appointment-advance-search.component';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
-import { TranslatePipe } from '@ngx-translate/core';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { SignalrService } from 'src/app/core/services/signalr.service';
@@ -617,8 +616,8 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public uploadRefferingNote(event: any, id: any) {
 		event.stopImmediatePropagation();
-		var extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
-		var allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		let extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+		let allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
 		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
 		if (!event.target.files.length) {
 			return;
@@ -636,7 +635,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		new Promise((resolve) => {
 			const { files } = event.target as HTMLInputElement;
 
-			if (files && files?.length) {
+			if (files?.length) {
 				const reader = new FileReader();
 				reader.onload = () => {
 					resolve(files[0]);
