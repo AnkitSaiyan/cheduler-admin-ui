@@ -237,6 +237,7 @@ export interface CreateAppointmentFormValues {
 	socialSecurityNumber: number;
 	userList?: string[];
 	qrCodeId: string;
+	endedAt?: string;
 }
 
 export interface UpdateRadiologistRequestData {
