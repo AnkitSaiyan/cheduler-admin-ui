@@ -208,8 +208,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 	}
 
 	public navigateToView(e: any) {
-		if (e?.AbsenceId) {
-			this.router.navigate([`/absence/rooms/${e.AbsenceId}/view`]);
+		if (e?.absenceId) {
+			this.router.navigate([`/absence/rooms/${e.absenceId}/view`]);
 		}
 	}
 }
