@@ -170,7 +170,7 @@
                   <ng-container *ngIf="!item.documentCount">
                     <span 
                   class="upload-button" 
-                  *dfmPermitted="Permission.UpdateAppointments"
+                  *dfmPermitted="Permission.UploadDocument"
                   (click)="$event.stopPropagation(); fileInput.click();"
                   ngbPopover="{{ 'UploadReferralNote' | translate }}"
                   triggers="mouseenter:mouseleave"
@@ -178,6 +178,7 @@
                   [openDelay]="200">
                     <img src="../../../../../assets/images/upload-icon.png" alt="" width="16px" />
                   </span>
+                  <span *dfmPermitted="Permission.ViewDocument" >—</span>
                   </ng-container>
           </dfm-table-body-cell>
           <dfm-table-row-cell [fullContent]="item.id">{{ item?.id }}</dfm-table-row-cell>
