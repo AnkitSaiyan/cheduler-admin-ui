@@ -39,7 +39,7 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Inactief',
 	},
 
-	'-': {
+	Default: {
 		[ENG_BE]: '-',
 		[DUTCH_BE]: '-',
 	},
