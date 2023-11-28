@@ -67,7 +67,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		'AppointmentNo',
 		'AppliedOn',
 		'Status',
-		'Actions',
 	];
 
 	public tableHeaders: DfmTableHeader[] = [
@@ -179,6 +178,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 					this.permissionSvc.isPermitted([Permission.UpdateAppointments, Permission.DeleteAppointments]) &&
 					!this.tableHeaders.find(({ title }) => title === 'Actions' || title === 'Acties')
 				) {
+					this.columns.push('Action');
 					this.tableHeaders = [
 						...this.tableHeaders,
 						{ id: this.tableHeaders?.length?.toString(), title: 'Actions', isSortable: false, isAction: true },
