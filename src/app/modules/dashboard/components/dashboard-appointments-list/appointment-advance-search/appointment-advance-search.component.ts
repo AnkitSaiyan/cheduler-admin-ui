@@ -16,7 +16,7 @@ import {
 	SelectedSlots,
 	SlotModified,
 } from '../../../../../shared/models/appointment.model';
-import { COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../../shared/utils/const';
+import { COMING_FROM_ROUTE, EDIT, EMAIL_REGEX } from '../../../../../shared/utils/const';
 import { SiteManagementApiService } from '../../../../../core/services/site-management-api.service';
 import { DateTimeUtils } from '../../../../../shared/utils/date-time.utils';
 import { GeneralUtils } from '../../../../../shared/utils/general.utils';
@@ -39,7 +39,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 	public loading$$ = new BehaviorSubject(false);
 
 	public loadingSlots$$ = new BehaviorSubject<boolean>(false);
-	private selectedLang: string = ENG_BE;
 
 	public submitting$$ = new BehaviorSubject(false);
 
@@ -169,7 +168,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 				}),
 			)
 			.subscribe((physicians) => {
-				const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'patientFname', 'appointmentId', 'patientLname');
 				const tempKeyValue = physicians.map((val) => ({
 					// eslint-disable-next-line no-unsafe-optional-chaining
 					name: val.patientFname ? val['patientFname']?.toString() + '  ' + val['patientLname']?.toString() : val?.toString(),
