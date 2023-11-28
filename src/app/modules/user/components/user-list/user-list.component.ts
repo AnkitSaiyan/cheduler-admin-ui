@@ -151,7 +151,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 		this.userManagementApiSvc.userList$.pipe(map((users) => users.items.map((user) => this.convertToUserBase(user)))).subscribe({
 			next: (userBase) => {
-				this.users$$.next([...(userBase as UserBase[])]);
+				this.users$$.next([...(userBase)]);
 				this.loading$$.next(false);
 			},
 			error: (err) => {
@@ -234,7 +234,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			)
 			.subscribe({
 				next: (value) => {
-					this.selectedUserIds.map((id) => {
+					this.selectedUserIds.forEach((id) => {
 						this.users$$.next([
 							...GeneralUtils.modifyListData(
 								this.users$$.value,
@@ -277,13 +277,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						title: Translate[this.columns[i]][lang] ?? this.columns[i],
 					}));
 
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						default:
-							this.statuses = StatusesNL;
-					}
+					if (lang == ENG_BE) {this.statuses = Statuses}
+					else {this.statuses = StatusesNL};
 				},
 			});
 	}
