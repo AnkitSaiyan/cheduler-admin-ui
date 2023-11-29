@@ -28,7 +28,7 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 	public ngOnInit(): void {
 		this.dialogSvc.dialogData$.pipe(take(1)).subscribe((data: Appointment) => {
-			const allUsers = GeneralUtils.removeDuplicateData(data?.exams?.[0]?.resourcesBatch.reduce((acc: any[], val: any) => [...acc, ...val.users], []) ?? [], 'id');
+			const allUsers = GeneralUtils.removeDuplicateData(data?.examDetail?.[0]?.resourcesBatch.reduce((acc: any[], val: any) => [...acc, ...val.users], []) ?? [], 'id');
 			const users = data?.exams?.[0]?.users ?? [];			
 			if (data.isOutside) {
 				this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
