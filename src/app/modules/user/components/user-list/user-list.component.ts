@@ -356,8 +356,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				this.clipboardData = '';
 				return;
 			}
-
-			console.log(this.filteredUsers$$.value);
+			
 			this.filteredUsers$$.value.forEach((user: UserBase) => {
 				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.userType ?? '—'}\t${ +user.status === 2 ? '-' :
 					StatusToName[+user.status]
