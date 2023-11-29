@@ -69,6 +69,8 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		'Status',
 	];
 
+	public columnsForPast = [...this.columns]
+
 	public tableHeaders: DfmTableHeader[] = [
 		{ id: '1', title: 'StartedAt', isSortable: true },
 		{ id: '2', title: 'EndedAt', isSortable: true },
@@ -605,13 +607,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				modalDialogClass: 'ad-ap-modal-shadow',
 			},
 		});
-	}
-
-	public manageActionColumn([...data]): Array<string> {
-		if (data.find((title) => title === 'Actions' || title === 'Acties')) {
-			data.pop();
-		}
-		return data;
 	}
 
 	public uploadRefferingNote(event: any, id: any) {
