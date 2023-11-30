@@ -610,6 +610,11 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Geen gegevens om te downloaden',
 	},
 
+	NoDataFound: {
+		[ENG_BE]: 'No data found',
+		[DUTCH_BE]: 'Geen gegevens gevonden',
+	},
+
 	sessionExp: {
 		[ENG_BE]: 'Your session has expired. Login again',
 		[DUTCH_BE]: 'Uw sessie is verlopen. Log opnieuw in',

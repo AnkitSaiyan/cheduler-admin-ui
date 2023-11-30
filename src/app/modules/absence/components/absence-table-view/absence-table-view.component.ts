@@ -289,7 +289,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 				.join('\t')}\n`;
 
 			if (!this.filteredAbsences$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}

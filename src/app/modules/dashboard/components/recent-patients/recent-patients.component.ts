@@ -176,7 +176,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 				.join('\t\t')}\n`;
 
 			if (!this.filteredRecentPatients$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}

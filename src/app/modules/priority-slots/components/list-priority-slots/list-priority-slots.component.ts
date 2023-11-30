@@ -242,6 +242,13 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
 	public copyToClipboard() {
 		try {
+
+			if (!this.filteredPrioritySlots$$.value.length) {
+				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
+				this.clipboardData = '';
+				return;
+			}
+
 			let dataString = `${this.columns.filter((value) => value !== 'Actions').join('\t')}\n`;
 
 			this.filteredPrioritySlots$$.value.forEach((prioritySlot: PrioritySlot) => {

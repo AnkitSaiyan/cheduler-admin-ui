@@ -110,7 +110,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 			let dataString = `${this.columns.join('\t')}\n`;
 
 			if (!this.filteredAbsence$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
