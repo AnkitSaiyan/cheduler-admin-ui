@@ -67,21 +67,22 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		'AppointmentNo',
 		'AppliedOn',
 		'Status',
+		'Actions',
 	];
-
-	public columnsForPast = [...this.columns]
 
 	public tableHeaders: DfmTableHeader[] = [
-		{ id: '1', title: 'StartedAt', isSortable: true },
-		{ id: '2', title: 'EndedAt', isSortable: true },
-		{ id: '3', title: 'PatientName', isSortable: true },
-		{ id: '4', title: 'Exam', isSortable: true },
-		{ id: '5', title: 'Physician', isSortable: true },
-		{ id: '6', title: 'ReferralNote', isSortable: true },
-		{ id: '7', title: 'AppointmentNo', isSortable: true },
-		{ id: '8', title: 'AppliedOn', isSortable: true },
-		{ id: '9', title: 'Status', isSortable: true },
+		{ id: '1', title: 'StartedAt' },
+		{ id: '2', title: 'EndedAt' },
+		{ id: '3', title: 'PatientName' },
+		{ id: '4', title: 'Exam' },
+		{ id: '5', title: 'Physician' },
+		{ id: '6', title: 'ReferralNote' },
+		{ id: '7', title: 'AppointmentNo' },
+		{ id: '8', title: 'AppliedOn' },
+		{ id: '9', title: 'Status' },
 	];
+
+	public pastTableHeaders: DfmTableHeader[] = [...this.tableHeaders];
 
 	public downloadItems: NameValue[] = [];
 
@@ -336,22 +337,25 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		this.shareDataSvc
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe({
-				next: (lang) => {
-					this.selectedLang = lang;
-					this.tableHeaders = this.tableHeaders.map((h, i) => ({
-						...h,
-						title: Translate[this.columns[i]][lang],
-					}));
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						case DUTCH_BE:
-							this.statuses = StatusesNL;
-							break;
-					}
-				},
+			.subscribe((lang) => {
+				this.selectedLang = lang;
+				this.tableHeaders = this.tableHeaders.map((h, i) => ({
+					...h,
+					title: Translate[this.columns[i]][lang],
+				}));
+				this.pastTableHeaders = this.pastTableHeaders.map((h, i) => ({
+					...h,
+					title: Translate[this.columns[i]][lang],
+				}));
+				// eslint-disable-next-line default-case
+				switch (lang) {
+					case ENG_BE:
+						this.statuses = Statuses;
+						break;
+					case DUTCH_BE:
+						this.statuses = StatusesNL;
+						break;
+				}
 			});
 
 		this.signalRSvc.latestAppointmentInfo$.pipe(withLatestFrom(this.appointments$$), takeUntil(this.destroy$$)).subscribe({
