@@ -100,6 +100,7 @@ import { WeekViewAbsenceTopPipe } from './pipes/week-view-absence-top.pipe';
 import { TimeSlotsTableComponent } from './components/time-slots-table/time-slots-table.component';
 import { DfmButtonTypeDirective } from './directives/dfm-button-type.directive';
 import { PhoneNumberDirective } from './directives/phone-number.directive';
+import { TruncatePipe } from './pipes/truncate.pipe';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -171,6 +172,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		TimeSlotsTableComponent,
 		DfmButtonTypeDirective,
   		PhoneNumberDirective,
+    	TruncatePipe,
 	],
 	imports: [
 		CommonModule,
@@ -286,6 +288,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		TimeSlotsTableComponent,
 		DfmButtonTypeDirective,
 		PhoneNumberDirective,
+		TruncatePipe,
 	],
 	providers: [
 		TranslatePipe,
