@@ -7,6 +7,32 @@
 						<dfm-button size="md" leadingIcon="drag" class="cursor-default" color="link-gray"></dfm-button>
 					</div>
 					<span class="font-weight-medium">{{ 'AppointmentsList' | translate }}</span>
+
+					<div class="hidden align-items-center dfm-gap-8 dfm-px-8 justify-content-center ap-li-section2-action-bar-mv hide-scrollbar overflow-x-auto">		
+						<dfm-button-icon color="secondary-gray" size="md" icon="filter-funnel-01" (click)="openAdvancePopup()"></dfm-button-icon>
+		
+						<dfm-button-icon
+							color="secondary-gray"
+							size="md"
+							icon="x-close"
+							ngbPopover="{{ 'Reset' | translate }}"
+							triggers="mouseenter:mouseleave"
+							popoverClass="popover-p-8"
+							[openDelay]="200"
+							(click)="isResetBtnDisable ? $event.preventDefault() : onRefresh();"
+						></dfm-button-icon>
+		
+						<dfm-button
+							*dfmPermitted="Permission.CreateAppointments"
+							color="primary"
+							size="md"
+							class="text-nowrap"
+							[disabled]="false"
+							routerLink="/appointment/add"
+							[state]="{ comingFromRoute: 'dashboard' }"
+							>Add
+						</dfm-button>
+					</div>
 				</header>
 				<div class="ap-li-section2-action-bar">
 					<dfm-button *dfmPermitted="Permission.CreateAppointments" color="primary" size="md" class="text-nowrap" routerLink="/appointment/add"
@@ -81,18 +107,15 @@
 			<div class="hidden align-items-center dfm-gap-8 dfm-px-8 justify-content-center ap-li-section2-action-bar-mv hide-scrollbar overflow-x-auto">
 				<dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" [formControl]="searchControl"></dfm-input>
 
-				<dfm-button-icon color="secondary-gray" size="md" icon="filter-funnel-01" (click)="openAdvancePopup()"></dfm-button-icon>
-
-				<dfm-button-icon
-					color="secondary-gray"
-					size="md"
-					icon="x-close"
-					ngbPopover="{{ 'Reset' | translate }}"
-					triggers="mouseenter:mouseleave"
-					popoverClass="popover-p-8"
-					[openDelay]="200"
-					(click)="isResetBtnDisable ? $event.preventDefault() : onRefresh();"
-				></dfm-button-icon>
+				<div class="appointment-status-dropdown">
+					<dfm-input-dropdown
+						class="flex-1"
+						size="md"
+						[formControl]="appointmentViewControl"
+						[showDescription]="false"
+						[items]="appointmentListData"
+					  ></dfm-input-dropdown>
+				</div>
 
 				<div class="d-flex align-items-center dfm-button-group-wrapper">
 					<div>
@@ -107,19 +130,7 @@
 							(click)="copyToClipboard()"
 						></dfm-button-icon>
 					</div>
-
 				</div>
-
-				<dfm-button
-					*dfmPermitted="Permission.CreateAppointments"
-					color="primary"
-					size="md"
-					class="text-nowrap"
-					[disabled]="false"
-					routerLink="/appointment/add"
-					[state]="{ comingFromRoute: 'dashboard' }"
-					>Add
-				</dfm-button>
 			</div>
 		</section>
 		<ng-container *ngIf="isUpcomingAppointmentsDashboard">
