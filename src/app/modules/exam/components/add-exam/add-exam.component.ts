@@ -81,7 +81,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 	public panelOpenState = false;
 
-	public examDetails$$ = new BehaviorSubject<Exam | undefined | any>(undefined);
+	public examDetails$$ = new BehaviorSubject<Exam | undefined>(undefined);
 
 	public availableRooms$$ = new BehaviorSubject<RoomsGroupedByType>({ private: [], public: [] });
 
@@ -215,7 +215,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		this.examApiSvc.allExams$
 			.pipe(
 				first(),
-				map((exams) => exams.filter((exam) => +exam.id !== (+this.examID ?? 0))),
+				map((exams) => exams.filter((exam) => +exam.id !== (+(this.examID ?? 0)))),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
@@ -436,10 +436,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 						roomduration: +duration,
 						roomOrder: +sortOrder,
 						roomList: roomName,
-						assistantCount: +assistantCount ?? 0,
-						nursingCount: +nursingCount ?? 0,
-						radiologistCount: +radiologistCount ?? 0,
-						secretaryCount: +secretaryCount ?? 0,
+						assistantCount: +(assistantCount ?? 0),
+						nursingCount: +(nursingCount ?? 0),
+						radiologistCount: +(radiologistCount ?? 0),
+						secretaryCount: +(secretaryCount ?? 0),
 						mandatoryUsers: [...(mandatoryStaffs?.map((value) => +value) ?? [])],
 						userList: [
 							...(assistants?.map((value) => +value) ?? []),
@@ -484,7 +484,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					},
 					error: (err) => {
 						this.submitting$$.next(false);
-						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
 					},
 				});
 		} else {
@@ -507,7 +506,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					},
 					error: (err) => {
 						this.submitting$$.next(false);
-						// this.notificationSvc.showNotification(Translate.Error.SomethingWrong[this.selectedLang], NotificationType.DANGER);
+						
 					},
 				});
 		}
@@ -609,7 +608,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			status: this.edit ? +!!examDetails?.status : Status.Active,
 			info: examDetails?.info,
 			instructions: examDetails?.instructions,
-			uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) || [])],
+			uncombinables: [...(examDetails?.uncombinables?.map((u) => u?.toString()) ?? [])],
 		});
 
 		this.examForm.patchValue({ bodyType: examDetails?.bodyType?.split(',') }, { onlySelf: true, emitEvent: false });
