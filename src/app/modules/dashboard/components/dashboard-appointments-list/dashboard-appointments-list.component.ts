@@ -452,7 +452,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			const data: any[] = this.isUpcomingAppointmentsDashboard ? this.upcomingTableData$$.value.items : this.pastTableData$$.value.items;
 
 			if (!data.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}

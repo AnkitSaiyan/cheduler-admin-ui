@@ -178,7 +178,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 				.join('\t\t')}\n`;
 
 			if (!this.filteredRoomAbsence$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
