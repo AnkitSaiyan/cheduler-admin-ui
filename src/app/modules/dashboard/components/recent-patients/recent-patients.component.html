@@ -9,66 +9,43 @@
 	</section>
 
 	<section class="d-flex dfm-px-16 align-items-center dfm-gap-16">
-		<dfm-input
-			class="flex-1"
-			size="md"
-			placeholder="{{ 'SearchByPatientName' | translate }}"
-			icon="search-sm"
-			[formControl]="searchControl"
-		></dfm-input>
+		<dfm-input class="flex-1" size="md" placeholder="{{ 'SearchByPatientName' | translate }}" icon="search-sm"
+			[formControl]="searchControl"></dfm-input>
 
 		<div class="d-flex align-items-center dfm-button-group-wrapper rec-pt-buttons">
 			<div [cdkCopyToClipboard]="clipboardData">
-				<dfm-button-icon
-					color="tertiary-gray"
-					size="md"
-					icon="copy-03"
-					ngbPopover="{{ 'ClickToCopy' | translate }}"
-					triggers="mouseenter:mouseleave"
-					popoverClass="popover-p-8"
-					[openDelay]="200"
-					(click)="copyToClipboard()"
-				></dfm-button-icon>
+				<dfm-button-icon color="tertiary-gray" size="md" icon="copy-03"
+					ngbPopover="{{ 'ClickToCopy' | translate }}" triggers="mouseenter:mouseleave"
+					popoverClass="popover-p-8" [openDelay]="200" (click)="copyToClipboard()"></dfm-button-icon>
 			</div>
 
 			<div class="dfm-dropdown-border-none max-w-152 min-w-152">
-				<dfm-input-dropdown
-					[items]="downloadItems"
-					placeholder="{{ 'Download' | translate }}"
-					size="md"
-					[showDescription]="false"
-					[formControl]="downloadDropdownControl"
-				></dfm-input-dropdown>
+				<dfm-input-dropdown [items]="downloadItems" placeholder="{{ 'Download' | translate }}" size="md"
+					[showDescription]="false" [formControl]="downloadDropdownControl"></dfm-input-dropdown>
 			</div>
 		</div>
 
 		<div class="hidden align-items-center rec-pt-mv-buttons dfm-button-group-wrapper rec-pt-mv-buttons">
 			<div>
-				<dfm-button-icon color="tertiary-gray" size="md" icon="copy-03" (click)="copyToClipboard()"></dfm-button-icon>
+				<dfm-button-icon color="tertiary-gray" size="md" icon="copy-03"
+					(click)="copyToClipboard()"></dfm-button-icon>
 			</div>
 
 		</div>
 	</section>
 
 	<section class="table-wrapper" *ngIf="filteredRecentPatients$$ | async as recentPatients">
-		<dfm-table [items]="recentPatients">
-			<ng-template #headerRowTemplate>
-				<dfm-table-header-cell *ngFor="let column of columns">{{ column | translate }}</dfm-table-header-cell>
-			</ng-template>
+		<dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="false"
+			noDataMessage="{{ 'NoDataFound' | translate }}" [stickyFirstColumn]="false" [headers]="tableHeaders">
 			<ng-template #bodyRowTemplate let-item>
 				<dfm-table-body-cell>
 					<div class="d-flex dfm-gap-8 align-items-center">
 						<div class="rounded-circle avatar-container">
-							<img
-								*ngIf="item.avatar"
-								[src]="item.avatar"
-								class="rounded-circle border-light border-1"
-								alt="Doctor's avatar"
-								width="40"
-								height="40"
-							/>
+							<img *ngIf="item.avatar" [src]="item.avatar" class="rounded-circle border-light border-1"
+								alt="Doctor's avatar" width="40" height="40" />
 
-							<div *ngIf="!item.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
+							<div *ngIf="!item.avatar"
+								class="circle-gray-200-40 d-flex justify-content-center align-items-center">
 								{{ item?.patientFname?.toString()[0]?.toUpperCase() }}
 							</div>
 						</div>
@@ -80,9 +57,6 @@
 				<dfm-table-body-cell>{{ item.startedAt | dfmUtcToLocal | dfmDefaultDate }}</dfm-table-body-cell>
 
 			</ng-template>
-		</dfm-table>
-		<div class="no-data-found-wrapper justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!recentPatients.length">
-			{{ 'NoDataFound' | translate }}
-		</div>
+		</dfm-data-table>
 	</section>
 </div>
