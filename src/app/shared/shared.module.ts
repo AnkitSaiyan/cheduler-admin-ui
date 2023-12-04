@@ -297,8 +297,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 	],
 })
 export class SharedModule {
-	constructor(private _adapter: DateAdapter<any>, private shareDataSvc: ShareDataService) {
-		this.shareDataSvc.getLanguage$().subscribe((lang) => this._adapter.setLocale(lang));
+	constructor(private adapterService: DateAdapter<any>, private shareDataSvc: ShareDataService) {
+		this.shareDataSvc.getLanguage$().subscribe((lang) => this.adapterService.setLocale(lang));
 	}
 
 	static forRoot(): ModuleWithProviders<SharedModule> {

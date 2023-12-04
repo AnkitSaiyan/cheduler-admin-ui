@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { EMPTY, Observable, of } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 import { UserApiService } from '../../core/services/user-api.service';
 import { UserRoleEnum } from '../models/user.model';
 

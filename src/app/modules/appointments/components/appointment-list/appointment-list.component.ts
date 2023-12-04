@@ -715,8 +715,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public uploadRefferingNote(event: any, id: any) {
 		event.stopImmediatePropagation();
-		let extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
-		let allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
 		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
 		if (!event.target.files.length) {
 		} else if (allowedExtensions.indexOf(extension) === -1) {

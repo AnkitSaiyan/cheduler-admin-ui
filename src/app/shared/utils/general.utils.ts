@@ -103,4 +103,3 @@ export class GeneralUtils {
 		return [...trueData, ...falseData];
 	}
 }
-

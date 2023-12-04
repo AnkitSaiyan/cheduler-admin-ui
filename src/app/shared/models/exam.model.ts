@@ -1,7 +1,7 @@
 import { AvailabilityType, User } from './user.model';
 import { Status } from './status.model';
-import { Room, RoomType } from './rooms.model';
-import { TimeSlot, Weekday } from './calendar.model';
+import { Room } from './rooms.model';
+import { TimeSlot } from './calendar.model';
 import { BodyType } from '../utils/const';
 import { BodyPart } from './body-part.model';
 

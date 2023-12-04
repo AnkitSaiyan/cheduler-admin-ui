@@ -213,4 +213,3 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 		}
 	}
 }
-

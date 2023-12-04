@@ -1,5 +1,4 @@
 import { UserType } from './user.model';
-import { PracticeAvailability } from './practice.model';
 import { NameValue } from '../components/search-modal.component';
 import { Status } from './status.model';
 import { TimeSlotStaff } from './time-slot.model';

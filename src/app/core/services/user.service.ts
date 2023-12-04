@@ -1,9 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap, take, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, switchMap, take, tap } from 'rxjs';
 import { MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
 import { Router } from '@angular/router';
-import { InteractionType } from '@azure/msal-browser';
-import { EXT_Patient_Tenant } from 'src/app/shared/utils/const';
+import { EXT_PATIENT_TENANT } from 'src/app/shared/utils/const';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { PermissionService } from './permission.service';
 import { NotificationDataService } from './notification-data.service';
@@ -17,7 +16,6 @@ export class UserService {
 	private authUser$$: BehaviorSubject<AuthUser | undefined> = new BehaviorSubject<AuthUser | undefined>(undefined);
 
 	constructor(
-		@Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
 		private msalService: MsalService,
 		private userManagementApiService: UserManagementApiService,
 		private permissionSvc: PermissionService,
@@ -41,7 +39,7 @@ export class UserService {
 
 		const tenantIds = (user?.idTokenClaims as any)?.extension_Tenants?.split(',');
 
-		if (tenantIds?.some((value) => value === EXT_Patient_Tenant)) {
+		if (tenantIds?.some((value) => value === EXT_PATIENT_TENANT)) {
 			this.notificationSvc.showError(`you don't have permission to view this page`);
 			return of(false);
 		}

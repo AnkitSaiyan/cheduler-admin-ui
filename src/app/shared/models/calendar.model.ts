@@ -282,22 +282,22 @@ export function dataModification(absence, datePipe: DatePipe) {
 			slotEndTime: datePipe.transform(value.endedAt, 'HH:mm:ss'),
 			isHoliday: value.isHoliday,
 		}))
-		?.forEach((absence: any) => {
-			let { repeatFrequency } = absence;
-			const { absenceId, name, info, startedAt, endedAt, roomName, userName, isHoliday } = absence;
-			const startDate = new Date(new Date(new Date(absence.startedAt)).toDateString());
-			let firstDate = new Date(new Date(new Date(absence.startedAt)).toDateString());
-			const lastDate = new Date(new Date(new Date(absence.endedAt)).toDateString());
+		?.forEach((absenceItem: any) => {
+			let { repeatFrequency } = absenceItem;
+			const { absenceId, name, info, startedAt, endedAt, roomName, userName, isHoliday } = absenceItem;
+			const startDate = new Date(new Date(new Date(absenceItem.startedAt)).toDateString());
+			let firstDate = new Date(new Date(new Date(absenceItem.startedAt)).toDateString());
+			const lastDate = new Date(new Date(new Date(absenceItem.endedAt)).toDateString());
 			switch (true) {
-				case !absence.isRepeat:
-				case absence.repeatType === RepeatType.Daily: {
-					repeatFrequency = absence.isRepeat ? repeatFrequency : 1;
+				case !absenceItem.isRepeat:
+				case absenceItem.repeatType === RepeatType.Daily: {
+					repeatFrequency = absenceItem.isRepeat ? repeatFrequency : 1;
 					while (true) {
 						if (firstDate.getTime() > lastDate.getTime()) break;
 						const dateString = datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
 						const customPrioritySlot = {
-							start: absence.slotStartTime.slice(0, 5),
-							end: absence.slotEndTime?.slice(0, 5),
+							start: absenceItem.slotStartTime.slice(0, 5),
+							end: absenceItem.slotEndTime?.slice(0, 5),
 							id: absenceId,
 							name,
 							info,
@@ -312,18 +312,18 @@ export function dataModification(absence, datePipe: DatePipe) {
 					}
 					break;
 				}
-				case absence.repeatType === RepeatType.Weekly: {
+				case absenceItem.repeatType === RepeatType.Weekly: {
 					const closestSunday = new Date(startDate.getTime() - startDate.getDay() * 24 * 60 * 60 * 1000);
 					firstDate = new Date(closestSunday);
 					while (true) {
-						absence.repeatDays.split(',').forEach((day) => {
+						absenceItem.repeatDays.split(',').forEach((day) => {
 							firstDate.setTime(closestSunday.getTime());
 							firstDate.setDate(closestSunday.getDate() + +day);
 							if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
 								const dateString = datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
 								const customPrioritySlot = {
-									start: absence.slotStartTime.slice(0, 5),
-									end: absence.slotEndTime?.slice(0, 5),
+									start: absenceItem.slotStartTime.slice(0, 5),
+									end: absenceItem.slotEndTime?.slice(0, 5),
 									id: absenceId,
 									name,
 									info,
@@ -341,16 +341,16 @@ export function dataModification(absence, datePipe: DatePipe) {
 					}
 					break;
 				}
-				case absence.repeatType === RepeatType.Monthly: {
+				case absenceItem.repeatType === RepeatType.Monthly: {
 					while (true) {
-						absence.repeatDays.split(',').forEach((day) => {
+						absenceItem.repeatDays.split(',').forEach((day) => {
 							if (getDateOfMonth(firstDate.getFullYear(), firstDate.getMonth() + 1, 0) >= +day) {
 								firstDate.setDate(+day);
 								if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
 									const dateString = datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
 									const customPrioritySlot = {
-										start: absence.slotStartTime.slice(0, 5),
-										end: absence.slotEndTime?.slice(0, 5),
+										start: absenceItem.slotStartTime.slice(0, 5),
+										end: absenceItem.slotEndTime?.slice(0, 5),
 										id: absenceId,
 										name,
 										info,

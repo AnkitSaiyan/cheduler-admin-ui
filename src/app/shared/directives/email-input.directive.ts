@@ -10,7 +10,7 @@ export class EmailInputDirective {
 		e.preventDefault();
 		e.stopImmediatePropagation();
 		e.stopPropagation();
-		this.handleChange(e);
+		this.handleChange();
 	}
 
 	@Input()
@@ -18,9 +18,7 @@ export class EmailInputDirective {
 
 	private emailOnly: RegExp = /(.+)@(.+){2,}\.(.+){2,}/;
 
-	constructor(private elementRef: ElementRef, private r: Renderer2) {}
-
-	private handleChange(e: InputEvent) {
+	private handleChange(e?: InputEvent) {
 		const inputText = this.dfmEmailInput.value as string;
 
 		if (inputText && !inputText.match(this.emailOnly)) {

@@ -2,8 +2,6 @@ import { Appointment } from '../models/appointment.model';
 import { DateDistributed } from '../models/calendar.model';
 
 export class DateTimeUtils {
-	constructor() {}
-
 	public static DateDistributedToString(date: DateDistributed | Date, separator = '-'): string {
 		if (date instanceof Date) {
 			return this.DateDistributedToString(this.DateToDateDistributed(date));
@@ -32,11 +30,11 @@ export class DateTimeUtils {
 			return '';
 		}
 
-		date = new Date(date);
+		const newDate = new Date(date);
 
-		const minutes = date.getMinutes().toString();
+		const minutes = newDate.getMinutes().toString();
 
-		return `${date.getHours()}:${minutes.length < 2 ? `0${minutes}` : minutes}:00`;
+		return `${newDate.getHours()}:${minutes.length < 2 ? `0${minutes}` : minutes}:00`;
 	}
 
 	public static TimeStringIn24Hour(timeString: string | undefined): string {

@@ -47,10 +47,8 @@ export const GlobalDateTimeFormat = 'dd/MM/yyyy, HH:mm';
 
 // URL constants
 export const DEV_SUBDOMAIN = 'red-sea-08bb7b903';
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const EXT_Patient_Tenant = 'NPXN';
-export const EXT_Admin_Tenant = 'N5v0';
+export const EXT_PATIENT_TENANT = 'NPXN';
+export const EXT_ADMIN_TENANT = 'N5v0';
 
 // error messages
 

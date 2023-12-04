@@ -215,7 +215,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		this.examApiSvc.allExams$
 			.pipe(
 				first(),
-				map((exams) => exams.filter((exam) => +exam.id !== (+(this.examID ?? 0)))),
+				map((exams) => exams.filter((exam) => +exam.id !== +(this.examID ?? 0))),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
@@ -482,7 +482,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 					},
-					error: (err) => {
+					error: () => {
 						this.submitting$$.next(false);
 					},
 				});
@@ -504,9 +504,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 					},
-					error: (err) => {
+					error: () => {
 						this.submitting$$.next(false);
-						
 					},
 				});
 		}
@@ -535,6 +534,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			case 'bodyPart':
 				this.filteredBodyPart$$.next(GeneralUtils.FilterArray(this.bodyPart, searchText, 'name'));
 				break;
+			default:
 		}
 	}
 

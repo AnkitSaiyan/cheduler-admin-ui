@@ -14,6 +14,7 @@ import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
+
 const ColumnIdToKey = {
 	1: 'patientFname',
 	2: 'patientEmail',
@@ -127,7 +128,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 					value as DownloadAsType,
 					this.tableHeaders.map(({ title }) => title).slice(0),
 					this.filteredRecentPatients$$.value.map((ap: any) => [
-						ap?.patientFname?.toString() + ' ' + ap?.patientLname.toString(),
+						`${ap?.patientFname?.toString()} ${ap?.patientLname.toString()}`,
 						ap?.patientEmail?.toString() || '-',
 						ap?.doctor.toString() || '-',
 						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap.startedAt.toString())) || '-',
@@ -180,9 +181,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 			}
 
 			this.filteredRecentPatients$$.value.forEach((ap: any) => {
-				dataString += `${
-					ap?.patientFname?.toString() + ' ' + ap?.patientLname?.toString()
-				}\t\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${this.defaultDatePipe.transform(
+				dataString += `${`${ap?.patientFname?.toString()} ${ap?.patientLname?.toString()}`}\t\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${this.defaultDatePipe.transform(
 					this.utcToLocalPipe.transform(ap.startedAt.toString()),
 				)}\n`;
 			});

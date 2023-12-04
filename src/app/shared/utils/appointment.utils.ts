@@ -1,4 +1,3 @@
-import { map } from 'rxjs';
 import {
 	AddAppointmentRequestData,
 	Appointment,
@@ -10,11 +9,8 @@ import {
 } from '../models/appointment.model';
 import { DateDistributed } from '../models/calendar.model';
 import { DateTimeUtils } from './date-time.utils';
-import { SchedulerUser } from '../models/user.model';
 
 export class AppointmentUtils {
-	constructor() {}
-
 	public static GetModifiedSlotData(
 		slots: Slot[],
 		isCombinable: boolean,

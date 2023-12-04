@@ -88,7 +88,7 @@ export enum Permission {
 	ReadEmailTemplate = 'can_read_email_template',
 	UpdateEmailTemplate = 'can_update_email_template',
 
-	//Upload Document
+	// Upload Document
 	UploadDocument = 'can_upload_document',
 	ViewDocument = 'can_view_document',
 }
@@ -144,7 +144,7 @@ export enum GeneralUserPermission {
 	// User
 	ReadUser = 'can_read_user',
 
-	//Upload Document
+	// Upload Document
 	UploadDocument = 'can_upload_document',
 	ViewDocument = 'can_view_document',
 }
@@ -182,7 +182,6 @@ export enum ReaderPermission {
 }
 
 export enum AdminNoPermissions {
-	//Document
+	// Document
 	ViewDocument = 'can_view_document',
 }
-

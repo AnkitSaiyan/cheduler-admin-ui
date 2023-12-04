@@ -53,4 +53,3 @@ export class IsPermittedDirective implements OnInit {
 		this.vcr.createEmbeddedView(this.templateRef);
 	}
 }
-

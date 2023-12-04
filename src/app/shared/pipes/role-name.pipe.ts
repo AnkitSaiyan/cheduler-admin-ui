@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { AppointmentStatus } from '../models/status.model';
 import { UserRoleEnum } from '../models/user.model';
 
 @Pipe({

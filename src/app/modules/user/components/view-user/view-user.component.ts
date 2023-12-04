@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, Observable, combineLatest, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';

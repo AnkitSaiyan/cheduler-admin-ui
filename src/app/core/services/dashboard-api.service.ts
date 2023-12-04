@@ -12,9 +12,7 @@ import { AppointmentChartDataType } from 'src/app/shared/models/dashboard.model'
 import { environment } from '../../../environments/environment';
 import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
-import { Translate } from '../../shared/models/translate.model';
 import { Notification } from '../../shared/models/notification.model';
-import { AppointmentApiService } from './appointment-api.service';
 import { UserManagementApiService } from './user-management-api.service';
 import { SchedulerUser } from '../../shared/models/user.model';
 
@@ -128,8 +126,8 @@ export class DashboardApiService extends DestroyableComponent {
 	}
 
 	public get notification$(): Observable<BaseResponse<Notification[]>> {
-		return combineLatest([this.refreshNotification$$.pipe(startWith('')), this.notificationPageNo$$]).pipe(
-			switchMap(([_, pageNo]) => this.fetchAllNotifications(pageNo)),
+		return combineLatest([this.notificationPageNo$$, this.refreshNotification$$.pipe(startWith(''))]).pipe(
+			switchMap(([pageNo]) => this.fetchAllNotifications(pageNo)),
 		);
 	}
 
@@ -187,8 +185,8 @@ export class DashboardApiService extends DestroyableComponent {
 	}
 
 	public get roomAbsence$(): Observable<BaseResponse<Room[]>> {
-		return combineLatest([this.refreshRoomAbsence$$.pipe(startWith('')), this.roomAbsencePageNo$$]).pipe(
-			switchMap(([_, pageNo]) => this.fetchRoomAbsence(pageNo)),
+		return combineLatest([this.roomAbsencePageNo$$, this.refreshRoomAbsence$$.pipe(startWith(''))]).pipe(
+			switchMap(([pageNo]) => this.fetchRoomAbsence(pageNo)),
 		);
 	}
 

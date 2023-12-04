@@ -6,6 +6,8 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
 import { NameValue } from 'src/app/shared/components/search-modal.component';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
+import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import {
 	AddAppointmentRequestData,
 	AddOutSideOperatingHoursAppointmentRequest,
@@ -23,8 +25,6 @@ import { DashboardApiService } from './dashboard-api.service';
 import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
 import { UserManagementApiService } from './user-management-api.service';
-import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 
 @Injectable({
 	providedIn: 'root',
@@ -537,6 +537,6 @@ export class AppointmentApiService extends DestroyableComponent {
 	}
 
 	public convertUtcToLocalDate(date: string | Date): string {
-		return date ? this.defaultDatePipe.transform(this.utcToLocalPipe.transform(date.toString())) : '-'
+		return date ? this.defaultDatePipe.transform(this.utcToLocalPipe.transform(date.toString())) : '-';
 	}
 }

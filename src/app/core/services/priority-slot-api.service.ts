@@ -4,9 +4,6 @@ import {
 	BehaviorSubject,
 	catchError,
 	combineLatest,
-	debounceTime,
-	filter,
-	forkJoin,
 	map,
 	Observable,
 	of,
@@ -23,7 +20,6 @@ import { NextSlotOpenPercentageData, PrioritySlot } from 'src/app/shared/models/
 import { environment } from 'src/environments/environment';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
-import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 import { LoaderService } from './loader.service';
 import { RepeatType } from '../../shared/models/absence.model';
 import { ShareDataService } from './share-data.service';
@@ -80,8 +76,8 @@ export class PrioritySlotApiService extends DestroyableComponent {
 	}
 
 	public get prioritySlots$(): Observable<BaseResponse<PrioritySlot[]>> {
-		return combineLatest([this.refreshPrioritySlots$$.pipe(startWith('')), this.pageNo$$]).pipe(
-			switchMap(([_, pageNo]) => this.fetchAllPrioritySlots(pageNo)),
+		return combineLatest([this.pageNo$$, this.refreshPrioritySlots$$.pipe(startWith(''))]).pipe(
+			switchMap(([pageNo]) => this.fetchAllPrioritySlots(pageNo)),
 		);
 	}
 

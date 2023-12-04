@@ -2,9 +2,6 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnIn
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
 import { DfmDatasource, DfmTableHeader, NotificationType } from 'diflexmo-angular-design';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { EmailTemplateApiService } from 'src/app/core/services/email-template-api.service';
 import { Status, StatusToName } from 'src/app/shared/models/status.model';
 import { getStatusEnum, getUserTypeEnum } from 'src/app/shared/utils/getEnums';
@@ -16,9 +13,12 @@ import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PaginationData } from '../../../../shared/models/base-response.model';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
-import { ActivatedRoute, Router } from '@angular/router';
+import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 
 const ColumnIdToKey = {
 	1: 'title',
@@ -309,6 +309,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 			}
 		}
 	}
+
 	private clearDownloadDropdown() {
 		setTimeout(() => {
 			this.downloadDropdownControl.setValue('');
@@ -326,4 +327,3 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		this.filteredEmails$$.next(GeneralUtils.SortArray(this.filteredEmails$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
-

@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { take, takeUntil } from 'rxjs';
 import { FormControl, Validators } from '@angular/forms';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -8,7 +9,6 @@ import { Appointment } from '../../../../shared/models/appointment.model';
 import { UserType } from '../../../../shared/models/user.model';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { UserApiService } from '../../../../core/services/user-api.service';
-import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
 @Component({
 	selector: 'dfm-change-radiologist-modal',
@@ -28,8 +28,11 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 	public ngOnInit(): void {
 		this.dialogSvc.dialogData$.pipe(take(1)).subscribe((data: Appointment) => {
-			const allUsers = GeneralUtils.removeDuplicateData(data?.examDetail?.[0]?.resourcesBatch.reduce((acc: any[], val: any) => [...acc, ...val.users], []) ?? [], 'id');
-			const users = data?.exams?.[0]?.users ?? [];			
+			const allUsers = GeneralUtils.removeDuplicateData(
+				data?.examDetail?.[0]?.resourcesBatch.reduce((acc: any[], val: any) => [...acc, ...val.users], []) ?? [],
+				'id',
+			);
+			const users = data?.exams?.[0]?.users ?? [];
 			if (data.isOutside) {
 				this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 					next: (allUsers) => {

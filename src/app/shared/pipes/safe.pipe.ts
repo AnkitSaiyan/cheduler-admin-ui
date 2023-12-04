@@ -13,10 +13,10 @@ export class SafePipe implements PipeTransform {
 	/**
 	 * Pipe Constructor
 	 *
-	 * @param _sanitizer: DomSanitezer
+	 * @param domSanitizer: DomSanitezer
 	 */
 	// tslint:disable-next-line
-	constructor(protected _sanitizer: DomSanitizer) {}
+	constructor(protected domSanitizer: DomSanitizer) {}
 
 	/**
 	 * Transform
@@ -27,17 +27,17 @@ export class SafePipe implements PipeTransform {
 	transform(value: string, type: string): SafeHtml | SafeStyle | SafeScript | SafeUrl | SafeResourceUrl {
 		switch (type) {
 			case 'html':
-				return this._sanitizer.bypassSecurityTrustHtml(value);
+				return this.domSanitizer.bypassSecurityTrustHtml(value);
 			case 'style':
-				return this._sanitizer.bypassSecurityTrustStyle(value);
+				return this.domSanitizer.bypassSecurityTrustStyle(value);
 			case 'script':
-				return this._sanitizer.bypassSecurityTrustScript(value);
+				return this.domSanitizer.bypassSecurityTrustScript(value);
 			case 'url':
-				return this._sanitizer.bypassSecurityTrustUrl(value);
+				return this.domSanitizer.bypassSecurityTrustUrl(value);
 			case 'resourceUrl':
-				return this._sanitizer.bypassSecurityTrustResourceUrl(value);
+				return this.domSanitizer.bypassSecurityTrustResourceUrl(value);
 			default:
-				return this._sanitizer.bypassSecurityTrustHtml(value);
+				return this.domSanitizer.bypassSecurityTrustHtml(value);
 		}
 	}
 }

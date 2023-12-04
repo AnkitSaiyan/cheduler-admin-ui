@@ -12,6 +12,10 @@ import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { SignalrService } from 'src/app/core/services/signalr.service';
+import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
+import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
+import { SiteManagementApiService } from 'src/app/core/services/site-management-api.service';
+import { UpcomingAppointmentApiService } from 'src/app/core/services/upcoming-appointment-api.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
@@ -27,10 +31,6 @@ import { Exam } from '../../../../shared/models/exam.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { AppointmentAdvanceSearchComponent } from './appointment-advance-search/appointment-advance-search.component';
-import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
-import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
-import { SiteManagementApiService } from 'src/app/core/services/site-management-api.service';
-import { UpcomingAppointmentApiService } from 'src/app/core/services/upcoming-appointment-api.service';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -625,8 +625,8 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public uploadRefferingNote(event: any, id: any) {
 		event.stopImmediatePropagation();
-		let extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
-		let allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
 		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
 		if (!event.target.files.length) {
 		} else if (allowedExtensions.indexOf(extension) === -1) {

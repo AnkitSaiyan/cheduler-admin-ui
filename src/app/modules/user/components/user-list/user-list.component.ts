@@ -151,10 +151,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 		this.userManagementApiSvc.userList$.pipe(map((users) => users.items.map((user) => this.convertToUserBase(user)))).subscribe({
 			next: (userBase) => {
-				this.users$$.next([...(userBase)]);
+				this.users$$.next([...userBase]);
 				this.loading$$.next(false);
 			},
-			error: (err) => {
+			error: () => {
 				this.users$$.next([]);
 				this.loading$$.next(false);
 			},
@@ -277,8 +277,11 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						title: Translate[this.columns[i]][lang] ?? this.columns[i],
 					}));
 
-					if (lang == ENG_BE) {this.statuses = Statuses}
-					else {this.statuses = StatusesNL};
+					if (lang == ENG_BE) {
+						this.statuses = Statuses;
+					} else {
+						this.statuses = StatusesNL;
+					}
 				},
 			});
 	}
@@ -356,10 +359,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				this.clipboardData = '';
 				return;
 			}
-			
+
 			this.filteredUsers$$.value.forEach((user: UserBase) => {
-				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.userType ?? '—'}\t${ +user.status === 2 ? '-' :
-					StatusToName[+user.status]
+				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.userType ?? '—'}\t${
+					+user.status === 2 ? '-' : StatusToName[+user.status]
 				}\n`;
 			});
 
