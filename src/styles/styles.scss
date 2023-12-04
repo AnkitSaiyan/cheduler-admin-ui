@@ -86,13 +86,8 @@ $diflexmo-admin-theme: mat.define-light-theme(
 @import '../../node_modules/bootstrap/scss/bootstrap';
 
 @import './themes/theme';
-// @import './abstracts/variables';
 @import './themes/dark-theme';
-// @import './themes/light-theme';
 
-//.dfm-card-header {
-//  display: none !important;
-//}
 
 $nav-bar-height: 64px;
 $nav-bar-1440-height: 46px;
@@ -171,7 +166,7 @@ $view-page-content-height-mobile-vh: calc(
 body,
 html {
 	box-sizing: border-box;
-	font-family: Montserrat;
+	font-family: Montserrat, sans-serif;
 
 	--content-height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total);
 	--content-height-1440: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total);
@@ -187,10 +182,6 @@ html {
 		100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height-mobile
 	);
 
-	//--list-page-table-height: calc(100dvh - $nav-bar-height - $body-content-padding-y-total - $list-page-section1-height - lis);
-	//--list-page-height-1440: calc(100dvh - $nav-bar-1440-height - $body-content-padding-y-total - $list-page-section1-height);
-	//--list-page-height-960: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height);
-	//--list-page-height-mobile: calc(100dvh - $nav-bar-mobile-top-height - $nav-bar-mobile-bottom-height - $body-content-padding-y-total - $list-page-section1-height-mobile);
 	.form-check-input:checked {
 		border-color: var(--dfm-primary);
 	}
@@ -266,24 +257,20 @@ html {
 
 // All view pages scrollable content height
 .view-page-content-height {
-	//height: $view-page-content-height;
 	max-height: $view-page-content-height;
 	overflow: auto;
 	transition: all 150ms linear;
 
 	@media (max-width: 1440px) {
-		//height: $view-page-content-height-1440;
 		max-height: $view-page-content-height-1440;
 	}
 
 	@media (max-width: 960px) {
-		//height: $view-page-content-height-960;
 		max-height: $view-page-content-height-960-vh;
 		max-height: $view-page-content-height-960;
 	}
 
 	@media (max-width: 680px) {
-		//height: $view-page-content-height-mobile;
 		max-height: $view-page-content-height-mobile-vh;
 		max-height: $view-page-content-height-mobile;
 		padding-bottom: 8px;
@@ -371,7 +358,6 @@ dfm-input-dropdown {
 	background: white;
 	border: 1px solid var(--dfm-input-border);
 	border-radius: 8px;
-	//height: 40px;
 
 	div + div {
 		border-left: 1px solid var(--dfm-input-border);
@@ -422,7 +408,6 @@ dfm-input-dropdown {
 	background: white;
 	border-radius: 16px;
 	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-	//height: fit-content;
 	flex: 1;
 }
 
@@ -445,7 +430,6 @@ dfm-table-body-cell td {
 
 dfm-notification {
 	.dfm-notification {
-		//animation: fromRight 1s ease !important;
 		top: 152px !important;
 		right: 0 !important;
 		z-index: 2000 !important;
@@ -592,7 +576,6 @@ ngb-timepicker {
 }
 
 .popover {
-	border: none;
 	box-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.075);
 	border: 1px solid var(--dfm-main-200);
 	max-width: inherit;
@@ -624,8 +607,10 @@ button:disabled {
 .carousel-control-next-icon {
 	width: 24px;
 	height: 24px;
-
+	display: block;
+	filter: invert(1) grayscale(100);
 	border-radius: 50%;
+
 
 	&:hover {
 		box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
@@ -647,12 +632,6 @@ button:disabled {
 	}
 }
 
-.carousel-control-prev,
-.carousel-control-next {
-	display: block;
-	width: auto;
-}
-
 .carousel-control-prev {
 	left: 16px;
 }
@@ -660,17 +639,6 @@ button:disabled {
 .carousel-control-next {
 	right: 16px;
 }
-
-.carousel-control-prev-icon, .carousel-control-next-icon {
-	width: 24px;
-	height: 24px;
-	filter: invert(1) grayscale(100);
-	border-radius: 50%;
-
-	&:hover {
-	  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
-	}
-  }
 
 .carousel-item {
   height: 92% !important;
@@ -1246,7 +1214,7 @@ body {
 }
 
 angular-editor-toolbar button i {
-  font-family: FontAwesome !important;
+  font-family: FontAwesome , sans-serif !important;
   color: #474d6d !important;
 
 }

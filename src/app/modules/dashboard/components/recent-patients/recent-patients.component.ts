@@ -52,10 +52,10 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 	});
 
 	public tableHeaders: DfmTableHeader[] = [
-		{ id: '1', title: 'PatientName', isSortable: true },
-		{ id: '2', title: 'EmailID', isSortable: true },
-		{ id: '3', title: 'Doctor', isSortable: true },
-		{ id: '4', title: 'AppointmentDate', isSortable: true },
+		{ id: '1', title: 'PatientName', isSortable: false },
+		{ id: '2', title: 'EmailID', isSortable: false },
+		{ id: '3', title: 'Doctor', isSortable: false },
+		{ id: '4', title: 'AppointmentDate', isSortable: false },
 	];
 
 	private paginationData: PaginationData | undefined;
