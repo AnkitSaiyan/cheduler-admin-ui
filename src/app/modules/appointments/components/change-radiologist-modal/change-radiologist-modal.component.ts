@@ -8,6 +8,7 @@ import { Appointment } from '../../../../shared/models/appointment.model';
 import { UserType } from '../../../../shared/models/user.model';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { UserApiService } from '../../../../core/services/user-api.service';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 
 @Component({
 	selector: 'dfm-change-radiologist-modal',
@@ -27,8 +28,8 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 	public ngOnInit(): void {
 		this.dialogSvc.dialogData$.pipe(take(1)).subscribe((data: Appointment) => {
-			const allUsers = data?.exams?.[0]?.allUsers || [];
-			const users = data?.exams?.[0]?.users || [];
+			const allUsers = GeneralUtils.removeDuplicateData(data?.examDetail?.[0]?.resourcesBatch.reduce((acc: any[], val: any) => [...acc, ...val.users], []) ?? [], 'id');
+			const users = data?.exams?.[0]?.users ?? [];			
 			if (data.isOutside) {
 				this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 					next: (allUsers) => {

@@ -29,7 +29,7 @@
                 <div class="input-as-dfm-input">
                   <input formControlName="startedAt"
                     placeholder="{{'dateFormat' | translate}}"
-                    required [value]="currentDate"  [matDatepicker]="picker" readonly class="w-full min-w-128">
+                    required [value]="currentDate" [max]="formValues.endedAt"  [matDatepicker]="picker" readonly class="w-full min-w-128">
                 </div>
                 <dfm-button-icon
                   color="secondary-gray"
@@ -69,7 +69,7 @@
                 <div class="input-as-dfm-input">
                   <input formControlName="endedAt"
                     placeholder="{{'dateFormat' | translate}}"
-                    required [value]="currentDate"  [matDatepicker]="picker2" readonly class="w-full min-w-128">
+                    required [value]="currentDate" [min]="formValues.startedAt"   [matDatepicker]="picker2" readonly class="w-full min-w-128">
                 </div>
                 <dfm-button-icon
                   color="secondary-gray"

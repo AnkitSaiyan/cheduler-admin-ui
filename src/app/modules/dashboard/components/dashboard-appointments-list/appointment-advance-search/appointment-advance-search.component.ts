@@ -2,8 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, map, take, takeUntil } from 'rxjs';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { ModalService } from 'src/app/core/services/modal.service';
-import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { DestroyableComponent } from '../../../../../shared/components/destroyable.component';
 import { RoomType } from '../../../../../shared/models/rooms.model';
 import { NameValue } from '../../../../../shared/components/search-modal.component';
@@ -13,10 +11,12 @@ import { NameValuePairPipe } from '../../../../../shared/pipes/name-value-pair.p
 import { TimeInIntervalPipe } from '../../../../../shared/pipes/time-in-interval.pipe';
 import { PhysicianApiService } from '../../../../../core/services/physician.api.service';
 import { Appointment, CreateAppointmentFormValues, SelectedSlots, SlotModified } from '../../../../../shared/models/appointment.model';
-import { COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE } from '../../../../../shared/utils/const';
+import { COMING_FROM_ROUTE, EDIT, EMAIL_REGEX } from '../../../../../shared/utils/const';
 import { SiteManagementApiService } from '../../../../../core/services/site-management-api.service';
 import { DateTimeUtils } from '../../../../../shared/utils/date-time.utils';
 import { GeneralUtils } from '../../../../../shared/utils/general.utils';
+import { ModalService } from 'src/app/core/services/modal.service';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { CustomDateParserFormatter } from '../../../../../shared/utils/dateFormat';
 import { UserApiService } from '../../../../../core/services/user-api.service';
 
@@ -35,28 +35,17 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 
 	public loadingSlots$$ = new BehaviorSubject<boolean>(false);
 
-	private selectedLang: string = ENG_BE;
-
 	public submitting$$ = new BehaviorSubject(false);
 
 	public filteredUserList: NameValue[] = [];
-
 	public filteredExamList: NameValue[] = [];
-
 	public filteredRoomList: NameValue[] = [];
-
 	public roomList: NameValue[] = [];
-
 	public filteredPhysicianList: NameValue[] = [];
-
 	public filteredPatientsList: NameValue[] = [];
-
 	public roomType = RoomType;
-
 	public edit = false;
-
 	public comingFromRoute = '';
-
 	examsData = [
 		{
 			name: 'Aanpasing steunzolen',
@@ -71,40 +60,25 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			value: 3,
 		},
 	];
-
 	public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
-
 	public slots: SlotModified[] = [];
-
 	public selectedTimeSlot: SelectedSlots = {};
-
 	public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
-
 	public isCombinable: boolean = false;
-
 	public startTimes: NameValue[];
-
 	public endTimes: NameValue[];
-
 	public dialogData = {
 		confirmButtonText: 'Proceed',
 		cancelButtonText: 'Cancel',
 		titleText: 'Confirmation',
 		bodyText: 'Are you sure you want to perform this action?',
 	};
-
 	private userList: NameValue[] = [];
-
 	private examList: NameValue[] = [];
-
 	private physicianList: NameValue[] = [];
-
 	private patientList: NameValue[] = [];
-
 	private times: NameValue[];
-
 	public statusList: NameValue[] = [];
-
 	public currentDate = new Date();
 
 	constructor(
@@ -189,14 +163,13 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 				}),
 			)
 			.subscribe((physicians) => {
-				const keyValuePhysicians = this.nameValuePipe.transform(physicians, 'patientFname', 'appointmentId', 'patientLname');
 				const tempKeyValue = physicians.map((val) => ({
 					// eslint-disable-next-line no-unsafe-optional-chaining
-					name: val.patientFname ? `${val.patientFname?.toString()}  ${val.patientLname?.toString()}` : val?.toString(),
+					name: val.patientFname ? val['patientFname']?.toString() + '  ' + val['patientLname']?.toString() : val?.toString(),
 
 					// eslint-disable-next-line no-unsafe-optional-chaining
 					value: val.patientFname
-						? `${val.patientFname?.toString()}:${val.patientLname?.toString()}:${val.appointmentId?.toString()}`
+						? val['patientFname']?.toString() + ':' + val['patientLname']?.toString() + ':' + val['appointmentId']?.toString()
 						: val?.toString(),
 				}));
 				this.filteredPatientsList = [...tempKeyValue];
@@ -257,20 +230,25 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 	public submitSearch() {
 		const data = this.appointmentForm.value;
 		if (data.patientId) {
-			const abc = data.patientId.split(':');
-			data.FirstName = abc[0];
-			data.LastName = abc[1];
+			let abc = data.patientId.split(':');
+			data['FirstName'] = abc[0];
+			data['LastName'] = abc[1];
 		}
 
 		if (data?.startedAt) {
 			const startDate = DateTimeUtils.DateToDateDistributed(data?.startedAt);
-			data.startedAt = `${startDate?.year}-${startDate?.month}-${startDate?.day} ${data?.startTime}:00`;
+			data['startedAt'] = `${startDate?.year}-${startDate?.month}-${startDate?.day} ${data?.startTime ?? '00:00'}:00`;
+		} else if (data?.startTime) {
+			data['startedAt'] = `${data?.startTime}:00`;
 		}
 
 		if (data?.endedAt) {
 			const endDate = DateTimeUtils.DateToDateDistributed(data?.endedAt);
-			data.endedAt = `${endDate?.year}-${endDate?.month}-${endDate?.day} ${data?.endTime}:00`;
+			data['endedAt'] = `${endDate?.year}-${endDate?.month}-${endDate?.day} ${data?.endTime ?? '00:00'}:00`;
+		} else if (data?.endTime) {
+			data['endedAt'] = `${data?.endTime}:00`;
 		}
+
 		this.dialogSvc.close(data);
 	}
 

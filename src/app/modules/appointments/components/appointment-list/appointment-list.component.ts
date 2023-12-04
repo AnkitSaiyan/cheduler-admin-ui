@@ -10,7 +10,6 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { SignalrService } from 'src/app/core/services/signalr.service';
 import { AppointmentAdvanceSearchComponent } from 'src/app/modules/dashboard/components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
@@ -29,7 +28,6 @@ import { getDurationMinutes } from '../../../../shared/models/calendar.model';
 import { Exam } from '../../../../shared/models/exam.model';
 import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
 import { Translate } from '../../../../shared/models/translate.model';
-import { DefaultDatePipe } from '../../../../shared/pipes/default-date.pipe';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
 
@@ -171,8 +169,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		private shareDataSvc: ShareDataService,
 		private translate: TranslateService,
 		public permissionSvc: PermissionService,
-		private defaultDatePipe: DefaultDatePipe,
-		private utcToLocalPipe: UtcToLocalPipe,
 		private joinWithAndPipe: JoinWithAndPipe,
 		private translatePipe: TranslatePipe,
 		private signalRSvc: SignalrService,
@@ -297,13 +293,14 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 					value as DownloadAsType,
 					this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
 					data?.map((ap: Appointment) => [
-						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
-						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
+						this.appointmentApiSvc.convertUtcToLocalDate(ap?.startedAt),
+						this.appointmentApiSvc.convertUtcToLocalDate(ap?.endedAt),
 						`${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
 						this.joinWithAndPipe.transform(ap.exams, 'name'),
-						this.titleCasePipe.transform(ap?.doctor),
+						this.titleCasePipe.transform(ap?.doctor) ?? '-',
+						ap.documentCount ? 'Yes' : 'No',
 						ap?.id?.toString(),
-						ap?.createdAt?.toString(),
+						this.appointmentApiSvc.convertUtcToLocalDate(ap?.createdAt),
 						this.translatePipe.transform(AppointmentStatusToName[+ap.approval]),
 					]),
 					'appointment',
@@ -445,24 +442,30 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public copyToClipboard() {
 		try {
-			let dataString = `Started At\t\t\tEnded At\t\t\t`;
-			dataString += `${this.tableHeaders
+			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t\t')}\n`;
 
-			if (!this.filteredAppointments$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+			const data: any[] = this.isUpcomingAppointments ? this.upcomingTableData$$.value.items : this.pastTableData$$.value.items;
+
+			if (!data.length) {
+				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
 
-			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
-				dataString += `${ap.startedAt.toString()}\t${ap.endedAt.toString()}\t${this.titleCasePipe.transform(
-					ap.patientFname,
-				)} ${this.titleCasePipe.transform(ap.patientLname)}\t\t${this.titleCasePipe.transform(
-					ap.doctor,
-				)}\t\t${ap.id.toString()}\t\t${ap.createdAt.toString()}\t\t${ap.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap.approval]}\n`;
+			data.forEach((ap: Appointment) => {
+				dataString += `${this.appointmentApiSvc.convertUtcToLocalDate(ap.startedAt)}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(
+					ap.endedAt,
+				)}\t\t${this.titleCasePipe.transform(ap.patientFname)} ${this.titleCasePipe.transform(ap.patientLname)}\t\t${this.joinWithAndPipe.transform(
+					ap.exams,
+					'name',
+				)}\t\t${this.titleCasePipe.transform(ap.doctor) || '-'}\t\t${
+					ap.documentCount ? 'Yes' : 'No'
+				}\t\t${ap.id.toString()}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap.createdAt)}\t\t${ap.readStatus ? 'Yes' : 'No'}\t\t${
+					AppointmentStatusToName[+ap.approval]
+				}\n`;
 			});
 
 			this.clipboardData = dataString;
@@ -653,7 +656,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	public onSort(e: DfmTableHeader, table = 'upcoming'): void {
-		table == 'past' ? (this.sortTypePast = e.sort) : (this.sortType = e.sort);
+		if (table == 'past') this.sortTypePast = e.sort;
+		else this.sortType = e.sort;
 		this.filteredAppointments$$.next(GeneralUtils.SortArray(this.filteredAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 
@@ -711,8 +715,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public uploadRefferingNote(event: any, id: any) {
 		event.stopImmediatePropagation();
-		const extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
-		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		let extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+		let allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
 		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
 		if (!event.target.files.length) {
 		} else if (allowedExtensions.indexOf(extension) === -1) {
@@ -729,7 +733,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		new Promise((resolve) => {
 			const { files } = event.target as HTMLInputElement;
 
-			if (files && files?.length) {
+			if (files?.length) {
 				const reader = new FileReader();
 				reader.onload = (e: any) => {
 					resolve(files[0]);

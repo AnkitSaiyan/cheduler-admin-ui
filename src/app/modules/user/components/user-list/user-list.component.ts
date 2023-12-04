@@ -151,7 +151,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 		this.userManagementApiSvc.userList$.pipe(map((users) => users.items.map((user) => this.convertToUserBase(user)))).subscribe({
 			next: (userBase) => {
-				this.users$$.next([...(userBase as UserBase[])]);
+				this.users$$.next([...(userBase)]);
 				this.loading$$.next(false);
 			},
 			error: (err) => {
@@ -195,7 +195,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 							u.firstname,
 							u.lastname,
 							u.email,
-							...this.roleNamePipe.transform(this.userApiSvc.userIdToRoleMap.get(u.id.toString())),
+							this.roleNamePipe.transform(this.userApiSvc.userIdToRoleMap.get(u.id.toString())) || '-',
 							Translate[StatusToName[+u.status]][this.selectedLang],
 						]),
 						'users',
@@ -234,7 +234,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			)
 			.subscribe({
 				next: (value) => {
-					this.selectedUserIds.map((id) => {
+					this.selectedUserIds.forEach((id) => {
 						this.users$$.next([
 							...GeneralUtils.modifyListData(
 								this.users$$.value,
@@ -277,13 +277,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						title: Translate[this.columns[i]][lang] ?? this.columns[i],
 					}));
 
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						default:
-							this.statuses = StatusesNL;
-					}
+					if (lang == ENG_BE) {this.statuses = Statuses}
+					else {this.statuses = StatusesNL};
 				},
 			});
 	}
@@ -357,13 +352,13 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				.join('\t')}\n`;
 
 			if (!this.filteredUsers$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
-
+			
 			this.filteredUsers$$.value.forEach((user: UserBase) => {
-				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user?.telephone ?? '—'}\t${user.userType ?? '—'}\t${
+				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.userType ?? '—'}\t${ +user.status === 2 ? '-' :
 					StatusToName[+user.status]
 				}\n`;
 			});
@@ -465,7 +460,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 					user.email?.toLowerCase()?.includes(searchText) ||
 					userType?.toLowerCase()?.includes(searchText) ||
 					(user?.telephone as string)?.toLowerCase()?.includes(searchText) ||
-					status.toLowerCase()?.startsWith(searchText)
+					status?.toLowerCase()?.startsWith(searchText)
 				);
 			}),
 		]);

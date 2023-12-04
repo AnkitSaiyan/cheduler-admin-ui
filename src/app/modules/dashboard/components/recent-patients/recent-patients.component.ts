@@ -11,8 +11,9 @@ import { Translate } from 'src/app/shared/models/translate.model';
 import { ENG_BE, Statuses } from 'src/app/shared/utils/const';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
-import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
-
+import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 const ColumnIdToKey = {
 	1: 'patientFname',
 	2: 'patientEmail',
@@ -65,6 +66,8 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 		private notificationSvc: NotificationDataService,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
+		private defaultDatePipe: DefaultDatePipe,
+		private utcToLocalPipe: UtcToLocalPipe,
 	) {
 		super();
 		this.recentPatients$$ = new BehaviorSubject<any[]>([]);
@@ -124,10 +127,10 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 					value as DownloadAsType,
 					this.tableHeaders.map(({ title }) => title).slice(0),
 					this.filteredRecentPatients$$.value.map((ap: any) => [
-						ap?.patientFname?.toString(),
-						ap?.patientEmail?.toString(),
-						ap?.doctor.toString(),
-						ap.startedAt.toString(),
+						ap?.patientFname?.toString() + ' ' + ap?.patientLname.toString(),
+						ap?.patientEmail?.toString() || '-',
+						ap?.doctor.toString() || '-',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap.startedAt.toString())) || '-',
 					]),
 					'recent-patients',
 				);
@@ -168,20 +171,20 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
 	public copyToClipboard() {
 		try {
-			let dataString = `Patient Name\t\t\tEmail Id\t\t\t`;
-			dataString += `${this.tableHeaders
-				.map(({ title }) => title)
-				.slice(2)
-				.join('\t\t')}\n`;
+			let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t\t')}\n`;
 
 			if (!this.filteredRecentPatients$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
 
 			this.filteredRecentPatients$$.value.forEach((ap: any) => {
-				dataString += `${ap?.patientFname?.toString()}\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${ap.startedAt.toString()}\n`;
+				dataString += `${
+					ap?.patientFname?.toString() + ' ' + ap?.patientLname?.toString()
+				}\t\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${this.defaultDatePipe.transform(
+					this.utcToLocalPipe.transform(ap.startedAt.toString()),
+				)}\n`;
 			});
 
 			this.clipboardData = dataString;

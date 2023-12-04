@@ -280,7 +280,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
 		}
 		minMaxValue = { ...minMaxValue, grayOutMin: min, grayOutMax: max };
-		// console.log(minMaxValue, 'test');
 		this.practiceHourMinMax$$.next(minMaxValue);
 	}
 

@@ -39,6 +39,11 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Inactief',
 	},
 
+	Default: {
+		[ENG_BE]: '-',
+		[DUTCH_BE]: '-',
+	},
+
 	Telephone: {
 		[ENG_BE]: 'Telephone',
 		[DUTCH_BE]: 'Telefoon',
@@ -605,6 +610,11 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Geen gegevens om te downloaden',
 	},
 
+	NoDataFound: {
+		[ENG_BE]: 'No data found',
+		[DUTCH_BE]: 'Geen gegevens gevonden',
+	},
+
 	sessionExp: {
 		[ENG_BE]: 'Your session has expired. Login again',
 		[DUTCH_BE]: 'Uw sessie is verlopen. Log opnieuw in',
@@ -665,7 +675,7 @@ export const Translate = Object.freeze({
 		},
 	},
 
-	// title
+	//title
 	Dashboard: {
 		[ENG_BE]: 'Dashboard',
 		[DUTCH_BE]: 'Dashboard',
@@ -878,3 +888,4 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Room Duration',
 	},
 });
+

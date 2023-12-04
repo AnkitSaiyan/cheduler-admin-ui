@@ -1,6 +1,6 @@
 import { Directive, Input, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { GeneralUserPermission, ReaderPermission } from '../models/permission.model';
+import { AdminNoPermissions, GeneralUserPermission, ReaderPermission } from '../models/permission.model';
 import { UserRoleEnum } from '../models/user.model';
 
 @Directive({
@@ -38,9 +38,12 @@ export class IsPermittedDirective implements OnInit {
 						}
 						break;
 					}
-					default:
-						this.createEmbeddedView();
+					case UserRoleEnum.Admin: {
+						if (!this.elementPermission.some((permission) => Object.values(AdminNoPermissions).find((value) => value === permission))) {
+							this.createEmbeddedView();
+						}
 						break;
+					}
 				}
 			},
 		});
@@ -50,3 +53,4 @@ export class IsPermittedDirective implements OnInit {
 		this.vcr.createEmbeddedView(this.templateRef);
 	}
 }
+

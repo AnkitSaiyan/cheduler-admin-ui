@@ -110,13 +110,13 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 			let dataString = `${this.columns.join('\t')}\n`;
 
 			if (!this.filteredAbsence$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
 
 			this.filteredAbsence$$.value.forEach((absence: Absence) => {
-				dataString += `${absence.name}\t${absence.startedAt}\t${absence.endedAt}\t${absence.info}\n`;
+				dataString += `${absence.name}\t${absence.startedAt}\t${absence.endedAt}\t${absence.info || '-'}\n`;
 			});
 
 			this.clipboardData = dataString;

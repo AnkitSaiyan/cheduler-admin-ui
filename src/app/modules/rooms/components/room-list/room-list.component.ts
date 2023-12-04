@@ -161,8 +161,8 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 						this.columns.filter((val) => val !== 'Actions'),
 						this.filteredRooms$$.value.map((u: Room) => [
 							u.name,
-							u.description,
-							this.roomPlaceInToIndexMap.get(u.placeInAgenda)?.toString(),
+							u.description ?? '-',
+							this.roomPlaceInToIndexMap.get(u.placeInAgenda)?.toString() ?? '-',
 							u.type?.toString(),
 							Translate[StatusToName[+u.status]][this.selectedLang],
 						]),
@@ -325,7 +325,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 			let dataString = `${this.columns.filter((value) => value !== 'Actions').join('\t')}\n`;
 
 			if (!this.filteredRooms$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
