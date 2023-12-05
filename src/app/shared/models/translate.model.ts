@@ -611,8 +611,8 @@ export const Translate = Object.freeze({
 	},
 
 	NoDataFound: {
-		[ENG_BE]: 'No data to download',
-		[DUTCH_BE]: 'Geen gegevens om te downloaden',
+		[ENG_BE]: 'No data found',
+		[DUTCH_BE]: 'Geen gegevens gevonden',
 	},
 
 	sessionExp: {
