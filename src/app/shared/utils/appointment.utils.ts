@@ -73,7 +73,7 @@ export class AppointmentUtils {
 		});
 	}
 
-	public static ToggleSlotSelection(slot: SlotModified, selectedTimeSlot: SelectedSlots, isCombinable = false, isEdit = false): void {
+	public static ToggleSlotSelection(slot: SlotModified, selectedTimeSlot: SelectedSlots, isEdit = false): void {
 		if (!isEdit && (!this.IsSlotAvailable(slot, selectedTimeSlot) || !slot?.end || !slot?.start)) {
 			return;
 		}
@@ -127,12 +127,12 @@ export class AppointmentUtils {
 							start: '',
 							end: '',
 							exams: examList.map((examID) => {
-								let examDetails = {
+								const examDetails = {
 									examId: +examID,
 									rooms: selectedTimeSlot[+examID]?.roomList ?? [],
 									users: selectedTimeSlot[+examID]?.userList ?? [],
-									start:'',
-									end:'',
+									start: '',
+									end: '',
 								};
 
 								if (selectedTimeSlot[+examID]) {

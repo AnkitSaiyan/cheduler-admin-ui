@@ -296,7 +296,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	public handleSlotSelectionToggle(slots: SlotModified) {
-		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable);
+		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot);
 		let smallestStartTime = '';
 		Object.values(this.selectedTimeSlot).forEach((slot) => {
 			if (!smallestStartTime || DateTimeUtils.TimeToNumber(slot.start) < DateTimeUtils.TimeToNumber(smallestStartTime)) {

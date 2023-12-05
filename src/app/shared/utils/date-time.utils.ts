@@ -34,7 +34,7 @@ export class DateTimeUtils {
 
 		const minutes = newDate.getMinutes().toString();
 
-		return `${newDate.getHours()}:${minutes.length < 2 ? '0'+minutes : minutes}:00`;
+		return `${newDate.getHours()}:${minutes.length < 2 ? `0${minutes}` : minutes}:00`;
 	}
 
 	public static TimeStringIn24Hour(timeString: string | undefined): string {
@@ -87,7 +87,6 @@ export class DateTimeUtils {
 		const min = minuteInInterval > 60 ? '00' : `0${minuteInInterval}`.slice(-2);
 		return format === 12 ? `${hour}:${min}${ap}` : `${hour}:${min}`;
 	}
-	
 
 	public static TimeToNumber(timeString: string): number {
 		if (timeString && timeString.includes(':')) {

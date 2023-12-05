@@ -456,7 +456,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	}
 
 	public handleSlotSelectionToggle(slots: SlotModified, isEdit: boolean = false) {
-		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable, isEdit);
+		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, isEdit);
 	}
 
 	public handleEmailInput(e: Event): void {
