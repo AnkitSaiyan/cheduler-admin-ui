@@ -244,7 +244,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		try {
 
 			if (!this.filteredPrioritySlots$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
