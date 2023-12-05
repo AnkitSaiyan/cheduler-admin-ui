@@ -452,7 +452,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	}
 
 	public checkSlotAvailability(slot: SlotModified) {
-		return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot, this.isCombinable);
+		return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot);
 	}
 
 	public handleSlotSelectionToggle(slots: SlotModified, isEdit: boolean = false) {

@@ -64,7 +64,7 @@ export class AppointmentUtils {
 		return { newSlots, examIdToSlots: examIdToSlotsMap };
 	}
 
-	public static IsSlotAvailable(slot: SlotModified, selectedTimeSlot: SelectedSlots, isCombinable = false) {
+	public static IsSlotAvailable(slot: SlotModified, selectedTimeSlot: SelectedSlots) {
 		return !Object.values(selectedTimeSlot)?.some((value) => {
 			const firstSlot = value?.slot?.split('-');
 			return (
@@ -74,11 +74,9 @@ export class AppointmentUtils {
 	}
 
 	public static ToggleSlotSelection(slot: SlotModified, selectedTimeSlot: SelectedSlots, isCombinable = false, isEdit = false): void {
-		if (!isEdit && (!this.IsSlotAvailable(slot, selectedTimeSlot, isCombinable) || !slot?.end || !slot?.start)) {
+		if (!isEdit && (!this.IsSlotAvailable(slot, selectedTimeSlot) || !slot?.end || !slot?.start)) {
 			return;
 		}
-		// debugger;
-
 		if (selectedTimeSlot[slot.examId]?.slot === `${slot.start}-${slot.end}`) {
 			selectedTimeSlot[slot.examId] = { slot: '', roomList: [], userList: [], examId: slot.examId };
 		} else {
@@ -129,10 +127,12 @@ export class AppointmentUtils {
 							start: '',
 							end: '',
 							exams: examList.map((examID) => {
-								const examDetails = {
+								let examDetails = {
 									examId: +examID,
 									rooms: selectedTimeSlot[+examID]?.roomList ?? [],
 									users: selectedTimeSlot[+examID]?.userList ?? [],
+									start:'',
+									end:'',
 								};
 
 								if (selectedTimeSlot[+examID]) {
