@@ -355,7 +355,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				.join('\t')}\n`;
 
 			if (!this.filteredUsers$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}

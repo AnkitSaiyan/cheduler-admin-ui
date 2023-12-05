@@ -610,9 +610,9 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Geen gegevens om te downloaden',
 	},
 
-	NoDataFound: {
-		[ENG_BE]: 'No data found',
-		[DUTCH_BE]: 'Geen gegevens gevonden',
+	NoDataToCopy: {
+		[ENG_BE]: 'No data to copy',
+		[DUTCH_BE]: 'Geen gegevens om te kopiëren',
 	},
 
 	sessionExp: {
@@ -675,7 +675,7 @@ export const Translate = Object.freeze({
 		},
 	},
 
-	// title
+	//title
 	Dashboard: {
 		[ENG_BE]: 'Dashboard',
 		[DUTCH_BE]: 'Dashboard',
@@ -888,3 +888,49 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Room Duration',
 	},
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

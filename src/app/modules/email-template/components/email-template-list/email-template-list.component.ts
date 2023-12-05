@@ -1,7 +1,10 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
 import { DfmDatasource, DfmTableHeader, NotificationType } from 'diflexmo-angular-design';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { EmailTemplateApiService } from 'src/app/core/services/email-template-api.service';
 import { Status, StatusToName } from 'src/app/shared/models/status.model';
 import { getStatusEnum, getUserTypeEnum } from 'src/app/shared/utils/getEnums';
@@ -13,12 +16,9 @@ import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { Permission } from 'src/app/shared/models/permission.model';
+import {PaginationData} from "../../../../shared/models/base-response.model";
+import {GeneralUtils} from "../../../../shared/utils/general.utils";
 import { ActivatedRoute, Router } from '@angular/router';
-import { PaginationData } from '../../../../shared/models/base-response.model';
-import { GeneralUtils } from '../../../../shared/utils/general.utils';
-import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 
 const ColumnIdToKey = {
 	1: 'title',
@@ -276,9 +276,9 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 				.map(({ title }) => title)
 				.slice(0, -1)
 				.join('\t')}\n`;
-
+			
 			if (!this.filteredEmails$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
@@ -309,7 +309,6 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 			}
 		}
 	}
-
 	private clearDownloadDropdown() {
 		setTimeout(() => {
 			this.downloadDropdownControl.setValue('');
@@ -327,3 +326,26 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 		this.filteredEmails$$.next(GeneralUtils.SortArray(this.filteredEmails$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -104,20 +104,21 @@
 
 			</div>
 
-			<div class="hidden align-items-center dfm-gap-8 dfm-px-8 justify-content-center ap-li-section2-action-bar-mv hide-scrollbar overflow-x-auto">
-				<dfm-input size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" [formControl]="searchControl"></dfm-input>
+			<div class="hidden dfm-gap-8 dfm-px-8 justify-content-center ap-li-section2-action-bar-mv hide-scrollbar overflow-x-auto">
+				<dfm-input class="mv-search" size="md" placeholder="{{ 'Search' | translate }}" icon="search-sm" [formControl]="searchControl"></dfm-input>
 
-				<div class="appointment-status-dropdown">
+				<div class="appointment-status-dropdown input-dropdown-menu-pos-rel">
 					<dfm-input-dropdown
 						class="flex-1"
 						size="md"
 						[formControl]="appointmentViewControl"
 						[showDescription]="false"
 						[items]="appointmentListData"
-					  ></dfm-input-dropdown>
+					  >
+					</dfm-input-dropdown>
 				</div>
 
-				<div class="d-flex align-items-center dfm-button-group-wrapper">
+				<div class="d-flex align-items-center dfm-button-group-wrapper h-fit">
 					<div>
 						<dfm-button-icon
 							color="tertiary-gray"

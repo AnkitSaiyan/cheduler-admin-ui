@@ -333,11 +333,11 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
 
-			if (!this.filteredStaffs$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
-				this.clipboardData = '';
-				return;
-			}
+				if (!this.filteredStaffs$$.value.length) {
+					this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
+					this.clipboardData = '';
+					return;
+				}
 
 			this.filteredStaffs$$.value.forEach((staff: User) => {
 				dataString += `${staff.firstname}\t${staff.lastname}\t ${staff.userType}\t ${staff.email}\t${StatusToName[+staff.status]}\n`;

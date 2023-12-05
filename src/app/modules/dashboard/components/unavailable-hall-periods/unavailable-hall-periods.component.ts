@@ -105,7 +105,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 				}
 				this.paginationData = roomAbsenceBase?.metaData?.pagination || 1;
 			},
-			error: () => this.filteredRoomAbsence$$.next([]),
+			error: () => this.filteredRoomAbsence$$.next([])
 		});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
@@ -173,18 +173,18 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 	public copyToClipboard() {
 		try {
-			let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t\t')}\n`;
+			let dataString = `${this.tableHeaders
+				.map(({ title }) => title)
+				.join('\t\t')}\n`;
 
 			if (!this.filteredRoomAbsence$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
 
 			this.filteredRoomAbsence$$.value.forEach((ap: any) => {
-				dataString += `${ap?.roomName?.toString()}\t\t${this.defaultDatePipe.transform(
-					this.utcToLocalPipe.transform(ap?.startDate?.toString()),
-				)}\t\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endDate?.toString()))}\t\t${ap.absenceName.toString()}\n`;
+				dataString += `${ap?.roomName?.toString()}\t\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startDate?.toString()))}\t\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endDate?.toString()))}\t\t${ap.absenceName.toString()}\n`;
 			});
 
 			this.clipboardData = dataString;

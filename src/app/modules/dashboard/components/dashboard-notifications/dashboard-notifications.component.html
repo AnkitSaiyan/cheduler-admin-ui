@@ -19,7 +19,7 @@
     >
       <div class="text-sm d-flex flex-column">
         <div class="d-flex dfm-gap-8">
-          <span class="font-weight-medium text-nowrap">{{ notification.title | translate | truncate : 60 }}</span>
+          <span class="font-weight-medium text-nowrap">{{ notification.title | translate | truncate }}</span>
           <span class="dfm-text-main-400">({{ notification.subTitle | translate}})</span>
         </div>
         <span>{{notification.message | translate}}</span>

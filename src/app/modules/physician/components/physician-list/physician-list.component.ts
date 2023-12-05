@@ -326,7 +326,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				.join('\t')}\n`;
 
 			if (!this.filteredPhysicians$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}

@@ -315,7 +315,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 				.join('\t')}\n`;
 
 			if (!this.filteredExams$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
