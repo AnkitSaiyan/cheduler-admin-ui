@@ -278,7 +278,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 				.join('\t')}\n`;
 			
 			if (!this.filteredEmails$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataFound[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
