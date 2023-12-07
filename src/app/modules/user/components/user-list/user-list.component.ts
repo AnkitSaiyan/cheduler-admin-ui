@@ -35,13 +35,6 @@ const SchedulerColumnIdToKey = {
 	5: 'Status',
 };
 
-const GeneralColumnIdToKey = {
-	1: 'firstname',
-	2: 'lastname',
-	3: 'email',
-	4: 'Status',
-};
-
 @Component({
 	selector: 'dfm-user-list',
 	templateUrl: './user-list.component.html',
@@ -233,7 +226,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
-				next: (value) => {
+				next: () => {
 					this.selectedUserIds.forEach((id) => {
 						this.users$$.next([
 							...GeneralUtils.modifyListData(
@@ -277,7 +270,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						title: Translate[this.columns[i]][lang] ?? this.columns[i],
 					}));
 
-					if (lang == ENG_BE) {
+					if (lang === ENG_BE) {
 						this.statuses = Statuses;
 					} else {
 						this.statuses = StatusesNL;
@@ -436,11 +429,11 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		modalRef.closed.pipe(take(1)).subscribe({
 			next: (res) => {
 				if (res) {
-					if (!isNaN(+res.id)) {
+					if (!Number.isNaN(+res.id)) {
 						return;
 					}
 
-					const item = isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : (res as UserBase);
+					const item = Number.isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : (res as UserBase);
 					this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, item, 'add'));
 				}
 			},
@@ -521,7 +514,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		} as unknown as UserBase;
 	}
 
-	public onScroll(e: undefined): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.tableData$$.value.isLoadingMore = true;
 		}

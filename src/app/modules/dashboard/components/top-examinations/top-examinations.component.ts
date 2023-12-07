@@ -20,7 +20,7 @@ export class TopExaminationsComponent extends DestroyableComponent implements On
 	}
 
 	public ngOnInit(): void {
-		this.dashboardApiService.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
+		this.dashboardApiService.exams$.pipe(takeUntil(this.destroy$$)).subscribe((exams: any) => {
 			this.exams$$.next(exams.exams);
 			this.filteredExams$$.next(exams.exams);
 		});

@@ -5,8 +5,8 @@ import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/
 })
 export class AppendTextToInputDirective {
 	@HostListener('input', ['$event'])
-	private onChange(e: InputEvent) {
-		this.handleChange(e);
+	private onChange() {
+		this.handleChange();
 	}
 
 	@Input()
@@ -14,10 +14,8 @@ export class AppendTextToInputDirective {
 
 	constructor(private elementRef: ElementRef, private r: Renderer2) {}
 
-	private handleChange(e: InputEvent) {
+	private handleChange() {
 		// testing
-
-		const { value } = e.target as HTMLInputElement;
 		this.elementRef.nativeElement.type = 'text';
 		this.elementRef.nativeElement.value = 'g';
 

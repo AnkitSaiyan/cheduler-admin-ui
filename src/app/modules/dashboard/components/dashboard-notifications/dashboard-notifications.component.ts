@@ -61,7 +61,7 @@ export class DashboardNotificationsComponent extends DestroyableComponent implem
 
 	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.dashboardApiService.notificationPageNo = this.dashboardApiService.notificationPageNo + 1;
+			this.dashboardApiService.notificationPageNo += 1;
 		}
 	}
 }

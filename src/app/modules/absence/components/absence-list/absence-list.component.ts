@@ -41,7 +41,7 @@ export class AbsenceListComponent extends DestroyableComponent implements OnInit
 			map((data) => data[ABSENCE_TYPE]),
 		);
 
-		this.absenceViewType$.pipe(takeUntil(this.destroy$$)).subscribe((res) => (res == 'table' ? this.changeDate(undefined) : null));
+		this.absenceViewType$.pipe(takeUntil(this.destroy$$)).subscribe((res) => (res === 'table' ? this.changeDate(undefined) : null));
 	}
 
 	public override ngOnDestroy() {

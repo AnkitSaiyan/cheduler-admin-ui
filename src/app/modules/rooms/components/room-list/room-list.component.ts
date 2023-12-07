@@ -103,7 +103,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 		});
 
 		this.rooms$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (rooms) => this.handleSearch(this.searchControl.value ?? ''),
+			next: () => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.roomApiSvc.rooms$
@@ -201,7 +201,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
-				next: (value) => {
+				next: () => {
 					this.notificationSvc.showNotification(Translate.SuccessMessage.StatusChanged[this.selectedLang]);
 					this.clearSelected$$.next();
 				},
@@ -230,12 +230,10 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 						this.columns = [...this.columns, Translate.Actions[lang]];
 					}
 
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						default:
-							this.statuses = StatusesNL;
+					if (lang === ENG_BE) {
+						this.statuses = Statuses;
+					} else {
+						this.statuses = StatusesNL;
 					}
 				},
 			});
@@ -491,12 +489,12 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 		this.roomApiSvc
 			.updatePlaceInAgenda$(requestData)
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe(
-				(res) => {
+			.subscribe({
+				next: () => {
 					this.loading$$.next(false);
 				},
-				() => this.loading$$.next(false),
-			);
+				error: () => this.loading$$.next(false),
+			});
 	}
 
 	private mapRoomPlaceInAgenda() {
@@ -514,9 +512,9 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 		}, 0);
 	}
 
-	public onScroll(e: any) {
+	public onScroll() {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.roomApiSvc.pageNo = this.roomApiSvc.pageNo + 1;
+			this.roomApiSvc.pageNo += 1;
 		}
 	}
 }

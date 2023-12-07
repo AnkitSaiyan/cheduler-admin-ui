@@ -1,7 +1,7 @@
 import { AvailabilityType, User } from './user.model';
 import { Status } from './status.model';
 import { PracticeAvailability } from './practice.model';
-import { TimeSlot } from './calendar.model';
+import { TimeSlot } from './common.modal';
 import { Exam } from './exam.model';
 import { PartialBy, Prettify } from '../utils/types';
 

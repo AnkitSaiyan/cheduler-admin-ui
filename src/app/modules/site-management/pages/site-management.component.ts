@@ -139,7 +139,9 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 				try {
 					introductoryTextObj = JSON.parse(siteManagementData.introductoryText);
 					introductoryTextObjEnglish = JSON.parse(siteManagementData.introductoryTextEnglish);
-				} catch (e) {}
+				} catch (e) {
+					console.log(e);
+				}
 			}
 
 			if (siteManagementData?.logo) {
@@ -184,7 +186,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			this.siteManagementForm.patchValue({
 				reminderTimeType: reminderDurationTYpe,
 				cancelAppointmentType: durationType,
-				documentSize: siteManagementData?.documentSizeInKb ? siteManagementData?.documentSizeInKb / 1024 : 5,
+				documentSize: siteManagementData?.documentSizeInKb ? siteManagementData.documentSizeInKb / 1024 : 5,
 				absenceImpactAlertIntervalType: absenceReminderType,
 			});
 		}, 0);
@@ -252,8 +254,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 		this.siteManagementApiSvc
 			.saveSiteManagementData$(requestData)
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe(
-				() => {
+			.subscribe({
+				next: () => {
 					this.submitting$$.next(false);
 					if (this.siteManagementData$$.value?.id) {
 						this.notificationSvc.showNotification(Translate.SuccessMessage.SiteUpdated[this.selectedLang]);
@@ -261,10 +263,10 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 						this.notificationSvc.showNotification(Translate.SuccessMessage.SiteAdded[this.selectedLang]);
 					}
 				},
-				(err) => {
+				error: () => {
 					this.submitting$$.next(false);
 				},
-			);
+			});
 	}
 
 	public onFileChange(event: Event) {
@@ -280,7 +282,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
 			const reader = new FileReader();
 
-			reader.onload = (e: any) => {
+			reader.onload = () => {
 				fileControl?.setValue({
 					file: reader.result,
 					fileBlob: files[0],
@@ -307,7 +309,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			return;
 		}
 
-		if (!inputText.match(EMAIL_REGEX)) {
+		if (!EMAIL_REGEX.exec(inputText)) {
 			this.siteManagementForm.get('email')?.setErrors({
 				email: true,
 			});

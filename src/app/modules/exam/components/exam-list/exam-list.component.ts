@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
@@ -136,7 +136,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 		});
 
 		this.exams$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (exams) => this.handleSearch(this.searchControl.value ?? ''),
+			next: () => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -149,7 +149,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 				this.paginationData = examsBase?.metaData?.pagination || 1;
 				this.isLoading = false;
 			},
-			error: (e) => {
+			error: () => {
 				this.exams$$.next([]);
 			},
 		});
@@ -233,12 +233,10 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 						title: Translate[this.columns[i]][lang],
 					}));
 
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						default:
-							this.statuses = StatusesNL;
+					if (lang === ENG_BE) {
+						this.statuses = Statuses;
+					} else {
+						this.statuses = StatusesNL;
 					}
 				},
 			});
@@ -391,7 +389,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 		}, 0);
 	}
 
-	public onScroll(e: undefined): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.examApiSvc.pageNo = this.paginationData.pageNo + 1;
 			this.tableData$$.value.isLoadingMore = true;

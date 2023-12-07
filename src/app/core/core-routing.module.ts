@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CoreComponent } from './core.component';
 import { PermissionGuard } from './guard/permission.guard';
-import { RouteGuard } from './guard/route.guard';
 
 const routes: Routes = [
 	{

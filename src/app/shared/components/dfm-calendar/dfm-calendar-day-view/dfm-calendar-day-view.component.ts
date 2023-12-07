@@ -145,7 +145,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 	public hideAbsenceData = {};
 
-	public isHoliday$$ = new BehaviorSubject<Boolean>(false);
+	public isHoliday$$ = new BehaviorSubject<boolean>(false);
 
 	public day: any = [];
 
@@ -173,7 +173,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			.subscribe(({ d }) => {
 				const date = d.split('-');
 				this.day = [+date[2], +date[1], date[0]];
-				this.selectedDate = new Date(date?.[0], date?.[1] - 1, date?.[2], 0, 0, 0, 0);
+				if (date) this.selectedDate = new Date(date[0], date[1] - 1, date[2], 0, 0, 0, 0);
 			});
 	}
 
@@ -258,11 +258,11 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				takeUntil(this.destroy$$),
 			)
 			.subscribe((data) => {
-				const isHoliday: boolean = Boolean(
+				const Holiday: boolean = Boolean(
 					data[this.datePipe.transform(this.selectedDate, 'd-M-yyyy') ?? ''] &&
 						data[this.datePipe.transform(this.selectedDate, 'd-M-yyyy') ?? ''].some(({ isHoliday }) => isHoliday),
 				);
-				this.isHoliday$$.next(isHoliday);
+				this.isHoliday$$.next(Holiday);
 			});
 	}
 
@@ -274,12 +274,11 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		this.hideAbsenceData = {};
 		if (Object.keys(absence)?.length) {
 			Object.entries(absence).forEach(([key, data]) => {
-				data.forEach((absence) => {
+				data.forEach((abse) => {
 					if (
-						DateTimeUtils.TimeToNumber(absence.end) <
-							DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot?.timings?.[0])) ||
-						DateTimeUtils.TimeToNumber(absence.start) >
-							DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot?.timings?.[this.timeSlot?.timings?.length - 1])) + 1
+						DateTimeUtils.TimeToNumber(abse.end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot?.timings?.[0])) ||
+						DateTimeUtils.TimeToNumber(abse.start) >
+							DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.timeSlot?.timings?.[this.timeSlot.timings.length - 1]) ?? '') + 1
 					) {
 						if (this.hideAbsenceData[key]) {
 							this.hideAbsenceData[key] = [...this.hideAbsenceData[key], absence];
@@ -356,13 +355,14 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 	public openChangeTimeModal(
 		appointment: Appointment,
-		extend = true,
+		extend: boolean,
 		eventContainer: HTMLDivElement,
 		position?: boolean,
 		time?: number,
 		divHieght?: number,
 		divTop?: number,
 	) {
+		const htmlContainer: HTMLDivElement = eventContainer;
 		this.minutesInBottom = this.extendMinutesInBottom(appointment);
 		const top = eventContainer?.style.top;
 		const height = eventContainer?.style.height;
@@ -375,8 +375,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		});
 
 		if (divHieght) {
-			eventContainer.style.top = `${divTop}px`;
-			eventContainer.style.height = `${divHieght}px`;
+			htmlContainer.style.top = `${divTop}px`;
+			htmlContainer.style.height = `${divHieght}px`;
 		}
 
 		modalRef.closed
@@ -398,10 +398,10 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				take(1),
 			)
 			.subscribe({
-				next: (res) => {
+				next: () => {
 					this.notificationSvc.showSuccess(Translate.AppointmentUpdatedSuccessfully[this.selectedLang]);
 				},
-				error: (err) => {
+				error: () => {
 					if (eventContainer) {
 						// eslint-disable-next-line no-param-reassign
 						eventContainer.style.top = divTop ? `${divTop}px` : top;
@@ -455,7 +455,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				take(1),
 			)
 			.subscribe({
-				next: (res) => this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted[this.selectedLang]}!`),
+				next: () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.Deleted[this.selectedLang]}!`),
 			});
 	}
 
@@ -463,7 +463,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		if (this.permissionSvc.permissionType === UserRoleEnum.Reader || this.disableDblClick) return;
 		const currentDate = new Date();
 
-		let minutes = Math.round(+e?.offsetY / this.pixelPerMinute);
+		let minutes = Math.round(+e.offsetY / this.pixelPerMinute);
 
 		// In case if calendar start time is not 00:00 then adding extra minutes
 		if (this.timeSlot?.timings?.[0]) {
@@ -644,7 +644,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const startTime = this.myDate(this.timeSlot?.timings?.[0]);
 		const dayStartTime = this.myDate(dayStart);
 		const lastMinutes = getDurationMinutes(startTime, dayStartTime);
-		const dayEnd = this.addMinutes(15, timings[timings?.length - 1]);
+		const dayEnd = this.addMinutes(15, timings[timings.length - 1]);
 
 		grayOutSlot.push({
 			dayStart: intervals[intervals.length - 1].dayEnd,
@@ -691,32 +691,33 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	}
 
 	public resize(e: any, resizer: HTMLDivElement, appointment: Appointment, container: HTMLDivElement): void {
+		const htmlContainer: HTMLDivElement = container;
 		this.minutesInBottom = this.extendMinutesInBottom(appointment);
 		this.element = container;
 		this.currentResizer = resizer;
 		e.preventDefault();
-		this.original_height = parseInt(container?.style.height);
-		this.original_y = parseInt(container?.style.top);
+		this.original_height = parseInt(container?.style.height, 10);
+		this.original_y = parseInt(container?.style.top, 10);
 		this.original_mouse_y = e.pageY;
 		const isTopResizer = resizer.classList.contains('top');
-		this.resizeListener = this.renderer.listen(window, 'mousemove', (e: any) => {
-			container.style.zIndex = '10';
+		this.resizeListener = this.renderer.listen(window, 'mousemove', (ele: any) => {
+			htmlContainer.style.zIndex = '10';
 			if (!isTopResizer) {
-				const height = this.original_height + (e.pageY - this.original_mouse_y);
+				const height = this.original_height + (ele.pageY - this.original_mouse_y);
 				if (height > this.minimum_size) {
 					this.element.style.height = `${height}px`;
 				}
-			} else if (isTopResizer) {
-				const height = this.original_height - (e.pageY - this.original_mouse_y);
-				if (height > this.minimum_size && this.element.getBoundingClientRect().height != height) {
+			} else {
+				const height = this.original_height - (ele.pageY - this.original_mouse_y);
+				if (height > this.minimum_size && this.element.getBoundingClientRect().height !== height) {
 					this.element.style.height = `${height}px`;
-					this.element.style.top = `${this.original_y + (e.pageY - this.original_mouse_y)}px`;
+					this.element.style.top = `${this.original_y + (ele.pageY - this.original_mouse_y)}px`;
 				}
 			}
 		});
 
 		this.mouseUpEve = this.renderer.listen(window, 'mouseup', () => {
-			container.style.zIndex = '1';
+			htmlContainer.style.zIndex = '1';
 			this.resizerMouseup(container, isTopResizer, appointment);
 		});
 	}
@@ -749,12 +750,15 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		divHieght: number,
 		divTop: number,
 	): void {
-		const amountofMinutes =
-			isExtend && isTopResizer && divTop / this.pixelPerMinute < minutes
-				? divTop / this.pixelPerMinute
-				: isExtend && !isTopResizer && this.minutesInBottom < +minutes
-				? this.minutesInBottom
-				: minutes;
+		const htmlContainer = container;
+		let amountofMinutes = 0;
+		if (isExtend && isTopResizer && divTop / this.pixelPerMinute < minutes) {
+			amountofMinutes = divTop / this.pixelPerMinute;
+		} else if (isExtend && !isTopResizer && this.minutesInBottom < +minutes) {
+			amountofMinutes = this.minutesInBottom;
+		} else {
+			amountofMinutes = minutes;
+		}
 
 		const requestData = {
 			amountofMinutes,
@@ -767,23 +771,23 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 		container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		this.appointmentApiSvc.updateAppointmentDuration$(requestData).subscribe({
-			next: (res) => {
+			next: () => {
 				this.notificationSvc.showSuccess(Translate.AppointmentUpdatedSuccessfully[this.selectedLang]);
 			},
-			error: (err) => {
+			error: () => {
 				if (container) {
-					container.style.top = `${divTop}px`;
-					container.style.height = `${divHieght}px`;
+					htmlContainer.style.top = `${divTop}px`;
+					htmlContainer.style.height = `${divHieght}px`;
 				}
 			},
 		});
 	}
 
 	private resizerMouseup(container: HTMLDivElement, isTopResizer: boolean, appointment: Appointment): void {
-		const minutes = Math.round(Math.abs(parseInt(container?.style.height) - this.original_height) / this.pixelPerMinute / 5) * 5;
-		const isExtend = parseInt(container?.style.height) > this.original_height;
+		const minutes = Math.round(Math.abs(parseInt(container?.style.height, 10) - this.original_height) / this.pixelPerMinute / 5) * 5;
+		const isExtend = parseInt(container?.style.height, 10) > this.original_height;
 
-		if (parseInt(container?.style.height) != this.original_height && minutes) {
+		if (parseInt(container?.style.height, 10) !== this.original_height && minutes) {
 			(async () => {
 				if (this.compareGrayoutAreaWithAppointment(container, isExtend, isTopResizer)) {
 					const confirmation = await this.showConfirm();
@@ -807,7 +811,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		this.mouseUpEve = () => {};
 	}
 
-	private showConfirm(): Promise<Boolean> {
+	private showConfirm(): Promise<boolean> {
 		return new Promise((resolve) => {
 			const modalRef = this.modalSvc.open(ConfirmActionModalComponent, {
 				data: {
@@ -825,7 +829,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 	private compareGrayoutAreaWithAppointment(container: HTMLElement, isExtend: boolean, isTopResizer: boolean): boolean {
 		if (isExtend && isTopResizer) {
-			const top = parseInt(container.style.top);
+			const top = parseInt(container.style.top, 10);
 			const grayAreaSlots: Array<any> = [];
 			this.grayOutSlot$$.value.forEach((slot) => {
 				grayAreaSlots.push(`${+slot.top}-${+slot.top + +slot.height}`);

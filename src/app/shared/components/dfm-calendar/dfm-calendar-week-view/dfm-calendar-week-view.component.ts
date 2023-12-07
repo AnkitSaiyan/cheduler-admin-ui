@@ -1,26 +1,20 @@
 import { DatePipe } from '@angular/common';
 import {
-	AfterViewChecked,
 	AfterViewInit,
 	ChangeDetectorRef,
 	Component,
-	ElementRef,
 	EventEmitter,
 	Input,
 	OnChanges,
 	OnDestroy,
 	OnInit,
 	Output,
-	QueryList,
-	ViewChildren,
 	ViewEncapsulation,
 } from '@angular/core';
 import { BehaviorSubject, Subject, debounceTime, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs';
 
 import { DraggableService } from 'src/app/core/services/draggable.service';
-import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { Appointment } from 'src/app/shared/models/appointment.model';
-import { CalendarType } from 'src/app/shared/utils/const';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -29,7 +23,6 @@ import { DateTimeUtils } from '../../../utils/date-time.utils';
 import {
 	calendarDistinctUntilChanged,
 	dataModification,
-	dataModificationForWeek,
 	getAllDaysOfWeek,
 	getDurationMinutes,
 	getFromAndToDate,
@@ -42,10 +35,7 @@ import { ModalService } from '../../../../core/services/modal.service';
 	styleUrls: ['./dfm-calendar-week-view.component.scss'],
 	encapsulation: ViewEncapsulation.None,
 })
-export class DfmCalendarWeekViewComponent extends DestroyableComponent implements OnInit, OnChanges, AfterViewInit, AfterViewChecked, OnDestroy {
-	@ViewChildren('eventContainer')
-	private eventContainer!: QueryList<ElementRef>;
-
+export class DfmCalendarWeekViewComponent extends DestroyableComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 	@Input()
 	public selectedDate!: Date;
 
@@ -208,11 +198,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		this.rendered = true;
 	}
 
-	public ngAfterViewChecked() {
-		if (!this.rendered) {
-		}
-	}
-
 	public override ngOnDestroy() {
 		super.ngOnDestroy();
 	}
@@ -246,10 +231,10 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		}
 		Object.entries(absence).forEach(([key, data]) => {
 			data.forEach((items) => {
-				items.forEach((absence) => {
+				items.forEach((abse) => {
 					if (
-						DateTimeUtils.TimeToNumber(absence.end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
-						DateTimeUtils.TimeToNumber(absence.start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
+						DateTimeUtils.TimeToNumber(abse.end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)) ||
+						DateTimeUtils.TimeToNumber(abse.start) > DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max)) + 1
 					) {
 						if (this.hideAbsenceData[key]) {
 							this.hideAbsenceData[key] = [...this.hideAbsenceData[key], absence];
@@ -294,8 +279,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const date = new Date(year, month, day);
 		this.dayViewEvent.emit(date);
 	}
-
-	private renderEvents(): void {}
 
 	public getHeight(groupedData: any[]): number {
 		let endDate: Date = groupedData[0].endedAt;
@@ -452,8 +435,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const startCalendarDate = this.myDate(min);
 		const startCalendarHour = startCalendarDate.getHours();
 		const startCalendarMinute = startCalendarDate.getMinutes();
-		const barHeight = 1;
-		const horizontalBarHeight = (this.getPrioritySlotHeight(prioritySlot) / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 		const top = (startMinute + startHour * 60) * this.pixelsPerMin - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
 
 		if (top % 20) {

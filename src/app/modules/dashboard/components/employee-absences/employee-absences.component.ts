@@ -147,7 +147,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 
 	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.absenceApiService.pageNoOnDashboard = this.absenceApiService.pageNoOnDashboard + 1;
+			this.absenceApiService.pageNoOnDashboard += 1;
 		}
 	}
 

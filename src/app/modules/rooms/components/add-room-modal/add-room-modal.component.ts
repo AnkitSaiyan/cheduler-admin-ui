@@ -14,7 +14,7 @@ import { PracticeAvailabilityServer } from '../../../../shared/models/practice.m
 import { AddRoomRequestData, Room, RoomType } from '../../../../shared/models/rooms.model';
 import { Status } from '../../../../shared/models/status.model';
 import { Translate } from '../../../../shared/models/translate.model';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 
 interface FormValues {
@@ -98,13 +98,10 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((lang) => {
 				this.selectedLang = lang;
-				switch (lang) {
-					case ENG_BE:
-						this.statuses = Statuses;
-						break;
-					case DUTCH_BE:
-						this.statuses = StatusesNL;
-						break;
+				if (lang === ENG_BE) {
+					this.statuses = Statuses;
+				} else {
+					this.statuses = StatusesNL;
 				}
 			});
 	}
@@ -121,8 +118,6 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 	public closeModal(res: boolean) {
 		this.modalSvc.close(res);
 	}
-
-	public handle(e: any) {}
 
 	public saveRoom() {
 		if (this.addRoomForm.invalid) {
@@ -160,8 +155,8 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 			this.roomApiSvc
 				.editRoom$(addRoomReqData)
 				.pipe(takeUntil(this.destroy$$))
-				.subscribe(
-					() => {
+				.subscribe({
+					next: () => {
 						if (this.modalData.edit) {
 							this.notificationSvc.showNotification(Translate.SuccessMessage.RoomsUpdated[this.selectedLang]);
 						} else {
@@ -170,14 +165,14 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 						this.closeModal(true);
 						this.submitting$$.next(false);
 					},
-					() => this.submitting$$.next(false),
-				);
+					error: () => this.submitting$$.next(false),
+				});
 		} else {
 			this.roomApiSvc
 				.addRoom$(addRoomReqData)
 				.pipe(takeUntil(this.destroy$$))
-				.subscribe(
-					() => {
+				.subscribe({
+					next: () => {
 						if (this.modalData.edit) {
 							this.notificationSvc.showNotification(Translate.SuccessMessage.RoomsUpdated[this.selectedLang]);
 						} else {
@@ -186,8 +181,8 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 						this.closeModal(true);
 						this.submitting$$.next(false);
 					},
-					() => this.submitting$$.next(false),
-				);
+					error: () => this.submitting$$.next(false),
+				});
 		}
 	}
 

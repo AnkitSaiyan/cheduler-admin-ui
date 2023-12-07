@@ -112,26 +112,26 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 			this.physicianApiSvc
 				.updatePhysician$(addPhysicianReqData)
 				.pipe(takeUntil(this.destroy$$))
-				.subscribe(
-					() => {
+				.subscribe({
+					next: () => {
 						this.notificationSvc.showNotification(`${Translate.SuccessMessage.PhysicianUpdated[this.selectedLanguage]}!`);
 						this.closeModal(true);
 						this.loading$$.next(false);
 					},
-					() => this.loading$$.next(false),
-				);
+					error: () => this.loading$$.next(false),
+				});
 		} else {
 			this.physicianApiSvc
 				.addPhysician$(addPhysicianReqData)
 				.pipe(takeUntil(this.destroy$$))
-				.subscribe(
-					() => {
+				.subscribe({
+					next: () => {
 						this.notificationSvc.showNotification(`${Translate.SuccessMessage.PhysicianAdded[this.selectedLanguage]}!`);
 						this.closeModal(true);
 						this.loading$$.next(false);
 					},
-					() => this.loading$$.next(false),
-				);
+					error: () => this.loading$$.next(false),
+				});
 		}
 	}
 
@@ -142,7 +142,7 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 			return;
 		}
 
-		if (!inputText.match(EMAIL_REGEX)) {
+		if (!EMAIL_REGEX.exec(inputText)) {
 			this.addPhysicianForm.get('email')?.setErrors({
 				email: true,
 			});
@@ -150,6 +150,4 @@ export class PhysicianAddComponent extends DestroyableComponent implements OnIni
 			this.addPhysicianForm.get('email')?.setErrors(null);
 		}
 	}
-
-	public handleNumberFocusOut($event: FocusEvent) {}
 }

@@ -138,7 +138,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 		});
 
 		this.physicians$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (physicians) => this.handleSearch(this.searchControl.value ?? ''),
+			next: () => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -151,7 +151,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				this.paginationData = physicianBase?.metaData?.pagination || 1;
 				this.isLoading = false;
 			},
-			error: (e) => this.physicians$$.next([]),
+			error: () => this.physicians$$.next([]),
 		});
 
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
@@ -220,7 +220,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				switchMap((changes) => this.physicianApiSvc.changePhysicianStatus$(changes)),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe((value) => {
+			.subscribe(() => {
 				this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`);
 				this.clearSelected$$.next();
 			});
@@ -306,7 +306,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				take(1),
 			)
 			.subscribe({
-				next: (response) => {
+				next: () => {
 					this.notificationSvc.showNotification(`${Translate.SuccessMessage.PhysicianDeleted[this.selectedLang]}!`);
 					// filtering out deleted physician
 					this.physicians$$.next([...this.physicians$$.value.filter((p) => +p.id !== +id)]);
@@ -427,9 +427,9 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 		}, 0);
 	}
 
-	public onScroll(e: undefined): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.physicianApiSvc.pageNo = this.physicianApiSvc.pageNo + 1;
+			this.physicianApiSvc.pageNo += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}
 	}

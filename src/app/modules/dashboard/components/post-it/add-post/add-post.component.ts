@@ -43,7 +43,7 @@ export class AddPostComponent extends DestroyableComponent implements OnInit, On
 		super.ngOnDestroy();
 	}
 
-	public close(result: boolean) {
+	public close() {
 		this.dialogSvc.close(this.postItMessage.value);
 	}
 }

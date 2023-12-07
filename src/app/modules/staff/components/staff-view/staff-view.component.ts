@@ -101,7 +101,6 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 	}
 
 	private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): Array<WeekWisePracticeAvailability[]> {
-		// const weekdayToSlotsObj: { [key: string]: TimeSlot[] } = {};
 		const weekdayTimeSlots: WeekdayTimeSlot<TimeSlot[]>[] = [];
 
 		// creating week-wise slots
@@ -164,7 +163,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 					practiceAvailability[index] = [];
 				}
 
-				const { rangeFromDate, rangeToDate, isRange } = practiceAvailabilities?.find((practice) => practice.rangeIndex === index)!;
+				const { rangeFromDate, rangeToDate, isRange } = practiceAvailabilities.find((practice) => practice.rangeIndex === index)!;
 
 				practiceAvailability[index].push({
 					slotNo,

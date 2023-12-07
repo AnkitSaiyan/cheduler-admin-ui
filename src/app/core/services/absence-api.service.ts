@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { EventEmitter, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, combineLatest, debounceTime, map, startWith, switchMap, takeUntil, tap } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, Subject, combineLatest, debounceTime, map, startWith, switchMap, tap } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { ABSENCE_TYPE_ARRAY } from 'src/app/shared/utils/const';
@@ -39,8 +39,8 @@ export class AbsenceApiService {
 	}
 
 	public absences$(absenceType: (typeof ABSENCE_TYPE_ARRAY)[number]): Observable<BaseResponse<Absence[]>> {
-		return combineLatest([this.refreshAbsences$$.pipe(startWith('')), this.pageNo$$]).pipe(
-			switchMap(([_, pageNo]) => this.fetchAllAbsence(pageNo, absenceType)),
+		return combineLatest([this.pageNo$$, this.refreshAbsences$$.pipe(startWith(''))]).pipe(
+			switchMap(([pageNo]) => this.fetchAllAbsence(pageNo, absenceType)),
 		);
 	}
 
@@ -51,20 +51,22 @@ export class AbsenceApiService {
 	): Observable<BaseResponse<Absence[]>> {
 		return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(
 			debounceTime(100),
-			switchMap(([_]) => this.fetchAllAbsenceForCalendar(absenceType, fromDate, toDate)),
+
+			switchMap(() => this.fetchAllAbsenceForCalendar(absenceType, fromDate, toDate)),
 		);
 	}
 
 	public absencesHolidayForCalendar$(fromDate: string, toDate: string): Observable<BaseResponse<Absence[]>> {
 		return combineLatest([this.refreshAbsences$$.pipe(startWith(''))]).pipe(
 			debounceTime(100),
-			switchMap(([_]) => this.fetchAllAbsenceHolidayForCalendar(fromDate, toDate)),
+
+			switchMap(() => this.fetchAllAbsenceHolidayForCalendar(fromDate, toDate)),
 		);
 	}
 
 	public get absencesOnDashboard$(): Observable<BaseResponse<Absence[]>> {
-		return combineLatest([this.refreshAbsencesOnDashboard$$.pipe(startWith('')), this.pageNoOnDashboard$$]).pipe(
-			switchMap(([_, pageNo]) => this.fetchAllAbsence(pageNo)),
+		return combineLatest([this.pageNoOnDashboard$$, this.refreshAbsencesOnDashboard$$.pipe(startWith(''))]).pipe(
+			switchMap(([pageNo]) => this.fetchAllAbsence(pageNo)),
 		);
 	}
 

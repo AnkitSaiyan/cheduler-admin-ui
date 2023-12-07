@@ -244,7 +244,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			});
 
 		this.appointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointment) => this.handleSearch(this.searchControl.value ?? ''),
+			next: () => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -373,7 +373,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 		this.appointmentViewControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			if (value) {
-				this.isUpcomingAppointments = value == 'upcoming';
+				this.isUpcomingAppointments = value === 'upcoming';
 			}
 			this.selectedAppointmentIDs = [];
 			this.filteredAppointments$$.next([...this.appointments$$.value]);
@@ -576,12 +576,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 						const currSD = new Date(appointment.startedAt);
 						const currED = new Date(appointment.endedAt);
 
-						if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
-							sameGroup = true;
-							if (currED > endDate) {
-								endDate = currED;
-							}
-						} else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
+						if ((currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime() || (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1))) {
 							sameGroup = true;
 							if (currED > endDate) {
 								endDate = currED;
@@ -648,15 +643,15 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.appointmentApiSvc.appointmentPageNo = 1;
 	}
 
-	public onScroll(e: any): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.appointmentApiSvc.appointmentPageNo = this.appointmentApiSvc.appointmentPageNo + 1;
+			this.appointmentApiSvc.appointmentPageNo += 1;
 			this.upcomingTableData$$.value.isLoadingMore = true;
 		}
 	}
 
 	public onSort(e: DfmTableHeader, table = 'upcoming'): void {
-		if (table == 'past') this.sortTypePast = e.sort;
+		if (table === 'past') this.sortTypePast = e.sort;
 		else this.sortType = e.sort;
 		this.filteredAppointments$$.next(GeneralUtils.SortArray(this.filteredAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
@@ -715,11 +710,13 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public uploadRefferingNote(event: any, id: any) {
 		event.stopImmediatePropagation();
+		if (!event.target.files.length) {
+			return;
+		}
 		const extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
 		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
 		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
-		if (!event.target.files.length) {
-		} else if (allowedExtensions.indexOf(extension) === -1) {
+		if (allowedExtensions.indexOf(extension) === -1) {
 			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
 		} else if (fileSize) {
 			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
@@ -730,29 +727,30 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	private onFileChange(event: any, id) {
+		const e = event;
 		new Promise((resolve) => {
 			const { files } = event.target as HTMLInputElement;
 
 			if (files?.length) {
 				const reader = new FileReader();
-				reader.onload = (e: any) => {
+				reader.onload = () => {
 					resolve(files[0]);
 				};
 				reader.readAsDataURL(files[0]);
 			}
 		}).then((res) => {
 			this.uploadDocument(res, id);
-			event.target.value = '';
+			e.target.value = '';
 		});
 	}
 
 	private uploadDocument(file: any, id) {
 		this.appointmentApiSvc.uploadDocumnet(file, '', id).subscribe({
-			next: (res) => {
+			next: () => {
 				this.notificationSvc.showNotification(`${Translate.documentUploadSuccessfully[this.selectedLang]}`, NotificationType.SUCCESS);
 				this.onRefresh();
 			},
-			error: (err) => this.notificationSvc.showNotification(`${Translate.Error.FailedToUpload[this.selectedLang]}`, NotificationType.DANGER),
+			error: () => this.notificationSvc.showNotification(`${Translate.Error.FailedToUpload[this.selectedLang]}`, NotificationType.DANGER),
 		});
 	}
 }

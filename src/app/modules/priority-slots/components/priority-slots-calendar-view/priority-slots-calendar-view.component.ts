@@ -111,7 +111,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		);
 
 		this.signalRService.priorityModuleData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
-			const indexOfChangedSlot = this.currentSlotPercentageData.findIndex((ele) => ele.date == data.date);
+			const indexOfChangedSlot = this.currentSlotPercentageData.findIndex((ele) => ele.date === data.date);
 			if (indexOfChangedSlot !== -1) {
 				this.currentSlotPercentageData[indexOfChangedSlot] = data;
 				this.slotPercentage$$.next(this.currentSlotPercentageData);
@@ -341,7 +341,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 				},
 				isClose,
 			)
-			.subscribe((res) => {
+			.subscribe(() => {
 				let prioritySlot = { ...this.prioritySlots$$.value };
 				const formatedDate = this.datePipe.transform(date, 'd-M-yyyy')!;
 				prioritySlot = {

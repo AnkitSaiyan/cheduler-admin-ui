@@ -67,21 +67,22 @@ export class DfmDragAreaEventDirective {
 					day: this.day,
 				});
 				return;
-			case CalendarType.Month:
+			case CalendarType.Month: {
 				const currentDate = new Date(this.day[2], this.day[1], this.day[0]);
 				currentDate.setHours(0, 0, 0, 0);
 				const appointmentDate = new Date(this.draggableSvc.dragStartElement.data?.startedAt);
 				appointmentDate.setHours(0, 0, 0, 0);
 				if (currentDate.getTime() !== appointmentDate.getTime()) {
-					this.draggableSvc.monthViewDragComplete(event);
+					this.draggableSvc.monthViewDragComplete();
 					this.editAppointment.emit({
 						day: this.day,
 						data: { ...this.draggableSvc.dragStartElement.data },
 					});
 				}
+				break;
+			}
 
 			default:
-				break;
 		}
 	}
 }

@@ -135,20 +135,18 @@ export function getAllDaysOfWeek(date: Date, sundayFirst: boolean = false): Arra
 	if (!sundayFirst) {
 		weekDay = day === 0 ? 6 : day - 1;
 	}
-	const dates: Date[] = [];
 	const dateDistributed: Array<[number, number, number]> = [];
 	//
 
 	const updateDate = (num) => {
 		const d: Date = new Date(date);
 		d.setDate(date.getDate() + num);
-		dates.push(d);
 		dateDistributed.push([d.getDate(), d.getMonth(), d.getFullYear()]);
 	};
 
 	let w = 0;
 
-	for (w = 0; w < weekDay; w++) {
+	for (w; w < weekDay; w++) {
 		updateDate(w - weekDay);
 	}
 
@@ -223,7 +221,7 @@ export function calendarDistinctUntilChanged(preQueryParam: Params, currQueryPar
 				return false;
 			}
 			return true;
-		case currQueryParam['v'] === 'w':
+		case currQueryParam['v'] === 'w': {
 			if (currMonth !== preMonth || currYear !== preYear) {
 				return false;
 			}
@@ -235,6 +233,7 @@ export function calendarDistinctUntilChanged(preQueryParam: Params, currQueryPar
 				return false;
 			}
 			return true;
+		}
 		default:
 			return false;
 	}
@@ -292,7 +291,7 @@ export function dataModification(absence, datePipe: DatePipe) {
 				case !absenceItem.isRepeat:
 				case absenceItem.repeatType === RepeatType.Daily: {
 					repeatFrequency = absenceItem.isRepeat ? repeatFrequency : 1;
-					while (true) {
+					while (firstDate.getTime() <= lastDate.getTime()) {
 						if (firstDate.getTime() > lastDate.getTime()) break;
 						const dateString = datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
 						const customPrioritySlot = {
@@ -315,7 +314,7 @@ export function dataModification(absence, datePipe: DatePipe) {
 				case absenceItem.repeatType === RepeatType.Weekly: {
 					const closestSunday = new Date(startDate.getTime() - startDate.getDay() * 24 * 60 * 60 * 1000);
 					firstDate = new Date(closestSunday);
-					while (true) {
+					while (closestSunday.getTime() <= lastDate.getTime()) {
 						absenceItem.repeatDays.split(',').forEach((day) => {
 							firstDate.setTime(closestSunday.getTime());
 							firstDate.setDate(closestSunday.getDate() + +day);
@@ -342,7 +341,7 @@ export function dataModification(absence, datePipe: DatePipe) {
 					break;
 				}
 				case absenceItem.repeatType === RepeatType.Monthly: {
-					while (true) {
+					while (firstDate.getTime() <= lastDate.getTime()) {
 						absenceItem.repeatDays.split(',').forEach((day) => {
 							if (getDateOfMonth(firstDate.getFullYear(), firstDate.getMonth() + 1, 0) >= +day) {
 								firstDate.setDate(+day);
@@ -406,14 +405,10 @@ export function dataModificationForWeek(absenceSlot: { [key: string]: Absence[] 
 					currSDTime.setMinutes(+currSD.split(':')[1]);
 
 					if (
-						DateTimeUtils.TimeToNumber(currSD) >= DateTimeUtils.TimeToNumber(startDate) &&
-						DateTimeUtils.TimeToNumber(currSD) <= DateTimeUtils.TimeToNumber(endDate)
+						(DateTimeUtils.TimeToNumber(currSD) >= DateTimeUtils.TimeToNumber(startDate) &&
+							DateTimeUtils.TimeToNumber(currSD) <= DateTimeUtils.TimeToNumber(endDate)) ||
+						(DateTimeUtils.TimeToNumber(currSD) > DateTimeUtils.TimeToNumber(endDate) && getDurationMinutes(endTime, currSDTime) <= 1)
 					) {
-						sameGroup = true;
-						if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
-							endDate = currED;
-						}
-					} else if (DateTimeUtils.TimeToNumber(currSD) > DateTimeUtils.TimeToNumber(endDate) && getDurationMinutes(endTime, currSDTime) <= 1) {
 						sameGroup = true;
 						if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
 							endDate = currED;

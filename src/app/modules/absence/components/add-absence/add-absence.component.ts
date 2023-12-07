@@ -7,7 +7,6 @@ import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, of,
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { ConfirmActionModalComponent } from 'src/app/shared/components/confirm-action-modal.component';
-import { PracticeAvailabilityServer } from 'src/app/shared/models/practice.model';
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -22,7 +21,7 @@ import { MonthToNamePipe } from '../../../../shared/pipes/month-to-name.pipe';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { WeekdayToNamePipe } from '../../../../shared/pipes/weekday-to-name.pipe';
-import { ABSENCE_TYPE_ARRAY, DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { ABSENCE_TYPE_ARRAY, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
@@ -159,13 +158,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 					monthly: [...this.getRepeatEveryItems(RepeatType.Daily)],
 				};
 
-				switch (lang) {
-					case ENG_BE:
-						this.statuses = Statuses;
-						break;
-					case DUTCH_BE:
-						this.statuses = StatusesNL;
-						break;
+				if (lang === ENG_BE) {
+					this.statuses = Statuses;
+				} else {
+					this.statuses = StatusesNL;
 				}
 			});
 	}
@@ -227,13 +223,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				next: (lang) => {
 					this.selectedLang = lang;
 
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						case DUTCH_BE:
-							this.statuses = StatusesNL;
-							break;
+					if (lang === ENG_BE) {
+						this.statuses = Statuses;
+					} else {
+						this.statuses = StatusesNL;
 					}
 				},
 			});
@@ -325,11 +318,11 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			switch (this.absenceForm.get('repeatType')?.value) {
 				case RepeatType.Weekly:
 				case RepeatType.Monthly: {
-					const invalid = ['repeatFrequency', 'repeatDays'].some((key) => {
+					const notValid = ['repeatFrequency', 'repeatDays'].some((key) => {
 						controls[key].markAsTouched();
 						return controls[key].invalid;
 					});
-					if (invalid) {
+					if (notValid) {
 						this.absenceForm.markAllAsTouched();
 						this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 						return;
@@ -369,6 +362,23 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 		const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
 
+		const getEndDate = () => {
+			let formattedEndedAt;
+
+			if (this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat) {
+				formattedEndedAt = null;
+			} else {
+				const date = new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`.replace(/-/g, '/'));
+				const formattedDate = isHoliday
+					? (this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss') as string)
+					: (this.datePipe.transform(DateTimeUtils.LocalDateToUTCDate(date, !rest.isHoliday), 'yyyy-MM-dd HH:mm:ss') as string);
+
+				formattedEndedAt = formattedDate;
+			}
+
+			return formattedEndedAt;
+		};
+
 		const addAbsenceReqData: AddAbsenceRequestData = {
 			...rest,
 			isHoliday,
@@ -384,21 +394,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 						),
 						'yyyy-MM-dd HH:mm:ss',
 				  ) as string),
-			endedAt:
-				this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat
-					? null
-					: isHoliday
-					? (this.datePipe.transform(
-							new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} 23:55:00`.replace(/-/g, '/')),
-							'yyyy-MM-dd HH:mm:ss',
-					  ) as string)
-					: (this.datePipe.transform(
-							DateTimeUtils.LocalDateToUTCDate(
-								new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`.replace(/-/g, '/')),
-								!rest.isHoliday,
-							),
-							'yyyy-MM-dd HH:mm:ss',
-					  ) as string),
+			endedAt: getEndDate(),
 			userList: isHoliday ? [] : userList,
 			roomList: isHoliday ? [] : roomList,
 			repeatType: rest.isRepeat ? rest.repeatType : null,
@@ -443,7 +439,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 						this.closeModal(true);
 					},
 					error: (err) => {
-						if (err?.error?.message == 'MSG_400_APMT_AFFECTS') this.openModal();
+						if (err?.error?.message === 'MSG_400_APMT_AFFECTS') this.openModal();
 						this.submitting$$.next(false);
 					},
 				});
@@ -462,7 +458,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 						this.closeModal(true);
 					},
 					error: (err) => {
-						if (err?.error?.message == 'MSG_400_APMT_AFFECTS') this.openModal();
+						if (err?.error?.message === 'MSG_400_APMT_AFFECTS') this.openModal();
 						this.submitting$$.next(false);
 					},
 				});
@@ -504,8 +500,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 		);
 	}
 
-	public handleChange(repeatFrequency: InputComponent) {}
-
 	public handleDropdownSearch(searchText: string, type: 'room' | 'staff'): void {
 		switch (type) {
 			case 'room':
@@ -513,6 +507,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				break;
 			case 'staff':
 				this.filteredStaffs$$.next(GeneralUtils.FilterArray(this.staffs, searchText, 'name'));
+				break;
+			default:
 				break;
 		}
 	}

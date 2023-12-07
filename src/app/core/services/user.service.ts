@@ -1,6 +1,6 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, map, Observable, of, switchMap, take, tap } from 'rxjs';
-import { MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
+import { MsalService } from '@azure/msal-angular';
 import { Router } from '@angular/router';
 import { EXT_PATIENT_TENANT } from 'src/app/shared/utils/const';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
@@ -68,16 +68,16 @@ export class UserService {
 							return;
 						}
 
-						const user = this.authUser$$.value;
-						if (!user) {
+						const users = this.authUser$$.value;
+						if (!users) {
 							return;
 						}
 
-						if (user.properties['extension_ProfileIsIncomplete']) {
+						if (users.properties['extension_ProfileIsIncomplete']) {
 							this.router.navigate(['/complete-profile']);
 						}
 					}),
-					catchError((err) => of(false)),
+					catchError(() => of(false)),
 				);
 			}),
 			catchError(() => of(false)),

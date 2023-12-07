@@ -197,7 +197,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
 	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.appointmentApiService.recentPatientPageNo = this.appointmentApiService.recentPatientPageNo + 1;
+			this.appointmentApiService.recentPatientPageNo += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}
 	}

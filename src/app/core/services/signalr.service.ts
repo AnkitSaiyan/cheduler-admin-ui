@@ -75,7 +75,7 @@ export class SignalrService {
 				console.log('Connection started.');
 				if (this.hubConnection.connectionId) this.sendConnectionId(this.hubConnection.connectionId);
 			})
-			.catch((err) => {
+			.catch(() => {
 				console.log('Opps!');
 			});
 	}
@@ -83,20 +83,28 @@ export class SignalrService {
 	private registerForAppointmentModule(): void {
 		this.hubConnection.on('InformClient', (param: any) => {
 			this.appointmentsModuleData$$.next(param);
+
+			let message = '';
+
+			switch (param.action) {
+				case 'Delete':
+					message = Translate.Delete[this.selectedLang];
+					break;
+				case 'Approved':
+					message = Translate.AppointmentStatus.Approved[this.selectedLang];
+					break;
+				case 'Cancelled':
+					message = Translate.AppointmentStatus.Cancelled[this.selectedLang];
+					break;
+				default:
+					message = Translate.SuccessMessage.Update[this.selectedLang];
+			}
+
 			this.notificationSvc.showSuccess(
 				`${
-					param.action == 'Add'
+					param.action === 'Add'
 						? Translate.AppointmentRecived[this.selectedLang]
-						: `${Translate.AppointmentNo[this.selectedLang]} ${param.id} ` +
-						  `${
-								param.action == 'Delete'
-									? Translate.Delete[this.selectedLang]
-									: param.action == 'Approved'
-									? Translate.AppointmentStatus.Approved[this.selectedLang]
-									: param.action == 'Cancelled'
-									? Translate.AppointmentStatus.Cancelled[this.selectedLang]
-									: Translate.SuccessMessage.Update[this.selectedLang]
-						  }`
+						: `${Translate.AppointmentNo[this.selectedLang]} ${param.id} ${message}`
 				}!`,
 			);
 		});
@@ -117,6 +125,6 @@ export class SignalrService {
 	private sendConnectionId(connectionId: string) {
 		this.http
 			.post<BaseResponse<any>>(`${environment.schedulerApiUrl}/signalr?connectionId=${connectionId}`, null)
-			.subscribe((res) => console.log('Data send successfully'));
+			.subscribe(() => console.log('Data send successfully'));
 	}
 }

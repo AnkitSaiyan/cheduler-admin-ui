@@ -3,8 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { BehaviorSubject, Observable, combineLatest, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { NgbActiveModal, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { DateDistributed, getDurationMinutes } from 'src/app/shared/models/calendar.model';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { getDurationMinutes } from 'src/app/shared/models/calendar.model';
 import { DatePipe } from '@angular/common';
 import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -184,7 +183,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 		combineLatest([this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length))])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
-			.subscribe((res) => {});
+			.subscribe();
 
 		this.appointmentForm
 			.get('startedAt')
@@ -366,7 +365,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				this.submitting$$.next(false);
 				this.modalSvc.close(true);
 			},
-			error: (err) => {
+			error: () => {
 				this.submitting$$.next(false);
 			},
 		});
@@ -402,7 +401,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				this.submitting$$.next(false);
 				this.modalSvc.close(true);
 			},
-			error: (err) => {
+			error: () => {
 				this.submitting$$.next(false);
 			},
 		});
@@ -421,7 +420,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			return;
 		}
 
-		if (!inputText.match(EMAIL_REGEX)) {
+		if (!EMAIL_REGEX.exec(inputText)) {
 			this.appointmentForm.get('patientEmail')?.setErrors({
 				email: true,
 			});
@@ -443,6 +442,8 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				break;
 			case 'staff':
 				this.filteredStaffs = [...GeneralUtils.FilterArray(this.staffs, searchText, 'name')];
+				break;
+			default:
 				break;
 		}
 	}
@@ -499,16 +500,6 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			}
 			return 1;
 		});
-
-		let date!: Date;
-
-		if (appointment?.startedAt) {
-			date = new Date(appointment.startedAt);
-		} else if (appointment?.exams?.[0]?.startedAt) {
-			date = new Date(appointment?.exams?.[0]?.startedAt);
-		}
-
-		const dateDistributed = DateTimeUtils.DateToDateDistributed(date);
 
 		setTimeout(() => {
 			this.appointmentForm.patchValue(
@@ -589,38 +580,46 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		this.appointmentForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 
-	public uploadRefferingNote(event: any) {
-		this.uploadFileName = event.target.files[0].name;
-		const extension = this.uploadFileName.substr(this.uploadFileName.lastIndexOf('.') + 1).toLowerCase();
-		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
+	public uploadRefferingNote(event: any): void {
 		if (!event.target.files.length) {
-		} else if (allowedExtensions.indexOf(extension) === -1) {
-			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
-			this.documentStage = 'FAILED_TO_UPLOAD';
-		} else if (fileSize) {
-			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
-			this.documentStage = 'FAILED_TO_UPLOAD';
+			return;
+		}
+
+		this.uploadFileName = event.target.files[0].name;
+		const extension = this.uploadFileName.slice(this.uploadFileName.lastIndexOf('.') + 1).toLowerCase();
+		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const fileSizeExceedsLimit = event.target.files[0].size / 1024 / 1024 > this.fileSize;
+
+		if (allowedExtensions.indexOf(extension) === -1) {
+			this.handleInvalidFile('File format not allowed.');
+		} else if (fileSizeExceedsLimit) {
+			this.handleInvalidFile(`File size should not exceed ${this.fileSize} MB.`);
 		} else {
 			this.documentStage = 'Uploading';
 			this.onFileChange(event);
 		}
 	}
 
+	private handleInvalidFile(errorMessage: string): void {
+		this.notificationSvc.showNotification(errorMessage, NotificationType.WARNING);
+		this.documentStage = 'FAILED_TO_UPLOAD';
+	}
+
 	private onFileChange(event: any) {
+		const e = event;
 		new Promise((resolve) => {
 			const { files } = event.target as HTMLInputElement;
 
 			if (files && files?.length) {
 				const reader = new FileReader();
-				reader.onload = (e: any) => {
+				reader.onload = () => {
 					resolve(files[0]);
 				};
 				reader.readAsDataURL(files[0]);
 			}
 		}).then((res) => {
 			this.uploadDocument(res);
-			event.target.value = '';
+			e.target.value = '';
 		});
 	}
 
@@ -632,14 +631,14 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 					qrCodeId: res?.apmtDocUniqueId,
 				});
 			},
-			error: (err) => (this.documentStage = 'FAILED_TO_UPLOAD'),
+			error: () => (this.documentStage = 'FAILED_TO_UPLOAD'),
 		});
 	}
 
 	public viewDocument() {
 		this.modalSvc.open(DocumentViewModalComponent, {
 			data: {
-				id: this.modalData?.appointment?.id || this.formValues.qrCodeId,
+				id: this.modalData?.appointment?.id ?? this.formValues.qrCodeId,
 			},
 			options: {
 				size: 'xl',

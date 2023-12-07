@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { ModalService } from 'src/app/core/services/modal.service';
-import { Subject, map, take, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';

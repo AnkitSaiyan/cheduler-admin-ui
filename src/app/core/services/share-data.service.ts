@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, BehaviorSubject, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
+import { combineLatest, BehaviorSubject, map, Observable, of, startWith, Subject, switchMap } from 'rxjs';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -88,10 +88,10 @@ export class ShareDataService {
 				return of(this.statuses).pipe(
 					map((statuses) => {
 						if (lang) {
-							return statuses.map((statuses) => {
+							return statuses.map((val) => {
 								return {
-									...statuses,
-									name: Translate.AppointmentStatus[statuses.name][lang],
+									...val,
+									name: Translate.AppointmentStatus[val.name][lang],
 								};
 							});
 						}

@@ -35,8 +35,8 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 			const users = data?.exams?.[0]?.users ?? [];
 			if (data.isOutside) {
 				this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
-					next: (allUsers) => {
-						this.setDropDownData(allUsers, users);
+					next: (allUser) => {
+						this.setDropDownData(allUser, users);
 					},
 				});
 			} else {

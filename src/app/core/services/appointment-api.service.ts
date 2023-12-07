@@ -175,7 +175,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		this.loaderSvc.activate();
 
 		if (data) {
-			const queryParams = { pageNo: 1 };
+			const queryParams: any = { pageNo: 1 };
 			if (data?.appointmentNumber) queryParams.id = data.appointmentNumber;
 			if (data?.roomsId) queryParams.roomId = data.roomsId;
 			if (data?.examList.length) queryParams.examId = data.examList;
@@ -185,7 +185,7 @@ export class AppointmentApiService extends DestroyableComponent {
 			if (data?.FirstName) queryParams.FirstName = data.FirstName;
 			if (data?.LastName) queryParams.LastName = data.LastName;
 			if (data?.userId) queryParams.userId = data.userId;
-			if (data?.approval == 0 || data.approval) queryParams.approval = data.approval;
+			if (data?.approval === 0 || data.approval) queryParams.approval = data.approval;
 
 			return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
 				map((response) => {
@@ -284,7 +284,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		const { id, ...restData } = requestData;
 		let patientTimeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
 
-		if (patientTimeZone && patientTimeZone[0] === '+') {
+		if (patientTimeZone && patientTimeZone.startsWith('+')) {
 			patientTimeZone = patientTimeZone.slice(1);
 		}
 
@@ -300,11 +300,11 @@ export class AppointmentApiService extends DestroyableComponent {
 	): Observable<Appointment> {
 		let patientTimeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
 
-		if (patientTimeZone && patientTimeZone[0] === '+') {
+		if (patientTimeZone && patientTimeZone.startsWith('+')) {
 			patientTimeZone = patientTimeZone.slice(1);
 		}
 
-		if (action == 'add') {
+		if (action === 'add') {
 			return this.http.post<BaseResponse<Appointment>>(`${this.appointmentUrl}/addappointment`, { ...requestData, patientTimeZone }).pipe(
 				map((response) => response.data),
 				tap(() => this.appointmentPageNo$$.next(1)),
@@ -321,7 +321,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		const { id, ...restData } = requestData;
 		let patientTimeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
 
-		if (patientTimeZone && patientTimeZone[0] === '+') {
+		if (patientTimeZone && patientTimeZone.startsWith('+')) {
 			patientTimeZone = patientTimeZone.slice(1);
 		}
 
@@ -359,7 +359,7 @@ export class AppointmentApiService extends DestroyableComponent {
 				},
 			]),
 			tap(() => this.loaderSvc.spinnerDeactivate()),
-			catchError((e) => {
+			catchError(() => {
 				this.loaderSvc.spinnerDeactivate();
 				return of([]);
 			}),
@@ -516,7 +516,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	public getDocumentById$(id: any, isPreview: boolean): Observable<any> {
 		let params = new HttpParams();
-		const idType = isNaN(id) ? 'qrCodeId' : 'appointmentId';
+		const idType = Number.isNaN(id) ? 'qrCodeId' : 'appointmentId';
 		params = params.append(idType, id);
 		params = params.append('isPreview', isPreview);
 		return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, { params }).pipe(

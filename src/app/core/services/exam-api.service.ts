@@ -29,7 +29,7 @@ export class ExamApiService {
 	}
 
 	public get exams$(): Observable<BaseResponse<Exam[]>> {
-		return combineLatest([this.refreshExams$$.pipe(startWith('')), this.pageNo$$]).pipe(switchMap(([_, pageNo]) => this.fetchExams(pageNo)));
+		return combineLatest([this.pageNo$$, this.refreshExams$$.pipe(startWith(''))]).pipe(switchMap(([pageNo]) => this.fetchExams(pageNo)));
 	}
 
 	private fetchExams(pageNo: number): Observable<BaseResponse<Exam[]>> {
@@ -58,7 +58,7 @@ export class ExamApiService {
 
 	public deleteExam(examID: number) {
 		this.loaderSvc.activate();
-		return this.http.delete<BaseResponse<Boolean>>(`${this.examUrl}/${examID}`).pipe(
+		return this.http.delete<BaseResponse<boolean>>(`${this.examUrl}/${examID}`).pipe(
 			map((response) => response.data),
 			tap(() => {
 				this.loaderSvc.deactivate();

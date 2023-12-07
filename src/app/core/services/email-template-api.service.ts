@@ -26,8 +26,8 @@ export class EmailTemplateApiService {
 	}
 
 	public get emailTemplates$(): Observable<BaseResponse<Email[]>> {
-		return combineLatest([this.emailTemplates$$.pipe(startWith('')), this.pageNo$$]).pipe(
-			switchMap(([_, pageNo]) => this.fetchAllEmailTemplates(pageNo)),
+		return combineLatest([this.pageNo$$, this.emailTemplates$$.pipe(startWith(''))]).pipe(
+			switchMap(([pageNo]) => this.fetchAllEmailTemplates(pageNo)),
 		);
 	}
 
@@ -40,9 +40,7 @@ export class EmailTemplateApiService {
 
 	public updateEmailTemplate(requestData: EmailTemplateRequestData): Observable<EmailTemplateRequestData> {
 		this.loaderSvc.activate();
-
-		const { id, ...restData } = requestData;
-		return this.http.put<BaseResponse<EmailTemplateRequestData>>(`${environment.schedulerApiUrl}/email/${id}`, requestData).pipe(
+		return this.http.put<BaseResponse<EmailTemplateRequestData>>(`${environment.schedulerApiUrl}/email/${requestData.id}`, requestData).pipe(
 			map((response) => response.data),
 			tap(() => {
 				this.pageNo$$.next(1);

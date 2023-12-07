@@ -46,7 +46,7 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 
 	public control = new FormControl<string | null>(null);
 
-	private onChange = (value: string | null) => {};
+	private onChange = () => {};
 
 	private onTouch = () => {};
 
@@ -113,12 +113,8 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 			});
 
 		this.control.valueChanges.pipe(debounceTime(0), filter(Boolean), takeUntil(this.destroy$$)).subscribe({
-			next: (value) => {
-				if (typeof value === 'object') {
-					this.onChange(value?.value);
-				} else {
-					this.onChange(value);
-				}
+			next: () => {
+				this.onChange();
 				this.onTouch();
 			},
 		});
@@ -134,7 +130,7 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 		this.searchTime(time);
 		const formattedTime = DateTimeUtils.FormatTime(time, 24, 5);
 		if (!formattedTime) {
-			this.onChange('');
+			this.onChange();
 			return;
 		}
 
@@ -180,7 +176,7 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 			return;
 		}
 
-		if (!time.match(TIME_24)) {
+		if (!TIME_24.exec(time)) {
 			toggleControlError(this.control, this.invalidTimeError);
 			return;
 		}

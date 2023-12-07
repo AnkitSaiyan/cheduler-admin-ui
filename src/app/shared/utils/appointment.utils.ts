@@ -77,10 +77,12 @@ export class AppointmentUtils {
 		if (!isEdit && (!this.IsSlotAvailable(slot, selectedTimeSlot) || !slot?.end || !slot?.start)) {
 			return;
 		}
-		if (selectedTimeSlot[slot.examId]?.slot === `${slot.start}-${slot.end}`) {
-			selectedTimeSlot[slot.examId] = { slot: '', roomList: [], userList: [], examId: slot.examId };
+
+		const SelectedSlot = selectedTimeSlot;
+		if (SelectedSlot[slot.examId]?.slot === `${slot.start}-${slot.end}`) {
+			SelectedSlot[slot.examId] = { slot: '', roomList: [], userList: [], examId: slot.examId };
 		} else {
-			selectedTimeSlot[slot.examId] = {
+			SelectedSlot[slot.examId] = {
 				...slot,
 				slot: `${slot.start}-${slot.end}`,
 				examId: slot.examId,

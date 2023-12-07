@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostListener, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, OnChanges } from '@angular/core';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { CalendarType } from '../utils/const';
@@ -17,7 +17,7 @@ export class DfmDragEventDirective implements OnChanges {
 
 	@Input() ngbPopoverDrag!: NgbPopover;
 
-	ngOnChanges(changes: SimpleChanges): void {
+	ngOnChanges(): void {
 		if (this.elementRef.nativeElement.draggable) {
 			this.elementRef.nativeElement.classList.add('dfm-cursor-grabbing');
 		}

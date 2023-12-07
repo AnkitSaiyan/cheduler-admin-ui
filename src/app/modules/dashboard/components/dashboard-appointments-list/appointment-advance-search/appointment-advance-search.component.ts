@@ -240,6 +240,8 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			case 'patient':
 				this.filteredPatientsList = [...GeneralUtils.FilterArray(this.patientList, searchText, 'name')];
 				break;
+			default:
+				break;
 		}
 	}
 
@@ -254,9 +256,9 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 	public submitSearch() {
 		const data = this.appointmentForm.value;
 		if (data.patientId) {
-			const abc = data.patientId.split(':');
-			data.FirstName = abc[0];
-			data.LastName = abc[1];
+			const [firstName, lastName] = data.patientId.split(':');
+			data.FirstName = firstName;
+			data.LastName = lastName;
 		}
 
 		if (data?.startedAt) {

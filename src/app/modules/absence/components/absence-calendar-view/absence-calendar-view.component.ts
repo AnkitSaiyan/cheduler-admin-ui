@@ -5,7 +5,6 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import {
 	BehaviorSubject,
 	Observable,
-	catchError,
 	combineLatest,
 	debounceTime,
 	distinctUntilChanged,
@@ -15,7 +14,6 @@ import {
 	skip,
 	startWith,
 	switchMap,
-	take,
 	takeUntil,
 	tap,
 } from 'rxjs';
@@ -75,7 +73,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	public absenceMonthViewData$!: Observable<any>;
 
-	private isDayView$$ = new BehaviorSubject<Boolean>(false);
+	private isDayView$$ = new BehaviorSubject<boolean>(false);
 
 	public todayEvent$$ = new BehaviorSubject<any[]>([]);
 
@@ -129,7 +127,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 					const dateSplit = params['d'].split('-');
 					if (dateSplit.length === 3) {
 						const date = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2]);
-						if (isNaN(date.getTime())) {
+						if (Number.isNaN(date.getTime())) {
 							this.updateToToday();
 						} else {
 							this.selectedDate$$.next(date);
@@ -241,7 +239,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 					return false;
 				}
 				return true;
-			case currQueryParam.v === 'w':
+			case currQueryParam.v === 'w': {
 				if (currMonth !== preMonth || currYear !== preYear) {
 					return false;
 				}
@@ -253,6 +251,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 					return false;
 				}
 				return true;
+			}
 			default:
 				return false;
 		}
@@ -284,7 +283,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 				toDate = DateTimeUtils.DateDistributedToString(currDate, '-');
 
 				return [data[ABSENCE_TYPE], { fromDate, toDate }];
-			default:
+			default: {
 				const time = this.weekdayToPractice$$.value[currDate.getDay()];
 				this.selectedSlot$$.next({
 					...time,
@@ -294,12 +293,13 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 				});
 				this.isDayView$$.next(true);
 				return [data[ABSENCE_TYPE], { fromDate: queryParam.d, toDate: queryParam.d }];
+			}
 		}
 	}
 
-	private dataModification(absence) {
+	private dataModification(absenceData) {
 		const absenceSlot = {};
-		absence
+		absenceData
 			?.map((value) => ({
 				...value,
 				startedAt: value.startedAt,
@@ -461,14 +461,10 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 						currSDTime.setMinutes(+currSD.split(':')[1]);
 
 						if (
-							DateTimeUtils.TimeToNumber(currSD) >= DateTimeUtils.TimeToNumber(startDate) &&
-							DateTimeUtils.TimeToNumber(currSD) <= DateTimeUtils.TimeToNumber(endDate)
+							(DateTimeUtils.TimeToNumber(currSD) >= DateTimeUtils.TimeToNumber(startDate) &&
+								DateTimeUtils.TimeToNumber(currSD) <= DateTimeUtils.TimeToNumber(endDate)) ||
+							(DateTimeUtils.TimeToNumber(currSD) > DateTimeUtils.TimeToNumber(endDate) && getDurationMinutes(endTime, currSDTime) <= 1)
 						) {
-							sameGroup = true;
-							if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
-								endDate = currED;
-							}
-						} else if (DateTimeUtils.TimeToNumber(currSD) > DateTimeUtils.TimeToNumber(endDate) && getDurationMinutes(endTime, currSDTime) <= 1) {
 							sameGroup = true;
 							if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
 								endDate = currED;
@@ -523,8 +519,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		event.valueChanges
 			.pipe(
 				startWith(new Date()),
-				switchMap((date) => combineLatest([of(date), this.route.data])),
-				filter(([_, routeData]) => !!routeData[ABSENCE_TYPE]),
+				switchMap((date) => combineLatest([this.route.data, of(date)])),
+				filter(([routeData]) => !!routeData[ABSENCE_TYPE]),
 				map(([date, routeData]) => [date, routeData[ABSENCE_TYPE]]),
 				switchMap(([date, absenceType]) =>
 					this.absenceApiSvc.absencesForCalendar$(

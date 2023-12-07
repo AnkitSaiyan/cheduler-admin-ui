@@ -1,7 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
-// import { DateAdapter } from '@angular/material/core';
-// import { ShareDataService } from 'src/app/core/services/share-data.service';
 
 @Component({
 	selector: 'dfm-calendar-picker',
@@ -13,8 +11,6 @@ export class DfmCalendarPickerComponent implements OnInit {
 	@Input() selectedDate!: Date | null;
 
 	@Output() formControl: EventEmitter<FormControl<Date>> = new EventEmitter<FormControl<Date>>();
-
-	constructor() {} // private shareDataSvc: ShareDataService // private _adapter: DateAdapter<any>,
 
 	ngOnInit(): void {
 		this.formControl.emit(this.dateControl);

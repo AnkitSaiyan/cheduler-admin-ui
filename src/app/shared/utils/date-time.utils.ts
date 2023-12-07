@@ -1,5 +1,10 @@
 import { Appointment } from '../models/appointment.model';
-import { DateDistributed } from '../models/calendar.model';
+
+interface DateDistributed {
+	day: number;
+	month: number;
+	year: number;
+}
 
 export class DateTimeUtils {
 	public static DateDistributedToString(date: DateDistributed | Date, separator = '-'): string {

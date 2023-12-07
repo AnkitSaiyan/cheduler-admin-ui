@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, of, startWith, switchMap, takeLast, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, of, startWith, switchMap, takeUntil } from 'rxjs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as Excel from 'exceljs';

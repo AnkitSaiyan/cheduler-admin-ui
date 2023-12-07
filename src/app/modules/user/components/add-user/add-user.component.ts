@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationType } from 'diflexmo-angular-design';
-import { BehaviorSubject, catchError, map, Observable, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, map, Observable, switchMap, take, takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { MsalService } from '@azure/msal-angular';
@@ -8,7 +8,6 @@ import { DestroyableComponent } from '../../../../shared/components/destroyable.
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { User, UserRoleEnum, UserType } from '../../../../shared/models/user.model';
-import { getUserTypeEnum } from '../../../../shared/utils/getEnums';
 import { DUTCH_BE, EMAIL_REGEX, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 
 import { Translate } from '../../../../shared/models/translate.model';
@@ -19,7 +18,6 @@ import { environment } from '../../../../../environments/environment';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Permission } from '../../../../shared/models/permission.model';
 import { PermissionService } from '../../../../core/services/permission.service';
-import { GeneralUtils } from '../../../../shared/utils/general.utils';
 
 interface FormValues {
 	userType: UserType;
@@ -178,15 +176,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 		let addUserObservable$: Observable<any>;
 
 		if ([this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {
-			let roleName: UserRoleEnum;
-			switch (this.formValues.userRole) {
-				case UserRoleEnum.Admin:
-				case UserRoleEnum.GeneralUser:
-					roleName = UserRoleEnum.Admin;
-					break;
-				case UserRoleEnum.Reader:
-					roleName = UserRoleEnum.Reader;
-			}
+			const roleName: UserRoleEnum = this.formValues.userRole === UserRoleEnum.Reader ? UserRoleEnum.Reader : UserRoleEnum.Admin;
 
 			addUserObservable$ = this.userManagementApiSvc
 				.createUserInvite({
@@ -205,7 +195,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 				})
 				.pipe(
 					switchMap((user) => {
-						return this.userApiSvc.assignUserRole(user.id, this.formValues.userRole).pipe(map((_) => user));
+						return this.userApiSvc.assignUserRole(user.id, this.formValues.userRole).pipe(map(() => user));
 					}),
 				);
 		} else {
@@ -228,7 +218,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 				this.loading$$.next(false);
 				this.closeModal({ ...user, userRole: this.formValues.userRole, accountEnabled: true });
 			},
-			error: (err) => this.loading$$.next(false),
+			error: () => this.loading$$.next(false),
 		});
 	}
 

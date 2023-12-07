@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, firstValueFrom, map, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, firstValueFrom, map, take, takeUntil } from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { RoomsApiService } from 'src/app/core/services/rooms-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
@@ -20,7 +20,7 @@ import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { DraggableService } from 'src/app/core/services/draggable.service';
-import { DUTCH_BE, ENG_BE } from '../../../../shared/utils/const';
+import { ENG_BE } from '../../../../shared/utils/const';
 import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
@@ -227,7 +227,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				filter(([weekdayToPractice]) => this.calendarViewFormControl.value === 'day' && weekdayToPractice),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe(([_, queryParams]) => {
+			.subscribe(([_, queryParams]) => { // eslint-disable-line
 				if (this.calendarViewFormControl.value === 'day' && !queryParams['d']) this.updateQuery('d', this.selectedDate$$.value);
 
 				const value = new Date(queryParams['d']);
@@ -244,12 +244,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((lang) => {
 				this.selectedLang = lang;
-				switch (lang) {
-					case ENG_BE:
-						break;
-					case DUTCH_BE:
-						break;
-				}
 			});
 	}
 
@@ -330,12 +324,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 						const currSD = new Date(appointment.startedAt);
 						const currED = new Date(appointment.endedAt);
 
-						if (currSD >= startDate && currSD < endDate) {
-							sameGroup = true;
-							if (currED > endDate) {
-								endDate = currED;
-							}
-						} else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
+						if ((currSD >= startDate && currSD < endDate) || (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1)) {
 							sameGroup = true;
 							if (currED > endDate) {
 								endDate = currED;
@@ -350,30 +339,29 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					if (!sameGroup) {
 						if (index !== 0 && lastDateString) {
 							groupedAppointments?.sort((s1, s2) =>
-								s1.endedAt.getTime() - s1.startedAt.getTime() > s2?.endedAt.getTime() - s2?.startedAt.getTime() ? 1 : -1,
+								s1.endedAt.getTime() - s1.startedAt.getTime() > s2.endedAt.getTime() - s2.startedAt.getTime() ? 1 : -1,
 							);
 							const modifiedGroupedAppointment: any = [[]];
-							groupedAppointments?.forEach((appointment) => {
+							groupedAppointments?.forEach((ap) => {
 								let pushed = true;
-								for (const items of modifiedGroupedAppointment) {
+								modifiedGroupedAppointment.forEach((items) => {
 									if (
 										items.every(
-											(item: any) =>
+											(item) =>
 												!DateTimeUtils.CheckTimeRangeOverlapping(
 													this.datePipe.transform(item.startedAt, 'HH:mm:ss')!,
 													this.datePipe.transform(item.endedAt, 'HH:mm:ss')!,
-													this.datePipe.transform(appointment.startedAt, 'HH:mm:ss')!,
+													this.datePipe.transform(ap.startedAt, 'HH:mm:ss')!,
 													this.datePipe.transform(appointment.endedAt, 'HH:mm:ss')!,
 												),
 										)
 									) {
-										items.push(appointment);
+										items.push(ap);
 										pushed = false;
-										break;
 									}
-								}
+								});
 								if (pushed) {
-									modifiedGroupedAppointment.push([appointment]);
+									modifiedGroupedAppointment.push([ap]);
 								}
 							});
 							const finalAppointment = modifiedGroupedAppointment
@@ -381,7 +369,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 									const sortedData = items.sort((s1, s2) => s1.startedAt - s2.startedAt);
 									return sortedData;
 								})
-								.sort((s1, s2) => s1?.[0]?.startedAt - s2?.[0]?.startedAt);
+								.sort((s1, s2) => s1[0].startedAt - s2[0].startedAt);
 
 							this.appointmentsGroupedByDateAndTIme[lastDateString].push(finalAppointment);
 							groupedAppointments = [];

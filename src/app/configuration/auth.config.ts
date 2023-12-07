@@ -37,7 +37,7 @@ export const MSALConfig: Configuration = Object.freeze({
 	},
 	system: {
 		loggerOptions: {
-			loggerCallback: (logLevel, message) => {
+			loggerCallback: () => {
 				//
 			},
 			logLevel: LogLevel.Verbose,

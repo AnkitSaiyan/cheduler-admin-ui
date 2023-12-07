@@ -10,17 +10,15 @@ export class PhoneNumberDirective {
 		e.preventDefault();
 		e.stopImmediatePropagation();
 		e.stopPropagation();
-		this.handleChange(e);
+		this.handleChange();
 	}
 
 	@Input()
 	public dfmPhoneNumber!: InputComponent;
 
-	private numberOnly: RegExp = /^[\+\d\s,]*$/;
+	private numberOnly: RegExp = /^[\d\s,]*$/;
 
-	constructor() {}
-
-	private handleChange(e: InputEvent) {
+	private handleChange() {
 		const inputText = this.dfmPhoneNumber.value?.toString();
 
 		if (inputText?.length === 1 && inputText === '+') {

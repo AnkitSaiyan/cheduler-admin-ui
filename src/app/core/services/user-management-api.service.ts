@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, combineLatest, forkJoin, map, Observable, of, pipe, startWith, Subject, switchMap, tap } from 'rxjs';
+import { catchError, combineLatest, forkJoin, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserPropertiesPermitItem } from '../../shared/models/user-properties-permit-item.model';
 import { UserInviteResponse } from '../../shared/models/user-invite-response.model';
@@ -47,19 +47,20 @@ export class UserManagementApiService {
 							switchMap(() => {
 								return forkJoin([
 									...userRes.items.map((user) => {
+										const userData = user;
 										const userRole = this.userIdToRoleMap.get(user.id);
 										if (userRole) {
-											user.userRole = userRole;
-											return of(user);
+											userData.userRole = userRole;
+											return of(userData);
 										}
 
-										return this.userApiSvc.getUserRole(user.id).pipe(
+										return this.userApiSvc.getUserRole(userData.id).pipe(
 											map((role) => {
-												user.userRole = role ?? ('' as UserRoleEnum);
-												return user;
+												userData.userRole = role ?? ('' as UserRoleEnum);
+												return userData;
 											}),
-											tap(({ id, userRole }) => this.userIdToRoleMap.set(id, userRole)),
-											catchError(() => of({ ...user, userRole: '' })),
+											tap((val) => this.userIdToRoleMap.set(val.id, val.userRole)),
+											catchError(() => of({ ...userData, userRole: '' })),
 										) as Observable<SchedulerUser>;
 									}),
 								]);

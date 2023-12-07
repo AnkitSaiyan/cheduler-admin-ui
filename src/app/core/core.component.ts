@@ -216,10 +216,10 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 
 	public onLanguageChange(lang: string) {
 		this.dataShareService.setLanguage(lang);
-		if (lang == ENG_BE) {
+		if (lang === ENG_BE) {
 			this.translateService.setTranslation(lang, englishLanguage);
 			this.translateService.setDefaultLang(lang);
-		} else if (lang == DUTCH_BE) {
+		} else if (lang === DUTCH_BE) {
 			this.translateService.setTranslation(lang, dutchLanguage);
 			this.translateService.setDefaultLang(lang);
 		}
@@ -265,10 +265,10 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 	private fetchUserAndUserRoles() {
 		combineLatest([this.userSvc.authUser$, this.loggingOut$$])
 			.pipe(
-				filter(([_, loggingOut]) => !loggingOut),
-				switchMap(([user, _]) => {
+				filter(([_, loggingOut]) => !loggingOut), // eslint-disable-line
+				switchMap(([user]) => {
 					if (!user) {
-						const lang = localStorage.getItem('lang') || DUTCH_BE;
+						const lang = localStorage.getItem('lang') ?? DUTCH_BE;
 						throw Error(localStorage.getItem('isSessionExpired') === 'true' ? Translate.sessionExp[lang] : Translate.failesToFetchUserDetails[lang]);
 					}
 					this.profileData = new NavigationProfileData(new NavigationUser(user.displayName, user.email, '', '', false), []);
@@ -282,19 +282,19 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 							// Set user permission
 							this.permissionSvc.setPermissionType(userRole);
 
-							this.user = user as AuthUser;
+							this.user = user;
 						}),
 						catchError(() => {
 							const lang = localStorage.getItem('lang') || DUTCH_BE;
 							const error: any = new Error(
 								localStorage.getItem('isSessionExpired') === 'true' ? Translate.sessionExp[lang] : Translate.failesToFetchUserDetails[lang],
 							);
-							return throwError(error);
+							return throwError(() => new Error(error));
 						}),
 					);
 				}),
 				takeUntil(this.destroy$$),
-				catchError((err) => throwError(err)),
+				catchError((err) => throwError(() => new Error(err))),
 			)
 			.subscribe({
 				error: (err) => {

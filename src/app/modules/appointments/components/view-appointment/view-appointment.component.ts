@@ -37,7 +37,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 
 	public statuses = Statuses;
 
-	public readonly previousPagefromView = localStorage.getItem('previousPagefromView') || 'appointment';
+	public readonly previousPagefromView = localStorage.getItem('previousPagefromView') ?? 'appointment';
 
 	constructor(
 		private appointmentApiSvc: AppointmentApiService,
@@ -78,7 +78,7 @@ export class ViewAppointmentComponent extends DestroyableComponent implements On
 				}),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe((appointment) => {});
+			.subscribe();
 		this.shareDataSvc
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))

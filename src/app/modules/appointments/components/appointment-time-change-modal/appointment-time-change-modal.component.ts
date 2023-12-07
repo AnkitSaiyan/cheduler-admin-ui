@@ -161,6 +161,7 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
 	}
 
 	public handleExpenseInput(e: Event, element: InputComponent, control: AbstractControl | null | undefined) {
+		const htmlElement: InputComponent = element;
 		if (!element.value && element.value < 5) {
 			e.preventDefault();
 			return;
@@ -169,7 +170,7 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
 		if (element.value % 5 !== 0) {
 			const newValue = element.value - (element.value % 5);
 
-			element.value = newValue;
+			htmlElement.value = newValue;
 			if (control) {
 				control.setValue(newValue);
 			}

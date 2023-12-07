@@ -44,6 +44,9 @@ export class IsPermittedDirective implements OnInit {
 						}
 						break;
 					}
+					default: {
+						this.createEmbeddedView();
+					}
 				}
 			},
 		});

@@ -1,9 +1,6 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { EMPTY, Observable } from 'rxjs';
-import { Translate } from 'src/app/shared/models/translate.model';
-import { DUTCH_BE, ENG_BE } from 'src/app/shared/utils/const';
-import { environment } from '../../../environments/environment';
 import { GeneralUtils } from '../../shared/utils/general.utils';
 import { NotificationDataService } from '../services/notification-data.service';
 import { UserService } from '../services/user.service';

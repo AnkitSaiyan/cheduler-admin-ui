@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/core';
+import { Directive, HostListener, Input } from '@angular/core';
 import { InputComponent } from 'diflexmo-angular-design';
 
 @Directive({
@@ -10,7 +10,7 @@ export class SsnInputDirective {
 		e.preventDefault();
 		e.stopImmediatePropagation();
 		e.stopPropagation();
-		this.handleChange(e);
+		this.handleChange();
 	}
 
 	@Input()
@@ -18,9 +18,7 @@ export class SsnInputDirective {
 
 	private numberOnly: RegExp = /^[0-9.-]+$/;
 
-	constructor(private elementRef: ElementRef, private r: Renderer2) {}
-
-	private handleChange(e: InputEvent) {
+	private handleChange() {
 		const inputText = this.dfmSsnInput.value?.toString();
 
 		if (inputText && !inputText.match(this.numberOnly)) {

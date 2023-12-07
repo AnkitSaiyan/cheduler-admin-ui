@@ -20,7 +20,7 @@ export class TopReferringDoctorsListComponent extends DestroyableComponent imple
 	}
 
 	public ngOnInit(): void {
-		this.dashboardApiService.doctors$.pipe(takeUntil(this.destroy$$)).subscribe((doctor) => {
+		this.dashboardApiService.doctors$.pipe(takeUntil(this.destroy$$)).subscribe((doctor: any) => {
 			this.topTenDoctors$$.next(doctor.doctors);
 			this.filteredTopTenDoctors$$.next(doctor.doctors);
 		});

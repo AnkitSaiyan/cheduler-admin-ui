@@ -100,6 +100,6 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
 				centered: true,
 				backdropClass: 'modal-backdrop-remove-mv',
 			},
-		}).result;
+		});
 	}
 }

@@ -2,6 +2,7 @@ import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
 import { AuthenticationResult, EventMessage, EventType, InteractionStatus } from '@azure/msal-browser';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { IdTokenClaims } from '@azure/msal-common';
 import { filter, Observable, Subject, switchMap, take, tap } from 'rxjs';
 import { Router } from '@angular/router';
@@ -120,7 +121,9 @@ export class AppComponent implements OnInit, OnDestroy {
 	}
 
 	public ngOnDestroy() {
+		// eslint-disable-next-line
 		this._destroying$.next();
+		// eslint-disable-next-line
 		this._destroying$.complete();
 	}
 }
