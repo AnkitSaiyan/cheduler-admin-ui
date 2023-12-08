@@ -585,16 +585,17 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			}
 		});
 
-		if (!this.practiceData[0]) {
-			grayOutSlot['6'] = [
-				{
-					dayStart: this.limit.min,
-					dayEnd: this.limit.max,
-					top: 0,
-					height: getDurationMinutes(this.myDate(this.limit.min), this.myDate(this.limit.max)) * this.pixelsPerMin,
-				},
-			];
-		}
+		// if (!this.practiceData[0]) {
+		// 	grayOutSlot['6'] = [
+		// 		{
+		// 			dayStart: this.limit.min,
+		// 			dayEnd: this.limit.max,
+		// 			top: 0,
+		// 			height: getDurationMinutes(this.myDate(this.limit.min), this.myDate(this.limit.max)) * this.pixelsPerMin,
+		// 		},
+		// 	];
+		// }
+
 		this.grayOutSlot$$.next(grayOutSlot);
 	}
 
