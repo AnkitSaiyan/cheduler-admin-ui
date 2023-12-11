@@ -1,6 +1,5 @@
 import { Status } from './status.model';
 import { PracticeAvailability } from './practice.model';
-import { Exam } from './exam.model';
 
 export enum AvailabilityType {
 	Unavailable,
@@ -32,7 +31,7 @@ export interface User {
 	examList: number[];
 	practiceAvailability: PracticeAvailability[];
 	info?: string;
-	exams?: Exam[];
+	exams?: any[];
 	rights?: any[];
 	rizivNumber?: string;
 	isMandate: boolean;

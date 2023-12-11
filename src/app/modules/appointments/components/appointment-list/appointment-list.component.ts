@@ -576,7 +576,12 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 						const currSD = new Date(appointment.startedAt);
 						const currED = new Date(appointment.endedAt);
 
-						if ((currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime() || (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1))) {
+						if (
+							currSD.getTime() === startDate.getTime() ||
+							(currSD > startDate && currSD < endDate) ||
+							currSD.getTime() === endDate.getTime() ||
+							(currSD > endDate && getDurationMinutes(endDate, currSD) <= 1)
+						) {
 							sameGroup = true;
 							if (currED > endDate) {
 								endDate = currED;

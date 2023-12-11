@@ -2,7 +2,6 @@ import { AvailabilityType, User } from './user.model';
 import { Status } from './status.model';
 import { PracticeAvailability } from './practice.model';
 import { TimeSlot } from './common.modal';
-import { Exam } from './exam.model';
 import { PartialBy, Prettify } from '../utils/types';
 
 export enum RoomType {
@@ -24,7 +23,7 @@ export interface Room {
 	endedAt?: string | Date;
 	examId: number;
 	examLists?: number[];
-	exams: Exam[];
+	exams: any[];
 	users?: User[];
 }
 
