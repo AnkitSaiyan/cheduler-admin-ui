@@ -456,8 +456,11 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public editAppointment(event: any) {
 		const weekday = new Date(event.day[2], event.day[1], event.day[0], 0, 0, 0, 0).getDay();
-		const grayOutArea = this.grayOutSlot$$.value?.[weekday - 1];
-		const isOutside = grayOutArea.some((item) => item.top < event.event.offsetY && item.top + item.height > event.event.offsetY);
+		const grayOutArea = this.grayOutSlot$$.value?.[(weekday + 7 - 1) % 7];
+		let isOutside = grayOutArea?.some((item) => item.top < event.event.offsetY && item.top + item.height > event.event.offsetY);
+		if (!grayOutArea) {
+			isOutside = true;
+		}
 		this.addAppointment.emit({
 			e: { offsetY: event.event.offsetY },
 			day: event.day,
