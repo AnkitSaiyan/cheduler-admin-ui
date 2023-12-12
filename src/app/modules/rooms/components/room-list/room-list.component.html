@@ -63,7 +63,7 @@
     [formControl]="searchControl"
   ></dfm-input>
 
-  <section class="list-page-content-height" *ngIf="filteredRooms$$ | async as rooms" infiniteScroll [scrollWindow]="false" (scrolled)="onScroll()">
+  <section class="list-page-content-height" *ngIf="filteredRooms$$ | async as rooms" infiniteScroll (scrolled)="onScroll()">
     <div class="room-table-wrapper">
       <table class="room-table">
         <caption></caption>
