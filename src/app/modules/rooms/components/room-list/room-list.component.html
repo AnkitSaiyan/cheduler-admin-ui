@@ -110,7 +110,6 @@
           <td class="room-table-td" *dfmPermitted="[Permission.UpdateRooms, Permission.DeleteRooms]">
             <div class="d-flex dfm-gap-16 align-items-center rm-li-action-buttons">
               <ng-container *dfmPermitted="Permission.UpdateRooms">
-
                 <dfm-button
                   *ngIf="room.status === statusType.Inactive"
                   color="link-gray"
