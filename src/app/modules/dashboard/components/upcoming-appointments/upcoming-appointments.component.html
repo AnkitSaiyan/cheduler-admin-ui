@@ -23,7 +23,6 @@
 		*ngIf="filteredUpcomingAppointments$$ | async as upcomingAppointments"
 		class="h-92"
 		infiniteScroll
-		[scrollWindow]="false"
 	>
 		<div *ngIf="upcomingAppointments.length; else elseBlock" class="d-flex flex-column dfm-gap-16 upcoming-events-container">
 			<table>
