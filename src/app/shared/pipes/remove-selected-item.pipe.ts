@@ -8,4 +8,3 @@ export class SortOrderValidation implements PipeTransform {
 		return formValue?.roomsForExam?.filter((_, i) => i !== index).some((val: any) => val?.sortOrder && val?.sortOrder === value);
 	}
 }
-

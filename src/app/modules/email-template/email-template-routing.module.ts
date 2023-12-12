@@ -7,27 +7,26 @@ import { EmailTemplateListComponent } from './components/email-template-list/ema
 import { EmailTemplateComponent } from './pages/email/email-template.component';
 
 const emailRoutes: Routes = [
-  {
-    path: '',
-    component: EmailTemplateComponent,
-    children: [
-      {
-        path: '',
-        component: EmailTemplateListComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.EmailTemplate },
-      },
-      {
-        path: `:${EMAIL_TEMPLATE_ID}/edit`,
-        component: EditEmailTemplateComponent,
-        data: { routeType: RouteType.Add, routeName: RouteName.EmailTemplate },
-      },
-    ],
-  },
+	{
+		path: '',
+		component: EmailTemplateComponent,
+		children: [
+			{
+				path: '',
+				component: EmailTemplateListComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.EmailTemplate },
+			},
+			{
+				path: `:${EMAIL_TEMPLATE_ID}/edit`,
+				component: EditEmailTemplateComponent,
+				data: { routeType: RouteType.Add, routeName: RouteName.EmailTemplate },
+			},
+		],
+	},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(emailRoutes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(emailRoutes)],
+	exports: [RouterModule],
 })
 export class EmailTemplateRoutingModule {}
-

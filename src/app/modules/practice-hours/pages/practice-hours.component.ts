@@ -7,42 +7,8 @@ import { TimeSlotUtils } from 'src/app/shared/utils/time-slots.utils';
 import { NotificationDataService } from '../../../core/services/notification-data.service';
 import { PracticeHoursApiService } from '../../../core/services/practice-hours-api.service';
 import { DestroyableComponent } from '../../../shared/components/destroyable.component';
-import { NameValue } from '../../../shared/components/search-modal.component';
-import { Weekday } from '../../../shared/models/calendar.model';
 import { PracticeAvailabilityServer } from '../../../shared/models/practice.model';
 import { Translate } from '../../../shared/models/translate.model';
-
-interface PracticeHourFormValues {
-	selectedWeekday: Weekday;
-	practiceHours: {
-		[key: string]: {
-			id?: number;
-			weekday: Weekday;
-			dayStart: string;
-			dayEnd: string;
-			startTimings: NameValue[];
-			endTimings: NameValue[];
-		}[];
-	};
-}
-
-interface ExceptionFormValues {
-	exception: {
-		date: {
-			day: number;
-			month: number;
-			year: number;
-		};
-		startTime: {
-			hour: number;
-			minute: number;
-		};
-		endTime: {
-			hour: number;
-			minute: number;
-		};
-	}[];
-}
 
 @Component({
 	selector: 'dfm-practice-hours',

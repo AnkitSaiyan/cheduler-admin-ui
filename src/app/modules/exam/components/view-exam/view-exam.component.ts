@@ -1,6 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
+import { DfmDatasource, DfmTableHeader } from 'diflexmo-angular-design';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { UserUtils } from 'src/app/shared/utils/user.utils';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -11,12 +15,8 @@ import { Exam, Uncombinables } from '../../../../shared/models/exam.model';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { ENG_BE, EXAM_ID } from '../../../../shared/utils/const';
 
-import { DfmDatasource, DfmTableHeader } from 'diflexmo-angular-design';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { Permission } from 'src/app/shared/models/permission.model';
 import { Translate } from '../../../../shared/models/translate.model';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
-import { UserUtils } from 'src/app/shared/utils/user.utils';
 
 @Component({
 	selector: 'dfm-view-exam',

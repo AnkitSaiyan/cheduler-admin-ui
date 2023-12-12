@@ -80,13 +80,3 @@ export class WeekViewAppointmentCardTopPipe implements PipeTransform {
 		return formattedDate;
 	}
 }
-
-
-
-
-
-
-
-
-
-

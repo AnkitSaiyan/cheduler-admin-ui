@@ -9,7 +9,9 @@ export class RemoveDuplicateDataPipe implements PipeTransform {
 		const arr: any = [];
 		if (key?.[1]) {
 			value.forEach((data) => {
-				if (data?.[key[1]].length) arr.push(...data?.[key[1]]);
+				if (data?.[key[1]].length) {
+					arr.push(...(data?.[key[1]] ?? {}));
+				}
 			});
 		} else {
 			arr.push(...value);

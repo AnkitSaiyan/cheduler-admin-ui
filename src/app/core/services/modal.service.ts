@@ -5,32 +5,32 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap/modal/modal-ref';
 
 @Injectable({
-  providedIn: 'root',
+	providedIn: 'root',
 })
 export class ModalService {
-  private dialogData$$ = new BehaviorSubject<any>(null);
+	private dialogData$$ = new BehaviorSubject<any>(null);
 
-  private dialogRef!: NgbModalRef;
+	private dialogRef!: NgbModalRef;
 
-  constructor(private ngbModal: NgbModal) {}
+	constructor(private ngbModal: NgbModal) {}
 
-  public open(dialogBox: any, extras?: { options?: NgbModalOptions; data?: any }): NgbModalRef {
-    if (extras?.data) {
-      this.dialogData$$.next(extras.data);
-    }
-    this.dialogRef = this.ngbModal.open(dialogBox, { centered: true, keyboard: false, ...extras?.options });
-    return this.dialogRef;
-  }
+	public open(dialogBox: any, extras?: { options?: NgbModalOptions; data?: any }): NgbModalRef {
+		if (extras?.data) {
+			this.dialogData$$.next(extras.data);
+		}
+		this.dialogRef = this.ngbModal.open(dialogBox, { centered: true, keyboard: false, ...extras?.options });
+		return this.dialogRef;
+	}
 
-  public dismiss() {
-    this.dialogRef.dismiss();
-  }
+	public dismiss() {
+		this.dialogRef.dismiss();
+	}
 
-  public close(data?: any) {
-    this.dialogRef.close(data);
-  }
+	public close(data?: any) {
+		this.dialogRef.close(data);
+	}
 
-  public get dialogData$(): Observable<any> {
-    return this.dialogData$$.asObservable();
-  }
+	public get dialogData$(): Observable<any> {
+		return this.dialogData$$.asObservable();
+	}
 }

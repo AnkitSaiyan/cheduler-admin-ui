@@ -1,14 +1,13 @@
-import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap, take, tap, throwError} from 'rxjs';
-import {AuthUser} from "../../shared/models/user.model";
-import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
-import {UserManagementApiService} from "./user-management-api.service";
-import {Router} from "@angular/router";
-import {InteractionType} from "@azure/msal-browser";
-import {PermissionService} from "./permission.service";
-import { EXT_Patient_Tenant } from 'src/app/shared/utils/const';
-import { NotificationDataService } from './notification-data.service';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, catchError, map, Observable, of, switchMap, take, tap } from 'rxjs';
+import { MsalService } from '@azure/msal-angular';
+import { Router } from '@angular/router';
+import { EXT_PATIENT_TENANT } from 'src/app/shared/utils/const';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { PermissionService } from './permission.service';
+import { NotificationDataService } from './notification-data.service';
+import { UserManagementApiService } from './user-management-api.service';
+import { AuthUser } from '../../shared/models/user.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -17,7 +16,6 @@ export class UserService {
 	private authUser$$: BehaviorSubject<AuthUser | undefined> = new BehaviorSubject<AuthUser | undefined>(undefined);
 
 	constructor(
-		@Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
 		private msalService: MsalService,
 		private userManagementApiService: UserManagementApiService,
 		private permissionSvc: PermissionService,
@@ -41,7 +39,7 @@ export class UserService {
 
 		const tenantIds = (user?.idTokenClaims as any)?.extension_Tenants?.split(',');
 
-		if (tenantIds?.some((value) => value === EXT_Patient_Tenant)) {
+		if (tenantIds?.some((value) => value === EXT_PATIENT_TENANT)) {
 			this.notificationSvc.showError(`you don't have permission to view this page`);
 			return of(false);
 		}
@@ -70,16 +68,16 @@ export class UserService {
 							return;
 						}
 
-						const user = this.authUser$$.value;
-						if (!user) {
+						const users = this.authUser$$.value;
+						if (!users) {
 							return;
 						}
 
-						if (user.properties['extension_ProfileIsIncomplete']) {
+						if (users.properties['extension_ProfileIsIncomplete']) {
 							this.router.navigate(['/complete-profile']);
 						}
 					}),
-					catchError((err) => of(false)),
+					catchError(() => of(false)),
 				);
 			}),
 			catchError(() => of(false)),
@@ -98,25 +96,3 @@ export class UserService {
 		this.permissionSvc.removePermissionType();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

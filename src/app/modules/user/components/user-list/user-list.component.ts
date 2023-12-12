@@ -35,13 +35,6 @@ const SchedulerColumnIdToKey = {
 	5: 'Status',
 };
 
-const GeneralColumnIdToKey = {
-	1: 'firstname',
-	2: 'lastname',
-	3: 'email',
-	4: 'Status',
-};
-
 @Component({
 	selector: 'dfm-user-list',
 	templateUrl: './user-list.component.html',
@@ -151,10 +144,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 		this.userManagementApiSvc.userList$.pipe(map((users) => users.items.map((user) => this.convertToUserBase(user)))).subscribe({
 			next: (userBase) => {
-				this.users$$.next([...(userBase)]);
+				this.users$$.next([...userBase]);
 				this.loading$$.next(false);
 			},
-			error: (err) => {
+			error: () => {
 				this.users$$.next([]);
 				this.loading$$.next(false);
 			},
@@ -212,7 +205,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			.pipe(
 				map((value) => {
 					if (value?.proceed) {
-						return [...this.selectedUserIds.map((id) => ({ id: id, status: value.newStatus as number }))];
+						return [...this.selectedUserIds.map((id) => ({ id, status: value.newStatus as number }))];
 					}
 
 					return [];
@@ -233,7 +226,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
-				next: (value) => {
+				next: () => {
 					this.selectedUserIds.forEach((id) => {
 						this.users$$.next([
 							...GeneralUtils.modifyListData(
@@ -277,8 +270,11 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						title: Translate[this.columns[i]][lang] ?? this.columns[i],
 					}));
 
-					if (lang == ENG_BE) {this.statuses = Statuses}
-					else {this.statuses = StatusesNL};
+					if (lang === ENG_BE) {
+						this.statuses = Statuses;
+					} else {
+						this.statuses = StatusesNL;
+					}
 				},
 			});
 	}
@@ -356,10 +352,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				this.clipboardData = '';
 				return;
 			}
-			
+
 			this.filteredUsers$$.value.forEach((user: UserBase) => {
-				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.userType ?? '—'}\t${ +user.status === 2 ? '-' :
-					StatusToName[+user.status]
+				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.userType ?? '—'}\t${
+					+user.status === 2 ? '-' : StatusToName[+user.status]
 				}\n`;
 			});
 
@@ -433,11 +429,11 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		modalRef.closed.pipe(take(1)).subscribe({
 			next: (res) => {
 				if (res) {
-					if (!isNaN(+res.id)) {
+					if (!Number.isNaN(+res.id)) {
 						return;
 					}
 
-					const item = isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : (res as UserBase);
+					const item = Number.isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : (res as UserBase);
 					this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, item, 'add'));
 				}
 			},
@@ -454,7 +450,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				if (user.status === 1) status = this.translate.instant('Active');
 				if (user.status === 0) status = this.translate.instant('Inactive');
 				return (
-					(user.firstname?.toLowerCase() + ' ' + user.lastname?.toLowerCase())?.includes(searchText) ||
+					`${user.firstname?.toLowerCase()} ${user.lastname?.toLowerCase()}`?.includes(searchText) ||
 					user.firstname?.toLowerCase()?.includes(searchText) ||
 					user.lastname?.toLowerCase()?.includes(searchText) ||
 					user.email?.toLowerCase()?.includes(searchText) ||
@@ -518,7 +514,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		} as unknown as UserBase;
 	}
 
-	public onScroll(e: undefined): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.tableData$$.value.isLoadingMore = true;
 		}

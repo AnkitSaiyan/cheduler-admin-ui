@@ -3,18 +3,18 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '
 import { ActivatedRoute, Router } from '@angular/router';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
 import {
-  BehaviorSubject,
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  first,
-  map,
-  of,
-  startWith,
-  switchMap,
-  take,
-  takeUntil
+	BehaviorSubject,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	first,
+	map,
+	of,
+	startWith,
+	switchMap,
+	take,
+	takeUntil,
 } from 'rxjs';
 import { BodyPartService } from 'src/app/core/services/body-part.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
@@ -215,7 +215,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		this.examApiSvc.allExams$
 			.pipe(
 				first(),
-				map((exams) => exams.filter((exam) => +exam.id !== (+(this.examID ?? 0)))),
+				map((exams) => exams.filter((exam) => +exam.id !== +(this.examID ?? 0))),
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
@@ -347,6 +347,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	}
 
 	public handleExpenseInput(e: Event, element: InputComponent, control: AbstractControl | null | undefined) {
+		const htmlElement: InputComponent = element;
 		if (!element.value && element.value < 5) {
 			e.preventDefault();
 			return;
@@ -355,7 +356,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		if (element.value % 5 !== 0) {
 			const newValue = element.value - (element.value % 5);
 
-			element.value = newValue;
+			htmlElement.value = newValue;
 			if (control) {
 				control.setValue(newValue);
 			}
@@ -482,7 +483,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 					},
-					error: (err) => {
+					error: () => {
 						this.submitting$$.next(false);
 					},
 				});
@@ -504,9 +505,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 					},
-					error: (err) => {
+					error: () => {
 						this.submitting$$.next(false);
-						
 					},
 				});
 		}
@@ -535,6 +535,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			case 'bodyPart':
 				this.filteredBodyPart$$.next(GeneralUtils.FilterArray(this.bodyPart, searchText, 'name'));
 				break;
+			default:
 		}
 	}
 
@@ -568,8 +569,8 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		this.examForm
 			.get('roomType')
 			?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
-			.subscribe((roomType) => {
-				this.createRoomsForExamFormArray(roomType);
+			.subscribe(() => {
+				this.createRoomsForExamFormArray();
 			});
 
 		this.examForm
@@ -675,25 +676,25 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			}, 100);
 		}
 
-		combineLatest([fg?.get('assistants')?.valueChanges?.pipe(startWith('')), fg?.get('assistantCount')?.valueChanges])
+		combineLatest([fg?.get('assistants')?.valueChanges.pipe(startWith('')) ?? [], fg?.get('assistantCount')?.valueChanges ?? []])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
 			.subscribe(() => {
 				this.checkStaffCountValidity(fg.get('assistants'), fg.get('assistantCount'), 'assistantCount');
 			});
 
-		combineLatest([fg?.get('radiologists')?.valueChanges?.pipe(startWith('')), fg?.get('radiologistCount')?.valueChanges])
+		combineLatest([fg?.get('radiologists')?.valueChanges?.pipe(startWith('')) ?? [], fg?.get('radiologistCount')?.valueChanges ?? []])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
 			.subscribe(() => {
 				this.checkStaffCountValidity(fg.get('radiologists'), fg.get('radiologistCount'), 'radiologistCount');
 			});
 
-		combineLatest([fg?.get('nursing')?.valueChanges?.pipe(startWith('')), fg?.get('nursingCount')?.valueChanges])
+		combineLatest([fg?.get('nursing')?.valueChanges?.pipe(startWith('')) ?? [], fg?.get('nursingCount')?.valueChanges ?? []])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
 			.subscribe(() => {
 				this.checkStaffCountValidity(fg.get('nursing'), fg.get('nursingCount'), 'nursingCount');
 			});
 
-		combineLatest([fg?.get('secretaries')?.valueChanges?.pipe(startWith('')), fg?.get('secretaryCount')?.valueChanges])
+		combineLatest([fg?.get('secretaries')?.valueChanges?.pipe(startWith('')) ?? [], fg?.get('secretaryCount')?.valueChanges ?? []])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
 			.subscribe(() => {
 				this.checkStaffCountValidity(fg.get('secretaries'), fg.get('secretaryCount'), 'secretaryCount');
@@ -724,24 +725,21 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		return fg;
 	}
 
-	// TODO: Needs to Optimize this solution
 	public filterBatchRooms(): void {
-		const roomsByType = this.availableRoomsOption$$.value[this.examForm.value?.roomType] ?? [];
+		const roomsByType = this.availableRoomsOption$$.value[this.examForm.value?.roomType] || [];
 
-		for (let control of this.roomsForExamControls) {
-			const roomIDsSet = new Set();
-			for (let currControl of this.roomsForExamControls) {
-				if (currControl.value.formId === control.value.formId) {
-					continue;
-				}
-				currControl.value.roomName?.forEach((id: number | string) => roomIDsSet.add(id));
-			}
+		this.roomsForExamControls.forEach((control) => {
+			const roomIDsSet = new Set<string | number>(
+				this.roomsForExamControls
+					.filter((currControl) => currControl.value.formId !== control.value.formId)
+					.flatMap((currControl) => currControl.value.roomName || []),
+			);
 
 			control.get('filteredRooms')?.setValue(
 				roomsByType.filter((room: NameValue) => !roomIDsSet.has(room.value)),
 				{ emitEvent: false },
 			);
-		}
+		});
 	}
 
 	public addMoreRoomForm() {
@@ -758,7 +756,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		this.toggleExpensiveError(this.formValues.expensive);
 	}
 
-	private createRoomsForExamFormArray(roomType: RoomType) {
+	private createRoomsForExamFormArray() {
 		const fa = this.examForm.get('roomsForExam') as FormArray;
 		fa.clear();
 		fa.push(this.addRoomForm());

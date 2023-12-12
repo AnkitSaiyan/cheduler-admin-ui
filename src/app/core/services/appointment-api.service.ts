@@ -6,6 +6,8 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
 import { NameValue } from 'src/app/shared/components/search-modal.component';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { environment } from 'src/environments/environment';
+import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import {
 	AddAppointmentRequestData,
 	AddOutSideOperatingHoursAppointmentRequest,
@@ -23,8 +25,6 @@ import { DashboardApiService } from './dashboard-api.service';
 import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
 import { UserManagementApiService } from './user-management-api.service';
-import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 
 @Injectable({
 	providedIn: 'root',
@@ -61,6 +61,7 @@ export class AppointmentApiService extends DestroyableComponent {
 	private selectedLang$$ = new BehaviorSubject<string>('');
 
 	private signalData!: Appointment[];
+
 	private appointmentUrl = `${environment.schedulerApiUrl}/appointment`;
 
 	private pageNo$$ = new BehaviorSubject<number>(1);
@@ -174,17 +175,17 @@ export class AppointmentApiService extends DestroyableComponent {
 		this.loaderSvc.activate();
 
 		if (data) {
-			const queryParams = { pageNo: 1 };
-			if (data?.appointmentNumber) queryParams['id'] = data.appointmentNumber;
-			if (data?.roomsId) queryParams['roomId'] = data.roomsId;
-			if (data?.examList.length) queryParams['examId'] = data.examList;
-			if (data?.doctorId) queryParams['doctorId'] = data.doctorId;
-			if (data?.startedAt) queryParams['startDate'] = data.startedAt;
-			if (data?.endedAt) queryParams['endDate'] = data.endedAt;
-			if (data?.FirstName) queryParams['FirstName'] = data.FirstName;
-			if (data?.LastName) queryParams['LastName'] = data.LastName;
-			if (data?.userId) queryParams['userId'] = data.userId;
-			if (data?.approval == 0 || data.approval) queryParams['approval'] = data.approval;
+			const queryParams: any = { pageNo: 1 };
+			if (data?.appointmentNumber) queryParams.id = data.appointmentNumber;
+			if (data?.roomsId) queryParams.roomId = data.roomsId;
+			if (data?.examList.length) queryParams.examId = data.examList;
+			if (data?.doctorId) queryParams.doctorId = data.doctorId;
+			if (data?.startedAt) queryParams.startDate = data.startedAt;
+			if (data?.endedAt) queryParams.endDate = data.endedAt;
+			if (data?.FirstName) queryParams.FirstName = data.FirstName;
+			if (data?.LastName) queryParams.LastName = data.LastName;
+			if (data?.userId) queryParams.userId = data.userId;
+			if (data?.approval === 0 || data.approval) queryParams.approval = data.approval;
 
 			return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params: queryParams }).pipe(
 				map((response) => {
@@ -266,7 +267,7 @@ export class AppointmentApiService extends DestroyableComponent {
 						...this.getAppointmentModified({ ...response?.data, examDetail: response?.data?.examBatchDetail } as any),
 						patientFname: userDetail?.givenName,
 						patientLname: userDetail?.surname,
-						patientTel: userDetail.properties?.['extension_PhoneNumber'],
+						patientTel: userDetail.properties?.extension_PhoneNumber,
 						patientEmail: userDetail.email,
 					};
 				}
@@ -283,7 +284,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		const { id, ...restData } = requestData;
 		let patientTimeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
 
-		if (patientTimeZone && patientTimeZone[0] === '+') {
+		if (patientTimeZone && patientTimeZone.startsWith('+')) {
 			patientTimeZone = patientTimeZone.slice(1);
 		}
 
@@ -299,29 +300,28 @@ export class AppointmentApiService extends DestroyableComponent {
 	): Observable<Appointment> {
 		let patientTimeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
 
-		if (patientTimeZone && patientTimeZone[0] === '+') {
+		if (patientTimeZone && patientTimeZone.startsWith('+')) {
 			patientTimeZone = patientTimeZone.slice(1);
 		}
 
-		if (action == 'add') {
+		if (action === 'add') {
 			return this.http.post<BaseResponse<Appointment>>(`${this.appointmentUrl}/addappointment`, { ...requestData, patientTimeZone }).pipe(
 				map((response) => response.data),
 				tap(() => this.appointmentPageNo$$.next(1)),
 			);
-		} else {
-			const { id, ...restData } = requestData;
-			return this.http.put<BaseResponse<Appointment>>(`${this.appointmentUrl}/editappointment/${id}`, { ...restData, patientTimeZone }).pipe(
-				map((response) => response.data),
-				tap(() => this.appointmentPageNo$$.next(1)),
-			);
 		}
+		const { id, ...restData } = requestData;
+		return this.http.put<BaseResponse<Appointment>>(`${this.appointmentUrl}/editappointment/${id}`, { ...restData, patientTimeZone }).pipe(
+			map((response) => response.data),
+			tap(() => this.appointmentPageNo$$.next(1)),
+		);
 	}
 
 	public updateAppointment$(requestData: AddAppointmentRequestData): Observable<Appointment> {
 		const { id, ...restData } = requestData;
 		let patientTimeZone = this.datePipe.transform(new Date(), 'ZZZZZ');
 
-		if (patientTimeZone && patientTimeZone[0] === '+') {
+		if (patientTimeZone && patientTimeZone.startsWith('+')) {
 			patientTimeZone = patientTimeZone.slice(1);
 		}
 
@@ -359,7 +359,7 @@ export class AppointmentApiService extends DestroyableComponent {
 				},
 			]),
 			tap(() => this.loaderSvc.spinnerDeactivate()),
-			catchError((e) => {
+			catchError(() => {
 				this.loaderSvc.spinnerDeactivate();
 				return of([]);
 			}),
@@ -516,7 +516,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	public getDocumentById$(id: any, isPreview: boolean): Observable<any> {
 		let params = new HttpParams();
-		const idType = isNaN(id) ? 'qrCodeId' : 'appointmentId';
+		const idType = Number.isNaN(id) ? 'qrCodeId' : 'appointmentId';
 		params = params.append(idType, id);
 		params = params.append('isPreview', isPreview);
 		return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, { params }).pipe(
@@ -537,6 +537,6 @@ export class AppointmentApiService extends DestroyableComponent {
 	}
 
 	public convertUtcToLocalDate(date: string | Date): string {
-		return date ? this.defaultDatePipe.transform(this.utcToLocalPipe.transform(date.toString())) : '-'
+		return date ? this.defaultDatePipe.transform(this.utcToLocalPipe.transform(date.toString())) : '-';
 	}
 }

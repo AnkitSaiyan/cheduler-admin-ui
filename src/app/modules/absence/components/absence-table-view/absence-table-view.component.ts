@@ -2,12 +2,14 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
+import { DfmDatasource, DfmTableHeader, NotificationType } from 'diflexmo-angular-design';
 import { BehaviorSubject, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { PaginationData } from 'src/app/shared/models/base-response.model';
+import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -20,10 +22,6 @@ import { Translate } from '../../../../shared/models/translate.model';
 import { ABSENCE_TYPE, ABSENCE_TYPE_ARRAY, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
-import { PaginationData } from 'src/app/shared/models/base-response.model';
-import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
-
 
 const ColumnIdToKey = {
 	1: 'name',
@@ -140,7 +138,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 					this.paginationData = absencesBase?.metaData?.pagination || 1;
 					this.isLoading = false;
 				},
-				error: (e) => {
+				error: () => {
 					this.absences$$.next([]);
 				},
 			});
@@ -161,7 +159,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		});
 
 		this.absences$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (absences) => this.handleSearch(this.searchControl.value ?? ''),
+			next: () => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
@@ -222,12 +220,10 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 						title: Translate[this.columns[i]][lang],
 					}));
 
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						default:
-							this.statuses = StatusesNL;
+					if (lang === ENG_BE) {
+						this.statuses = Statuses;
+					} else {
+						this.statuses = StatusesNL;
 					}
 				},
 			});
@@ -241,8 +237,8 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		this.filteredAbsences$$.next([
 			...this.absences$$.value.filter((absence: Absence) => {
 				return (
-					absence.name?.toLowerCase()?.includes(searchText) ||
-					this.datePipe.transform(absence?.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ||
+					absence.name?.toLowerCase()?.includes(searchText) ??
+					this.datePipe.transform(absence?.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ??
 					this.datePipe.transform(absence?.endedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText)
 				);
 			}),
@@ -295,7 +291,9 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 			}
 
 			this.filteredAbsences$$.value.forEach((absence: Absence) => {
-				dataString += `${absence.name}\t${this.utcToLocalPipe.transform(this.utcToLocalPipe.transform(absence?.startedAt?.toString()))}\t${this.utcToLocalPipe.transform(this.utcToLocalPipe.transform(absence?.endedAt?.toString()))}\t${absence.info}\n`;
+				dataString += `${absence.name}\t${this.utcToLocalPipe.transform(
+					this.utcToLocalPipe.transform(absence?.startedAt?.toString()),
+				)}\t${this.utcToLocalPipe.transform(this.utcToLocalPipe.transform(absence?.endedAt?.toString()))}\t${absence.info}\n`;
 			});
 
 			this.clipboardData = dataString;
@@ -371,6 +369,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 			},
 		});
 	}
+
 	private clearDownloadDropdown() {
 		setTimeout(() => {
 			this.downloadDropdownControl.setValue('');
@@ -387,7 +386,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		});
 	}
 
-	public onScroll(e: undefined): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.absenceApiSvc.pageNo = this.paginationData.pageNo + 1;
 			this.tableData$$.value.isLoadingMore = true;
@@ -398,21 +397,3 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 		this.filteredAbsences$$.next(GeneralUtils.SortArray(this.filteredAbsences$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

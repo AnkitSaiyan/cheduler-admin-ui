@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { GeneralUserPermission, ReaderPermission } from 'src/app/shared/models/permission.model';
 import { UserRoleEnum } from '../../shared/models/user.model';
 
@@ -46,20 +46,3 @@ export class PermissionService {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,7 +1,7 @@
 import { Params } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { DateTimeUtils } from '../utils/date-time.utils';
 import { Absence, RepeatType } from './absence.model';
-import { DatePipe } from '@angular/common';
 
 export enum Weekday {
 	SUN,
@@ -135,20 +135,18 @@ export function getAllDaysOfWeek(date: Date, sundayFirst: boolean = false): Arra
 	if (!sundayFirst) {
 		weekDay = day === 0 ? 6 : day - 1;
 	}
-	const dates: Date[] = [];
 	const dateDistributed: Array<[number, number, number]> = [];
 	//
 
 	const updateDate = (num) => {
 		const d: Date = new Date(date);
 		d.setDate(date.getDate() + num);
-		dates.push(d);
 		dateDistributed.push([d.getDate(), d.getMonth(), d.getFullYear()]);
 	};
 
 	let w = 0;
 
-	for (w = 0; w < weekDay; w++) {
+	for (w; w < weekDay; w++) {
 		updateDate(w - weekDay);
 	}
 
@@ -223,7 +221,7 @@ export function calendarDistinctUntilChanged(preQueryParam: Params, currQueryPar
 				return false;
 			}
 			return true;
-		case currQueryParam['v'] === 'w':
+		case currQueryParam['v'] === 'w': {
 			if (currMonth !== preMonth || currYear !== preYear) {
 				return false;
 			}
@@ -235,6 +233,7 @@ export function calendarDistinctUntilChanged(preQueryParam: Params, currQueryPar
 				return false;
 			}
 			return true;
+		}
 		default:
 			return false;
 	}
@@ -282,22 +281,22 @@ export function dataModification(absence, datePipe: DatePipe) {
 			slotEndTime: datePipe.transform(value.endedAt, 'HH:mm:ss'),
 			isHoliday: value.isHoliday,
 		}))
-		?.forEach((absence: any) => {
-			let { repeatFrequency } = absence;
-			const { absenceId, name, info, startedAt, endedAt, roomName, userName, isHoliday } = absence;
-			const startDate = new Date(new Date(new Date(absence.startedAt)).toDateString());
-			let firstDate = new Date(new Date(new Date(absence.startedAt)).toDateString());
-			const lastDate = new Date(new Date(new Date(absence.endedAt)).toDateString());
+		?.forEach((absenceItem: any) => {
+			let { repeatFrequency } = absenceItem;
+			const { absenceId, name, info, startedAt, endedAt, roomName, userName, isHoliday } = absenceItem;
+			const startDate = new Date(new Date(new Date(absenceItem.startedAt)).toDateString());
+			let firstDate = new Date(new Date(new Date(absenceItem.startedAt)).toDateString());
+			const lastDate = new Date(new Date(new Date(absenceItem.endedAt)).toDateString());
 			switch (true) {
-				case !absence.isRepeat:
-				case absence.repeatType === RepeatType.Daily: {
-					repeatFrequency = absence.isRepeat ? repeatFrequency : 1;
-					while (true) {
+				case !absenceItem.isRepeat:
+				case absenceItem.repeatType === RepeatType.Daily: {
+					repeatFrequency = absenceItem.isRepeat ? repeatFrequency : 1;
+					while (firstDate.getTime() <= lastDate.getTime()) {
 						if (firstDate.getTime() > lastDate.getTime()) break;
 						const dateString = datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
 						const customPrioritySlot = {
-							start: absence.slotStartTime.slice(0, 5),
-							end: absence.slotEndTime?.slice(0, 5),
+							start: absenceItem.slotStartTime.slice(0, 5),
+							end: absenceItem.slotEndTime?.slice(0, 5),
 							id: absenceId,
 							name,
 							info,
@@ -312,18 +311,18 @@ export function dataModification(absence, datePipe: DatePipe) {
 					}
 					break;
 				}
-				case absence.repeatType === RepeatType.Weekly: {
+				case absenceItem.repeatType === RepeatType.Weekly: {
 					const closestSunday = new Date(startDate.getTime() - startDate.getDay() * 24 * 60 * 60 * 1000);
 					firstDate = new Date(closestSunday);
-					while (true) {
-						absence.repeatDays.split(',').forEach((day) => {
+					while (closestSunday.getTime() <= lastDate.getTime()) {
+						absenceItem.repeatDays.split(',').forEach((day) => {
 							firstDate.setTime(closestSunday.getTime());
 							firstDate.setDate(closestSunday.getDate() + +day);
 							if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
 								const dateString = datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
 								const customPrioritySlot = {
-									start: absence.slotStartTime.slice(0, 5),
-									end: absence.slotEndTime?.slice(0, 5),
+									start: absenceItem.slotStartTime.slice(0, 5),
+									end: absenceItem.slotEndTime?.slice(0, 5),
 									id: absenceId,
 									name,
 									info,
@@ -341,16 +340,16 @@ export function dataModification(absence, datePipe: DatePipe) {
 					}
 					break;
 				}
-				case absence.repeatType === RepeatType.Monthly: {
-					while (true) {
-						absence.repeatDays.split(',').forEach((day) => {
+				case absenceItem.repeatType === RepeatType.Monthly: {
+					while (firstDate.getTime() <= lastDate.getTime()) {
+						absenceItem.repeatDays.split(',').forEach((day) => {
 							if (getDateOfMonth(firstDate.getFullYear(), firstDate.getMonth() + 1, 0) >= +day) {
 								firstDate.setDate(+day);
 								if (firstDate.getTime() >= startDate.getTime() && firstDate.getTime() <= lastDate.getTime()) {
 									const dateString = datePipe.transform(firstDate, 'd-M-yyyy') ?? '';
 									const customPrioritySlot = {
-										start: absence.slotStartTime.slice(0, 5),
-										end: absence.slotEndTime?.slice(0, 5),
+										start: absenceItem.slotStartTime.slice(0, 5),
+										end: absenceItem.slotEndTime?.slice(0, 5),
 										id: absenceId,
 										name,
 										info,
@@ -380,7 +379,7 @@ export function dataModificationForWeek(absenceSlot: { [key: string]: Absence[] 
 	let startDate: string;
 	let endDate: string;
 	let sameGroup: boolean;
-	let absenceGroupedByDate = {};
+	const absenceGroupedByDate = {};
 
 	Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
 		let groupedAbsence: any[] = [];
@@ -406,14 +405,10 @@ export function dataModificationForWeek(absenceSlot: { [key: string]: Absence[] 
 					currSDTime.setMinutes(+currSD.split(':')[1]);
 
 					if (
-						DateTimeUtils.TimeToNumber(currSD) >= DateTimeUtils.TimeToNumber(startDate) &&
-						DateTimeUtils.TimeToNumber(currSD) <= DateTimeUtils.TimeToNumber(endDate)
+						(DateTimeUtils.TimeToNumber(currSD) >= DateTimeUtils.TimeToNumber(startDate) &&
+							DateTimeUtils.TimeToNumber(currSD) <= DateTimeUtils.TimeToNumber(endDate)) ||
+						(DateTimeUtils.TimeToNumber(currSD) > DateTimeUtils.TimeToNumber(endDate) && getDurationMinutes(endTime, currSDTime) <= 1)
 					) {
-						sameGroup = true;
-						if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
-							endDate = currED;
-						}
-					} else if (DateTimeUtils.TimeToNumber(currSD) > DateTimeUtils.TimeToNumber(endDate) && getDurationMinutes(endTime, currSDTime) <= 1) {
 						sameGroup = true;
 						if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
 							endDate = currED;

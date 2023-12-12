@@ -1,23 +1,23 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Permission } from 'src/app/shared/models/permission.model';
 import { TimeSlot, Weekday, WeekWisePracticeAvailability } from '../../../../shared/models/calendar.model';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
-import { ROOM_ID } from '../../../../shared/utils/const';
+import { ROOM_ID, ENG_BE } from '../../../../shared/utils/const';
 import { PracticeAvailability } from '../../../../shared/models/practice.model';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Room } from '../../../../shared/models/rooms.model';
 import { AddRoomModalComponent } from '../add-room-modal/add-room-modal.component';
-import { ENG_BE } from '../../../../shared/utils/const';
+
 import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
-import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
 	selector: 'dfm-view-room',

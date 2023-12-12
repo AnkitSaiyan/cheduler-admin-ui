@@ -1,23 +1,19 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
-import {
-	AuthenticationResult,
-	EventMessage,
-	EventType,
-	InteractionStatus,
-} from '@azure/msal-browser';
+import { AuthenticationResult, EventMessage, EventType, InteractionStatus } from '@azure/msal-browser';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { IdTokenClaims } from '@azure/msal-common';
 import { filter, Observable, Subject, switchMap, take, tap } from 'rxjs';
+import { Router } from '@angular/router';
 import defaultLanguage from '../assets/i18n/nl-BE.json';
 import englishLanguage from '../assets/i18n/en-BE.json';
 import { AuthConfig } from './configuration/auth.config';
 import { NotificationDataService } from './core/services/notification-data.service';
 import { DUTCH_BE, ENG_BE } from './shared/utils/const';
 import { UserService } from './core/services/user.service';
-import {AuthUser} from "./shared/models/user.model";
-import {RouteName} from "./shared/models/permission.model";
-import {Router} from "@angular/router";
+import { AuthUser } from './shared/models/user.model';
+import { RouteName } from './shared/models/permission.model';
 import { BodyPartService } from './core/services/body-part.service';
 
 type IdTokenClaimsWithPolicyId = IdTokenClaims & {
@@ -125,7 +121,9 @@ export class AppComponent implements OnInit, OnDestroy {
 	}
 
 	public ngOnDestroy() {
+		// eslint-disable-next-line
 		this._destroying$.next();
+		// eslint-disable-next-line
 		this._destroying$.complete();
 	}
 }

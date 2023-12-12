@@ -14,7 +14,6 @@ export class AuthService {
 			}
 			return null;
 		} catch (e) {
-
 			return null;
 		}
 	}
@@ -27,4 +26,3 @@ export class AuthService {
 		return this.getTokenDetails(UserManagementCacheKey)?.secret ?? '';
 	}
 }
-

@@ -1,6 +1,6 @@
-import {environment} from 'src/environments/environment';
-import {ProtectedApi} from './protected.config';
-import {BrowserCacheLocation, Configuration, LogLevel} from "@azure/msal-browser";
+import { environment } from 'src/environments/environment';
+import { BrowserCacheLocation, Configuration, LogLevel } from '@azure/msal-browser';
+import { ProtectedApi } from './protected.config';
 
 const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigator.userAgent.indexOf('Trident/') > -1; // Remove this line to use Angular Universal
 export class AuthConfig {
@@ -14,9 +14,13 @@ export class AuthConfig {
 			scope: 'https://diflexmoauthdev.onmicrosoft.com/usermanagement.api/usermanagement.api',
 		},
 	];
+
 	static readonly fullAuthority: string = 'https://diflexmoauthdev.b2clogin.com/diflexmoauthdev.onmicrosoft.com';
+
 	static readonly authFlow: string = 'B2C_1_Cheduler_SignIn';
+
 	static readonly authority: string = 'diflexmoauthdev.b2clogin.com';
+
 	static readonly authClientId: string = environment.authClientId;
 }
 
@@ -33,7 +37,7 @@ export const MSALConfig: Configuration = Object.freeze({
 	},
 	system: {
 		loggerOptions: {
-			loggerCallback: (logLevel, message) => {
+			loggerCallback: () => {
 				//
 			},
 			logLevel: LogLevel.Verbose,
@@ -41,5 +45,3 @@ export const MSALConfig: Configuration = Object.freeze({
 		},
 	},
 });
-
-

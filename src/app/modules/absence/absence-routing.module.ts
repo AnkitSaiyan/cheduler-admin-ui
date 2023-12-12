@@ -51,7 +51,7 @@ const absenceRoutes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(absenceRoutes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(absenceRoutes)],
+	exports: [RouterModule],
 })
 export class AbsenceRoutingModule {}

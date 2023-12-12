@@ -26,26 +26,21 @@ export class EmailTemplateApiService {
 	}
 
 	public get emailTemplates$(): Observable<BaseResponse<Email[]>> {
-		return combineLatest([
-			this.emailTemplates$$.pipe(startWith('')),
-			this.pageNo$$
-		]).pipe(switchMap(([_, pageNo]) => this.fetchAllEmailTemplates(pageNo)));
+		return combineLatest([this.pageNo$$, this.emailTemplates$$.pipe(startWith(''))]).pipe(
+			switchMap(([pageNo]) => this.fetchAllEmailTemplates(pageNo)),
+		);
 	}
 
 	private fetchAllEmailTemplates(pageNo: number): Observable<BaseResponse<Email[]>> {
 		this.loaderSvc.activate();
 
 		const params = new HttpParams().append('pageNo', pageNo);
-		return this.http.get<BaseResponse<Email[]>>(`${environment.schedulerApiUrl}/email`, { params }).pipe(
-			tap(() => this.loaderSvc.deactivate())
-		);
+		return this.http.get<BaseResponse<Email[]>>(`${environment.schedulerApiUrl}/email`, { params }).pipe(tap(() => this.loaderSvc.deactivate()));
 	}
 
 	public updateEmailTemplate(requestData: EmailTemplateRequestData): Observable<EmailTemplateRequestData> {
 		this.loaderSvc.activate();
-
-		const { id, ...restData } = requestData;
-		return this.http.put<BaseResponse<EmailTemplateRequestData>>(`${environment.schedulerApiUrl}/email/${id}`, requestData).pipe(
+		return this.http.put<BaseResponse<EmailTemplateRequestData>>(`${environment.schedulerApiUrl}/email/${requestData.id}`, requestData).pipe(
 			map((response) => response.data),
 			tap(() => {
 				this.pageNo$$.next(1);

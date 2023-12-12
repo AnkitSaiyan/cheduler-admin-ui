@@ -1,4 +1,5 @@
 export class UserPropertiesPermitItem {
-  tenantName: string = '';
-  tenantId: string = '';
+	tenantName: string = '';
+
+	tenantId: string = '';
 }

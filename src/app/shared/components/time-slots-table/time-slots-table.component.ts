@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { WeekWisePracticeAvailability, Weekday } from '../../models/calendar.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { WeekWisePracticeAvailability, Weekday } from '../../models/calendar.mod
 	templateUrl: './time-slots-table.component.html',
 	styleUrls: ['./time-slots-table.component.scss'],
 })
-export class TimeSlotsTableComponent implements OnInit {
+export class TimeSlotsTableComponent {
 	tableData: any[] = [];
 
 	@Input() set weekWisePracticeAvailability(data: WeekWisePracticeAvailability[]) {
@@ -14,9 +14,4 @@ export class TimeSlotsTableComponent implements OnInit {
 	}
 
 	columns: Weekday[] = [Weekday.MON, Weekday.TUE, Weekday.WED, Weekday.THU, Weekday.FRI, Weekday.SAT, Weekday.SUN];
-
-	constructor() {}
-
-	ngOnInit(): void {}
 }
-

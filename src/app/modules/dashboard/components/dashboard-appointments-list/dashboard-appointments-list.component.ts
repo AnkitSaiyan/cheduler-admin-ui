@@ -1,9 +1,21 @@
-import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil, withLatestFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { TitleCasePipe } from '@angular/common';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
+import { PaginationData } from 'src/app/shared/models/base-response.model';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { SignalrService } from 'src/app/core/services/signalr.service';
+import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
+import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
+import { SiteManagementApiService } from 'src/app/core/services/site-management-api.service';
+import { UpcomingAppointmentApiService } from 'src/app/core/services/upcoming-appointment-api.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
@@ -18,19 +30,7 @@ import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { Exam } from '../../../../shared/models/exam.model';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { AppointmentAdvanceSearchComponent } from './appointment-advance-search/appointment-advance-search.component';
-import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { PermissionService } from 'src/app/core/services/permission.service';
-import { Permission } from 'src/app/shared/models/permission.model';
-import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
-import { PaginationData } from 'src/app/shared/models/base-response.model';
-import { GeneralUtils } from 'src/app/shared/utils/general.utils';
-import { SignalrService } from 'src/app/core/services/signalr.service';
-import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
-import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
-import { SiteManagementApiService } from 'src/app/core/services/site-management-api.service';
-import { UpcomingAppointmentApiService } from 'src/app/core/services/upcoming-appointment-api.service';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -150,6 +150,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	private fileSize!: number;
 
 	public isLoading: boolean = true;
+
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -167,7 +168,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		private signalRSvc: SignalrService,
 		private dashBoardSvc: DashboardApiService,
 		private siteManagementApiSvc: SiteManagementApiService,
-		private upcomingAppointmentApiSvc : UpcomingAppointmentApiService,
+		private upcomingAppointmentApiSvc: UpcomingAppointmentApiService,
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -288,7 +289,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 							ap.documentCount ? 'Yes' : 'No',
 							ap?.id.toString(),
 							this.appointmentApiSvc.convertUtcToLocalDate(ap?.createdAt),
-							this.translatePipe.transform(AppointmentStatusToName[+ap?.approval]),
+							this.translatePipe.transform(AppointmentStatusToName[+(ap?.approval ?? 0)]),
 						]),
 						'appointments',
 					);
@@ -368,7 +369,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		});
 		this.appointmentViewControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			if (value) {
-				this.isUpcomingAppointmentsDashboard = value == 'upcoming';
+				this.isUpcomingAppointmentsDashboard = value === 'upcoming';
 			}
 			this.selectedAppointmentIDs = [];
 		});
@@ -393,7 +394,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				if (appointment.approval === 1) status = this.translate.instant('Approved');
 				if (appointment.approval === 2) status = this.translate.instant('Canceled');
 				return (
-					(appointment.patientFname?.toLowerCase() + ' ' + appointment.patientLname?.toLowerCase())?.includes(searchText) ||
+					`${appointment.patientFname?.toLowerCase()} ${appointment.patientLname?.toLowerCase()}`?.includes(searchText) ||
 					appointment.patientLname?.toLowerCase()?.includes(searchText) ||
 					appointment.doctor?.toLowerCase()?.includes(searchText) ||
 					appointment.id?.toString()?.includes(searchText) ||
@@ -448,7 +449,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t\t')}\n`;
-			
+
 			const data: any[] = this.isUpcomingAppointmentsDashboard ? this.upcomingTableData$$.value.items : this.pastTableData$$.value.items;
 
 			if (!data.length) {
@@ -458,11 +459,19 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			}
 
 			data.forEach((ap: Appointment) => {
-				dataString += `${this.appointmentApiSvc.convertUtcToLocalDate(ap?.startedAt)}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.endedAt)}\t\t${this.titleCasePipe.transform(
-					ap?.patientFname,
-				)} ${this.titleCasePipe.transform(ap?.patientLname)}\t\t${this.joinWithAndPipe.transform(ap.exams, 'name')}\t\t${this.titleCasePipe.transform(ap?.doctor
-					// eslint-disable-next-line no-unsafe-optional-chaining
-				) ||'-'}\t\t${ap.documentCount ? 'Yes' : 'No'}\t\t${ap?.id.toString()}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.createdAt)}\t\t${ap?.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap?.approval]}\n`;
+				dataString += `${this.appointmentApiSvc.convertUtcToLocalDate(ap?.startedAt)}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(
+					ap?.endedAt,
+				)}\t\t${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}\t\t${this.joinWithAndPipe.transform(
+					ap.exams,
+					'name',
+				)}\t\t${
+					this.titleCasePipe.transform(
+						ap?.doctor,
+						// eslint-disable-next-line no-unsafe-optional-chaining
+					) || '-'
+				}\t\t${ap.documentCount ? 'Yes' : 'No'}\t\t${ap?.id.toString()}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap?.createdAt)}\t\t${
+					ap?.readStatus ? 'Yes' : 'No'
+				}\t\t${AppointmentStatusToName[+ap.approval]}\n`;
 			});
 
 			this.clipboardData = dataString;
@@ -582,6 +591,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				},
 			});
 	}
+
 	private clearDownloadDropdown() {
 		setTimeout(() => {
 			this.downloadDropdownControl.setValue('');
@@ -590,7 +600,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.appointmentApiSvc.appointmentPageNo = this.appointmentApiSvc.appointmentPageNo + 1;
+			this.appointmentApiSvc.appointmentPageNo += 1;
 			this.upcomingTableData$$.value.isLoadingMore = true;
 		}
 	}
@@ -615,12 +625,13 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public uploadRefferingNote(event: any, id: any) {
 		event.stopImmediatePropagation();
-		let extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
-		let allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
 		if (!event.target.files.length) {
 			return;
-		} else if (allowedExtensions.indexOf(extension) === -1) {
+		}
+		const extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
+		if (allowedExtensions.indexOf(extension) === -1) {
 			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
 		} else if (fileSize) {
 			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
@@ -631,6 +642,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	}
 
 	private onFileChange(event: any, id) {
+		const e = event;
 		new Promise((resolve) => {
 			const { files } = event.target as HTMLInputElement;
 
@@ -643,7 +655,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			}
 		}).then((res) => {
 			this.uploadDocument(res, id);
-			event.target.value = '';
+			e.target.value = '';
 		});
 	}
 

@@ -1,6 +1,5 @@
 export class ProtectedApi {
-  url: string = '';
+	url: string = '';
 
-  scope: string = '';
+	scope: string = '';
 }
-

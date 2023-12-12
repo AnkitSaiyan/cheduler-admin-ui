@@ -7,31 +7,31 @@ import { ViewPrioritySlotsComponent } from './components/view-priority-slots/vie
 import { PrioritySlotsComponent } from './pages/priority-slots.component';
 
 const prioritySlotsRoutes: Routes = [
-  {
-    path: '',
-    component: PrioritySlotsComponent,
-    children: [
-      {
-        path: '',
-        component: ListPrioritySlotsComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.PrioritySlot },
-      },
-      {
-        path: `:${PRIORITY_ID}/view`,
-        component: ViewPrioritySlotsComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.PrioritySlot },
-      },
-      {
-        path: '**',
-        redirectTo: '',
-        pathMatch: 'full',
-      },
-    ],
-  },
+	{
+		path: '',
+		component: PrioritySlotsComponent,
+		children: [
+			{
+				path: '',
+				component: ListPrioritySlotsComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.PrioritySlot },
+			},
+			{
+				path: `:${PRIORITY_ID}/view`,
+				component: ViewPrioritySlotsComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.PrioritySlot },
+			},
+			{
+				path: '**',
+				redirectTo: '',
+				pathMatch: 'full',
+			},
+		],
+	},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(prioritySlotsRoutes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(prioritySlotsRoutes)],
+	exports: [RouterModule],
 })
 export class PrioritySlotsRoutingModule {}

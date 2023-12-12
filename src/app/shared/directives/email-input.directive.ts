@@ -1,30 +1,28 @@
-import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/core';
+import { Directive, HostListener, Input } from '@angular/core';
 import { InputComponent } from 'diflexmo-angular-design';
 
 @Directive({
-  selector: '[dfmEmailInput]',
+	selector: '[dfmEmailInput]',
 })
 export class EmailInputDirective {
-  @HostListener('input', ['$event'])
-  private onChange(e: InputEvent) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    this.handleChange(e);
-  }
+	@HostListener('input', ['$event'])
+	private onChange(e: InputEvent) {
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		e.stopPropagation();
+		this.handleChange();
+	}
 
-  @Input()
-  public dfmEmailInput!: InputComponent;
+	@Input()
+	public dfmEmailInput!: InputComponent;
 
-  private emailOnly: RegExp = /(.+)@(.+){2,}\.(.+){2,}/;
+	private emailOnly: RegExp = /(.+)@(.+){2,}\.(.+){2,}/;
 
-  constructor(private elementRef: ElementRef, private r: Renderer2) {}
+	private handleChange() {
+		const inputText = this.dfmEmailInput.value as string;
 
-  private handleChange(e: InputEvent) {
-    const inputText = this.dfmEmailInput.value as string;
-
-    if (inputText && !inputText.match(this.emailOnly)) {
-      this.dfmEmailInput.value = inputText.slice(0, -1);
-    }
-  }
+		if (inputText && !inputText.match(this.emailOnly)) {
+			this.dfmEmailInput.value = inputText.slice(0, -1);
+		}
+	}
 }

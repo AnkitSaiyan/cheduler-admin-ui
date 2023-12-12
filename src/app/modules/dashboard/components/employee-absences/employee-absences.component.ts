@@ -9,9 +9,9 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { Absence } from 'src/app/shared/models/absence.model';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
+import { Router } from '@angular/router';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ABSENCE_TYPE_ARRAY, ENG_BE } from '../../../../shared/utils/const';
-import { Router } from '@angular/router';
 
 @Component({
 	selector: 'dfm-employee-absences',
@@ -147,7 +147,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 
 	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.absenceApiService.pageNoOnDashboard = this.absenceApiService.pageNoOnDashboard + 1;
+			this.absenceApiService.pageNoOnDashboard += 1;
 		}
 	}
 

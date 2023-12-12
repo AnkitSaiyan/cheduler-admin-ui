@@ -14,16 +14,16 @@ import { AppointmentTimeChangeModalComponent } from './components/appointment-ti
 import { AddAppointmentModalComponent } from './components/add-appointment-modal/add-appointment-modal.component';
 
 @NgModule({
-  declarations: [
-    AppointmentsComponent,
-    AddAppointmentComponent,
-    AppointmentListComponent,
-    ViewAppointmentComponent,
-    AppointmentCalendarComponent,
-    ChangeRadiologistModalComponent,
-    AppointmentTimeChangeModalComponent,
-    AddAppointmentModalComponent,
-  ],
-  imports: [CommonModule, AppointmentsRoutingModule, SharedModule, ReactiveFormsModule],
+	declarations: [
+		AppointmentsComponent,
+		AddAppointmentComponent,
+		AppointmentListComponent,
+		ViewAppointmentComponent,
+		AppointmentCalendarComponent,
+		ChangeRadiologistModalComponent,
+		AppointmentTimeChangeModalComponent,
+		AddAppointmentModalComponent,
+	],
+	imports: [CommonModule, AppointmentsRoutingModule, SharedModule, ReactiveFormsModule],
 })
 export class AppointmentsModule {}

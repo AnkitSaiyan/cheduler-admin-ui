@@ -1,5 +1,5 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, NgControl, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationType } from 'diflexmo-angular-design';
 import { DatePipe } from '@angular/common';
@@ -7,6 +7,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { ModalService } from 'src/app/core/services/modal.service';
+import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
@@ -38,8 +40,6 @@ import { GeneralUtils } from '../../../../shared/utils/general.utils';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { UserApiService } from '../../../../core/services/user-api.service';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ModalService } from 'src/app/core/services/modal.service';
-import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
 
 @Component({
 	selector: 'dfm-add-appointment',
@@ -57,14 +57,21 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	public loadingSlots$$ = new BehaviorSubject<boolean>(false);
 
 	public submitting$$ = new BehaviorSubject(false);
+
 	private selectedLang: string = ENG_BE;
 
 	public filteredUserList: NameValue[] = [];
+
 	public filteredExamList: NameValue[] = [];
+
 	public filteredPhysicianList: NameValue[] = [];
+
 	public roomType = RoomType;
+
 	public edit = false;
+
 	public comingFromRoute = '';
+
 	examsData = [
 		{
 			name: 'Aanpasing steunzolen',
@@ -79,28 +86,43 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			value: 3,
 		},
 	];
+
 	public examIdToDetails: { [key: number]: { name: string; expensive: number } } = {};
+
 	public slots: SlotModified[] = [];
+
 	public selectedTimeSlot: SelectedSlots = {};
+
 	public examIdToAppointmentSlots: { [key: number]: SlotModified[] } = {};
+
 	public isSlotUpdated = false;
+
 	public slots$$ = new BehaviorSubject<any>(null);
+
 	public isCombinable: boolean = false;
 
 	public isDoctorConsentDisable$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
 	private userList: NameValue[] = [];
+
 	private examList: NameValue[] = [];
+
 	private physicianList: NameValue[] = [];
 
 	public dateControl = new FormControl();
+
 	public currentDate = new Date();
 
 	public isOutside: boolean | undefined = false;
+
 	private staffs: NameValue[] = [];
+
 	public filteredStaffs: NameValue[] = [];
+
 	public uploadFileName!: string;
+
 	private fileSize!: number;
+
 	public documentStage: string = '';
 
 	constructor(
@@ -277,7 +299,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	}
 
 	public getSlotData(reqData: AppointmentSlotsRequestData) {
-		return this.appointmentApiSvc.getSlots$({...reqData, AppointmentId: this.appointment$$?.value?.id ?? 0});
+		return this.appointmentApiSvc.getSlots$({ ...reqData, AppointmentId: this.appointment$$?.value?.id ?? 0 });
 	}
 
 	public saveAppointment(): void {
@@ -343,7 +365,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 							}
 							this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 						},
-						error: (err) => {
+						error: () => {
 							this.submitting$$.next(false);
 						},
 					});
@@ -369,7 +391,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 							}
 							this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 						},
-						error: (err) => {
+						error: () => {
 							this.submitting$$.next(false);
 						},
 					});
@@ -377,7 +399,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		} catch (e) {
 			this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}`, NotificationType.DANGER);
 			this.submitting$$.next(false);
-			return;
 		}
 	}
 
@@ -420,23 +441,22 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 						}
 						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 					},
-					error: (err) => {
+					error: () => {
 						this.submitting$$.next(false);
 					},
 				});
 		} catch (e) {
 			this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}`, NotificationType.DANGER);
 			this.submitting$$.next(false);
-			return;
 		}
 	}
 
 	public checkSlotAvailability(slot: SlotModified) {
-		return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot, this.isCombinable);
+		return AppointmentUtils.IsSlotAvailable(slot, this.selectedTimeSlot);
 	}
 
 	public handleSlotSelectionToggle(slots: SlotModified, isEdit: boolean = false) {
-		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, this.isCombinable, isEdit);
+		AppointmentUtils.ToggleSlotSelection(slots, this.selectedTimeSlot, isEdit);
 	}
 
 	public handleEmailInput(e: Event): void {
@@ -446,7 +466,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			return;
 		}
 
-		if (!inputText.match(EMAIL_REGEX)) {
+		if (!EMAIL_REGEX.exec(inputText)) {
 			this.appointmentForm.get('patientEmail')?.setErrors({
 				email: true,
 			});
@@ -474,6 +494,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				break;
 			case 'staff':
 				this.filteredStaffs = [...GeneralUtils.FilterArray(this.staffs, searchText, 'name')];
+				break;
+			default:
 				break;
 		}
 	}
@@ -593,7 +615,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 						exams.forEach((exam) => {
 							const start = DateTimeUtils.DateTo24TimeString(exam.startedAt);
 							const end = DateTimeUtils.DateTo24TimeString(exam.endedAt);
-							const userList = exam.users?.filter((u) => +u.examId === +exam.id)?.map((u) => +u.id) || [];
+							const userList = exam.users?.filter((u) => +u.examId === +exam.id)?.map((u) => +u.id) ?? [];
 							const roomList = [
 								...(exam.rooms
 									?.filter((r) => +r.examId === +exam.id)
@@ -601,7 +623,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 										start: (r?.startedAt as string)?.slice(-8),
 										end: (r?.endedAt as string)?.slice(-8),
 										roomId: +r.id,
-									})) || []),
+									})) ?? []),
 							];
 
 							this.handleSlotSelectionToggle(
@@ -619,13 +641,13 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 					this.cdr.detectChanges();
 				});
 		}, 600);
-
 	}
 
 	private findSlot(examID: number, start: string, end: string): SlotModified | undefined {
 		if (this.examIdToAppointmentSlots[examID]?.length) {
 			return this.examIdToAppointmentSlots[examID].find((slot) => slot.start === start && slot.end === end);
 		}
+		return undefined;
 	}
 
 	private setSlots(slots: Slot[], isCombinable: boolean) {
@@ -633,51 +655,57 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 		this.examIdToAppointmentSlots = examIdToSlots;
 		this.slots = newSlots;
-
 	}
 
 	public onDateChange(value: string, controlName: string) {
 		this.appointmentForm.get(controlName)?.setValue(DateTimeUtils.DateToDateDistributed(new Date(value)));
 	}
 
-	public uploadRefferingNote(event: any) {
-		this.uploadFileName = event.target.files[0].name;
-		var extension = this.uploadFileName.substr(this.uploadFileName.lastIndexOf('.') + 1).toLowerCase();
-		var allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
+	public uploadRefferingNote(event: any): void {
 		if (!event.target.files.length) {
 			return;
-		} else if (allowedExtensions.indexOf(extension) === -1) {
-			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
-			this.documentStage = 'FAILED_TO_UPLOAD';
-		} else if (fileSize) {
-			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
-			this.documentStage = 'FAILED_TO_UPLOAD';
+		}
+
+		this.uploadFileName = event.target.files[0].name;
+		const extension = this.uploadFileName.slice(this.uploadFileName.lastIndexOf('.') + 1).toLowerCase();
+		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const fileSizeExceedsLimit = event.target.files[0].size / 1024 / 1024 > this.fileSize;
+
+		if (allowedExtensions.indexOf(extension) === -1) {
+			this.handleInvalidFile('File format not allowed.');
+		} else if (fileSizeExceedsLimit) {
+			this.handleInvalidFile(`File size should not exceed ${this.fileSize} MB.`);
 		} else {
 			this.documentStage = 'Uploading';
 			this.onFileChange(event);
 		}
 	}
 
+	private handleInvalidFile(errorMessage: string): void {
+		this.notificationSvc.showNotification(errorMessage, NotificationType.WARNING);
+		this.documentStage = 'FAILED_TO_UPLOAD';
+	}
+
 	private onFileChange(event: any) {
+		const e = event;
 		new Promise((resolve) => {
 			const { files } = event.target as HTMLInputElement;
 
 			if (files && files?.length) {
 				const reader = new FileReader();
-				reader.onload = (e: any) => {
+				reader.onload = () => {
 					resolve(files[0]);
 				};
 				reader.readAsDataURL(files[0]);
 			}
 		}).then((res) => {
 			this.uploadDocument(res);
-			event.target.value = '';
+			e.target.value = '';
 		});
 	}
 
 	private uploadDocument(file: any) {
-		this.appointmentApiSvc.uploadDocumnet(file, '', (this.appointment$$?.value?.id ?? 0)+'').subscribe({
+		this.appointmentApiSvc.uploadDocumnet(file, '', `${this.appointment$$?.value?.id ?? 0}`).subscribe({
 			next: (res) => {
 				this.documentStage = this.uploadFileName;
 
@@ -685,14 +713,14 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 					qrCodeId: res?.apmtDocUniqueId,
 				});
 			},
-			error: (err) => (this.documentStage = 'FAILED_TO_UPLOAD'),
+			error: () => (this.documentStage = 'FAILED_TO_UPLOAD'),
 		});
 	}
 
 	public viewDocument() {
 		this.modalSvc.open(DocumentViewModalComponent, {
 			data: {
-				id: this.appointment$$?.value?.id || this.formValues.qrCodeId,
+				id: this.appointment$$?.value?.id ?? this.formValues.qrCodeId,
 			},
 			options: {
 				size: 'xl',

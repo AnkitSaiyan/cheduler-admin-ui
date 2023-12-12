@@ -1,8 +1,13 @@
-import {ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { TitleCasePipe } from '@angular/common';
 import { getStatusEnum } from '../../../../shared/utils/getEnums';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
@@ -14,12 +19,7 @@ import { User } from '../../../../shared/models/user.model';
 import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
 import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { TranslateService } from '@ngx-translate/core';
-import { Permission } from 'src/app/shared/models/permission.model';
-import { PermissionService } from 'src/app/core/services/permission.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
-import { TitleCasePipe } from '@angular/common';
 import { PaginationData } from '../../../../shared/models/base-response.model';
 import { GeneralUtils } from '../../../../shared/utils/general.utils';
 
@@ -108,7 +108,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		this.staffs$$ = new BehaviorSubject<any[]>([]);
 		this.filteredStaffs$$ = new BehaviorSubject<any[]>([]);
 		this.userApiSvc.pageNoStaff = 1;
-    this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
+		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: () => {
 				if (
 					this.permissionSvc.isPermitted([Permission.UpdateStaffs, Permission.DeleteStaffs]) &&
@@ -152,7 +152,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 				this.paginationData = staffBase?.metaData?.pagination || 1;
 				this.isLoading = false;
 			},
-			error: (e) => {
+			error: () => {
 				this.staffs$$.next([]);
 			},
 		});
@@ -171,7 +171,6 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 				this.router.navigate([], { queryParams: { search: searchText }, relativeTo: this.route, queryParamsHandling: 'merge', replaceUrl: true });
 			},
 		});
-
 
 		this.downloadDropdownControl.valueChanges
 			.pipe(
@@ -213,7 +212,6 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 					if (value?.proceed) {
 						return [...this.selectedStaffIds.map((id) => ({ id: +id, status: value.newStatus as number }))];
 					}
-
 					return [];
 				}),
 				filter((changes) => {
@@ -227,7 +225,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 			)
 			.subscribe({
 				next: () => {
-					this.selectedStaffIds.map((id) => {
+					this.selectedStaffIds.forEach((id) => {
 						this.staffs$$.next([
 							...GeneralUtils.modifyListData(
 								this.staffs$$.value,
@@ -256,12 +254,10 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 						title: Translate[this.columns[i]][lang],
 					}));
 
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						default:
-							this.statuses = StatusesNL;
+					if (lang === ENG_BE) {
+						this.statuses = Statuses;
+					} else {
+						this.statuses = StatusesNL;
 					}
 				},
 			});
@@ -316,7 +312,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 				take(1),
 			)
 			.subscribe({
-				next: (response) => {
+				next: () => {
 					this.staffs$$.next(GeneralUtils.modifyListData(this.staffs$$.value, { id }, 'delete', 'id'));
 					this.notificationSvc.showNotification(Translate.SuccessMessage.StaffDeleted[this.selectedLang]);
 				},
@@ -334,11 +330,11 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 				.filter((value) => value !== 'Actions')
 				.join('\t')}\n`;
 
-				if (!this.filteredStaffs$$.value.length) {
-					this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
-					this.clipboardData = '';
-					return;
-				}
+			if (!this.filteredStaffs$$.value.length) {
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
+				this.clipboardData = '';
+				return;
+			}
 
 			this.filteredStaffs$$.value.forEach((staff: User) => {
 				dataString += `${staff.firstname}\t${staff.lastname}\t ${staff.userType}\t ${staff.email}\t${StatusToName[+staff.status]}\n`;
@@ -410,7 +406,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 				if (staff.status === 1) status = this.translate.instant('Active');
 				if (staff.status === 0) status = this.translate.instant('Inactive');
 				return (
-					(staff.firstname?.toLowerCase() + ' ' + staff.lastname?.toLowerCase())?.includes(searchText) ||
+					`${staff.firstname?.toLowerCase()} ${staff.lastname?.toLowerCase()}`?.includes(searchText) ||
 					staff.firstname?.toLowerCase()?.includes(searchText) ||
 					staff.lastname?.toLowerCase()?.includes(searchText) ||
 					staff.email?.toLowerCase()?.includes(searchText) ||
@@ -438,9 +434,9 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		}, 0);
 	}
 
-	public onScroll(e: undefined): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.userApiSvc.pageNoStaff = this.userApiSvc.pageNoStaff + 1;
+			this.userApiSvc.pageNoStaff += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}
 	}

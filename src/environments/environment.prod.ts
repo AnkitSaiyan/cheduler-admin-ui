@@ -12,6 +12,6 @@ export const environment: Environment = {
 	schedulerApiUrl: 'https://diflexmo-scheduler-api-dev.azurewebsites.net/api',
 	userManagementApiUrl: 'https://auth-dev.diflexmo.be/usermanagement/api',
 	authClientId: 'cf1fa2ba-8272-4875-b6c2-0cea52ee30a2',
-	redirectUrl: window.location.origin + '/admin',
+	redirectUrl: `${window.location.origin}/admin`,
 	schedulerApiAuthScope: 'https://diflexmoauthdev.onmicrosoft.com/cheduler.api/cheduler.api',
 };

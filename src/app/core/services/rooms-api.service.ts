@@ -75,7 +75,7 @@ export class RoomsApiService extends DestroyableComponent {
 	}
 
 	public get rooms$(): Observable<BaseResponse<Room[]>> {
-		return combineLatest([this.refreshRooms$$.pipe(startWith('')), this.pageNo$$]).pipe(switchMap(([_, pageNo]) => this.fetchRooms(pageNo)));
+		return combineLatest([this.pageNo$$, this.refreshRooms$$.pipe(startWith(''))]).pipe(switchMap(([pageNo]) => this.fetchRooms(pageNo)));
 	}
 
 	private fetchRooms(pageNo: number): Observable<BaseResponse<Room[]>> {
@@ -85,9 +85,10 @@ export class RoomsApiService extends DestroyableComponent {
 		const params = new HttpParams().append('pageNo', pageNo);
 		return this.http.get<BaseResponse<Room[]>>(`${this.roomUrl}`, { params }).pipe(
 			map((response) => {
+				const sortedData = response?.data?.slice().sort((r1, r2) => r1.placeInAgenda - r2.placeInAgenda);
 				return {
 					...response,
-					data: response?.data?.sort((r1, r2) => r1.placeInAgenda - r2.placeInAgenda),
+					data: sortedData,
 				};
 			}),
 			tap(() => {
@@ -104,13 +105,14 @@ export class RoomsApiService extends DestroyableComponent {
 	private fetchAllRooms$(): Observable<Room[]> {
 		this.loaderSvc.activate();
 		this.loaderSvc.spinnerActivate();
+		const sortedData = (response) => {
+			return response.data.sort((r1, r2) => {
+				return r1.placeInAgenda - r2.placeInAgenda;
+			});
+		};
 
 		return this.http.get<BaseResponse<Room[]>>(`${environment.schedulerApiUrl}/common/getrooms`).pipe(
-			map((response) =>
-				response.data.sort((r1, r2) => {
-					return r1.placeInAgenda - r2.placeInAgenda;
-				}),
-			),
+			map((response) => sortedData(response)),
 			tap(() => {
 				this.loaderSvc.deactivate();
 				this.loaderSvc.spinnerDeactivate();
@@ -168,7 +170,7 @@ export class RoomsApiService extends DestroyableComponent {
 
 	public deleteRoom(roomID: number) {
 		this.loaderSvc.activate();
-		return this.http.delete<BaseResponse<Boolean>>(`${this.roomUrl}/${roomID}`).pipe(
+		return this.http.delete<BaseResponse<boolean>>(`${this.roomUrl}/${roomID}`).pipe(
 			map((response) => response.data),
 			tap(() => {
 				this.pageNo$$.next(1);

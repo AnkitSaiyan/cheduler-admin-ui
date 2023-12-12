@@ -105,5 +105,4 @@ export class CompletedBarChartComponent extends DestroyableComponent implements 
 			};
 		});
 	}
-
 }

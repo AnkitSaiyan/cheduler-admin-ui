@@ -2,35 +2,35 @@ import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/
 import { InputComponent } from 'diflexmo-angular-design';
 
 @Directive({
-  selector: '[dfmNameInput]',
+	selector: '[dfmNameInput]',
 })
 export class NameInputDirective {
-  @HostListener('input', ['$event'])
-  private onChange(e: InputEvent) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    this.handleChange(e);
-  }
+	@HostListener('input', ['$event'])
+	private onChange(e: InputEvent) {
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		e.stopPropagation();
+		this.handleChange(e);
+	}
 
-  @Input()
-  public dfmNameInput!: InputComponent;
+	@Input()
+	public dfmNameInput!: InputComponent;
 
-  private alphabetOnly: RegExp = /^[A-Za-z\s]+$/;
+	private alphabetOnly: RegExp = /^[A-Za-z\s]+$/;
 
-  constructor(private elementRef: ElementRef, private r: Renderer2) {}
+	constructor(private elementRef: ElementRef, private r: Renderer2) {}
 
-  private handleChange(e: InputEvent) {
-    let inputText = this.dfmNameInput.value as string;
+	private handleChange(e: InputEvent) {
+		let inputText = this.dfmNameInput.value as string;
 
-    if ((inputText && !inputText.match(this.alphabetOnly)) || (inputText[inputText.length - 2] === ' ' && inputText[inputText.length - 1] === ' ')) {
-      inputText = inputText.slice(0, -1);
-      this.dfmNameInput.value = inputText;
-      (e.target as HTMLInputElement).value = inputText;
-    }
+		if ((inputText && !inputText.match(this.alphabetOnly)) || (inputText[inputText.length - 2] === ' ' && inputText[inputText.length - 1] === ' ')) {
+			inputText = inputText.slice(0, -1);
+			this.dfmNameInput.value = inputText;
+			(e.target as HTMLInputElement).value = inputText;
+		}
 
-    if (this.dfmNameInput.value.length === 1) {
-      this.dfmNameInput.value = this.dfmNameInput.value.trim();
-    }
-  }
+		if (this.dfmNameInput.value.length === 1) {
+			this.dfmNameInput.value = this.dfmNameInput.value.trim();
+		}
+	}
 }

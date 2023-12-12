@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration, ChartOptions } from 'chart.js/dist/types';
-import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import { DashboardApiService } from 'src/app/core/services/dashboard-api.service';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { debounceTime, forkJoin, map, switchMap, takeUntil } from 'rxjs';
@@ -48,7 +47,7 @@ export class PatientConsultationsLineChartComponent extends DestroyableComponent
 			.getLanguage$()
 			.pipe(
 				debounceTime(0),
-				map(() => Object.keys(Month).filter((key) => isNaN(+key))),
+				map(() => Object.keys(Month).filter((key) => Number.isNaN(+key))),
 				switchMap((months) => {
 					const observables = months.map((month) => this.translateService.get(month));
 					return forkJoin(observables);
@@ -82,14 +81,6 @@ export class PatientConsultationsLineChartComponent extends DestroyableComponent
 							borderColor: '#6172F3',
 						},
 					],
-				};
-
-				const data = {
-					data: [],
-					backgroundColor: ['#FDF8F2', '#F4E3CF', '#F1D2AE'],
-					hoverBackgroundColor: ['#FDF8F2', '#F4E3CF', '#F1D2AE'],
-					hoverBorderColor: ['#531422', '#531422', '#531422'],
-					hoverOffset: 0,
 				};
 			},
 		});

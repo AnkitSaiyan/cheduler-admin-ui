@@ -101,13 +101,12 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 	}
 
 	private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): Array<WeekWisePracticeAvailability[]> {
-		// const weekdayToSlotsObj: { [key: string]: TimeSlot[] } = {};
 		const weekdayTimeSlots: WeekdayTimeSlot<TimeSlot[]>[] = [];
 
 		// creating week-wise slots
 		practiceAvailabilities.forEach((practice) => {
-			const weekdayString: string = practice.weekday + '';
-			const rangeIndex: number = practice.rangeIndex;
+			const weekdayString: string = `${practice.weekday}`;
+			const { rangeIndex } = practice;
 
 			if (!weekdayTimeSlots[rangeIndex]) {
 				weekdayTimeSlots[rangeIndex] = {};
@@ -130,7 +129,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 		weekdayTimeSlots.forEach((weekdayTimeSlotObject: WeekdayTimeSlot<TimeSlot[]>, index: number) => {
 			// sorting slots by start time
 			for (let weekday = 0; weekday < 7; weekday++) {
-				const weekdayString: string = weekday + '';
+				const weekdayString: string = `${weekday}`;
 				if (weekdayTimeSlotObject[weekdayString]?.length) {
 					weekdayTimeSlotObject[weekdayString].sort((a, b) => DateTimeUtils.TimeToNumber(a.dayStart) - DateTimeUtils.TimeToNumber(b.dayStart));
 				}
@@ -145,7 +144,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 				let done = true;
 
 				for (let weekday = 0; weekday < 7; weekday++) {
-					const weekdayString: string = weekday + '';
+					const weekdayString: string = `${weekday}`;
 					if (weekdayTimeSlotObject[weekdayString]?.length > slotNo) {
 						allWeekTimeSlots[weekdayString] = { ...(allWeekTimeSlots[weekdayString] ?? {}), ...weekdayTimeSlotObject[weekdayString][slotNo] };
 						if (done) {
@@ -164,7 +163,7 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 					practiceAvailability[index] = [];
 				}
 
-				const { rangeFromDate, rangeToDate, isRange } = practiceAvailabilities?.find((practice) => practice.rangeIndex === index)!;
+				const { rangeFromDate, rangeToDate, isRange } = practiceAvailabilities.find((practice) => practice.rangeIndex === index)!;
 
 				practiceAvailability[index].push({
 					slotNo,

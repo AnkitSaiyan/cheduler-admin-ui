@@ -13,7 +13,7 @@ export class DayViewAbsenceTopPipe implements PipeTransform {
 		start.setMonth(selectedDate.getMonth());
 		start.setFullYear(selectedDate.getFullYear());
 
-		const timingEnd = DateTimeUtils.timeStingToDate(timeSlot?.timings?.[timeSlot?.timings?.length - 1]);
+		const timingEnd = DateTimeUtils.timeStingToDate(timeSlot.timings[timeSlot.timings.length - 1]);
 		timingEnd.setDate(selectedDate.getDate());
 		timingEnd.setMonth(selectedDate.getMonth());
 		timingEnd.setFullYear(selectedDate.getFullYear());
@@ -34,4 +34,3 @@ export class DayViewAbsenceTopPipe implements PipeTransform {
 		return minutes * PIXELS_PER_MIN;
 	}
 }
-

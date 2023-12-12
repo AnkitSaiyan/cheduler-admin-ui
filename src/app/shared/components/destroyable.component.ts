@@ -2,17 +2,17 @@ import { Component, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Component({
-  template: '',
+	template: '',
 })
 export class DestroyableComponent implements OnDestroy {
-  protected destroy$$ = new Subject<void>();
+	protected destroy$$ = new Subject<void>();
 
-  private destroy() {
-    this.destroy$$.next();
-    this.destroy$$.unsubscribe();
-  }
+	private destroy() {
+		this.destroy$$.next();
+		this.destroy$$.unsubscribe();
+	}
 
-  public ngOnDestroy() {
-    this.destroy();
-  }
+	public ngOnDestroy() {
+		this.destroy();
+	}
 }

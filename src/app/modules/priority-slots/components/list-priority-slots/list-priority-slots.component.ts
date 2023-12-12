@@ -1,18 +1,10 @@
-import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, filter, switchMap, take, takeUntil } from 'rxjs';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
-import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { NotificationDataService } from '../../../../core/services/notification-data.service';
-import { ModalService } from '../../../../core/services/modal.service';
-import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
-import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-slots.component';
 import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
-import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Permission } from 'src/app/shared/models/permission.model';
@@ -21,6 +13,14 @@ import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { Translate } from '../../../../shared/models/translate.model';
+import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-slots.component';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
+import { DownloadAsType, DownloadService, DownloadType } from '../../../../core/services/download.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationDataService } from '../../../../core/services/notification-data.service';
+import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -35,8 +35,11 @@ const ColumnIdToKey = {
 })
 export class ListPrioritySlotsComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	clipboardData: string = '';
+
 	public searchControl = new FormControl('', []);
+
 	public downloadDropdownControl = new FormControl('', []);
+
 	public columns: string[] = ['Start', 'End', 'Priority', 'Actions'];
 
 	public tableData$$ = new BehaviorSubject<DfmDatasource<any>>({
@@ -50,12 +53,19 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		{ id: '2', title: 'End', isSortable: true },
 		{ id: '3', title: 'Priority', isSortable: true },
 	];
+
 	public downloadItems: DownloadType[] = [];
+
 	public filteredPrioritySlots$$: BehaviorSubject<any[]>;
+
 	public statuses = Statuses;
+
 	public calendarView$$ = new BehaviorSubject<boolean>(false);
+
 	public readonly Permission = Permission;
+
 	private prioritySlots$$: BehaviorSubject<any[]>;
+
 	private selectedLang: string = ENG_BE;
 
 	private paginationData: PaginationData | undefined;
@@ -114,7 +124,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		});
 
 		this.prioritySlots$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (prioritySlot) => this.handleSearch(this.searchControl.value ?? ''),
+			next: () => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.priorityApiSvc.prioritySlots$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -127,7 +137,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 				this.paginationData = prioritySlotBase?.metaData?.pagination || 1;
 				this.isLoading = false;
 			},
-			error: (e) => this.prioritySlots$$.next([]),
+			error: () => this.prioritySlots$$.next([]),
 		});
 
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe((params) => {
@@ -177,7 +187,9 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 					this.columns.filter((value) => value !== 'Actions'),
 					this.filteredPrioritySlots$$.value.map((pr: PrioritySlot) => [
 						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(pr?.startedAt?.toString())) ?? '',
-						this.defaultDatePipe.transform(this.utcToLocalPipe.transform((pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`)?.toString())) ?? '',
+						this.defaultDatePipe.transform(
+							this.utcToLocalPipe.transform((pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`)?.toString()),
+						) ?? '',
 						// pr.endedAt ? pr.endedAt : `${pr.startedAt.slice(0, -9)}, ${pr.slotEndTime}`,
 						pr.priority ?? '-',
 					]),
@@ -242,7 +254,6 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 
 	public copyToClipboard() {
 		try {
-
 			if (!this.filteredPrioritySlots$$.value.length) {
 				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
@@ -252,9 +263,11 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 			let dataString = `${this.columns.filter((value) => value !== 'Actions').join('\t')}\n`;
 
 			this.filteredPrioritySlots$$.value.forEach((prioritySlot: PrioritySlot) => {
-				dataString += `${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(prioritySlot?.startedAt?.toString()))}\t${prioritySlot.endedAt ? this.defaultDatePipe.transform(this.utcToLocalPipe.transform(prioritySlot?.endedAt?.toString())) : prioritySlot.startedAt.slice(0, -9)}\t${
-					prioritySlot.priority
-				}\n`;
+				dataString += `${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(prioritySlot?.startedAt?.toString()))}\t${
+					prioritySlot.endedAt
+						? this.defaultDatePipe.transform(this.utcToLocalPipe.transform(prioritySlot?.endedAt?.toString()))
+						: prioritySlot.startedAt.slice(0, -9)
+				}\t${prioritySlot.priority}\n`;
 			});
 
 			this.clipboardData = dataString;
@@ -337,9 +350,9 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		this.priorityApiSvc.refresh();
 	}
 
-	public onScroll(e: any): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.priorityApiSvc.pageNo = this.priorityApiSvc.pageNo + 1;
+			this.priorityApiSvc.pageNo += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}
 	}
@@ -348,42 +361,3 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		this.filteredPrioritySlots$$.next(GeneralUtils.SortArray(this.filteredPrioritySlots$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

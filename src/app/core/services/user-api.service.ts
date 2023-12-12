@@ -1,7 +1,8 @@
 import { Inject, Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, filter, map, Observable, of, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, filter, map, Observable, of, startWith, switchMap, takeUntil, tap } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
+import { Router } from '@angular/router';
 import { User, UserRoleEnum } from '../../shared/models/user.model';
 import { NameValue } from '../../shared/components/search-modal.component';
 import { PermissionService } from './permission.service';
@@ -13,7 +14,6 @@ import { AddStaffRequestData, StaffType } from '../../shared/models/staff.model'
 import { Translate } from '../../shared/models/translate.model';
 import { ShareDataService } from './share-data.service';
 import { DestroyableComponent } from '../../shared/components/destroyable.component';
-import { Router } from '@angular/router';
 import { HttpUtils } from '../../shared/utils/http.utils';
 
 @Injectable({
@@ -125,7 +125,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 				this.loaderSvc.deactivate();
 				this.loaderSvc.spinnerDeactivate();
 			}),
-			catchError((e) => of({} as User)),
+			catchError(() => of({} as User)),
 		);
 	}
 

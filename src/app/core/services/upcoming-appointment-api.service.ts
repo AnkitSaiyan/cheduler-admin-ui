@@ -32,7 +32,7 @@ export class UpcomingAppointmentApiService extends DestroyableComponent {
 
 		this.upComingAppointments.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
 			if (data?.length) {
-				const arr = data.map((val) => this.getSaperatedExamData(val)).flat();				
+				const arr = data.map((val) => this.getSaperatedExamData(val)).flat();
 				this.todaysAppointments$$.next(arr);
 			}
 		});
@@ -60,16 +60,16 @@ export class UpcomingAppointmentApiService extends DestroyableComponent {
 
 	private getSaperatedExamData(appointment: Appointment): UpcomingAppointments[] {
 		if (!appointment) return [];
-		let examsArr: any[] = [];
+		const examsArr: any[] = [];
 		appointment?.exams?.forEach((exam) => {
-			let obj: UpcomingAppointments = {
+			const obj: UpcomingAppointments = {
 				startedAt: '',
 				patientFullName: '',
 				examName: '',
 				roomName: '',
 			};
 
-			obj.patientFullName = appointment.patientFname + ' ' + appointment.patientLname;
+			obj.patientFullName = `${appointment.patientFname} ${appointment.patientLname}`;
 			obj.startedAt = exam.startedAt;
 			obj.examName = exam.name;
 			obj.roomName = exam?.rooms?.[0].name ?? '';
@@ -83,7 +83,7 @@ export class UpcomingAppointmentApiService extends DestroyableComponent {
 		return appointments?.filter((ap) => {
 			const dateIn4Hours = new Date();
 			dateIn4Hours.setHours(new Date().getHours() + 4);
-			return dateIn4Hours.getTime() - new Date(this.utcPipe.transform(ap.startedAt)).getTime() >= - (60 * 1000);
+			return dateIn4Hours.getTime() - new Date(this.utcPipe.transform(ap.startedAt)).getTime() >= -(60 * 1000);
 		});
 	}
 }

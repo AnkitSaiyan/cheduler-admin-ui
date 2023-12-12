@@ -10,7 +10,7 @@ import { StaffViewComponent } from './components/staff-view/staff-view.component
 import { AddStaffComponent } from './components/add-staff/add-staff.component';
 
 @NgModule({
-  declarations: [StaffComponent, StaffListComponent, AddStaffComponent, StaffViewComponent],
-  imports: [CommonModule, StaffRoutingModule, SharedModule, ReactiveFormsModule],
+	declarations: [StaffComponent, StaffListComponent, AddStaffComponent, StaffViewComponent],
+	imports: [CommonModule, StaffRoutingModule, SharedModule, ReactiveFormsModule],
 })
 export class StaffModule {}

@@ -12,4 +12,3 @@ export class MaxDatePipe implements PipeTransform {
 		return date;
 	}
 }
-

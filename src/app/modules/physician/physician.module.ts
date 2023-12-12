@@ -10,7 +10,7 @@ import { PhysicianListComponent } from './components/physician-list/physician-li
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
-  declarations: [PhysicianComponent, PhysicianListComponent, PhysicianViewComponent, PhysicianAddComponent],
-  imports: [CommonModule, PhysicianRoutingModule, SharedModule, ReactiveFormsModule],
+	declarations: [PhysicianComponent, PhysicianListComponent, PhysicianViewComponent, PhysicianAddComponent],
+	imports: [CommonModule, PhysicianRoutingModule, SharedModule, ReactiveFormsModule],
 })
 export class PhysicianModule {}

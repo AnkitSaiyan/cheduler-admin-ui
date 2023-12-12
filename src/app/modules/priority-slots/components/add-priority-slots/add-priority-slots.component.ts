@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, of, startWith, switchMap, take, takeUntil } from 'rxjs';
 import { InputComponent, NotificationType } from 'diflexmo-angular-design';
@@ -20,12 +20,11 @@ import { MonthToNamePipe } from '../../../../shared/pipes/month-to-name.pipe';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { toggleControlError } from '../../../../shared/utils/toggleControlError';
-import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { UserApiService } from '../../../../core/services/user-api.service';
-import { DownloadService } from '../../../../core/services/download.service';
 
 interface FormValues {
 	name: string;
@@ -56,25 +55,35 @@ interface FormValues {
 	styleUrls: ['./add-priority-slots.component.scss'],
 	providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
 })
-export class AddPrioritySlotsComponent extends DestroyableComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AddPrioritySlotsComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public prioritySlotForm!: FormGroup;
 
 	public radiologist$$ = new BehaviorSubject<NameValue[] | null>(null);
+
 	public submitting$$ = new BehaviorSubject<boolean>(false);
+
 	public prioritySlot$$ = new BehaviorSubject<PrioritySlot | null | undefined>(null);
 
 	public modalData!: { edit: boolean; prioritySlotDetails: PrioritySlot };
+
 	public priorityType = PriorityType;
+
 	public repeatTypes: any[] = [];
+
 	public startTimes: NameValue[];
+
 	public endTimes: NameValue[];
+
 	public statuses = Statuses;
+
 	public repeatEvery!: any;
+
 	public repeatTypeToName = {
 		daily: 'Days',
 		weekly: 'Weeks',
 		monthly: 'Months',
 	};
+
 	public minFromDate = new Date();
 
 	@ViewChild('repeatFrequency')
@@ -123,13 +132,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 					monthly: [...this.getRepeatEveryItems(RepeatType.Daily)],
 				};
 
-				switch (lang) {
-					case ENG_BE:
-						this.statuses = Statuses;
-						break;
-					case DUTCH_BE:
-						this.statuses = StatusesNL;
-						break;
+				if (lang === ENG_BE) {
+					this.statuses = Statuses;
+				} else {
+					this.statuses = StatusesNL;
 				}
 			});
 	}
@@ -168,20 +174,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			const radiologist: NameValue[] = [];
 			staffs.forEach((staff) => {
 				const nameValue = { name: `${staff.firstname} ${staff.lastname}`, value: staff.id.toString() };
-				switch (staff.userType) {
-					case UserType.Radiologist:
-						radiologist.push(nameValue);
-						break;
-					default:
-				}
+				if (staff.userType === UserType.Radiologist) radiologist.push(nameValue);
 			});
 			this.radiologist$$.next(radiologist);
 		});
-	}
-
-	public ngAfterViewInit() {
-		if (!this.prioritySlot$$.value?.id) {
-		}
 	}
 
 	public override ngOnDestroy() {
@@ -212,11 +208,11 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			switch (this.prioritySlotForm.get('repeatType')?.value) {
 				case RepeatType.Weekly:
 				case RepeatType.Monthly: {
-					const invalid = ['repeatFrequency', 'repeatDays'].some((key) => {
+					const invalidMonth = ['repeatFrequency', 'repeatDays'].some((key) => {
 						controls[key].markAsTouched();
 						return controls[key].invalid;
 					});
-					if (invalid) {
+					if (invalidMonth) {
 						this.prioritySlotForm.markAllAsTouched();
 						this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 						return;
@@ -289,30 +285,30 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			this.priorityApiSvc
 				.updatePrioritySlot$(addPriorityReqData)
 				.pipe(takeUntil(this.destroy$$))
-				.subscribe(
-					() => {
+				.subscribe({
+					next: () => {
 						this.notificationSvc.showNotification(Translate.SuccessMessage.PrioritySlotsUpdated[this.selectedLang]);
 						this.submitting$$.next(false);
 						this.closeModal(true);
 					},
-					(err) => {
+					error: () => {
 						this.submitting$$.next(false);
 					},
-				);
+				});
 		} else {
 			this.priorityApiSvc
 				.savePrioritySlot$(addPriorityReqData)
 				.pipe(takeUntil(this.destroy$$))
-				.subscribe(
-					() => {
+				.subscribe({
+					next: () => {
 						this.notificationSvc.showNotification(Translate.SuccessMessage.PrioritySlotsAdded[this.selectedLang]);
 						this.submitting$$.next(false);
 						this.closeModal(true);
 					},
-					(err) => {
+					error: () => {
 						this.submitting$$.next(false);
 					},
-				);
+				});
 		}
 	}
 
@@ -360,9 +356,8 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.updateRepeatFrequency('number');
 	}
 
-	public handleChange(repeatFrequency: InputComponent) {}
-
 	public handleExpenseInput(e: Event, element: InputComponent, control: AbstractControl | null | undefined) {
+		const htmlElement: InputComponent = element;
 		if (!element.value) {
 			e.preventDefault();
 			return;
@@ -371,13 +366,13 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		if (element.value > 100) {
 			const newValue = 100;
 
-			element.value = newValue;
+			htmlElement.value = newValue;
 			if (control) {
 				control.setValue(newValue);
 			}
 		}
 		if (element.value <= 0) {
-			element.value = 1;
+			htmlElement.value = 1;
 			if (control) {
 				control.setValue(1);
 			}
@@ -412,12 +407,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
 		if (this.staffDetails.length) {
 			this.staffDetails.forEach((u) => {
-				switch (u.userType) {
-					case UserType.Radiologist:
-						radiologists.push(u.id.toString());
-						break;
-					default:
-				}
+				if (u.userType === UserType.Radiologist) radiologists.push(u.id.toString());
 			});
 
 			this.prioritySlotForm?.patchValue({
@@ -492,10 +482,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			});
 
 		combineLatest([
-			this.prioritySlotForm?.get('slotStartTime')?.valueChanges.pipe(startWith('')),
-			this.prioritySlotForm?.get('slotEndTime')?.valueChanges.pipe(startWith('')),
-			this.prioritySlotForm?.get('startedAt')?.valueChanges.pipe(startWith('')),
-			this.prioritySlotForm?.get('endedAt')?.valueChanges.pipe(startWith('')),
+			this.prioritySlotForm?.get('slotStartTime')?.valueChanges.pipe(startWith('')) ?? [],
+			this.prioritySlotForm?.get('slotEndTime')?.valueChanges.pipe(startWith('')) ?? [],
+			this.prioritySlotForm?.get('startedAt')?.valueChanges.pipe(startWith('')) ?? [],
+			this.prioritySlotForm?.get('endedAt')?.valueChanges.pipe(startWith('')) ?? [],
 		])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
 			.subscribe(() => this.handleTimeChange());
@@ -503,7 +493,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 		this.prioritySlotForm
 			.get('slotEndTime')
 			?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
-			.subscribe((data: any) => {
+			.subscribe(() => {
 				this.handleTimeChange();
 			});
 	}

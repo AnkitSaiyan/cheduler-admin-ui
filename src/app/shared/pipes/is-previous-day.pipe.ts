@@ -11,9 +11,3 @@ export class IsPreviousDayPipe implements PipeTransform {
 		return date.getTime() < currentDate.getTime();
 	}
 }
-
-
-
-
-
-

@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { ModalService } from 'src/app/core/services/modal.service';
-import { DestroyableComponent } from '../destroyable.component';
-import { Subject, map, take, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
-import { Translate } from '../../models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { ENG_BE } from '../../utils/const';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Translate } from '../../models/translate.model';
+import { ENG_BE } from '../../utils/const';
+import { DestroyableComponent } from '../destroyable.component';
 
 @Component({
 	selector: 'dfm-document-view-modal',

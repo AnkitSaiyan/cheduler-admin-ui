@@ -2,25 +2,23 @@ import { Directive, HostListener, Input } from '@angular/core';
 import { InputComponent } from 'diflexmo-angular-design';
 
 @Directive({
-  selector: '[dfmPhoneNumber]'
+	selector: '[dfmPhoneNumber]',
 })
-export class PhoneNumberDirective{
+export class PhoneNumberDirective {
 	@HostListener('input', ['$event'])
 	private onChange(e: InputEvent) {
 		e.preventDefault();
 		e.stopImmediatePropagation();
 		e.stopPropagation();
-		this.handleChange(e);
+		this.handleChange();
 	}
 
 	@Input()
 	public dfmPhoneNumber!: InputComponent;
 
-	private numberOnly: RegExp = /^[\+\d\s,]*$/;
+	private numberOnly: RegExp = /^[\d\s,]*$/;
 
-	constructor() {}
-
-	private handleChange(e: InputEvent) {
+	private handleChange() {
 		const inputText = this.dfmPhoneNumber.value?.toString();
 
 		if (inputText?.length === 1 && inputText === '+') {

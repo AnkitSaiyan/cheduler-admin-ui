@@ -28,8 +28,8 @@ export class PhysicianApiService {
 	}
 
 	public get physicians$(): Observable<BaseResponse<Physician[]>> {
-		return combineLatest([this.refreshPhysicians$$.pipe(startWith('')), this.pageNo$$]).pipe(
-			switchMap(([_, pageNo]) => this.fetchAllPhysicians(pageNo)),
+		return combineLatest([this.pageNo$$, this.refreshPhysicians$$.pipe(startWith(''))]).pipe(
+			switchMap(([pageNo]) => this.fetchAllPhysicians(pageNo)),
 		);
 	}
 
@@ -59,7 +59,7 @@ export class PhysicianApiService {
 				this.http.get<BaseResponse<Physician>>(`${environment.schedulerApiUrl}/doctor/${physicianID}`).pipe(
 					map((response) => response.data),
 					tap(() => this.loaderSvc.deactivate()),
-					catchError((e) => {
+					catchError(() => {
 						return of({} as Physician);
 					}),
 				),
@@ -103,7 +103,7 @@ export class PhysicianApiService {
 
 	public deletePhysician(physicianID: number) {
 		this.loaderSvc.activate();
-		return this.http.delete<BaseResponse<Boolean>>(`${environment.schedulerApiUrl}/doctor/${physicianID}`).pipe(
+		return this.http.delete<BaseResponse<boolean>>(`${environment.schedulerApiUrl}/doctor/${physicianID}`).pipe(
 			map((response) => response.data),
 			tap(() => {
 				this.loaderSvc.deactivate();

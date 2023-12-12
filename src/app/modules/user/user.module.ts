@@ -10,7 +10,7 @@ import { ViewUserComponent } from './components/view-user/view-user.component';
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
-  declarations: [UserComponent, UserListComponent, AddUserComponent, ViewUserComponent],
-  imports: [CommonModule, UserRoutingModule, SharedModule, ReactiveFormsModule],
+	declarations: [UserComponent, UserListComponent, AddUserComponent, ViewUserComponent],
+	imports: [CommonModule, UserRoutingModule, SharedModule, ReactiveFormsModule],
 })
 export class UserModule {}

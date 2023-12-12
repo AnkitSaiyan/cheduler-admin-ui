@@ -9,7 +9,7 @@ export class StaffUtils {
 				practice[rangeIndex] = {
 					...practice?.[rangeIndex],
 					practice: [
-						...practice?.[rangeIndex]?.practice,
+						...(practice?.[rangeIndex]?.practice ?? {}),
 						{
 							...availability,
 							dayStart: DateTimeUtils.UTCTimeToLocalTimeString(availability.dayStart),
@@ -36,4 +36,3 @@ export class StaffUtils {
 		return practice;
 	}
 }
-

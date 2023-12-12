@@ -4,19 +4,19 @@ import { UserType } from '../models/user.model';
 //  Status Enums
 
 export function getStatusEnum(): typeof Status {
-  return Status;
+	return Status;
 }
 
 export function getAppointmentStatusEnum(): typeof AppointmentStatus {
-  return AppointmentStatus;
+	return AppointmentStatus;
 }
 
 export function getReadStatusEnum(): typeof ReadStatus {
-  return ReadStatus;
+	return ReadStatus;
 }
 
 // Type Enums
 
 export function getUserTypeEnum(): typeof UserType {
-  return UserType;
+	return UserType;
 }
