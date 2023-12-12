@@ -72,7 +72,8 @@
         <tr class="room-table-header-row" >
           <th class="room-table-th checkbox" *ngIf="permissionSvc.isNotReader">
             <dfm-checkbox class="w-fit d-flex dfm-me-0" #headerCheckBox
-                          (click)="$event.stopPropagation(); handleCheckboxSelection(-1)"></dfm-checkbox>
+            (click)="$event.stopPropagation(); handleCheckboxSelection(-1)">
+            </dfm-checkbox>
           </th>
           <th *ngFor="let column of columns" class="room-table-th">{{ column | translate }}</th>
         </tr>
