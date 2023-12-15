@@ -29,7 +29,7 @@ export const MSALConfig: Configuration = Object.freeze({
 		clientId: AuthConfig.authClientId,
 		authority: `${AuthConfig.fullAuthority}/${AuthConfig.authFlow}`,
 		knownAuthorities: [AuthConfig.authority],
-		redirectUri: window.origin,
+		redirectUri: environment.redirectUrl,
 	},
 	cache: {
 		cacheLocation: BrowserCacheLocation.LocalStorage,
