@@ -1,26 +1,27 @@
-import { Inject, Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, filter, map, Observable, of, startWith, switchMap, takeUntil, tap } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
+import { Inject, Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { User, UserRoleEnum } from '../../shared/models/user.model';
-import { NameValue } from '../../shared/components/search-modal.component';
-import { PermissionService } from './permission.service';
+import { MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
+import { BehaviorSubject, Observable, catchError, combineLatest, filter, map, of, startWith, switchMap, takeUntil, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { LoaderService } from './loader.service';
-import { BaseResponse } from '../../shared/models/base-response.model';
-import { ChangeStatusRequestData } from '../../shared/models/status.model';
-import { AddStaffRequestData, StaffType } from '../../shared/models/staff.model';
-import { Translate } from '../../shared/models/translate.model';
-import { ShareDataService } from './share-data.service';
 import { DestroyableComponent } from '../../shared/components/destroyable.component';
+import { NameValue } from '../../shared/components/search-modal.component';
+import { BaseResponse } from '../../shared/models/base-response.model';
+import { AddStaffRequestData, StaffType } from '../../shared/models/staff.model';
+import { ChangeStatusRequestData } from '../../shared/models/status.model';
+import { Translate } from '../../shared/models/translate.model';
+import { User, UserRoleEnum } from '../../shared/models/user.model';
 import { HttpUtils } from '../../shared/utils/http.utils';
+import { LoaderService } from './loader.service';
+import { PermissionService } from './permission.service';
+import { ShareDataService } from './share-data.service';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class UserApiService extends DestroyableComponent implements OnDestroy {
 	private readonly userUrl = `${environment.schedulerApiUrl}/user`;
+	private readonly userRoleUrl = `${environment.schedulerApiUrl}/userroles`;
 
 	private selectedLang$$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
@@ -143,6 +144,20 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 			map((res) => res?.data),
 			tap(() => this.loaderSvc.deactivate()),
 		);
+	}
+
+	public updateRole$(userId: string | number, tenantId: string, role: string): Observable<any> {
+		const params = { userId, tenantId };
+		this.loaderSvc.activate();
+		return this.http
+			.put<BaseResponse<any>>(`${this.userRoleUrl}`, JSON.stringify(role), {
+				params,
+				headers: { 'Content-Type': 'application/json' },
+			})
+			.pipe(
+				map((res) => res?.data),
+				tap(() => this.loaderSvc.deactivate()),
+			);
 	}
 
 	public deleteUser(userID: number): Observable<any> {

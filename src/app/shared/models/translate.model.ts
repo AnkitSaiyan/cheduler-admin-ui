@@ -350,6 +350,10 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'User Updated successfully',
 			[DUTCH_BE]: 'Gebruiker Succesvol geüpdated',
 		},
+		UserRoleUpdated: {
+			[ENG_BE]: 'User Role Updated successfully',
+			[DUTCH_BE]: 'Gebruikersrol Succesvol geüpdated',
+		},
 		Added: {
 			[ENG_BE]: 'Added successfully',
 			[DUTCH_BE]: 'Succesvol toegevoegd',
@@ -888,3 +892,4 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Room Duration',
 	},
 });
+

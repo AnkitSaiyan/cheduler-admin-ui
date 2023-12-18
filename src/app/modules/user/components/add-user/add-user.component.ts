@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationType } from 'diflexmo-angular-design';
-import { BehaviorSubject, map, Observable, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, switchMap, take, takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { MsalService } from '@azure/msal-angular';
@@ -138,12 +138,17 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 				},
 				[Validators.required],
 			],
-			firstname: [userDetails?.firstname ?? '', [Validators.required]],
-			lastname: [userDetails?.lastname ?? '', [Validators.required]],
-			email: [userDetails?.email ?? '', []],
+			firstname: [{ value: userDetails?.firstname ?? '', disabled: this.modalData.edit }, [Validators.required]],
+			lastname: [{ value: userDetails?.lastname ?? '', disabled: this.modalData.edit }, [Validators.required]],
+			email: [{ value: userDetails?.email ?? '', disabled: this.modalData.edit }, []],
 			userRole: [null, []],
 			tenantId: [null, []],
 		});
+		if (userDetails?.userRole) {
+			setTimeout(() => {
+				this.addUserForm.get('userRole')?.setValue(userDetails?.userRole);
+			}, 0);
+		}
 	}
 
 	public closeModal(res: any) {
@@ -175,7 +180,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
 		let addUserObservable$: Observable<any>;
 
-		if ([this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {
+		if (!this.modalData.edit && [this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {
 			const roleName: UserRoleEnum = this.formValues.userRole === UserRoleEnum.Reader ? UserRoleEnum.Reader : UserRoleEnum.Admin;
 
 			addUserObservable$ = this.userManagementApiSvc
@@ -198,25 +203,22 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 						return this.userApiSvc.assignUserRole(user.id, this.formValues.userRole).pipe(map(() => user));
 					}),
 				);
+		} else if (this.modalData.edit) {
+			addUserObservable$ = this.userApiSvc.updateRole$(this.modalData.userDetails.id, this.userManagementApiSvc.tenantId, this.formValues.userRole);
 		} else {
-			addUserObservable$ = this.userApiSvc.upsertUser$({
-				firstname: this.formValues.firstname,
-				lastname: this.formValues.lastname,
-				email: this.formValues.email ?? null,
-				userType: this.modalData.edit ? this.modalData.userDetails.userType : this.formValues.userType,
-				...(this.modalData.userDetails ? { id: this.modalData.userDetails.id } : {}),
-			});
+			addUserObservable$ = of({});
 		}
 
 		addUserObservable$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (user) => {
+				this.loading$$.next(false);
 				if (this.modalData.edit) {
-					this.notificationSvc.showNotification(Translate.SuccessMessage.UserUpdated[this.selectedLang]);
+					this.notificationSvc.showNotification(Translate.SuccessMessage.UserRoleUpdated[this.selectedLang]);
+					this.closeModal({ ...this.modalData.userDetails, userRole: this.formValues.userRole, accountEnabled: true });
 				} else {
 					this.notificationSvc.showNotification(Translate.SuccessMessage.UserAdded[this.selectedLang]);
+					this.closeModal({ ...user, userRole: this.formValues.userRole, accountEnabled: true });
 				}
-				this.loading$$.next(false);
-				this.closeModal({ ...user, userRole: this.formValues.userRole, accountEnabled: true });
 			},
 			error: () => this.loading$$.next(false),
 		});
