@@ -181,7 +181,9 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 			}
 
 			this.filteredRecentPatients$$.value.forEach((ap: any) => {
-				dataString += `${`${ap?.patientFname?.toString()} ${ap?.patientLname?.toString()}`}\t\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${this.defaultDatePipe.transform(
+				dataString += `${
+					ap?.patientFname?.toString() + ' ' + ap?.patientLname?.toString()
+				}\t\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${this.defaultDatePipe.transform(
 					this.utcToLocalPipe.transform(ap.startedAt.toString()),
 				)}\n`;
 			});

@@ -28,8 +28,8 @@ export const StatusesNL = Object.freeze(['inactief', 'actief']);
 
 // RegExp Const
 
-export const EMAIL_REGEX: RegExp = /(.+)@(.+){1,}\.(.+){2,}/;
-export const TIME_24: RegExp = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+export const EMAIL_REGEX: RegExp = /^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
+export const TIME_24: RegExp = /^([0-1]?\d|2[0-3]):[0-5]\d$/;
 export const NUM_ONLY_REGEX: RegExp = /^\d+$/;
 
 // Cache Keys

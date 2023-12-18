@@ -21,7 +21,7 @@ export class EmailInputDirective {
 	private handleChange() {
 		const inputText = this.dfmEmailInput.value as string;
 
-		if (inputText && !inputText.match(this.emailOnly)) {
+		if (inputText && !this.emailOnly.exec(inputText)) {
 			this.dfmEmailInput.value = inputText.slice(0, -1);
 		}
 	}

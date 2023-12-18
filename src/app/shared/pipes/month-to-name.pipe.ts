@@ -35,7 +35,7 @@ export class MonthToNamePipe implements PipeTransform {
 				case Month.OCT:
 				case Month.NOV:
 				case Month.DEC:
-					return (short ? this.months[month].slice(0, 3) : this.months[month]) as string;
+					return (short ? this.months[month].slice(0, 3) : this.months[month]);
 				default:
 					return '';
 			}

@@ -167,7 +167,7 @@ export class AppointmentUtils {
 			}
 		}
 
-		if (appointment && appointment?.id) {
+		if (appointment?.id) {
 			requestData.id = appointment.id;
 		}
 

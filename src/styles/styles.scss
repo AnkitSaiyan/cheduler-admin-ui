@@ -1236,10 +1236,6 @@ angular-editor-toolbar button i {
 	cursor: grabbing !important;
 }
 
-// tabs style
-.mat-tab-label {
-  width: 100%;
-}
 // mat group button style
 
 
@@ -1293,6 +1289,7 @@ angular-editor-toolbar button i {
 .mat-tab-label {
   max-width: 260px;
   min-width: 160px !important;
+  width: 100%;
 
   &.mat-tab-label-active {
     background: var(--dfm-badge-secondary-bg);

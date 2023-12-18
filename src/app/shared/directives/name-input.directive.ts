@@ -23,7 +23,7 @@ export class NameInputDirective {
 	private handleChange(e: InputEvent) {
 		let inputText = this.dfmNameInput.value as string;
 
-		if ((inputText && !inputText.match(this.alphabetOnly)) || (inputText[inputText.length - 2] === ' ' && inputText[inputText.length - 1] === ' ')) {
+		if ((inputText && !this.alphabetOnly.exec(inputText)) || (inputText[inputText.length - 2] === ' ' && inputText[inputText.length - 1].endsWith(' '))) {
 			inputText = inputText.slice(0, -1);
 			this.dfmNameInput.value = inputText;
 			(e.target as HTMLInputElement).value = inputText;

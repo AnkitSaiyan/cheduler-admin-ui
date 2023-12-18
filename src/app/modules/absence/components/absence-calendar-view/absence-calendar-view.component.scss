@@ -3,44 +3,47 @@
   gap: 16px;
 
   .side-panel-container {
-      position: relative;
-      min-width: 52px;
+    position: relative;
+    min-width: 52px;
+
     .side-panel {
-        display: flex;
-          flex-direction: column;
-          padding: 8px 16px;
-          max-width: min(30vw, 360px);
-          min-width: min(30vw, 360px);
-        min-height: 100%;
-          .date-picker {
-              margin-right: 40px;
-            }
+      display: flex;
+      flex-direction: column;
+      padding: 8px 16px;
+      max-width: min(30vw, 360px);
+      min-width: min(30vw, 360px);
+      min-height: 100%;
 
-          >h4 {
-              margin-bottom: 8px;
-                margin-top: 8px;
-                text-align: center;
-                text-wrap: nowrap;
-            }
-          }
-                >dfm-button-icon {
-                  position: absolute;
-                  top: 8px;
-                  right: 8px;
-                  transition: all 500ms;
-                }
+      .date-picker {
+        margin-right: 40px;
+      }
 
-                &.side-panel-hide {
-                  .side-panel {
-                    display: none;
-                  }
+      >h4 {
+        margin-bottom: 8px;
+        margin-top: 8px;
+        text-align: center;
+        text-wrap: nowrap;
+      }
+    }
 
-                  >dfm-button-icon {
-                    transform: rotate(180deg);
-                    transition: all 500ms;
-                  }
-                }
-                }
+    >dfm-button-icon {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      transition: all 500ms;
+    }
+
+    &.side-panel-hide {
+      .side-panel {
+        display: none;
+      }
+
+      >dfm-button-icon {
+        transform: rotate(180deg);
+        transition: all 500ms;
+      }
+    }
+  }
 
   .calendar-main-wrapper {
     flex: 1;
@@ -48,6 +51,7 @@
     overflow: auto;
   }
 }
+
 .card-info {
   padding: 0 8px;
 
@@ -82,10 +86,11 @@
 
   >div:nth-child(3) {
     >div {
-      background:  var(--dfm-danger-500);
+      background: var(--dfm-danger-500);
     }
   }
 }
+
 .calendar-header {
   display: flex;
   align-items: center;
@@ -124,18 +129,15 @@
     max-height: calc(100vh - 36px - 56px - 48px - 42px - 16px - 48px - 38px - 20px);
     max-height: calc(100dvh - 36px - 56px - 48px - 42px - 16px - 48px - 38px - 20px);
   }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                .not-mobile {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  display: none;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+
+  .not-mobile {
+    display: none;
+  }
 }
 
 @media (max-width: 680px) {
   .calendar-main-wrapper {
     padding: 16px 4px 4px;
-  }
-
-  .calendar-header {
-    padding: 0 12px;
   }
 
   .calendar-body {
@@ -151,6 +153,7 @@
   }
 
   .calendar-header {
+    padding: 0 12px;
     width: 100%;
     justify-content: space-between;
 

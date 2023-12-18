@@ -242,12 +242,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 						title: Translate[this.columns[i]][lang],
 					}));
 
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						default:
-							this.statuses = StatusesNL;
+					if (lang === ENG_BE) {
+						this.statuses = Statuses;
+					} else{
+						this.statuses = StatusesNL;
 					}
 				},
 			});
@@ -270,10 +268,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				if (!physician.status) status = this.translate.instant('Inactive');
 
 				return (
-					`${physician.firstname?.toLowerCase()} ${physician.lastname?.toLowerCase()}`?.includes(searchText) ||
-					physician.firstname?.toLowerCase()?.includes(searchText) ||
-					physician.lastname?.toLowerCase()?.includes(searchText) ||
-					physician.email?.toLowerCase()?.includes(searchText) ||
+					`${physician.firstname?.toLowerCase()} ${physician.lastname?.toLowerCase()}`?.includes(searchText) ??
+					physician.firstname?.toLowerCase()?.includes(searchText) ??
+					physician.lastname?.toLowerCase()?.includes(searchText) ??
+					physician.email?.toLowerCase()?.includes(searchText) ??
 					status?.toLowerCase()?.startsWith(searchText)
 				);
 			}),
@@ -413,7 +411,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
 	private closeMenus() {
 		if (window.innerWidth >= 680) {
-			if (this.optionMenu && this.optionMenu.isOpen()) {
+			if (this.optionMenu?.isOpen()) {
 				this.optionMenu.close();
 				this.toggleMenu(true);
 			}
