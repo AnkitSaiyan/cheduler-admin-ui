@@ -214,7 +214,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			return;
 		}
 
-		if (!inputText.match(EMAIL_REGEX)) {
+		if (!EMAIL_REGEX.exec(inputText)) {
 			this.appointmentForm.get('patientEmail')?.setErrors({
 				email: true,
 			});
@@ -263,16 +263,17 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 
 		if (data?.startedAt) {
 			const startDate = DateTimeUtils.DateToDateDistributed(data?.startedAt);
-			data.startedAt = `${startDate?.year}-${startDate?.month}-${startDate?.day} ${data?.startTime ?? '00:00'}:00`;
-		} else if (data?.startTime) {
-			data.startedAt = `${data?.startTime}:00`;
+			data.startedAt = `${startDate?.year}-${startDate?.month}-${startDate?.day}`;
 		}
-
+		if (data?.startTime) {
+			data.startTime = `${data?.startTime}:00`;
+		}
 		if (data?.endedAt) {
 			const endDate = DateTimeUtils.DateToDateDistributed(data?.endedAt);
-			data.endedAt = `${endDate?.year}-${endDate?.month}-${endDate?.day} ${data?.endTime ?? '00:00'}:00`;
-		} else if (data?.endTime) {
-			data.endedAt = `${data?.endTime}:00`;
+			data.endedAt = `${endDate?.year}-${endDate?.month}-${endDate?.day}`;
+		}
+		if (data?.endTime) {
+			data.endTime = `${data?.endTime}:00`;
 		}
 
 		this.dialogSvc.close(data);

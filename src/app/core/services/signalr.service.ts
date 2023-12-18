@@ -82,6 +82,8 @@ export class SignalrService {
 
 	private registerForAppointmentModule(): void {
 		this.hubConnection.on('InformClient', (param: any) => {
+			param.examDetail = param.exams;
+			param.exams = null;
 			this.appointmentsModuleData$$.next(param);
 
 			let message = '';

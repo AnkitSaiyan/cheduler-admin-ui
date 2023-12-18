@@ -182,6 +182,8 @@ export class AppointmentApiService extends DestroyableComponent {
 			if (data?.doctorId) queryParams.doctorId = data.doctorId;
 			if (data?.startedAt) queryParams.startDate = data.startedAt;
 			if (data?.endedAt) queryParams.endDate = data.endedAt;
+			if (data.startTime) queryParams.startTime = data.startTime;
+			if (data.endTime) queryParams.endTime = data.endTime;
 			if (data?.FirstName) queryParams.FirstName = data.FirstName;
 			if (data?.LastName) queryParams.LastName = data.LastName;
 			if (data?.userId) queryParams.userId = data.userId;
