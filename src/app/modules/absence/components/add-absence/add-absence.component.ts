@@ -291,140 +291,101 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	}
 
 	public saveAbsence() {
-		const { controls } = this.absenceForm;
 		const isHoliday = this.modalData.absenceType === ABSENCE_TYPE_ARRAY[2];
-		let valid = true;
-		if (!this.formValues.roomList.length && !this.formValues.userList.length) {
-			valid = false;
-		}
 
-		const invalid = ['name', 'startedAt', 'startTime', 'info'].some((key) => {
+		const valid = this.validateForm(isHoliday);
+	
+		if (!valid) {
+			return;
+		}
+	
+		const addAbsenceReqData = this.payload(isHoliday);
+		this.submitting$$.next(true);
+		this.saveDataToBackend(this.modalData.edit, addAbsenceReqData);
+	}
+	
+	private validateForm(isHoliday: boolean): boolean {
+		const { controls } = this.absenceForm;
+	
+		if (!this.validateRoomAndUserList() || this.markInvalidControls(['name', 'startedAt', 'startTime', 'info'], controls)) {
+			return false;
+		}
+	
+		if (this.formValues.isRepeat && !this.validateRepeatFields(controls)) {
+			return false;
+		}
+	
+		if (!isHoliday && !this.validateNonHoliday()) {
+			return false;
+		}
+	
+		return true;
+	}
+	
+	private validateRoomAndUserList(): boolean {
+		if (!this.formValues.roomList.length && !this.formValues.userList.length) {
+			this.isAbsenceStaffRoomInvalid.next(true);
+	
+			if (this.formValues.roomList || this.formValues.userList) {
+				const message =
+					this.modalData.absenceType === 'rooms'
+						? Translate.SelectRoom[this.selectedLang]
+						: Translate.SelectStaff[this.selectedLang];
+	
+				this.notificationSvc.showNotification(message, NotificationType.WARNING);
+			}
+	
+			return false;
+		}
+	
+		return true;
+	}
+	
+	private validateRepeatFields(controls): boolean {
+		switch (this.absenceForm.get('repeatType')?.value) {
+			case RepeatType.Weekly:
+			case RepeatType.Monthly:
+				if (this.markInvalidControls(['repeatFrequency', 'repeatDays'], controls)) {
+					return false;
+				}
+				break;
+			default:
+				if (this.markInvalidControls(['repeatFrequency'], controls)) {
+					return false;
+				}
+				break;
+		}
+	
+		return true;
+	}
+	
+	private validateNonHoliday(): boolean {
+		if (!this.formValues.roomList || !this.formValues.userList) {
+			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+			this.isAbsenceStaffRoomInvalid.next(true);
+			return false;
+		}
+	
+		return true;
+	}
+	
+	private markInvalidControls(keys: string[], controls): boolean {
+		const invalid = keys.some((key) => {
 			controls[key].markAsTouched();
 			return controls[key].invalid;
 		});
-		this.absenceForm.markAllAsTouched();
-
+	
 		if (invalid) {
+			this.absenceForm.markAllAsTouched();
 			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-			return;
 		}
+	
+		return invalid;
+	}
+	
 
-		if (this.formValues.isRepeat) {
-			if (this.endDateTypeControl.value === EndDateType.Until && controls['endedAt'].invalid) {
-				controls['endedAt'].markAsTouched();
-				this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-				return;
-			}
-			switch (this.absenceForm.get('repeatType')?.value) {
-				case RepeatType.Weekly:
-				case RepeatType.Monthly: {
-					const notValid = ['repeatFrequency', 'repeatDays'].some((key) => {
-						controls[key].markAsTouched();
-						return controls[key].invalid;
-					});
-					if (notValid) {
-						this.absenceForm.markAllAsTouched();
-						this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-						return;
-					}
-					break;
-				}
-				default: {
-					if (controls['repeatFrequency'].invalid) {
-						controls['repeatFrequency'].markAsTouched();
-						this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-						return;
-					}
-					break;
-				}
-			}
-		} else if (controls['endedAt'].invalid) {
-			controls['endedAt'].markAsTouched();
-			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-			return;
-		}
-
-		if (!isHoliday && !valid) {
-			if (this.formValues.roomList || this.formValues.userList) {
-				if (this.modalData.absenceType === 'rooms') {
-					this.notificationSvc.showNotification(Translate.SelectRoom[this.selectedLang], NotificationType.WARNING);
-				} else {
-					this.notificationSvc.showNotification(Translate.SelectStaff[this.selectedLang], NotificationType.WARNING);
-				}
-				this.isAbsenceStaffRoomInvalid.next(true);
-				return;
-			}
-
-			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-			this.isAbsenceStaffRoomInvalid.next(true);
-			return;
-		}
-
-		const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
-
-		const getEndDate = () => {
-			let formattedEndedAt;
-
-			if (this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat) {
-				formattedEndedAt = null;
-			} else {
-				const date = new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`.replace(/-/g, '/'));
-				const formattedDate = isHoliday
-					? (this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss') as string)
-					: (this.datePipe.transform(DateTimeUtils.LocalDateToUTCDate(date, !rest.isHoliday), 'yyyy-MM-dd HH:mm:ss') as string);
-
-				formattedEndedAt = formattedDate;
-			}
-
-			return formattedEndedAt;
-		};
-
-		const addAbsenceReqData: AddAbsenceRequestData = {
-			...rest,
-			isHoliday,
-			startedAt: isHoliday
-				? (this.datePipe.transform(
-						new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} 00:00:00`.replace(/-/g, '/')),
-						'yyyy-MM-dd HH:mm:ss',
-				  ) as string)
-				: (this.datePipe.transform(
-						DateTimeUtils.LocalDateToUTCDate(
-							new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`.replace(/-/g, '/')),
-							!rest.isHoliday,
-						),
-						'yyyy-MM-dd HH:mm:ss',
-				  ) as string),
-			endedAt: getEndDate(),
-			userList: isHoliday ? [] : userList,
-			roomList: isHoliday ? [] : roomList,
-			repeatType: rest.isRepeat ? rest.repeatType : null,
-			repeatFrequency: rest.isRepeat && rest.repeatFrequency ? +rest.repeatFrequency.toString().split(' ')[0] : 0,
-			repeatDays: '',
-			addAppointmentImpactedAbsence: this.addAppointmentImpactedAbsence,
-		};
-
-		if (this.modalData.absenceType === 'rooms') {
-			addAbsenceReqData.userList = [];
-		} else {
-			addAbsenceReqData.roomList = [];
-		}
-
-		if (rest.isRepeat && repeatDays?.length) {
-			addAbsenceReqData.repeatDays = repeatDays?.reduce((acc, curr, i) => {
-				if (repeatDays?.length && i < repeatDays.length - 1) {
-					return `${acc + curr},`;
-				}
-				return acc + curr;
-			}, '');
-		}
-
-		if (this.modalData?.absenceID) {
-			addAbsenceReqData.id = this.modalData.absenceID;
-		}
-
-		this.submitting$$.next(true);
-
-		if (this.modalData.edit) {
+	private saveDataToBackend(edit: boolean, addAbsenceReqData: AddAbsenceRequestData) {
+		if (edit) {
 			this.absenceApiSvc
 				.updateAbsence(addAbsenceReqData)
 				.pipe(takeUntil(this.destroy$$))
@@ -464,6 +425,71 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				});
 		}
 	}
+
+	private payload(isHoliday): AddAbsenceRequestData {
+		const { startedAt, endedAt, repeatDays, startTime, endTime, userList, roomList, ...rest } = this.formValues;
+
+		const addAbsenceReqData: AddAbsenceRequestData = {
+			...rest,
+			isHoliday,
+			startedAt: isHoliday
+				? (this.datePipe.transform(
+						new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} 00:00:00`.replace(/-/g, '/')),
+						'yyyy-MM-dd HH:mm:ss',
+				  ) as string)
+				: (this.datePipe.transform(
+						DateTimeUtils.LocalDateToUTCDate(
+							new Date(`${startedAt.year}-${startedAt.month}-${startedAt.day} ${startTime}:00`.replace(/-/g, '/')),
+							!rest.isHoliday,
+						),
+						'yyyy-MM-dd HH:mm:ss',
+				  ) as string),
+			endedAt: this.getEndDate(rest, endedAt, endTime, isHoliday),
+			userList: isHoliday ? [] : userList,
+			roomList: isHoliday ? [] : roomList,
+			repeatType: rest.isRepeat ? rest.repeatType : null,
+			repeatFrequency: rest.isRepeat && rest.repeatFrequency ? +rest.repeatFrequency.toString().split(' ')[0] : 0,
+			repeatDays: '',
+			addAppointmentImpactedAbsence: this.addAppointmentImpactedAbsence,
+		};
+
+		if (this.modalData.absenceType === 'rooms') {
+			addAbsenceReqData.userList = [];
+		} else {
+			addAbsenceReqData.roomList = [];
+		}
+
+		if (rest.isRepeat && repeatDays?.length) {
+			addAbsenceReqData.repeatDays = repeatDays?.reduce((acc, curr, i) => {
+				if (repeatDays?.length && i < repeatDays.length - 1) {
+					return `${acc + curr},`;
+				}
+				return acc + curr;
+			}, '');
+		}
+
+		if (this.modalData?.absenceID) {
+			addAbsenceReqData.id = this.modalData.absenceID;
+		}
+
+		return addAbsenceReqData;
+	}
+
+	private getEndDate(rest:any, endedAt:any, endTime: string, isHoliday: boolean) {
+		let formattedEndedAt;
+
+		if (this.endDateTypeControl?.value === EndDateType.Never && rest.isRepeat) {
+			formattedEndedAt = null;
+		} else {
+			const date = new Date(`${endedAt.year}-${endedAt.month}-${endedAt.day} ${endTime}:00`.replace(/-/g, '/'));
+			const formattedDate = isHoliday
+				? (this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss') as string)
+				: (this.datePipe.transform(DateTimeUtils.LocalDateToUTCDate(date, !rest.isHoliday), 'yyyy-MM-dd HH:mm:ss') as string);
+
+			formattedEndedAt = formattedDate;
+		}
+		return formattedEndedAt;
+	};
 
 	public handleTimeInput(time: string, controlName: 'startTime' | 'endTime') {
 		this.searchTime(time, controlName);
@@ -537,8 +563,53 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			this.endDateControl.setValue(date);
 		}
 
-		const startedAt = absenceDetails?.startedAt || this.selectedDate;
+		this.intilaizeForm(absenceDetails, absenceDetails?.startedAt ?? this.selectedDate, startTime, endTime)
 
+		this.setupValueChangeSubscriptions(absenceDetails);
+	}
+
+
+	private setupValueChangeSubscriptions(absenceDetails: Absence | undefined) {
+		this.absenceForm
+			.get('repeatType')
+			?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
+			.subscribe({
+				next: () => {
+					if (!absenceDetails) {
+						this.absenceForm.get('repeatDays')?.setValue(null);
+					}
+					if (this.repeatFrequency && (!this.absence$$.value || !Object.keys(this.absence$$.value)?.length)) {
+						this.repeatFrequency.type = 'number';
+					}
+				},
+			});
+
+		combineLatest([
+			this.absenceForm.get('userList')?.valueChanges.pipe(startWith('')) ?? [],
+			this.absenceForm.get('roomList')?.valueChanges.pipe(startWith('')) ?? [],
+		])
+			.pipe(debounceTime(0), takeUntil(this.destroy$$))
+			.subscribe({
+				next: () => {
+					this.isAbsenceStaffRoomInvalid.next(false);
+				},
+			});
+
+		combineLatest([
+			this.absenceForm.get('startTime')?.valueChanges.pipe(startWith('')) ?? [],
+			this.absenceForm.get('endTime')?.valueChanges.pipe(startWith('')) ?? [],
+			this.absenceForm.get('startedAt')?.valueChanges.pipe(startWith('')) ?? [],
+			this.absenceForm.get('endedAt')?.valueChanges.pipe(startWith('')) ?? [],
+		])
+			.pipe(debounceTime(0), takeUntil(this.destroy$$))
+			.subscribe({
+				next: () => {
+					this.handleTimeChange();
+				},
+			});
+	}
+
+	private intilaizeForm(absenceDetails: Absence | undefined, startedAt: Date | string | undefined, startTime: any, endTime: any) {
 		this.absenceForm = this.fb.group({
 			name: [absenceDetails?.name ?? '', [Validators.required]],
 			startedAt: [
@@ -587,44 +658,6 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			this.absenceForm.get('endTime')?.markAsUntouched();
 		}, 0);
 		this.cdr.detectChanges();
-
-		this.absenceForm
-			.get('repeatType')
-			?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))
-			.subscribe({
-				next: () => {
-					if (!absenceDetails) {
-						this.absenceForm.get('repeatDays')?.setValue(null);
-					}
-					if (this.repeatFrequency && (!this.absence$$.value || !Object.keys(this.absence$$.value)?.length)) {
-						this.repeatFrequency.type = 'number';
-					}
-				},
-			});
-
-		combineLatest([
-			this.absenceForm.get('userList')?.valueChanges.pipe(startWith('')),
-			this.absenceForm.get('roomList')?.valueChanges.pipe(startWith('')),
-		])
-			.pipe(debounceTime(0), takeUntil(this.destroy$$))
-			.subscribe({
-				next: () => {
-					this.isAbsenceStaffRoomInvalid.next(false);
-				},
-			});
-
-		combineLatest([
-			this.absenceForm.get('startTime')?.valueChanges.pipe(startWith('')),
-			this.absenceForm.get('endTime')?.valueChanges.pipe(startWith('')),
-			this.absenceForm.get('startedAt')?.valueChanges.pipe(startWith('')),
-			this.absenceForm.get('endedAt')?.valueChanges.pipe(startWith('')),
-		])
-			.pipe(debounceTime(0), takeUntil(this.destroy$$))
-			.subscribe({
-				next: () => {
-					this.handleTimeChange();
-				},
-			});
 	}
 
 	private getRepeatEveryItems(repeatType: RepeatType): NameValue[] {

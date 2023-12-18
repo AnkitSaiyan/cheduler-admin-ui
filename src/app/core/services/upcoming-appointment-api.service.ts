@@ -52,12 +52,6 @@ export class UpcomingAppointmentApiService extends DestroyableComponent {
 		this.todaysAppointments$$.next(appointments);
 	}
 
-	public endTimer() {
-		// this.timer$.unsubscribe();
-		// this.refreshUpcomingAppointments$$.complete();
-		// this.todaysAppointments$$.unsubscribe();
-	}
-
 	private getSaperatedExamData(appointment: Appointment): UpcomingAppointments[] {
 		if (!appointment) return [];
 		const examsArr: any[] = [];

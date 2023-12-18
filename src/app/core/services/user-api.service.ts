@@ -147,7 +147,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 
 	public deleteUser(userID: number): Observable<any> {
 		this.loaderSvc.activate();
-		return this.http.delete<BaseResponse<Boolean>>(`${this.userUrl}/${userID}`).pipe(
+		return this.http.delete<BaseResponse<boolean>>(`${this.userUrl}/${userID}`).pipe(
 			map((res) => res?.data),
 			tap(() => this.loaderSvc.deactivate()),
 		);
@@ -202,7 +202,7 @@ export class UserApiService extends DestroyableComponent implements OnDestroy {
 			map((roles) => {
 				return roles[0] ?? '';
 			}),
-			tap((role) => this.userIdToRoleMap.set(userId, role as UserRoleEnum)),
+			tap((role) => this.userIdToRoleMap.set(userId, role)),
 		);
 	}
 

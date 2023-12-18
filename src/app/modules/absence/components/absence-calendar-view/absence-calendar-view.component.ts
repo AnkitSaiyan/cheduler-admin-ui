@@ -608,7 +608,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		getNumberArray(6, 0).forEach((weekday) => {
 			const practiceData = weekdayToPractice[weekday];
 
-			if (practiceData && practiceData.intervals.length) {
+			if (practiceData?.intervals.length) {
 				const startTime = practiceData.intervals[0].dayStart;
 				const endTime = practiceData.intervals[practiceData.intervals.length - 1].dayEnd;
 

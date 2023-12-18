@@ -285,7 +285,7 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 							this.user = user;
 						}),
 						catchError(() => {
-							const lang = localStorage.getItem('lang') || DUTCH_BE;
+							const lang = localStorage.getItem('lang') ?? DUTCH_BE;
 							const error: any = new Error(
 								localStorage.getItem('isSessionExpired') === 'true' ? Translate.sessionExp[lang] : Translate.failesToFetchUserDetails[lang],
 							);

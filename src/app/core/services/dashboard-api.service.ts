@@ -138,7 +138,7 @@ export class DashboardApiService extends DestroyableComponent {
 			switchMap((response) => {
 				const notifications = response?.data?.notifications;
 
-				if (!notifications || !notifications.length) {
+				if (!notifications?.length) {
 					return of({ ...response, data: [] });
 				}
 

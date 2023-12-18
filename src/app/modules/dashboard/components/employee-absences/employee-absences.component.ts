@@ -133,8 +133,8 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 		this.filteredAbsence$$.next([
 			...this.absences$$.value.filter((absence: Absence) => {
 				return (
-					absence.name?.toLowerCase()?.includes(searchText) ||
-					this.datePipe.transform(absence.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ||
+					absence.name?.toLowerCase()?.includes(searchText) ??
+					this.datePipe.transform(absence.startedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText) ??
 					this.datePipe.transform(absence.endedAt, 'dd/MM/yyyy, HH:mm')?.includes(searchText)
 				);
 			}),

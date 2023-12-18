@@ -184,6 +184,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			this.practiceHourMinMax$$.next(minMaxValue);
 		});
 
+		this.setupSubscriptions();
+	}
+
+	private setupSubscriptions() {
 		if (this.appointmentData$$) {
 			this.appointmentData$$.pipe(takeUntil(this.destroy$$)).subscribe((appointments) => {
 				this.appointments$$.next(appointments);
@@ -227,7 +231,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				filter(([weekdayToPractice]) => this.calendarViewFormControl.value === 'day' && weekdayToPractice),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe(([_, queryParams]) => { // eslint-disable-line
+			.subscribe(([_, queryParams]) => {
+				// eslint-disable-line
 				if (this.calendarViewFormControl.value === 'day' && !queryParams['d']) this.updateQuery('d', this.selectedDate$$.value);
 
 				const value = new Date(queryParams['d']);
@@ -239,6 +244,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					),
 				});
 			});
+
 		this.shareDataSvc
 			.getLanguage$()
 			.pipe(takeUntil(this.destroy$$))
@@ -294,17 +300,21 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	private groupAppointmentsForCalendar(...appointments: Appointment[]) {
+		this.appointmentsGroupedByDate = {};
+		this.appointmentsGroupedByDateAndTIme = {};
+		this.appointmentGroupedByDateAndRoom = {};
+
+		appointments.push({} as Appointment);
+		this.mapAppointmentsForCalendar(appointments);
+	}
+
+	private mapAppointmentsForCalendar(appointments: Appointment[]) {
 		let startDate: Date;
 		let endDate: Date;
 		let sameGroup: boolean;
 		let groupedAppointments: Appointment[] = [];
 		let lastDateString: string;
 
-		this.appointmentsGroupedByDate = {};
-		this.appointmentsGroupedByDateAndTIme = {};
-		this.appointmentGroupedByDateAndRoom = {};
-
-		appointments.push({} as Appointment);
 		appointments.forEach((appointment, index) => {
 			if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
 				const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
@@ -457,7 +467,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		getNumberArray(6, 0).forEach((weekday) => {
 			const practiceData = weekdayToPractice[weekday];
 
-			if (practiceData && practiceData.intervals.length) {
+			if (practiceData?.intervals?.length) {
 				const startTime = practiceData.intervals[0].dayStart;
 				const endTime = practiceData.intervals[practiceData.intervals.length - 1].dayEnd;
 

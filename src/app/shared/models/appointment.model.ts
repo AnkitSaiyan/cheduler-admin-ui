@@ -110,7 +110,6 @@ export interface AddAppointmentRequestData {
 	patientEmail: string;
 	patientTel: number;
 	comments: string;
-
 	exams: Array<{
 		examId: number;
 		startedAt: string;
