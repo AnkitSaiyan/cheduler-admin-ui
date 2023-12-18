@@ -410,7 +410,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		});
 
 		modalRef.closed.pipe(take(1)).subscribe({
-			next: (result) => this.filterUserList(result),
+			next: (result) => {
+				this.filterUserList(result);
+			},
 		});
 	}
 
@@ -432,9 +434,12 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 					if (!Number.isNaN(+res.id)) {
 						return;
 					}
-
-					const item = Number.isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : (res as UserBase);
-					this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, item, 'add'));
+					if (!!userDetails?.id) {
+						this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, res, 'update', 'id'));
+					} else {
+						const item = Number.isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : (res as UserBase);
+						this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, item, 'add'));
+					}
 				}
 			},
 		});

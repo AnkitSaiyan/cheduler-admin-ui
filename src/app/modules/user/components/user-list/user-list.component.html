@@ -82,7 +82,7 @@
               <dfm-data-table-action *ngIf="item.status === statusTypeEnum.Inactive" icon="check-circle"  tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Active }], item)"></dfm-data-table-action>
               <dfm-data-table-action *ngIf="item.status === statusTypeEnum.Active" icon="x-circle" tooltip="{{ 'ChangeStatus' | translate }}" (click)="$event.stopPropagation(); changeStatus([{ id: item.id, status: statusTypeEnum.Inactive }],item)"></dfm-data-table-action>
             </ng-container>
-            <ng-container *ngIf="item?.userType === UserType.General">
+            <ng-container *ngIf="(userSvc.authUser$ | async)?.id !== item.id">
               <dfm-data-table-action *dfmPermitted="Permission.UpdateUser" icon="pencil-02" tooltip="{{ 'Edit' | translate }}" (click)="$event.stopPropagation(); openAddUserModal(item)"></dfm-data-table-action>
             </ng-container>
             <ng-container *ngIf="(userSvc.authUser$ | async)?.id !== item.id">
