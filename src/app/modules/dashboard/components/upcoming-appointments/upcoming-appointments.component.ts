@@ -10,7 +10,7 @@ import { UpcomingAppointmentApiService } from 'src/app/core/services/upcoming-ap
 	templateUrl: './upcoming-appointments.component.html',
 	styleUrls: ['./upcoming-appointments.component.scss'],
 })
-export class UpcomingAppointmentsComponent extends DestroyableComponent implements OnInit, OnDestroy {
+export class UpcomingAppointmentsComponent extends DestroyableComponent implements OnInit {
 	private upcomingAppointments$$: BehaviorSubject<any[]>;
 
 	public filteredUpcomingAppointments$$: BehaviorSubject<any[]>;
@@ -52,10 +52,6 @@ export class UpcomingAppointmentsComponent extends DestroyableComponent implemen
 				this.upcomingAppointments$$.next(appointments);
 			},
 		});
-	}
-
-	public override ngOnDestroy() {
-		this.upcomingAppointmentApiService.endTimer();
 	}
 
 	public navigateToView(appointment: any) {

@@ -346,60 +346,59 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				delete requestData.doctorId;
 			}
 
-			if (this.edit) {
-				this.appointmentApiSvc
-					.updateAppointment$(requestData)
-					.pipe(takeUntil(this.destroy$$))
-					.subscribe({
-						next: () => {
-							this.notificationSvc.showNotification(`${Translate.AppointmentUpdatedSuccessfully[this.selectedLang]}`);
-
-							this.submitting$$.next(false);
-
-							let route: string;
-
-							if (this.comingFromRoute === 'view') {
-								route = '../view';
-							} else {
-								route = this.edit ? '/appointment' : '/dashboard';
-							}
-							this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
-						},
-						error: () => {
-							this.submitting$$.next(false);
-						},
-					});
-			} else {
-				this.appointmentApiSvc
-					.saveAppointment$(requestData)
-					.pipe(takeUntil(this.destroy$$))
-					.subscribe({
-						next: () => {
-							this.notificationSvc.showNotification(`${Translate.AppointmentSavedSuccessfully[this.selectedLang]}`);
-							this.submitting$$.next(false);
-
-							let route: string;
-							switch (this.comingFromRoute) {
-								case 'view':
-									route = '../view';
-									break;
-								case 'dashboard':
-									route = '/';
-									break;
-								default:
-									route = this.edit ? '/appointment' : '../';
-							}
-							this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
-						},
-						error: () => {
-							this.submitting$$.next(false);
-						},
-					});
-			}
+			this.sendDataToBackend(requestData);
 		} catch (e) {
 			this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}`, NotificationType.DANGER);
 			this.submitting$$.next(false);
 		}
+	}
+
+	private sendDataToBackend(requestData: AddAppointmentRequestData) {
+		if (this.edit) {
+			this.appointmentApiSvc
+				.updateAppointment$(requestData)
+				.pipe(takeUntil(this.destroy$$))
+				.subscribe({
+					next: () => {
+						this.notificationSvc.showNotification(`${Translate.AppointmentUpdatedSuccessfully[this.selectedLang]}`);
+
+						this.navigationAfterAddAppointment();
+					},
+					error: () => {
+						this.submitting$$.next(false);
+					},
+				});
+		} else {
+			this.appointmentApiSvc
+				.saveAppointment$(requestData)
+				.pipe(takeUntil(this.destroy$$))
+				.subscribe({
+					next: () => {
+						this.notificationSvc.showNotification(`${Translate.AppointmentSavedSuccessfully[this.selectedLang]}`);
+						this.navigationAfterAddAppointment();
+					},
+					error: () => {
+						this.submitting$$.next(false);
+					},
+				});
+		}
+	}
+
+	private navigationAfterAddAppointment() {
+		this.submitting$$.next(false);
+
+		let route: string;
+		switch (this.comingFromRoute) {
+			case 'view':
+				route = '../view';
+				break;
+			case 'dashboard':
+				route = '/';
+				break;
+			default:
+				route = this.edit ? '/appointment' : '../';
+		}
+		this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 	}
 
 	public saveOutSideOperatingHoursAppointment() {
@@ -550,38 +549,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 		dateDistributed = DateTimeUtils.DateToDateDistributed(date);
 
-		const verifiedUser = Boolean(appointment?.patientAzureId);
-
-		setTimeout(() => {
-			this.appointmentForm.patchValue(
-				{
-					patientFname: appointment?.patientFname ?? null,
-					patientLname: appointment?.patientLname ?? null,
-					patientTel: appointment?.patientTel ?? null,
-					patientEmail: appointment?.patientEmail ?? null,
-					doctorId: appointment?.doctorId?.toString() ?? null,
-					startedAt: dateDistributed,
-					examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
-					userId: appointment?.userId?.toString() ?? null,
-					comments: appointment?.comments ?? null,
-					approval: appointment?.approval ?? AppointmentStatus.Pending,
-					socialSecurityNumber: appointment?.socialSecurityNumber ?? null,
-				},
-				{ emitEvent: false },
-			);
-			this.appointmentForm.get('userList')?.setValue(appointment?.usersDetail.map((user) => user.id?.toString() ?? []));
-
-			if (!appointment?.exams?.length) {
-				this.appointmentForm.get('examList')?.markAsUntouched();
-			}
-			this.dateControl.setValue(date);
-
-			if (verifiedUser) {
-				['patientFname', 'patientLname', 'patientTel', 'patientEmail'].forEach((key) => {
-					this.appointmentForm.get(key)?.disable();
-				});
-			}
-		}, 500);
+		this.updateFormValues(appointment, date, dateDistributed);
 
 		const examList = appointment?.exams?.map((exam) => exam.id) ?? [];
 
@@ -591,6 +559,10 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 		this.loadingSlots$$.next(true);
 
+		this.setSlotData(appointment, dateDistributed, examList);
+	}
+
+	private setSlotData(appointment: Appointment | undefined, dateDistributed: DateDistributed, examList: any) {
 		setTimeout(() => {
 			this.loaderService.spinnerDeactivate();
 			this.getSlotData(AppointmentUtils.GenerateSlotRequestData(dateDistributed, examList))
@@ -643,6 +615,41 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		}, 600);
 	}
 
+	private updateFormValues(appointment: Appointment | undefined, date: Date, dateDistributed: DateDistributed) {
+		setTimeout(() => {
+			this.appointmentForm.patchValue(
+				{
+					patientFname: appointment?.patientFname ?? null,
+					patientLname: appointment?.patientLname ?? null,
+					patientTel: appointment?.patientTel ?? null,
+					patientEmail: appointment?.patientEmail ?? null,
+					doctorId: appointment?.doctorId?.toString() ?? null,
+					startedAt: dateDistributed,
+					examList: appointment?.exams?.map((exam) => exam.id?.toString()) ?? [],
+					userId: appointment?.userId?.toString() ?? null,
+					comments: appointment?.comments ?? null,
+					approval: appointment?.approval ?? AppointmentStatus.Pending,
+					socialSecurityNumber: appointment?.socialSecurityNumber ?? null,
+				},
+				{ emitEvent: false },
+			);
+			this.appointmentForm.get('userList')?.setValue(appointment?.usersDetail.map((user) => user.id?.toString() ?? []));
+
+			if (!appointment?.exams?.length) {
+				this.appointmentForm.get('examList')?.markAsUntouched();
+			}
+			this.dateControl.setValue(date);
+
+			const varified = Boolean(appointment?.patientAzureId);
+
+			if (varified) {
+				['patientFname', 'patientLname', 'patientTel', 'patientEmail'].forEach((key) => {
+					this.appointmentForm.get(key)?.disable();
+				});
+			}
+		}, 500);
+	}
+
 	private findSlot(examID: number, start: string, end: string): SlotModified | undefined {
 		if (this.examIdToAppointmentSlots[examID]?.length) {
 			return this.examIdToAppointmentSlots[examID].find((slot) => slot.start === start && slot.end === end);
@@ -691,7 +698,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		new Promise((resolve) => {
 			const { files } = event.target as HTMLInputElement;
 
-			if (files && files?.length) {
+			if (files?.length) {
 				const reader = new FileReader();
 				reader.onload = () => {
 					resolve(files[0]);

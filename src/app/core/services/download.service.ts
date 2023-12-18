@@ -112,7 +112,7 @@ export class DownloadService extends DestroyableComponent implements OnDestroy {
 		}
 
 		headers.forEach((title, index) => {
-			if (title && title.length) {
+			if (title?.length) {
 				csv += `${title[0]}${title.slice(1)}`;
 			}
 

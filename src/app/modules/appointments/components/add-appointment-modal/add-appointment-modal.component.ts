@@ -181,7 +181,12 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			if (this.modalData.appointment?.id && this.modalData.appointment.documentCount) this.getDocument(this.modalData.appointment.id);
 		}
 
-		combineLatest([this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length))])
+		this.setupSubscriptions()
+		
+	}
+
+	private setupSubscriptions() {
+		combineLatest([(this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length)) ?? [])])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
 			.subscribe();
 
@@ -500,7 +505,10 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			}
 			return 1;
 		});
+		this.updateFormValues(appointment);		
+	}
 
+	private updateFormValues(appointment: Appointment) {
 		setTimeout(() => {
 			this.appointmentForm.patchValue(
 				{
@@ -610,7 +618,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		new Promise((resolve) => {
 			const { files } = event.target as HTMLInputElement;
 
-			if (files && files?.length) {
+			if (files?.length) {
 				const reader = new FileReader();
 				reader.onload = () => {
 					resolve(files[0]);

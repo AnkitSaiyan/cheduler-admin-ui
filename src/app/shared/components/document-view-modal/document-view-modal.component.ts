@@ -85,6 +85,7 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 		const downloadLink = document.createElement('a');
 		downloadLink.href = this.downloadableDoc;
 		downloadLink.download = this.fileName;
+		document.body.appendChild(downloadLink);
 		downloadLink.click();
 		this.isDownloadClick = false;
 	}
