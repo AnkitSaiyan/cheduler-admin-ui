@@ -231,7 +231,7 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 			return;
 		}
 
-		if (!inputText.match(EMAIL_REGEX)) {
+		if (!EMAIL_REGEX.exec(inputText)) {
 			this.addUserForm.get('email')?.setErrors({
 				email: true,
 			});

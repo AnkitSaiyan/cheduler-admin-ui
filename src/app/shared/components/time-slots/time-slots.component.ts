@@ -250,7 +250,7 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 			return;
 		}
 
-		if (!time.match(TIME_24)) {
+		if (!TIME_24.exec(time)) {
 			toggleControlError(control, this.invalidTimeError);
 			return;
 		}
@@ -259,23 +259,23 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 	}
 
 	private handleInvalidSlotRangeError(controlArrays: FormArray[]) {
-		for (let i = 0; i < controlArrays.length; i++) {
-			for (let j = 0; j < controlArrays[i].length; j++) {
-				const dayStart = controlArrays[i].controls[j].get('dayStart');
-				const dayEnd = controlArrays[i].controls[j].get('dayEnd');
-
-				if (dayStart?.value && dayEnd?.value) {
-					if (DateTimeUtils.TimeToNumber(dayStart.value) >= DateTimeUtils.TimeToNumber(dayEnd?.value)) {
-						toggleControlError(dayStart, this.invalidSlotRangeError);
-						toggleControlError(dayEnd, this.invalidSlotRangeError);
-						return;
-					}
+		for (const controlArray of controlArrays) {
+			for (const control of controlArray.controls) {
+			  const dayStart = control.get('dayStart');
+			  const dayEnd = control.get('dayEnd');
+		  
+			  if (dayStart?.value && dayEnd?.value) {
+				if (DateTimeUtils.TimeToNumber(dayStart.value) >= DateTimeUtils.TimeToNumber(dayEnd?.value)) {
+				  toggleControlError(dayStart, this.invalidSlotRangeError);
+				  toggleControlError(dayEnd, this.invalidSlotRangeError);
+				  return;
 				}
-
-				toggleControlError(dayStart, this.invalidSlotRangeError, false);
-				toggleControlError(dayEnd, this.invalidSlotRangeError, false);
+			  }
+		  
+			  toggleControlError(dayStart, this.invalidSlotRangeError, false);
+			  toggleControlError(dayEnd, this.invalidSlotRangeError, false);
 			}
-		}
+		  }
 	}
 
 	private handleSlotExistsError(controlArrays: FormArray[]) {

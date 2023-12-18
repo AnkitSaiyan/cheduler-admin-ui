@@ -247,7 +247,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			bodyTextEnglish,
 		});
 
-		if (this.siteManagementData$$.value && this.siteManagementData$$.value?.id) {
+		if (this.siteManagementData$$.value?.id) {
 			requestData.id = this.siteManagementData$$.value.id;
 		}
 
@@ -272,7 +272,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 	public onFileChange(event: Event) {
 		const { files } = event.target as HTMLInputElement;
 
-		if (files && files?.length) {
+		if (files?.length) {
 			const fileControl = this.siteManagementForm.get('file');
 
 			fileControl?.setValue({

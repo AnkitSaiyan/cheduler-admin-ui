@@ -9,7 +9,7 @@ export class JoinWithAndPipe implements PipeTransform {
 			return '';
 		}
 
-		if (!value || !value.length) {
+		if (!value?.length) {
 			return '';
 		}
 

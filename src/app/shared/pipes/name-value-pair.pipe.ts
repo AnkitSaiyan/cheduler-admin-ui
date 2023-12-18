@@ -6,7 +6,7 @@ import { NameValue } from '../components/search-modal.component';
 })
 export class NameValuePairPipe implements PipeTransform {
 	public transform(arr: any[], nameKey?: string, valueKey?: string, descriptionKey?: string): NameValue[] {
-		if (!arr || !arr?.length) {
+		if (!arr?.length) {
 			return [];
 		}
 

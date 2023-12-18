@@ -39,7 +39,7 @@ export class DateTimeUtils {
 
 		const minutes = newDate.getMinutes().toString();
 
-		return `${newDate.getHours()}:${minutes.length < 2 ? `0${minutes}` : minutes}:00`;
+		return `${newDate.getHours()}:${minutes.length < 2 ? '0' + minutes : minutes}:00`;
 	}
 
 	public static TimeStringIn24Hour(timeString: string | undefined): string {
@@ -94,7 +94,7 @@ export class DateTimeUtils {
 	}
 
 	public static TimeToNumber(timeString: string): number {
-		if (timeString && timeString.includes(':')) {
+		if (timeString?.includes(':')) {
 			const timeInNo = +timeString.split(':').join('');
 
 			if (!Number.isNaN(timeInNo)) {

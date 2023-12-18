@@ -4,37 +4,43 @@ import { Pipe, PipeTransform } from '@angular/core';
 	name: 'timeInInterval',
 })
 export class TimeInIntervalPipe implements PipeTransform {
-	public transform(interval: number = 30, format24 = true, formatted = false, startMin?: number, endMin?: number): string[] {
-		const times: any[] = []; // time array
-		const ap = ['AM', 'PM']; // AM-PM
+	public transform(
+		interval: number = 30,
+		format24: boolean = true,
+		formatted: boolean = false,
+		startMin: number = 0,
+		endMin: number = 24 * 60,
+	): string[] {
+		const times: string[] = [];
+		const ap = ['AM', 'PM'];
 		const format = format24 ? 24 : 12;
 
-		for (let startTime = startMin ?? 0; startTime < (endMin ?? 24 * 60); startTime += interval) {
-			// getting hours of day in 0-24 format
+		for (let startTime = startMin; startTime < endMin; startTime += interval) {
 			const hour = Math.floor(startTime / 60);
-
-			// getting minutes of the hour in 0-interval format
 			const minute = startTime % 60;
+			const hourFormat = format === 12 ? hour % format || 12 : hour % format;
 
-			// pushing data in array in [00:00 - 12:00 AM/PM format] if format24 is false else [00:00 - 23:00]`
-			const hourString = `0${hour % format === 0 && format === 12 ? '12' : hour % format}`.slice(-2);
-			const minuteString = `0${minute}`.slice(-2);
-			let time: string;
+			const hourString = hourFormat.toString().padStart(2, '0');
+			const minuteString = minute.toString().padStart(2, '0');
+			const amPmString = format === 12 ? ap[Math.floor(hour / 12)] : '';
+
+			let time = '';
 
 			if (formatted) {
-				time = `${hourString[0] === '0' ? hourString[1] : hourString}${
-					interval === 60 && (minuteString === '00' || minuteString === '0') ? '' : `:${minuteString}`
-				} `;
+				time += hourString;
+
+				if (!(interval === 60 && (minuteString === '00' || minuteString === '0'))) {
+					time += `:${minuteString}`;
+				}
+
+				time += ` ${amPmString}`;
 			} else {
 				time = `${hourString}:${minuteString}`;
 			}
 
-			if (format === 12) {
-				time += ap[Math.floor(hour / 12)];
-			}
-
 			times.push(time);
 		}
+
 		return times;
 	}
 }

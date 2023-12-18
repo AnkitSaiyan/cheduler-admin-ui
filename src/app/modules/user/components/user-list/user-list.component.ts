@@ -480,7 +480,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 	private closeMenus() {
 		if (window.innerWidth >= 680) {
-			if (this.optionMenu && this.optionMenu.isOpen()) {
+			if (this.optionMenu?.isOpen()) {
 				this.optionMenu.close();
 				this.toggleMenu(true);
 			}

@@ -17,7 +17,7 @@ export class RemoveDuplicateDataPipe implements PipeTransform {
 			arr.push(...value);
 		}
 
-		if (arr.length) return GeneralUtils.removeDuplicateData(arr, key?.[0] || 'id');
+		if (arr.length) return GeneralUtils.removeDuplicateData(arr, key?.[0] ?? 'id');
 		return [];
 	}
 }

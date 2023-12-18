@@ -78,7 +78,7 @@ export class UserService {
 		if (hasUser) {
 			const users = this.authUser$$.value;
 
-			if (users && users.properties['extension_ProfileIsIncomplete']) {
+			if (users?.properties['extension_ProfileIsIncomplete']) {
 				this.router.navigate(['/complete-profile']);
 			}
 		}

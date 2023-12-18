@@ -39,10 +39,6 @@
     padding: 16px 4px 4px;
   }
 
-  .calendar-header {
-    padding: 0 12px;
-  }
-
   .calendar-body {
     overflow: auto;
     height: calc(100vh - 36px - 56px - 48px - 42px - 16px - 20px - 92px - 20px);
@@ -56,6 +52,7 @@
   }
 
   .calendar-header {
+    padding: 0 12px;
     width: 100%;
     justify-content: space-between;
 
