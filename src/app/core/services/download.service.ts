@@ -123,7 +123,7 @@ export class DownloadService extends DestroyableComponent implements OnDestroy {
 
 		csv += '\n';
 		if (data.length) {
-			data.forEach((row) => (csv += `${row.map((v) => `"${v}"`).join(',')}\n`));
+			csv = data.map(row => row.map(v => `"${v}"`).join(',')).join('\n');
 		}
 
 		return csv;
