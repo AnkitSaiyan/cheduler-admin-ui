@@ -73,7 +73,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
 		// To logout on every tab if user logs out in one tab
 		this.msalBroadcastService.msalSubject$
-			.pipe(filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_REMOVED ?? msg.eventType === EventType.ACCOUNT_ADDED))
+			.pipe(filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_REMOVED || msg.eventType === EventType.ACCOUNT_ADDED))
 			.subscribe({
 				next: () => {
 					window.location.pathname = '/';
