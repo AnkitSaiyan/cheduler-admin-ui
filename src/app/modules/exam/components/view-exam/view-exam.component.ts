@@ -163,6 +163,12 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 
 		let slotNo = 0;
 
+		this.makePracticeAvailability(weekdayToSlotsObj, slotNo, practiceAvailability);
+
+		return practiceAvailability;
+	}
+
+	private makePracticeAvailability(weekdayToSlotsObj: { [key: string]: TimeSlot[] }, slotNo: number, practiceAvailability: WeekWisePracticeAvailability[]) {
 		while (true) {
 			const allWeekTimeSlots: { [key: string]: TimeSlot } = {};
 
@@ -196,7 +202,5 @@ export class ViewExamComponent extends DestroyableComponent implements OnInit, O
 				sunday: { ...allWeekTimeSlots['0'] },
 			});
 		}
-
-		return practiceAvailability;
 	}
 }

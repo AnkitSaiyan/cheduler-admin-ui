@@ -346,14 +346,14 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				delete requestData.doctorId;
 			}
 
-			this.sendDataToBackend(requestData);
+			this.saveDataToBackend(requestData);
 		} catch (e) {
 			this.notificationSvc.showNotification(`${Translate.Error.FailedToSave[this.selectedLang]}`, NotificationType.DANGER);
 			this.submitting$$.next(false);
 		}
 	}
 
-	private sendDataToBackend(requestData: AddAppointmentRequestData) {
+	private saveDataToBackend(requestData: AddAppointmentRequestData) {
 		if (this.edit) {
 			this.appointmentApiSvc
 				.updateAppointment$(requestData)

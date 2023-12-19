@@ -98,6 +98,60 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 	}
 
 	private createForm(siteManagementData?: SiteManagement | undefined): void {
+		const {
+			file,
+			introductoryTextObj,
+			introductoryTextObjEnglish,
+			duration,
+			durationType,
+			reminderDuration,
+			reminderDurationTYpe,
+			absenceReminder,
+			absenceReminderType,
+		} = this.getSiteData(siteManagementData);
+
+		this.siteManagementForm = this.fb.group({
+			name: [siteManagementData?.name ?? '', [Validators.required]],
+			file: [{ ...file }, []],
+			introductoryText: [siteManagementData?.introductoryText ?? null, []],
+			heading: [introductoryTextObj?.heading ?? '', []],
+			subHeading: [introductoryTextObj?.subHeading ?? '', []],
+			bodyText: [introductoryTextObj?.bodyText ?? '', []],
+			headingEnglish: [introductoryTextObjEnglish?.headingEnglish ?? '', []],
+			subHeadingEnglish: [introductoryTextObjEnglish?.subHeadingEnglish ?? '', []],
+			bodyTextEnglish: [introductoryTextObjEnglish?.bodyTextEnglish ?? '', []],
+			disableAppointment: [!!siteManagementData?.disableAppointment, []],
+			disableWarningText: [siteManagementData?.disableWarningText ?? '', []],
+			doctorReferringConsent: [siteManagementData?.doctorReferringConsent, []],
+			cancelAppointmentTime: [duration, []],
+			cancelAppointmentType: [durationType, []],
+			email: [siteManagementData?.email ?? '', [Validators.required]],
+			telephone: [siteManagementData?.telephone, [Validators.required]],
+			address: [siteManagementData?.address, [Validators.required]],
+			isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
+			reminderTime: [reminderDuration, []],
+			reminderTimeType: [reminderDurationTYpe, []],
+			isAppointmentAutoconfirm: [!!siteManagementData?.isAppointmentAutoconfirm, [Validators.required]],
+			isAppointmentAutoconfirmAdmin: [!!siteManagementData?.isAppointmentAutoconfirmAdmin, [Validators.required]],
+			documentSize: [5, [Validators.required]],
+			editUploadedDocument: [!!siteManagementData?.editUploadedDocument, [Validators.required]],
+			absenceImpactAlertInterval: [absenceReminder, []],
+			absenceImpactAlertIntervalType: [absenceReminderType, []],
+		});
+
+		setTimeout(() => {
+			this.siteManagementForm.patchValue({
+				reminderTimeType: reminderDurationTYpe,
+				cancelAppointmentType: durationType,
+				documentSize: siteManagementData?.documentSizeInKb ? siteManagementData.documentSizeInKb / 1024 : 5,
+				absenceImpactAlertIntervalType: absenceReminderType,
+			});
+		}, 0);
+
+		this.cdr.detectChanges();
+	}
+
+	private getSiteData(siteManagementData: SiteManagement | undefined) {
 		let duration = 0;
 		let reminderDuration = 0;
 		let absenceReminder = 0;
@@ -153,45 +207,17 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			}
 		}
 
-		this.siteManagementForm = this.fb.group({
-			name: [siteManagementData?.name ?? '', [Validators.required]],
-			file: [{ ...file }, []],
-			introductoryText: [siteManagementData?.introductoryText ?? null, []],
-			heading: [introductoryTextObj?.heading ?? '', []],
-			subHeading: [introductoryTextObj?.subHeading ?? '', []],
-			bodyText: [introductoryTextObj?.bodyText ?? '', []],
-			headingEnglish: [introductoryTextObjEnglish?.headingEnglish ?? '', []],
-			subHeadingEnglish: [introductoryTextObjEnglish?.subHeadingEnglish ?? '', []],
-			bodyTextEnglish: [introductoryTextObjEnglish?.bodyTextEnglish ?? '', []],
-			disableAppointment: [!!siteManagementData?.disableAppointment, []],
-			disableWarningText: [siteManagementData?.disableWarningText ?? '', []],
-			doctorReferringConsent: [siteManagementData?.doctorReferringConsent, []],
-			cancelAppointmentTime: [duration, []],
-			cancelAppointmentType: [durationType, []],
-			email: [siteManagementData?.email ?? '', [Validators.required]],
-			telephone: [siteManagementData?.telephone, [Validators.required]],
-			address: [siteManagementData?.address, [Validators.required]],
-			isSlotsCombinable: [!!siteManagementData?.isSlotsCombinable, [Validators.required]],
-			reminderTime: [reminderDuration, []],
-			reminderTimeType: [reminderDurationTYpe, []],
-			isAppointmentAutoconfirm: [!!siteManagementData?.isAppointmentAutoconfirm, [Validators.required]],
-			isAppointmentAutoconfirmAdmin: [!!siteManagementData?.isAppointmentAutoconfirmAdmin, [Validators.required]],
-			documentSize: [5, [Validators.required]],
-			editUploadedDocument: [!!siteManagementData?.editUploadedDocument, [Validators.required]],
-			absenceImpactAlertInterval: [absenceReminder, []],
-			absenceImpactAlertIntervalType: [absenceReminderType, []],
-		});
-
-		setTimeout(() => {
-			this.siteManagementForm.patchValue({
-				reminderTimeType: reminderDurationTYpe,
-				cancelAppointmentType: durationType,
-				documentSize: siteManagementData?.documentSizeInKb ? siteManagementData.documentSizeInKb / 1024 : 5,
-				absenceImpactAlertIntervalType: absenceReminderType,
-			});
-		}, 0);
-
-		this.cdr.detectChanges();
+		return {
+			duration,
+			durationType,
+			absenceReminder,
+			absenceReminderType,
+			reminderDuration,
+			reminderDurationTYpe,
+			introductoryTextObj,
+			introductoryTextObjEnglish,
+			file,
+		};
 	}
 
 	public saveSiteManagementData(): void {

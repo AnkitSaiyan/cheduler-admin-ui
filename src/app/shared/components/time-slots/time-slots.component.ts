@@ -261,21 +261,21 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 	private handleInvalidSlotRangeError(controlArrays: FormArray[]) {
 		for (const controlArray of controlArrays) {
 			for (const control of controlArray.controls) {
-			  const dayStart = control.get('dayStart');
-			  const dayEnd = control.get('dayEnd');
-		  
-			  if (dayStart?.value && dayEnd?.value) {
-				if (DateTimeUtils.TimeToNumber(dayStart.value) >= DateTimeUtils.TimeToNumber(dayEnd?.value)) {
-				  toggleControlError(dayStart, this.invalidSlotRangeError);
-				  toggleControlError(dayEnd, this.invalidSlotRangeError);
-				  return;
+				const dayStart = control.get('dayStart');
+				const dayEnd = control.get('dayEnd');
+
+				if (dayStart?.value && dayEnd?.value) {
+					if (DateTimeUtils.TimeToNumber(dayStart.value) >= DateTimeUtils.TimeToNumber(dayEnd?.value)) {
+						toggleControlError(dayStart, this.invalidSlotRangeError);
+						toggleControlError(dayEnd, this.invalidSlotRangeError);
+						return;
+					}
 				}
-			  }
-		  
-			  toggleControlError(dayStart, this.invalidSlotRangeError, false);
-			  toggleControlError(dayEnd, this.invalidSlotRangeError, false);
+
+				toggleControlError(dayStart, this.invalidSlotRangeError, false);
+				toggleControlError(dayEnd, this.invalidSlotRangeError, false);
 			}
-		  }
+		}
 	}
 
 	private handleSlotExistsError(controlArrays: FormArray[]) {
@@ -287,26 +287,8 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 
 					for (let j = i + 1; j < formArray.length; j++) {
 						const currControl = controls[j];
-
 						if (currControl.value.dayStart && currControl.value.dayEnd) {
-							if (
-								DateTimeUtils.CheckTimeRangeOverlapping(
-									compareWithControl.value.dayStart,
-									compareWithControl.value.dayEnd,
-									currControl.value.dayStart,
-									currControl.value.dayEnd,
-								)
-							) {
-								toggleControlError(currControl.get('dayStart'), this.slotExistsError);
-								toggleControlError(currControl.get('dayEnd'), this.slotExistsError);
-								toggleControlError(compareWithControl.get('dayStart'), this.slotExistsError);
-								toggleControlError(compareWithControl.get('dayEnd'), this.slotExistsError);
-							} else {
-								toggleControlError(currControl.get('dayStart'), this.slotExistsError, false);
-								toggleControlError(currControl.get('dayEnd'), this.slotExistsError, false);
-								toggleControlError(compareWithControl.get('dayStart'), this.slotExistsError, false);
-								toggleControlError(compareWithControl.get('dayEnd'), this.slotExistsError, false);
-							}
+							this.slotExistError(currControl, compareWithControl);
 						}
 					}
 				}
@@ -315,6 +297,27 @@ export class TimeSlotsComponent extends DestroyableComponent implements OnInit, 
 				toggleControlError(controls[0].get('dayEnd'), this.slotExistsError, false);
 			}
 		});
+	}
+
+	private slotExistError(currControl, compareWithControl) {
+		if (
+			DateTimeUtils.CheckTimeRangeOverlapping(
+				compareWithControl.value.dayStart,
+				compareWithControl.value.dayEnd,
+				currControl.value.dayStart,
+				currControl.value.dayEnd,
+			)
+		) {
+			toggleControlError(currControl.get('dayStart'), this.slotExistsError);
+			toggleControlError(currControl.get('dayEnd'), this.slotExistsError);
+			toggleControlError(compareWithControl.get('dayStart'), this.slotExistsError);
+			toggleControlError(compareWithControl.get('dayEnd'), this.slotExistsError);
+		} else {
+			toggleControlError(currControl.get('dayStart'), this.slotExistsError, false);
+			toggleControlError(currControl.get('dayEnd'), this.slotExistsError, false);
+			toggleControlError(compareWithControl.get('dayStart'), this.slotExistsError, false);
+			toggleControlError(compareWithControl.get('dayEnd'), this.slotExistsError, false);
+		}
 	}
 
 	private handleError(time: string, control: AbstractControl | null | undefined, weekday: string | number | null | undefined) {

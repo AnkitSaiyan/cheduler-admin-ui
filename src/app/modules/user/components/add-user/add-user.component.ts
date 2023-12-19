@@ -178,6 +178,10 @@ export class AddUserComponent extends DestroyableComponent implements OnInit, On
 
 		this.loading$$.next(true);
 
+		this.saveDataToBackend();
+	}
+
+	private saveDataToBackend() {
 		let addUserObservable$: Observable<any>;
 
 		if (!this.modalData.edit && [this.formValues.userType, this.modalData?.userDetails?.userType].includes(UserType.Scheduler)) {

@@ -241,6 +241,11 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			practiceAvailability: timeSlotFormValues,
 		};
 
+		this.saveDataToBackend(addStaffReqData);
+	}
+
+
+	private saveDataToBackend(addStaffReqData: AddStaffRequestData) {
 		if (!addStaffReqData.info) {
 			delete addStaffReqData.info;
 		}

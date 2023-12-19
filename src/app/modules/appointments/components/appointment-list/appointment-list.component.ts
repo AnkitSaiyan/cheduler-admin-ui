@@ -24,7 +24,6 @@ import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../..
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { Appointment } from '../../../../shared/models/appointment.model';
-import { getDurationMinutes } from '../../../../shared/models/calendar.model';
 import { Exam } from '../../../../shared/models/exam.model';
 import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
 import { Translate } from '../../../../shared/models/translate.model';
@@ -543,97 +542,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		setTimeout(() => {
 			this.appointmentViewControl.setValue(this.isUpcomingAppointments ? 'upcoming' : 'past');
 		}, 0);
-	}
-
-	private groupAppointmentsForCalendar(...appointments: Appointment[]) {
-		let startDate: Date;
-		let endDate: Date;
-		let sameGroup: boolean;
-		let groupedAppointments: Appointment[] = [];
-		let lastDateString: string;
-
-		this.appointmentsGroupedByDate = {};
-		this.appointmentsGroupedByDateAndTime = {};
-		this.appointmentGroupedByDateAndRoom = {};
-
-		appointments.push({} as Appointment);
-		appointments.forEach((appointment, index) => {
-			if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
-				const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
-
-				if (dateString) {
-					if (!this.appointmentsGroupedByDate[dateString]) {
-						this.appointmentsGroupedByDate[dateString] = [];
-					}
-
-					if (!this.appointmentsGroupedByDateAndTime[dateString]) {
-						this.appointmentsGroupedByDateAndTime[dateString] = [];
-
-						startDate = new Date(appointment.startedAt);
-						endDate = new Date(appointment.endedAt);
-						sameGroup = false;
-					} else {
-						const currSD = new Date(appointment.startedAt);
-						const currED = new Date(appointment.endedAt);
-
-						if (
-							currSD.getTime() === startDate.getTime() ||
-							(currSD > startDate && currSD < endDate) ||
-							currSD.getTime() === endDate.getTime() ||
-							(currSD > endDate && getDurationMinutes(endDate, currSD) <= 1)
-						) {
-							sameGroup = true;
-							if (currED > endDate) {
-								endDate = currED;
-							}
-						} else {
-							startDate = currSD;
-							endDate = currED;
-							sameGroup = false;
-						}
-					}
-
-					if (!sameGroup) {
-						if (index !== 0) {
-							this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
-							groupedAppointments = [];
-						}
-					}
-
-					lastDateString = dateString;
-
-					groupedAppointments.push(appointment);
-					this.appointmentsGroupedByDate[dateString].push(appointment);
-				}
-			} else if (lastDateString) {
-				this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
-			}
-		});
-	}
-
-	private groupAppointmentByDateAndRoom(...appointments: Appointment[]) {
-		appointments?.forEach((appointment) => {
-			const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
-
-			if (dateString) {
-				if (!this.appointmentGroupedByDateAndRoom[dateString]) {
-					this.appointmentGroupedByDateAndRoom[dateString] = {};
-				}
-
-				appointment?.exams?.forEach((exam) => {
-					exam.rooms?.forEach((room) => {
-						if (!this.appointmentGroupedByDateAndRoom[dateString][room.id]) {
-							this.appointmentGroupedByDateAndRoom[dateString][room.id] = [];
-						}
-
-						this.appointmentGroupedByDateAndRoom[dateString][room.id].push({
-							appointment,
-							exams: appointment.exams ?? [],
-						});
-					});
-				});
-			}
-		});
 	}
 
 	private clearDownloadDropdown() {
