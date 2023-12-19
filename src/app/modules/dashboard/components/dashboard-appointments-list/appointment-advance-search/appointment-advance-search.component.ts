@@ -31,7 +31,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 
 	public appointment$$ = new BehaviorSubject<Appointment | undefined>(undefined);
 
-	public loading$$ = new BehaviorSubject(false);
+	public loading$$ = new BehaviorSubject(true);
 
 	public loadingSlots$$ = new BehaviorSubject<boolean>(false);
 
@@ -105,6 +105,8 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 
 	public currentDate = new Date();
 
+	private advanceSearchData: any;
+
 	constructor(
 		private dialogSvc: ModalService,
 		private fb: FormBuilder,
@@ -133,6 +135,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			if (data.titleText) this.dialogData.titleText = data.titleText;
 			if (data.confirmButtonText) this.dialogData.confirmButtonText = data.confirmButtonText;
 			if (data.cancelButtonText) this.dialogData.cancelButtonText = data.cancelButtonText;
+			if (data.values) this.advanceSearchData = data.values;
 		});
 
 		this.createForm();
@@ -223,9 +226,9 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 		}
 	}
 
-	public handleDropdownSearch(searchText: string, type: 'user' | 'doctor' | 'exam' | 'room' | 'patient'): void {
+	public handleDropdownSearch(searchText: string, type: 'user' | 'physician' | 'exam' | 'room' | 'patient'): void {
 		switch (type) {
-			case 'doctor':
+			case 'physician':
 				this.filteredPhysicianList = [...GeneralUtils.FilterArray(this.physicianList, searchText, 'name')];
 				break;
 			case 'user':
@@ -255,12 +258,6 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 
 	public submitSearch() {
 		const data = this.appointmentForm.value;
-		if (data.patientId) {
-			const [firstName, lastName] = data.patientId.split(':');
-			data.FirstName = firstName;
-			data.LastName = lastName;
-		}
-
 		if (data?.startedAt) {
 			const startDate = DateTimeUtils.DateToDateDistributed(data?.startedAt);
 			data.startedAt = `${startDate?.year}-${startDate?.month}-${startDate?.day}`;
@@ -336,5 +333,19 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			endTime: [],
 			approval: [],
 		});
+		if (this.advanceSearchData) {
+			if (this.advanceSearchData.startTime)
+				this.advanceSearchData.startTime = DateTimeUtils.UTCTimeToLocalTimeString(this.advanceSearchData.startTime);
+
+			if (this.advanceSearchData.endTime)
+				this.advanceSearchData.endTime = DateTimeUtils.UTCTimeToLocalTimeString(this.advanceSearchData.endTime);
+
+			setTimeout(() => {
+				this.appointmentForm.setValue(this.advanceSearchData);
+				this.loading$$.next(false);
+			}, 1500);
+		} else {
+			this.loading$$.next(false);
+		}
 	}
 }

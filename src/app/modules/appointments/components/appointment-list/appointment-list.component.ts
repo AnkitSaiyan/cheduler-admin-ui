@@ -154,6 +154,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public isLoading: boolean = true;
 
+	private advanceSearchData: any;
+
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -552,6 +554,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public onRefresh(): void {
 		this.appointmentApiSvc.refresh();
+		this.advanceSearchData = undefined;
 		this.isResetBtnDisable = true;
 		this.appointmentApiSvc.appointmentPageNo = 1;
 	}
@@ -575,15 +578,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				titleText: 'AdvancedSearch',
 				confirmButtonText: 'Search',
 				cancelButtonText: 'Reset',
-				items: [
-					...this.appointments$$.value.map(({ id, patientLname, patientFname }) => {
-						return {
-							name: `${patientFname} ${patientLname}`,
-							key: `${patientFname} ${patientLname} ${id}`,
-							value: id,
-						};
-					}),
-				],
+				values: this.advanceSearchData,
 			},
 			options: {
 				size: 'xl',
@@ -595,7 +590,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		modalRef.closed
 			.pipe(
 				filter((res) => !!res),
-				switchMap((result) => this.appointmentApiSvc.fetchAllAppointments$(1, result)),
+				switchMap((result) => {
+					this.advanceSearchData = result;
+					return this.appointmentApiSvc.fetchAllAppointments$(1, result)
+				}),
 				take(1),
 			)
 			.subscribe({
