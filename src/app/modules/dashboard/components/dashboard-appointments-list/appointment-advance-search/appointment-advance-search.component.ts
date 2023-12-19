@@ -266,14 +266,14 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			data.startedAt = `${startDate?.year}-${startDate?.month}-${startDate?.day}`;
 		}
 		if (data?.startTime) {
-			data.startTime = `${data?.startTime}:00`;
+			data.startTime = `${DateTimeUtils.LocalToUTCTimeTimeString(data?.startTime)}:00`;
 		}
 		if (data?.endedAt) {
 			const endDate = DateTimeUtils.DateToDateDistributed(data?.endedAt);
 			data.endedAt = `${endDate?.year}-${endDate?.month}-${endDate?.day}`;
 		}
 		if (data?.endTime) {
-			data.endTime = `${data?.endTime}:00`;
+			data.endTime = `${DateTimeUtils.LocalToUTCTimeTimeString(data?.endTime)}:00`;
 		}
 
 		this.dialogSvc.close(data);
