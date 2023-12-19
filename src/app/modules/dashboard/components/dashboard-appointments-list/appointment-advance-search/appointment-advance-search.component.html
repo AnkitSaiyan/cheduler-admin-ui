@@ -1,4 +1,7 @@
 <div #content class="bg-white rounded-4 confirm-action-modal">
+  <div class="loading-overlay" *ngIf="(loading$$ | async) === true">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
   <div class="modal-header">
     <h5 class="modal-title">{{ dialogData.titleText | translate }}</h5>
     <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close()"></dfm-button-icon>
@@ -168,10 +171,10 @@
             [items]="filteredPhysicianList"
             [typeToSearch]="true"
             placeholder="{{ 'SelectDoctor' | translate }}"
-            (searchInput)="handleDropdownSearch($event,'doctor')"
+            (searchInput)="handleDropdownSearch($event,'physician')"
             formControlName="doctorId"
             size="md"
-            label="{{ 'Doctor' | translate }}"
+            label="{{ 'Physician' | translate }}"
           >
           </dfm-input-dropdown>
         </div>

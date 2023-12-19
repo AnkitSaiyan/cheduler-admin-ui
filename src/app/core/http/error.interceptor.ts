@@ -26,7 +26,7 @@ export class ErrorInterceptor implements HttpInterceptor {
 	}
 
 	private generateErrorMessage(err: any, lang: string): void {
-		if (err.status) {
+		if (err.status === 401 || err.status === 403) {
 			this.errorMessage = this.handleHttpStatusCodes(err.status, lang);
 		} else if (err?.error?.errors) {
 			this.errorMessage = this.handleGeneralErrors(err?.error?.errors);
