@@ -108,33 +108,29 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
 			weekdayToSlotsObj[practice.weekday.toString()].push(timeSlot);
 		});
 
+		this.PracticeAvailability(weekdayToSlotsObj, practiceAvailability);
+
+		return practiceAvailability;
+	}
+
+	private PracticeAvailability(weekdayToSlotsObj: { [key: string]: TimeSlot[] }, practiceAvailability: WeekWisePracticeAvailability[]) {
 		// sorting slots by start time
 		for (let weekday = 0; weekday < 7; weekday++) {
 			if (weekdayToSlotsObj[weekday.toString()]?.length) {
 				weekdayToSlotsObj[weekday.toString()].sort((a, b) => DateTimeUtils.TimeToNumber(a.dayStart) - DateTimeUtils.TimeToNumber(b.dayStart));
 			}
 		}
-
 		let slotNo = 0;
-
 		while (true) {
 			const allWeekTimeSlots: { [key: string]: TimeSlot } = {};
-
 			let done = true;
-
 			for (let weekday = 0; weekday < 7; weekday++) {
 				if (weekdayToSlotsObj[weekday.toString()]?.length > slotNo) {
 					allWeekTimeSlots[weekday.toString()] = { ...allWeekTimeSlots, ...weekdayToSlotsObj[weekday.toString()][slotNo] };
-					if (done) {
-						done = false;
-					}
+					if (done) done = false;
 				}
 			}
-
-			if (done) {
-				break;
-			}
-
+			if (done) break;
 			slotNo++;
 
 			practiceAvailability.push({
@@ -148,8 +144,6 @@ export class ViewRoomComponent extends DestroyableComponent implements OnInit, O
 				sunday: { ...allWeekTimeSlots['0'] },
 			});
 		}
-
-		return practiceAvailability;
 	}
 
 	public deleteRoom(id: number) {

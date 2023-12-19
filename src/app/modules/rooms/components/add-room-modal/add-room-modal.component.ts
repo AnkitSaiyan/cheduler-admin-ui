@@ -147,6 +147,10 @@ export class AddRoomModalComponent extends DestroyableComponent implements OnIni
 			practiceAvailability: timeSlotFormValues,
 		};
 
+		this.saveDataToBackend(addRoomReqData);
+	}
+
+	private saveDataToBackend(addRoomReqData: AddRoomRequestData) {
 		if (this.modalData?.roomID) {
 			addRoomReqData.id = this.modalData.roomID;
 		}

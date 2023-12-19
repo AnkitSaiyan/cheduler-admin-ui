@@ -116,33 +116,44 @@ export class AppointmentTimeChangeModalComponent extends DestroyableComponent im
 		this.minutes = minutes;
 		this.isTop = isTop;
 		this.isExtendOutside = false;
+	  
 		if (this.extend) {
-			if (isTop) {
-				this.isExtendOutside = this.eventTop - +minutes * this.pixelPerMin < 0;
-				this.eventContainer.style.top = `${this.eventTop - +minutes * this.pixelPerMin}px`;
-				this.eventContainer.style.height = `${Math.abs(this.eventHeight + +minutes * this.pixelPerMin)}px`;
-			} else {
-				this.isExtendOutside = +minutes > this.extendableTimeInBottom;
-				this.resetEventCard();
-				this.eventContainer.style.height = `${Math.abs(this.eventHeight + +minutes * this.pixelPerMin)}px`;
-			}
+		  this.handleExtendCase(minutes, isTop);
 		} else {
-			const calculatedHeight = this.eventHeight - +minutes * this.pixelPerMin;
-			if (calculatedHeight <= 0) {
-				this.timeChangeForm.patchValue({ minutes: this.eventHeight / this.pixelPerMin }, { emitEvent: false });
-			}
-
-			if (isTop) {
-				this.eventContainer.style.top = `${calculatedHeight >= 0 ? this.eventTop + +minutes * this.pixelPerMin : this.eventContainer.style.top}px`;
-				this.eventContainer.style.height = `${calculatedHeight >= 0 ? calculatedHeight : 0}px`;
-			} else {
-				this.resetEventCard();
-				this.eventContainer.style.height = `${calculatedHeight >= 0 ? calculatedHeight : 0}px`;
-			}
+		  this.handleNonExtendCase(minutes, isTop);
 		}
-
+	  
 		setTimeout(() => this.scrollIntoView(), 0);
-	}
+	  }
+	  
+	  private handleExtendCase(minutes: number, isTop: boolean): void {
+		if (isTop) {
+		  this.isExtendOutside = this.eventTop - minutes * this.pixelPerMin < 0;
+		  this.eventContainer.style.top = `${Math.max(this.eventTop - minutes * this.pixelPerMin, 0)}px`;
+		  this.eventContainer.style.height = `${Math.abs(this.eventHeight + minutes * this.pixelPerMin)}px`;
+		} else {
+		  this.isExtendOutside = minutes > this.extendableTimeInBottom;
+		  this.resetEventCard();
+		  this.eventContainer.style.height = `${Math.abs(this.eventHeight + minutes * this.pixelPerMin)}px`;
+		}
+	  }
+	  
+	  private handleNonExtendCase(minutes: number, isTop: boolean): void {
+		const calculatedHeight = this.eventHeight - minutes * this.pixelPerMin;
+	  
+		if (calculatedHeight <= 0) {
+		  this.timeChangeForm.patchValue({ minutes: this.eventHeight / this.pixelPerMin }, { emitEvent: false });
+		}
+	  
+		if (isTop) {
+		  this.eventContainer.style.top = `${Math.max(calculatedHeight >= 0 ? this.eventTop + minutes * this.pixelPerMin : this.eventTop, 0)}px`;
+		  this.eventContainer.style.height = `${Math.max(calculatedHeight, 0)}px`;
+		} else {
+		  this.resetEventCard();
+		  this.eventContainer.style.height = `${Math.max(calculatedHeight, 0)}px`;
+		}
+	  }
+	  
 
 	private resetEventCard() {
 		this.eventContainer.style.top = `${this.eventTop}px`;

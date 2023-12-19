@@ -237,6 +237,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
 		this.submitting$$.next(true);
 
+		this.saveDataToBackend(this.requestData());
+	}
+
+	private requestData(): PrioritySlot {
 		const { startedAt, endedAt, repeatDays, slotStartTime, slotEndTime, nxtSlotOpenPct, ...rest } = this.formValues;
 
 		const addPriorityReqData: PrioritySlot = {
@@ -281,6 +285,10 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 			addPriorityReqData.id = this.modalData.prioritySlotDetails.id;
 		}
 
+		return addPriorityReqData;
+	}
+
+	private saveDataToBackend(addPriorityReqData: PrioritySlot) {
 		if (this.modalData.edit) {
 			this.priorityApiSvc
 				.updatePrioritySlot$(addPriorityReqData)
@@ -380,28 +388,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 	}
 
 	private createForm(prioritySlotDetails?: PrioritySlot | undefined): void {
-		let startTime;
-		let endTime;
-
-		if (prioritySlotDetails?.startedAt) {
-			const date = new Date(prioritySlotDetails.startedAt);
-			startTime = this.datePipe.transform(date, 'HH:mm');
-
-			if (startTime && !this.startTimes.find((time) => time.value === startTime)) {
-				this.startTimes.push({ name: startTime, value: startTime });
-			}
-			this.startDateControl.setValue(date);
-		}
-
-		if (prioritySlotDetails?.endedAt) {
-			const date = new Date(prioritySlotDetails.endedAt);
-			endTime = this.datePipe.transform(date, 'HH:mm');
-
-			if (endTime && !this.endTimes.find((time) => time.value === endTime)) {
-				this.endTimes.push({ name: endTime, value: endTime });
-			}
-			this.endDateControl.setValue(date);
-		}
+		const { startTime, endTime } = this.getStartAndEndTime(prioritySlotDetails);
 
 		const radiologists: string[] = [];
 
@@ -464,6 +451,37 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 
 		this.cdr.detectChanges();
 
+		this.handleFormSubscription(prioritySlotDetails);
+	}
+
+	private getStartAndEndTime(prioritySlotDetails: PrioritySlot | undefined): { startTime; endTime } {
+		let startTime;
+		let endTime;
+
+		if (prioritySlotDetails?.startedAt) {
+			const date = new Date(prioritySlotDetails.startedAt);
+			startTime = this.datePipe.transform(date, 'HH:mm');
+
+			if (startTime && !this.startTimes.find((time) => time.value === startTime)) {
+				this.startTimes.push({ name: startTime, value: startTime });
+			}
+			this.startDateControl.setValue(date);
+		}
+
+		if (prioritySlotDetails?.endedAt) {
+			const date = new Date(prioritySlotDetails.endedAt);
+			endTime = this.datePipe.transform(date, 'HH:mm');
+
+			if (endTime && !this.endTimes.find((time) => time.value === endTime)) {
+				this.endTimes.push({ name: endTime, value: endTime });
+			}
+			this.endDateControl.setValue(date);
+		}
+
+		return { startTime, endTime };
+	}
+
+	private handleFormSubscription(prioritySlotDetails: PrioritySlot | undefined) {
 		this.prioritySlotForm
 			?.get('repeatType')
 			?.valueChanges.pipe(debounceTime(0), distinctUntilChanged(), takeUntil(this.destroy$$))

@@ -545,50 +545,54 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 					}
 				}
 			} else {
-				grayOutSlot[+value - 1] = [
-					{
-						dayStart: this.limit.min,
-						dayEnd: intervals[0].dayStart,
-						top: 0,
-						height: getDurationMinutes(this.myDate(this.limit.min), this.myDate(intervals[0].dayStart)) * this.pixelsPerMin,
-					},
-				];
-
-				const start1 = this.myDate(this.limit.min);
-				const end1 = this.myDate(intervals[intervals.length - 1].dayEnd);
-				const minutes1 = getDurationMinutes(start1, end1);
-
-				grayOutSlot[+value - 1] = [
-					...grayOutSlot[+value - 1],
-					{
-						dayStart: intervals[intervals.length - 1].dayEnd,
-						dayEnd: this.limit.max,
-						top: minutes1 * this.pixelsPerMin,
-						height: getDurationMinutes(this.myDate(intervals[intervals.length - 1].dayEnd), this.myDate(this.limit.max)) * this.pixelsPerMin,
-					},
-				];
-
-				if (intervals?.length > 1) {
-					for (let i = 0; i < intervals.length - 1; i++) {
-						const start = this.myDate(this.limit.min);
-						const end = this.myDate(intervals[i].dayEnd);
-						const minutes = getDurationMinutes(start, end);
-						const timeInterval = getDurationMinutes(end, this.myDate(intervals[i + 1].dayStart));
-						grayOutSlot[+value - 1] = [
-							...grayOutSlot[+value - 1],
-							{
-								dayStart: intervals[i].dayEnd,
-								dayEnd: intervals[i + 1].dayStart,
-								top: minutes * this.pixelsPerMin,
-								height: timeInterval * this.pixelsPerMin,
-							},
-						];
-					}
-				}
+				this.getGrayOutAreaElse(intervals, grayOutSlot, value);
 			}
 		});
 
 		this.grayOutSlot$$.next(grayOutSlot);
+	}
+
+	private getGrayOutAreaElse(intervals: any, grayOutSlot: any, value: any) {
+		grayOutSlot[+value - 1] = [
+			{
+				dayStart: this.limit.min,
+				dayEnd: intervals[0].dayStart,
+				top: 0,
+				height: getDurationMinutes(this.myDate(this.limit.min), this.myDate(intervals[0].dayStart)) * this.pixelsPerMin,
+			},
+		];
+
+		const start1 = this.myDate(this.limit.min);
+		const end1 = this.myDate(intervals[intervals.length - 1].dayEnd);
+		const minutes1 = getDurationMinutes(start1, end1);
+
+		grayOutSlot[+value - 1] = [
+			...grayOutSlot[+value - 1],
+			{
+				dayStart: intervals[intervals.length - 1].dayEnd,
+				dayEnd: this.limit.max,
+				top: minutes1 * this.pixelsPerMin,
+				height: getDurationMinutes(this.myDate(intervals[intervals.length - 1].dayEnd), this.myDate(this.limit.max)) * this.pixelsPerMin,
+			},
+		];
+
+		if (intervals?.length > 1) {
+			for (let i = 0; i < intervals.length - 1; i++) {
+				const start = this.myDate(this.limit.min);
+				const end = this.myDate(intervals[i].dayEnd);
+				const minutes = getDurationMinutes(start, end);
+				const timeInterval = getDurationMinutes(end, this.myDate(intervals[i + 1].dayStart));
+				grayOutSlot[+value - 1] = [
+					...grayOutSlot[+value - 1],
+					{
+						dayStart: intervals[i].dayEnd,
+						dayEnd: intervals[i + 1].dayStart,
+						top: minutes * this.pixelsPerMin,
+						height: timeInterval * this.pixelsPerMin,
+					},
+				];
+			}
+		}
 	}
 
 	public changeDate(offset: number) {

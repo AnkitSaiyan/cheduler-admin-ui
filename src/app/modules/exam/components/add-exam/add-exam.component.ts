@@ -364,12 +364,27 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	}
 
 	public saveForm() {
-		let valid = true;
-
 		let timeSlotFormValues: TimeSlot[] = [];
 		if (this.formValues.practiceAvailabilityToggle) {
 			timeSlotFormValues = TimeSlotUtils.getFormRequestBody(this.examForm?.get('timeSlotForm')?.value);
 		}
+
+		const valid = this.isFormValid();
+
+		if (!valid) {
+			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+			return;
+		}
+
+		this.submitting$$.next(true);
+
+		const createExamRequestData: CreateExamRequestData = this.requestData(timeSlotFormValues);
+
+		this.saveDataToBackend(createExamRequestData);
+	}
+
+	private isFormValid(): boolean {
+		let valid: boolean = true;
 
 		if (!this.examForm.valid) {
 			this.examForm.markAllAsTouched();
@@ -400,14 +415,11 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			valid = false;
 		}
 
-		if (!valid) {
-			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-			return;
-		}
+		return valid;
+	}
 
-		this.submitting$$.next(true);
-
-		const createExamRequestData: CreateExamRequestData = {
+	private requestData(timeSlotFormValues: TimeSlot[]): CreateExamRequestData {
+		return {
 			name: this.formValues.name,
 			bodyType: this.formValues.bodyType.join(','),
 			bodyPart: this.formValues.bodyPart,
@@ -456,7 +468,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			uncombinables: this.formValues.uncombinables?.map((value) => +value) ?? [],
 			practiceAvailability: timeSlotFormValues,
 		};
+	}
 
+	private saveDataToBackend(createExamRequestData: CreateExamRequestData) {
 		if (this.examDetails$$.value?.id) {
 			createExamRequestData.id = this.examDetails$$.value?.id;
 		}
@@ -464,7 +478,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		if (!createExamRequestData.practiceAvailability?.length) {
 			createExamRequestData.availabilityType = AvailabilityType.Unavailable;
 		}
-
 		if (this.edit) {
 			this.examApiSvc
 				.updateExam$(createExamRequestData)
@@ -472,16 +485,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 				.subscribe({
 					next: () => {
 						this.notificationSvc.showNotification(Translate.SuccessMessage.ExamUpdated[this.selectedLang]);
-						let route: string;
-						if (this.comingFromRoute === 'view') {
-							route = '../view';
-						} else {
-							route = this.edit ? '/exam' : '../';
-						}
-
-						this.submitting$$.next(false);
-
-						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
+						this.navigationAfterSave();
 					},
 					error: () => {
 						this.submitting$$.next(false);
@@ -494,22 +498,27 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 				.subscribe({
 					next: () => {
 						this.notificationSvc.showNotification(Translate.SuccessMessage.ExamAdded[this.selectedLang]);
-						let route: string;
-						if (this.comingFromRoute === 'view') {
-							route = '../view';
-						} else {
-							route = this.edit ? '/exam' : '../';
-						}
-
-						this.submitting$$.next(false);
-
-						this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
+						this.navigationAfterSave();
 					},
 					error: () => {
 						this.submitting$$.next(false);
 					},
 				});
 		}
+	}
+
+	private navigationAfterSave() {
+		let route: string;
+
+		if (this.comingFromRoute === 'view') {
+			route = '../view';
+		} else {
+			route = this.edit ? '/exam' : '../';
+		}
+
+		this.submitting$$.next(false);
+
+		this.router.navigate([route], { relativeTo: this.route, queryParamsHandling: 'merge' });
 	}
 
 	public handleDropdownSearch(searchText: string, type: 'mandatory' | 'radio' | 'nursing' | 'assistant' | 'secretary' | 'exam' | 'bodyPart'): void {
@@ -656,9 +665,17 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			filteredRooms: [[...roomsByType]],
 		});
 
-		const { assistants, mandatory, nursing, radiologists, secretaries } = UserUtils.GroupUsersByType(batch?.users ?? [], false, false, true);
-
 		if (batch) {
+			this.updateFormValues(batch, fg)
+		}
+
+		this.handleFormSubscriptions(fg);
+
+		return fg;
+	}
+
+	private updateFormValues(batch: ResourceBatch, fg: FormGroup) {
+		const { assistants, mandatory, nursing, radiologists, secretaries } = UserUtils.GroupUsersByType(batch?.users ?? [], false, false, true);
 			setTimeout(() => {
 				fg.patchValue({
 					roomName: batch?.rooms.map(({ id }) => id),
@@ -674,8 +691,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					mandatoryStaffs: mandatory,
 				} as any);
 			}, 100);
-		}
+		
+	}
 
+	private handleFormSubscriptions(fg: FormGroup) {
 		combineLatest([fg?.get('assistants')?.valueChanges.pipe(startWith('')) ?? [], fg?.get('assistantCount')?.valueChanges ?? []])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
 			.subscribe(() => {
@@ -721,8 +740,6 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 					this.filterBatchRooms();
 				},
 			});
-
-		return fg;
 	}
 
 	public filterBatchRooms(): void {

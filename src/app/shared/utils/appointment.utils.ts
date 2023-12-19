@@ -109,7 +109,8 @@ export class AppointmentUtils {
 		isCombinable: boolean,
 	): AddAppointmentRequestData {
 		const { startedAt, startTime, examList, ...rest } = formValues;
-		const { userList, roomList, slot, exams, ...restData } = { ...Object.values(selectedTimeSlot)[0] } as any;
+		const selectedTimeSlotValues: any = { ...Object.values(selectedTimeSlot)[0] }
+		const { userList, roomList, slot, exams, ...restData } = selectedTimeSlotValues;
 		let finalCombinableRequestData = {};
 
 		if (exams?.length) {
