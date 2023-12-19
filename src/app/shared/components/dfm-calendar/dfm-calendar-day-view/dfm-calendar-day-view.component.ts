@@ -38,7 +38,7 @@ import {
 	UpdateRadiologistRequestData,
 } from '../../../models/appointment.model';
 import { CalenderTimeSlot, Interval, dataModification, getDurationMinutes, getFromAndToDate } from '../../../models/calendar.model';
-import { Exam } from '../../../models/exam.model';
+import { Exam, ResourceBatch } from '../../../models/exam.model';
 import { ReadStatus } from '../../../models/status.model';
 import { Translate } from '../../../models/translate.model';
 import { getAddAppointmentRequestData } from '../../../utils/getAddAppointmentRequestData';
@@ -338,9 +338,12 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			.pipe(
 				filter((res) => !!res),
 				switchMap((ids: number[]) => {
+					const resourcesBatch = this.getResourceBatchAndRoomID(appointment);
 					const requestData = {
 						appointmentId: appointment.id,
 						examId: appointment?.exams?.[0].id,
+						appointmentResourceBatchId: resourcesBatch?.[0]?.batchId,
+						roomId: resourcesBatch?.[0]?.rooms?.[0].id,
 						userId: ids,
 					} as UpdateRadiologistRequestData;
 
@@ -351,6 +354,11 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			.subscribe({
 				next: () => this.notificationSvc.showNotification(`${Translate.SuccessMessage.Updated[this.selectedLang]}!`),
 			});
+	}
+
+
+	private getResourceBatchAndRoomID(appointment: Appointment): ResourceBatch[] | undefined {	
+		return appointment?.exams?.[0]?.resourcesBatch?.filter((batch) => batch.rooms[0].id === appointment?.exams?.[0]?.rooms?.[0].id);			
 	}
 
 	public openChangeTimeModal(
