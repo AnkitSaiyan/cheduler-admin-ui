@@ -44,7 +44,6 @@ export interface Exam {
 
 export interface ResourceBatch {
 	batchId: number;
-	examId: number;
 	batchName: string;
 	roomOrder: number;
 	roomDuration: number;
@@ -56,7 +55,8 @@ export interface ResourceBatch {
 	users: User[];
 	roomList: number[];
 	rooms: Room[];
-	mandatoryUsers: User[];
+	examResourceUsersList?: User[];
+	appointmentResourcebatchId?: number;
 }
 
 export interface Uncombinables {

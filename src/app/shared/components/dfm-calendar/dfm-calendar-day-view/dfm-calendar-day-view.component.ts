@@ -342,7 +342,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 					const requestData = {
 						appointmentId: appointment.id,
 						examId: appointment?.exams?.[0].id,
-						appointmentResourceBatchId: resourcesBatch?.[0]?.batchId,
+						appointmentResourceBatchId: resourcesBatch?.[0]?.appointmentResourcebatchId,
 						roomId: resourcesBatch?.[0]?.rooms?.[0].id,
 						userId: ids,
 					} as UpdateRadiologistRequestData;
