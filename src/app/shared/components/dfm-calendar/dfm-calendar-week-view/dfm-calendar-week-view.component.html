@@ -413,7 +413,7 @@
               <div
                   (dblclick)="onDblClick($event, eventsContainer, day, true, 0)"
                   class="gray-out-area-week"
-                  [ngStyle]="{ 'top.px': 0, 'height.%': '100', width: bodyMain.style.width }"
+                  [ngStyle]="{ 'top.px': 0, 'height.%': !showGrayOutSlot ? '0' : '100', width: bodyMain.style.width }"
                 ></div>
             </ng-template>
             </ng-container>
