@@ -34,7 +34,7 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 				resourcesBatch?.[0].examResourceUsersList ?? [],
 				'id', 
 			);
-			const users = resourcesBatch?.[0].users ?? [];
+			const users = GeneralUtils.removeDuplicateData(resourcesBatch?.[0].users ?? [], 'id');
 			if (data.isOutside) {
 				this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 					next: (allUser) => {
@@ -80,7 +80,7 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 			setTimeout(() => {
 				this.radiologistFormControl.setValue(selected);
-			}, 200);
+			}, 500);
 		}
 	}
 
