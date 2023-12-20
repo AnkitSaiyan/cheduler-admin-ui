@@ -9,6 +9,7 @@ import { Appointment } from '../../../../shared/models/appointment.model';
 import { UserType } from '../../../../shared/models/user.model';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { UserApiService } from '../../../../core/services/user-api.service';
+import { ResourceBatch } from 'src/app/shared/models/exam.model';
 
 @Component({
 	selector: 'dfm-change-radiologist-modal',
@@ -28,11 +29,12 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 	public ngOnInit(): void {
 		this.dialogSvc.dialogData$.pipe(take(1)).subscribe((data: Appointment) => {
+			const resourcesBatch = this.getResourceBatchAndRoomID(data);			
 			const allUsers = GeneralUtils.removeDuplicateData(
-				data?.examDetail?.[0]?.usersList ?? [],
-				'id',
+				resourcesBatch?.[0].examResourceUsersList ?? [],
+				'id', 
 			);
-			const users = data?.exams?.[0]?.users ?? [];
+			const users = resourcesBatch?.[0].users ?? [];
 			if (data.isOutside) {
 				this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 					next: (allUser) => {
@@ -43,6 +45,10 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 				this.setDropDownData(allUsers, users);
 			}
 		});
+	}
+
+	private getResourceBatchAndRoomID(appointment: Appointment): ResourceBatch[] | undefined {	
+		return appointment?.exams?.[0]?.resourcesBatch?.filter((batch) => batch.rooms[0].id === appointment?.exams?.[0]?.rooms?.[0].id);			
 	}
 
 	private setDropDownData(allUsers, users): void {
@@ -88,6 +94,7 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 			return;
 		}
 
-		this.dialogSvc.close(this.radiologistFormControl.value);
+		this.dialogSvc.close(this.radiologistFormControl.value?.map(Number));
 	}
 }
+	
