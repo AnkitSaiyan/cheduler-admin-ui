@@ -214,6 +214,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public saveStaff(): void {
+    if (!this.addStaffForm.value?.practiceAvailabilityToggle) {
+			this.practiceAvailabilityArray.clear();
+		}
 		if (this.addStaffForm.invalid) {
 			this.addStaffForm.markAllAsTouched();
 			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
