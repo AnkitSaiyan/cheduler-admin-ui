@@ -405,7 +405,6 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 				size: 'lg',
 				centered: true,
 				backdropClass: 'modal-backdrop-remove-mv',
-				backdrop: false,
 				windowClass: 'modal-backdrop-enable-click',
 			},
 		});

@@ -403,7 +403,6 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				size: 'lg',
 				centered: true,
 				backdropClass: 'modal-backdrop-remove-mv',
-				backdrop: false,
 				windowClass: 'modal-backdrop-enable-click',
 			},
 		});
