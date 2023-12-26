@@ -1088,9 +1088,13 @@ $percentages: (
 	display: none !important;
 }
 
+.modal-backdrop {
+  z-index: 999 !important;
+}
 .modal-backdrop-remove-mv {
 	@media (max-width: 680px) {
 		opacity: 0 !important;
+    z-index: -1 !important;
 	}
 }
 
@@ -1186,9 +1190,6 @@ body {
 	}
 }
 
-.modal-backdrop {
-	z-index: 999 !important;
-}
 
 .input-border-none {
 	> dfm-input {

@@ -307,7 +307,6 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 				centered: true,
 				backdropClass: 'modal-backdrop-remove-mv',
 				keyboard: false,
-				backdrop: false,
 				windowClass: 'modal-backdrop-enable-click',
 			},
 		});
@@ -361,3 +360,4 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 		this.filteredPrioritySlots$$.next(GeneralUtils.SortArray(this.filteredPrioritySlots$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 }
+
