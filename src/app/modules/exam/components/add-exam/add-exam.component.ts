@@ -797,7 +797,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 	}
 
 	private checkStaffCountValidity(control: AbstractControl | null, countControl: AbstractControl | null, errorName: string) {
-		if (!countControl?.value || (countControl.value && Number.isNaN(+countControl.value))) {
+		if (!countControl?.value || (countControl.value && isNaN(+countControl.value))) {
 			return;
 		}
 

@@ -563,7 +563,7 @@ export class AddPrioritySlotsComponent extends DestroyableComponent implements O
 				this.cdr.detectChanges();
 				break;
 			case 'number':
-				if (repeatFrequency.split(' ')[0] && !Number.isNaN(+repeatFrequency.split(' ')[0])) {
+				if (repeatFrequency.split(' ')[0] && !isNaN(+repeatFrequency.split(' ')[0])) {
 					this.prioritySlotForm.patchValue({
 						repeatFrequency: +repeatFrequency.split(' ')[0],
 					});

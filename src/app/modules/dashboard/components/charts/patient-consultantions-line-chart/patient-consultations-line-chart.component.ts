@@ -47,7 +47,7 @@ export class PatientConsultationsLineChartComponent extends DestroyableComponent
 			.getLanguage$()
 			.pipe(
 				debounceTime(0),
-				map(() => Object.keys(Month).filter((key) => Number.isNaN(+key))),
+				map(() => Object.keys(Month).filter((key) => isNaN(+key))),
 				switchMap((months) => {
 					const observables = months.map((month) => this.translateService.get(month));
 					return forkJoin(observables);
