@@ -39,7 +39,7 @@ import { NameValue } from '../../../../shared/components/search-modal.component'
 export class AppointmentCalendarComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public calendarViewFormControl = new FormControl();
 
-	public dataControl = new FormControl();
+	public dateControl = new FormControl();
 
 	public selectedDate$$: BehaviorSubject<Date> = new BehaviorSubject<Date>(new Date());
 
@@ -220,7 +220,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			this.headerList = rooms.map(({ name, id }) => ({ name, value: id }));
 		});
 
-		this.dataControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
+		this.dateControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			const date = new Date(value);
 			this.updateDate(date);
 			this.newDate$$.next({ date, isWeekChange: false });
@@ -725,5 +725,9 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			});
 
 		this.prioritySlots$$.next({ ...myPrioritySlots });
+	}
+
+	public updateFormDate(value: any) {
+		this.dateControl.setValue(value);
 	}
 }

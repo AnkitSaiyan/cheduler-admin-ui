@@ -1,13 +1,14 @@
-<div class="bg-white d-flex flex-column dfm-gap-16 dfm-p-24 calendar-main-wrapper" *ngIf="selectedDate$$ | async as selectedDate">
-  <section class="calendar-header">
-    <h4 *ngIf="selectedDate" class="">
-      <ng-container *ngIf="calendarViewFormControl.value === 'day'; else notDayView">
-        {{ (selectedDate | date : 'EEE')! | uppercase | translate | titlecase }} {{ (selectedDate | date : 'MMM')! |translate  }} {{ selectedDate | date : 'dd, yyyy'  }}
-      </ng-container>
-      <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : ' yyyy' }}</ng-template></h4>
-
-    <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper align-items-center">
-      <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper align-items-center">
+<div class="d-flex flex-row dfm-gap-16 calendar-main-wrapper" *ngIf="selectedDate$$ | async as selectedDate">
+  <section class="calendar-header bg-white">
+    <ng-content ></ng-content>
+    <div class="d-flex align-items-center dfm-gap-16">
+      <h4 *ngIf="selectedDate" >
+        <ng-container *ngIf="calendarViewFormControl.value === 'day'; else notDayView">
+          {{ (selectedDate | date : 'EEE')! | uppercase | translate | titlecase }} {{ (selectedDate | date : 'MMM')! |translate  }} {{ selectedDate | date : 'dd, yyyy'  }}
+        </ng-container>
+        <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : ' yyyy' }}</ng-template>
+      </h4>
+       <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper align-items-center">
         <div #menuTrigger="matMenuTrigger"
           (mouseover)="menuTrigger.openMenu(); $event.stopPropagation(); $event.preventDefault()" (mouseleave)="menuTrigger.closeMenu(); $event.stopPropagation(); $event.preventDefault()"   [matMenuTriggerFor]="infoDetail">
           <dfm-button-icon color="secondary-gray" size="sm" icon="info-circle" ></dfm-button-icon>
@@ -23,39 +24,41 @@
           </mat-menu>
         </div>
       </div>
-      <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown">
-        <dfm-input-dropdown
-          size="sm"
-          [formControl]="calendarViewFormControl"
-          [showDescription]="false"
-          [items]="calendarViewType"
-        ></dfm-input-dropdown>
-      </div>
-    </div>
 
+    </div>
     <div class="d-flex dfm-gap-4">
       <div class="flex-1 calendar-date-buttons">
-        <div class="d-flex gap-2 m-t-2">
-        <div>
-        <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-left" (click)="changeDate(-1)"></dfm-button-icon>
+        <div class="d-flex m-t-2">
+          <div>
+            <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-left" (click)="changeDate(-1)"></dfm-button-icon>
+          </div>
+
+          <div class="h-fit">
+            <dfm-button color="secondary-gray" size="sm" class="h-100" (click)="updateToToday()">{{ 'Today' | translate }} </dfm-button>
+          </div>
+
+          <div>
+            <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-right" (click)="changeDate(1)"></dfm-button-icon>
+          </div>
+          <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown">
+          <dfm-input-dropdown
+            size="sm"
+            [formControl]="calendarViewFormControl"
+            [showDescription]="false"
+            [items]="calendarViewType"
+          ></dfm-input-dropdown>
+        </div>
+        </div>
+      </div>
+      <div class="flex-1 calender-picker-mv">
+        <dfm-calendar-picker [selectedDate]="(this.newDate$$ | async)?.date ?? null" (formControl)="dateControl = $event"></dfm-calendar-picker>
       </div>
 
-      <div class="h-fit">
-        <dfm-button color="secondary-gray" size="sm" class="h-100" (click)="updateToToday()">{{ 'Today' | translate }} </dfm-button>
-      </div>
-
-      <div>
-        <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-right" (click)="changeDate(1)"></dfm-button-icon>
-      </div>
     </div>
-    </div>
-    <div class="flex-1">
-      <dfm-calendar-picker [selectedDate]="(this.newDate$$ | async)?.date ?? null" (formControl)="dataControl = $event"></dfm-calendar-picker>
-    </div>
-  </div>
+    <mat-calendar class="calender-picker" [selected]="dateControl.value" (selectedChange)="updateFormDate($event)"></mat-calendar>
   </section>
 
-  <section class="calendar-body">
+  <section class="calendar-body bg-white">
     <ng-container [ngSwitch]="calendarViewFormControl.value">
       <ng-container *ngSwitchCase="'month'">
         <dfm-calendar-month-view
@@ -73,6 +76,7 @@
 
       <ng-container *ngSwitchCase="'week'">
         <dfm-calendar-week-view
+          size="lg"
           (selectedDateEvent)="updateDate($event.selectedDate)"
           [changeWeek$$]="changeWeek$$"
           (dayViewEvent)="changeToDayView($event)"

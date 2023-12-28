@@ -1,13 +1,19 @@
 .calendar-header {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  column-gap: 16px;
-  row-gap: 16px;
+  flex-direction: column;
+    gap: 16px;
+    padding: 12px;
+    min-width: min(30%, 300px);
+      max-width: min(30%, 300px);
 
   h4 {
     margin: 0;
+    white-space: nowrap;
   }
+    .action {
+      display: flex;
+      justify-content: flex-end;
+    }
 }
 
 .m-t-2 {
@@ -16,32 +22,49 @@
 
 .calendar-body {
   overflow: auto;
-  height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px);
-  max-height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px);
+  height: calc(100vh - 64px - 48px - 24px);
+    max-height: calc(100vh - 64px - 48px - 24px);
+    width: 100%;
 }
 
+.calender-picker-mv {
+  display: none;
+}
+
+.calender-picker {
+  display: block;
+}
 @media (max-width: 1440px) {
   .calendar-body {
     overflow: auto;
-    height: calc(100vh - 46px - 48px - 42px - 16px - 48px - 38px - 20px);
-    max-height: calc(100vh - 46px - 48px - 42px - 16px - 48px - 38px - 20px);
+    height: calc(100vh - 46px - 48px - 24px);
+      max-height: calc(100vh - 46px - 48px - 24px);
+      width: 100%;
   }
 }
 
 @media (max-width: 960px) {
   .calendar-body {
     overflow: auto;
-    height: calc(100vh - 36px - 56px - 48px - 42px - 16px - 48px - 38px - 20px);
-    height: calc(100dvh - 36px - 56px - 48px - 42px - 16px - 48px - 38px - 20px);
-    max-height: calc(100vh - 36px - 56px - 48px - 42px - 16px - 48px - 38px - 20px);
-    max-height: calc(100dvh - 36px - 56px - 48px - 42px - 16px - 48px - 38px - 20px);
+    height: calc(100vh - 36px - 56px - 48px - 24px);
+      height: calc(100dvh - 36px - 56px - 48px - 24px);
+      max-height: calc(100vh - 36px - 56px - 48px - 24px);
+      max-height: calc(100dvh - 36px - 56px - 48px - 24px);
+      width: 100%;
+  }
+}
+.calendar-date-buttons {
+  >div {
+    gap: .25rem;
   }
 }
 
 @media (max-width: 680px) {
   .calendar-main-wrapper {
     padding: 16px 4px 4px;
+    flex-direction: column !important;
   }
+
 
   .calendar-body {
     overflow: auto;
@@ -72,6 +95,13 @@
     .calendar-date-buttons {
       width: 100%;
     }
+                                .calender-picker-mv {
+                                  display: block;
+                                }
+                
+                                .calender-picker {
+                                  display: none;
+                                }
   }
 }
 
