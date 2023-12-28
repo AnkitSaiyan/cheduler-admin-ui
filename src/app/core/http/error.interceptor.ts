@@ -13,7 +13,13 @@ export class ErrorInterceptor implements HttpInterceptor {
 
 	private errorMessage = Translate.Error.SomethingWrong[this.language];
 
-	constructor(private notificationSvc: NotificationDataService, private loaderSvc: LoaderService, private shareDataSvc: ShareDataService) {}
+	constructor(private notificationSvc: NotificationDataService, private loaderSvc: LoaderService, private shareDataSvc: ShareDataService) {
+		this.shareDataSvc.getLanguage$().subscribe({
+			next: (lang) => {
+				this.language = lang;
+			},
+		});
+	}
 
 	public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 		return next.handle(req).pipe(

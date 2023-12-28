@@ -592,15 +592,15 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Prioritaire slots',
 		Daily: {
 			[ENG_BE]: 'Daily',
-			[DUTCH_BE]: 'Daily NL',
+			[DUTCH_BE]: 'Dagelijks',
 		},
 		Weekly: {
 			[ENG_BE]: 'Weekly',
-			[DUTCH_BE]: 'Weekly NL',
+			[DUTCH_BE]: 'Wekelijks',
 		},
 		Monthly: {
 			[ENG_BE]: 'Monthly',
-			[DUTCH_BE]: 'Monthly NL',
+			[DUTCH_BE]: 'Maandelijks',
 		},
 	},
 
@@ -669,12 +669,12 @@ export const Translate = Object.freeze({
 				MSG_400_EXAM_EXIST: 'Exam name already exist.',
 			},
 			[DUTCH_BE]: {
-				MSG_400_APMT_EXISTS: '(NL) Appointment exists in this range.',
-				MSG_400_APMT_EXCEEDS: '(NL) Appointment exceeds outside hours.',
-				MSG_400_DOC_NOT_EDITABLE: '(NL) You can not edit this document',
+				MSG_400_APMT_EXISTS: 'Afspraak bestaat in dit bereik.',
+				MSG_400_APMT_EXCEEDS: 'Afspraak overschrijdt buiten kantooruren.',
+				MSG_400_DOC_NOT_EDITABLE: 'U kunt dit document niet bewerken',
 				MSG_400_SLOT_EXISTS: 'Dit slot overlapt met een reeds bestaand slot',
-				MSG_400_APMT_START_BIGGER: '(NL) Duration of minutes is greater than the end time',
-				MSG_400_EXAM_EXIST: '(NL) Exam name already exist.',
+				MSG_400_APMT_START_BIGGER: 'De duur van minuten is groter dan de eindtijd',
+				MSG_400_EXAM_EXIST: 'Examennaam bestaat al.',
 			},
 		},
 	},
