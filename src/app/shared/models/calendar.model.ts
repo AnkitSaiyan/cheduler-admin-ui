@@ -187,9 +187,9 @@ export function stringToTimeArray(timeString: string | undefined, splitBy: strin
 
 	const timeStringArray = timeString.split(splitBy);
 
-	const hour = timeStringArray.length && !Number.isNaN(+timeStringArray[0]) ? +timeStringArray[0] : 0;
-	const min = timeStringArray.length > 1 && !Number.isNaN(+timeStringArray[1]) ? +timeStringArray[1] : 0;
-	const second = timeStringArray.length > 2 && !Number.isNaN(+timeStringArray[2]) ? +timeStringArray[2] : 0;
+	const hour = timeStringArray.length && !isNaN(+timeStringArray[0]) ? +timeStringArray[0] : 0;
+	const min = timeStringArray.length > 1 && !isNaN(+timeStringArray[1]) ? +timeStringArray[1] : 0;
+	const second = timeStringArray.length > 2 && !isNaN(+timeStringArray[2]) ? +timeStringArray[2] : 0;
 
 	return [hour, min, second];
 }

@@ -261,7 +261,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			addStaffReqData.availabilityType = AvailabilityType.Unavailable;
 		}
 
-		addStaffReqData.id = Number.isNaN(+this.staffID) ? 0 : +this.staffID;
+		addStaffReqData.id = isNaN(+this.staffID) ? 0 : +this.staffID;
 
 		this.userApiSvc
 			.upsertUser$(addStaffReqData)

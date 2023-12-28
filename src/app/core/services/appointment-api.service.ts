@@ -523,7 +523,7 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	public getDocumentById$(id: any, isPreview: boolean): Observable<any> {
 		let params = new HttpParams();
-		const idType = Number.isNaN(id) ? 'qrCodeId' : 'appointmentId';
+		const idType = isNaN(id) ? 'qrCodeId' : 'appointmentId';
 		params = params.append(idType, id);
 		params = params.append('isPreview', isPreview);
 		return this.http.get<any>(`${environment.schedulerApiUrl}/qrcode/getdocuments`, { params }).pipe(

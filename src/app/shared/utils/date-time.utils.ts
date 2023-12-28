@@ -76,7 +76,7 @@ export class DateTimeUtils {
 			return '';
 		}
 		const [hourPart, minutePart]: string[] = timeString.split(':');
-		if (hourPart?.length !== 2 || minutePart?.length < 2 || Number.isNaN(+hourPart) || Number.isNaN(+minutePart.slice(0, 2))) {
+		if (hourPart?.length !== 2 || minutePart?.length < 2 || isNaN(+hourPart) || isNaN(+minutePart.slice(0, 2))) {
 			return '';
 		}
 		let ap = '';
@@ -97,7 +97,7 @@ export class DateTimeUtils {
 		if (timeString?.includes(':')) {
 			const timeInNo = +timeString.split(':').join('');
 
-			if (!Number.isNaN(timeInNo)) {
+			if (!isNaN(timeInNo)) {
 				return timeInNo;
 			}
 		}

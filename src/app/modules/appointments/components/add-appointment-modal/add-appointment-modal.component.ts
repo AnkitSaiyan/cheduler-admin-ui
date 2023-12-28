@@ -554,7 +554,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		this.formValues.examList.forEach((examID) => {
 			const expensive = +this.examIdToDetails[+examID].expensive;
 
-			if (!Number.isNaN(+expensive)) {
+			if (!isNaN(+expensive)) {
 				totalExpense += +expensive;
 			}
 		});

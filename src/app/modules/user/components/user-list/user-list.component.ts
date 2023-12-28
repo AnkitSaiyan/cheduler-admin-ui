@@ -430,13 +430,13 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		modalRef.closed.pipe(take(1)).subscribe({
 			next: (res) => {
 				if (res) {
-					if (!Number.isNaN(+res.id)) {
+					if (!isNaN(+res.id)) {
 						return;
 					}
 					if (userDetails?.id) {
 						this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, res, 'update', 'id'));
 					} else {
-						const item = Number.isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : (res as UserBase);
+						const item = isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : (res as UserBase);
 						this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, item, 'add'));
 					}
 				}

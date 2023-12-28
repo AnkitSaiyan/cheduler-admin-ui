@@ -127,7 +127,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 					const dateSplit = params['d'].split('-');
 					if (dateSplit.length === 3) {
 						const date = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2]);
-						if (Number.isNaN(date.getTime())) {
+						if (isNaN(date.getTime())) {
 							this.updateToToday();
 						} else {
 							this.selectedDate$$.next(date);
