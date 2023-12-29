@@ -73,7 +73,7 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 
 	@Input()
-	public dataGroupedByDate: { [key: string]: any[] } = {};
+	public appointmentData: { [key: string]: any[] } = {};
 
 	@Input()
 	public absenceData: { [key: string]: any[] } = {};
@@ -121,7 +121,7 @@ export class DfmCalendarMonthViewComponent extends DestroyableComponent implemen
 		const previousValue = changes['dataGroupedByDate']?.previousValue;
 
 		if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
-			this.dataGroupedByDate = currentValue;
+			this.appointmentData = currentValue;
 		}
 	}
 

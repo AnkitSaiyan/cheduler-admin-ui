@@ -69,7 +69,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	public timeSlot!: CalenderTimeSlot;
 
 	@Input()
-	public dataGroupedByDateAndRoom: {
+	public appointmentData: {
 		[key: string]: {
 			[key: number]: {
 				appointment: Appointment;
@@ -185,7 +185,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const currentValue = changes['dataGroupedByDateAndRoom']?.currentValue;
 		const previousValue = changes['dataGroupedByDateAndRoom']?.previousValue;
 		if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
-			this.dataGroupedByDateAndRoom = currentValue;
+			this.appointmentData = currentValue;
 		}
 		if (this.timeSlot?.timings?.length) {
 			this.setHideAbsence(this.absenceData);
@@ -193,8 +193,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		this.getGrayOutArea(this.timeSlot);
 		const date: string = this.datePipe.transform(this.selectedDate, 'd-M-yyyy')!;
 		this.hideAppointmentData = {};
-		if (this.dataGroupedByDateAndRoom[date]) {
-			Object.values(this.dataGroupedByDateAndRoom[date]).forEach((data) => {
+		if (this.appointmentData[date]) {
+			Object.values(this.appointmentData[date]).forEach((data) => {
 				data.forEach(({ appointment }) => {
 					this.getTop(appointment, true);
 				});

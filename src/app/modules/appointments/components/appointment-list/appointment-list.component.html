@@ -168,8 +168,8 @@
 								(click)="$event.stopPropagation();"
 									(change)="uploadRefferingNote($event, item.id)" />
                   <ng-container *ngIf="!item.documentCount">
-                    <span 
-                  class="upload-button" 
+                    <span
+                  class="upload-button"
                   *dfmPermitted="Permission.UploadDocument"
                   (click)="$event.stopPropagation(); fileInput.click();"
                   ngbPopover="{{ 'UploadReferralNote' | translate }}"
@@ -245,7 +245,7 @@
     </ng-container>
 
     <ng-container *ngIf="calendarView$$ | async">
-      <dfm-appointment-calendar class="h-100" [appointmentData$$]="appointments$$"> </dfm-appointment-calendar>
+      <dfm-appointment-calendar class="h-100" > </dfm-appointment-calendar>
     </ng-container>
   </section>
 

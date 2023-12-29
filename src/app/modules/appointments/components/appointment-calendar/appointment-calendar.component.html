@@ -50,7 +50,7 @@
     </div>
     </div>
     <div class="flex-1">
-      <dfm-calendar-picker [selectedDate]="(this.newDate$$ | async)?.date ?? null" (formControl)="dataControl = $event"></dfm-calendar-picker>
+      <dfm-calendar-picker [selectedDate]="selectedDate" (formControl)="setForm($event)"></dfm-calendar-picker>
     </div>
   </div>
   </section>
@@ -66,7 +66,7 @@
           [selectedDate]="selectedDate"
           [newDate$$]="newDate$$"
           (dateChange)="changeDate($event)"
-          [dataGroupedByDate]="appointmentsGroupedByDate"
+          [appointmentData]="(appointmentDataForMonthView$ | async) ?? {}"
         >
         </dfm-calendar-month-view>
       </ng-container>
@@ -78,8 +78,7 @@
           (dayViewEvent)="changeToDayView($event)"
           (dateChange)="changeDate($event)"
           [newDate$$]="newDate$$"
-          [selectedDate]="selectedDate"
-          [dataGroupedByDateAndTime]="appointmentsGroupedByDateAndTIme"
+          [appointmentData]="(appointmentDataForWeekView$ | async) ?? {}"
           (addAppointment)="addAppointment($event)"
           [format24Hour]="true"
           [showGrayOutSlot] ="true"
@@ -100,7 +99,7 @@
           [timeSlot]="selectedSlot$$ | async"
           [format24Hour]="true"
           [prioritySlots]="prioritySlots$$ | async"
-          [dataGroupedByDateAndRoom]="appointmentGroupedByDateAndRoom"
+          [appointmentData]="(appointmentDataForDayView$ | async) ?? {}"
         ></dfm-calendar-day-view>
       </ng-container>
     </ng-container>
