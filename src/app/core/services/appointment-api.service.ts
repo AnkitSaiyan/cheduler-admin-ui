@@ -484,9 +484,7 @@ export class AppointmentApiService extends DestroyableComponent {
 			}),
 			switchMap((response) => {
 				const upcoming = response.data?.upcomingAppointments;
-				return !upcoming?.length
-					? of({ ...response, data: [] })
-					: this.AttachPatientDetails(upcoming).pipe(map((data) => ({ ...response, data })));
+				return !upcoming?.length ? of({ ...response, data: [] }) : this.AttachPatientDetails(upcoming).pipe(map((data) => ({ ...response, data })));
 			}),
 			tap(() => this.loaderSvc.deactivate()),
 		);
@@ -545,5 +543,14 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	public convertUtcToLocalDate(date: string | Date): string {
 		return date ? this.defaultDatePipe.transform(this.utcToLocalPipe.transform(date.toString())) : '-';
+	}
+
+	public getAppointmentForCalendar(fromDate: string, toDate: string): Observable<BaseResponse<Appointment[]>> {
+		this.loaderSvc.activate();
+		const params = { toDate, fromDate };
+		return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}/appointmentlist`, { params }).pipe(
+			map((response) => this.mapAppointments(response)),
+			tap(() => this.loaderSvc.deactivate()),
+		);
 	}
 }

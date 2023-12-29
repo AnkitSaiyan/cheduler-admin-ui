@@ -66,7 +66,7 @@
           [selectedDate]="selectedDate"
           [newDate$$]="newDate$$"
           (dateChange)="changeDate($event)"
-          [appointmentData]="appointmentsGroupedByDate"
+          [appointmentData]="(appointmentDataForMonthView$ | async) ?? {}"
         >
         </dfm-calendar-month-view>
       </ng-container>
@@ -78,7 +78,7 @@
           (dayViewEvent)="changeToDayView($event)"
           (dateChange)="changeDate($event)"
           [newDate$$]="newDate$$"
-          [appointmentData]="appointmentsGroupedByDateAndTIme"
+          [appointmentData]="(appointmentDataForWeekView$ | async) ?? {}"
           (addAppointment)="addAppointment($event)"
           [format24Hour]="true"
           [showGrayOutSlot] ="true"
@@ -99,7 +99,7 @@
           [timeSlot]="selectedSlot$$ | async"
           [format24Hour]="true"
           [prioritySlots]="prioritySlots$$ | async"
-          [appointmentData]="appointmentGroupedByDateAndRoom"
+          [appointmentData]="(appointmentDataForDayView$ | async) ?? {}"
         ></dfm-calendar-day-view>
       </ng-container>
     </ng-container>
