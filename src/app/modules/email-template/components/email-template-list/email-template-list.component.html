@@ -55,7 +55,7 @@
     <dfm-data-table [data]="(tableData$$ | async) ?? {items: []}" [selectable]="true" (selected)="handleCheckboxSelection($event)"
                     [clearSelected$]="clearSelected$$" [stickyActions]="true" noDataMessage="{{ (isLoading ? 'Loading' : 'NoDataFound') | translate }}"
                     [rowClickable]="true" [stickyCheckbox]="true"  [stickyFirstColumn]="false" [headers]="tableHeaders"
-                    (scrolled)="onScroll($event)" (sorted)="onSort($event)">
+                    (scrolled)="onScroll()" (sorted)="onSort($event)">
       <ng-template #bodyRowTemplate let-item>
         <dfm-table-row-cell [fullContent]="item.title">{{ item.title | titlecase | dashIfNothing }}</dfm-table-row-cell>
         <dfm-table-row-cell [fullContent]="item.subject">{{ item.subject | titlecase | dashIfNothing }}</dfm-table-row-cell>

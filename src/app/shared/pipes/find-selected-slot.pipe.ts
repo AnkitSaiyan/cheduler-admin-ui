@@ -9,5 +9,3 @@ export class FindSelectedSlotPipe implements PipeTransform {
 		return selectedSlot?.[value?.find((item) => selectedSlot[item])];
 	}
 }
-
-

@@ -1,4 +1,4 @@
-import { Weekday } from './calendar.model';
+import { Weekday } from './common.modal';
 
 export interface PracticeAvailability {
 	id?: number;

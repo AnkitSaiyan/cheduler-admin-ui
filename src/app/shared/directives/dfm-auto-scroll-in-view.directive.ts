@@ -5,6 +5,7 @@ import { AfterViewInit, Directive, ElementRef, Input } from '@angular/core';
 })
 export class DfmAutoScrollInViewDirective implements AfterViewInit {
 	@Input('dfmAutoScrollInView') apply: boolean = true;
+
 	constructor(private elementRef: ElementRef) {}
 
 	ngAfterViewInit() {
@@ -13,4 +14,3 @@ export class DfmAutoScrollInViewDirective implements AfterViewInit {
 		}
 	}
 }
-

@@ -1,14 +1,13 @@
-import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap, take, tap, throwError} from 'rxjs';
-import {AuthUser} from "../../shared/models/user.model";
-import {MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
-import {UserManagementApiService} from "./user-management-api.service";
-import {Router} from "@angular/router";
-import {InteractionType} from "@azure/msal-browser";
-import {PermissionService} from "./permission.service";
-import { EXT_Patient_Tenant } from 'src/app/shared/utils/const';
-import { NotificationDataService } from './notification-data.service';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, catchError, map, Observable, of, switchMap, take, tap } from 'rxjs';
+import { MsalService } from '@azure/msal-angular';
+import { Router } from '@angular/router';
+import { EXT_PATIENT_TENANT } from 'src/app/shared/utils/const';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { PermissionService } from './permission.service';
+import { NotificationDataService } from './notification-data.service';
+import { UserManagementApiService } from './user-management-api.service';
+import { AuthUser } from '../../shared/models/user.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -17,7 +16,6 @@ export class UserService {
 	private authUser$$: BehaviorSubject<AuthUser | undefined> = new BehaviorSubject<AuthUser | undefined>(undefined);
 
 	constructor(
-		@Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
 		private msalService: MsalService,
 		private userManagementApiService: UserManagementApiService,
 		private permissionSvc: PermissionService,
@@ -39,51 +37,51 @@ export class UserService {
 
 		GeneralUtils.saveSessionExpTime();
 
-		const tenantIds = (user?.idTokenClaims as any)?.extension_Tenants?.split(',');
+		const tenantIds = ((user?.idTokenClaims as any)?.extension_Tenants || '').split(',');
 
-		if (tenantIds?.some((value) => value === EXT_Patient_Tenant)) {
-			this.notificationSvc.showError(`you don't have permission to view this page`);
+		if (tenantIds.includes(EXT_PATIENT_TENANT)) {
+			this.handlePermissionError();
 			return of(false);
 		}
 
 		return this.userManagementApiService.getTenantId().pipe(
-			switchMap(() => {
-				return this.userManagementApiService.getUserProperties(userId).pipe(
-					map((res: any) => {
-						try {
-							const tenants = ((user?.idTokenClaims as any).extension_Tenants as string).split(',');
-							if (tenants.length === 0) {
-								return false;
-							}
-
-							this.authUser$$.next(new AuthUser(res.mail, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants));
-
-							return true;
-						} catch (error) {
-							return false;
-						}
-					}),
-					tap((res) => {
-						// Complete Profile if not completed
-
-						if (!res) {
-							return;
-						}
-
-						const user = this.authUser$$.value;
-						if (!user) {
-							return;
-						}
-
-						if (user.properties['extension_ProfileIsIncomplete']) {
-							this.router.navigate(['/complete-profile']);
-						}
-					}),
-					catchError((err) => of(false)),
-				);
-			}),
+			switchMap(() => this.userManagementApiService.getUserProperties(userId)),
+			map((res: any) => this.handleUserProperties(res, user)),
+			tap((res) => this.handleUserProfileCompletion(res)),
 			catchError(() => of(false)),
 		);
+	}
+
+	private handlePermissionError(): void {
+		this.notificationSvc.showError(`You don't have permission to view this page`);
+	}
+
+	private handleUserProperties(res: any, user: any): boolean {
+		try {
+			const tenants = (((user.idTokenClaims).extension_Tenants as string) || '').split(',');
+
+			if (tenants.length === 0) {
+				return false;
+			}
+
+			const authUser = new AuthUser(res.mail, res.givenName, res.id, res.surname, res.displayName, res.email, res.properties, tenants);
+
+			this.authUser$$.next(authUser);
+
+			return true;
+		} catch (error) {
+			return false;
+		}
+	}
+
+	private handleUserProfileCompletion(hasUser: boolean): void {
+		if (hasUser) {
+			const users = this.authUser$$.value;
+
+			if (users?.properties['extension_ProfileIsIncomplete']) {
+				this.router.navigate(['/complete-profile']);
+			}
+		}
 	}
 
 	public logout() {
@@ -98,25 +96,3 @@ export class UserService {
 		this.permissionSvc.removePermissionType();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

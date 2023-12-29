@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { Permission } from 'src/app/shared/models/permission.model';
+import { DfmDatasource, DfmTableHeader } from 'diflexmo-angular-design';
 import { AbsenceApiService } from '../../../../core/services/absence-api.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -12,7 +13,6 @@ import { Absence, RepeatType } from '../../../../shared/models/absence.model';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ABSENCE_ID, ABSENCE_TYPE, ABSENCE_TYPE_ARRAY, ENG_BE } from '../../../../shared/utils/const';
 import { AddAbsenceComponent } from '../add-absence/add-absence.component';
-import { DfmDatasource, DfmTableHeader } from 'diflexmo-angular-design';
 
 @Component({
 	selector: 'dfm-view-absence',
@@ -156,7 +156,7 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 		let startedAt;
 		let endedAt;
 
-		let { patientFname, patientLname, ...rest } = appointment;
+		const { patientFname, patientLname, ...rest } = appointment;
 
 		appointment.examDetails.forEach((exam) => {
 			if (exam.startedAt && (!startedAt || new Date(exam.startedAt) < startedAt)) {
@@ -170,8 +170,8 @@ export class ViewAbsenceComponent extends DestroyableComponent implements OnInit
 		return {
 			...rest,
 			patientFullName: `${patientFname} ${patientLname}`,
-			startedAt: startedAt,
-			endedAt: endedAt,
+			startedAt,
+			endedAt,
 		};
 	}
 

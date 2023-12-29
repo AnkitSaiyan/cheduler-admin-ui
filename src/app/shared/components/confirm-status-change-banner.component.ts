@@ -153,6 +153,10 @@ export class ConfirmStatusChangeBannerComponent implements OnInit {
 				this.statuses = [];
 		}
 
+		this.handleSubscription();
+	}
+
+	private handleSubscription() {
 		this.dataShareService.getLanguage$().subscribe({
 			next: (language: string) => {
 				switch (this.statusType) {

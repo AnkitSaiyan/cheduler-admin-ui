@@ -4,6 +4,9 @@ import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'difl
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
@@ -17,19 +20,16 @@ import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Physician } from '../../../../shared/models/physician.model';
 import { PhysicianAddComponent } from '../physician-add/physician-add.component';
 import { ShareDataService } from '../../../../core/services/share-data.service';
-import { TranslateService } from '@ngx-translate/core';
 import { Translate } from '../../../../shared/models/translate.model';
-import { Permission } from 'src/app/shared/models/permission.model';
-import { PermissionService } from 'src/app/core/services/permission.service';
-import {PaginationData} from "../../../../shared/models/base-response.model";
-import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import { PaginationData } from '../../../../shared/models/base-response.model';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
 
 const ColumnIdToKey = {
-  1: 'firstname',
-  2: 'lastname',
-  3: 'email',
-  4: 'status',
-}
+	1: 'firstname',
+	2: 'lastname',
+	3: 'email',
+	4: 'status',
+};
 
 @Component({
 	selector: 'dfm-physician-list',
@@ -138,7 +138,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 		});
 
 		this.physicians$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (physicians) => this.handleSearch(this.searchControl.value ?? ''),
+			next: () => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.physicianApiSvc.physicians$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -151,7 +151,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				this.paginationData = physicianBase?.metaData?.pagination || 1;
 				this.isLoading = false;
 			},
-			error: (e) => this.physicians$$.next([]),
+			error: () => this.physicians$$.next([]),
 		});
 
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
@@ -220,7 +220,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				switchMap((changes) => this.physicianApiSvc.changePhysicianStatus$(changes)),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe((value) => {
+			.subscribe(() => {
 				this.notificationSvc.showNotification(`${Translate.SuccessMessage.StatusChanged[this.selectedLang]}!`);
 				this.clearSelected$$.next();
 			});
@@ -242,12 +242,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 						title: Translate[this.columns[i]][lang],
 					}));
 
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						default:
-							this.statuses = StatusesNL;
+					if (lang === ENG_BE) {
+						this.statuses = Statuses;
+					} else{
+						this.statuses = StatusesNL;
 					}
 				},
 			});
@@ -270,10 +268,10 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				if (!physician.status) status = this.translate.instant('Inactive');
 
 				return (
-					(physician.firstname?.toLowerCase() + ' ' + physician.lastname?.toLowerCase())?.includes(searchText) ||
-					physician.firstname?.toLowerCase()?.includes(searchText) ||
-					physician.lastname?.toLowerCase()?.includes(searchText) ||
-					physician.email?.toLowerCase()?.includes(searchText) ||
+					`${physician.firstname?.toLowerCase()} ${physician.lastname?.toLowerCase()}`?.includes(searchText) ??
+					physician.firstname?.toLowerCase()?.includes(searchText) ??
+					physician.lastname?.toLowerCase()?.includes(searchText) ??
+					physician.email?.toLowerCase()?.includes(searchText) ??
 					status?.toLowerCase()?.startsWith(searchText)
 				);
 			}),
@@ -306,7 +304,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				take(1),
 			)
 			.subscribe({
-				next: (response) => {
+				next: () => {
 					this.notificationSvc.showNotification(`${Translate.SuccessMessage.PhysicianDeleted[this.selectedLang]}!`);
 					// filtering out deleted physician
 					this.physicians$$.next([...this.physicians$$.value.filter((p) => +p.id !== +id)]);
@@ -326,7 +324,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				.join('\t')}\n`;
 
 			if (!this.filteredPhysicians$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
@@ -405,7 +403,6 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				size: 'lg',
 				centered: true,
 				backdropClass: 'modal-backdrop-remove-mv',
-				backdrop: false,
 				windowClass: 'modal-backdrop-enable-click',
 			},
 		});
@@ -413,12 +410,13 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 
 	private closeMenus() {
 		if (window.innerWidth >= 680) {
-			if (this.optionMenu && this.optionMenu.isOpen()) {
+			if (this.optionMenu?.isOpen()) {
 				this.optionMenu.close();
 				this.toggleMenu(true);
 			}
 		}
 	}
+
 	private clearDownloadDropdown() {
 		const timeout = setTimeout(() => {
 			this.downloadDropdownControl.setValue('');
@@ -426,9 +424,9 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 		}, 0);
 	}
 
-	public onScroll(e: undefined): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.physicianApiSvc.pageNo = this.physicianApiSvc.pageNo + 1;
+			this.physicianApiSvc.pageNo += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}
 	}

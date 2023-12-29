@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { ModalService } from 'src/app/core/services/modal.service';
-import { DestroyableComponent } from '../destroyable.component';
-import { Subject, map, take, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
-import { Translate } from '../../models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { ENG_BE } from '../../utils/const';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Translate } from '../../models/translate.model';
+import { ENG_BE } from '../../utils/const';
+import { DestroyableComponent } from '../destroyable.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
 	selector: 'dfm-document-view-modal',
@@ -37,6 +38,7 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 		private notificationService: NotificationDataService,
 		private shareDataSvc: ShareDataService,
 		private activeModal: NgbActiveModal,
+		private sanitizer: DomSanitizer,
 	) {
 		super();
 	}
@@ -82,14 +84,40 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 			this.notificationService.showNotification(Translate.DownloadingInProgress[this.selectedLang]);
 			return;
 		}
-		const downloadLink = document.createElement('a');
-		downloadLink.href = this.downloadableDoc;
-		downloadLink.download = this.fileName;
-		downloadLink.click();
-		this.isDownloadClick = false;
+
+		this.downloadImage(this.downloadableDoc);
 	}
 
 	public closeModal() {
 		this.activeModal.close();
+	}
+
+	private downloadImage(base64Data: string) {
+		const blob = this.base64ToBlob(this.getSanitizeImage(base64Data));
+		const url = window.URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = this.fileName;
+		a.target = '_self';
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		window.URL.revokeObjectURL(url);
+	}
+
+	private base64ToBlob(base64Data: string): Blob {
+		const byteString = window.atob(base64Data.split(',')[1]);
+		const mimeString = `${this.isImage ? 'image' : 'application'}/${this.fileName.split('.').slice(-1)}`;
+		const arrayBuffer = new ArrayBuffer(byteString.length);
+		const uint8Array = new Uint8Array(arrayBuffer);
+		for (let i = 0; i < byteString.length; i++) {
+			uint8Array[i] = byteString.charCodeAt(i);
+		}
+		return new Blob([arrayBuffer], { type: mimeString });
+	}
+
+	private getSanitizeImage(base64: string): any {
+		let url1: any = this.sanitizer.bypassSecurityTrustResourceUrl(base64);
+		return url1.changingThisBreaksApplicationSecurity;
 	}
 }

@@ -1,5 +1,5 @@
 ::ng-deep angular-editor-toolbar button i {
-  font-family: FontAwesome !important; 
+  font-family: FontAwesome , sans-serif;
 }
 
 .ed-et-main-wrapper {
@@ -79,14 +79,6 @@
 
     .ed-et-title-buttons {
       display: none !important;
-    }
-
-    .ed-et-title-buttons {
-      display: none !important;
-    }
-
-    .ed-et-title-buttons-mv {
-      display: flex;
     }
 
     .ed-et-action-buttons {

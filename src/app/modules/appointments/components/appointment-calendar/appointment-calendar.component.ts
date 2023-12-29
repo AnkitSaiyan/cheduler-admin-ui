@@ -26,7 +26,7 @@ import { Appointment, AppointmentSlotsRequestData } from '../../../../shared/mod
 import { Exam } from '../../../../shared/models/exam.model';
 import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { DUTCH_BE, ENG_BE } from '../../../../shared/utils/const';
+import { ENG_BE } from '../../../../shared/utils/const';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
@@ -198,12 +198,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)
 			) {
 				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
+			} else if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
+				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 			} else {
-				if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
-					minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
-				} else {
-					minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
-				}
+				minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
 			}
 			minMaxValue = { ...minMaxValue, grayOutMin: min, grayOutMax: max };
 			this.practiceHourMinMax$$.next(minMaxValue);
@@ -251,12 +249,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((lang) => {
 				this.selectedLang = lang;
-				switch (lang) {
-					case ENG_BE:
-						break;
-					case DUTCH_BE:
-						break;
-				}
 			});
 	}
 
@@ -384,17 +376,21 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	private groupAppointmentsForCalendar(...appointments: Appointment[]) {
+		this.appointmentsGroupedByDate = {};
+		this.appointmentsGroupedByDateAndTIme = {};
+		this.appointmentGroupedByDateAndRoom = {};
+
+		appointments.push({} as Appointment);
+		this.mapAppointmentsForCalendar(appointments);
+	}
+
+	private mapAppointmentsForCalendar(appointments: Appointment[]) {
 		let startDate: Date;
 		let endDate: Date;
 		let sameGroup: boolean;
 		let groupedAppointments: Appointment[] = [];
 		let lastDateString: string;
 
-		this.appointmentsGroupedByDate = {};
-		this.appointmentsGroupedByDateAndTIme = {};
-		this.appointmentGroupedByDateAndRoom = {};
-
-		appointments.push({} as Appointment);
 		appointments.forEach((appointment, index) => {
 			if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
 				const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
@@ -414,12 +410,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 						const currSD = new Date(appointment.startedAt);
 						const currED = new Date(appointment.endedAt);
 
-						if (currSD >= startDate && currSD < endDate) {
-							sameGroup = true;
-							if (currED > endDate) {
-								endDate = currED;
-							}
-						} else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
+						if ((currSD >= startDate && currSD < endDate) || (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1)) {
 							sameGroup = true;
 							if (currED > endDate) {
 								endDate = currED;
@@ -434,30 +425,29 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					if (!sameGroup) {
 						if (index !== 0 && lastDateString) {
 							groupedAppointments?.sort((s1, s2) =>
-								s1.endedAt.getTime() - s1.startedAt.getTime() > s2?.endedAt.getTime() - s2?.startedAt.getTime() ? 1 : -1,
+								s1.endedAt.getTime() - s1.startedAt.getTime() > s2.endedAt.getTime() - s2.startedAt.getTime() ? 1 : -1,
 							);
 							const modifiedGroupedAppointment: any = [[]];
-							groupedAppointments?.forEach((appointment) => {
+							groupedAppointments?.forEach((ap) => {
 								let pushed = true;
-								for (let items of modifiedGroupedAppointment) {
+								modifiedGroupedAppointment.forEach((items) => {
 									if (
 										items.every(
-											(item: any) =>
+											(item) =>
 												!DateTimeUtils.CheckTimeRangeOverlapping(
 													this.datePipe.transform(item.startedAt, 'HH:mm:ss')!,
 													this.datePipe.transform(item.endedAt, 'HH:mm:ss')!,
-													this.datePipe.transform(appointment.startedAt, 'HH:mm:ss')!,
+													this.datePipe.transform(ap.startedAt, 'HH:mm:ss')!,
 													this.datePipe.transform(appointment.endedAt, 'HH:mm:ss')!,
 												),
 										)
 									) {
-										items.push(appointment);
+										items.push(ap);
 										pushed = false;
-										break;
 									}
-								}
+								});
 								if (pushed) {
-									modifiedGroupedAppointment.push([appointment]);
+									modifiedGroupedAppointment.push([ap]);
 								}
 							});
 							const finalAppointment = modifiedGroupedAppointment
@@ -465,7 +455,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 									const sortedData = items.sort((s1, s2) => s1.startedAt - s2.startedAt);
 									return sortedData;
 								})
-								.sort((s1, s2) => s1?.[0]?.startedAt - s2?.[0]?.startedAt);
+								.sort((s1, s2) => s1[0].startedAt - s2[0].startedAt);
 
 							this.appointmentsGroupedByDateAndTIme[lastDateString].push(finalAppointment);
 							groupedAppointments = [];
@@ -555,7 +545,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		getNumberArray(6, 0).forEach((weekday) => {
 			const practiceData = weekdayToPractice[weekday];
 
-			if (practiceData && practiceData.intervals.length) {
+			if (practiceData?.intervals?.length) {
 				const startTime = practiceData.intervals[0].dayStart;
 				const endTime = practiceData.intervals[practiceData.intervals.length - 1].dayEnd;
 
@@ -640,8 +630,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			const reqData: AppointmentSlotsRequestData = {
 				fromDate: date,
 				toDate: date,
-				date: date,
-				exams: appointment?.exams?.map(({ id }) => id + ''),
+				date,
+				exams: appointment?.exams?.map(({ id }) => `${id}`),
 				AppointmentId: appointment?.id,
 			};
 			const isSlotAvailable = await firstValueFrom(this.appointmentApiSvc.getSlots$(reqData).pipe(map((data) => !!data?.[0]?.slots?.length)));

@@ -97,12 +97,8 @@
       display: flex;
     }
 
-    .ad-ap-title-buttons, .ad-ap-title-buttons {
+    .ad-ap-title-buttons {
       display: none !important;
-    }
-
-    .ad-ap-title-buttons-mv {
-      display: flex;
     }
 
     .ad-ap-action-buttons {
@@ -154,7 +150,16 @@
   }
 
   .time-slot-text {
-    background-color: white;
+    background-color: #fff !important; 
+  }
+
+  .time-slot-text.uncombinable {
+    background-color: var(--dfm-main-100) !important; 
+  }
+
+  .time-slot-selected-text.uncombinable {
+    background: var(--dfm-primary) !important;
+    color: white !important;
   }
 }
 

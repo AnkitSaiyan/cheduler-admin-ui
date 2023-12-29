@@ -26,4 +26,3 @@ export class DurationInMinutesPipe implements PipeTransform {
 		return hours * 60 + minutes;
 	}
 }
-

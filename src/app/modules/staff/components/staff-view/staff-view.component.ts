@@ -101,13 +101,12 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 	}
 
 	private getPracticeAvailability(practiceAvailabilities: PracticeAvailability[]): Array<WeekWisePracticeAvailability[]> {
-		// const weekdayToSlotsObj: { [key: string]: TimeSlot[] } = {};
 		const weekdayTimeSlots: WeekdayTimeSlot<TimeSlot[]>[] = [];
 
 		// creating week-wise slots
 		practiceAvailabilities.forEach((practice) => {
-			const weekdayString: string = practice.weekday + '';
-			const rangeIndex: number = practice.rangeIndex;
+			const weekdayString: string = `${practice.weekday}`;
+			const { rangeIndex } = practice;
 
 			if (!weekdayTimeSlots[rangeIndex]) {
 				weekdayTimeSlots[rangeIndex] = {};
@@ -129,58 +128,58 @@ export class StaffViewComponent extends DestroyableComponent implements OnInit, 
 
 		weekdayTimeSlots.forEach((weekdayTimeSlotObject: WeekdayTimeSlot<TimeSlot[]>, index: number) => {
 			// sorting slots by start time
-			for (let weekday = 0; weekday < 7; weekday++) {
-				const weekdayString: string = weekday + '';
-				if (weekdayTimeSlotObject[weekdayString]?.length) {
-					weekdayTimeSlotObject[weekdayString].sort((a, b) => DateTimeUtils.TimeToNumber(a.dayStart) - DateTimeUtils.TimeToNumber(b.dayStart));
-				}
-			}
-
+			this.sortSlot(weekdayTimeSlotObject);
 			// creating weekday-wise slot data
 			let slotNo = 0;
-
 			while (true) {
 				const allWeekTimeSlots: WeekdayTimeSlot<TimeSlot> = {};
-
 				let done = true;
-
 				for (let weekday = 0; weekday < 7; weekday++) {
-					const weekdayString: string = weekday + '';
+					const weekdayString: string = `${weekday}`;
 					if (weekdayTimeSlotObject[weekdayString]?.length > slotNo) {
 						allWeekTimeSlots[weekdayString] = { ...(allWeekTimeSlots[weekdayString] ?? {}), ...weekdayTimeSlotObject[weekdayString][slotNo] };
-						if (done) {
-							done = false;
-						}
+						if (done) done = false;
 					}
 				}
 
-				if (done) {
-					break;
-				}
+				if (done) break;
 
 				slotNo++;
 
-				if (!practiceAvailability[index]?.length) {
-					practiceAvailability[index] = [];
-				}
-
-				const { rangeFromDate, rangeToDate, isRange } = practiceAvailabilities?.find((practice) => practice.rangeIndex === index)!;
-
-				practiceAvailability[index].push({
-					slotNo,
-					rangeFromDate: rangeFromDate ? DateTimeUtils.UTCDateToLocalDate(new Date(rangeFromDate), true) : null,
-					rangeToDate: rangeToDate ? DateTimeUtils.UTCDateToLocalDate(new Date(rangeToDate), true) : null,
-					isRange,
-					monday: { ...(allWeekTimeSlots['1'] ?? {}) },
-					tuesday: { ...(allWeekTimeSlots['2'] ?? {}) },
-					wednesday: { ...(allWeekTimeSlots['3'] ?? {}) },
-					thursday: { ...(allWeekTimeSlots['4'] ?? {}) },
-					friday: { ...(allWeekTimeSlots['5'] ?? {}) },
-					saturday: { ...(allWeekTimeSlots['6'] ?? {}) },
-					sunday: { ...(allWeekTimeSlots['0'] ?? {}) },
-				});
+				this.practice(practiceAvailability, index, practiceAvailabilities, slotNo, allWeekTimeSlots);
 			}
 		});
 		return practiceAvailability;
+	}
+
+	private sortSlot(weekdayTimeSlotObject: WeekdayTimeSlot<TimeSlot[]>) {
+		for (let weekday = 0; weekday < 7; weekday++) {
+			const weekdayString: string = `${weekday}`;
+			if (weekdayTimeSlotObject[weekdayString]?.length) {
+				weekdayTimeSlotObject[weekdayString].sort((a, b) => DateTimeUtils.TimeToNumber(a.dayStart) - DateTimeUtils.TimeToNumber(b.dayStart));
+			}
+		}
+	}
+
+	private practice(practiceAvailability, index, practiceAvailabilities, slotNo, allWeekTimeSlots) {
+		if (!practiceAvailability[index]?.length) {
+			practiceAvailability[index] = [];
+		}
+
+		const { rangeFromDate, rangeToDate, isRange } = practiceAvailabilities.find((practice) => practice.rangeIndex === index)!;
+
+		practiceAvailability[index].push({
+			slotNo,
+			rangeFromDate: rangeFromDate ? DateTimeUtils.UTCDateToLocalDate(new Date(rangeFromDate), true) : null,
+			rangeToDate: rangeToDate ? DateTimeUtils.UTCDateToLocalDate(new Date(rangeToDate), true) : null,
+			isRange,
+			monday: { ...(allWeekTimeSlots['1'] ?? {}) },
+			tuesday: { ...(allWeekTimeSlots['2'] ?? {}) },
+			wednesday: { ...(allWeekTimeSlots['3'] ?? {}) },
+			thursday: { ...(allWeekTimeSlots['4'] ?? {}) },
+			friday: { ...(allWeekTimeSlots['5'] ?? {}) },
+			saturday: { ...(allWeekTimeSlots['6'] ?? {}) },
+			sunday: { ...(allWeekTimeSlots['0'] ?? {}) },
+		});
 	}
 }

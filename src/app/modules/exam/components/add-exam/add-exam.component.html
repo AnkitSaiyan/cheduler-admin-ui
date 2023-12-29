@@ -114,13 +114,12 @@
 							#expensive
 							[dfmNumberInput]="expensive"
 							class="ad-ex-duration"
-							type="number"
 							size="md"
 							placeholder="{{ 'EnterDuration' | translate }}"
 							label="{{ 'DurationMin' | translate }} *"
 							formControlName="expensive"
 							(focusout)="handleExpenseInput($event, expensive, examForm.get('expensive'))"
-						>
+							>
 						</dfm-input>
 						<div class="validation-error" *ngIf="examForm.get('expensive')?.hasError('required') && examForm.get('expensive')?.touched">
 							{{ 'RequiredField' | translate }}
@@ -167,7 +166,7 @@
 										[openDelay]="200"
 										color="tertiary"
 										(click)="removeRoomForm(rowIndex)"
-										*ngIf="roomsForExam.length > 1"
+										*ngIf="roomsForExam.length > 1 && rowIndex"
 									></dfm-button-icon>
 								</ng-template>
 								<div class="room-container">
@@ -191,7 +190,6 @@
 											<dfm-input
 												#duration
 												[dfmNumberInput]="duration"
-												type="text"
 												size="md"
 												placeholder="{{ 'DurationMins' | translate }}"
 												formControlName="duration"

@@ -1,76 +1,75 @@
-import {Injectable} from "@angular/core";
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
-import {catchError, Observable, switchMap, throwError} from "rxjs";
-import {NotificationDataService} from "../services/notification-data.service";
-import {NotificationType} from "diflexmo-angular-design";
-import {LoaderService} from "../services/loader.service";
-import {HttpStatusCodes} from "../../shared/models/base-response.model";
-import {ShareDataService} from "../services/share-data.service";
-import {Translate} from "../../shared/models/translate.model";
-import {ENG_BE} from "../../shared/utils/const";
+import { Injectable } from '@angular/core';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { catchError, Observable, throwError } from 'rxjs';
+import { NotificationDataService } from '../services/notification-data.service';
+import { LoaderService } from '../services/loader.service';
+import { HttpStatusCodes } from '../../shared/models/base-response.model';
+import { ShareDataService } from '../services/share-data.service';
+import { Translate } from '../../shared/models/translate.model';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-	constructor(private notificationSvc: NotificationDataService, private loaderSvc: LoaderService, private shareDataSvc: ShareDataService) {}
+	private language = this.shareDataSvc.getLanguage();
+
+	private errorMessage = Translate.Error.SomethingWrong[this.language];
+
+	constructor(private notificationSvc: NotificationDataService, private loaderSvc: LoaderService, private shareDataSvc: ShareDataService) {
+		this.shareDataSvc.getLanguage$().subscribe({
+			next: (lang) => {
+				this.language = lang;
+			},
+		});
+	}
+
 	public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 		return next.handle(req).pipe(
 			catchError((err) => {
-				const language = this.shareDataSvc.getLanguage();
-				this.generateErrorMessage(err, language);
+				this.generateErrorMessage(err, this.language);
 				this.stopLoaders();
-
-				return throwError(err);
+				return throwError(() => new Error(err));
 			}),
 		);
 	}
 
-  private generateErrorMessage(err: any, lang: string) {
-    // generate error message here
-    let errorMessage = Translate.Error.SomethingWrong[lang];
+	private generateErrorMessage(err: any, lang: string): void {
+		if (err.status === 401 || err.status === 403) {
+			this.errorMessage = this.handleHttpStatusCodes(err.status, lang);
+		} else if (err?.error?.errors) {
+			this.errorMessage = this.handleGeneralErrors(err?.error?.errors);
+		} else {
+			this.errorMessage = this.handleBackendCodes(err?.error?.message, lang);
+		}
+		if (this.errorMessage !== 'MSG_400_APMT_AFFECTS') this.notificationSvc.showError(this.errorMessage);
+	}
 
-    if (err.status) {
-      switch (err.status) {
-        case HttpStatusCodes.FORBIDDEN:
-          {
-            errorMessage = Translate.Error.Forbidden[lang];
-          }
-          break;
-        case HttpStatusCodes.UNAUTHORIZED:
-          {
-            errorMessage = Translate.Error.Unauthorized[lang];
-          }
-          break;
-        default: {
-          if (err?.error?.errors) {
-            const errObj = err.error.errors;
-            if (errObj?.GeneralErrors) {
-              if (Array.isArray(errObj.GeneralErrors)) {
-                errorMessage = '';
-                errObj.GeneralErrors.forEach((msg) => {
-                  errorMessage += `${msg} `;
-                });
-              } else if (typeof errObj?.GeneralErrors === 'string') {
-                errorMessage = errObj.GeneralErrors;
-              }
-            } else if (typeof errObj === 'string') {
-              errorMessage = errObj;
-            }
-          } else {
-            errorMessage = Translate.Error.BackendCodes[lang][err.error.message] || Translate.Error.SomethingWrong[lang];
-          }
-        }
-      }
-    }
-    if(err.error.message !== "MSG_400_APMT_AFFECTS") this.notificationSvc.showError(errorMessage);
-  }
+	private handleHttpStatusCodes(statusCode: number, lang: string): string {
+		switch (statusCode) {
+			case HttpStatusCodes.FORBIDDEN:
+				return Translate.Error.Forbidden[lang];
+			case HttpStatusCodes.UNAUTHORIZED:
+				return Translate.Error.Unauthorized[lang];
+			default:
+				return Translate.Error.SomethingWrong[lang];
+		}
+	}
+
+	private handleGeneralErrors(errors: any[] | string): string {
+		if (Array.isArray(errors)) {
+			errors.forEach((msg) => {
+				this.errorMessage += `${msg} `;
+			});
+		} else if (typeof errors === 'string') {
+			this.errorMessage = errors;
+		}
+		return this.errorMessage;
+	}
+
+	private handleBackendCodes(message: string, lang: string): string {
+		return Translate.Error.BackendCodes[lang][message] || Translate.Error.SomethingWrong[lang];
+	}
 
 	private stopLoaders() {
 		this.loaderSvc.deactivate();
 		this.loaderSvc.spinnerDeactivate();
 	}
 }
-
-
-
-
-

@@ -1,17 +1,16 @@
 import {
-  AddAppointmentRequestData, Appointment, AppointmentSlotsRequestData,
-  CreateAppointmentFormValues,
-  SelectedSlots,
-  Slot,
-  SlotModified
-} from "../models/appointment.model";
-import {DateDistributed} from "../models/calendar.model";
-import {DateTimeUtils} from "./date-time.utils";
-import {map} from "rxjs";
-import {SchedulerUser} from "../models/user.model";
+	AddAppointmentRequestData,
+	Appointment,
+	AppointmentSlotsRequestData,
+	CreateAppointmentFormValues,
+	SelectedSlots,
+	Slot,
+	SlotModified,
+} from '../models/appointment.model';
+import { DateDistributed } from '../models/calendar.model';
+import { DateTimeUtils } from './date-time.utils';
 
 export class AppointmentUtils {
-	constructor() {}
 	public static GetModifiedSlotData(
 		slots: Slot[],
 		isCombinable: boolean,
@@ -65,7 +64,7 @@ export class AppointmentUtils {
 		return { newSlots, examIdToSlots: examIdToSlotsMap };
 	}
 
-	public static IsSlotAvailable(slot: SlotModified, selectedTimeSlot: SelectedSlots, isCombinable = false) {
+	public static IsSlotAvailable(slot: SlotModified, selectedTimeSlot: SelectedSlots) {
 		return !Object.values(selectedTimeSlot)?.some((value) => {
 			const firstSlot = value?.slot?.split('-');
 			return (
@@ -74,16 +73,16 @@ export class AppointmentUtils {
 		});
 	}
 
-	public static ToggleSlotSelection(slot: SlotModified, selectedTimeSlot: SelectedSlots, isCombinable = false, isEdit = false): void {
-		if (!isEdit && (!this.IsSlotAvailable(slot, selectedTimeSlot, isCombinable) || !slot?.end || !slot?.start)) {
+	public static ToggleSlotSelection(slot: SlotModified, selectedTimeSlot: SelectedSlots, isEdit = false): void {
+		if (!isEdit && (!this.IsSlotAvailable(slot, selectedTimeSlot) || !slot?.end || !slot?.start)) {
 			return;
 		}
-		// debugger;
 
-		if (selectedTimeSlot[slot.examId]?.slot === `${slot.start}-${slot.end}`) {
-			selectedTimeSlot[slot.examId] = { slot: '', roomList: [], userList: [], examId: slot.examId };
+		const SelectedSlot = selectedTimeSlot;
+		if (SelectedSlot[slot.examId]?.slot === `${slot.start}-${slot.end}`) {
+			SelectedSlot[slot.examId] = { slot: '', roomList: [], userList: [], examId: slot.examId };
 		} else {
-			selectedTimeSlot[slot.examId] = {
+			SelectedSlot[slot.examId] = {
 				...slot,
 				slot: `${slot.start}-${slot.end}`,
 				examId: slot.examId,
@@ -110,7 +109,8 @@ export class AppointmentUtils {
 		isCombinable: boolean,
 	): AddAppointmentRequestData {
 		const { startedAt, startTime, examList, ...rest } = formValues;
-		const { userList, roomList, slot, exams, ...restData } = { ...Object.values(selectedTimeSlot)[0] } as any;
+		const selectedTimeSlotValues: any = { ...Object.values(selectedTimeSlot)[0] }
+		const { userList, roomList, slot, exams, ...restData } = selectedTimeSlotValues;
 		let finalCombinableRequestData = {};
 
 		if (exams?.length) {
@@ -134,19 +134,21 @@ export class AppointmentUtils {
 									examId: +examID,
 									rooms: selectedTimeSlot[+examID]?.roomList ?? [],
 									users: selectedTimeSlot[+examID]?.userList ?? [],
+									start: '',
+									end: '',
 								};
 
 								if (selectedTimeSlot[+examID]) {
 									const time: any = selectedTimeSlot[+examID];
-									examDetails['start'] = time.start;
-									examDetails['end'] = time.end;
+									examDetails.start = time.start;
+									examDetails.end = time.end;
 								} else {
 									const time: any = selectedTimeSlot[0];
 									const start = time?.start;
 									const end = time?.end;
 
-									examDetails['start'] = `${start[0]}:${start[1]}:00`;
-									examDetails['end'] = `${end[0]}:${end[1]}:00`;
+									examDetails.start = `${start[0]}:${start[1]}:00`;
+									examDetails.end = `${end[0]}:${end[1]}:00`;
 								}
 
 								return examDetails;
@@ -166,51 +168,10 @@ export class AppointmentUtils {
 			}
 		}
 
-		if (appointment && appointment?.id) {
+		if (appointment?.id) {
 			requestData.id = appointment.id;
 		}
 
 		return requestData;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

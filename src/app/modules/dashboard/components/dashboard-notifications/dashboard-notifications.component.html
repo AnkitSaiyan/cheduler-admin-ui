@@ -19,12 +19,12 @@
     >
       <div class="text-sm d-flex flex-column">
         <div class="d-flex dfm-gap-8">
-          <span class="font-weight-medium text-nowrap">{{ notification.title | translate }}</span>
+          <span class="font-weight-medium text-nowrap">{{ notification.title | translate | truncate }}</span>
           <span class="dfm-text-main-400">({{ notification.subTitle | translate}})</span>
         </div>
         <span>{{notification.message | translate}}</span>
       </div>
-      <span class="dfm-text-main-400 text-nowrap"> {{ notification.date | dfmUtcToLocal | dfmDefaultDate : 'time'  }} </span>
+      <span class="dfm-text-main-400 text-nowrap"> {{ notification.date | dfmUtcToLocal | dfmDefaultDate : 'datetime'  }} </span>
     </div>
     <div class="no-data-found-wrapper d-flex justify-content-center dfm-p-16 dfm-mx-2 bg-white rounded-bottom" *ngIf="!notifications.length">
       {{ 'NoDataFound' | translate }}

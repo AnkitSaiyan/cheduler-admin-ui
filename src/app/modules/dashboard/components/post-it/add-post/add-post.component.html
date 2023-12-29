@@ -1,7 +1,7 @@
 <div #content class="bg-white rounded-4 confirm-action-modal">
   <div class="modal-header">
     <h5 class="modal-title">{{ dialogData.titleText | translate}}</h5>
-    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close(false)"></dfm-button-icon>
+    <dfm-button-icon color="tertiary-gray" icon="x-close" (click)="close()"></dfm-button-icon>
   </div>
 
   <div class="modal-body">
@@ -9,7 +9,7 @@
   </div>
 
   <div class="modal-footer">
-    <dfm-button color="secondary" size="md" (click)="close(false)">{{ dialogData.cancelButtonText | translate }}</dfm-button>
-    <dfm-button color="primary" size="md" (click)="close(true)">{{ dialogData.confirmButtonText | translate }}</dfm-button>
+    <dfm-button color="secondary" size="md" (click)="close()">{{ dialogData.cancelButtonText | translate }}</dfm-button>
+    <dfm-button color="primary" size="md" (click)="close()">{{ dialogData.confirmButtonText | translate }}</dfm-button>
   </div>
 </div>

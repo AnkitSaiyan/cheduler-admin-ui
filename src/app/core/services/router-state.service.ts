@@ -4,62 +4,62 @@ import { BehaviorSubject, distinctUntilChanged, filter, map, Observable } from '
 import { RouterState } from '../../shared/models/router-state.model';
 
 @Injectable({
-  providedIn: 'root',
+	providedIn: 'root',
 })
 export class RouterStateService {
-  private routerState$$ = new BehaviorSubject<RouterState>({} as RouterState);
+	private routerState$$ = new BehaviorSubject<RouterState>({} as RouterState);
 
-  constructor(private router: Router) {
-    this.createRouterState();
-  }
+	constructor(private router: Router) {
+		this.createRouterState();
+	}
 
-  private createRouterState() {
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe({
-      next: () => {
-        const { snapshot } = this.router.routerState;
+	private createRouterState() {
+		this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe({
+			next: () => {
+				const { snapshot } = this.router.routerState;
 
-        let state: ActivatedRouteSnapshot = snapshot.root;
+				let state: ActivatedRouteSnapshot = snapshot.root;
 
-        // Getting params
-        let params = {};
-        while (state.firstChild) {
-          params = { ...params, ...state.params };
-          state = state.firstChild;
-        }
-        params = { ...params, ...state.params };
+				// Getting params
+				let params = {};
+				while (state.firstChild) {
+					params = { ...params, ...state.params };
+					state = state.firstChild;
+				}
+				params = { ...params, ...state.params };
 
-        const url = snapshot.url.split('?')[0];
-        const { queryParams } = snapshot.root;
-        const { data } = state.data;
+				const url = snapshot.url.split('?')[0];
+				const { queryParams } = snapshot.root;
+				const { data } = state.data;
 
-        const routerState: RouterState = { params, queryParams, url, data };
+				const routerState: RouterState = { params, queryParams, url, data };
 
-        this.routerState$$.next(routerState);
-      }
-    });
-  }
+				this.routerState$$.next(routerState);
+			},
+		});
+	}
 
-  public get routerState$() {
-    return this.routerState$$.asObservable().pipe(filter((params) => !!params));
-  }
+	public get routerState$() {
+		return this.routerState$$.asObservable().pipe(filter((params) => !!params));
+	}
 
-  public listenForParamChange$(paramName: string): Observable<string> {
-    return this.routerState$$.pipe(
-      map((state) => {
-        return state.params[paramName];
-      }),
-      distinctUntilChanged(),
-    );
-  }
+	public listenForParamChange$(paramName: string): Observable<string> {
+		return this.routerState$$.pipe(
+			map((state) => {
+				return state.params[paramName];
+			}),
+			distinctUntilChanged(),
+		);
+	}
 
-  public listenForQueryParamsChanges$(): Observable<Params> {
-    return this.routerState$$.pipe(
-      map((state) => state.queryParams),
-      distinctUntilChanged(),
-    );
-  }
+	public listenForQueryParamsChanges$(): Observable<Params> {
+		return this.routerState$$.pipe(
+			map((state) => state.queryParams),
+			distinctUntilChanged(),
+		);
+	}
 
-  public listenForUrlChange$(): Observable<string> {
-    return this.routerState$$.pipe(map((state) => state.url));
-  }
+	public listenForUrlChange$(): Observable<string> {
+		return this.routerState$$.pipe(map((state) => state.url));
+	}
 }

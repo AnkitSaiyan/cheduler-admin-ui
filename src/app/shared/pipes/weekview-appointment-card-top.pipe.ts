@@ -3,7 +3,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DateTimeUtils } from '../utils/date-time.utils';
 import { getDurationMinutes } from '../models/calendar.model';
 
-// TODO: Functions can be made common and optimized
+// Functions can be made common and optimized
 
 @Pipe({
 	name: 'weekViewAppointmentCardTop',
@@ -80,13 +80,3 @@ export class WeekViewAppointmentCardTopPipe implements PipeTransform {
 		return formattedDate;
 	}
 }
-
-
-
-
-
-
-
-
-
-

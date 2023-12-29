@@ -1,4 +1,3 @@
-import { TitleCasePipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 import { ENG_BE } from '../utils/const';
 
@@ -10,9 +9,3 @@ export class ShowBodyPartPipe implements PipeTransform {
 		return value.map(({ bodypartName, bodypartNameNl }) => (lang === ENG_BE ? bodypartName : bodypartNameNl)).join(', ');
 	}
 }
-
-
-
-
-
-

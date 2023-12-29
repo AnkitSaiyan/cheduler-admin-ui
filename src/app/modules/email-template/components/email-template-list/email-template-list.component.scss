@@ -1,8 +1,12 @@
-.et-ls-button-dropdown-group {
+  .et-ls-button-dropdown-group {
     background: transparent;
 
+    .et-ls-info-cell {
+      max-width: 512px;
+    }
+
     div:last-child {
-      max-width: 152px;
+      max-width: 160px;
     }
   }
 
@@ -90,18 +94,6 @@
 
   }
 
-  .et-ls-button-dropdown-group {
-    background: transparent;
-
-    .et-ls-info-cell {
-      max-width: 512px;
-    }
-
-    div:last-child {
-      max-width: 160px;
-    }
-  }
-
   .et-ls-searchbar-mv {
     display: none;
   }
@@ -175,8 +167,3 @@
       display: block;
     }
   }
-
-  .et-ls-button-dropdown-group {
-    background: transparent;
-  }
-

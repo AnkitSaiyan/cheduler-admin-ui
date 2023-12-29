@@ -6,6 +6,8 @@ import { BehaviorSubject, Subject, debounceTime, map, of, switchMap, take, takeU
 import { PracticeHoursApiService } from 'src/app/core/services/practice-hours-api.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { TimeSlotFormValues, TimeSlotStaff } from 'src/app/shared/models/time-slot.model';
+import { StaffUtils } from 'src/app/shared/utils/staff.utils';
+import { DatePipe } from '@angular/common';
 import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { UserApiService } from '../../../../core/services/user-api.service';
@@ -18,10 +20,8 @@ import { Translate } from '../../../../shared/models/translate.model';
 import { AvailabilityType, User, UserType } from '../../../../shared/models/user.model';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { TimeInIntervalPipe } from '../../../../shared/pipes/time-in-interval.pipe';
-import { COMING_FROM_ROUTE, DUTCH_BE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
+import { COMING_FROM_ROUTE, EDIT, EMAIL_REGEX, ENG_BE, STAFF_ID, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
-import { StaffUtils } from 'src/app/shared/utils/staff.utils';
-import { DatePipe } from '@angular/common';
 
 interface FormValues {
 	firstname: string;
@@ -192,13 +192,11 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((lang) => {
 				this.selectedLang = lang;
-				switch (lang) {
-					case ENG_BE:
-						this.statuses = Statuses;
-						break;
-					case DUTCH_BE:
-						this.statuses = StatusesNL;
-						break;
+
+				if (lang === ENG_BE) {
+					this.statuses = Statuses;
+				} else {
+					this.statuses = StatusesNL;
 				}
 			});
 	}
@@ -216,6 +214,9 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public saveStaff(): void {
+    if (!this.addStaffForm.value?.practiceAvailabilityToggle) {
+			this.practiceAvailabilityArray.clear();
+		}
 		if (this.addStaffForm.invalid) {
 			this.addStaffForm.markAllAsTouched();
 			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
@@ -235,7 +236,6 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
 			return;
 		}
-
 		this.submitting$$.next(true);
 
 		const addStaffReqData: AddStaffRequestData = {
@@ -244,6 +244,11 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			practiceAvailability: timeSlotFormValues,
 		};
 
+		this.saveDataToBackend(addStaffReqData);
+	}
+
+
+	private saveDataToBackend(addStaffReqData: AddStaffRequestData) {
 		if (!addStaffReqData.info) {
 			delete addStaffReqData.info;
 		}
@@ -256,7 +261,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			addStaffReqData.availabilityType = AvailabilityType.Unavailable;
 		}
 
-		addStaffReqData.id = Number.isNaN(+this.staffID) ? 0 : +this.staffID;
+		addStaffReqData.id = isNaN(+this.staffID) ? 0 : +this.staffID;
 
 		this.userApiSvc
 			.upsertUser$(addStaffReqData)
@@ -313,7 +318,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			return;
 		}
 
-		if (!inputText.match(EMAIL_REGEX)) {
+		if (!EMAIL_REGEX.exec(inputText)) {
 			this.addStaffForm.get('email')?.setErrors({
 				email: true,
 			});
@@ -341,7 +346,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			telephone: [null, []],
 			userType: [null, [Validators.required]],
 			info: [null, []],
-			status: [null ?? Status.Active, []],
+			status: [null, []],
 			availabilityType: [AvailabilityType.Unavailable, []],
 			practiceAvailabilityToggle: [false, []],
 			practiceAvailabilityArray: this.fb.array([this.practiceAvailabilityGroup(false)]),
@@ -383,7 +388,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 
 		const practiceFA = this.practiceAvailabilityArray;
 		const practiceFALength = practiceFA.length;
-
+		/* eslint-disable no-continue */
 		for (let i = 0; i < practiceFALength; i++) {
 			const firstControl = practiceFA.controls[i];
 			const isRange = firstControl.get('isRange')?.value;
@@ -396,11 +401,10 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 			for (let j = i + 1; j < practiceFALength; j++) {
 				const secondControl = practiceFA.controls[j];
 
-				const isRange = secondControl.get('isRange')?.value;
-				if (!isRange) {
+				const isRangeInner = secondControl.get('isRange')?.value;
+				if (!isRangeInner) {
 					continue;
 				}
-
 				const otherRangeFromDate = secondControl.get('rangeFromDate')?.value;
 				const otherRangeToDate = secondControl.get('rangeToDate')?.value;
 				const startDate1 = new Date(rangeFromDate);
@@ -419,6 +423,7 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 				firstControl.get('rangeToDate')?.setErrors(null);
 			}
 		}
+		/* eslint-enable no-continue */
 	}
 
 	public get practiceAvailabilityArray(): FormArray {
@@ -461,8 +466,8 @@ export class AddStaffComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public dateFilter(d: Date | null): boolean {
-		const day = (d || new Date()).getDay();
+		const day = (d ?? new Date()).getDay();
 		// Prevent all days accept Mondays.
-		return day == 1;
+		return day === 1;
 	}
 }

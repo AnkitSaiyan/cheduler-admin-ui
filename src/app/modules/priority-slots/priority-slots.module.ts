@@ -10,13 +10,13 @@ import { PrioritySlotsRoutingModule } from './priority-slots-routing.module';
 import { PrioritySlotsCalendarViewComponent } from './components/priority-slots-calendar-view/priority-slots-calendar-view.component';
 
 @NgModule({
-  declarations: [
-    PrioritySlotsComponent,
-    AddPrioritySlotsComponent,
-    ViewPrioritySlotsComponent,
-    ListPrioritySlotsComponent,
-    PrioritySlotsCalendarViewComponent,
-  ],
-  imports: [CommonModule, SharedModule, FormsModule, ReactiveFormsModule, PrioritySlotsRoutingModule],
+	declarations: [
+		PrioritySlotsComponent,
+		AddPrioritySlotsComponent,
+		ViewPrioritySlotsComponent,
+		ListPrioritySlotsComponent,
+		PrioritySlotsCalendarViewComponent,
+	],
+	imports: [CommonModule, SharedModule, FormsModule, ReactiveFormsModule, PrioritySlotsRoutingModule],
 })
 export class PrioritySlotsModule {}

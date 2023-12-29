@@ -1,12 +1,12 @@
-import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivateChild, Router, UrlTree} from '@angular/router';
-import {map, Observable} from 'rxjs';
-import {RouteName, RouteType} from 'src/app/shared/models/permission.model';
-import {UserRoleEnum} from 'src/app/shared/models/user.model';
-import {PermissionService} from '../services/permission.service';
-import {NotificationDataService} from "../services/notification-data.service";
-import {Translate} from "../../shared/models/translate.model";
-import {ENG_BE} from "../../shared/utils/const";
+import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivateChild, Router, UrlTree } from '@angular/router';
+import { map, Observable } from 'rxjs';
+import { RouteName, RouteType } from 'src/app/shared/models/permission.model';
+import { UserRoleEnum } from 'src/app/shared/models/user.model';
+import { PermissionService } from '../services/permission.service';
+import { NotificationDataService } from '../services/notification-data.service';
+import { Translate } from '../../shared/models/translate.model';
+import { ENG_BE } from '../../shared/utils/const';
 
 @Injectable({
 	providedIn: 'root',
@@ -58,39 +58,3 @@ export class PermissionGuard implements CanActivateChild {
 		return true;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

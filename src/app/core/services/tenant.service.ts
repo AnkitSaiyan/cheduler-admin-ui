@@ -7,4 +7,3 @@ import { MsalService } from '@azure/msal-angular';
 export class TenantService {
 	constructor(private msalService: MsalService) {}
 }
-

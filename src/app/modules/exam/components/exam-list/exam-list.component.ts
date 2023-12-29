@@ -1,9 +1,12 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, combineLatest, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, map, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DfmDatasource, DfmTableHeader, NotificationType, TableItem } from 'diflexmo-angular-design';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { ChangeStatusRequestData, Status, StatusToName } from '../../../../shared/models/status.model';
 import { getStatusEnum } from '../../../../shared/utils/getEnums';
@@ -16,17 +19,14 @@ import { ExamApiService } from '../../../../core/services/exam-api.service';
 import { Exam } from '../../../../shared/models/exam.model';
 import { ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { Translate } from '../../../../shared/models/translate.model';
-import { TranslateService } from '@ngx-translate/core';
-import { Permission } from 'src/app/shared/models/permission.model';
-import { PermissionService } from 'src/app/core/services/permission.service';
-import { PaginationData } from "../../../../shared/models/base-response.model";
-import {GeneralUtils} from "../../../../shared/utils/general.utils";
+import { PaginationData } from '../../../../shared/models/base-response.model';
+import { GeneralUtils } from '../../../../shared/utils/general.utils';
 
 const ColumnIdToKey = {
-  1: 'name',
-  2: 'expensive',
-  3: 'status'
-}
+	1: 'name',
+	2: 'expensive',
+	3: 'status',
+};
 
 @Component({
 	selector: 'dfm-exam-list',
@@ -136,7 +136,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 		});
 
 		this.exams$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (exams) => this.handleSearch(this.searchControl.value ?? ''),
+			next: () => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.examApiSvc.exams$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -149,7 +149,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 				this.paginationData = examsBase?.metaData?.pagination || 1;
 				this.isLoading = false;
 			},
-			error: (e) => {
+			error: () => {
 				this.exams$$.next([]);
 			},
 		});
@@ -233,12 +233,10 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 						title: Translate[this.columns[i]][lang],
 					}));
 
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						default:
-							this.statuses = StatusesNL;
+					if (lang === ENG_BE) {
+						this.statuses = Statuses;
+					} else {
+						this.statuses = StatusesNL;
 					}
 				},
 			});
@@ -315,7 +313,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 				.join('\t')}\n`;
 
 			if (!this.filteredExams$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
@@ -391,7 +389,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 		}, 0);
 	}
 
-	public onScroll(e: undefined): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.examApiSvc.pageNo = this.paginationData.pageNo + 1;
 			this.tableData$$.value.isLoadingMore = true;

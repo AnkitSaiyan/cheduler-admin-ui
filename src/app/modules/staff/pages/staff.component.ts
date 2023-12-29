@@ -1,12 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
-  selector: 'dfm-staff',
-  templateUrl: './staff.component.html',
-  styleUrls: ['./staff.component.scss'],
+	selector: 'dfm-staff',
+	templateUrl: './staff.component.html',
+	styleUrls: ['./staff.component.scss'],
 })
-export class StaffComponent implements OnInit {
-  constructor() {}
-
-  public ngOnInit(): void {}
-}
+export class StaffComponent {}

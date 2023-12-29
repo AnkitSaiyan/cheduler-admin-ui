@@ -253,7 +253,7 @@
             <div class="d-flex align-items-center gap-3 overflow-y-auto max-h-128 dfm-mt-12 flex-wrap">
               <ng-container *ngIf="examIdToAppointmentSlots[examID] as slots; else noSlots">
                 <div
-                        class="time-slot-text dfm-p-8 text-center text-sm font-weight-medium w-128"
+                        class="time-slot-text uncombinable dfm-p-8 text-center text-sm font-weight-medium w-128"
                         *ngFor="let slot of slots"
                         (click)="handleSlotSelectionToggle(slot)"
                         [ngClass]="{
@@ -265,7 +265,9 @@
               </div>
               </ng-container>
               <ng-template #noSlots>
-                <span class="dfm-text-main-300">No slots found for this exam</span>
+                <span class="dfm-text-main-300"
+                  *ngIf="exams?.value?.length && formValues.startedAt?.day && (loadingSlots$$ | async) === false && !isOutside">
+                  {{ 'NoSlotsFoundForSelectedExamsAndTime' | translate }}</span>
               </ng-template>
             </div>
           </div>
@@ -334,7 +336,7 @@
         <div *ngIf="!!(documentStage && documentStage !== 'FAILED_TO_UPLOAD' && documentStage !== 'Uploading')"
           class="view-link" (click)="viewDocument()">{{'View' | translate}}</div>
       </div>
-        <p class="file-name" [style.color]="documentStage == 'FAILED_TO_UPLOAD' ? 'red' : ''">
+        <p class="file-name" [style.color]="documentStage === 'FAILED_TO_UPLOAD' ? 'red' : ''">
           {{ documentStage | translate }}&nbsp;
           <dfm-icon class="clear-icon" (click)="clearFile()"
             *ngIf="!!(documentStage !== 'FAILED_TO_UPLOAD' && documentStage !== 'Uploading' && documentStage)"

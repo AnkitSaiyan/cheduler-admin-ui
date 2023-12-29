@@ -9,7 +9,9 @@ export class DfmDragAreaEventDirective {
 	constructor(private elementRef: ElementRef, private draggableSvc: DraggableService, private renderer: Renderer2) {}
 
 	@Input() day!: any;
+
 	@Input() calendarType: CalendarType = CalendarType.Week;
+
 	@Input() headerType!: string;
 
 	@Output() private editAppointment = new EventEmitter<any>();
@@ -31,6 +33,7 @@ export class DfmDragAreaEventDirective {
 		event.target.classList.remove('drag-area-border');
 		event.stopPropagation();
 	}
+
 	@HostListener('dragend', ['$event'])
 	onDragEnd() {
 		this.draggableSvc.isDragStarted = false;
@@ -58,67 +61,28 @@ export class DfmDragAreaEventDirective {
 			case CalendarType.Week:
 				this.draggableSvc.removeDragShadow(this.elementRef);
 				this.draggableSvc.weekViewDragComplete(event);
-        this.editAppointment.emit({
+				this.editAppointment.emit({
 					event: { ...event, offsetY: event.offsetY - this.draggableSvc.dragStartElement.event.offsetY },
 					data: { ...this.draggableSvc.dragStartElement.data },
 					day: this.day,
 				});
 				return;
-			case CalendarType.Month:
+			case CalendarType.Month: {
 				const currentDate = new Date(this.day[2], this.day[1], this.day[0]);
 				currentDate.setHours(0, 0, 0, 0);
 				const appointmentDate = new Date(this.draggableSvc.dragStartElement.data?.startedAt);
 				appointmentDate.setHours(0, 0, 0, 0);
 				if (currentDate.getTime() !== appointmentDate.getTime()) {
-					this.draggableSvc.monthViewDragComplete(event);
+					this.draggableSvc.monthViewDragComplete();
 					this.editAppointment.emit({
 						day: this.day,
 						data: { ...this.draggableSvc.dragStartElement.data },
 					});
 				}
-				return;
-			default:
 				break;
+			}
+
+			default:
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

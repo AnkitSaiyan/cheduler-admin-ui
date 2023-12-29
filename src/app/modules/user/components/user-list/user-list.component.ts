@@ -35,13 +35,6 @@ const SchedulerColumnIdToKey = {
 	5: 'Status',
 };
 
-const GeneralColumnIdToKey = {
-	1: 'firstname',
-	2: 'lastname',
-	3: 'email',
-	4: 'Status',
-};
-
 @Component({
 	selector: 'dfm-user-list',
 	templateUrl: './user-list.component.html',
@@ -151,10 +144,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 		this.userManagementApiSvc.userList$.pipe(map((users) => users.items.map((user) => this.convertToUserBase(user)))).subscribe({
 			next: (userBase) => {
-				this.users$$.next([...(userBase as UserBase[])]);
+				this.users$$.next([...userBase]);
 				this.loading$$.next(false);
 			},
-			error: (err) => {
+			error: () => {
 				this.users$$.next([]);
 				this.loading$$.next(false);
 			},
@@ -195,7 +188,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 							u.firstname,
 							u.lastname,
 							u.email,
-							...this.roleNamePipe.transform(this.userApiSvc.userIdToRoleMap.get(u.id.toString())),
+							this.roleNamePipe.transform(this.userApiSvc.userIdToRoleMap.get(u.id.toString())) || '-',
 							Translate[StatusToName[+u.status]][this.selectedLang],
 						]),
 						'users',
@@ -212,7 +205,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 			.pipe(
 				map((value) => {
 					if (value?.proceed) {
-						return [...this.selectedUserIds.map((id) => ({ id: id, status: value.newStatus as number }))];
+						return [...this.selectedUserIds.map((id) => ({ id, status: value.newStatus as number }))];
 					}
 
 					return [];
@@ -233,8 +226,8 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				takeUntil(this.destroy$$),
 			)
 			.subscribe({
-				next: (value) => {
-					this.selectedUserIds.map((id) => {
+				next: () => {
+					this.selectedUserIds.forEach((id) => {
 						this.users$$.next([
 							...GeneralUtils.modifyListData(
 								this.users$$.value,
@@ -277,12 +270,10 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 						title: Translate[this.columns[i]][lang] ?? this.columns[i],
 					}));
 
-					switch (lang) {
-						case ENG_BE:
-							this.statuses = Statuses;
-							break;
-						default:
-							this.statuses = StatusesNL;
+					if (lang === ENG_BE) {
+						this.statuses = Statuses;
+					} else {
+						this.statuses = StatusesNL;
 					}
 				},
 			});
@@ -357,14 +348,14 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				.join('\t')}\n`;
 
 			if (!this.filteredUsers$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
 
 			this.filteredUsers$$.value.forEach((user: UserBase) => {
-				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user?.telephone ?? '—'}\t${user.userType ?? '—'}\t${
-					StatusToName[+user.status]
+				dataString += `${user.firstname}\t${user.lastname}\t${user.email ?? '—'}\t${user.userType ?? '—'}\t${
+					+user.status === 2 ? '-' : StatusToName[+user.status]
 				}\n`;
 			});
 
@@ -419,7 +410,9 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		});
 
 		modalRef.closed.pipe(take(1)).subscribe({
-			next: (result) => this.filterUserList(result),
+			next: (result) => {
+				this.filterUserList(result);
+			},
 		});
 	}
 
@@ -430,7 +423,6 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				size: 'lg',
 				centered: true,
 				backdropClass: 'modal-backdrop-remove-mv',
-				backdrop: false,
 				windowClass: 'modal-backdrop-enable-click',
 			},
 		});
@@ -441,9 +433,12 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 					if (!isNaN(+res.id)) {
 						return;
 					}
-
-					const item = isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : (res as UserBase);
-					this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, item, 'add'));
+					if (userDetails?.id) {
+						this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, res, 'update', 'id'));
+					} else {
+						const item = isNaN(+res.id) ? this.convertToUserBase(res as SchedulerUser) : (res as UserBase);
+						this.users$$.next(GeneralUtils.modifyListData(this.users$$.value, item, 'add'));
+					}
 				}
 			},
 		});
@@ -459,13 +454,13 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 				if (user.status === 1) status = this.translate.instant('Active');
 				if (user.status === 0) status = this.translate.instant('Inactive');
 				return (
-					(user.firstname?.toLowerCase() + ' ' + user.lastname?.toLowerCase())?.includes(searchText) ||
+					`${user.firstname?.toLowerCase()} ${user.lastname?.toLowerCase()}`?.includes(searchText) ||
 					user.firstname?.toLowerCase()?.includes(searchText) ||
 					user.lastname?.toLowerCase()?.includes(searchText) ||
 					user.email?.toLowerCase()?.includes(searchText) ||
 					userType?.toLowerCase()?.includes(searchText) ||
 					(user?.telephone as string)?.toLowerCase()?.includes(searchText) ||
-					status.toLowerCase()?.startsWith(searchText)
+					status?.toLowerCase()?.startsWith(searchText)
 				);
 			}),
 		]);
@@ -484,7 +479,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 
 	private closeMenus() {
 		if (window.innerWidth >= 680) {
-			if (this.optionMenu && this.optionMenu.isOpen()) {
+			if (this.optionMenu?.isOpen()) {
 				this.optionMenu.close();
 				this.toggleMenu(true);
 			}
@@ -523,7 +518,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 		} as unknown as UserBase;
 	}
 
-	public onScroll(e: undefined): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.tableData$$.value.isLoadingMore = true;
 		}

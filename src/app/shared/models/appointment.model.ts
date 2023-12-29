@@ -110,7 +110,6 @@ export interface AddAppointmentRequestData {
 	patientEmail: string;
 	patientTel: number;
 	comments: string;
-
 	exams: Array<{
 		examId: number;
 		startedAt: string;
@@ -237,6 +236,7 @@ export interface CreateAppointmentFormValues {
 	socialSecurityNumber: number;
 	userList?: string[];
 	qrCodeId: string;
+	endedAt?: string;
 }
 
 export interface UpdateRadiologistRequestData {

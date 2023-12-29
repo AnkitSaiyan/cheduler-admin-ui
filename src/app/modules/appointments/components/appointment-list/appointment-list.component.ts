@@ -10,8 +10,11 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { JoinWithAndPipe } from 'src/app/shared/pipes/join-with-and.pipe';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { SignalrService } from 'src/app/core/services/signalr.service';
+import { AppointmentAdvanceSearchComponent } from 'src/app/modules/dashboard/components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
+import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
+import { SiteManagementApiService } from 'src/app/core/services/site-management-api.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -21,17 +24,11 @@ import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../..
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
 import { Appointment } from '../../../../shared/models/appointment.model';
-import { getDurationMinutes } from '../../../../shared/models/calendar.model';
 import { Exam } from '../../../../shared/models/exam.model';
 import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
 import { Translate } from '../../../../shared/models/translate.model';
-import { DefaultDatePipe } from '../../../../shared/pipes/default-date.pipe';
 import { DUTCH_BE, ENG_BE, Statuses, StatusesNL } from '../../../../shared/utils/const';
 import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/utils/getEnums';
-import { SignalrService } from 'src/app/core/services/signalr.service';
-import { AppointmentAdvanceSearchComponent } from 'src/app/modules/dashboard/components/dashboard-appointments-list/appointment-advance-search/appointment-advance-search.component';
-import { DocumentViewModalComponent } from 'src/app/shared/components/document-view-modal/document-view-modal.component';
-import { SiteManagementApiService } from 'src/app/core/services/site-management-api.service';
 
 const ColumnIdToKey = {
 	1: 'startedAt',
@@ -157,6 +154,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public isLoading: boolean = true;
 
+	private advanceSearchData: any;
+
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -171,8 +170,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		private shareDataSvc: ShareDataService,
 		private translate: TranslateService,
 		public permissionSvc: PermissionService,
-		private defaultDatePipe: DefaultDatePipe,
-		private utcToLocalPipe: UtcToLocalPipe,
 		private joinWithAndPipe: JoinWithAndPipe,
 		private translatePipe: TranslatePipe,
 		private signalRSvc: SignalrService,
@@ -248,7 +245,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			});
 
 		this.appointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointment) => this.handleSearch(this.searchControl.value ?? ''),
+			next: () => this.handleSearch(this.searchControl.value ?? ''),
 		});
 
 		this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -297,13 +294,14 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 					value as DownloadAsType,
 					this.tableHeaders.map(({ title }) => title).filter((val) => val !== 'Actions'),
 					data?.map((ap: Appointment) => [
-						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startedAt?.toString())) ?? '',
-						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endedAt?.toString())) ?? '',
+						this.appointmentApiSvc.convertUtcToLocalDate(ap?.startedAt),
+						this.appointmentApiSvc.convertUtcToLocalDate(ap?.endedAt),
 						`${this.titleCasePipe.transform(ap?.patientFname)} ${this.titleCasePipe.transform(ap?.patientLname)}`,
 						this.joinWithAndPipe.transform(ap.exams, 'name'),
-						this.titleCasePipe.transform(ap?.doctor),
+						this.titleCasePipe.transform(ap?.doctor) ?? '-',
+						ap.documentCount ? 'Yes' : 'No',
 						ap?.id?.toString(),
-						ap?.createdAt?.toString(),
+						this.appointmentApiSvc.convertUtcToLocalDate(ap?.createdAt),
 						this.translatePipe.transform(AppointmentStatusToName[+ap.approval]),
 					]),
 					'appointment',
@@ -376,7 +374,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 		this.appointmentViewControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			if (value) {
-				this.isUpcomingAppointments = value == 'upcoming';
+				this.isUpcomingAppointments = value === 'upcoming';
 			}
 			this.selectedAppointmentIDs = [];
 			this.filteredAppointments$$.next([...this.appointments$$.value]);
@@ -402,7 +400,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				if (appointment.approval === 1) status = this.translate.instant('Approved');
 				if (appointment.approval === 2) status = this.translate.instant('Canceled');
 				return (
-					(appointment.patientFname?.toLowerCase() + ' ' + appointment.patientLname?.toLowerCase())?.includes(searchText) ||
+					`${appointment.patientFname?.toLowerCase()} ${appointment.patientLname?.toLowerCase()}`?.includes(searchText) ||
 					appointment.doctor?.toLowerCase()?.includes(searchText) ||
 					appointment.id?.toString()?.includes(searchText) ||
 					status?.toLowerCase()?.startsWith(searchText)
@@ -445,24 +443,30 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public copyToClipboard() {
 		try {
-			let dataString = `Started At\t\t\tEnded At\t\t\t`;
-			dataString += `${this.tableHeaders
+			let dataString = `${this.tableHeaders
 				.map(({ title }) => title)
 				.filter((value) => value !== 'Actions')
 				.join('\t\t')}\n`;
 
-			if (!this.filteredAppointments$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+			const data: any[] = this.isUpcomingAppointments ? this.upcomingTableData$$.value.items : this.pastTableData$$.value.items;
+
+			if (!data.length) {
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
 
-			this.filteredAppointments$$.value.forEach((ap: Appointment) => {
-				dataString += `${ap.startedAt.toString()}\t${ap.endedAt.toString()}\t${this.titleCasePipe.transform(
-					ap.patientFname,
-				)} ${this.titleCasePipe.transform(ap.patientLname)}\t\t${this.titleCasePipe.transform(
-					ap.doctor,
-				)}\t\t${ap.id.toString()}\t\t${ap.createdAt.toString()}\t\t${ap.readStatus ? 'Yes' : 'No'}\t\t${AppointmentStatusToName[+ap.approval]}\n`;
+			data.forEach((ap: Appointment) => {
+				dataString += `${this.appointmentApiSvc.convertUtcToLocalDate(ap.startedAt)}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(
+					ap.endedAt,
+				)}\t\t${this.titleCasePipe.transform(ap.patientFname)} ${this.titleCasePipe.transform(ap.patientLname)}\t\t${this.joinWithAndPipe.transform(
+					ap.exams,
+					'name',
+				)}\t\t${this.titleCasePipe.transform(ap.doctor) || '-'}\t\t${
+					ap.documentCount ? 'Yes' : 'No'
+				}\t\t${ap.id.toString()}\t\t${this.appointmentApiSvc.convertUtcToLocalDate(ap.createdAt)}\t\t${ap.readStatus ? 'Yes' : 'No'}\t\t${
+					AppointmentStatusToName[+ap.approval]
+				}\n`;
 			});
 
 			this.clipboardData = dataString;
@@ -542,97 +546,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		}, 0);
 	}
 
-	private groupAppointmentsForCalendar(...appointments: Appointment[]) {
-		let startDate: Date;
-		let endDate: Date;
-		let sameGroup: boolean;
-		let groupedAppointments: Appointment[] = [];
-		let lastDateString: string;
-
-		this.appointmentsGroupedByDate = {};
-		this.appointmentsGroupedByDateAndTime = {};
-		this.appointmentGroupedByDateAndRoom = {};
-
-		appointments.push({} as Appointment);
-		appointments.forEach((appointment, index) => {
-			if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
-				const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
-
-				if (dateString) {
-					if (!this.appointmentsGroupedByDate[dateString]) {
-						this.appointmentsGroupedByDate[dateString] = [];
-					}
-
-					if (!this.appointmentsGroupedByDateAndTime[dateString]) {
-						this.appointmentsGroupedByDateAndTime[dateString] = [];
-
-						startDate = new Date(appointment.startedAt);
-						endDate = new Date(appointment.endedAt);
-						sameGroup = false;
-					} else {
-						const currSD = new Date(appointment.startedAt);
-						const currED = new Date(appointment.endedAt);
-
-						if (currSD.getTime() === startDate.getTime() || (currSD > startDate && currSD < endDate) || currSD.getTime() === endDate.getTime()) {
-							sameGroup = true;
-							if (currED > endDate) {
-								endDate = currED;
-							}
-						} else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
-							sameGroup = true;
-							if (currED > endDate) {
-								endDate = currED;
-							}
-						} else {
-							startDate = currSD;
-							endDate = currED;
-							sameGroup = false;
-						}
-					}
-
-					if (!sameGroup) {
-						if (index !== 0) {
-							this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
-							groupedAppointments = [];
-						}
-					}
-
-					lastDateString = dateString;
-
-					groupedAppointments.push(appointment);
-					this.appointmentsGroupedByDate[dateString].push(appointment);
-				}
-			} else if (lastDateString) {
-				this.appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments);
-			}
-		});
-	}
-
-	private groupAppointmentByDateAndRoom(...appointments: Appointment[]) {
-		appointments?.forEach((appointment) => {
-			const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
-
-			if (dateString) {
-				if (!this.appointmentGroupedByDateAndRoom[dateString]) {
-					this.appointmentGroupedByDateAndRoom[dateString] = {};
-				}
-
-				appointment?.exams?.forEach((exam) => {
-					exam.rooms?.forEach((room) => {
-						if (!this.appointmentGroupedByDateAndRoom[dateString][room.id]) {
-							this.appointmentGroupedByDateAndRoom[dateString][room.id] = [];
-						}
-
-						this.appointmentGroupedByDateAndRoom[dateString][room.id].push({
-							appointment,
-							exams: appointment.exams ?? [],
-						});
-					});
-				});
-			}
-		});
-	}
-
 	private clearDownloadDropdown() {
 		setTimeout(() => {
 			this.downloadDropdownControl.setValue('');
@@ -641,19 +554,21 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public onRefresh(): void {
 		this.appointmentApiSvc.refresh();
+		this.advanceSearchData = undefined;
 		this.isResetBtnDisable = true;
 		this.appointmentApiSvc.appointmentPageNo = 1;
 	}
 
-	public onScroll(e: any): void {
+	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.appointmentApiSvc.appointmentPageNo = this.appointmentApiSvc.appointmentPageNo + 1;
+			this.appointmentApiSvc.appointmentPageNo += 1;
 			this.upcomingTableData$$.value.isLoadingMore = true;
 		}
 	}
 
 	public onSort(e: DfmTableHeader, table = 'upcoming'): void {
-		table == 'past' ? (this.sortTypePast = e.sort) : (this.sortType = e.sort);
+		if (table === 'past') this.sortTypePast = e.sort;
+		else this.sortType = e.sort;
 		this.filteredAppointments$$.next(GeneralUtils.SortArray(this.filteredAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
 	}
 
@@ -663,15 +578,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				titleText: 'AdvancedSearch',
 				confirmButtonText: 'Search',
 				cancelButtonText: 'Reset',
-				items: [
-					...this.appointments$$.value.map(({ id, patientLname, patientFname }) => {
-						return {
-							name: `${patientFname} ${patientLname}`,
-							key: `${patientFname} ${patientLname} ${id}`,
-							value: id,
-						};
-					}),
-				],
+				values: this.advanceSearchData,
 			},
 			options: {
 				size: 'xl',
@@ -683,7 +590,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		modalRef.closed
 			.pipe(
 				filter((res) => !!res),
-				switchMap((result) => this.appointmentApiSvc.fetchAllAppointments$(1, result)),
+				switchMap((result) => {
+					this.advanceSearchData = result;
+					return this.appointmentApiSvc.fetchAllAppointments$(1, result)
+				}),
 				take(1),
 			)
 			.subscribe({
@@ -711,12 +621,13 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public uploadRefferingNote(event: any, id: any) {
 		event.stopImmediatePropagation();
-		var extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
-		var allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
 		if (!event.target.files.length) {
 			return;
-		} else if (allowedExtensions.indexOf(extension) === -1) {
+		}
+		const extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
+		if (allowedExtensions.indexOf(extension) === -1) {
 			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
 		} else if (fileSize) {
 			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
@@ -727,29 +638,30 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	private onFileChange(event: any, id) {
+		const e = event;
 		new Promise((resolve) => {
 			const { files } = event.target as HTMLInputElement;
 
-			if (files && files?.length) {
+			if (files?.length) {
 				const reader = new FileReader();
-				reader.onload = (e: any) => {
+				reader.onload = () => {
 					resolve(files[0]);
 				};
 				reader.readAsDataURL(files[0]);
 			}
 		}).then((res) => {
 			this.uploadDocument(res, id);
-			event.target.value = '';
+			e.target.value = '';
 		});
 	}
 
 	private uploadDocument(file: any, id) {
 		this.appointmentApiSvc.uploadDocumnet(file, '', id).subscribe({
-			next: (res) => {
+			next: () => {
 				this.notificationSvc.showNotification(`${Translate.documentUploadSuccessfully[this.selectedLang]}`, NotificationType.SUCCESS);
 				this.onRefresh();
 			},
-			error: (err) => this.notificationSvc.showNotification(`${Translate.Error.FailedToUpload[this.selectedLang]}`, NotificationType.DANGER),
+			error: () => this.notificationSvc.showNotification(`${Translate.Error.FailedToUpload[this.selectedLang]}`, NotificationType.DANGER),
 		});
 	}
 }

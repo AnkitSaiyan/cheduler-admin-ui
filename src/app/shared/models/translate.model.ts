@@ -39,6 +39,11 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Inactief',
 	},
 
+	Default: {
+		[ENG_BE]: '-',
+		[DUTCH_BE]: '-',
+	},
+
 	Telephone: {
 		[ENG_BE]: 'Telephone',
 		[DUTCH_BE]: 'Telefoon',
@@ -345,6 +350,10 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'User Updated successfully',
 			[DUTCH_BE]: 'Gebruiker Succesvol geüpdated',
 		},
+		UserRoleUpdated: {
+			[ENG_BE]: 'User Role Updated successfully',
+			[DUTCH_BE]: 'Gebruikersrol Succesvol geüpdated',
+		},
 		Added: {
 			[ENG_BE]: 'Added successfully',
 			[DUTCH_BE]: 'Succesvol toegevoegd',
@@ -583,15 +592,15 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Prioritaire slots',
 		Daily: {
 			[ENG_BE]: 'Daily',
-			[DUTCH_BE]: 'Daily NL',
+			[DUTCH_BE]: 'Dagelijks',
 		},
 		Weekly: {
 			[ENG_BE]: 'Weekly',
-			[DUTCH_BE]: 'Weekly NL',
+			[DUTCH_BE]: 'Wekelijks',
 		},
 		Monthly: {
 			[ENG_BE]: 'Monthly',
-			[DUTCH_BE]: 'Monthly NL',
+			[DUTCH_BE]: 'Maandelijks',
 		},
 	},
 
@@ -603,6 +612,11 @@ export const Translate = Object.freeze({
 	NoDataToDownlaod: {
 		[ENG_BE]: 'No data to download',
 		[DUTCH_BE]: 'Geen gegevens om te downloaden',
+	},
+
+	NoDataToCopy: {
+		[ENG_BE]: 'No data to copy',
+		[DUTCH_BE]: 'Geen gegevens om te kopiëren',
 	},
 
 	sessionExp: {
@@ -655,17 +669,17 @@ export const Translate = Object.freeze({
 				MSG_400_EXAM_EXIST: 'Exam name already exist.',
 			},
 			[DUTCH_BE]: {
-				MSG_400_APMT_EXISTS: '(NL) Appointment exists in this range.',
-				MSG_400_APMT_EXCEEDS: '(NL) Appointment exceeds outside hours.',
-				MSG_400_DOC_NOT_EDITABLE: '(NL) You can not edit this document',
+				MSG_400_APMT_EXISTS: 'Afspraak bestaat in dit bereik.',
+				MSG_400_APMT_EXCEEDS: 'Afspraak overschrijdt buiten kantooruren.',
+				MSG_400_DOC_NOT_EDITABLE: 'U kunt dit document niet bewerken',
 				MSG_400_SLOT_EXISTS: 'Dit slot overlapt met een reeds bestaand slot',
-				MSG_400_APMT_START_BIGGER: '(NL) Duration of minutes is greater than the end time',
-				MSG_400_EXAM_EXIST: '(NL) Exam name already exist.',
+				MSG_400_APMT_START_BIGGER: 'De duur van minuten is groter dan de eindtijd',
+				MSG_400_EXAM_EXIST: 'Examennaam bestaat al.',
 			},
 		},
 	},
 
-	//title
+	// title
 	Dashboard: {
 		[ENG_BE]: 'Dashboard',
 		[DUTCH_BE]: 'Dashboard',
@@ -878,49 +892,4 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Room Duration',
 	},
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

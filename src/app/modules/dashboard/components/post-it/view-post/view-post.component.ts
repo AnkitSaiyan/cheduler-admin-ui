@@ -34,5 +34,3 @@ export class ViewPostComponent extends DestroyableComponent implements OnInit, O
 		this.dialogSvc.close();
 	}
 }
-
-

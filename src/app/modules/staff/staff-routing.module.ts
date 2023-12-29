@@ -8,37 +8,37 @@ import { StaffViewComponent } from './components/staff-view/staff-view.component
 import { AddStaffComponent } from './components/add-staff/add-staff.component';
 
 const staffRoutes: Routes = [
-  {
-    path: '',
-    component: StaffComponent,
-    title: 'Staff',
-    children: [
-      {
-        path: '',
-        component: StaffListComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.Staffs },
-      },
-      {
-        path: 'add',
-        component: AddStaffComponent,
-        data: { routeType: RouteType.Add, routeName: RouteName.Staffs },
-      },
-      {
-        path: `:${STAFF_ID}/view`,
-        component: StaffViewComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.Staffs },
-      },
-      {
-        path: `:${STAFF_ID}/edit`,
-        component: AddStaffComponent,
-        data: { routeType: RouteType.Add, routeName: RouteName.Staffs },
-      },
-    ],
-  },
+	{
+		path: '',
+		component: StaffComponent,
+		title: 'Staff',
+		children: [
+			{
+				path: '',
+				component: StaffListComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.Staffs },
+			},
+			{
+				path: 'add',
+				component: AddStaffComponent,
+				data: { routeType: RouteType.Add, routeName: RouteName.Staffs },
+			},
+			{
+				path: `:${STAFF_ID}/view`,
+				component: StaffViewComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.Staffs },
+			},
+			{
+				path: `:${STAFF_ID}/edit`,
+				component: AddStaffComponent,
+				data: { routeType: RouteType.Add, routeName: RouteName.Staffs },
+			},
+		],
+	},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(staffRoutes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(staffRoutes)],
+	exports: [RouterModule],
 })
 export class StaffRoutingModule {}

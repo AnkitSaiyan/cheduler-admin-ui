@@ -1,7 +1,6 @@
 import { ElementRef, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { Appointment } from 'src/app/shared/models/appointment.model';
 
-
 @Injectable({
 	providedIn: 'root',
 })
@@ -21,6 +20,7 @@ export class DraggableService {
 	private dragStartElementParentReference!: any;
 
 	private dragEndElementReference!: any;
+
 	private headerTypeValue!: string | undefined;
 
 	constructor(rendererFactory: RendererFactory2) {
@@ -37,19 +37,20 @@ export class DraggableService {
 		return this.dragStartElementRefData;
 	}
 
+	public get dragEndElementRef() {
+		return this.dragEndElementReference;
+	}
+
 	public set dragEndElementRef(element: ElementRef) {
 		this.dragEndElementReference = element;
 	}
+
 	public get isDragStarted() {
 		return this.dragStarted;
 	}
 
 	public set isDragStarted(value: boolean) {
 		this.dragStarted = value;
-	}
-
-	public get dragEndElementRef() {
-		return this.dragEndElementReference;
 	}
 
 	public set dragStartElementParentRef(element: ElementRef) {
@@ -79,12 +80,13 @@ export class DraggableService {
 	public dayViewDragComplete(event: any) {
 		if (!this.dragStartElement || !this.dragEndElementRef) return;
 		const cloneElement = this.dragStartElement?.event?.target?.cloneNode(true);
-		const calculatedOffsetY: number = event?.offsetY - this.dragStartElement?.event?.offsetY;
+		const calculatedOffsetY: number = event.offsetY - this.dragStartElement.event.offsetY;
 		const top: number = calculatedOffsetY - (calculatedOffsetY % 20);
 		cloneElement.style.top = `${top}px`;
 		this.renderer.appendChild(this.dragEndElementRef?.nativeElement, cloneElement);
 		this.renderer?.removeChild(this.dragStartElementParentRef, this.dragStartElement?.event?.target);
 	}
+
 	public weekViewDragComplete(event: any) {
 		if (!this.dragStartElement || !this.dragEndElementRef) return;
 		const cloneElement = this.dragStartElement?.event?.target?.cloneNode(true);
@@ -94,13 +96,13 @@ export class DraggableService {
 		}
 		this.renderer.appendChild(cloneParentElement, cloneElement);
 		this.renderer?.removeChild(this.dragStartElementParentRef, this.dragStartElement?.event?.target);
-		const calculatedOffsetY: number = event?.offsetY - this.dragStartElement?.event?.offsetY;
+		const calculatedOffsetY: number = event.offsetY - this.dragStartElement.event.offsetY;
 		const top: number = calculatedOffsetY - (calculatedOffsetY % 20);
 		cloneParentElement.style.top = `${top}px`;
 		this.renderer.appendChild(this.dragEndElementRef?.nativeElement, cloneParentElement);
 	}
 
-	public monthViewDragComplete(event: any) {
+	public monthViewDragComplete() {
 		if (!this.dragStartElement || !this.dragEndElementRef) return;
 		const cloneElement = this.dragStartElement?.event?.target?.cloneNode(true);
 		this.renderer.appendChild(this.dragEndElementRef?.nativeElement, cloneElement);
@@ -144,62 +146,3 @@ export class DraggableService {
 		element?.remove();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

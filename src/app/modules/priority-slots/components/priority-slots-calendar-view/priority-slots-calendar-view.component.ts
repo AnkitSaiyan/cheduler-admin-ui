@@ -10,10 +10,10 @@ import { DestroyableComponent } from 'src/app/shared/components/destroyable.comp
 import { RepeatType } from 'src/app/shared/models/absence.model';
 import { getDateOfMonth } from 'src/app/shared/models/calendar.model';
 import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
-import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
-import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { SignalrService } from 'src/app/core/services/signalr.service';
+import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
+import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 
 @Component({
 	selector: 'dfm-priority-slots-calendar-view',
@@ -111,7 +111,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 		);
 
 		this.signalRService.priorityModuleData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
-			const indexOfChangedSlot = this.currentSlotPercentageData.findIndex((ele) => ele.date == data.date);
+			const indexOfChangedSlot = this.currentSlotPercentageData.findIndex((ele) => ele.date === data.date);
 			if (indexOfChangedSlot !== -1) {
 				this.currentSlotPercentageData[indexOfChangedSlot] = data;
 				this.slotPercentage$$.next(this.currentSlotPercentageData);
@@ -341,7 +341,7 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 				},
 				isClose,
 			)
-			.subscribe((res) => {
+			.subscribe(() => {
 				let prioritySlot = { ...this.prioritySlots$$.value };
 				const formatedDate = this.datePipe.transform(date, 'd-M-yyyy')!;
 				prioritySlot = {
@@ -357,15 +357,3 @@ export class PrioritySlotsCalendarViewComponent extends DestroyableComponent imp
 			});
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-

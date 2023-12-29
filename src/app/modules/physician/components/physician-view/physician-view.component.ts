@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Permission } from 'src/app/shared/models/permission.model';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -13,7 +14,6 @@ import { PhysicianAddComponent } from '../physician-add/physician-add.component'
 import { Status } from '../../../../shared/models/status.model';
 import { Translate } from '../../../../shared/models/translate.model';
 import { ShareDataService } from '../../../../core/services/share-data.service';
-import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
 	selector: 'dfm-physician-view',

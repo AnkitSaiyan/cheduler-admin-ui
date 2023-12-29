@@ -29,8 +29,11 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 	}
 
 	@Input() label!: string;
+
 	@Input() placeholder!: string;
+
 	@Input() size: InputSize = 'md';
+
 	@Input() public interval = 5;
 
 	private times: NameValue[] = [];
@@ -131,7 +134,7 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 		this.searchTime(time);
 		const formattedTime = DateTimeUtils.FormatTime(time, 24, 5);
 		if (!formattedTime) {
-      this.onChange('');
+			this.onChange('');
 			return;
 		}
 
@@ -177,7 +180,7 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 			return;
 		}
 
-		if (!time.match(TIME_24)) {
+		if (!TIME_24.exec(time)) {
 			toggleControlError(this.control, this.invalidTimeError);
 			return;
 		}
@@ -185,19 +188,3 @@ export class DfmTimeInputDropdownComponent extends DestroyableComponent implemen
 		toggleControlError(this.control, this.invalidTimeError, false);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

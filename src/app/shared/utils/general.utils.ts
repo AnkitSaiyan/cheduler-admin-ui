@@ -11,9 +11,8 @@ export class GeneralUtils {
 					return d?.toString()?.toLowerCase().includes(filterText.toString().toLowerCase());
 				}),
 			];
-		} else {
-			return arr;
 		}
+		return arr;
 	}
 
 	public static saveSessionExpTime(): void {
@@ -22,23 +21,14 @@ export class GeneralUtils {
 	}
 
 	public static SortArray([...arr]: readonly any[], sort: ColumnSort | undefined, key?: string): any[] {
-		if (key == 'startedAt' || key == 'endedAt') return this.sortDate(arr, sort, key);
-		switch (sort) {
-			case 'Asc':
-				return arr.sort((a, b) => {
-					if (key) {
-						return a[key] <= b[key] ? -1 : 1;
-					}
-					return a <= b ? -1 : 1;
-				});
-			default:
-				return arr.sort((a, b) => {
-					if (key) {
-						return a[key] >= b[key] ? -1 : 1;
-					}
-					return a >= b ? -1 : 1;
-				});
+		if (key === 'startedAt' || key === 'endedAt') {
+			return this.sortDate(arr, sort, key);
 		}
+		const compareFunction = (a: any, b: any) => {
+			const compareResult = key ? a[key] - b[key] : a - b;
+			return sort === 'Asc' ? compareResult : -compareResult;
+		};
+		return arr.slice().sort(compareFunction);
 	}
 
 	public static modifyListData(
@@ -51,56 +41,61 @@ export class GeneralUtils {
 		if (!list.length) {
 			return list;
 		}
-
-		action = action == 'approved' || action == 'cancelled' ? 'update' : action;
-
-		switch (action) {
+		const perform = action === 'approved' || action === 'cancelled' ? 'update' : action;
+		switch (perform) {
 			case 'add':
 				return [item, ...list];
-			case 'delete':
-				return list.filter((data) => {
-					if (key) {
-						return data[key]?.toString() !== item[key]?.toString();
-					}
-					return data !== item;
-				});
-			case 'update' || 'approved' || 'cancelled':
-				if (typeof index === 'number' && index > -1 && index < list.length) {
-					list[index] = item;
-					return list;
-				}
 
-				return list.map((data) => {
-					if (key) {
-						if (data[key] === item[key]) {
-							return item;
-						}
-					} else {
-						if (data.toString() === item.toString()) {
-							return item;
-						}
-					}
-					return data;
-				});
+			case 'delete':
+				return this.deleteItem(list, item, key);
+
+			case 'update':
+				return this.updateItem(list, item, key, index);
+
+			default:
+				return list;
 		}
 	}
 
+	private static deleteItem(list: any[], item: any, key?: string): any[] {
+		return list.filter((data) => this.isNotMatching(data, item, key));
+	}
+
+	private static updateItem(list: any[], item: any, key?: string, index?: null | number): any[] {
+		if (typeof index === 'number' && index > -1 && index < list.length) {
+			return [...list.slice(0, index), item, ...list.slice(index + 1)];
+		}
+		return list.map((data) => (this.isMatching(data, item, key) ? item : data));
+	}
+
+	private static isNotMatching(data: any, item: any, key?: string): boolean {
+		return key ? data[key]?.toString() !== item[key]?.toString() : data !== item;
+	}
+
+	private static isMatching(data: any, item: any, key?: string): boolean {
+		return key ? data[key] === item[key] : data.toString() === item.toString();
+	}
+
 	public static removeDuplicateData(list: Array<any>, key: any): Array<any> {
-		const filtered = list.filter((val, index, array) => array.findIndex((v) => v[key] == val[key]) == index);
+		if (!list.length) return list;
+		const filtered = list.filter((val, index, array) => array.findIndex((v) => v[key] === val[key]) === index);
 		return filtered;
 	}
 
 	private static sortDate([...arr]: readonly any[], sort: ColumnSort | undefined, key: string): any[] {
-		let trueData: any[] = [];
-		let falseData: any[] = [];
-		for (let val of arr) val[key] ? trueData.push(val) : falseData.push(val);
-
-		switch (sort) {
-			case 'Asc':
-				trueData.sort((a: any, b: any) => (new Date(a[key]) < new Date(b[key]) ? -1 : 1));
-				break;
-			default:
-				trueData.sort((a: any, b: any) => (new Date(b[key]) < new Date(a[key]) ? -1 : 1));
+		const trueData: any[] = [];
+		const falseData: any[] = [];
+		arr.forEach((val) => {
+			if (val[key]) {
+				trueData.push(val);
+			} else {
+				falseData.push(val);
+			}
+		});
+		if (sort === 'Asc') {
+			trueData.sort((a: any, b: any) => (new Date(a[key]) < new Date(b[key]) ? -1 : 1));
+		} else {
+			trueData.sort((a: any, b: any) => (new Date(b[key]) < new Date(a[key]) ? -1 : 1));
 		}
 		return [...trueData, ...falseData];
 	}

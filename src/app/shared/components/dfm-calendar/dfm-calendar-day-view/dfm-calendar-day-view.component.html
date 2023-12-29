@@ -94,7 +94,7 @@
                               <span class="font-weight-medium dfm-mt-8">{{"Staff" | translate}}</span>
                               <ng-container *ngIf="data.exams | isData : 'users'; else dash">
                                 <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
-                                  <div *ngFor="let user of exam?.users"
+                                  <div *ngFor="let user of (exam?.users | removeDuplicateData)"
                                        class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
                                     <div class="circle-gray-200-40">
                                       {{ user?.firstname?.length ? (user.firstname[0] | uppercase) : '' }}
@@ -196,7 +196,7 @@
                                       <span class="font-weight-medium dfm-mt-8">{{"Staff" | translate}}</span>
                                       <ng-container *ngIf="data.exams | isData : 'users'; else dash">
                                         <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
-                                          <div *ngFor="let user of exam?.users"
+                                          <div *ngFor="let user of (exam?.users | removeDuplicateData)"
                                                class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
                                             <div class="circle-gray-200-40">
                                               {{ user?.firstname?.length ? (user.firstname[0] | uppercase) : '' }}
@@ -409,14 +409,14 @@
 
                                     <div class="d-flex flex-column dfm-gap-4">
                                       <span class="font-weight-medium dfm-mt-8"> {{"Comments" | translate}} </span>
-                                      <span class="calendar-comments-text"> {{ data.appointment?.comments | dashIfNothing }}</span>
+                                      <span class="calendar-comments-text"> {{ data?.appointment?.comments | dashIfNothing }}</span>
                                     </div>
 
                                     <div class="d-flex flex-column dfm-gap-4">
                                       <span class="font-weight-medium dfm-mt-8">{{"Staff" | translate}}</span>
                                       <ng-container *ngIf="data.exams | isData : 'users'; else dash">
                                         <div *ngFor="let exam of data.exams" class="dfm-ps-4 dfm-pt-4">
-                                          <div *ngFor="let user of exam?.rooms?.[0]?.users"
+                                          <div *ngFor="let user of ((exam?.rooms?.[0]?.users || []) | removeDuplicateData)"
                                               class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
                                             <div class="circle-gray-200-40">
                                               {{ user?.firstname?.length ? (user.firstname[0] | uppercase) : '' }}
@@ -435,11 +435,6 @@
                                   </div>
                                 </ng-template>
                                 <!-- POP OVER ENDS -->
-
-                                <!-- circle for alert start -->
-                                <!-- <div class="calendar-week-view-event-circle-icon" [ngClass]="{ 'calendar-week-view-event-circle-icon-sm': eventHeight <= 20 }">
-                                </div> -->
-                                <!-- circle for alert end -->
                                 <div class="calender-day-view-event-details-container" (click)="$event.stopPropagation()"
                                     [ngClass]="{ 'calender-day-view-event-details-container-sm m-0-auto ': +eventHeight <= 40, 'center': +eventContainer.offsetHeight >20 && +eventContainer.offsetHeight <=40 }"
                                     [routerLink]="['/', 'appointment', data.appointment.id, 'view']" queryParamsHandling="merge">

@@ -3,19 +3,19 @@ import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, OnDestroy
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import {
-  BehaviorSubject,
-  Observable,
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  map,
-  of,
-  skip,
-  startWith,
-  switchMap,
-  takeUntil,
-  tap
+	BehaviorSubject,
+	Observable,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	map,
+	of,
+	skip,
+	startWith,
+	switchMap,
+	takeUntil,
+	tap,
 } from 'rxjs';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
@@ -41,7 +41,7 @@ import { getNumberArray } from 'src/app/shared/utils/getNumberArray';
 export class AbsenceCalendarViewComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public calendarViewFormControl = new FormControl('month', []);
 
-	public dateControl = new FormControl();
+	public dataControl = new FormControl();
 
 	public calendarViewType: NameValue[] = [];
 
@@ -73,7 +73,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	public absenceMonthViewData$!: Observable<any>;
 
-	private isDayView$$ = new BehaviorSubject<Boolean>(false);
+	private isDayView$$ = new BehaviorSubject<boolean>(false);
 
 	public todayEvent$$ = new BehaviorSubject<any[]>([]);
 
@@ -167,7 +167,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			.pipe(
 				filter(([data, queryParams]: [Params, Params]) => data[ABSENCE_TYPE] === ABSENCE_TYPE_ARRAY[0] && queryParams['v'] === 'd'),
 				distinctUntilChanged(([preParams, preQueryParam], [currParams, currQueryParam]) => {
-					return !Boolean(preParams[ABSENCE_TYPE] !== currParams[ABSENCE_TYPE] || preQueryParam['v'] !== currQueryParam['v']);
+					return !(preParams[ABSENCE_TYPE] !== currParams[ABSENCE_TYPE] || preQueryParam['v'] !== currQueryParam['v']);
 				}),
 				debounceTime(100),
 				switchMap(() => this.roomApiSvc.allRooms$),
@@ -223,23 +223,23 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	private distinctUntilChanged([preParams, preQueryParam], [currParams, currQueryParam]): boolean {
 		if (preParams[ABSENCE_TYPE] !== currParams[ABSENCE_TYPE]) return false;
 
-		if (preQueryParam['v'] !== currQueryParam['v']) return false;
+		if (preQueryParam.v !== currQueryParam.v) return false;
 
-		const [currYear, currMonth, currDay] = currQueryParam['d'].split('-');
+		const [currYear, currMonth, currDay] = currQueryParam.d.split('-');
 
-		const [preYear, preMonth, preDay] = preQueryParam['d'].split('-');
+		const [preYear, preMonth, preDay] = preQueryParam.d.split('-');
 
 		const currDate = new Date(currYear, currMonth - 1, currDay, 0, 0, 0, 0);
 
 		const preDate = new Date(preYear, preMonth - 1, preDay, 0, 0, 0, 0);
 
 		switch (true) {
-			case currQueryParam['v'] === 'm':
+			case currQueryParam.v === 'm':
 				if (currMonth !== preMonth || currYear !== preYear) {
 					return false;
 				}
 				return true;
-			case currQueryParam['v'] === 'w':
+			case currQueryParam.v === 'w': {
 				if (currMonth !== preMonth || currYear !== preYear) {
 					return false;
 				}
@@ -251,6 +251,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 					return false;
 				}
 				return true;
+			}
 			default:
 				return false;
 		}
@@ -258,7 +259,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 	private getFromAndToDate([data, queryParam]) {
 		this.isDayView$$.next(false);
-		const [year, month, day] = queryParam['d'].split('-');
+		const [year, month, day] = queryParam.d.split('-');
 
 		const currDate = new Date(+year, +month - 1, +day, 0, 0, 0, 0);
 
@@ -266,13 +267,13 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 
 		let toDate: string;
 		switch (true) {
-			case queryParam['v'] === 'm':
+			case queryParam.v === 'm':
 				fromDate = DateTimeUtils.DateDistributedToString(new Date(+year, +month - 1, 1), '-');
 
 				toDate = DateTimeUtils.DateDistributedToString(new Date(+year, +month, 0), '-');
 
 				return [data[ABSENCE_TYPE], { fromDate, toDate }];
-			case queryParam['v'] === 'w':
+			case queryParam.v === 'w':
 				currDate.setDate(currDate.getDate() - (currDate.getDay() ? currDate.getDay() - 1 : 6));
 
 				fromDate = DateTimeUtils.DateDistributedToString(currDate, '-');
@@ -282,7 +283,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 				toDate = DateTimeUtils.DateDistributedToString(currDate, '-');
 
 				return [data[ABSENCE_TYPE], { fromDate, toDate }];
-			default:
+			default: {
 				const time = this.weekdayToPractice$$.value[currDate.getDay()];
 				this.selectedSlot$$.next({
 					...time,
@@ -291,13 +292,14 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 					),
 				});
 				this.isDayView$$.next(true);
-				return [data[ABSENCE_TYPE], { fromDate: queryParam['d'], toDate: queryParam['d'] }];
+				return [data[ABSENCE_TYPE], { fromDate: queryParam.d, toDate: queryParam.d }];
+			}
 		}
 	}
 
-	private dataModification(absence) {
+	private dataModification(absenceData) {
 		const absenceSlot = {};
-		absence
+		absenceData
 			?.map((value) => ({
 				...value,
 				startedAt: value.startedAt,
@@ -421,14 +423,14 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		let startDate: string;
 		let endDate: string;
 		let sameGroup: boolean;
-		let absenceGroupedByDate = {};
-		let modifiedAbsence = {};
+		const absenceGroupedByDate = {};
+		const modifiedAbsence = {};
 		Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
 			const filterAbsence = {};
 			const name = absence?.[0].userName ? 'userName' : 'roomName';
 			absence.forEach((item) => {
 				if (filterAbsence?.[item.id]) {
-					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: filterAbsence[item.id][name] + ', ' + item[name] };
+					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: `${filterAbsence[item.id][name]}, ${item[name]}` };
 				} else {
 					filterAbsence[item.id] = item;
 				}
@@ -459,14 +461,10 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 						currSDTime.setMinutes(+currSD.split(':')[1]);
 
 						if (
-							DateTimeUtils.TimeToNumber(currSD) >= DateTimeUtils.TimeToNumber(startDate) &&
-							DateTimeUtils.TimeToNumber(currSD) <= DateTimeUtils.TimeToNumber(endDate)
+							(DateTimeUtils.TimeToNumber(currSD) >= DateTimeUtils.TimeToNumber(startDate) &&
+								DateTimeUtils.TimeToNumber(currSD) <= DateTimeUtils.TimeToNumber(endDate)) ||
+							(DateTimeUtils.TimeToNumber(currSD) > DateTimeUtils.TimeToNumber(endDate) && getDurationMinutes(endTime, currSDTime) <= 1)
 						) {
-							sameGroup = true;
-							if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
-								endDate = currED;
-							}
-						} else if (DateTimeUtils.TimeToNumber(currSD) > DateTimeUtils.TimeToNumber(endDate) && getDurationMinutes(endTime, currSDTime) <= 1) {
 							sameGroup = true;
 							if (DateTimeUtils.TimeToNumber(currED) > DateTimeUtils.TimeToNumber(endDate)) {
 								endDate = currED;
@@ -491,13 +489,13 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	}
 
 	private dataModificationForMonth(absenceSlot: { [key: string]: Absence[] }) {
-		let modifiedAbsence = {};
+		const modifiedAbsence = {};
 		Object.entries(absenceSlot).forEach(([key, absence]: [string, any]) => {
 			const filterAbsence = {};
 			const name = absence?.[0].userName ? 'userName' : 'roomName';
 			absence.forEach((item) => {
 				if (filterAbsence?.[item.id]) {
-					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: filterAbsence[item.id][name] + ', ' + item[name] };
+					filterAbsence[item.id] = { ...filterAbsence[item.id], [name]: `${filterAbsence[item.id][name]}, ${item[name]}` };
 				} else {
 					filterAbsence[item.id] = item;
 				}
@@ -508,9 +506,9 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 	}
 
 	public setForm(event: FormControl<Date>) {
-		this.dateControl = event;
-		this.dateControl.setValue(this.selectedDate$$.value, { onlySelf: true, emitEvent: false });
-		this.dateControl.valueChanges.pipe(takeUntil(this.destroy$$), distinctUntilChanged()).subscribe({
+		this.dataControl = event;
+		this.dataControl.setValue(this.selectedDate$$.value, { onlySelf: true, emitEvent: false });
+		this.dataControl.valueChanges.pipe(takeUntil(this.destroy$$), distinctUntilChanged()).subscribe({
 			next: (value) => {
 				this.updateQuery('', value);
 			},
@@ -521,8 +519,8 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		event.valueChanges
 			.pipe(
 				startWith(new Date()),
-				switchMap((date) => combineLatest([of(date), this.route.data])),
-				filter(([_, routeData]) => !!routeData[ABSENCE_TYPE]),
+				switchMap((date) => combineLatest([this.route.data, of(date)])),
+				filter(([routeData]) => !!routeData[ABSENCE_TYPE]),
 				map(([date, routeData]) => [date, routeData[ABSENCE_TYPE]]),
 				switchMap(([date, absenceType]) =>
 					this.absenceApiSvc.absencesForCalendar$(
@@ -610,7 +608,7 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		getNumberArray(6, 0).forEach((weekday) => {
 			const practiceData = weekdayToPractice[weekday];
 
-			if (practiceData && practiceData.intervals.length) {
+			if (practiceData?.intervals.length) {
 				const startTime = practiceData.intervals[0].dayStart;
 				const endTime = practiceData.intervals[practiceData.intervals.length - 1].dayEnd;
 
@@ -668,12 +666,10 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 			DateTimeUtils.TimeToNumber('22:00:00') <= DateTimeUtils.TimeToNumber(max)
 		) {
 			minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
+		} else if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
+			minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
 		} else {
-			if (DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(max)) > 2155) {
-				minMaxValue = { ...minMaxValue, max: DateTimeUtils.LocalToUTCTimeTimeString('23:59:00') };
-			} else {
-				minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
-			}
+			minMaxValue = { ...minMaxValue, max: this.calculate(120, max, 'plus') };
 		}
 		minMaxValue = { ...minMaxValue, grayOutMin: min, grayOutMax: max };
 		this.practiceHourMinMax$$.next(minMaxValue);
@@ -687,4 +683,3 @@ export class AbsenceCalendarViewComponent extends DestroyableComponent implement
 		this.dateChange.emit(date);
 	}
 }
-

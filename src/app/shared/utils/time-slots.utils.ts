@@ -23,21 +23,20 @@ export class TimeSlotUtils {
 	}
 
 	public static isFormValid(formArrays): boolean {
-		for (let i = 0; i < formArrays.length; i++) {
-			for (let j = 0; j < formArrays[i].length; j++) {
-				const controls = formArrays[i].controls[j] as AbstractControl;
-
-				if (controls.invalid) {
-					return false;
-				}
-
-				if ((controls.value.dayStart && !controls.value.dayEnd) || (!controls.value.dayStart && controls.value.dayEnd)) {
-					return false;
-				}
+		for (const formArray of formArrays) {
+			for (const control of formArray.controls) {
+			  const controls = control as AbstractControl;
+		  
+			  if (controls.invalid) {
+				return false;
+			  }
+		  
+			  if ((controls.value.dayStart && !controls.value.dayEnd) || (!controls.value.dayStart && controls.value.dayEnd)) {
+				return false;
+			  }
 			}
-		}
+		  }
 
 		return true;
 	}
 }
-

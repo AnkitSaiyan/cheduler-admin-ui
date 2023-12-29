@@ -44,4 +44,3 @@ export interface WeekWisePracticeAvailability {
 export interface WeekdayTimeSlot<T> {
 	[key: string]: T;
 }
-

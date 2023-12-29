@@ -1,9 +1,6 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { EMPTY, Observable } from 'rxjs';
-import { Translate } from 'src/app/shared/models/translate.model';
-import { DUTCH_BE, ENG_BE } from 'src/app/shared/utils/const';
-import { environment } from '../../../environments/environment';
 import { GeneralUtils } from '../../shared/utils/general.utils';
 import { NotificationDataService } from '../services/notification-data.service';
 import { UserService } from '../services/user.service';
@@ -14,13 +11,11 @@ export class HeaderInterceptor implements HttpInterceptor {
 
 	public intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 		const SubDomain: string = window.location.host.split('.')[0];
-		const usersUrl = environment.userManagementApiUrl + '/users';
 
 		const sessionExp = localStorage.getItem('sessionExp');
 
 		if (sessionExp && +sessionExp < new Date().getTime()) {
-			
-			localStorage.setItem('isSessionExpired', 'true')
+			localStorage.setItem('isSessionExpired', 'true');
 			setTimeout(() => {
 				this.userSvc.logout();
 			}, 1500);
@@ -39,4 +34,3 @@ export class HeaderInterceptor implements HttpInterceptor {
 		return next.handle(newRequest);
 	}
 }
-

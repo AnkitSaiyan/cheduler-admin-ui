@@ -1,5 +1,5 @@
-import {Pipe, PipeTransform} from "@angular/core";
-import {DateTimeUtils} from "../utils/date-time.utils";
+import { Pipe, PipeTransform } from '@angular/core';
+import { DateTimeUtils } from '../utils/date-time.utils';
 
 @Pipe({
 	name: 'dfmUtcToLocal',
@@ -17,5 +17,3 @@ export class UtcToLocalPipe implements PipeTransform {
 		return DateTimeUtils.UTCDateToLocalDate(new Date(utcDateTimeString), changeDate).toString();
 	}
 }
-
-

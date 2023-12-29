@@ -13,6 +13,8 @@ import { Translate } from 'src/app/shared/models/translate.model';
 import { ENG_BE, Statuses } from 'src/app/shared/utils/const';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 
 const ColumnIdToKey = {
 	1: 'roomName',
@@ -67,6 +69,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 		private router: Router,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
+		private defaultDatePipe: DefaultDatePipe,
+		private utcToLocalPipe: UtcToLocalPipe,
 	) {
 		super();
 		this.roomAbsence$$ = new BehaviorSubject<any[]>([]);
@@ -92,8 +96,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 			next: (roomAbsence) => this.filteredRoomAbsence$$.next([...roomAbsence]),
 		});
 
-		this.dashboardApiService.roomAbsence$.pipe(takeUntil(this.destroy$$)).subscribe(
-			(roomAbsenceBase) => {
+		this.dashboardApiService.roomAbsence$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (roomAbsenceBase) => {
 				if (this.paginationData && this.paginationData.pageNo < roomAbsenceBase?.metaData?.pagination.pageNo) {
 					this.roomAbsence$$.next([...this.roomAbsence$$.value, ...roomAbsenceBase.data]);
 				} else {
@@ -101,8 +105,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 				}
 				this.paginationData = roomAbsenceBase?.metaData?.pagination || 1;
 			},
-			() => this.filteredRoomAbsence$$.next([]),
-		);
+			error: () => this.filteredRoomAbsence$$.next([]),
+		});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe((searchText) => {
 			if (searchText) {
@@ -127,11 +131,11 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 					this.tableHeaders.map(({ title }) => title),
 					this.filteredRoomAbsence$$.value.map((ap: any) => [
 						ap?.roomName?.toString(),
-						ap.startDate.toString(),
-						ap.endDate.toString(),
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.startDate?.toString())) || '-',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endDate?.toString())) || '-',
 						ap?.absenceName?.toString(),
 					]),
-					'unavailable-hall-period',
+					'unavailable-rooms-period',
 				);
 
 				if (value !== 'PRINT') {
@@ -169,20 +173,18 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 	public copyToClipboard() {
 		try {
-			let dataString = `Room Name\t\t\tStarted At\t\t\t`;
-			dataString += `${this.tableHeaders
-				.map(({ title }) => title)
-				.slice(2)
-				.join('\t\t')}\n`;
+			let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t\t')}\n`;
 
 			if (!this.filteredRoomAbsence$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
 
 			this.filteredRoomAbsence$$.value.forEach((ap: any) => {
-				dataString += `${ap?.roomName?.toString()}\t${ap?.startDate?.toString()}\t\t${ap.endDate.toString()}\t\t${ap.absenceName.toString()}\n`;
+				dataString += `${ap?.roomName?.toString()}\t\t${this.defaultDatePipe.transform(
+					this.utcToLocalPipe.transform(ap?.startDate?.toString()),
+				)}\t\t${this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap?.endDate?.toString()))}\t\t${ap.absenceName.toString()}\n`;
 			});
 
 			this.clipboardData = dataString;
@@ -196,7 +198,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 
 	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.dashboardApiService.roomAbsencePageNo = this.dashboardApiService.roomAbsencePageNo + 1;
+			this.dashboardApiService.roomAbsencePageNo += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}
 	}
@@ -206,8 +208,8 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 	}
 
 	public navigateToView(e: any) {
-		if (e?.roomId) {
-			this.router.navigate([`/absence/rooms/${e.roomId}/view`]);
+		if (e?.absenceId) {
+			this.router.navigate([`/absence/rooms/${e.absenceId}/view`]);
 		}
 	}
 }

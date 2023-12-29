@@ -9,9 +9,12 @@ import { NameValue } from 'src/app/shared/components/search-modal.component';
 import { DfmDatasource, DfmTableHeader, NotificationType } from 'diflexmo-angular-design';
 import { Translate } from 'src/app/shared/models/translate.model';
 import { ENG_BE, Statuses } from 'src/app/shared/utils/const';
-import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { PaginationData } from 'src/app/shared/models/base-response.model';
 import { GeneralUtils } from 'src/app/shared/utils/general.utils';
+import { DefaultDatePipe } from 'src/app/shared/pipes/default-date.pipe';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
+import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
+
 const ColumnIdToKey = {
 	1: 'patientFname',
 	2: 'patientEmail',
@@ -50,10 +53,10 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 	});
 
 	public tableHeaders: DfmTableHeader[] = [
-		{ id: '1', title: 'PatientName', isSortable: true },
-		{ id: '2', title: 'EmailID', isSortable: true },
-		{ id: '3', title: 'Doctor', isSortable: true },
-		{ id: '4', title: 'AppointmentDate', isSortable: true },
+		{ id: '1', title: 'PatientName', isSortable: false },
+		{ id: '2', title: 'EmailID', isSortable: false },
+		{ id: '3', title: 'Doctor', isSortable: false },
+		{ id: '4', title: 'AppointmentDate', isSortable: false },
 	];
 
 	private paginationData: PaginationData | undefined;
@@ -64,6 +67,8 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 		private notificationSvc: NotificationDataService,
 		private cdr: ChangeDetectorRef,
 		private shareDataSvc: ShareDataService,
+		private defaultDatePipe: DefaultDatePipe,
+		private utcToLocalPipe: UtcToLocalPipe,
 	) {
 		super();
 		this.recentPatients$$ = new BehaviorSubject<any[]>([]);
@@ -123,10 +128,10 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 					value as DownloadAsType,
 					this.tableHeaders.map(({ title }) => title).slice(0),
 					this.filteredRecentPatients$$.value.map((ap: any) => [
-						ap?.patientFname?.toString(),
-						ap?.patientEmail?.toString(),
-						ap?.doctor.toString(),
-						ap.startedAt.toString(),
+						`${ap?.patientFname?.toString()} ${ap?.patientLname.toString()}`,
+						ap?.patientEmail?.toString() || '-',
+						ap?.doctor.toString() || '-',
+						this.defaultDatePipe.transform(this.utcToLocalPipe.transform(ap.startedAt.toString())) || '-',
 					]),
 					'recent-patients',
 				);
@@ -156,7 +161,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 		this.filteredRecentPatients$$.next([
 			...this.recentPatients$$.value.filter((appointment) => {
 				return (
-					(appointment.patientFname?.toLowerCase() + ' ' + appointment.patientLname?.toLowerCase()).includes(searchText) ||
+					`${appointment.patientFname?.toLowerCase()} ${appointment.patientLname?.toLowerCase()}`.includes(searchText) ||
 					appointment.patientEmail?.toLowerCase()?.includes(searchText) ||
 					appointment.doctor?.toLowerCase()?.includes(searchText) ||
 					appointment.startedAt?.toString()?.includes(searchText)
@@ -167,20 +172,20 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
 	public copyToClipboard() {
 		try {
-			let dataString = `Patient Name\t\t\tEmail Id\t\t\t`;
-			dataString += `${this.tableHeaders
-				.map(({ title }) => title)
-				.slice(2)
-				.join('\t\t')}\n`;
+			let dataString = `${this.tableHeaders.map(({ title }) => title).join('\t\t')}\n`;
 
 			if (!this.filteredRecentPatients$$.value.length) {
-				this.notificationSvc.showNotification(Translate.NoDataToDownlaod[this.selectedLang], NotificationType.DANGER);
+				this.notificationSvc.showNotification(Translate.NoDataToCopy[this.selectedLang], NotificationType.DANGER);
 				this.clipboardData = '';
 				return;
 			}
 
 			this.filteredRecentPatients$$.value.forEach((ap: any) => {
-				dataString += `${ap?.patientFname?.toString()}\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${ap.startedAt.toString()}\n`;
+				dataString += `${
+					ap?.patientFname?.toString() + ' ' + ap?.patientLname?.toString()
+				}\t\t${ap?.patientEmail?.toString()}\t\t${ap.doctor.toString()}\t\t${this.defaultDatePipe.transform(
+					this.utcToLocalPipe.transform(ap.startedAt.toString()),
+				)}\n`;
 			});
 
 			this.clipboardData = dataString;
@@ -194,7 +199,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 
 	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
-			this.appointmentApiService.recentPatientPageNo = this.appointmentApiService.recentPatientPageNo + 1;
+			this.appointmentApiService.recentPatientPageNo += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}
 	}

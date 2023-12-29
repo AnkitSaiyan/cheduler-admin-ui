@@ -45,4 +45,3 @@ export interface Absence {
 }
 
 export type AddAbsenceRequestData = Prettify<PartialBy<Omit<Absence, 'rooms' | 'user' | 'userName' | 'roomName'>, 'id' | 'status' | 'absenceId'>>;
-

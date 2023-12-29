@@ -1,15 +1,16 @@
-export class UserInvite {
-  email: string = '';
-  givenName: string = '';
-  surName: string = '';
-  contextTenantId: string = '';
-  roleName: string = '';
-  redirect: UserInviteRedirect = { redirectUrl: '', clientId: '' }
+export interface UserInvite {
+	email: string;
+	givenName: string;
+	surName: string;
+	contextTenantId: string;
+	roles: string[];
+	redirect: UserInviteRedirect;
+	accountType: 'Local';
+	externalProviderName: null;
+	externalUserId: null;
 }
 
-export class UserInviteRedirect {
-  redirectUrl: string = '';
-  clientId: string = '';
+export interface UserInviteRedirect {
+	redirectUrl: string;
+	clientId: string;
 }
-
-

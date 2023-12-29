@@ -1,6 +1,7 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { take, takeUntil } from 'rxjs';
 import { FormControl, Validators } from '@angular/forms';
+import { GeneralUtils } from 'src/app/shared/utils/general.utils';
 import { ModalService } from '../../../../core/services/modal.service';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
@@ -8,6 +9,7 @@ import { Appointment } from '../../../../shared/models/appointment.model';
 import { UserType } from '../../../../shared/models/user.model';
 import { NameValuePairPipe } from '../../../../shared/pipes/name-value-pair.pipe';
 import { UserApiService } from '../../../../core/services/user-api.service';
+import { ResourceBatch } from 'src/app/shared/models/exam.model';
 
 @Component({
 	selector: 'dfm-change-radiologist-modal',
@@ -27,18 +29,26 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 	public ngOnInit(): void {
 		this.dialogSvc.dialogData$.pipe(take(1)).subscribe((data: Appointment) => {
-			const allUsers = data?.exams?.[0]?.allUsers || [];
-			const users = data?.exams?.[0]?.users || [];
+			const resourcesBatch = this.getResourceBatchAndRoomID(data);			
+			const allUsers = GeneralUtils.removeDuplicateData(
+				resourcesBatch?.[0].examResourceUsersList ?? [],
+				'id', 
+			);
+			const users = GeneralUtils.removeDuplicateData(resourcesBatch?.[0].users ?? [], 'id');
 			if (data.isOutside) {
 				this.userApiService.allStaffs$.pipe(takeUntil(this.destroy$$)).subscribe({
-					next: (allUsers) => {
-						this.setDropDownData(allUsers, users);
+					next: (allUser) => {
+						this.setDropDownData(allUser, users);
 					},
 				});
 			} else {
 				this.setDropDownData(allUsers, users);
 			}
 		});
+	}
+
+	private getResourceBatchAndRoomID(appointment: Appointment): ResourceBatch[] | undefined {	
+		return appointment?.exams?.[0]?.resourcesBatch?.filter((batch) => batch.rooms[0].id === appointment?.exams?.[0]?.rooms?.[0].id);			
 	}
 
 	private setDropDownData(allUsers, users): void {
@@ -70,7 +80,7 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 
 			setTimeout(() => {
 				this.radiologistFormControl.setValue(selected);
-			}, 200);
+			}, 500);
 		}
 	}
 
@@ -84,7 +94,7 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 			return;
 		}
 
-		this.dialogSvc.close(this.radiologistFormControl.value);
+		this.dialogSvc.close(this.radiologistFormControl.value?.map(Number));
 	}
 }
-;
+	

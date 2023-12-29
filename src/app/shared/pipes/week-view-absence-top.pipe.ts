@@ -20,7 +20,6 @@ export class WeekViewAbsenceTopPipe implements PipeTransform {
 		const startCalendarDate = DateTimeUtils.timeStingToDate(limit.min);
 		const startCalendarHour = startCalendarDate.getHours();
 		const startCalendarMinute = startCalendarDate.getMinutes();
-		const barHeight = 1;
 		const top = (startMinute + startHour * 60) * PIXELS_PER_MIN - (startCalendarMinute + startCalendarHour * 60) * PIXELS_PER_MIN;
 		if (
 			DateTimeUtils.TimeToNumber(absences?.[0].end) < DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(limit.min)) ||
@@ -40,4 +39,3 @@ export class WeekViewAbsenceTopPipe implements PipeTransform {
 		return top;
 	}
 }
-

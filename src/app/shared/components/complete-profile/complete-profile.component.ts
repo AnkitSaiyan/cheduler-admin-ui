@@ -1,19 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, switchMap, take, takeUntil } from "rxjs";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { UserManagementApiService } from "../../../core/services/user-management-api.service";
-import { DestroyableComponent } from "../destroyable.component";
-import { AuthUser } from "../../models/user.model";
-import { NotificationDataService } from "../../../core/services/notification-data.service";
-import { Router } from "@angular/router";
-import { ModalService } from "../../../core/services/modal.service";
-import { ConfirmActionModalComponent, ConfirmActionModalData } from "../confirm-action-modal.component";
-import { UserService } from "../../../core/services/user.service";
+import { BehaviorSubject, filter, switchMap, take, takeUntil } from 'rxjs';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import defaultLanguage from '../../../../../src/assets/i18n/en-BE.json';
-import dutchLangauge from '../../../../../src/assets/i18n/nl-BE.json';
-import { Translate } from '../../models/translate.model';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { UserManagementApiService } from '../../../core/services/user-management-api.service';
+import { DestroyableComponent } from '../destroyable.component';
+import { AuthUser } from '../../models/user.model';
+import { NotificationDataService } from '../../../core/services/notification-data.service';
+import { ModalService } from '../../../core/services/modal.service';
+import { ConfirmActionModalComponent, ConfirmActionModalData } from '../confirm-action-modal.component';
+import { UserService } from '../../../core/services/user.service';
+import defaultLanguage from '../../../../assets/i18n/en-BE.json';
+import dutchLangauge from '../../../../assets/i18n/nl-BE.json';
+import { Translate } from '../../models/translate.model';
 
 @Component({
 	selector: 'dfm-complete-profile',
@@ -22,6 +22,7 @@ import { ShareDataService } from 'src/app/core/services/share-data.service';
 })
 export class CompleteProfileComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public submitting$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
 	public user!: AuthUser;
 
 	public completeProfileForm = new FormGroup({
@@ -32,6 +33,7 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 		Country: new FormControl('', Validators.required),
 		PostalCode: new FormControl('', Validators.required),
 	});
+
 	public selectedLang: string = 'en-BE';
 
 	siteDetails$$: BehaviorSubject<any>;
@@ -61,6 +63,7 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 				this.selectedLang = value;
 			});
 	}
+
 	changeLanguage(value) {
 		this.shareDataSvc.setLanguage(value);
 		if (value === 'en-BE') {
@@ -132,6 +135,7 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 				next: () => this.userSvc.logout(),
 			});
 	}
+
 	public items: any = [
 		{
 			name: 'EN',
@@ -142,19 +146,6 @@ export class CompleteProfileComponent extends DestroyableComponent implements On
 			value: 'NL',
 		},
 	];
+
 	protected readonly window = window;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

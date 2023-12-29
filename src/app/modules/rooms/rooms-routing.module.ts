@@ -7,26 +7,26 @@ import { ROOM_ID } from '../../shared/utils/const';
 import { ViewRoomComponent } from './components/view-room/view-room.component';
 
 const roomRoutes: Routes = [
-  {
-    path: '',
-    component: RoomsComponent,
-    children: [
-      {
-        path: '',
-        component: RoomListComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.Room },
-      },
-      {
-        path: `:${ROOM_ID}/view`,
-        component: ViewRoomComponent,
-        data: { routeType: RouteType.View, routeName: RouteName.Room },
-      },
-    ],
-  },
+	{
+		path: '',
+		component: RoomsComponent,
+		children: [
+			{
+				path: '',
+				component: RoomListComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.Room },
+			},
+			{
+				path: `:${ROOM_ID}/view`,
+				component: ViewRoomComponent,
+				data: { routeType: RouteType.View, routeName: RouteName.Room },
+			},
+		],
+	},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(roomRoutes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(roomRoutes)],
+	exports: [RouterModule],
 })
 export class RoomsRoutingModule {}

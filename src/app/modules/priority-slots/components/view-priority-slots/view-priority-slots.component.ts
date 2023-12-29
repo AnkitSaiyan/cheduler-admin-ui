@@ -1,6 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, filter, map, switchMap, take, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { getUserTypeEnum } from 'src/app/shared/utils/getEnums';
+import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
+import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
+import { RepeatType } from 'src/app/shared/models/absence.model';
+import { ShareDataService } from 'src/app/core/services/share-data.service';
+import { Permission } from 'src/app/shared/models/permission.model';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { RouterStateService } from '../../../../core/services/router-state.service';
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
@@ -8,13 +14,7 @@ import { ModalService } from '../../../../core/services/modal.service';
 import { ENG_BE, PRIORITY_ID } from '../../../../shared/utils/const';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { AddPrioritySlotsComponent } from '../add-priority-slots/add-priority-slots.component';
-import { getUserTypeEnum } from 'src/app/shared/utils/getEnums';
-import { PrioritySlotApiService } from 'src/app/core/services/priority-slot-api.service';
-import { PrioritySlot } from 'src/app/shared/models/priority-slots.model';
-import { RepeatType } from 'src/app/shared/models/absence.model';
 import { Translate } from '../../../../shared/models/translate.model';
-import { ShareDataService } from 'src/app/core/services/share-data.service';
-import { Permission } from 'src/app/shared/models/permission.model';
 
 @Component({
 	selector: 'dfm-view-priority-slots',
@@ -100,10 +100,6 @@ export class ViewPrioritySlotsComponent extends DestroyableComponent implements 
 				centered: true,
 				backdropClass: 'modal-backdrop-remove-mv',
 			},
-		}).result;
+		});
 	}
 }
-
-
-
-

@@ -63,5 +63,3 @@ export class WeekViewAppointmentCardGroupHeightPipe implements PipeTransform {
 		return formattedDate;
 	}
 }
-
-

@@ -19,4 +19,3 @@ export class DayViewAbsenceHeightPipe implements PipeTransform {
 		return durationMinutes * PIXELS_PER_MIN;
 	}
 }
-

@@ -4,9 +4,6 @@ import {
 	BehaviorSubject,
 	catchError,
 	combineLatest,
-	debounceTime,
-	filter,
-	forkJoin,
 	map,
 	Observable,
 	of,
@@ -22,12 +19,11 @@ import { BaseResponse } from 'src/app/shared/models/base-response.model';
 import { NextSlotOpenPercentageData, PrioritySlot } from 'src/app/shared/models/priority-slots.model';
 import { environment } from 'src/environments/environment';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
+import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { LoaderService } from './loader.service';
 import { RepeatType } from '../../shared/models/absence.model';
 import { ShareDataService } from './share-data.service';
 import { Translate } from '../../shared/models/translate.model';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
-import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 
 @Injectable({
 	providedIn: 'root',
@@ -47,9 +43,13 @@ export class PrioritySlotApiService extends DestroyableComponent {
 			value: RepeatType.Monthly,
 		},
 	];
+
 	private readonly prioritySlots: string = `${environment.schedulerApiUrl}/priorityslot`;
+
 	private refreshPrioritySlots$$ = new Subject<void>();
+
 	private selectedLang$$ = new BehaviorSubject<string>('');
+
 	private pageNo$$ = new BehaviorSubject<number>(1);
 
 	constructor(
@@ -76,8 +76,8 @@ export class PrioritySlotApiService extends DestroyableComponent {
 	}
 
 	public get prioritySlots$(): Observable<BaseResponse<PrioritySlot[]>> {
-		return combineLatest([this.refreshPrioritySlots$$.pipe(startWith('')), this.pageNo$$]).pipe(
-			switchMap(([_, pageNo]) => this.fetchAllPrioritySlots(pageNo)),
+		return combineLatest([this.pageNo$$, this.refreshPrioritySlots$$.pipe(startWith(''))]).pipe(
+			switchMap(([pageNo]) => this.fetchAllPrioritySlots(pageNo)),
 		);
 	}
 
@@ -86,7 +86,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 			return this.http.get<BaseResponse<NextSlotOpenPercentageData>>(`${this.prioritySlots}/getprioritypercentage?date=${date}`).pipe(
 				throttleTime(200),
 				map((res) => res?.data),
-				catchError((err) => of({})),
+				catchError(() => of({})),
 			);
 		});
 
@@ -123,7 +123,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 			}),
 			catchError((e) => {
 				this.loaderSvc.deactivate();
-				return throwError(e);
+				return throwError(() => new Error(e));
 			}),
 		);
 	}
@@ -131,9 +131,6 @@ export class PrioritySlotApiService extends DestroyableComponent {
 	public getPrioritySlotsByID(slotID: number): Observable<PrioritySlot | undefined> {
 		this.loaderSvc.activate();
 		this.loaderSvc.spinnerActivate();
-
-		let queryParams = new HttpParams();
-		queryParams = queryParams.append('id', slotID);
 		return combineLatest([this.refreshPrioritySlots$$.pipe(startWith(''))]).pipe(
 			switchMap(() =>
 				this.http.get<BaseResponse<PrioritySlot>>(`${this.prioritySlots}/${slotID}`).pipe(
@@ -156,7 +153,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 					}),
 					catchError((e) => {
 						this.loaderSvc.deactivate();
-						return throwError(e);
+						return throwError(() => new Error(e));
 					}),
 				),
 			),
@@ -165,10 +162,9 @@ export class PrioritySlotApiService extends DestroyableComponent {
 
 	public savePrioritySlot$(requestData: PrioritySlot) {
 		this.loaderSvc.activate();
-		let { id, ...restData } = requestData;
-		let queryParams = new HttpParams();
+		const { id, ...restData } = requestData;
+		const queryParams = new HttpParams();
 		queryParams.append('id', 0);
-		requestData.id = id;
 
 		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}`, restData, { params: queryParams }).pipe(
 			map((response) => response.data),
@@ -178,15 +174,15 @@ export class PrioritySlotApiService extends DestroyableComponent {
 			}),
 			catchError((e) => {
 				this.loaderSvc.deactivate();
-				return throwError(e);
+				return throwError(() => new Error(e));
 			}),
 		);
 	}
 
 	public updatePrioritySlot$(requestData: PrioritySlot) {
 		this.loaderSvc.activate();
-		let { id, ...restData } = requestData;
-		let queryParams = new HttpParams();
+		const { id, ...restData } = requestData;
+		const queryParams = new HttpParams();
 		queryParams.append('id', String(id));
 		return this.http.post<BaseResponse<PrioritySlot>>(`${this.prioritySlots}?id=${id}`, restData).pipe(
 			map((response) => response.data),
@@ -196,7 +192,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 			}),
 			catchError((e) => {
 				this.loaderSvc.deactivate();
-				return throwError(e);
+				return throwError(() => new Error(e));
 			}),
 		);
 	}
@@ -209,7 +205,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 			tap(() => this.loaderSvc.deactivate()),
 			catchError((e) => {
 				this.loaderSvc.deactivate();
-				return throwError(e);
+				return throwError(() => new Error(e));
 			}),
 		);
 	}
@@ -222,7 +218,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 			}),
 			catchError((e) => {
 				this.loaderSvc.deactivate();
-				return throwError(e);
+				return throwError(() => new Error(e));
 			}),
 		);
 	}
@@ -241,7 +237,7 @@ export class PrioritySlotApiService extends DestroyableComponent {
 				return this.http.get<any>(`${this.prioritySlots}/getpriorityopencloselist?date=${date}`).pipe(
 					throttleTime(200),
 					map((res) => ({ [finalDate]: res?.data })),
-					catchError((err) => of({})),
+					catchError(() => of({})),
 				);
 			});
 
@@ -252,43 +248,3 @@ export class PrioritySlotApiService extends DestroyableComponent {
 		this.refreshPrioritySlots$$.next();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -12,4 +12,3 @@ export class DayViewAppointmentHeightPipe implements PipeTransform {
 		return durationMinutes * PIXELS_PER_MIN;
 	}
 }
-

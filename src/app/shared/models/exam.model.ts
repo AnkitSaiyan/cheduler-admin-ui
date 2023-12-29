@@ -1,7 +1,7 @@
 import { AvailabilityType, User } from './user.model';
 import { Status } from './status.model';
-import { Room, RoomType } from './rooms.model';
-import { TimeSlot, Weekday } from './calendar.model';
+import { Room } from './rooms.model';
+import { TimeSlot } from './common.modal';
 import { BodyType } from '../utils/const';
 import { BodyPart } from './body-part.model';
 
@@ -44,7 +44,6 @@ export interface Exam {
 
 export interface ResourceBatch {
 	batchId: number;
-	examId: number;
 	batchName: string;
 	roomOrder: number;
 	roomDuration: number;
@@ -56,7 +55,8 @@ export interface ResourceBatch {
 	users: User[];
 	roomList: number[];
 	rooms: Room[];
-	mandatoryUsers: User[];
+	examResourceUsersList?: User[];
+	appointmentResourcebatchId?: number;
 }
 
 export interface Uncombinables {

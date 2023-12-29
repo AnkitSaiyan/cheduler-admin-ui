@@ -23,8 +23,3 @@ export interface NextSlotOpenPercentageData {
 	mediumPriorityPercentage: number;
 	lowPriorityPercentage: number;
 }
-
-
-
-
-

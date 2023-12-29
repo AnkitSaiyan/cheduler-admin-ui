@@ -400,7 +400,7 @@
                 [ngClass]="{'drag-started': draggableSvc.isDragStarted}"
               >
               </div>
-            <ng-container *ngIf="grayOutSlot$$.value[weekday] && grayOutSlot$$.value[weekday] as items">
+            <ng-container *ngIf="grayOutSlot$$.value[weekday] && grayOutSlot$$.value[weekday] as items; else noPracticeHour">
               <ng-container *ngFor="let item of items">
                 <div
                   (dblclick)="onDblClick($event, eventsContainer, day, true, item.top)"
@@ -409,6 +409,13 @@
                 ></div>
               </ng-container>
             </ng-container>
+            <ng-template #noPracticeHour>
+              <div
+                  (dblclick)="onDblClick($event, eventsContainer, day, true, 0)"
+                  class="gray-out-area-week"
+                  [ngStyle]="{ 'top.px': 0, 'height.%': !showGrayOutSlot ? '0' : '100', width: bodyMain.style.width }"
+                ></div>
+            </ng-template>
             </ng-container>
 
           </div>

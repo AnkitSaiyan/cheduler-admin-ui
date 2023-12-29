@@ -6,44 +6,44 @@ import { ConfirmActionModalData } from 'src/app/shared/components/confirm-action
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 
 @Component({
-  selector: 'dfm-add-post',
-  templateUrl: './add-post.component.html',
-  styleUrls: ['./add-post.component.scss'],
+	selector: 'dfm-add-post',
+	templateUrl: './add-post.component.html',
+	styleUrls: ['./add-post.component.scss'],
 })
 export class AddPostComponent extends DestroyableComponent implements OnInit, OnDestroy, AfterViewInit {
-  public dialogData: ConfirmActionModalData = {
-    confirmButtonText: 'Proceed',
-    cancelButtonText: 'Cancel',
-    titleText: 'PostIt',
-    bodyText: 'Are you sure you want to perform this action?',
-  };
+	public dialogData: ConfirmActionModalData = {
+		confirmButtonText: 'Proceed',
+		cancelButtonText: 'Cancel',
+		titleText: 'PostIt',
+		bodyText: 'Are you sure you want to perform this action?',
+	};
 
-  @ViewChild('myinput') myInputField!: ElementRef;
+	@ViewChild('myinput') myInputField!: ElementRef;
 
-  ngAfterViewInit() {
-    this.myInputField?.nativeElement?.focus();
-  }
+	ngAfterViewInit() {
+		this.myInputField?.nativeElement?.focus();
+	}
 
-  postItMessage = new FormControl('', []);
+	postItMessage = new FormControl('', []);
 
-  constructor(private dialogSvc: ModalService) {
-    super();
-  }
+	constructor(private dialogSvc: ModalService) {
+		super();
+	}
 
-  public ngOnInit() {
-    this.dialogSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data: ConfirmActionModalData) => {
-      if (data.bodyText) this.dialogData.bodyText = data.bodyText;
-      if (this.postItMessage.value) this.dialogData.titleText = this.postItMessage.value;
-      if (data.confirmButtonText) this.dialogData.confirmButtonText = data.confirmButtonText;
-      if (data.cancelButtonText) this.dialogData.cancelButtonText = data.cancelButtonText;
-    });
-  }
+	public ngOnInit() {
+		this.dialogSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data: ConfirmActionModalData) => {
+			if (data.bodyText) this.dialogData.bodyText = data.bodyText;
+			if (this.postItMessage.value) this.dialogData.titleText = this.postItMessage.value;
+			if (data.confirmButtonText) this.dialogData.confirmButtonText = data.confirmButtonText;
+			if (data.cancelButtonText) this.dialogData.cancelButtonText = data.cancelButtonText;
+		});
+	}
 
-  public override ngOnDestroy() {
-    super.ngOnDestroy();
-  }
+	public override ngOnDestroy() {
+		super.ngOnDestroy();
+	}
 
-  public close(result: boolean) {
-    this.dialogSvc.close(this.postItMessage.value);
-  }
+	public close() {
+		this.dialogSvc.close(this.postItMessage.value);
+	}
 }

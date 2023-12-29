@@ -1,9 +1,12 @@
 import { Appointment } from '../models/appointment.model';
-import { DateDistributed } from '../models/calendar.model';
+
+interface DateDistributed {
+	day: number;
+	month: number;
+	year: number;
+}
 
 export class DateTimeUtils {
-	constructor() {}
-
 	public static DateDistributedToString(date: DateDistributed | Date, separator = '-'): string {
 		if (date instanceof Date) {
 			return this.DateDistributedToString(this.DateToDateDistributed(date));
@@ -32,11 +35,11 @@ export class DateTimeUtils {
 			return '';
 		}
 
-		date = new Date(date);
+		const newDate = new Date(date);
 
-		const minutes = date.getMinutes().toString();
+		const minutes = newDate.getMinutes().toString();
 
-		return `${date.getHours()}:${minutes.length < 2 ? `0${minutes}` : minutes}:00`;
+		return `${newDate.getHours()}:${minutes.length < 2 ? '0' + minutes : minutes}:00`;
 	}
 
 	public static TimeStringIn24Hour(timeString: string | undefined): string {
@@ -72,54 +75,29 @@ export class DateTimeUtils {
 		if (!timeString) {
 			return '';
 		}
-
 		const [hourPart, minutePart]: string[] = timeString.split(':');
-
-		//
-
-		if (!hourPart || !minutePart) {
+		if (hourPart?.length !== 2 || minutePart?.length < 2 || isNaN(+hourPart) || isNaN(+minutePart.slice(0, 2))) {
 			return '';
 		}
-
-		if (hourPart?.length !== 2 || minutePart?.length < 2) {
-			return '';
-		}
-
-		if (Number.isNaN(+hourPart) || Number.isNaN(+minutePart.slice(0, 2))) {
-			return '';
-		}
-
 		let ap = '';
 		if (format === 12) {
-			if (+hourPart >= 12 && +hourPart < 24) {
-				ap = 'PM';
-			} else {
-				ap = 'AM';
-			}
+			ap = +hourPart >= 12 && +hourPart < 24 ? 'PM' : 'AM';
 		}
-
 		let minuteInInterval = +minutePart.slice(0, 2);
-		if (minuteInInterval < 60) {
-			if (minuteInInterval % interval) {
-				minuteInInterval -= minuteInInterval % interval;
-			}
+		if (minuteInInterval < 60 && minuteInInterval % interval) {
+			minuteInInterval -= minuteInInterval % interval;
 		}
-
-		const hour = hourPart === '12' ? hourPart : `0${Math.floor(format === 12 ? +hourPart % 12 : +hourPart).toString()}`.slice(-2);
-		const min = +minutePart.slice(0, 2) > 60 ? '00' : `0${minuteInInterval}`.slice(-2);
-
-		if (format === 12) {
-			return `${hour}:${min}${ap}`;
-		}
-
-		return `${hour}:${min}`;
+		const floorVal = Math.floor(format === 12 ? +hourPart % 12 : +hourPart);
+		const hour = hourPart === '12' ? hourPart : `0${floorVal}`.slice(-2);
+		const min = minuteInInterval > 60 ? '00' : `0${minuteInInterval}`.slice(-2);
+		return format === 12 ? `${hour}:${min}${ap}` : `${hour}:${min}`;
 	}
 
 	public static TimeToNumber(timeString: string): number {
-		if (timeString && timeString.includes(':')) {
+		if (timeString?.includes(':')) {
 			const timeInNo = +timeString.split(':').join('');
 
-			if (!Number.isNaN(timeInNo)) {
+			if (!isNaN(timeInNo)) {
 				return timeInNo;
 			}
 		}
@@ -188,8 +166,8 @@ export class DateTimeUtils {
 		const offsetMinutes = localDate.getTimezoneOffset();
 		localDate.setTime(utcDate.getTime() - offsetMinutes * 60 * 1000);
 
-		const localHour = ('0' + localDate.getHours()).slice(-2);
-		const localMin = ('0' + localDate.getMinutes()).slice(-2);
+		const localHour = `0${localDate.getHours()}`.slice(-2);
+		const localMin = `0${localDate.getMinutes()}`.slice(-2);
 
 		return `${localHour}:${localMin}`;
 	}
@@ -211,8 +189,8 @@ export class DateTimeUtils {
 		const offsetMinutes = localDate.getTimezoneOffset();
 		localDate.setTime(utcDate.getTime() + offsetMinutes * 60 * 1000);
 
-		const localHour = ('0' + localDate.getHours()).slice(-2);
-		const localMin = ('0' + localDate.getMinutes()).slice(-2);
+		const localHour = `0${localDate.getHours()}`.slice(-2);
+		const localMin = `0${localDate.getMinutes()}`.slice(-2);
 
 		return `${localHour}:${localMin}`;
 	}
@@ -247,4 +225,3 @@ export class DateTimeUtils {
 		return calendarEndInMin - appointmentEndInMin;
 	}
 }
-
