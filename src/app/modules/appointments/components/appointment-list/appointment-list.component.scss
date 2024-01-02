@@ -38,7 +38,7 @@
   bottom: 18px;
   left: 18px;
   z-index: 9;
-  
+
     @media (max-width: 680px) {
       bottom: 64px;
     }
@@ -57,6 +57,10 @@
   .ap-li-section-1 {
     justify-content: space-between;
     flex-wrap: wrap;
+    .ap-li-title-buttons,
+      .toggle-view {
+        order: -1;
+      }
   }
 
   .ap-li-search, .ap-li-button-dropdown-group, .header-buttons {

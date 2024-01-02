@@ -16,6 +16,13 @@
     }
 }
 
+.toggle-button-mv {
+  display: none;
+}
+
+.calendar-mobile-header {
+  display: none !important;
+}
 .m-t-2 {
   margin-top: 2px;
 }
@@ -66,22 +73,55 @@
   }
 
 
-  .calendar-body {
+.calendar-body {
     overflow: auto;
-    height: calc(100vh - 36px - 56px - 48px - 42px - 16px - 20px - 92px - 20px);
-    height: calc(100dvh - 36px - 56px - 48px - 42px - 16px - 20px - 92px - 20px);
-    max-height: calc(100vh - 36px - 56px - 48px - 42px - 16px - 20px - 92px - 20px);
-    max-height: calc(100dvh - 36px - 56px - 48px - 42px - 16px - 20px - 92px - 20px);
+    height: calc(100vh - 36px - 56px - 48px - 42px);
+      height: calc(100dvh - 36px - 56px - 48px - 42px);
+      max-height: calc(100vh - 36px - 56px - 48px - 42px);
+      max-height: calc(100dvh - 36px - 56px - 48px - 42px);
+      margin-top: 16px;
 
     &::-webkit-scrollbar {
       display: none !important;
     }
+
   }
 
+.toggle-button-mv {
+  display: block;
+}
+
+.calendar-mobile-header {
+  display: flex !important;
+  position: fixed;
+  top: 54px;
+}
   .calendar-header {
-    padding: 0 12px;
-    width: 100%;
-    justify-content: space-between;
+    padding: 12px;
+      width: calc(100% - 6px);
+      gap: 16px;
+      max-width: 100%;
+      position: absolute;
+      z-index: 111;
+      top: 0;
+      left: 0;
+      box-shadow: 7px 9px 15px -5px rgba(0, 0, 0, 0.1);
+      -webkit-box-shadow: 7px 9px 15px -5px rgba(0, 0, 0, 0.1);
+      -moz-box-shadow: 7px 9px 15px -5px rgba(0, 0, 0, 0.1);
+      overflow: auto;
+      height: calc(100vh - 36px - 56px - 48px - 12px);
+      height: calc(100dvh - 36px - 56px - 48px - 12px);
+      max-height: calc(100vh - 36px - 56px - 48px - 12px);
+      max-height: calc(100dvh - 36px - 56px - 48px - 12px);
+    
+      &.hidden {
+        display: none;
+    
+      }
+    
+      &::-webkit-scrollbar {
+        display: none !important;
+      }
 
     .calendar-view-dropdown-wrapper {
       margin-left: 0;
@@ -94,14 +134,7 @@
 
     .calendar-date-buttons {
       width: 100%;
-    }
-                                .calender-picker-mv {
-                                  display: block;
-                                }
-                
-                                .calender-picker {
-                                  display: none;
-                                }
+
   }
 }
 
@@ -136,4 +169,5 @@
       background: var(--dfm-danger-500);
     }
   }
+}
 }
