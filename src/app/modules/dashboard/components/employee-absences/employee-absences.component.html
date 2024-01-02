@@ -31,7 +31,7 @@
     <div *ngFor="let employee of employeeAbsences" class="d-flex align-items-center dfm-gap-8" (click)="navigateToViewStaff(employee.absenceId)" style="cursor: pointer;">
 
       <div class="rounded-circle avatar-container">
-        <img *ngIf="employee.avatar" [src]="employee.avatar" class="rounded-circle border-1" alt="Doctor's avatar" width="32" height="32" />
+        <img *ngIf="employee.avatar" [src]="employee.avatar" class="rounded-circle border-1" alt="Physician's avatar" width="32" height="32" />
 
         <div *ngIf="!employee.avatar" class="circle-gray-200-40 d-flex justify-content-center align-items-center">
           {{ employee.name.toString()[0].toUpperCase() }}

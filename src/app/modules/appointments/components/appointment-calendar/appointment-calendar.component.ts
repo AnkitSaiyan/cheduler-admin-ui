@@ -73,7 +73,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	private appointmentData$!: Observable<any[]>;
 
-	private isDayView$$ = new BehaviorSubject<Boolean>(false);
+	private isDayView$$ = new BehaviorSubject<boolean>(false);
 
 	public appointmentDataForMonthView$!: Observable<{ [key: string]: any[][] }>;
 
@@ -215,7 +215,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			map(this.getFromAndToDate.bind(this)),
 			debounceTime(100),
 			switchMap(({ fromDate, toDate }) => {
-				return this.appointmentApiSvc.getAppointmentForCalendar(fromDate, toDate);
+				return this.appointmentApiSvc.appointmentForCalendar$(fromDate, toDate);
 			}),
 			map((data) => data.data),
 			takeUntil(this.destroy$$),
@@ -273,7 +273,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					return false;
 				}
 				return true;
-			case currQueryParam['v'] === 'w':
+			case currQueryParam['v'] === 'w': {
 				if (currMonth !== preMonth || currYear !== preYear) {
 					return false;
 				}
@@ -285,6 +285,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					return false;
 				}
 				return true;
+			}
 			default:
 				return false;
 		}
@@ -316,7 +317,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				toDate = DateTimeUtils.DateDistributedToString(currDate, '-');
 
 				return { fromDate, toDate };
-			default:
+			default: {
 				const time = this.weekdayToPractice$$.value[currDate.getDay()];
 				this.selectedSlot$$.next({
 					...time,
@@ -326,6 +327,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				});
 				this.isDayView$$.next(true);
 				return { fromDate: queryParam['d'], toDate: queryParam['d'] };
+			}
 		}
 	}
 

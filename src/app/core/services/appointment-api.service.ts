@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, debounceTime, map, Observable, of, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { DestroyableComponent } from 'src/app/shared/components/destroyable.component';
 import { NameValue } from 'src/app/shared/components/search-modal.component';
 import { BaseResponse } from 'src/app/shared/models/base-response.model';
@@ -59,8 +59,6 @@ export class AppointmentApiService extends DestroyableComponent {
 	private refreshAppointment$$ = new Subject<void>();
 
 	private selectedLang$$ = new BehaviorSubject<string>('');
-
-	private signalData!: Appointment[];
 
 	private appointmentUrl = `${environment.schedulerApiUrl}/appointment`;
 
@@ -128,6 +126,13 @@ export class AppointmentApiService extends DestroyableComponent {
 					),
 				);
 			}),
+		);
+	}
+
+	public appointmentForCalendar$(fromDate: string, toDate: string): Observable<BaseResponse<Appointment[]>> {
+		return combineLatest([this.appointmentPageNo$$.pipe(startWith(''))]).pipe(
+			debounceTime(100),
+			switchMap(() => this.getAppointmentForCalendar(fromDate, toDate)),
 		);
 	}
 
@@ -330,9 +335,13 @@ export class AppointmentApiService extends DestroyableComponent {
 	}
 
 	public updateAppointmentDuration$(requestData: UpdateDurationRequestData): Observable<null> {
+		this.loaderSvc.activate();
 		return this.http.put<BaseResponse<null>>(`${this.appointmentUrl}/updateappointmentduration`, requestData).pipe(
 			map((response) => response?.data),
-			tap(() => this.appointmentPageNo$$.next(1)),
+			tap(() => {
+				this.appointmentPageNo$$.next(1);
+				this.loaderSvc.deactivate();
+			}),
 		);
 	}
 
@@ -545,7 +554,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		return date ? this.defaultDatePipe.transform(this.utcToLocalPipe.transform(date.toString())) : '-';
 	}
 
-	public getAppointmentForCalendar(fromDate: string, toDate: string): Observable<BaseResponse<Appointment[]>> {
+	private getAppointmentForCalendar(fromDate: string, toDate: string): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
 		const params = { toDate, fromDate };
 		return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}/appointmentlist`, { params }).pipe(

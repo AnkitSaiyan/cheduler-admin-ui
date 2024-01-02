@@ -311,7 +311,7 @@
       </div>
       <span
         class="font-weight-medium text-sm dfm-my-8"
-        *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false && !isOutside"
+        *ngIf="exams?.value?.length && formValues.startedAt?.day && !slots?.length && (loadingSlots$$ | async) === false && !isOutside && isCombinable"
       >
         {{ 'NoSlotsFoundForSelectedExamsAndTime' | translate }}
       </span>
