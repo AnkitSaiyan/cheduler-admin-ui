@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, Observable, debounceTime, distinctUntilChanged, filter, firstValueFrom, map, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, debounceTime, distinctUntilChanged, filter, firstValueFrom, map, switchMap, take, takeUntil } from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { ModalService } from 'src/app/core/services/modal.service';
@@ -230,6 +230,31 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		this.roomApiSvc.allRooms$.pipe(takeUntil(this.destroy$$)).subscribe((rooms) => {
 			this.headerList = rooms.map(({ name, id }) => ({ name, value: id }));
 		});
+
+		this.dateControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
+			const date = new Date(value);
+			this.updateDate(date);
+			this.newDate$$.next({ date, isWeekChange: false });
+		});
+
+		combineLatest([this.weekdayToPractice$$, this.route.queryParams, this.calendarViewFormControl.valueChanges])
+			.pipe(
+				filter(([weekdayToPractice]) => this.calendarViewFormControl.value === 'day' && weekdayToPractice),
+				takeUntil(this.destroy$$),
+			)
+			.subscribe(([_, queryParams]) => {
+				// eslint-disable-line
+				if (this.calendarViewFormControl.value === 'day' && !queryParams['d']) this.updateQuery('d', this.selectedDate$$.value);
+
+				const value = new Date(queryParams['d']);
+				const time = this.weekdayToPractice$$.value[value.getDay()];
+				this.selectedSlot$$.next({
+					...time,
+					timings: time?.timings?.filter(
+						(timing: any) => DateTimeUtils.TimeToNumber(DateTimeUtils.UTCTimeToLocalTimeString(timing)) > DateTimeUtils.TimeToNumber(timing),
+					),
+				});
+			});
 
 		this.shareDataSvc
 			.getLanguage$()
@@ -801,5 +826,9 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			});
 
 		this.prioritySlots$$.next({ ...myPrioritySlots });
+	}
+
+	public updateFormDate(value: any) {
+		this.dateControl.setValue(value);
 	}
 }

@@ -37,6 +37,9 @@ import { ModalService } from '../../../../core/services/modal.service';
 })
 export class DfmCalendarWeekViewComponent extends DestroyableComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 	@Input()
+	public size: 'sm' | 'lg' = 'sm';
+
+	@Input()
 	public selectedDate!: Date;
 
 	@Input()
