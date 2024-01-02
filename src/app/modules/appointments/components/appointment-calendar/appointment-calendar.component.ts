@@ -370,8 +370,9 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		let sameGroup: boolean;
 		let groupedAppointments: Appointment[] = [];
 		let lastDateString: string;
-		const appointmentsGroupedByDateAndTime = {};
 
+		const appointmentsGroupedByDateAndTime = {};
+		appointments.push({} as Appointment);
 		appointments.forEach((appointment, index) => {
 			if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
 				const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
@@ -387,7 +388,12 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 						const currSD = new Date(appointment.startedAt);
 						const currED = new Date(appointment.endedAt);
 
-						if ((currSD >= startDate && currSD < endDate) || (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1)) {
+						if (currSD >= startDate && currSD < endDate) {
+							sameGroup = true;
+							if (currED > endDate) {
+								endDate = currED;
+							}
+						} else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
 							sameGroup = true;
 							if (currED > endDate) {
 								endDate = currED;
@@ -402,29 +408,30 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					if (!sameGroup) {
 						if (index !== 0 && lastDateString) {
 							groupedAppointments?.sort((s1, s2) =>
-								s1.endedAt.getTime() - s1.startedAt.getTime() > s2.endedAt.getTime() - s2.startedAt.getTime() ? 1 : -1,
+								s1.endedAt.getTime() - s1.startedAt.getTime() > s2?.endedAt.getTime() - s2?.startedAt.getTime() ? 1 : -1,
 							);
 							const modifiedGroupedAppointment: any = [[]];
-							groupedAppointments?.forEach((ap) => {
+							groupedAppointments?.forEach((appointment) => {
 								let pushed = true;
-								modifiedGroupedAppointment.forEach((items) => {
+								for (let items of modifiedGroupedAppointment) {
 									if (
 										items.every(
-											(item) =>
+											(item: any) =>
 												!DateTimeUtils.CheckTimeRangeOverlapping(
 													this.datePipe.transform(item.startedAt, 'HH:mm:ss')!,
 													this.datePipe.transform(item.endedAt, 'HH:mm:ss')!,
-													this.datePipe.transform(ap.startedAt, 'HH:mm:ss')!,
+													this.datePipe.transform(appointment.startedAt, 'HH:mm:ss')!,
 													this.datePipe.transform(appointment.endedAt, 'HH:mm:ss')!,
 												),
 										)
 									) {
-										items.push(ap);
+										items.push(appointment);
 										pushed = false;
+										break;
 									}
-								});
+								}
 								if (pushed) {
-									modifiedGroupedAppointment.push([ap]);
+									modifiedGroupedAppointment.push([appointment]);
 								}
 							});
 							const finalAppointment = modifiedGroupedAppointment
@@ -432,7 +439,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 									const sortedData = items.sort((s1, s2) => s1.startedAt - s2.startedAt);
 									return sortedData;
 								})
-								.sort((s1, s2) => s1[0].startedAt - s2[0].startedAt);
+								.sort((s1, s2) => s1?.[0]?.startedAt - s2?.[0]?.startedAt);
 
 							appointmentsGroupedByDateAndTime[lastDateString].push(finalAppointment);
 							groupedAppointments = [];
@@ -443,13 +450,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 					groupedAppointments.push(appointment);
 				}
-			}
-			if (lastDateString) {
+			} else if (lastDateString) {
 				appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments.map((value) => [value]));
 			}
 		});
-
-
 		return appointmentsGroupedByDateAndTime;
 	}
 
