@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ContentChild, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -38,6 +38,8 @@ import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appoi
 })
 export class AppointmentCalendarComponent extends DestroyableComponent implements OnInit, OnDestroy {
 	public calendarViewFormControl = new FormControl();
+
+	@ContentChild(TemplateRef) topAction!: TemplateRef<any>;
 
 	public dateControl = new FormControl();
 
@@ -473,7 +475,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments.map((value) => [value]));
 			}
 		});
-
 
 		return appointmentsGroupedByDateAndTime;
 	}

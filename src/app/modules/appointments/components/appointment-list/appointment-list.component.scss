@@ -33,6 +33,13 @@
 .appointment-status-dropdown{
   max-width: 152px;
 }
+.top-action {
+  h4 {
+    margin: 0;
+    font-size: 18px;
+    white-space: nowrap;
+  }
+}
 .refresh-btn {
   position: fixed;
   bottom: 18px;

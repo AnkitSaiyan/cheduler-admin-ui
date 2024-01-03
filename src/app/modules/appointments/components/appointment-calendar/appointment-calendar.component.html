@@ -1,70 +1,12 @@
 <div class="d-flex flex-row dfm-gap-16 calendar-main-wrapper" *ngIf="selectedDate$$ | async as selectedDate">
-  <section class="calendar-header bg-white hidden" #tools>
-    <div class="d-flex dfm-gap-8">
-      <ng-content ></ng-content>
-      <dfm-button-icon class="toggle-button-mv" color="secondary-gray" size="md" icon="chevron-left" (click)="tools?.classList?.toggle('hidden')"></dfm-button-icon>
-    </div>
-    <div class="d-flex align-items-center dfm-gap-16">
-      <h4 *ngIf="selectedDate" >
-        <ng-container *ngIf="calendarViewFormControl.value === 'day'; else notDayView">
-          {{ (selectedDate | date : 'EEE')! | uppercase | translate | titlecase }} {{ (selectedDate | date : 'MMM')! |translate  }} {{ selectedDate | date : 'dd, yyyy'  }}
-        </ng-container>
-        <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : ' yyyy' }}</ng-template>
-      </h4>
-       <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper align-items-center">
-        <div #menuTrigger="matMenuTrigger"
-          (mouseover)="menuTrigger.openMenu(); $event.stopPropagation(); $event.preventDefault()" (mouseleave)="menuTrigger.closeMenu(); $event.stopPropagation(); $event.preventDefault()"   [matMenuTriggerFor]="infoDetail">
-          <dfm-button-icon color="secondary-gray" size="sm" icon="info-circle" ></dfm-button-icon>
-          <mat-menu #infoDetail="matMenu" [hasBackdrop]="false">
-            <div class="card-info">
-              <div>
-                <div></div><h1 class="mat-caption dfm-text-main-500">{{'BLUE_REPRESENTS_NORMAL_APPOINTMENT' | translate}}</h1>
-              </div>
-              <div>
-                <div></div><h1 class="mat-caption dfm-text-main-500">{{'RED_REPRESENTS_AFFECTED_APPOINTMENT' | translate}}</h1>
-              </div>
-            </div>
-          </mat-menu>
-        </div>
-      </div>
-
-    </div>
-    <div class="d-flex dfm-gap-4">
-      <div class="flex-1 calendar-date-buttons">
-        <div class="d-flex m-t-2">
-          <div>
-            <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-left" (click)="changeDate(-1)"></dfm-button-icon>
-          </div>
-
-          <div class="h-fit">
-            <dfm-button color="secondary-gray" size="sm" class="h-100" (click)="updateToToday()">{{ 'Today' | translate }} </dfm-button>
-          </div>
-
-          <div>
-            <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-right" (click)="changeDate(1)"></dfm-button-icon>
-          </div>
-          <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown">
-          <dfm-input-dropdown
-            size="sm"
-            [formControl]="calendarViewFormControl"
-            [showDescription]="false"
-            [items]="calendarViewType"
-          ></dfm-input-dropdown>
-        </div>
-        </div>
-      </div>
-
-    </div>
-    <mat-calendar  [selected]="dateControl.value" (selectedChange)="updateFormDate($event)"></mat-calendar>
+  <section class="side-view">
+    <ng-container [ngTemplateOutlet]="sideView"></ng-container>
   </section>
-  <section class="flex-row align-items-center dfm-gap-16 calendar-mobile-header">
-    <dfm-button-icon class="toggle-button-mv " color="secondary-gray" size="md" icon="chevron-right" (click)="tools?.classList?.toggle('hidden')"></dfm-button-icon>
-    <h4 *ngIf="selectedDate" >
-      <ng-container *ngIf="calendarViewFormControl.value === 'day'; else notDayView">
-        {{ (selectedDate | date : 'EEE')! | uppercase | translate | titlecase }} {{ (selectedDate | date : 'MMM')! |translate  }} {{ selectedDate | date : 'dd, yyyy'  }}
-      </ng-container>
-      <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : ' yyyy' }}</ng-template>
-    </h4>
+  <section class="flex-row dfm-gap-8 calendar-mobile-header hidden" #tools>
+    <ng-container [ngTemplateOutlet]="sideView"></ng-container>
+    <dfm-button-icon class="toggle-button-mv h-fit" color="secondary-gray" size="md" icon="chevron-right" (click)="tools?.classList?.toggle('hidden');tools?.classList?.toggle('show')"></dfm-button-icon>
+    <ng-container *ngTemplateOutlet="topAction; context: {$implicit: selectedDate, view: calendarViewFormControl.value}">
+    </ng-container>
   </section>
   <section class="calendar-body bg-white">
     <ng-container [ngSwitch]="calendarViewFormControl.value">
@@ -116,4 +58,64 @@
       </ng-container>
     </ng-container>
   </section>
+  <ng-template #sideView >
+    <div class="calendar-header bg-white">
+      <div class="d-flex dfm-gap-8">
+        <ng-container [ngTemplateOutlet]="topAction"></ng-container>
+      </div>
+      <div class="d-flex align-items-center dfm-gap-16 ">
+        <h4 *ngIf="selectedDate" >
+          <ng-container *ngIf="calendarViewFormControl.value === 'day'; else notDayView">
+            {{ (selectedDate | date : 'EEE')! | uppercase | translate | titlecase }} {{ (selectedDate | date : 'MMM')! |translate  }} {{ selectedDate | date : 'dd, yyyy'  }}
+          </ng-container>
+          <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : ' yyyy' }}</ng-template>
+        </h4>
+         <div class="d-flex dfm-gap-8 flex-wrap ml-auto calendar-view-dropdown-wrapper align-items-center">
+          <div #menuTrigger="matMenuTrigger"
+            (mouseover)="menuTrigger.openMenu(); $event.stopPropagation(); $event.preventDefault()" (mouseleave)="menuTrigger.closeMenu(); $event.stopPropagation(); $event.preventDefault()"   [matMenuTriggerFor]="infoDetail">
+            <dfm-button-icon color="secondary-gray" size="sm" icon="info-circle" ></dfm-button-icon>
+            <mat-menu #infoDetail="matMenu" [hasBackdrop]="false">
+              <div class="card-info">
+                <div>
+                  <div></div><h1 class="mat-caption dfm-text-main-500">{{'BLUE_REPRESENTS_NORMAL_APPOINTMENT' | translate}}</h1>
+                </div>
+                <div>
+                  <div></div><h1 class="mat-caption dfm-text-main-500">{{'RED_REPRESENTS_AFFECTED_APPOINTMENT' | translate}}</h1>
+                </div>
+              </div>
+            </mat-menu>
+          </div>
+        </div>
+
+      </div>
+      <div class="d-flex dfm-gap-4">
+        <div class="flex-1 calendar-date-buttons">
+          <div class="d-flex m-t-2">
+            <div>
+              <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-left" (click)="changeDate(-1)"></dfm-button-icon>
+            </div>
+
+            <div class="h-fit">
+              <dfm-button color="secondary-gray" size="sm" class="h-100" (click)="updateToToday()">{{ 'Today' | translate }} </dfm-button>
+            </div>
+
+            <div>
+              <dfm-button-icon color="secondary-gray" size="sm" icon="chevron-right" (click)="changeDate(1)"></dfm-button-icon>
+            </div>
+            <div class="max-w-192 dfm-input-dropdown-wrapper-wo-label calendar-view-dropdown">
+            <dfm-input-dropdown
+              size="sm"
+              [formControl]="calendarViewFormControl"
+              [showDescription]="false"
+              [items]="calendarViewType"
+            ></dfm-input-dropdown>
+          </div>
+          </div>
+        </div>
+
+      </div>
+      <mat-calendar  [selected]="dateControl.value" (selectedChange)="updateFormDate($event)"></mat-calendar>
+    </div>
+  </ng-template>
 </div>
+
