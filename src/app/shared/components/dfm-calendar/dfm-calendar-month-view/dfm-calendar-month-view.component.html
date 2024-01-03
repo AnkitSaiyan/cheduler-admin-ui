@@ -26,70 +26,11 @@
                     <b>{{day}}</b>
                   </span>
                   <div class="dfm-card-container">
-                    <ng-container *ngFor="let data of appointmentData[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" >
-                      <ng-template #appointmentDetails>
-                        <div class="calendar-week-view-event-details-expanded"
-                        >
-                          <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
-                            <b>{{data.id}}</b> - {{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}
-                          </span>
 
-                            <div class="calendar-week-view-event-patients-container accordion-content">
-                              <div class="calendar-week-view-event-patients-container">
-                                <div class="d-flex flex-column dfm-p-8">
-                                  <span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
-                                    data.exams | joinWithAnd : 'name'
-                                  }}</span>
-                                  <span class="text-sm dfm-text-main-500">
-                                    {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
-                                    -
-                                    {{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
-                                    ({{ getDurationFn(data.startedAt, data.endedAt) }} min)
-                                  </span>
-                                </div>
-                              </div>
-                              <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                                <span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
-                                <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
-                                <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
+                    <ng-container *ngTemplateOutlet="appointmentCardList; context: {$implicit: day}"></ng-container>
 
-                                <ng-container *ngIf="data.exams | isData : 'users'; else dash">
-                                  <div *ngFor="let user of data.exams | removeDuplicateData: ['id', 'users']" class="dfm-ps-4 dfm-pt-4">
-                                    <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
-                                      <div class="circle-gray-200-40">
-                                        {{ user?.firstname[0] | uppercase }}
-                                      </div>
-                                      <div class="d-flex flex-column">
-                                        <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
-                                        <span class="dfm-text-main-500">{{ user?.userType | titlecase | translate }}</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ng-container>
 
-                                <ng-template #dash>
-                                  <span>{{ '' | dashIfNothing }}</span>
-                                </ng-template>
-                              </div>
-                            </div>
-                          </div>
-                      </ng-template>
-                      <div class="calender-month-view-day-exam-event-details" [ngbPopover]="appointmentDetails"  triggers="click" [autoClose]="'outside'" container="body"  [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [draggedElData]="data" [ngbPopoverDrag]="popover" #popover="ngbPopover"
-                        [calendarType]="calendarType.Month"
-                        [ngClass]="{
-                          'affectedAppointments': data.absenceDetails?.length
-                        }"
-                        >
-                        <span class="calender-month-view-day-exam-event-title text-truncate"
-                        >
-                          {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
-                          -
-                          {{ data?.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}
 
-                          <b>{{(data?.patientFname | titlecase) + ' ' + data?.patientLname | titlecase }}</b>
-                        </span>
-                      </div>
-                    </ng-container>
                     <ng-container *ngIf="(holidayData$$ | async) as holiday ">
 
                       <ng-container *ngFor="let data of holiday[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" >
@@ -151,79 +92,7 @@
             </ng-template>
 
 
-            <ng-container *ngFor="let data of appointmentData[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]">
-              <ng-template #appointmentDetails>
-                <div class="calendar-week-view-event-details-expanded"
-                >
-                  <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
-                    <b>{{data.id}}</b> - {{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}
-                  </span>
-
-                    <div class="calendar-week-view-event-patients-container accordion-content">
-                      <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
-                        <ngb-panel>
-                          <ng-template ngbPanelTitle>
-                            <div class="calendar-week-view-event-patients-container">
-                              <div class="d-flex flex-column dfm-p-8">
-                                <span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
-                                  data.exams | joinWithAnd : 'name'
-                                }}</span>
-                                <span class="text-sm dfm-text-main-500">
-                                  {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
-                                  -
-                                  {{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
-                                  ({{ getDurationFn(data.startedAt, data.endedAt) }} min)
-                                </span>
-                              </div>
-                            </div>
-                          </ng-template>
-
-                          <ng-template ngbPanelContent>
-                            <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
-                              <span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
-                              <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
-                              <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
-
-                              <ng-container *ngIf="data.exams | isData : 'users'; else dash">
-                                <div *ngFor="let user of data.exams | removeDuplicateData: ['id', 'users']" class="dfm-ps-4 dfm-pt-4">
-                                  <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
-                                    <div class="circle-gray-200-40">
-                                      {{ user?.firstname[0] | uppercase }}
-                                    </div>
-                                    <div class="d-flex flex-column">
-                                      <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
-                                      <span class="dfm-text-main-500">{{ user?.userType | titlecase | translate }}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </ng-container>
-
-                              <ng-template #dash>
-                                <span>{{ '' | dashIfNothing }}</span>
-                              </ng-template>
-                            </div>
-                          </ng-template>
-                        </ngb-panel>
-                      </ngb-accordion>
-                    </div>
-                  </div>
-              </ng-template>
-
-              <div class="calender-month-view-day-exam-event-details" [ngbPopover]="appointmentDetails"  triggers="click" [autoClose]="'outside'" container="body" [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [draggedElData]="data" [calendarType]="calendarType.Month" #popover="ngbPopover"
-               [ngbPopoverDrag]="popover"
-               [ngClass]="{
-                'affectedAppointments': data.absenceDetails?.length
-              }"
-               >
-                <span class="calender-month-view-day-exam-event-title text-truncate ">
-                  {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
-                  -
-                  {{ data?.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
-
-                  <b>{{(data?.patientFname | titlecase) + ' ' + data?.patientLname | titlecase }}</b>
-                </span>
-              </div>
-            </ng-container>
+            <ng-container *ngTemplateOutlet="appointmentCardList; context: {$implicit: day}"></ng-container>
             <ng-container *ngIf="(holidayData$$ | async) as holiday ">
               <ng-container *ngFor="let data of holiday[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]">
                 <div class="calender-month-view-day-exam-event-details holiday" >
@@ -312,3 +181,70 @@
   </table>
   <div class="right" (dragover)="changeDate(1)"></div>
 </div>
+
+<ng-template #appointmentCardList let-day>
+  <ng-container *ngFor="let data of appointmentData[day + '-' + (+selectedDate.getMonth() + 1) + '-' + selectedDate.getFullYear()]" >
+    <ng-template #appointmentDetails>
+      <div class="calendar-week-view-event-details-expanded"
+      >
+        <span class="calendar-week-view-event-details-expanded-title font-weight-medium">
+          <b>{{data.id}}</b> - {{ (data.patientFname | titlecase) + ' ' + (data.patientLname | titlecase) }}
+        </span>
+
+          <div class="calendar-week-view-event-patients-container accordion-content">
+            <div class="calendar-week-view-event-patients-container">
+              <div class="d-flex flex-column dfm-p-8">
+                <span class="font-weight-medium" *ngIf="data?.patientFname?.length">{{
+                  data.exams | joinWithAnd : 'name'
+                }}</span>
+                <span class="text-sm dfm-text-main-500">
+                  {{ (data.startedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
+                  -
+                  {{ (data.endedAt | dfmDefaultDate : 'time')! | dfmUtcToLocal : true }}
+                  ({{ getDurationFn(data.startedAt, data.endedAt) }} min)
+                </span>
+              </div>
+            </div>
+            <div class="text-sm d-flex flex-column dfm-px-8 dfm-pt-16 dfm-pb-8">
+              <span class="font-weight-medium dfm-mt-8"> {{ 'Comments' | translate }} </span>
+              <span class="calendar-comments-text"> {{ data?.comments | dashIfNothing }} </span>
+              <span class="font-weight-medium dfm-mt-8">{{ 'Staff' | translate }}</span>
+
+              <ng-container *ngIf="data.exams | isData : 'users'; else dash">
+                <div *ngFor="let user of data.exams | removeDuplicateData: ['id', 'users']" class="dfm-ps-4 dfm-pt-4">
+                  <div class="d-flex align-items-center dfm-gap-8 dfm-pt-4 dfm-pb-4">
+                    <div class="circle-gray-200-40">
+                      {{ user?.firstname[0] | uppercase }}
+                    </div>
+                    <div class="d-flex flex-column">
+                      <span>{{ user?.firstname | titlecase }} {{ user?.lastname | titlecase }}</span>
+                      <span class="dfm-text-main-500">{{ user?.userType | titlecase | translate }}</span>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #dash>
+                <span>{{ '' | dashIfNothing }}</span>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+    </ng-template>
+    <div class="calender-month-view-day-exam-event-details" [ngbPopover]="appointmentDetails"  triggers="click" [autoClose]="'outside'" container="body"  [draggable]="!((data.startedAt | dfmUtcToLocal : false : true) | isPreviousDay : true)" dfmDragEvent [draggedElData]="data" [ngbPopoverDrag]="popover" #popover="ngbPopover"
+      [calendarType]="calendarType.Month"
+      [ngClass]="{
+        'affectedAppointments': data.absenceDetails?.length
+      }"
+      >
+      <span class="calender-month-view-day-exam-event-title text-truncate"
+      >
+        {{ data?.startedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true}}
+        -
+        {{ data?.endedAt | dfmDefaultDate : 'time' | dfmUtcToLocal : true }}
+
+        <b>{{(data?.patientFname | titlecase) + ' ' + data?.patientLname | titlecase }}</b>
+      </span>
+    </div>
+  </ng-container>
+</ng-template>
