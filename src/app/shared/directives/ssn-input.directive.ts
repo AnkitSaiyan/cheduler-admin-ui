@@ -1,4 +1,5 @@
-import { Directive, HostListener, Input } from '@angular/core';
+import { Directive, HostListener, Input, inject } from '@angular/core';
+import { NgControl } from '@angular/forms';
 import { InputComponent } from 'diflexmo-angular-design';
 
 @Directive({
@@ -18,11 +19,14 @@ export class SsnInputDirective {
 
 	private numberOnly: RegExp = /^[0-9.-]+$/;
 
+	constructor(private control: NgControl) {}
+
 	private handleChange() {
 		const inputText = this.dfmSsnInput.value?.toString();
 
 		if (inputText && !inputText.match(this.numberOnly)) {
-			this.dfmSsnInput.value = inputText.slice(0, -1);
+			this.dfmSsnInput.value = inputText.slice(0, -1); // Remove last characters
+			this.control.control?.setValue(this.dfmSsnInput.value); // Update the form control value
 		}
 	}
 }
