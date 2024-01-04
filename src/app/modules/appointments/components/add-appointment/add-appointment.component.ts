@@ -712,6 +712,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	}
 
 	private uploadDocument(file: any) {
+		console.log(file);
+		
 		this.appointmentApiSvc.uploadDocumnet(file, '', `${this.appointment$$?.value?.id ?? 0}`).subscribe({
 			next: (res) => {
 				this.documentStage = this.uploadFileName;

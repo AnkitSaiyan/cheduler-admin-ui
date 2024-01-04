@@ -25,6 +25,7 @@ import { DashboardApiService } from './dashboard-api.service';
 import { LoaderService } from './loader.service';
 import { ShareDataService } from './share-data.service';
 import { UserManagementApiService } from './user-management-api.service';
+import { Document } from 'src/app/shared/models/document.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -126,13 +127,6 @@ export class AppointmentApiService extends DestroyableComponent {
 					),
 				);
 			}),
-		);
-	}
-
-	public appointmentForCalendar$(fromDate: string, toDate: string): Observable<BaseResponse<Appointment[]>> {
-		return combineLatest([this.appointmentPageNo$$.pipe(startWith(''))]).pipe(
-			debounceTime(100),
-			switchMap(() => this.getAppointmentForCalendar(fromDate, toDate)),
 		);
 	}
 
@@ -528,7 +522,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public getDocumentById$(id: any, isPreview: boolean): Observable<any> {
+	public getDocumentById$(id: any, isPreview: boolean): Observable<Document> {
 		let params = new HttpParams();
 		const idType = isNaN(id) ? 'qrCodeId' : 'appointmentId';
 		params = params.append(idType, id);
@@ -552,6 +546,13 @@ export class AppointmentApiService extends DestroyableComponent {
 
 	public convertUtcToLocalDate(date: string | Date): string {
 		return date ? this.defaultDatePipe.transform(this.utcToLocalPipe.transform(date.toString())) : '-';
+	}
+
+	public appointmentForCalendar$(fromDate: string, toDate: string): Observable<BaseResponse<Appointment[]>> {
+		return combineLatest([this.appointmentPageNo$$.pipe(startWith(''))]).pipe(
+			debounceTime(100),
+			switchMap(() => this.getAppointmentForCalendar(fromDate, toDate)),
+		);
 	}
 
 	private getAppointmentForCalendar(fromDate: string, toDate: string): Observable<BaseResponse<Appointment[]>> {
