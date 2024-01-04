@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 import { DateTimeUtils } from '../utils/date-time.utils';
 import { getDurationMinutes } from '../models/calendar.model';
+import { PIXELS_PER_MIN, TIME_INTERVAL } from '../utils/const';
 
 // Functions can be made common and optimized
 
@@ -11,9 +12,9 @@ import { getDurationMinutes } from '../models/calendar.model';
 export class WeekViewAppointmentCardTopPipe implements PipeTransform {
 	constructor(private datePipe: DatePipe) {}
 
-	public readonly timeInterval: number = 15;
+	public readonly timeInterval: number = TIME_INTERVAL;
 
-	public readonly pixelsPerMin: number = 4;
+	public readonly pixelsPerMin: number = PIXELS_PER_MIN;
 
 	transform(groupedData: any[][], min: string, max: string): number {
 		let groupStartDate = this.datePipe.transform(new Date(groupedData?.[0]?.[0].startedAt), 'HH:mm:ss') ?? '';

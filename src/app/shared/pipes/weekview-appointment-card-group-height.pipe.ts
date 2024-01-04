@@ -2,16 +2,13 @@ import { DatePipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 import { DateTimeUtils } from '../utils/date-time.utils';
 import { getDurationMinutes } from '../models/calendar.model';
+import { PIXELS_PER_MIN } from '../utils/const';
 
 @Pipe({
 	name: 'weekViewAppointmentCardGroupHeight',
 })
 export class WeekViewAppointmentCardGroupHeightPipe implements PipeTransform {
 	constructor(private datePipe: DatePipe) {}
-
-	public readonly timeInterval: number = 15;
-
-	public readonly pixelsPerMin: number = 4;
 
 	transform(groupedData: any[][], min: string, max: string): number {
 		let groupStartDate = this.datePipe.transform(new Date(groupedData?.[0]?.[0].startedAt), 'HH:mm:ss') ?? '';
@@ -50,6 +47,6 @@ export class WeekViewAppointmentCardGroupHeightPipe implements PipeTransform {
 				: DateTimeUtils.timeStingToDate(groupEndDate);
 		const durationMinutes = getDurationMinutes(startDate, finalEndDate);
 
-		return durationMinutes * this.pixelsPerMin;
+		return durationMinutes * PIXELS_PER_MIN;
 	}
 }

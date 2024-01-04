@@ -21,7 +21,7 @@ import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { UserRoleEnum } from 'src/app/shared/models/user.model';
-import { CalendarType, ENG_BE } from 'src/app/shared/utils/const';
+import { CalendarType, ENG_BE, PIXELS_PER_MIN, TIME_INTERVAL } from 'src/app/shared/utils/const';
 import { DateTimeUtils } from 'src/app/shared/utils/date-time.utils';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { ModalService } from '../../../../core/services/modal.service';
@@ -103,9 +103,9 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 
 	public dateString!: string;
 
-	public readonly timeInterval: number = 15;
+	public readonly timeInterval: number = TIME_INTERVAL;
 
-	public readonly pixelsPerMin: number = 4;
+	public readonly pixelsPerMin: number = PIXELS_PER_MIN;
 
 	public lastOpenedMenuRef!: NgbDropdown | null;
 
