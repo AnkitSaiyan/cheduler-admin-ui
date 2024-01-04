@@ -673,19 +673,66 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			return;
 		}
 
-		this.uploadFileName = event.target.files[0].name;
-		const extension = this.uploadFileName.slice(this.uploadFileName.lastIndexOf('.') + 1).toLowerCase();
-		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-		const fileSizeExceedsLimit = event.target.files[0].size / 1024 / 1024 > this.fileSize;
-
-		if (allowedExtensions.indexOf(extension) === -1) {
-			this.handleInvalidFile('File format not allowed.');
-		} else if (fileSizeExceedsLimit) {
-			this.handleInvalidFile(`File size should not exceed ${this.fileSize} MB.`);
+		if (this.checkFileExtensions(event)) {
+			alert('not allowed');
 		} else {
-			this.documentStage = 'Uploading';
-			this.onFileChange(event);
+			this.fileChange(event);
 		}
+
+		// this.uploadFileName = event.target.files[0].name;
+		// const extension = this.uploadFileName.slice(this.uploadFileName.lastIndexOf('.') + 1).toLowerCase();
+		// const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		// const fileSizeExceedsLimit = event.target.files[0].size / 1024 / 1024 > this.fileSize;
+
+		// if (allowedExtensions.indexOf(extension) === -1) {
+		// 	this.handleInvalidFile('File format not allowed.');
+		// } else if (fileSizeExceedsLimit) {
+		// 	this.handleInvalidFile(`File size should not exceed ${this.fileSize} MB.`);
+		// } else {
+		// 	this.documentStage = 'Uploading';
+		// 	this.onFileChange(event);
+		// }
+	}
+
+	private checkFileExtensions(event: any): boolean {
+		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		for (let files of event.target.files) {
+			const fileName = files.name;
+			const fileExtension = fileName.split('.').pop().toLowerCase();
+			if (!allowedExtensions.includes(fileExtension)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private fileChange(event: any) {
+		const e = event;
+		const { files } = event.target as HTMLInputElement;
+
+		if (files?.length) {
+			const promises = Array.from(files).map((file) => this.readFileAsDataURL(file));
+			Promise.all(promises).then((transformedDataArray) => {
+				this.uploadDocuments(transformedDataArray);
+				e.target.value = ''; // Clear the file input
+			});
+		}
+	}
+
+	private readFileAsDataURL(file: File): Promise<any> {
+		return new Promise((resolve) => {
+			const reader = new FileReader();
+			reader.onload = () => {
+				resolve(file);
+			};
+			reader.readAsDataURL(file);
+		});
+	}
+
+	private uploadDocuments(transformedDataArray: string[]) {
+		// Implement your logic to upload multiple documents using the transformed data array
+		console.log('Uploading documents:', transformedDataArray);
+		this.uploadDocument(transformedDataArray[0])
 	}
 
 	private handleInvalidFile(errorMessage: string): void {

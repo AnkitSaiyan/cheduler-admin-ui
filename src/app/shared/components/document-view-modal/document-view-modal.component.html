@@ -28,8 +28,8 @@
 	<div class="bottom-img">
 		<ng-container *ngFor="let doc of documents">
 			<div class="bottom-img-item">
-				<img *ngIf="doc.isImage" [src]="doc.fileData" class="img-fluid" alt="image" />
-				<span class="img-fluid" *ngIf="!doc.isImage">
+				<img (click)="setFocus(doc)" *ngIf="doc.isImage" [src]="doc.fileData" class="img-fluid" alt="image" />
+				<span (click)="setFocus(doc)" class="img-fluid" *ngIf="!doc.isImage">
 					<svg width="5vw" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
 						xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 309.267 309.267" xml:space="preserve">
 						<g>
@@ -51,7 +51,7 @@
 				</span>
 				<div class="btns">
 					<span (click)="downloadDocument(doc)" >&#x2913;</span>
-					<span (click)="setFocus(doc)" >&#9654; </span>
+					<!-- <span (click)="setFocus(doc)" >&#9654; </span> -->
 				</div>
 			</div>
 		</ng-container>
