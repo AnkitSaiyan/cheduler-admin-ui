@@ -1,4 +1,5 @@
 import { Directive, HostListener, Input } from '@angular/core';
+import { NgControl } from '@angular/forms';
 import { InputComponent } from 'diflexmo-angular-design';
 
 @Directive({
@@ -18,6 +19,8 @@ export class PhoneNumberDirective {
 
 	private numberOnly: RegExp = /^[\d\s,]*$/;
 
+	constructor(private control: NgControl) {}
+
 	private handleChange() {
 		const inputText = this.dfmPhoneNumber.value?.toString();
 
@@ -27,6 +30,7 @@ export class PhoneNumberDirective {
 
 		if (inputText && !inputText.match(this.numberOnly)) {
 			this.dfmPhoneNumber.value = inputText.slice(0, -1);
+			this.control.control?.setValue(this.dfmPhoneNumber.value);
 		}
 	}
 }

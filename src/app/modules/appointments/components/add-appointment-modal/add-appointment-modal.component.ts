@@ -368,7 +368,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 						: `${Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`,
 				);
 				this.submitting$$.next(false);
-				this.modalSvc.close(true);
+				this.close(true);
 			},
 			error: () => {
 				this.submitting$$.next(false);
@@ -404,7 +404,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			next: () => {
 				this.notificationSvc.showNotification(`${Translate.SuccessMessage.AppointmentAdded[this.selectedLang]}!`);
 				this.submitting$$.next(false);
-				this.modalSvc.close(true);
+				this.close(true);
 			},
 			error: () => {
 				this.submitting$$.next(false);
