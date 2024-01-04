@@ -235,7 +235,7 @@ export interface CreateAppointmentFormValues {
 	comments: string;
 	socialSecurityNumber: number;
 	userList?: string[];
-	qrCodeId: string;
+	qrCodeId: string[];
 	endedAt?: string;
 }
 

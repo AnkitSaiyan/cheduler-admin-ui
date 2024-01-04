@@ -182,7 +182,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		}
 
 		this.setupSubscriptions()
-		
+
 	}
 
 	private setupSubscriptions() {
@@ -505,7 +505,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			}
 			return 1;
 		});
-		this.updateFormValues(appointment);		
+		this.updateFormValues(appointment);
 	}
 
 	private updateFormValues(appointment: Appointment) {
@@ -658,9 +658,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 	}
 
 	public clearFile() {
-		this.appointmentApiSvc.deleteDocument(this.formValues.qrCodeId).pipe(takeUntil(this.destroy$$)).subscribe();
-		this.formValues.qrCodeId = '';
-		this.documentStage = '';
+		// this.appointmentApiSvc.deleteDocument(this.formValues.qrCodeId).pipe(takeUntil(this.destroy$$)).subscribe();
+		// this.formValues.qrCodeId = '';
+		// this.documentStage = '';
 	}
 
 	private getDocument(id: number) {
