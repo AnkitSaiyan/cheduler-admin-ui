@@ -611,7 +611,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		// In case if calendar start time is not 00:00 then adding extra minutes
 
 		if (this.practiceHourMinMax$$.value) {
-			minutes += getDurationMinutes(this.myDate('00:00:00'), this.myDate(this.practiceHourMinMax$$.value.min));
+			minutes += getDurationMinutes(DateTimeUtils.timeStingToDate('00:00:00'), DateTimeUtils.timeStingToDate(this.practiceHourMinMax$$.value.min));
 		}
 
 		const roundedMin = minutes - (minutes % 5);
@@ -712,16 +712,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		eventsContainer.appendChild(eventCard);
 
 		return eventCard;
-	}
-
-	private myDate(date: string): Date {
-		const formattedDate = new Date();
-		const splitDate = date.split(':');
-		formattedDate.setHours(+splitDate[0]);
-		formattedDate.setMinutes(+splitDate[1]);
-		formattedDate.setSeconds(0);
-		formattedDate.setMilliseconds(0);
-		return formattedDate;
 	}
 
 	private setPrioritySlots(prioritySlots: PrioritySlot[]) {

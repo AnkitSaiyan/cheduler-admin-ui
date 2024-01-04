@@ -32,23 +32,29 @@ export class WeekViewAppointmentCardTopPipe implements PipeTransform {
 			}
 		});
 
-		const startDate = this.myDate(groupStartDate).getTime() < this.myDate(min).getTime() ? this.myDate(min) : this.myDate(groupStartDate);
+		const startDate =
+			DateTimeUtils.timeStingToDate(groupStartDate).getTime() < DateTimeUtils.timeStingToDate(min).getTime()
+				? DateTimeUtils.timeStingToDate(min)
+				: DateTimeUtils.timeStingToDate(groupStartDate);
 		const startHour = startDate.getHours();
 		const startMinute = startDate.getMinutes();
-		const startCalendarDate = this.myDate(min);
+		const startCalendarDate = DateTimeUtils.timeStingToDate(min);
 		const startCalendarHour = startCalendarDate.getHours();
 		const startCalendarMinute = startCalendarDate.getMinutes();
 		const barHeight = 1;
 		let height = 0;
-		const finalEndDate = this.myDate(groupEndDate).getTime() > this.myDate(max).getTime() ? this.myDate(max) : this.myDate(groupEndDate);
+		const finalEndDate =
+			DateTimeUtils.timeStingToDate(groupEndDate).getTime() > DateTimeUtils.timeStingToDate(max).getTime()
+				? DateTimeUtils.timeStingToDate(max)
+				: DateTimeUtils.timeStingToDate(groupEndDate);
 		const durationMinutes = getDurationMinutes(startDate, finalEndDate);
 
 		height = durationMinutes * this.pixelsPerMin;
-		if (this.myDate(groupEndDate).getTime() <= this.myDate(min).getTime()) {
+		if (DateTimeUtils.timeStingToDate(groupEndDate).getTime() <= DateTimeUtils.timeStingToDate(min).getTime()) {
 			height = 0;
 		}
 
-		if (this.myDate(groupStartDate).getTime() >= this.myDate(max).getTime()) {
+		if (DateTimeUtils.timeStingToDate(groupStartDate).getTime() >= DateTimeUtils.timeStingToDate(max).getTime()) {
 			height = 0;
 		}
 
@@ -62,21 +68,5 @@ export class WeekViewAppointmentCardTopPipe implements PipeTransform {
 		}
 
 		return top;
-	}
-
-	private myDate(date: string): Date {
-		if (!date) {
-			return new Date();
-		}
-
-		const formattedDate = new Date();
-		const splitDate = date.split(':');
-
-		formattedDate.setHours(+splitDate[0]);
-		formattedDate.setMinutes(+splitDate[1]);
-		formattedDate.setSeconds(0);
-		formattedDate.setMilliseconds(0);
-
-		return formattedDate;
 	}
 }

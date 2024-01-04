@@ -144,7 +144,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			if (this.modalData?.event?.offsetY) {
 				let minutes = Math.round(+this.modalData.event.offsetY / this.pixelPerMinute);
 				if (this.modalData?.limit) {
-					minutes += getDurationMinutes(this.myDate('00:00:00'), this.myDate(this.modalData.limit.min));
+					minutes += getDurationMinutes(DateTimeUtils.timeStingToDate('00:00:00'), DateTimeUtils.timeStingToDate(this.modalData.limit.min));
 				}
 
 				// In case if calendar start time is not 00:00 then adding extra minutes
@@ -182,7 +182,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		}
 
 		this.setupSubscriptions()
-		
+
 	}
 
 	private setupSubscriptions() {
@@ -460,15 +460,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		}
 	}
 
-	private myDate(date: string): Date {
-		const formattedDate = new Date();
-		const splitDate = date.split(':');
-		formattedDate.setHours(+splitDate[0]);
-		formattedDate.setMinutes(+splitDate[1]);
-		formattedDate.setSeconds(0);
-		formattedDate.setMilliseconds(0);
-		return formattedDate;
-	}
+
 
 	private createForm() {
 		this.appointmentForm = this.fb.group({
@@ -505,7 +497,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			}
 			return 1;
 		});
-		this.updateFormValues(appointment);		
+		this.updateFormValues(appointment);
 	}
 
 	private updateFormValues(appointment: Appointment) {

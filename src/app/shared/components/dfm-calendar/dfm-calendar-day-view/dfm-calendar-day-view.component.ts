@@ -292,7 +292,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 	}
 
 	public getTop(groupedData: any, storeHiddenAppointment: boolean = false): number {
-		const start = this.myDate(this.timeSlot?.timings?.[0]);
+		const start = DateTimeUtils.timeStingToDate(this.timeSlot?.timings?.[0]);
 		start.setDate(this.selectedDate.getDate());
 		start.setMonth(this.selectedDate.getMonth());
 		start.setFullYear(this.selectedDate.getFullYear());
@@ -356,9 +356,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			});
 	}
 
-
-	private getResourceBatchAndRoomID(appointment: Appointment): ResourceBatch[] | undefined {	
-		return appointment?.exams?.[0]?.resourcesBatch?.filter((batch) => batch.rooms[0].id === appointment?.exams?.[0]?.rooms?.[0].id);			
+	private getResourceBatchAndRoomID(appointment: Appointment): ResourceBatch[] | undefined {
+		return appointment?.exams?.[0]?.resourcesBatch?.filter((batch) => batch.rooms[0].id === appointment?.exams?.[0]?.rooms?.[0].id);
 	}
 
 	public openChangeTimeModal(
@@ -641,7 +640,7 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 		const timings = timeSlot?.timings;
 		if (!timings?.length) return;
 		const grayOutSlot: any = [];
-		const timeDuration = getDurationMinutes(this.myDate(timings?.[0]), this.myDate(intervals?.[0].dayStart));
+		const timeDuration = getDurationMinutes(DateTimeUtils.timeStingToDate(timings?.[0]), DateTimeUtils.timeStingToDate(intervals?.[0].dayStart));
 		grayOutSlot.push({
 			dayStart: timings?.[0],
 			dayEnd: timings?.[0],
@@ -649,8 +648,8 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			height: (timeDuration > 120 ? 120 : timeDuration) * this.pixelsPerMin,
 		});
 		const dayStart = intervals[intervals.length - 1].dayEnd;
-		const startTime = this.myDate(this.timeSlot?.timings?.[0]);
-		const dayStartTime = this.myDate(dayStart);
+		const startTime = DateTimeUtils.timeStingToDate(this.timeSlot?.timings?.[0]);
+		const dayStartTime = DateTimeUtils.timeStingToDate(dayStart);
 		const lastMinutes = getDurationMinutes(startTime, dayStartTime);
 		const dayEnd = this.addMinutes(15, timings[timings.length - 1]);
 
@@ -658,15 +657,15 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			dayStart: intervals[intervals.length - 1].dayEnd,
 			dayEnd,
 			top: lastMinutes * this.pixelsPerMin,
-			height: getDurationMinutes(dayStartTime, this.myDate(dayEnd)) * this.pixelsPerMin,
+			height: getDurationMinutes(dayStartTime, DateTimeUtils.timeStingToDate(dayEnd)) * this.pixelsPerMin,
 		});
 
 		if (intervals?.length > 1) {
 			for (let i = 0; i < intervals.length - 1; i++) {
-				const start = this.myDate(this.timeSlot?.timings?.[0]);
-				const end = this.myDate(intervals[i].dayEnd);
+				const start = DateTimeUtils.timeStingToDate(this.timeSlot?.timings?.[0]);
+				const end = DateTimeUtils.timeStingToDate(intervals[i].dayEnd);
 				const minutes = getDurationMinutes(start, end);
-				const timeInterval = getDurationMinutes(end, this.myDate(intervals[i + 1].dayStart));
+				const timeInterval = getDurationMinutes(end, DateTimeUtils.timeStingToDate(intervals[i + 1].dayStart));
 				grayOutSlot.push({
 					dayStart: intervals[i].dayEnd,
 					dayEnd: intervals[i + 1].dayStart,
@@ -676,16 +675,6 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 			}
 		}
 		this.grayOutSlot$$.next([...grayOutSlot]);
-	}
-
-	private myDate(date: string): Date {
-		const formattedDate = new Date();
-		const splitDate = date?.split(':');
-		formattedDate.setHours(+splitDate[0]);
-		formattedDate.setMinutes(+splitDate[1]);
-		formattedDate.setSeconds(0);
-		formattedDate.setMilliseconds(0);
-		return formattedDate;
 	}
 
 	private subtractMinutes(minutes: number, time: string): string {
