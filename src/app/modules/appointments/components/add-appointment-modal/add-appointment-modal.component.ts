@@ -668,10 +668,10 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			.getDocumentById$(id, true)
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((res) => {
-				this.documentStage = res.fileName;
-				this.appointmentForm.patchValue({
-					qrCodeId: res?.apmtQRCodeId,
-				});
+				// this.documentStage = res.fileName;
+				// this.appointmentForm.patchValue({
+				// 	qrCodeId: res?.apmtQRCodeId,
+				// });
 			});
 	}
 }

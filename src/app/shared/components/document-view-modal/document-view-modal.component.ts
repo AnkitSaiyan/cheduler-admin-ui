@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { ModalService } from 'src/app/core/services/modal.service';
-import { Subject, map, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, map, takeUntil } from 'rxjs';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -33,7 +33,7 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 
 	private selectedLang: string = ENG_BE;
 
-	public documents!: Document[];
+	public documents$$: BehaviorSubject<Document[]> = new BehaviorSubject<Document[]>([]);
 
 	public focusedDocument!: Document;
 
@@ -51,7 +51,6 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 	ngOnInit(): void {
 		this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
 			this.getDocument(data.id);
-			this.showDocuments();
 		});
 
 		this.shareDataSvc
@@ -69,37 +68,37 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 			.getDocumentById$(id, true)
 			.pipe(
 				takeUntil(this.destroy$$),
-				map((resp) => ({
-					...resp,
-					isImage: !resp.fileName.includes('.pdf'),
-				})),
+				map((resp) =>
+					resp.map((res) => ({
+						...res,
+						isImage: !res.fileName.includes('.pdf'),
+					})),
+				),
 			)
-			.subscribe((res: Document) => {
-				console.log(res);
-
-				this.isImage = !res.fileName.includes('.pdf');
-				if (!this.downloadableDoc) this.image.next((this.isImage ? this.base64ImageStart : this.base64PdfStart) + res.fileData);
-				this.fileName = res.fileName;
+			.subscribe((res: any) => {
+				this.showDocuments(res);
 			});
 		this.appointmentApiSvc
 			.getDocumentById$(id, false)
 			.pipe(takeUntil(this.destroy$$))
-			.subscribe((res) => {
-				this.image.next((!res.fileName.includes('.pdf') ? this.base64ImageStart : this.base64PdfStart) + res.fileData);
-				this.downloadableDoc = (res.fileName.includes('.pdf') ? this.base64PdfStart : this.base64ImageStart) + res.fileData;
-				this.fileName = res.fileName;
-				if (this.isDownloadClick) this.downloadDocument('all');
+			.subscribe((res: any) => {
+				this.showDocuments(res);
+				// this.image.next((!res.fileName.includes('.pdf') ? this.base64ImageStart : this.base64PdfStart) + res.fileData);
+				// this.downloadableDoc = (res.fileName.includes('.pdf') ? this.base64PdfStart : this.base64ImageStart) + res.fileData;
+				// this.fileName = res.fileName;
+				// if (this.isDownloadClick) this.downloadDocument('all');
 			});
 	}
 
-	private showDocuments() {
-		this.documents = docApiRes.map((res) => ({
-			...res,
-			fileData: (!res.fileName.includes('.pdf') ?
-				this.base64ImageStart : this.base64PdfStart) + res.fileData,
-			isImage: !res.fileName.includes('.pdf'),
-		}));
-		this.focusedDocument = this.documents[0];
+	private showDocuments(documentRes: Document[]) {
+		this.documents$$.next(
+			documentRes.map((res) => ({
+				...res,
+				fileData: (!res.fileName.includes('.pdf') ? this.base64ImageStart : this.base64PdfStart) + res.fileData,
+				isImage: !res.fileName.includes('.pdf'),
+			})),
+		);
+		this.focusedDocument = this.documents$$.value[0];
 	}
 
 	public setFocus(docData: Document) {
@@ -107,18 +106,21 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 	}
 
 	public downloadDocument(docData: Document | 'all') {
+		if (!this.focusedDocument) {
+			return;
+		}
 		if (!this.downloadableDoc) {
 			this.isDownloadClick = true;
 			this.notificationService.showNotification(Translate.DownloadingInProgress[this.selectedLang]);
 			return;
 		}
-		if (docData === 'all') {
-			this.documents.forEach((data) => {
-				this.downloadImage(data);
-			})
-		} else {
-			this.downloadImage(docData);	
-		}
+		// if (docData === 'all') {
+		// 	this.documents$$.value?.forEach((data) => {
+		// 		this.downloadImage(data);
+		// 	});
+		// } else {
+		// }
+		this.downloadImage(this.focusedDocument);
 
 		// this.downloadImage(this.downloadableDoc);
 	}
@@ -136,7 +138,7 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 		window.URL.revokeObjectURL(url);
 	}
 
-	private base64ToBlob(base64Data: string, docData:Document): Blob {
+	private base64ToBlob(base64Data: string, docData: Document): Blob {
 		const byteString = window.atob(base64Data.split(',')[1]);
 		const mimeString = `${docData.isImage ? 'image' : 'application'}/${docData.fileName.split('.').slice(-1)}`;
 		const arrayBuffer = new ArrayBuffer(byteString.length);

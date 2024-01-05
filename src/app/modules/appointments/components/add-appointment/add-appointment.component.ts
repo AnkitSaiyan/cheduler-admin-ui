@@ -123,11 +123,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 	private fileSize!: number;
 
-	public documentStage: string = '';
-
 	public documentNameMap = new Map();
 
-	public isDocumentUploading$$ = new BehaviorSubject<boolean>(false);
+	public isDocumentUploading$$ = new BehaviorSubject<number>(0);
 
 	constructor(
 		private fb: FormBuilder,
@@ -762,20 +760,19 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	}
 
 	private uploadDocument(file: any) {
-		this.isDocumentUploading$$.next(true);
+		this.isDocumentUploading$$.next(this.isDocumentUploading$$.value + 1);
 		this.appointmentApiSvc.uploadDocumnet(file, '', `${this.appointment$$?.value?.id ?? 0}`).subscribe({
 			next: (res) => {
-				this.documentStage = this.uploadFileName;
 				this.documentNameMap.set(res?.apmtDocUniqueId, file?.name);
 				this.appointmentForm.patchValue({
 					qrCodeId: [...this.appointmentForm.value.qrCodeId, res?.apmtDocUniqueId],
 				});
 				this.notificationSvc.showNotification(Translate.AddedSuccess(file?.name)[this.selectedLang], NotificationType.SUCCESS);
-				this.isDocumentUploading$$.next(false);
+				this.isDocumentUploading$$.next(this.isDocumentUploading$$.value - 1);
 			},
 			error: () => {
-				this.documentStage = 'FAILED_TO_UPLOAD';
-				this.isDocumentUploading$$.next(false);
+				this.notificationSvc.showNotification(Translate.Error.FailedToUpload[this.selectedLang], NotificationType.DANGER);
+				this.isDocumentUploading$$.next(this.isDocumentUploading$$.value - 1);
 			},
 		});
 	}
@@ -808,10 +805,9 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			.getDocumentById$(id, true)
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((res) => {
-				this.documentStage = res.fileName;
-				this.appointmentForm.patchValue({
-					qrCodeId: res?.apmtQRCodeId,
-				});
+				// this.appointmentForm.patchValue({
+				// 	qrCodeId: res?.apmtQRCodeId,
+				// });
 			});
 	}
 }

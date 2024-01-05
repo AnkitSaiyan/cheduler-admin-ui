@@ -522,7 +522,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public getDocumentById$(id: any, isPreview: boolean): Observable<Document> {
+	public getDocumentById$(id: any, isPreview: boolean): Observable<Document[]> {
 		let params = new HttpParams();
 		const idType = isNaN(id) ? 'qrCodeId' : 'appointmentId';
 		params = params.append(idType, id);
