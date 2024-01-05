@@ -76,6 +76,8 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 	public ngOnInit(): void {
 		for (let i = 1; i < 11; i++) {
 			this.documentSize.push({ name: `${i} MB`, value: i });
+		}
+		for (let i = 1; i < 6; i++) {
 			this.documentCount.push({ name: `${i}`, value: i });
 		}
 
