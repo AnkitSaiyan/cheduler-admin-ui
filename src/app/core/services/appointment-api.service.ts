@@ -533,7 +533,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		);
 	}
 
-	public deleteDocument(qrId: string): Observable<any> {
+	public deleteDocument(qrId: number | string): Observable<any> {
 		return this.http.delete<any>(`${environment.schedulerApiUrl}/qrcode/${qrId}`).pipe(
 			map((response) => response.statusCode),
 			tap(),

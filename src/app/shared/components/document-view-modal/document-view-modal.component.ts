@@ -50,7 +50,11 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 
 	ngOnInit(): void {
 		this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
-			this.getDocument(data.id);
+			if (data?.documentList) {
+				this.showDocuments(data?.documentList, data?.focusedDocId);
+			} else {
+				this.getDocument(data.id, data?.focusedDocId);
+			}
 		});
 
 		this.shareDataSvc
@@ -63,7 +67,7 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 			});
 	}
 
-	public getDocument(id) {
+	public getDocument(id, focusedDocId?: number) {
 		this.appointmentApiSvc
 			.getDocumentById$(id, true)
 			.pipe(
@@ -76,13 +80,13 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 				),
 			)
 			.subscribe((res: any) => {
-				this.showDocuments(res);
+				this.showDocuments(res, focusedDocId);
 			});
 		this.appointmentApiSvc
 			.getDocumentById$(id, false)
 			.pipe(takeUntil(this.destroy$$))
 			.subscribe((res: any) => {
-				this.showDocuments(res);
+				this.showDocuments(res, focusedDocId);
 				// this.image.next((!res.fileName.includes('.pdf') ? this.base64ImageStart : this.base64PdfStart) + res.fileData);
 				// this.downloadableDoc = (res.fileName.includes('.pdf') ? this.base64PdfStart : this.base64ImageStart) + res.fileData;
 				// this.fileName = res.fileName;
@@ -90,7 +94,7 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 			});
 	}
 
-	private showDocuments(documentRes: Document[]) {
+	private showDocuments(documentRes: Document[], focusedDocId?: number) {
 		this.documents$$.next(
 			documentRes.map((res) => ({
 				...res,
@@ -98,31 +102,19 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 				isImage: !res.fileName.includes('.pdf'),
 			})),
 		);
-		this.focusedDocument = this.documents$$.value[0];
+		this.focusedDocument = this.documents$$.value?.find(({ id }) => id === focusedDocId) ?? this.documents$$.value[0];
 	}
 
 	public setFocus(docData: Document) {
 		this.focusedDocument = docData;
 	}
 
-	public downloadDocument(docData: Document | 'all') {
+	public downloadDocument() {
 		if (!this.focusedDocument) {
 			return;
 		}
-		if (!this.downloadableDoc) {
-			this.isDownloadClick = true;
-			this.notificationService.showNotification(Translate.DownloadingInProgress[this.selectedLang]);
-			return;
-		}
-		// if (docData === 'all') {
-		// 	this.documents$$.value?.forEach((data) => {
-		// 		this.downloadImage(data);
-		// 	});
-		// } else {
-		// }
+		this.notificationService.showNotification(Translate.DownloadingInProgress[this.selectedLang]);
 		this.downloadImage(this.focusedDocument);
-
-		// this.downloadImage(this.downloadableDoc);
 	}
 
 	private downloadImage(docData: Document) {

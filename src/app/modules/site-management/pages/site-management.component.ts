@@ -60,7 +60,10 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 	private selectedLang: string = ENG_BE;
 
 	public documentSize: any[] = [];
+
 	public documentCount: any[] = [];
+
+	public apmtDocUniqueId$$ = new BehaviorSubject<string | null>(null);
 
 	constructor(
 		private fb: FormBuilder,
