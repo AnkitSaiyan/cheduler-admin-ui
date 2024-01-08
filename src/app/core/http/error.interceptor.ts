@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, of, throwError } from 'rxjs';
 import { NotificationDataService } from '../services/notification-data.service';
 import { LoaderService } from '../services/loader.service';
 import { HttpStatusCodes } from '../../shared/models/base-response.model';
@@ -26,7 +26,7 @@ export class ErrorInterceptor implements HttpInterceptor {
 			catchError((err) => {
 				this.generateErrorMessage(err, this.language);
 				this.stopLoaders();
-				return throwError(() => new Error(err));
+				return throwError(() => err);
 			}),
 		);
 	}
@@ -39,7 +39,6 @@ export class ErrorInterceptor implements HttpInterceptor {
 		} else {
 			this.errorMessage = this.handleBackendCodes(err?.error?.message, lang);
 		}
-		if (this.errorMessage !== 'MSG_400_APMT_AFFECTS') this.notificationSvc.showError(this.errorMessage);
 	}
 
 	private handleHttpStatusCodes(statusCode: number, lang: string): string {
