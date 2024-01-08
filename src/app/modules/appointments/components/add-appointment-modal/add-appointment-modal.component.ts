@@ -640,16 +640,17 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		});
 	}
 
-	private async uploadDocuments(transformedDataArray: string[]) {
+	private async uploadDocuments(files: string[]) {
+		const transformedDataArray = files;
 		if (this.fileMaxCount === this.documentList$$.value?.length) {
-			this.notificationSvc.showNotification('test', NotificationType.DANGER);
+			this.notificationSvc.showNotification('File count limit exceeded', NotificationType.DANGER);
 			return;
 		}
 
-		// if (this.fileMaxCount < this.documentList$$.value?.length + transformedDataArray?.length) {
-		// 	this.notificationSvc.showNotification(Translate.AddedSuccess(file?.name)[this.selectedLang], NotificationType.DANGER);
-		// 	return;
-		// }
+		if (this.fileMaxCount < this.documentList$$.value?.length + transformedDataArray?.length) {
+			this.notificationSvc.showNotification('File count limit exceeded', NotificationType.DANGER);
+			transformedDataArray?.splice(this.fileMaxCount - this.documentList$$.value?.length);
+		}
 		for (const file of transformedDataArray) {
 			if (!this.formValues.qrCodeId) {
 				await this.uploadDocument(file);

@@ -156,6 +156,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	private advanceSearchData: any;
 
+	private qrCodeId!: string;
+
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -592,7 +594,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				filter((res) => !!res),
 				switchMap((result) => {
 					this.advanceSearchData = result;
-					return this.appointmentApiSvc.fetchAllAppointments$(1, result)
+					return this.appointmentApiSvc.fetchAllAppointments$(1, result);
 				}),
 				take(1),
 			)
@@ -624,44 +626,70 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		if (!event.target.files.length) {
 			return;
 		}
-		const extension = event.target.files[0].name.substr(event.target.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+		this.fileChange(event, id);
+	}
+
+	private checkFileExtensions(file: any): boolean {
 		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-		const fileSize = event.target.files[0].size / 1024 / 1024 > this.fileSize;
-		if (allowedExtensions.indexOf(extension) === -1) {
-			this.notificationSvc.showNotification(Translate.FileFormatNotAllowed[this.selectedLang], NotificationType.WARNING);
-		} else if (fileSize) {
-			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]} ${this.fileSize} MB.`, NotificationType.WARNING);
-		} else {
-			this.notificationSvc.showNotification(Translate.uploading[this.selectedLang], NotificationType.INFO);
-			this.onFileChange(event, id);
+		const fileName = file.name;
+		const fileExtension = fileName.split('.').pop().toLowerCase();
+		if (!allowedExtensions.includes(fileExtension)) {
+			return true;
+		}
+		return false;
+	}
+
+	private fileChange(event: any, appointmentId: any) {
+		const e = event;
+		const { files } = event.target as HTMLInputElement;
+
+		if (files?.length) {
+			const promises = Array.from(files).map((file) => this.readFileAsDataURL(file));
+			Promise.all(promises).then((transformedDataArray) => {
+				this.uploadDocuments(transformedDataArray, appointmentId);
+				e.target.value = ''; // Clear the file input
+			});
 		}
 	}
 
-	private onFileChange(event: any, id) {
-		const e = event;
-		new Promise((resolve) => {
-			const { files } = event.target as HTMLInputElement;
-
-			if (files?.length) {
-				const reader = new FileReader();
-				reader.onload = () => {
-					resolve(files[0]);
-				};
-				reader.readAsDataURL(files[0]);
-			}
-		}).then((res) => {
-			this.uploadDocument(res, id);
-			e.target.value = '';
+	private readFileAsDataURL(file: File): Promise<any> {
+		return new Promise((resolve) => {
+			const reader = new FileReader();
+			reader.onload = () => {
+				resolve(file);
+			};
+			reader.readAsDataURL(file);
 		});
 	}
 
-	private uploadDocument(file: any, id) {
-		this.appointmentApiSvc.uploadDocumnet(file, '', id).subscribe({
-			next: () => {
-				this.notificationSvc.showNotification(`${Translate.documentUploadSuccessfully[this.selectedLang]}`, NotificationType.SUCCESS);
-				this.onRefresh();
-			},
-			error: () => this.notificationSvc.showNotification(`${Translate.Error.FailedToUpload[this.selectedLang]}`, NotificationType.DANGER),
+	private async uploadDocuments(transformedDataArray: string[], appointmentId) {
+		for (const [index, file] of transformedDataArray.entries()) {
+			if (!this.qrCodeId) {
+				await this.uploadDocument(file, appointmentId, index === transformedDataArray?.length - 1);
+			} else {
+				this.uploadDocument(file, appointmentId, index === transformedDataArray?.length - 1, this.qrCodeId);
+			}
+		}
+	}
+
+	private uploadDocument(file: any, appointmentId: any, isLast: boolean, uniqueId = '') {
+		return new Promise((resolve) => {
+			this.appointmentApiSvc
+				.uploadDocumnet(file, uniqueId, `${appointmentId}`)
+				.pipe(take(1))
+				.subscribe({
+					next: (documentList) => {
+						this.notificationSvc.showNotification(Translate.AddedSuccess(file?.name)[this.selectedLang], NotificationType.SUCCESS);
+						if (isLast) {
+							this.onRefresh();
+						}
+						resolve(documentList);
+					},
+					error: (err) => {
+						this.notificationSvc.showNotification(Translate.Error.FailedToUpload[this.selectedLang], NotificationType.DANGER);
+						resolve(err);
+					},
+				});
 		});
 	}
 }

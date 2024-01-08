@@ -164,8 +164,8 @@
           <dfm-table-body-cell>
             <span *ngIf="item.documentCount" class="view-link"
 								(click)="$event.stopPropagation(); openDocumentModal(item.id)">{{'View' | translate}}</span>
-								<input #fileInput type="file" class="hidden" accept="image/*, application/pdf"
-								(click)="$event.stopPropagation();"
+								<input #fileInput type="file" class="hidden" accept="image/*, application/pdf" multiple
+								(click)="$event.stopPropagation();fileInput.value = ''"
 									(change)="uploadRefferingNote($event, item.id)" />
                   <ng-container *ngIf="!item.documentCount">
                     <span
