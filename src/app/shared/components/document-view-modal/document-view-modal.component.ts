@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { ModalService } from 'src/app/core/services/modal.service';
-import { BehaviorSubject, Subject, map, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, map, race, take, takeUntil } from 'rxjs';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -68,29 +68,10 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 	}
 
 	public getDocument(id, focusedDocId?: number) {
-		this.appointmentApiSvc
-			.getDocumentById$(id, true)
-			.pipe(
-				takeUntil(this.destroy$$),
-				map((resp) =>
-					resp.map((res) => ({
-						...res,
-						isImage: !res.fileName.includes('.pdf'),
-					})),
-				),
-			)
+		race(this.appointmentApiSvc.getDocumentById$(id, true), this.appointmentApiSvc.getDocumentById$(id, false))
+			.pipe(take(1))
 			.subscribe((res: any) => {
 				this.showDocuments(res, focusedDocId);
-			});
-		this.appointmentApiSvc
-			.getDocumentById$(id, false)
-			.pipe(takeUntil(this.destroy$$))
-			.subscribe((res: any) => {
-				this.showDocuments(res, focusedDocId);
-				// this.image.next((!res.fileName.includes('.pdf') ? this.base64ImageStart : this.base64PdfStart) + res.fileData);
-				// this.downloadableDoc = (res.fileName.includes('.pdf') ? this.base64PdfStart : this.base64ImageStart) + res.fileData;
-				// this.fileName = res.fileName;
-				// if (this.isDownloadClick) this.downloadDocument('all');
 			});
 	}
 

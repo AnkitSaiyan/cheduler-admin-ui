@@ -531,8 +531,11 @@
 	"BatchDetails": "Batch Details",
 	"AddRange": "Bereik toevoegen",
 	"Range": "Bereik",
-	"Default": "standaard"
+	"Default": "standaard",
+	"FileFormatNotAllowed": "Bestandsformaat niet toegestaan.",
+	"FileSizeError": "De bestandsgrootte mag niet groter zijn dan."
 }
+
 
 
 

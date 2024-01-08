@@ -529,8 +529,11 @@
 	"BatchDetails": "Batch Details",
 	"AddRange": "Add Range",
 	"Range": "Range",
-	"Default": "Default"
+	"Default": "Default",
+	"FileFormatNotAllowed": "File format not allowed",
+	"FileSizeError": "File size should not be greater than"
 }
+
 
 
 

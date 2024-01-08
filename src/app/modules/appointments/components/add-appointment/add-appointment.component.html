@@ -331,9 +331,17 @@
         <div class="d-flex dfm-gap-16 align-items-center">
         <label class="input-type-file-primary-md text-nowrap">{{ 'ChooseFile' | translate }}
           <input #fileInput type="file" class="hidden" accept="image/*, application/pdf" multiple
-            (change)="$event.stopPropagation(); uploadRefferingNote($event)" (click)="fileInput.value = ''" />
+            (change)="$event.stopPropagation(); uploadRefferingNote($event)" (click)="fileInput.value = ''; documentListError$$.next([])" />
         </label>
       </div>
+      <ng-container *ngIf="(documentListError$$ | async) as documentListError">
+        <div class="d-flex flex-column dfm-gap-8" *ngFor="let document of documentListError">
+          <p class="file-name error text-truncate" >
+            {{ document.fileName| translate }}&nbsp;
+          </p>
+          <small>{{'( ' + (document?.error === 'fileFormat' ? ('FileFormatNotAllowed' | translate) : ('FileSizeError' | translate) +' ' +fileSize + ' MB') +' )'}}</small>
+        </div>
+      </ng-container>
       <ng-container *ngIf="(documentList$$ | async) as documentList">
         <div class="d-flex align-items-center dfm-gap-8" *ngFor="let document of documentList">
           <p class="file-name text-truncate" >
@@ -345,6 +353,7 @@
             icon="trash-01"></dfm-button-icon>
         </div>
       </ng-container>
+
       <p class="file-name" *ngIf="isDocumentUploading$$ | async">
         {{ 'Uploading' | translate }}
       </p>

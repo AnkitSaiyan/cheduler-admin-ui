@@ -118,9 +118,15 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 	public uploadFileName!: string;
 
-	private fileSize!: number;
+	public fileSize!: number;
+
+	private fileMaxCount!: number;
 
 	public documentList$$ = new BehaviorSubject<Document[]>([]);
+
+	public documentListError$$: BehaviorSubject<{ fileName: string; error: 'fileFormat' | 'fileLimit' }[]> = new BehaviorSubject<
+		{ fileName: string; error: 'fileFormat' | 'fileLimit' }[]
+	>([]);
 
 	public isDocumentUploading$$ = new BehaviorSubject<number>(0);
 
@@ -174,6 +180,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			this.isCombinable = siteSettings.isSlotsCombinable;
 			this.fileSize = siteSettings.documentSizeInKb / 1024;
 			this.isDoctorConsentDisable$$.next(siteSettings.doctorReferringConsent === 1);
+			this.fileMaxCount = siteSettings.docUploadMaxCount;
 		});
 
 		this.examApiService.allExams$.pipe(takeUntil(this.destroy$$)).subscribe((exams) => {
@@ -668,36 +675,15 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 		if (!event.target.files.length) {
 			return;
 		}
-
-		if (this.checkFileExtensions(event)) {
-			this.handleInvalidFile(Translate.FileFormatNotAllowed[this.selectedLang]);
-		} else {
-			this.fileChange(event);
-		}
-
-		// this.uploadFileName = event.target.files[0].name;
-		// const extension = this.uploadFileName.slice(this.uploadFileName.lastIndexOf('.') + 1).toLowerCase();
-		// const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-		// const fileSizeExceedsLimit = event.target.files[0].size / 1024 / 1024 > this.fileSize;
-
-		// if (allowedExtensions.indexOf(extension) === -1) {
-		// 	this.handleInvalidFile('File format not allowed.');
-		// } else if (fileSizeExceedsLimit) {
-		// 	this.handleInvalidFile(`File size should not exceed ${this.fileSize} MB.`);
-		// } else {
-		// 	this.documentStage = 'Uploading';
-		// 	this.onFileChange(event);
-		// }
+		this.fileChange(event);
 	}
 
-	private checkFileExtensions(event: any): boolean {
+	private checkFileExtensions(file: any): boolean {
 		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-		for (let files of event.target.files) {
-			const fileName = files.name;
-			const fileExtension = fileName.split('.').pop().toLowerCase();
-			if (!allowedExtensions.includes(fileExtension)) {
-				return true;
-			}
+		const fileName = file.name;
+		const fileExtension = fileName.split('.').pop().toLowerCase();
+		if (!allowedExtensions.includes(fileExtension)) {
+			return true;
 		}
 		return false;
 	}
@@ -726,6 +712,16 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	}
 
 	private async uploadDocuments(transformedDataArray: string[]) {
+		if (this.fileMaxCount === this.documentList$$.value?.length) {
+			this.notificationSvc.showNotification('test', NotificationType.DANGER);
+			return;
+		}
+
+		// if (this.fileMaxCount < this.documentList$$.value?.length + transformedDataArray?.length) {
+
+		// 	return;
+		// }
+
 		for (const file of transformedDataArray) {
 			if (!this.formValues.qrCodeId) {
 				await this.uploadDocument(file);
@@ -738,30 +734,21 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	private handleInvalidFile(errorMessage: string): void {
 		this.notificationSvc.showNotification(errorMessage, NotificationType.WARNING);
 	}
-
-	private onFileChange(event: any) {
-		const e = event;
-		new Promise((resolve) => {
-			const { files } = event.target as HTMLInputElement;
-
-			if (files?.length) {
-				const reader = new FileReader();
-				reader.onload = () => {
-					resolve(files[0]);
-				};
-				reader.readAsDataURL(files[0]);
-			}
-		}).then((res) => {
-			this.uploadDocument(res);
-			e.target.value = '';
-		});
-	}
 	/**
 	 * Ignore await response.
 	 * @param file
 	 * @returns
 	 */
 	private uploadDocument(file: any, uniqueId = '') {
+		const fileSizeExceedsLimit = file.size / 1024 / 1024 > this.fileSize;
+		if (fileSizeExceedsLimit) {
+			this.documentListError$$.next([...this.documentListError$$.value, { fileName: file.name, error: 'fileLimit' }]);
+			return;
+		}
+		if (this.checkFileExtensions(file)) {
+			this.documentListError$$.next([...this.documentListError$$.value, { fileName: file.name, error: 'fileFormat' }]);
+			return;
+		}
 		return new Promise((resolve) => {
 			this.isDocumentUploading$$.next(this.isDocumentUploading$$.value + 1);
 			this.appointmentApiSvc

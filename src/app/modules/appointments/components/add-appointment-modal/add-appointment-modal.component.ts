@@ -32,6 +32,7 @@ import { Translate } from '../../../../shared/models/translate.model';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { CustomDateParserFormatter } from '../../../../shared/utils/dateFormat';
 import { UserApiService } from '../../../../core/services/user-api.service';
+import { Document } from 'src/app/shared/models/document.model';
 
 @Component({
 	selector: 'dfm-add-appointment-modal',
@@ -80,6 +81,14 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	private userList: NameValue[] = [];
 
+	public documentList$$ = new BehaviorSubject<Document[]>([]);
+
+	public documentListError$$: BehaviorSubject<{ fileName: string; error: 'fileFormat' | 'fileLimit' }[]> = new BehaviorSubject<
+		{ fileName: string; error: 'fileFormat' | 'fileLimit' }[]
+	>([]);
+
+	public isDocumentUploading$$ = new BehaviorSubject<number>(0);
+
 	public modalData!: {
 		event: MouseEvent;
 		element: HTMLDivElement;
@@ -103,7 +112,9 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	public uploadFileName!: string;
 
-	private fileSize!: number;
+	public fileSize!: number;
+
+	private fileMaxCount!: number;
 
 	public documentStage: string = '';
 
@@ -135,6 +146,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			this.isCombinable = siteSettings.isSlotsCombinable;
 			this.fileSize = siteSettings.documentSizeInKb / 1024;
 			this.isDoctorConsentDisable$$.next(siteSettings.doctorReferringConsent === 1);
+			this.fileMaxCount = siteSettings.docUploadMaxCount;
 		});
 
 		this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
@@ -181,12 +193,11 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			if (this.modalData.appointment?.id && this.modalData.appointment.documentCount) this.getDocument(this.modalData.appointment.id);
 		}
 
-		this.setupSubscriptions()
-
+		this.setupSubscriptions();
 	}
 
 	private setupSubscriptions() {
-		combineLatest([(this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length)) ?? [])])
+		combineLatest([this.appointmentForm.get('examList')?.valueChanges.pipe(filter((examList) => !!examList?.length)) ?? []])
 			.pipe(debounceTime(0), takeUntil(this.destroy$$))
 			.subscribe();
 
@@ -593,18 +604,58 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			return;
 		}
 
-		this.uploadFileName = event.target.files[0].name;
-		const extension = this.uploadFileName.slice(this.uploadFileName.lastIndexOf('.') + 1).toLowerCase();
-		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-		const fileSizeExceedsLimit = event.target.files[0].size / 1024 / 1024 > this.fileSize;
+		this.fileChange(event);
+	}
 
-		if (allowedExtensions.indexOf(extension) === -1) {
-			this.handleInvalidFile('File format not allowed.');
-		} else if (fileSizeExceedsLimit) {
-			this.handleInvalidFile(`File size should not exceed ${this.fileSize} MB.`);
-		} else {
-			this.documentStage = 'Uploading';
-			this.onFileChange(event);
+	private checkFileExtensions(file: any): boolean {
+		const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+		const fileName = file.name;
+		const fileExtension = fileName.split('.').pop().toLowerCase();
+		if (!allowedExtensions.includes(fileExtension)) {
+			return true;
+		}
+		return false;
+	}
+
+	private fileChange(event: any) {
+		const e = event;
+		const { files } = event.target as HTMLInputElement;
+
+		if (files?.length) {
+			const promises = Array.from(files).map((file) => this.readFileAsDataURL(file));
+			Promise.all(promises).then((transformedDataArray) => {
+				this.uploadDocuments(transformedDataArray);
+				e.target.value = ''; // Clear the file input
+			});
+		}
+	}
+
+	private readFileAsDataURL(file: File): Promise<any> {
+		return new Promise((resolve) => {
+			const reader = new FileReader();
+			reader.onload = () => {
+				resolve(file);
+			};
+			reader.readAsDataURL(file);
+		});
+	}
+
+	private async uploadDocuments(transformedDataArray: string[]) {
+		if (this.fileMaxCount === this.documentList$$.value?.length) {
+			this.notificationSvc.showNotification('test', NotificationType.DANGER);
+			return;
+		}
+
+		// if (this.fileMaxCount < this.documentList$$.value?.length + transformedDataArray?.length) {
+		// 	this.notificationSvc.showNotification(Translate.AddedSuccess(file?.name)[this.selectedLang], NotificationType.DANGER);
+		// 	return;
+		// }
+		for (const file of transformedDataArray) {
+			if (!this.formValues.qrCodeId) {
+				await this.uploadDocument(file);
+			} else {
+				this.uploadDocument(file, this.formValues.qrCodeId);
+			}
 		}
 	}
 
@@ -613,40 +664,56 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		this.documentStage = 'FAILED_TO_UPLOAD';
 	}
 
-	private onFileChange(event: any) {
-		const e = event;
-		new Promise((resolve) => {
-			const { files } = event.target as HTMLInputElement;
-
-			if (files?.length) {
-				const reader = new FileReader();
-				reader.onload = () => {
-					resolve(files[0]);
-				};
-				reader.readAsDataURL(files[0]);
-			}
-		}).then((res) => {
-			this.uploadDocument(res);
-			e.target.value = '';
-		});
-	}
-
-	private uploadDocument(file: any) {
-		this.appointmentApiSvc.uploadDocumnet(file, '', `${this.modalData?.appointment?.id ?? 0}`).subscribe({
-			next: (res) => {
-				this.documentStage = this.uploadFileName;
-				this.appointmentForm.patchValue({
-					qrCodeId: res?.apmtDocUniqueId,
+	/**
+	 * Ignore await response.
+	 * @param file
+	 * @returns
+	 */
+	private uploadDocument(file: any, uniqueId = '') {
+		const fileSizeExceedsLimit = file.size / 1024 / 1024 > this.fileSize;
+		if (fileSizeExceedsLimit) {
+			this.documentListError$$.next([...this.documentListError$$.value, { fileName: file.name, error: 'fileLimit' }]);
+			return;
+		}
+		if (this.checkFileExtensions(file)) {
+			this.documentListError$$.next([...this.documentListError$$.value, { fileName: file.name, error: 'fileFormat' }]);
+			return;
+		}
+		return new Promise((resolve) => {
+			this.isDocumentUploading$$.next(this.isDocumentUploading$$.value + 1);
+			this.appointmentApiSvc
+				.uploadDocumnet(file, uniqueId, `${this.modalData?.appointment?.id ?? 0}`)
+				.pipe(
+					take(1),
+					switchMap((res) => {
+						this.appointmentForm.patchValue({
+							qrCodeId: res?.apmtDocUniqueId,
+						});
+						return this.appointmentApiSvc.getDocumentById$(res.apmtDocUniqueId, true);
+					}),
+				)
+				.subscribe({
+					next: (documentList) => {
+						this.documentList$$.next(documentList);
+						this.notificationSvc.showNotification(Translate.AddedSuccess(file?.name)[this.selectedLang], NotificationType.SUCCESS);
+						this.isDocumentUploading$$.next(this.isDocumentUploading$$.value - 1);
+						resolve(documentList);
+					},
+					error: (err) => {
+						this.notificationSvc.showNotification(Translate.Error.FailedToUpload[this.selectedLang], NotificationType.DANGER);
+						this.isDocumentUploading$$.next(this.isDocumentUploading$$.value - 1);
+						resolve(err);
+					},
 				});
-			},
-			error: () => (this.documentStage = 'FAILED_TO_UPLOAD'),
 		});
 	}
 
-	public viewDocument() {
+	public viewDocument(id?: number) {
 		this.modalSvc.open(DocumentViewModalComponent, {
 			data: {
 				id: this.modalData?.appointment?.id ?? this.formValues.qrCodeId,
+				documentList: this.documentList$$.value,
+				focusedDocId: id,
 			},
 			options: {
 				size: 'xl',
@@ -657,21 +724,18 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		});
 	}
 
-	public clearFile() {
-		// this.appointmentApiSvc.deleteDocument(this.formValues.qrCodeId).pipe(takeUntil(this.destroy$$)).subscribe();
-		// this.formValues.qrCodeId = '';
-		// this.documentStage = '';
+	public clearFile(document: Document) {
+		this.appointmentApiSvc.deleteDocument(document.id).pipe(takeUntil(this.destroy$$)).subscribe();
+		this.notificationSvc.showNotification(Translate.DeleteSuccess(document.fileName)[this.selectedLang], NotificationType.SUCCESS);
+		this.documentList$$.next(this.documentList$$.value?.filter((item) => item?.id !== document?.id));
 	}
 
 	private getDocument(id: number) {
 		this.appointmentApiSvc
 			.getDocumentById$(id, true)
-			.pipe(takeUntil(this.destroy$$))
-			.subscribe((res) => {
-				// this.documentStage = res.fileName;
-				// this.appointmentForm.patchValue({
-				// 	qrCodeId: res?.apmtQRCodeId,
-				// });
+			.pipe(take(1))
+			.subscribe((documentList) => {
+				this.documentList$$.next(documentList);
 			});
 	}
 }
