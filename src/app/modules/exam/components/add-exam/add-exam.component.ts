@@ -289,7 +289,9 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		this.route.params
 			.pipe(
 				filter((params) => {
-					this.examForm.get('name')?.addAsyncValidators(this.examApiSvc.examValidator((+params[EXAM_ID] && this.edit) || '0'));
+					this.examForm.get('name')?.addAsyncValidators(
+						this.examApiSvc.examValidator((+params[EXAM_ID] && this.edit) ? +params[EXAM_ID] : '0')
+					);
 					this.examForm.updateValueAndValidity();
 					return params[EXAM_ID];
 				}),
