@@ -85,9 +85,13 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	public downloadItems: NameValue[] = [];
 
-	public appointments$$: BehaviorSubject<Appointment[]>;
+	private appointments$$: BehaviorSubject<Appointment[]>;
 
-	public filteredAppointments$$: BehaviorSubject<Appointment[]>;
+	private filteredAppointments$$: BehaviorSubject<Appointment[]>;
+
+	private filteredPastAppointments$$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
+
+	private pastAppointments$$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
 
 	public upcomingTableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
@@ -138,6 +142,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	private paginationData: PaginationData | undefined;
 
+	private pastPaginationData: PaginationData | undefined;
+
 	public appointmentViewControl = new FormControl();
 
 	public appointmentListData: NameValue[] = [];
@@ -150,7 +156,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	private sortType: undefined | ColumnSort = 'Asc';
 
-	private sortTypePast: undefined | ColumnSort = 'Asc';
+	private sortTypePast: undefined | ColumnSort = 'Desc';
 
 	public isLoading: boolean = true;
 
@@ -181,6 +187,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.appointmentApiSvc.appointmentPageNo = 1;
+		this.pastTableHeaders[0] = { id: '1', title: 'StartedAt', isSortable: true, sort: 'Desc' };
 		localStorage.removeItem('previousPagefromView');
 
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe((params) => {
@@ -226,19 +233,28 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.filteredAppointments$$
 			.pipe(
 				takeUntil(this.destroy$$),
-				map((appointments) => GeneralUtils.SortArray(appointments, this.isUpcomingAppointments ? this.sortType : this.sortTypePast, 'startedAt')),
-				map((data) => [data.filter((item) => item.isEditable), data.filter((item) => !item.isEditable)]),
+				map((appointments) => GeneralUtils.SortArray(appointments,  this.sortType , 'startedAt')),
 			)
 			.subscribe({
 				next: (items) => {
 					this.upcomingTableData$$.next({
-						items: items[0],
+						items: [...items],
 						isInitialLoading: false,
 						isLoading: false,
 						isLoadingMore: false,
 					});
+				},
+			});
+		
+			this.filteredPastAppointments$$
+			.pipe(
+				takeUntil(this.destroy$$),
+				map((appointments) => GeneralUtils.SortArray(appointments, this.sortTypePast, 'startedAt')),
+			)
+			.subscribe({
+				next: (items) => {
 					this.pastTableData$$.next({
-						items: items[1],
+						items: [...items],
 						isInitialLoading: false,
 						isLoading: false,
 						isLoadingMore: false,
@@ -248,6 +264,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 		this.appointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: () => this.handleSearch(this.searchControl.value ?? ''),
+		});
+
+		this.pastAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (appointments) => this.filteredPastAppointments$$.next([...appointments])
 		});
 
 		this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -263,12 +283,26 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			error: () => this.filteredAppointments$$.next([]),
 		});
 
+		this.appointmentApiSvc.pastAppointment$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (appointmentsBase) => {
+				if (this.pastPaginationData && this.pastPaginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
+					this.pastAppointments$$.next([...this.pastAppointments$$.value, ...appointmentsBase.data]);
+				} else {
+					this.pastAppointments$$.next(appointmentsBase.data);
+				}
+				this.pastPaginationData = appointmentsBase?.metaData?.pagination || 1;
+				this.isLoading = false;
+			},
+			error: () => this.filteredPastAppointments$$.next([]),
+		});
+
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
 			this.searchControl.setValue(search);
 			if (search) {
 				this.handleSearch(search.toLowerCase());
 			} else {
 				this.filteredAppointments$$.next([...this.appointments$$.value]);
+				this.filteredPastAppointments$$.next([...this.pastAppointments$$.value]);
 			}
 		});
 
@@ -377,6 +411,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.appointmentViewControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			if (value) {
 				this.isUpcomingAppointments = value === 'upcoming';
+				this.searchControl.setValue('');
+				this.onRefresh();
 			}
 			this.selectedAppointmentIDs = [];
 			this.filteredAppointments$$.next([...this.appointments$$.value]);
@@ -395,20 +431,39 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	private handleSearch(searchText: string): void {
-		this.filteredAppointments$$.next([
-			...this.appointments$$.value.filter((appointment) => {
-				let status: any;
-				if (appointment.approval === 0) status = this.translate.instant('Pending');
-				if (appointment.approval === 1) status = this.translate.instant('Approved');
-				if (appointment.approval === 2) status = this.translate.instant('Canceled');
-				return (
-					`${appointment.patientFname?.toLowerCase()} ${appointment.patientLname?.toLowerCase()}`?.includes(searchText) ||
-					appointment.doctor?.toLowerCase()?.includes(searchText) ||
-					appointment.id?.toString()?.includes(searchText) ||
-					status?.toLowerCase()?.startsWith(searchText)
-				);
-			}),
-		]);
+		if (this.isUpcomingAppointments) {
+			this.filteredAppointments$$.next([
+				...this.appointments$$.value.filter((appointment) => {
+					const status: any = this.getStatusInstance(appointment);
+					return this.getSearchFilteredData(appointment, searchText, status);
+				}),
+			]);
+		} else {
+			this.filteredPastAppointments$$.next([
+				...this.pastAppointments$$.value.filter((appointment) => {
+					const status: any = this.getStatusInstance(appointment);
+					return this.getSearchFilteredData(appointment, searchText, status);
+				}),
+			]);
+		}
+	}
+
+	private getStatusInstance(appointment: Appointment): string {
+		let status: any;
+		if (appointment.approval === 0) status = this.translate.instant('Pending');
+		if (appointment.approval === 1) status = this.translate.instant('Approved');
+		if (appointment.approval === 2) status = this.translate.instant('Canceled');
+		return status;
+	}
+
+	private getSearchFilteredData(appointment: Appointment, searchText: string, status: string): boolean {
+		return (
+			`${appointment.patientFname?.toLowerCase()} ${appointment.patientLname?.toLowerCase()}`?.includes(searchText) ||
+			appointment.patientLname?.toLowerCase()?.includes(searchText) ||
+			appointment.doctor?.toLowerCase()?.includes(searchText) ||
+			appointment.id?.toString()?.includes(searchText) ||
+			status?.toLowerCase()?.startsWith(searchText)
+		);
 	}
 
 	public changeStatus(changes: ChangeStatusRequestData[]) {
@@ -501,39 +556,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		}
 	}
 
-	public openSearchModal() {
-		this.toggleMenu();
-
-		const modalRef = this.modalSvc.open(SearchModalComponent, {
-			options: { fullscreen: true },
-			data: {
-				items: [
-					...this.appointments$$.value.map(({ id, patientLname, patientFname }) => {
-						return {
-							name: `${patientFname} ${patientLname}`,
-							key: `${patientFname} ${patientLname} ${id}`,
-							value: id,
-						};
-					}),
-				],
-				placeHolder: 'Search by Patient Name, app. no...',
-			} as SearchModalData,
-		});
-
-		modalRef.closed.pipe(take(1)).subscribe((result) => this.filterAppointments(result));
-	}
-
-	private filterAppointments(result: { name: string; value: string }[]) {
-		if (!result?.length) {
-			this.filteredAppointments$$.next([...this.appointments$$.value]);
-			return;
-		}
-
-		const ids = new Set<number>();
-		result.forEach((item) => ids.add(+item.value));
-		this.filteredAppointments$$.next([...this.appointments$$.value.filter((appointment: Appointment) => ids.has(+appointment.id))]);
-	}
-
 	public toggleView(): void {
 		this.selectedAppointmentIDs = [];
 		this.router.navigate([], {
@@ -559,6 +581,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.advanceSearchData = undefined;
 		this.isResetBtnDisable = true;
 		this.appointmentApiSvc.appointmentPageNo = 1;
+		this.appointmentApiSvc.pastAppointmentPageNo = 1;
 	}
 
 	public onScroll(): void {
@@ -569,9 +592,14 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	public onSort(e: DfmTableHeader, table = 'upcoming'): void {
-		if (table === 'past') this.sortTypePast = e.sort;
-		else this.sortType = e.sort;
-		this.filteredAppointments$$.next(GeneralUtils.SortArray(this.filteredAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
+		if (table === 'past') {
+			this.sortTypePast = e.sort;
+			this.filteredPastAppointments$$.next(GeneralUtils.SortArray(this.filteredPastAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
+		}
+		else {
+			this.sortType = e.sort;
+			this.filteredAppointments$$.next(GeneralUtils.SortArray(this.filteredAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
+		}
 	}
 
 	openAdvancePopup() {
@@ -594,14 +622,19 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				filter((res) => !!res),
 				switchMap((result) => {
 					this.advanceSearchData = result;
-					return this.appointmentApiSvc.fetchAllAppointments$(1, result);
+					return this.appointmentApiSvc.fetchAllAppointments$(1, this.isUpcomingAppointments, result);
 				}),
 				take(1),
 			)
 			.subscribe({
 				next: (appointments) => {
-					this.appointments$$.next(appointments?.data);
-					this.filteredAppointments$$.next(appointments?.data);
+					if (this.isUpcomingAppointments) {
+						this.appointments$$.next(appointments?.data);
+						this.filteredAppointments$$.next(appointments?.data);	
+					} else {
+						this.pastAppointments$$.next(appointments?.data);
+						this.filteredPastAppointments$$.next(appointments?.data);
+					}
 					this.isResetBtnDisable = false;
 				},
 			});

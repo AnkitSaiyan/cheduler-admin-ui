@@ -83,6 +83,17 @@ export class AppointmentApiService extends DestroyableComponent {
 		return this.appointmentPageNo$$.value;
 	}
 
+
+	private pastAppointmentPageNo$$ = new BehaviorSubject<number>(1);
+
+	public set pastAppointmentPageNo(pageNo: number) {
+		this.pastAppointmentPageNo$$.next(pageNo);
+	}
+
+	public get pastAppointmentPageNo(): number {
+		return this.pastAppointmentPageNo$$.value;
+	}
+
 	private recentPatientPageNo$$ = new BehaviorSubject<number>(1);
 
 	public set recentPatientPageNo(pageNo: number) {
@@ -116,19 +127,20 @@ export class AppointmentApiService extends DestroyableComponent {
 		this.loaderSvc.activate();
 		return combineLatest([this.appointmentPageNo$$]).pipe(
 			switchMap(([pageNo]) => {
-				return this.fetchAllAppointments$(pageNo).pipe(
-					switchMap((appointments) =>
-						this.AttachPatientDetails(appointments.data).pipe(
-							map((data) => {
-								this.loaderSvc.deactivate();
-								return { ...appointments, data };
-							}),
-						),
-					),
-				);
+				return this.getAppointmentData(pageNo, false);
 			}),
 		);
 	}
+
+	public get pastAppointment$(): Observable<BaseResponse<Appointment[]>> {
+		this.loaderSvc.activate();
+		return combineLatest([this.pastAppointmentPageNo$$]).pipe(
+			switchMap(([pageNo]) => {
+				return this.getAppointmentData(pageNo, true);
+			}),
+		);
+	}
+
 
 	public get appointmentListData$(): Observable<any[]> {
 		return combineLatest([this.selectedLang$$.pipe(startWith(''))]).pipe(
@@ -167,6 +179,19 @@ export class AppointmentApiService extends DestroyableComponent {
 					}),
 				);
 			}),
+		);
+	}
+
+	private getAppointmentData(pageNo:any, isPast:boolean): Observable<BaseResponse<Appointment[]>> {
+		return this.fetchAllAppointments$(pageNo, isPast).pipe(
+			switchMap((appointments) =>
+				this.AttachPatientDetails(appointments.data).pipe(
+					map((data) => {
+						this.loaderSvc.deactivate();
+						return { ...appointments, data };
+					}),
+				),
+			),
 		);
 	}
 
@@ -210,7 +235,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		return this.http.get<BaseResponse<Appointment[]>>(`${this.appointmentUrl}`, { params });
 	}
 
-	public fetchAllAppointments$(pageNo: number, data?: any): Observable<BaseResponse<Appointment[]>> {
+	public fetchAllAppointments$(pageNo: number, isPast: boolean, data?: any): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
 		if (data) {
 			const queryParams = this.buildQueryParams(data);
@@ -219,7 +244,11 @@ export class AppointmentApiService extends DestroyableComponent {
 				tap(() => this.loaderSvc.deactivate()),
 			);
 		}
-		const params = new HttpParams().append('pageNo', pageNo);
+		let params = new HttpParams().append('pageNo', pageNo);
+		if (isPast) {
+			params = params.append('isPast', true);
+		}
+
 		return this.fetchAppointments(params).pipe(
 			map((response) => this.mapAppointments(response)),
 			tap(() => this.loaderSvc.deactivate()),
