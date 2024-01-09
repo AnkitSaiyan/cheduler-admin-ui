@@ -21,6 +21,7 @@ export interface SiteManagement {
 	editUploadedDocument: boolean;
 	documentSizeInKb: number;
 	absenceImpactAlertInterval: number;
+	docUploadMaxCount: number;
 }
 
 export type SiteManagementRequestData = Prettify<PartialBy<Omit<SiteManagement, 'logo' | 'documentSizeInKb'>, 'id'> & { documentSize: number }>;

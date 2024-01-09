@@ -65,6 +65,7 @@ export class SiteManagementApiService extends DestroyableComponent {
 		formData.append('editUploadedDocument', String(requestData.editUploadedDocument));
 		formData.append('documentSizeInKb', String(requestData.documentSize * 1024));
 		formData.append('absenceImpactAlertInterval', String(requestData.absenceImpactAlertInterval));
+		formData.append('DocUploadMaxCount', String(requestData.docUploadMaxCount));
 		if (requestData.file) {
 			formData.append('File', requestData.file);
 		}

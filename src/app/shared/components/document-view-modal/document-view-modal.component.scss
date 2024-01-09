@@ -13,6 +13,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        min-height: 300px;
+        height: 400px;
+          width: 100%;
         img{
             max-width: 60vw;
             max-height: 60vh;
@@ -22,16 +25,20 @@
     .bottom-img{
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
+        justify-content: start;
         flex-wrap: wrap;
         gap: 3px;
         border-radius: 8px;
-        .bottom-img-item{
-            width: 5vw;
-            height: auto;
+        .bottom-img-item {
             border-radius: 4px;
             overflow: hidden;
             position: relative;
+            width: 40px;
+            height: 40px;
+              object-fit: cover;
+              display: flex;
+            justify-content: center;
+              align-items: center;
             .btns{
                 position: absolute;
                 color: #ffffff;
@@ -47,7 +54,18 @@
             }
             &:hover .btns{
                 display:flex;
+                color: black;
             }
+        &.focused {
+          padding: 2px;
+          border: 4px solid #000000;
+
+            .img-fluid:not(.top-pdf) {
+              >svg {
+                width: 24px;
+              }
+            }
+        }
         }
     }
 }
@@ -61,6 +79,7 @@
     gap: 10px;
 }
 
+
 .bottom-pdf{
     height: 10vh !important;
 }
@@ -69,4 +88,7 @@
     height: 50vh;
     background-color: white;
     border-radius: 5px;
+}
+p {
+  white-space: nowrap;
 }

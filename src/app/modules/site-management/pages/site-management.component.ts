@@ -40,6 +40,7 @@ interface FormValues {
 	editUploadedDocument: boolean;
 	absenceImpactAlertInterval: number;
 	absenceImpactAlertIntervalType: TimeDurationType;
+	docUploadMaxCount: number;
 }
 
 @Component({
@@ -60,6 +61,10 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 
 	public documentSize: any[] = [];
 
+	public documentCount: any[] = [];
+
+	public apmtDocUniqueId$$ = new BehaviorSubject<string | null>(null);
+
 	constructor(
 		private fb: FormBuilder,
 		private notificationSvc: NotificationDataService,
@@ -72,7 +77,12 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 	}
 
 	public ngOnInit(): void {
-		for (let i = 1; i < 11; i++) this.documentSize.push({ name: `${i} MB`, value: i });
+		for (let i = 1; i < 11; i++) {
+			this.documentSize.push({ name: `${i} MB`, value: i });
+		}
+		for (let i = 1; i < 6; i++) {
+			this.documentCount.push({ name: `${i}`, value: i });
+		}
 
 		this.siteManagementApiSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.timeDurations = items));
 
@@ -137,6 +147,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			editUploadedDocument: [!!siteManagementData?.editUploadedDocument, [Validators.required]],
 			absenceImpactAlertInterval: [absenceReminder, []],
 			absenceImpactAlertIntervalType: [absenceReminderType, []],
+			docUploadMaxCount: [5, [Validators.required]],
 		});
 
 		setTimeout(() => {
@@ -145,6 +156,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 				cancelAppointmentType: durationType,
 				documentSize: siteManagementData?.documentSizeInKb ? siteManagementData.documentSizeInKb / 1024 : 5,
 				absenceImpactAlertIntervalType: absenceReminderType,
+				docUploadMaxCount: siteManagementData?.docUploadMaxCount ? siteManagementData?.docUploadMaxCount : 5,
 			});
 		}, 0);
 
