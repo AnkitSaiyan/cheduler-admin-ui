@@ -8,9 +8,9 @@
 					</div>
 					<span class="font-weight-medium">{{ 'AppointmentsList' | translate }}</span>
 
-					<div class="hidden align-items-center dfm-gap-8 dfm-px-8 justify-content-center ap-li-section2-action-bar-mv hide-scrollbar overflow-x-auto">		
+					<div class="hidden align-items-center dfm-gap-8 dfm-px-8 justify-content-center ap-li-section2-action-bar-mv hide-scrollbar overflow-x-auto">
 						<dfm-button-icon color="secondary-gray" size="md" icon="filter-funnel-01" (click)="openAdvancePopup()"></dfm-button-icon>
-		
+
 						<dfm-button-icon
 							color="secondary-gray"
 							size="md"
@@ -21,7 +21,7 @@
 							[openDelay]="200"
 							(click)="isResetBtnDisable ? $event.preventDefault() : onRefresh();"
 						></dfm-button-icon>
-		
+
 						<dfm-button
 							*dfmPermitted="Permission.CreateAppointments"
 							color="primary"
@@ -135,7 +135,7 @@
 			</div>
 		</section>
 		<ng-container *ngIf="isUpcomingAppointmentsDashboard">
-			<section class="table-wrapper" *ngIf="(upcomingTableData$$ | async)?.items as appointments">	
+			<section class="table-wrapper" *ngIf="(upcomingTableData$$ | async)?.items as appointments">
 				<dfm-data-table [data]="(upcomingTableData$$ | async) ?? {items: []}" [selectable]="true"
 					(selected)="handleCheckboxSelection($event)" [clearSelected$]="clearSelected$$" [stickyActions]="true"
 					noDataMessage="{{ (isLoading ? 'Loading' : 'NoAppointmentsFound') | translate }}" [rowClickable]="true"
@@ -161,8 +161,8 @@
 						<dfm-table-body-cell>
 							<span *ngIf="item.documentCount" class="view-link"
 								(click)="$event.stopPropagation(); openDocumentModal(item.id)">{{'View' | translate}}</span>
-							<input #fileInput type="file" class="hidden" accept="image/*, application/pdf"
-								(click)="$event.stopPropagation();" (change)="uploadRefferingNote($event, item.id)" />
+							<input #fileInput type="file" class="hidden" accept="image/*, application/pdf" multiple
+								(click)="$event.stopPropagation();fileInput.value = ''" (change)="uploadRefferingNote($event, item.id)" />
 							<ng-container *ngIf="!item.documentCount">
 								<span class="upload-button" *dfmPermitted="Permission.UploadDocument"
 									(click)="$event.stopPropagation(); fileInput.click();"
@@ -180,11 +180,11 @@
 							<dfm-badge *ngIf="item.approval === statusType.Approved" color="success" size="sm" fontWeight="medium">
 								{{ item.approval | approvalTypeName | translate | dashIfNothing }}
 							</dfm-badge>
-			
+
 							<dfm-badge *ngIf="item.approval === statusType.Cancelled" color="primary" size="sm">
 								{{ item.approval | approvalTypeName | translate | dashIfNothing }}
 							</dfm-badge>
-			
+
 							<dfm-badge *ngIf="item.approval === statusType.Pending" color="gray" size="sm">
 								{{ item.approval | approvalTypeName | translate | dashIfNothing }}
 							</dfm-badge>
@@ -204,10 +204,10 @@
 							</ng-container>
 						</dfm-data-table-action-cell>
 					</ng-template>
-				</dfm-data-table>	
+				</dfm-data-table>
 			</section>
 
-			
+
 		</ng-container>
 		<ng-container *ngIf="!isUpcomingAppointmentsDashboard">
 				<dfm-data-table  [data]="(pastTableData$$ | async) ?? {items: []}" [selectable]="false"
@@ -227,11 +227,11 @@
 					<dfm-badge *ngIf="item.approval === statusType.Approved" color="success" size="sm" fontWeight="medium">
 					  {{ item.approval | approvalTypeName | translate | dashIfNothing }}
 					</dfm-badge>
-		
+
 					<dfm-badge *ngIf="item.approval === statusType.Cancelled" color="primary" size="sm">
 					  {{ item.approval | approvalTypeName  | translate | dashIfNothing }}
 					</dfm-badge>
-		
+
 					<dfm-badge *ngIf="item.approval === statusType.Pending" color="gray" size="sm">
 					  {{ item.approval | approvalTypeName | translate  | dashIfNothing }}
 					</dfm-badge>

@@ -25,9 +25,15 @@
   font-size: 14px;
   color: blue;
   width: 180px;
-  text-align: center;
-  overflow-wrap: break-word;
   margin-bottom: 0;
+  &.error {
+      color: red
+    }
+  }
+  
+  small {
+    color: red;
+    font-size: 10px;
 }
 
 .clear-icon{
@@ -150,11 +156,11 @@
   }
 
   .time-slot-text {
-    background-color: #fff !important; 
+    background-color: #fff !important;
   }
 
   .time-slot-text.uncombinable {
-    background-color: var(--dfm-main-100) !important; 
+    background-color: var(--dfm-main-100) !important;
   }
 
   .time-slot-selected-text.uncombinable {
