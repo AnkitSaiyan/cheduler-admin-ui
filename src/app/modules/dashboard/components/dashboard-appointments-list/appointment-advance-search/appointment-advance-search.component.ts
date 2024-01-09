@@ -259,15 +259,15 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 	public submitSearch() {
 		const data = this.appointmentForm.value;
 		if (data?.startedAt) {
-			const startDate = DateTimeUtils.DateToDateDistributed(data?.startedAt);
-			data.startedAt = `${startDate?.year}-${startDate?.month}-${startDate?.day}`;
+			const startDate = DateTimeUtils.formatDate(data?.startedAt);
+			data.startedAt = `${startDate.split(' ')[0]}`;
 		}
 		if (data?.startTime) {
 			data.startTime = `${DateTimeUtils.LocalToUTCTimeTimeString(data?.startTime)}:00`;
 		}
 		if (data?.endedAt) {
-			const endDate = DateTimeUtils.DateToDateDistributed(data?.endedAt);
-			data.endedAt = `${endDate?.year}-${endDate?.month}-${endDate?.day}`;
+			const endDate = DateTimeUtils.formatDate(data?.endedAt);
+			data.endedAt = `${endDate.split(' ')[0]}`;
 		}
 		if (data?.endTime) {
 			data.endTime = `${DateTimeUtils.LocalToUTCTimeTimeString(data?.endTime)}:00`;
