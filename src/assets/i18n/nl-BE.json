@@ -503,7 +503,7 @@
 	"Uploaded": "Geüpload",
 	"RE_UPLOAD_REFERRAL_NOTE": "Verwijsbrief opnieuw uploaden",
 	"DocumentSize": "Documentgrootte",
-	"DocUploadMaxCount": "Document upload max count",
+	"DocUploadMaxCount": "Maximale Anzahl an Dokument-Uploads",
 	"APPOINTMENT_AFFECTS_ABSENCE": "Weet u zeker dat u deze afwezigheid wilt toevoegen? \n Let op: Houd er rekening mee dat het toevoegen van deze afwezigheid invloed heeft op uw komende afspraken.",
 	"LabHoliday": "De praktijk is vandaag gesloten.",
 	"NoAbsenceForTheDay": "Geen afwezigheid voor de dag",
@@ -536,6 +536,7 @@
 	"FileSizeError": "De bestandsgrootte mag niet groter zijn dan.",
 	"UploadLimitExceeded": "Ihr Upload-Limit wurde überschritten"
 }
+
 
 
 

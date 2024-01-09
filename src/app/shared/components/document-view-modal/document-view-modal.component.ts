@@ -37,6 +37,10 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 
 	public focusedDocument!: Document;
 
+	private modalData!: any;
+
+	public isOriginFileLoading$$ = new BehaviorSubject<boolean>(false);
+
 	constructor(
 		private modalSvc: ModalService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -50,11 +54,11 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 
 	ngOnInit(): void {
 		this.modalSvc.dialogData$.pipe(takeUntil(this.destroy$$)).subscribe((data) => {
+			this.modalData = data;
 			if (data?.documentList) {
 				this.showDocuments(data?.documentList, data?.focusedDocId);
-			} else {
-				this.getDocument(data.id, data?.focusedDocId);
 			}
+			this.getDocument(data.id, data?.focusedDocId);
 		});
 
 		this.shareDataSvc
@@ -68,10 +72,26 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 	}
 
 	public getDocument(id, focusedDocId?: number) {
-		race(this.appointmentApiSvc.getDocumentById$(id, true), this.appointmentApiSvc.getDocumentById$(id, false))
+		if (!this.modalData?.documentList) {
+			this.appointmentApiSvc
+				.getDocumentById$(id, true)
+				.pipe(take(1))
+				.subscribe((res: any) => {
+					this.showDocuments(res, focusedDocId);
+				});
+		}
+		this.isOriginFileLoading$$.next(true);
+		this.appointmentApiSvc
+			.getDocumentById$(id, false)
 			.pipe(take(1))
-			.subscribe((res: any) => {
-				this.showDocuments(res, focusedDocId);
+			.subscribe({
+				next: (res: any) => {
+					this.showDocuments(res, focusedDocId);
+					this.isOriginFileLoading$$.next(false);
+				},
+				error: () => {
+					this.isOriginFileLoading$$.next(false);
+				},
 			});
 	}
 
@@ -83,7 +103,11 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 				isImage: !res.fileName.includes('.pdf'),
 			})),
 		);
-		this.focusedDocument = this.documents$$.value?.find(({ id }) => id === focusedDocId) ?? this.documents$$.value[0];
+		if (this.focusedDocument) {
+			this.focusedDocument = this.documents$$.value?.find(({ id }) => id === this.focusedDocument.id) ?? this.documents$$.value[0];
+		} else {
+			this.focusedDocument = this.documents$$.value?.find(({ id }) => id === focusedDocId) ?? this.documents$$.value[0];
+		}
 	}
 
 	public setFocus(docData: Document) {
