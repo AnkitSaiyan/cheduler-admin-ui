@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationType } from 'diflexmo-angular-design';
-import { BehaviorSubject, debounceTime, filter, map, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, lastValueFrom, map, switchMap, take, takeUntil, tap } from 'rxjs';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { ModalService } from 'src/app/core/services/modal.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
@@ -120,7 +120,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 	public fileSize!: number;
 
-	private fileMaxCount!: number;
+	public fileMaxCount!: number;
 
 	public documentList$$ = new BehaviorSubject<Document[]>([]);
 
@@ -722,7 +722,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 			this.notificationSvc.showNotification(Translate.Error.UploadLimitExceeded[this.selectedLang], NotificationType.DANGER);
 			transformedDataArray?.splice(this.fileMaxCount - this.documentList$$.value?.length);
 		}
-		console.log(transformedDataArray);
 		for (const file of transformedDataArray) {
 			if (!this.formValues.qrCodeId) {
 				await this.uploadDocument(file);

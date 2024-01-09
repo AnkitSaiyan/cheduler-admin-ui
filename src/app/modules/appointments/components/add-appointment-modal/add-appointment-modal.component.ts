@@ -114,7 +114,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	public fileSize!: number;
 
-	private fileMaxCount!: number;
+	public fileMaxCount!: number;
 
 	public documentStage: string = '';
 

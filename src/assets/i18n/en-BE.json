@@ -532,8 +532,11 @@
 	"Default": "Default",
 	"FileFormatNotAllowed": "File format not allowed",
 	"FileSizeError": "File size should not be greater than",
-	"UploadLimitExceeded": "Your upload limit has exceeded"
+	"UploadLimitExceeded": "Your upload limit has exceeded",
+	"CountLimit": "Count limit",
+	"SizeLimit": "Size limit"
 }
+
 
 
 
