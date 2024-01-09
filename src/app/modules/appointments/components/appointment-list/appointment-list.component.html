@@ -141,7 +141,6 @@
   <section
     class="overflow-y-auto list-page-content-height"
     [ngClass]="{ 'list-page-content-height-calendar': (calendarView$$ | async) }"
-    *ngIf="filteredAppointments$$ | async as appointments"
   >
     <ng-container *ngIf="(calendarView$$ | async) === false">
       <ng-container *ngIf="isUpcomingAppointments">

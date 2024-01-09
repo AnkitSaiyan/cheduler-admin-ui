@@ -213,7 +213,7 @@
 				<dfm-data-table  [data]="(pastTableData$$ | async) ?? {items: []}" [selectable]="false"
 							  noDataMessage="{{ isLoading ? 'Loading...' : 'NoAppointmentsFound' | translate }}"
 							  [rowClickable]="true"  (rowClicked)="navigateToView($event)"
-							  [stickyFirstColumn]="false" [headers]="pastTableHeaders" (scrolled)="onScroll()" (sorted)="onSort($event)">
+							  [stickyFirstColumn]="false" [headers]="pastTableHeaders" (scrolled)="pastOnScroll()">
 				<ng-template #bodyRowTemplate let-item>
 				  <dfm-table-row-cell [fullContent]="item">{{ item?.exams.length ? (item.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing ) : ('' | dashIfNothing) }}</dfm-table-row-cell>
 				  <dfm-table-row-cell [fullContent]="item">{{ item?.exams.length ? (item.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing) : ('' | dashIfNothing) }}</dfm-table-row-cell>

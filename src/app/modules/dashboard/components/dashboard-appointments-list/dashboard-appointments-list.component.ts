@@ -22,7 +22,7 @@ import { getAppointmentStatusEnum, getReadStatusEnum } from '../../../../shared/
 import { NotificationDataService } from '../../../../core/services/notification-data.service';
 import { ModalService } from '../../../../core/services/modal.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
-import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
+import { NameValue } from '../../../../shared/components/search-modal.component';
 import { DownloadAsType, DownloadService } from '../../../../core/services/download.service';
 import { AppointmentApiService } from '../../../../core/services/appointment-api.service';
 import { Appointment } from '../../../../shared/models/appointment.model';
@@ -88,7 +88,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	private appointments$$: BehaviorSubject<any[]>;
 
-	public filteredAppointments$$: BehaviorSubject<any[]>;
+	private filteredAppointments$$: BehaviorSubject<any[]>;
 
 	public upcomingTableData$$ = new BehaviorSubject<DfmDatasource<any>>({
 		items: [],
@@ -101,6 +101,10 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		isInitialLoading: true,
 		isLoadingMore: false,
 	});
+
+	private filteredPastAppointments$$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
+
+	private pastAppointments$$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
 
 	public appointmentsGroupedByDate: { [key: string]: Appointment[] } = {};
 
@@ -138,6 +142,8 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	public clipboardData: string = '';
 
 	private paginationData: PaginationData | undefined;
+
+	private pastPaginationData: PaginationData | undefined;
 
 	public appointmentViewControl = new FormControl();
 
@@ -211,28 +217,17 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 			next: (items) => (this.downloadItems = items),
 		});
 
-		this.filteredAppointments$$
-			.pipe(
-				takeUntil(this.destroy$$),
-				map((data) => [data.filter((item) => item.isEditable), data.filter((item) => !item.isEditable)]),
-			)
-			.subscribe({
-				next: (items) => {
-					this.upcomingAppointmentApiSvc.upComingAppointments.next(items[0]);
-					this.upcomingTableData$$.next({
-						items: items[0],
-						isInitialLoading: false,
-						isLoading: false,
-						isLoadingMore: false,
-					});
-					this.pastTableData$$.next({
-						items: items[1],
-						isInitialLoading: false,
-						isLoading: false,
-						isLoadingMore: false,
-					});
-				},
-			});
+		this.filteredAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => {
+				this.upcomingAppointmentApiSvc.upComingAppointments.next(items[0]);
+				this.upcomingTableData$$.next({
+					items: [...items],
+					isInitialLoading: false,
+					isLoading: false,
+					isLoadingMore: false,
+				});
+			},
+		});
 
 		this.appointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (appointment) => this.filteredAppointments$$.next([...appointment]),
@@ -256,12 +251,49 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				error: () => this.filteredAppointments$$.next([]),
 			});
 
+		this.pastAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (appointment) => this.filteredPastAppointments$$.next([...appointment]),
+		});
+
+		this.filteredPastAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (items) => {
+				this.pastTableData$$.next({
+					items: [...items],
+					isInitialLoading: false,
+					isLoading: false,
+					isLoadingMore: false,
+				});
+			},
+		});
+
+		this.appointmentApiSvc.pastAppointment$
+			.pipe(
+				takeUntil(this.destroy$$),
+				map((appointmentsBase) => ({
+					data: GeneralUtils.SortArray(appointmentsBase.data, 'Desc', 'startedAt'),
+					metaData: appointmentsBase.metaData,
+				})),
+			)
+			.subscribe({
+				next: (appointmentsBase) => {
+					if (this.pastPaginationData && this.pastPaginationData.pageNo < appointmentsBase?.metaData?.pagination.pageNo) {
+						this.pastAppointments$$.next([...this.pastAppointments$$.value, ...appointmentsBase.data]);
+					} else {
+						this.pastAppointments$$.next(appointmentsBase.data);
+					}
+					this.pastPaginationData = appointmentsBase?.metaData?.pagination || 1;
+					this.isLoading = false;
+				},
+				error: () => this.filteredPastAppointments$$.next([]),
+			});
+
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({
 			next: (searchText) => {
 				if (searchText) {
 					this.handleSearch(searchText.toLowerCase());
 				} else {
 					this.filteredAppointments$$.next([...this.appointments$$.value]);
+					this.filteredPastAppointments$$.next([...this.pastAppointments$$.value]);
 				}
 			},
 		});
@@ -374,6 +406,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		this.appointmentViewControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			if (value) {
 				this.isUpcomingAppointmentsDashboard = value === 'upcoming';
+				this.onRefresh();
 			}
 			this.selectedAppointmentIDs = [];
 		});
@@ -391,21 +424,39 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	}
 
 	private handleSearch(searchText: string): void {
-		this.filteredAppointments$$.next([
-			...this.appointments$$.value.filter((appointment) => {
-				let status: any;
-				if (appointment.approval === 0) status = this.translate.instant('Pending');
-				if (appointment.approval === 1) status = this.translate.instant('Approved');
-				if (appointment.approval === 2) status = this.translate.instant('Canceled');
-				return (
-					`${appointment.patientFname?.toLowerCase()} ${appointment.patientLname?.toLowerCase()}`?.includes(searchText) ||
-					appointment.patientLname?.toLowerCase()?.includes(searchText) ||
-					appointment.doctor?.toLowerCase()?.includes(searchText) ||
-					appointment.id?.toString()?.includes(searchText) ||
-					status?.toLowerCase()?.startsWith(searchText)
-				);
-			}),
-		]);
+		if (this.isUpcomingAppointmentsDashboard) {
+			this.filteredAppointments$$.next([
+				...this.appointments$$.value.filter((appointment) => {
+					const status: any = this.getStatusInstance(appointment);
+					return this.getSearchFilteredData(appointment, searchText, status);
+				}),
+			]);
+		} else {
+			this.filteredPastAppointments$$.next([
+				...this.pastAppointments$$.value.filter((appointment) => {
+					const status: any = this.getStatusInstance(appointment);
+					return this.getSearchFilteredData(appointment, searchText, status);
+				}),
+			]);
+		}
+	}
+
+	private getStatusInstance(appointment: Appointment): string {
+		let status: any;
+		if (appointment.approval === 0) status = this.translate.instant('Pending');
+		if (appointment.approval === 1) status = this.translate.instant('Approved');
+		if (appointment.approval === 2) status = this.translate.instant('Canceled');
+		return status;
+	}
+
+	private getSearchFilteredData(appointment: Appointment, searchText: string, status: string): boolean {
+		return (
+			`${appointment.patientFname?.toLowerCase()} ${appointment.patientLname?.toLowerCase()}`?.includes(searchText) ||
+			appointment.patientLname?.toLowerCase()?.includes(searchText) ||
+			appointment.doctor?.toLowerCase()?.includes(searchText) ||
+			appointment.id?.toString()?.includes(searchText) ||
+			status?.toLowerCase()?.startsWith(searchText)
+		);
 	}
 
 	public changeStatus(changes: ChangeStatusRequestData[]) {
@@ -421,6 +472,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		this.advanceSearchData = undefined;
 		this.isResetBtnDisable = true;
 		this.appointmentApiSvc.appointmentPageNo = 1;
+		this.appointmentApiSvc.pastAppointmentPageNo = 1;
 	}
 
 	public deleteAppointment(id: number) {
@@ -508,48 +560,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		}
 	}
 
-	public openSearchModal() {
-		this.toggleMenu();
-
-		const modalRef = this.modalSvc.open(SearchModalComponent, {
-			options: { fullscreen: true },
-			data: {
-				items: [
-					...this.appointments$$.value.map(({ id, patientLname, patientFname }) => {
-						return {
-							name: `${patientFname} ${patientLname}`,
-							key: `${patientFname} ${patientLname} ${id}`,
-							value: id,
-						};
-					}),
-				],
-				placeHolder: 'Search by Patient Name, app. no...',
-			} as SearchModalData,
-		});
-
-		modalRef.closed
-			.pipe(
-				filter((res) => !!res),
-				take(1),
-			)
-			.subscribe({
-				next: (result) => {
-					this.filterAppointments(result);
-				},
-			});
-	}
-
-	private filterAppointments(result: { name: string; value: string }[]) {
-		if (!result?.length) {
-			this.filteredAppointments$$.next([...this.appointments$$.value]);
-			return;
-		}
-
-		const ids = new Set<number>();
-		result.forEach((item) => ids.add(+item.value));
-		this.filteredAppointments$$.next([...this.appointments$$.value.filter((appointment: Appointment) => ids.has(+appointment.id))]);
-	}
-
 	public toggleView(): void {
 		this.router.navigate([], {
 			replaceUrl: true,
@@ -579,14 +589,19 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				filter((res) => !!res),
 				switchMap((result) => {
 					this.advanceSearchData = result;
-					return this.appointmentApiSvc.fetchAllAppointments$(1, result);
+					return this.appointmentApiSvc.fetchAllAppointments$(1, this.isUpcomingAppointmentsDashboard, result);
 				}),
 				take(1),
 			)
 			.subscribe({
 				next: (appointments) => {
-					this.appointments$$.next(appointments?.data);
-					this.filteredAppointments$$.next(appointments?.data);
+					if (this.isUpcomingAppointmentsDashboard) {
+						this.appointments$$.next(appointments?.data);
+						this.filteredAppointments$$.next(appointments?.data);	
+					} else {
+						this.pastAppointments$$.next(appointments?.data);
+						this.filteredPastAppointments$$.next(appointments?.data);
+					}
 					this.isResetBtnDisable = false;
 				},
 			});
@@ -601,6 +616,13 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	public onScroll(): void {
 		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
 			this.appointmentApiSvc.appointmentPageNo += 1;
+			this.upcomingTableData$$.value.isLoadingMore = true;
+		}
+	}
+
+	public pastOnScroll(): void {
+		if (this.pastPaginationData?.pageCount && this.pastPaginationData?.pageNo && this.pastPaginationData.pageCount > this.pastPaginationData.pageNo) {
+			this.appointmentApiSvc.pastAppointmentPageNo += 1;
 			this.upcomingTableData$$.value.isLoadingMore = true;
 		}
 	}
