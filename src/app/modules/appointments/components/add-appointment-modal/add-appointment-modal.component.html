@@ -281,8 +281,16 @@
                 {{ document.fileName| translate }}&nbsp;
               </p>
               <dfm-button-icon size="sm" (click)="viewDocument(document?.id)"
+                ngbPopover="{{ 'View' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
                 icon="eye"></dfm-button-icon>
               <dfm-button-icon size="sm" (click)="clearFile(document)"
+                ngbPopover="{{ 'Delete' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
                 icon="trash-01"></dfm-button-icon>
             </div>
           </ng-container>

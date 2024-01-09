@@ -714,12 +714,12 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 	private async uploadDocuments(files: string[]) {
 		const transformedDataArray = files;
 		if (this.fileMaxCount === this.documentList$$.value?.length) {
-			this.notificationSvc.showNotification('File count limit exceeded', NotificationType.DANGER);
+			this.notificationSvc.showNotification(Translate.Error.UploadLimitExceeded[this.selectedLang], NotificationType.DANGER);
 			return;
 		}
 
 		if (this.fileMaxCount < this.documentList$$.value?.length + transformedDataArray?.length) {
-			this.notificationSvc.showNotification('File count limit exceeded', NotificationType.DANGER);
+			this.notificationSvc.showNotification(Translate.Error.UploadLimitExceeded[this.selectedLang], NotificationType.DANGER);
 			transformedDataArray?.splice(this.fileMaxCount - this.documentList$$.value?.length);
 		}
 		console.log(transformedDataArray);

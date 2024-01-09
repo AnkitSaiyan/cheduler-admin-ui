@@ -59,12 +59,8 @@
         &.focused {
           padding: 2px;
           border: 4px solid #000000;
+          box-sizing: content-box;
 
-            .img-fluid:not(.top-pdf) {
-              >svg {
-                width: 24px;
-              }
-            }
         }
         }
     }
