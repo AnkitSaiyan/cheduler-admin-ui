@@ -54,11 +54,12 @@ export class ErrorInterceptor implements HttpInterceptor {
 	}
 
 	private handleGeneralErrors(errors: any[] | string): string {
-		if (Array.isArray(errors)) {
-			errors.forEach((msg) => {
+		if (Array.isArray(errors['generalErrors'])) {
+			this.errorMessage = '';
+			errors['generalErrors'].forEach((msg) => {
 				this.errorMessage += `${msg} `;
 			});
-		} else if (typeof errors === 'string') {
+		} else if (typeof errors['generalErrors'] === 'string') {
 			this.errorMessage = errors;
 		}
 		return this.errorMessage;
