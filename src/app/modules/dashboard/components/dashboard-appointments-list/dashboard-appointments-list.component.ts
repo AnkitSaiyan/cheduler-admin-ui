@@ -161,6 +161,10 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	private qrCodeId!: string;
 
+	public fileMaxCount!: number;
+
+	private notAllowedExtentions: string[] = [];
+
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -211,6 +215,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	public ngOnInit() {
 		this.siteManagementApiSvc.siteManagementData$.pipe(takeUntil(this.destroy$$)).subscribe((siteSettings) => {
 			this.fileSize = siteSettings.documentSizeInKb / 1024;
+			this.fileMaxCount = siteSettings.docUploadMaxCount;
 		});
 
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -597,7 +602,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				next: (appointments) => {
 					if (this.isUpcomingAppointmentsDashboard) {
 						this.appointments$$.next(appointments?.data);
-						this.filteredAppointments$$.next(appointments?.data);	
+						this.filteredAppointments$$.next(appointments?.data);
 					} else {
 						this.pastAppointments$$.next(appointments?.data);
 						this.filteredPastAppointments$$.next(appointments?.data);
@@ -687,16 +692,28 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	}
 
 	private async uploadDocuments(transformedDataArray: string[], appointmentId) {
+		let isLimitExceeded = false;
+		if (transformedDataArray?.length > this.fileMaxCount) {
+			transformedDataArray.splice(this.fileMaxCount);
+			isLimitExceeded = true;
+		}
+		this.notAllowedExtentions = [];
+		
 		for (const [index, file] of transformedDataArray.entries()) {
 			if (!this.qrCodeId) {
-				await this.uploadDocument(file, appointmentId, index === transformedDataArray?.length - 1);
+				await this.uploadDocument(file, appointmentId, index === transformedDataArray?.length - 1, isLimitExceeded);
 			} else {
-				this.uploadDocument(file, appointmentId, index === transformedDataArray?.length - 1, this.qrCodeId);
+				this.uploadDocument(file, appointmentId, index === transformedDataArray?.length - 1, isLimitExceeded, this.qrCodeId);
 			}
 		}
 	}
 
-	private uploadDocument(file: any, appointmentId: any, isLast: boolean, uniqueId = '') {
+	private uploadDocument(file: any, appointmentId: any, isLast: boolean, isLimitExceeded: boolean, uniqueId = '') {
+		const fileSizeExceedsLimit = file.size / 1024 / 1024 > this.fileSize;
+		if (this.checkFileExtensions(file)) {
+			this.notAllowedExtentions.push(file.name.split('.').pop().toLowerCase());
+			return;
+		}
 		return new Promise((resolve) => {
 			this.appointmentApiSvc
 				.uploadDocumnet(file, uniqueId, `${appointmentId}`)
@@ -705,6 +722,9 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 					next: (documentList) => {
 						this.notificationSvc.showNotification(Translate.AddedSuccess(file?.name)[this.selectedLang], NotificationType.SUCCESS);
 						if (isLast) {
+							setTimeout(() => {
+								this.generateDocErrors(isLimitExceeded, fileSizeExceedsLimit);
+							}, 200);
 							this.onRefresh();
 						}
 						resolve(documentList);
@@ -715,5 +735,20 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 					},
 				});
 		});
+	}
+
+	private generateDocErrors(isLimitExceeded: boolean, fileSizeExceedsLimit: boolean) {
+		if (isLimitExceeded) {
+			this.notificationSvc.showNotification(Translate.Error.UploadLimitExceeded[this.selectedLang], NotificationType.DANGER);
+		}
+		if (fileSizeExceedsLimit) {
+			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]}  ${this.fileSize}MB`, NotificationType.DANGER);
+		}
+		if (this.notAllowedExtentions.length) {
+			this.notificationSvc.showNotification(
+				`${Translate.FileFormatNotAllowed[this.selectedLang]} (${[...new Set(this.notAllowedExtentions)].join(', ')})`,
+				NotificationType.DANGER,
+			);
+		}
 	}
 }

@@ -1,4 +1,4 @@
-import { DatePipe, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,7 +22,7 @@ import { NotificationDataService } from '../../../../core/services/notification-
 import { RoomsApiService } from '../../../../core/services/rooms-api.service';
 import { ConfirmActionModalComponent, ConfirmActionModalData } from '../../../../shared/components/confirm-action-modal.component';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
-import { NameValue, SearchModalComponent, SearchModalData } from '../../../../shared/components/search-modal.component';
+import { NameValue } from '../../../../shared/components/search-modal.component';
 import { Appointment } from '../../../../shared/models/appointment.model';
 import { Exam } from '../../../../shared/models/exam.model';
 import { AppointmentStatus, AppointmentStatusToName, ChangeStatusRequestData } from '../../../../shared/models/status.model';
@@ -164,6 +164,10 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	private qrCodeId!: string;
 
+	private fileMaxCount!: number;
+
+	private notAllowedExtentions: string[] = [];
+
 	constructor(
 		private downloadSvc: DownloadService,
 		private appointmentApiSvc: AppointmentApiService,
@@ -172,7 +176,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		private route: ActivatedRoute,
 		private modalSvc: ModalService,
 		private roomApiSvc: RoomsApiService,
-		private datePipe: DatePipe,
 		private cdr: ChangeDetectorRef,
 		private titleCasePipe: TitleCasePipe,
 		private shareDataSvc: ShareDataService,
@@ -226,6 +229,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	public ngOnInit() {
 		this.siteManagementApiSvc.siteManagementData$.pipe(takeUntil(this.destroy$$)).subscribe((siteSettings) => {
 			this.fileSize = siteSettings.documentSizeInKb / 1024;
+			this.fileMaxCount = siteSettings.docUploadMaxCount;
 		});
 
 		this.downloadSvc.fileTypes$.pipe(takeUntil(this.destroy$$)).subscribe((items) => (this.downloadItems = items));
@@ -233,7 +237,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		this.filteredAppointments$$
 			.pipe(
 				takeUntil(this.destroy$$),
-				map((appointments) => GeneralUtils.SortArray(appointments,  this.sortType , 'startedAt')),
+				map((appointments) => GeneralUtils.SortArray(appointments, this.sortType, 'startedAt')),
 			)
 			.subscribe({
 				next: (items) => {
@@ -245,8 +249,8 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 					});
 				},
 			});
-		
-			this.filteredPastAppointments$$
+
+		this.filteredPastAppointments$$
 			.pipe(
 				takeUntil(this.destroy$$),
 				map((appointments) => GeneralUtils.SortArray(appointments, this.sortTypePast, 'startedAt')),
@@ -267,7 +271,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		});
 
 		this.pastAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
-			next: (appointments) => this.filteredPastAppointments$$.next([...appointments])
+			next: (appointments) => this.filteredPastAppointments$$.next([...appointments]),
 		});
 
 		this.appointmentApiSvc.appointment$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -595,8 +599,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 		if (table === 'past') {
 			this.sortTypePast = e.sort;
 			this.filteredPastAppointments$$.next(GeneralUtils.SortArray(this.filteredPastAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
-		}
-		else {
+		} else {
 			this.sortType = e.sort;
 			this.filteredAppointments$$.next(GeneralUtils.SortArray(this.filteredAppointments$$.value, e.sort, ColumnIdToKey[e.id]));
 		}
@@ -630,7 +633,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				next: (appointments) => {
 					if (this.isUpcomingAppointments) {
 						this.appointments$$.next(appointments?.data);
-						this.filteredAppointments$$.next(appointments?.data);	
+						this.filteredAppointments$$.next(appointments?.data);
 					} else {
 						this.pastAppointments$$.next(appointments?.data);
 						this.filteredPastAppointments$$.next(appointments?.data);
@@ -696,16 +699,29 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	private async uploadDocuments(transformedDataArray: string[], appointmentId) {
+		let isLimitExceeded = false;
+		if (transformedDataArray?.length > this.fileMaxCount) {
+			transformedDataArray.splice(this.fileMaxCount);
+			isLimitExceeded = true;
+		}
+		this.notAllowedExtentions = [];
+
 		for (const [index, file] of transformedDataArray.entries()) {
 			if (!this.qrCodeId) {
-				await this.uploadDocument(file, appointmentId, index === transformedDataArray?.length - 1);
+				await this.uploadDocument(file, appointmentId, index === transformedDataArray?.length - 1, isLimitExceeded);
 			} else {
-				this.uploadDocument(file, appointmentId, index === transformedDataArray?.length - 1, this.qrCodeId);
+				this.uploadDocument(file, appointmentId, index === transformedDataArray?.length - 1, isLimitExceeded, this.qrCodeId);
 			}
 		}
 	}
 
-	private uploadDocument(file: any, appointmentId: any, isLast: boolean, uniqueId = '') {
+	private uploadDocument(file: any, appointmentId: any, isLast: boolean, isLimitExceeded: boolean, uniqueId = '') {
+		const fileSizeExceedsLimit = file.size / 1024 / 1024 > this.fileSize;
+		if (this.checkFileExtensions(file)) {
+			this.notAllowedExtentions.push(file.name.split('.').pop().toLowerCase());
+			return;
+		}
+
 		return new Promise((resolve) => {
 			this.appointmentApiSvc
 				.uploadDocumnet(file, uniqueId, `${appointmentId}`)
@@ -714,6 +730,9 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 					next: (documentList) => {
 						this.notificationSvc.showNotification(Translate.AddedSuccess(file?.name)[this.selectedLang], NotificationType.SUCCESS);
 						if (isLast) {
+							setTimeout(() => {
+								this.generateDocErrors(isLimitExceeded, fileSizeExceedsLimit);
+							}, 200);
 							this.onRefresh();
 						}
 						resolve(documentList);
@@ -724,5 +743,20 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 					},
 				});
 		});
+	}
+
+	private generateDocErrors(isLimitExceeded: boolean, fileSizeExceedsLimit: boolean) {
+		if (isLimitExceeded) {
+			this.notificationSvc.showNotification(Translate.Error.UploadLimitExceeded[this.selectedLang], NotificationType.DANGER);
+		}
+		if (fileSizeExceedsLimit) {
+			this.notificationSvc.showNotification(`${Translate.FileNotGreaterThan[this.selectedLang]}  ${this.fileSize}MB`, NotificationType.DANGER);
+		}
+		if (this.notAllowedExtentions.length) {
+			this.notificationSvc.showNotification(
+				`${Translate.FileFormatNotAllowed[this.selectedLang]} (${[...new Set(this.notAllowedExtentions)].join(', ')})`,
+				NotificationType.DANGER,
+			);
+		}
 	}
 }
