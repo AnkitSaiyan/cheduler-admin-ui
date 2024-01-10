@@ -659,6 +659,10 @@ export const Translate = Object.freeze({
 			[ENG_BE]: 'Failed to upload.',
 			[DUTCH_BE]: 'Uploaden is mislukt',
 		},
+		UploadLimitExceeded: {
+			[ENG_BE]: 'Your upload limit has exceeded',
+			[DUTCH_BE]: 'Ihr Upload-Limit wurde überschritten',
+		},
 		BackendCodes: {
 			[ENG_BE]: {
 				MSG_400_APMT_EXISTS: 'Appointment exists in this range.',
@@ -892,4 +896,5 @@ export const Translate = Object.freeze({
 		[DUTCH_BE]: 'Room Duration',
 	},
 });
+
 

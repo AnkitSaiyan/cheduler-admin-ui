@@ -87,7 +87,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 		{ fileName: string; error: 'fileFormat' | 'fileLimit' }[]
 	>([]);
 
-	public isDocumentUploading$$ = new BehaviorSubject<number>(0);
+	public isDocumentUploading$$ = new BehaviorSubject<boolean>(false);
 
 	public modalData!: {
 		event: MouseEvent;
@@ -114,7 +114,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	public fileSize!: number;
 
-	private fileMaxCount!: number;
+	public fileMaxCount!: number;
 
 	public documentStage: string = '';
 
@@ -642,28 +642,46 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 
 	private async uploadDocuments(files: string[]) {
 		const transformedDataArray = files;
+		let isLimitExceeded = false;
 		if (this.fileMaxCount === this.documentList$$.value?.length) {
-			this.notificationSvc.showNotification('File count limit exceeded', NotificationType.DANGER);
+			this.notificationSvc.showNotification(Translate.Error.UploadLimitExceeded[this.selectedLang], NotificationType.DANGER);
 			return;
 		}
 
 		if (this.fileMaxCount < this.documentList$$.value?.length + transformedDataArray?.length) {
-			this.notificationSvc.showNotification('File count limit exceeded', NotificationType.DANGER);
 			transformedDataArray?.splice(this.fileMaxCount - this.documentList$$.value?.length);
+			isLimitExceeded = true;
 		}
+		this.isDocumentUploading$$.next(true);
+		const allPromise: any[] = [];
 		for (const file of transformedDataArray) {
 			if (!this.formValues.qrCodeId) {
 				await this.uploadDocument(file);
 			} else {
-				this.uploadDocument(file, this.formValues.qrCodeId);
+				allPromise.push(this.uploadDocument(file, this.formValues.qrCodeId));
 			}
 		}
+		await Promise.all(allPromise);
+		this.appointmentApiSvc
+			.getDocumentById$(this.formValues.qrCodeId, true)
+			.pipe(take(1))
+			.subscribe({
+				next: (documentList) => {
+					this.documentList$$.next(documentList);
+					this.isDocumentUploading$$.next(false);
+					if (isLimitExceeded) {
+						this.notificationSvc.showNotification(Translate.Error.UploadLimitExceeded[this.selectedLang], NotificationType.DANGER);
+					}
+				},
+				error: () => {
+					this.isDocumentUploading$$.next(false);
+					if (isLimitExceeded) {
+						this.notificationSvc.showNotification(Translate.Error.UploadLimitExceeded[this.selectedLang], NotificationType.DANGER);
+					}
+				},
+			});
 	}
 
-	private handleInvalidFile(errorMessage: string): void {
-		this.notificationSvc.showNotification(errorMessage, NotificationType.WARNING);
-		this.documentStage = 'FAILED_TO_UPLOAD';
-	}
 
 	/**
 	 * Ignore await response.
@@ -681,28 +699,19 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 			return;
 		}
 		return new Promise((resolve) => {
-			this.isDocumentUploading$$.next(this.isDocumentUploading$$.value + 1);
 			this.appointmentApiSvc
 				.uploadDocumnet(file, uniqueId, `${this.modalData?.appointment?.id ?? 0}`)
-				.pipe(
-					take(1),
-					switchMap((res) => {
+				.pipe(take(1))
+				.subscribe({
+					next: (res) => {
 						this.appointmentForm.patchValue({
 							qrCodeId: res?.apmtDocUniqueId,
 						});
-						return this.appointmentApiSvc.getDocumentById$(res.apmtDocUniqueId, true);
-					}),
-				)
-				.subscribe({
-					next: (documentList) => {
-						this.documentList$$.next(documentList);
 						this.notificationSvc.showNotification(Translate.AddedSuccess(file?.name)[this.selectedLang], NotificationType.SUCCESS);
-						this.isDocumentUploading$$.next(this.isDocumentUploading$$.value - 1);
-						resolve(documentList);
+						resolve(res);
 					},
 					error: (err) => {
 						this.notificationSvc.showNotification(Translate.Error.FailedToUpload[this.selectedLang], NotificationType.DANGER);
-						this.isDocumentUploading$$.next(this.isDocumentUploading$$.value - 1);
 						resolve(err);
 					},
 				});
