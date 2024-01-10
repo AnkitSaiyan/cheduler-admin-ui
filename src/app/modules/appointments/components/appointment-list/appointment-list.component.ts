@@ -87,7 +87,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 
 	private appointments$$: BehaviorSubject<Appointment[]>;
 
-	private filteredAppointments$$: BehaviorSubject<Appointment[]>;
+	public filteredAppointments$$: BehaviorSubject<Appointment[]>;
 
 	private filteredPastAppointments$$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
 
