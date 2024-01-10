@@ -1,4 +1,4 @@
-<div class="dfm-container">
+<div class="dfm-container" >
   <div class="left" (dragover)="changeDate(-1)"></div>
   <div role="grid" class="role-container">
     <div role="presentation" class="calendar-week-view-header">
@@ -140,7 +140,7 @@
       </div>
     </div>
 
-    <div class="calendar-week-view-body-container">
+    <div class="calendar-week-view-body-container" [ngClass]="{'large': size === 'lg'}">
       <div role="presentation" class="calendar-week-view-body">
         <div role="row" class="calendar-week-view-time-slot-container">
           <div

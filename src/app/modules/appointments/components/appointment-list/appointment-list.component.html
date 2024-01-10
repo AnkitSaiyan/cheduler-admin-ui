@@ -79,7 +79,7 @@
 
       </div>
 
-      <div class="d-flex dfm-gap-8 align-items-center">
+      <div class="d-flex dfm-gap-8 align-items-center toggle-view">
         <div class="">
           <dfm-button-icon
             color="secondary-gray"
@@ -100,33 +100,6 @@
       </div>
       </div>
     </div>
-
-    <ng-container *ngIf="calendarView$$ | async">
-      <div class="d-flex dfm-gap-8 align-items-center justify-content-between">
-        <div>
-        <dfm-button class="ap-li-title-buttons" color="link" size="lg" routerLink="./">{{ 'Appointment' | translate }} </dfm-button>
-      </div>
-        <div class="d-flex dfm-gap-8">
-          <dfm-button-icon
-            color="secondary-gray"
-            size="md"
-            icon="list"
-            ngbPopover="{{ 'ListView' | translate }}"
-            triggers="mouseenter:mouseleave"
-            popoverClass="popover-p-8"
-            [openDelay]="200"
-            (click)="toggleView()"
-          ></dfm-button-icon>
-
-
-          <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
-          >{{ 'AddAppointment' | translate }}
-        </dfm-button>
-
-
-      </div>
-    </div>
-    </ng-container>
   </section>
 
   <dfm-input
@@ -139,8 +112,9 @@
   ></dfm-input>
 
   <section
-    class="overflow-y-auto list-page-content-height"
-    [ngClass]="{ 'list-page-content-height-calendar': (calendarView$$ | async) }"
+    class="overflow-y-auto"
+    [ngClass]="{'list-page-content-height': !(calendarView$$ | async) }"
+    *ngIf="filteredAppointments$$ | async as appointments"
   >
     <ng-container *ngIf="(calendarView$$ | async) === false">
       <ng-container *ngIf="isUpcomingAppointments">
@@ -244,7 +218,40 @@
     </ng-container>
 
     <ng-container *ngIf="calendarView$$ | async">
-      <dfm-appointment-calendar class="h-100" > </dfm-appointment-calendar>
+      <dfm-appointment-calendar class="h-100" >
+        <ng-template let-selectedDate let-calendarView="view">
+          <div class="d-flex dfm-gap-8 align-items-center justify-content-between flex-1 h-fit top-action" top-action>
+            <div *ngIf="!selectedDate; else dateView">
+              <dfm-button class="ap-li-title-buttons" color="link" size="lg" routerLink="./">{{ 'Appointment' | translate }} </dfm-button>
+            </div>
+            <ng-template #dateView>
+              <h4 >
+                <ng-container *ngIf="calendarView === 'day'; else notDayView">
+                  {{ (selectedDate | date : 'EEE')! | uppercase | translate | titlecase }} {{ (selectedDate | date : 'MMM')! |translate  }} {{ selectedDate | date : 'dd, yyyy'  }}
+                </ng-container>
+                <ng-template #notDayView>{{ (selectedDate | date : 'MMM')! | translate }} {{ selectedDate | date : ' yyyy' }}</ng-template>
+              </h4>
+            </ng-template>
+            <div class="d-flex dfm-gap-8">
+              <dfm-button-icon
+                color="secondary-gray"
+                size="md"
+                icon="list"
+                ngbPopover="{{ 'ListView' | translate }}"
+                triggers="mouseenter:mouseleave"
+                popoverClass="popover-p-8"
+                [openDelay]="200"
+                (click)="toggleView()"
+              ></dfm-button-icon>
+
+
+              <dfm-button color="primary" size="md" *dfmPermitted="Permission.CreateAppointments" class="text-nowrap" [disabled]="false" routerLink="./add" queryParamsHandling="merge"
+              >{{ 'Add' | translate }}
+              </dfm-button>
+            </div>
+          </div>
+        </ng-template>
+      </dfm-appointment-calendar>
     </ng-container>
   </section>
 

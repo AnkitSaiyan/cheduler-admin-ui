@@ -28,6 +28,7 @@ import {
 	getFromAndToDate,
 } from '../../../models/calendar.model';
 import { ModalService } from '../../../../core/services/modal.service';
+import { PIXELS_PER_MIN, TIME_INTERVAL } from 'src/app/shared/utils/const';
 
 @Component({
 	selector: 'dfm-calendar-week-view',
@@ -36,6 +37,9 @@ import { ModalService } from '../../../../core/services/modal.service';
 	encapsulation: ViewEncapsulation.None,
 })
 export class DfmCalendarWeekViewComponent extends DestroyableComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+	@Input()
+	public size: 'sm' | 'lg' = 'sm';
+
 	@Input()
 	public selectedDate!: Date;
 
@@ -104,9 +108,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public getDurationMinutes = getDurationMinutes;
 
 	// In minutes
-	public readonly timeInterval: number = 15;
+	public readonly timeInterval: number = TIME_INTERVAL;
 
-	public readonly pixelsPerMin: number = 4;
+	public readonly pixelsPerMin: number = PIXELS_PER_MIN;
 
 	public rendered = false;
 
@@ -262,14 +266,16 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const localEndTime = this.datePipe.transform(DateTimeUtils.UTCDateToLocalDate(new Date(end), true), 'HH:mm:ss') ?? '';
 
 		const startDate =
-			this.myDate(localStartTime).getTime() < DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min)).getTime()
-				? DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min))
-				: this.myDate(localStartTime);
+			DateTimeUtils.timeStingToDate(localStartTime).getTime() <
+			DateTimeUtils.UTCDateToLocalDate(DateTimeUtils.timeStingToDate(this.limit.min)).getTime()
+				? DateTimeUtils.UTCDateToLocalDate(DateTimeUtils.timeStingToDate(this.limit.min))
+				: DateTimeUtils.timeStingToDate(localStartTime);
 
 		const endDate =
-			this.myDate(localEndTime).getTime() < DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min)).getTime()
-				? DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min))
-				: this.myDate(localEndTime);
+			DateTimeUtils.timeStingToDate(localEndTime).getTime() <
+			DateTimeUtils.UTCDateToLocalDate(DateTimeUtils.timeStingToDate(this.limit.min)).getTime()
+				? DateTimeUtils.UTCDateToLocalDate(DateTimeUtils.timeStingToDate(this.limit.min))
+				: DateTimeUtils.timeStingToDate(localEndTime);
 
 		const margin = getDurationMinutes(startDate, endDate);
 		return margin;
@@ -290,20 +296,22 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const groupStartDate = this.datePipe.transform(new Date(groupedData[0].startedAt), 'HH:mm:ss') ?? '';
 
 		const startDate =
-			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime()
-				? this.myDate(this.limit.min)
+			DateTimeUtils.timeStingToDate(groupStartDate).getTime() < DateTimeUtils.timeStingToDate(this.limit.min).getTime()
+				? DateTimeUtils.timeStingToDate(this.limit.min)
 				: new Date(groupedData[0].startedAt);
 
 		const groupEndDate = this.datePipe.transform(new Date(endDate), 'HH:mm:ss') ?? '';
-		if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
+		if (DateTimeUtils.timeStingToDate(groupEndDate).getTime() <= DateTimeUtils.timeStingToDate(this.limit.min).getTime()) {
 			return 0;
 		}
 
-		if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
+		if (DateTimeUtils.timeStingToDate(groupStartDate).getTime() >= DateTimeUtils.timeStingToDate(this.limit.max).getTime()) {
 			return 0;
 		}
 		const finalEndDate =
-			this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : new Date(endDate);
+			DateTimeUtils.timeStingToDate(groupEndDate).getTime() > DateTimeUtils.timeStingToDate(this.limit.max).getTime()
+				? DateTimeUtils.timeStingToDate(this.limit.max)
+				: new Date(endDate);
 
 		const durationMinutes = getDurationMinutes(startDate, finalEndDate);
 		return durationMinutes * this.pixelsPerMin;
@@ -324,17 +332,21 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			}
 		});
 		const startDate =
-			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime() ? this.myDate(this.limit.min) : this.myDate(groupStartDate);
+			DateTimeUtils.timeStingToDate(groupStartDate).getTime() < DateTimeUtils.timeStingToDate(this.limit.min).getTime()
+				? DateTimeUtils.timeStingToDate(this.limit.min)
+				: DateTimeUtils.timeStingToDate(groupStartDate);
 
-		if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
+		if (DateTimeUtils.timeStingToDate(groupEndDate).getTime() <= DateTimeUtils.timeStingToDate(this.limit.min).getTime()) {
 			return 0;
 		}
 
-		if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
+		if (DateTimeUtils.timeStingToDate(groupStartDate).getTime() >= DateTimeUtils.timeStingToDate(this.limit.max).getTime()) {
 			return 0;
 		}
 		const finalEndDate =
-			this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : this.myDate(groupEndDate);
+			DateTimeUtils.timeStingToDate(groupEndDate).getTime() > DateTimeUtils.timeStingToDate(this.limit.max).getTime()
+				? DateTimeUtils.timeStingToDate(this.limit.max)
+				: DateTimeUtils.timeStingToDate(groupEndDate);
 
 		const durationMinutes = getDurationMinutes(startDate, finalEndDate);
 		return durationMinutes * this.pixelsPerMin;
@@ -353,8 +365,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const groupStartDate = this.datePipe.transform(DateTimeUtils.UTCDateToLocalDate(new Date(groupedData[0].startedAt)), 'HH:mm:ss') ?? '';
 
 		const startDate =
-			this.myDate(groupStartDate).getTime() < this.myDate(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)).getTime()
-				? this.myDate(this.limit.min)
+			DateTimeUtils.timeStingToDate(groupStartDate).getTime() <
+			DateTimeUtils.timeStingToDate(DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min)).getTime()
+				? DateTimeUtils.timeStingToDate(this.limit.min)
 				: new Date(groupedData[0].startedAt);
 
 		return this.getMargin(startDate, endDate) * this.pixelsPerMin;
@@ -362,17 +375,19 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getPrioritySlotHeight(prioritySlot: any): number {
 		const max = DateTimeUtils.UTCTimeToLocalTimeString(this.limit.max);
-		let startDate: Date = this.myDate(prioritySlot.start);
-		const min = DateTimeUtils.UTCDateToLocalDate(this.myDate(this.limit.min));
+		let startDate: Date = DateTimeUtils.timeStingToDate(prioritySlot.start);
+		const min = DateTimeUtils.UTCDateToLocalDate(DateTimeUtils.timeStingToDate(this.limit.min));
 		startDate = startDate?.getTime() < min.getTime() ? min : startDate;
-		if (this.myDate(prioritySlot.end).getTime() <= this.myDate(this.limit.min).getTime()) {
+		if (DateTimeUtils.timeStingToDate(prioritySlot.end).getTime() <= DateTimeUtils.timeStingToDate(this.limit.min).getTime()) {
 			return 0;
 		}
 
-		if (this.myDate(prioritySlot.start).getTime() >= this.myDate(max).getTime()) {
+		if (DateTimeUtils.timeStingToDate(prioritySlot.start).getTime() >= DateTimeUtils.timeStingToDate(max).getTime()) {
 			return 0;
 		}
-		const endDate: Date = this.myDate(DateTimeUtils.TimeToNumber(prioritySlot.end) > DateTimeUtils.TimeToNumber(max) ? max : prioritySlot.end);
+		const endDate: Date = DateTimeUtils.timeStingToDate(
+			DateTimeUtils.TimeToNumber(prioritySlot.end) > DateTimeUtils.TimeToNumber(max) ? max : prioritySlot.end,
+		);
 		const durationMinutes = getDurationMinutes(startDate, endDate);
 		return durationMinutes * this.pixelsPerMin;
 	}
@@ -392,25 +407,29 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			}
 		});
 		const startDate =
-			this.myDate(groupStartDate).getTime() < this.myDate(this.limit.min).getTime() ? this.myDate(this.limit.min) : this.myDate(groupStartDate);
+			DateTimeUtils.timeStingToDate(groupStartDate).getTime() < DateTimeUtils.timeStingToDate(this.limit.min).getTime()
+				? DateTimeUtils.timeStingToDate(this.limit.min)
+				: DateTimeUtils.timeStingToDate(groupStartDate);
 		const startHour = startDate.getHours();
 		const startMinute = startDate.getMinutes();
-		const startCalendarDate = this.myDate(this.limit.min);
+		const startCalendarDate = DateTimeUtils.timeStingToDate(this.limit.min);
 		const startCalendarHour = startCalendarDate.getHours();
 		const startCalendarMinute = startCalendarDate.getMinutes();
 		const barHeight = 1;
 
 		let height = 0;
 		const finalEndDate =
-			this.myDate(groupEndDate).getTime() > this.myDate(this.limit.max).getTime() ? this.myDate(this.limit.max) : this.myDate(groupEndDate);
+			DateTimeUtils.timeStingToDate(groupEndDate).getTime() > DateTimeUtils.timeStingToDate(this.limit.max).getTime()
+				? DateTimeUtils.timeStingToDate(this.limit.max)
+				: DateTimeUtils.timeStingToDate(groupEndDate);
 		const durationMinutes = getDurationMinutes(startDate, finalEndDate);
 
 		height = durationMinutes * this.pixelsPerMin;
-		if (this.myDate(groupEndDate).getTime() <= this.myDate(this.limit.min).getTime()) {
+		if (DateTimeUtils.timeStingToDate(groupEndDate).getTime() <= DateTimeUtils.timeStingToDate(this.limit.min).getTime()) {
 			height = 0;
 		}
 
-		if (this.myDate(groupStartDate).getTime() >= this.myDate(this.limit.max).getTime()) {
+		if (DateTimeUtils.timeStingToDate(groupStartDate).getTime() >= DateTimeUtils.timeStingToDate(this.limit.max).getTime()) {
 			height = 0;
 		}
 
@@ -427,12 +446,12 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public getPrioritySlotTop(prioritySlot: any): number {
 		const min = DateTimeUtils.UTCTimeToLocalTimeString(this.limit.min);
-		const startDate = this.myDate(
+		const startDate = DateTimeUtils.timeStingToDate(
 			DateTimeUtils.TimeToNumber(prioritySlot.start) < DateTimeUtils.TimeToNumber(min) ? this.limit.min : prioritySlot.start,
 		);
 		const startHour = startDate.getHours();
 		const startMinute = startDate.getMinutes();
-		const startCalendarDate = this.myDate(min);
+		const startCalendarDate = DateTimeUtils.timeStingToDate(min);
 		const startCalendarHour = startCalendarDate.getHours();
 		const startCalendarMinute = startCalendarDate.getMinutes();
 		const top = (startMinute + startHour * 60) * this.pixelsPerMin - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
@@ -486,17 +505,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		});
 	}
 
-	private myDate(date: string): Date {
-		if (!date) return new Date();
-		const formattedDate = new Date();
-		const splitDate = date.split(':');
-		formattedDate.setHours(+splitDate[0]);
-		formattedDate.setMinutes(+splitDate[1]);
-		formattedDate.setSeconds(0);
-		formattedDate.setMilliseconds(0);
-		return formattedDate;
-	}
-
 	private getGrayOutArea() {
 		if (this.practiceData === undefined || this.practiceData === null) return;
 		const grayOutSlot: any = {};
@@ -509,12 +517,14 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 						dayStart: this.limit.min,
 						dayEnd: intervals[0].dayStart,
 						top: 0,
-						height: getDurationMinutes(this.myDate(this.limit.min), this.myDate(intervals[0].dayStart)) * this.pixelsPerMin,
+						height:
+							getDurationMinutes(DateTimeUtils.timeStingToDate(this.limit.min), DateTimeUtils.timeStingToDate(intervals[0].dayStart)) *
+							this.pixelsPerMin,
 					},
 				];
 
-				const start1 = this.myDate(this.limit.min);
-				const end1 = this.myDate(intervals[intervals.length - 1].dayEnd);
+				const start1 = DateTimeUtils.timeStingToDate(this.limit.min);
+				const end1 = DateTimeUtils.timeStingToDate(intervals[intervals.length - 1].dayEnd);
 				const minutes1 = getDurationMinutes(start1, end1);
 
 				grayOutSlot['6'] = [
@@ -523,16 +533,20 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 						dayStart: intervals[intervals.length - 1].dayEnd,
 						dayEnd: this.limit.max,
 						top: minutes1 * this.pixelsPerMin,
-						height: getDurationMinutes(this.myDate(intervals[intervals.length - 1].dayEnd), this.myDate(this.limit.max)) * this.pixelsPerMin,
+						height:
+							getDurationMinutes(
+								DateTimeUtils.timeStingToDate(intervals[intervals.length - 1].dayEnd),
+								DateTimeUtils.timeStingToDate(this.limit.max),
+							) * this.pixelsPerMin,
 					},
 				];
 
 				if (intervals?.length > 1) {
 					for (let i = 0; i < intervals.length - 1; i++) {
-						const start = this.myDate(this.limit.min);
-						const end = this.myDate(intervals[i].dayEnd);
+						const start = DateTimeUtils.timeStingToDate(this.limit.min);
+						const end = DateTimeUtils.timeStingToDate(intervals[i].dayEnd);
 						const minutes = getDurationMinutes(start, end);
-						const timeInterval = getDurationMinutes(end, this.myDate(intervals[i + 1].dayStart));
+						const timeInterval = getDurationMinutes(end, DateTimeUtils.timeStingToDate(intervals[i + 1].dayStart));
 						grayOutSlot['6'] = [
 							...grayOutSlot['6'],
 							{
@@ -558,12 +572,13 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 				dayStart: this.limit.min,
 				dayEnd: intervals[0].dayStart,
 				top: 0,
-				height: getDurationMinutes(this.myDate(this.limit.min), this.myDate(intervals[0].dayStart)) * this.pixelsPerMin,
+				height:
+					getDurationMinutes(DateTimeUtils.timeStingToDate(this.limit.min), DateTimeUtils.timeStingToDate(intervals[0].dayStart)) * this.pixelsPerMin,
 			},
 		];
 
-		const start1 = this.myDate(this.limit.min);
-		const end1 = this.myDate(intervals[intervals.length - 1].dayEnd);
+		const start1 = DateTimeUtils.timeStingToDate(this.limit.min);
+		const end1 = DateTimeUtils.timeStingToDate(intervals[intervals.length - 1].dayEnd);
 		const minutes1 = getDurationMinutes(start1, end1);
 
 		grayOutSlot[+value - 1] = [
@@ -572,16 +587,18 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 				dayStart: intervals[intervals.length - 1].dayEnd,
 				dayEnd: this.limit.max,
 				top: minutes1 * this.pixelsPerMin,
-				height: getDurationMinutes(this.myDate(intervals[intervals.length - 1].dayEnd), this.myDate(this.limit.max)) * this.pixelsPerMin,
+				height:
+					getDurationMinutes(DateTimeUtils.timeStingToDate(intervals[intervals.length - 1].dayEnd), DateTimeUtils.timeStingToDate(this.limit.max)) *
+					this.pixelsPerMin,
 			},
 		];
 
 		if (intervals?.length > 1) {
 			for (let i = 0; i < intervals.length - 1; i++) {
-				const start = this.myDate(this.limit.min);
-				const end = this.myDate(intervals[i].dayEnd);
+				const start = DateTimeUtils.timeStingToDate(this.limit.min);
+				const end = DateTimeUtils.timeStingToDate(intervals[i].dayEnd);
 				const minutes = getDurationMinutes(start, end);
-				const timeInterval = getDurationMinutes(end, this.myDate(intervals[i + 1].dayStart));
+				const timeInterval = getDurationMinutes(end, DateTimeUtils.timeStingToDate(intervals[i + 1].dayStart));
 				grayOutSlot[+value - 1] = [
 					...grayOutSlot[+value - 1],
 					{

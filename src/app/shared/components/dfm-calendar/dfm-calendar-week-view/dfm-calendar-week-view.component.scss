@@ -107,6 +107,10 @@ h3 {
 .calendar-week-view-body-container {
 	height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
 	max-height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 38px - 20px - 84px);
+  &.large {
+      height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 6px);
+        max-height: calc(100vh - 64px - 48px - 42px - 16px - 48px - 6px);
+    }
 	overflow-y: auto;
 	overflow-x: hidden;
 

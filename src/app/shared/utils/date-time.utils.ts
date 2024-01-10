@@ -207,6 +207,9 @@ export class DateTimeUtils {
 	}
 
 	public static timeStingToDate(date: string): Date {
+    if (!date) {
+			return new Date();
+		}
 		const formattedDate = new Date();
 		const splitDate = date?.split(':');
 		formattedDate.setHours(+splitDate[0]);
