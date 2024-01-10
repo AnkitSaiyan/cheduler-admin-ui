@@ -594,7 +594,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 				filter((res) => !!res),
 				switchMap((result) => {
 					this.advanceSearchData = result;
-					return this.appointmentApiSvc.fetchAllAppointments$(1, this.isUpcomingAppointmentsDashboard, result);
+					return this.appointmentApiSvc.fetchAllAppointments$(1, !this.isUpcomingAppointmentsDashboard, result);
 				}),
 				take(1),
 			)

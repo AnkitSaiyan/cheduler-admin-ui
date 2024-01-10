@@ -625,7 +625,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				filter((res) => !!res),
 				switchMap((result) => {
 					this.advanceSearchData = result;
-					return this.appointmentApiSvc.fetchAllAppointments$(1, this.isUpcomingAppointments, result);
+					return this.appointmentApiSvc.fetchAllAppointments$(1, !this.isUpcomingAppointments, result);
 				}),
 				take(1),
 			)

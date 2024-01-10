@@ -196,9 +196,10 @@ export class AppointmentApiService extends DestroyableComponent {
 	}
 
 	// Extract the logic for building queryParams
-	private buildQueryParams(data: any): any {
+	private buildQueryParams(data: any, isPast: boolean): any {
 		const queryParams: any = { pageNo: 1 };
 
+		if (isPast) queryParams.isPast = true;
 		if (data.appointmentNumber) queryParams.id = data.appointmentNumber;
 		if (data.roomsId) queryParams.roomId = data.roomsId;
 		if (data.examList?.length) queryParams.examId = data.examList;
@@ -238,7 +239,7 @@ export class AppointmentApiService extends DestroyableComponent {
 	public fetchAllAppointments$(pageNo: number, isPast: boolean, data?: any): Observable<BaseResponse<Appointment[]>> {
 		this.loaderSvc.activate();
 		if (data) {
-			const queryParams = this.buildQueryParams(data);
+			const queryParams = this.buildQueryParams(data, isPast);
 			return this.fetchAppointments(queryParams).pipe(
 				map((response) => this.mapAppointments(response)),
 				tap(() => this.loaderSvc.deactivate()),
