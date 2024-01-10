@@ -545,6 +545,7 @@ export class AppointmentApiService extends DestroyableComponent {
 		formData.append('FileData', '');
 		formData.append('FileName', '');
 		formData.append('AppointmentId', appointmentId);
+		formData.append('isUploadedFromQr', JSON.stringify(false));
 		return this.http.post<any>(`${environment.schedulerApiUrl}/qrcode/upload`, formData).pipe(
 			map((response) => response.data),
 			tap(),
