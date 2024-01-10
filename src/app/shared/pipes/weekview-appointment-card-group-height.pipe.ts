@@ -2,16 +2,13 @@ import { DatePipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 import { DateTimeUtils } from '../utils/date-time.utils';
 import { getDurationMinutes } from '../models/calendar.model';
+import { PIXELS_PER_MIN } from '../utils/const';
 
 @Pipe({
 	name: 'weekViewAppointmentCardGroupHeight',
 })
 export class WeekViewAppointmentCardGroupHeightPipe implements PipeTransform {
 	constructor(private datePipe: DatePipe) {}
-
-	public readonly timeInterval: number = 15;
-
-	public readonly pixelsPerMin: number = 4;
 
 	transform(groupedData: any[][], min: string, max: string): number {
 		let groupStartDate = this.datePipe.transform(new Date(groupedData?.[0]?.[0].startedAt), 'HH:mm:ss') ?? '';
@@ -31,35 +28,25 @@ export class WeekViewAppointmentCardGroupHeightPipe implements PipeTransform {
 			}
 		});
 
-		const startDate = this.myDate(groupStartDate).getTime() < this.myDate(min).getTime() ? this.myDate(min) : this.myDate(groupStartDate);
+		const startDate =
+			DateTimeUtils.timeStingToDate(groupStartDate).getTime() < DateTimeUtils.timeStingToDate(min).getTime()
+				? DateTimeUtils.timeStingToDate(min)
+				: DateTimeUtils.timeStingToDate(groupStartDate);
 
-		if (this.myDate(groupEndDate).getTime() <= this.myDate(min).getTime()) {
+		if (DateTimeUtils.timeStingToDate(groupEndDate).getTime() <= DateTimeUtils.timeStingToDate(min).getTime()) {
 			return 0;
 		}
 
-		if (this.myDate(groupStartDate).getTime() >= this.myDate(max).getTime()) {
+		if (DateTimeUtils.timeStingToDate(groupStartDate).getTime() >= DateTimeUtils.timeStingToDate(max).getTime()) {
 			return 0;
 		}
 
-		const finalEndDate = this.myDate(groupEndDate).getTime() > this.myDate(max).getTime() ? this.myDate(max) : this.myDate(groupEndDate);
+		const finalEndDate =
+			DateTimeUtils.timeStingToDate(groupEndDate).getTime() > DateTimeUtils.timeStingToDate(max).getTime()
+				? DateTimeUtils.timeStingToDate(max)
+				: DateTimeUtils.timeStingToDate(groupEndDate);
 		const durationMinutes = getDurationMinutes(startDate, finalEndDate);
 
-		return durationMinutes * this.pixelsPerMin;
-	}
-
-	private myDate(date: string): Date {
-		if (!date) {
-			return new Date();
-		}
-
-		const formattedDate = new Date();
-		const splitDate = date.split(':');
-
-		formattedDate.setHours(+splitDate[0]);
-		formattedDate.setMinutes(+splitDate[1]);
-		formattedDate.setSeconds(0);
-		formattedDate.setMilliseconds(0);
-
-		return formattedDate;
+		return durationMinutes * PIXELS_PER_MIN;
 	}
 }
