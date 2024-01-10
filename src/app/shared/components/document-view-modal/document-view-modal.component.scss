@@ -1,90 +1,78 @@
-.img-main-container{
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
-    width: 100%;
-    border-radius: 8px;
-    background-color: #ffffff;
+.img-main-container {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  width: 100%;
+  border-radius: 8px;
+  background-color: #ffffff;
+  overflow: hidden;
+  gap: 10px;
+  padding: 10px;
+
+  .top-img {
     overflow: hidden;
-    gap: 10px;
-    padding:10px ;
-    .top-img{
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 300px;
-        height: 400px;
-          width: 100%;
-        img{
-            max-width: 60vw;
-            max-height: 60vh;
-
-        }
-    }
-    .bottom-img{
-        display: flex;
-        flex-direction: row;
-        justify-content: start;
-        flex-wrap: wrap;
-        gap: 3px;
-        border-radius: 8px;
-        .bottom-img-item {
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-            width: 40px;
-            height: 40px;
-              object-fit: cover;
-              display: flex;
-            justify-content: center;
-              align-items: center;
-            .btns{
-                position: absolute;
-                color: #ffffff;
-                top: 0;
-                right: 5px;
-                justify-content: space-between;
-                gap: 10px;
-                font-weight: 500;
-                font-size: 14px;
-                display: none;
-                transition: .4s;
-                cursor: pointer;
-            }
-            &:hover .btns{
-                display:flex;
-                color: black;
-            }
-        &.focused {
-          padding: 2px;
-          border: 4px solid #000000;
-          box-sizing: content-box;
-
-        }
-        }
-    }
-}
-
-.top-pdf{
-    height: 50vh !important;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
+    min-height: 300px;
+    height: 400px;
+    width: 100%;
+
+    img {
+      max-width: 60vw;
+      max-height: 60vh;
+
+    }
+  }
+
+  .bottom-img {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    flex-wrap: wrap;
     gap: 10px;
+    border-radius: 8px;
+
+    .bottom-img-item {
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      width: 8vw;
+      // height: 50px;
+      object-fit: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &.focused {
+        padding: 2px;
+        border: 1px solid #000000;
+        box-sizing: content-box;
+      }
+    }
+  }
+}
+
+.top-pdf {
+  height: 50vh !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
 }
 
 
-.bottom-pdf{
-    height: 10vh !important;
+.bottom-pdf {
+  height: 10vh !important;
 }
 
-.loader{
-    height: 50vh;
-    background-color: white;
-    border-radius: 5px;
+.loader {
+  height: 50vh;
+  background-color: white;
+  border-radius: 5px;
 }
+
 p {
   white-space: nowrap;
 }
