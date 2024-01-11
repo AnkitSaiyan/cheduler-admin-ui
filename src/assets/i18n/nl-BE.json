@@ -536,8 +536,12 @@
 	"FileSizeError": "De bestandsgrootte mag niet groter zijn dan.",
 	"UploadLimitExceeded": "Ihr Upload-Limit wurde überschritten",
 	"CountLimit": "Count limit",
-	"SizeLimit": "Size limit"
+	"SizeLimit": "Size limit",
+	"FileFormat": "File format",
+	"ReUpload": "Her-upload"
 }
+
+
 
 
 

@@ -354,7 +354,7 @@
             <p class="file-name error text-truncate" >
               {{ document.fileName| translate }}&nbsp;
             </p>
-            <span class="view-link" (click)="fileInput.click()">Re-upload</span>
+            <span class="view-link" (click)="fileInput.click()">{{'ReUpload' | translate}}</span>
           </div>
           <small>{{'( ' + (document?.error === 'fileFormat' ? ('FileFormatNotAllowed' | translate) : ('FileSizeError' | translate) +' ' +fileSize + ' MB') +' )'}}</small>
         </div>

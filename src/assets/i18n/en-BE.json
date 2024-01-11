@@ -534,8 +534,12 @@
 	"FileSizeError": "File size should not be greater than",
 	"UploadLimitExceeded": "Your upload limit has exceeded",
 	"CountLimit": "Count limit",
-	"SizeLimit": "Size limit"
+	"SizeLimit": "Size limit",
+	"FileFormat": "File format",
+	"ReUpload": "Re-upload"
 }
+
+
 
 
 
