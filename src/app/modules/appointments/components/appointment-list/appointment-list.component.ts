@@ -638,7 +638,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 						this.pastAppointments$$.next(appointments?.data);
 						this.filteredPastAppointments$$.next(appointments?.data);
 					}
-					this.isResetBtnDisable = false;
+					this.isResetBtnDisable = !Object.values(this.advanceSearchData).some((value:any) => !!value);
 				},
 			});
 	}

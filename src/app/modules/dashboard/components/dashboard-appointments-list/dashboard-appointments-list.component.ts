@@ -592,7 +592,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		modalRef.closed
 			.pipe(
 				filter((res) => !!res),
-				switchMap((result) => {
+				switchMap((result) => {	
 					this.advanceSearchData = result;
 					return this.appointmentApiSvc.fetchAllAppointments$(1, !this.isUpcomingAppointmentsDashboard, result);
 				}),
@@ -607,7 +607,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 						this.pastAppointments$$.next(appointments?.data);
 						this.filteredPastAppointments$$.next(appointments?.data);
 					}
-					this.isResetBtnDisable = false;
+					this.isResetBtnDisable = !Object.values(this.advanceSearchData).some((value:any) => !!value);
 				},
 			});
 	}

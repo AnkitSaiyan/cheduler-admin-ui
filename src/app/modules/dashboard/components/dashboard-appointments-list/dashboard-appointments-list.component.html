@@ -30,7 +30,7 @@
 							[disabled]="false"
 							routerLink="/appointment/add"
 							[state]="{ comingFromRoute: 'dashboard' }"
-							>Add
+							>{{ 'Add' | translate }}
 						</dfm-button>
 					</div>
 				</header>
@@ -64,7 +64,7 @@
 					</div>
 					<div>
 						<dfm-button-icon
-							color="tertiary-gray"
+							[color]="isResetBtnDisable ? 'tertiary-gray': 'primary'"
 							size="md"
 							icon="x-close"
 							ngbPopover="{{ 'Reset' | translate }}"

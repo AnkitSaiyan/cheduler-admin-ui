@@ -325,7 +325,7 @@ export class AppointmentAdvanceSearchComponent extends DestroyableComponent impl
 			patientId: [null, []],
 			roomsId: [null, []],
 			doctorId: [null, []],
-			examList: [[]],
+			examList: [],
 			userId: [null],
 			endedAt: [],
 			startedAt: [],

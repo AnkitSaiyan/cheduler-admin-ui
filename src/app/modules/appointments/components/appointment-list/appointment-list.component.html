@@ -29,7 +29,7 @@
         <div >
           <dfm-button-icon
             class=""
-            color="secondary-gray"
+            [color]="isResetBtnDisable ? 'tertiary-gray': 'primary'"
             size="md"
             icon="filter-funnel-01"
             ngbPopover="{{ 'AdvancedSearch' | translate }}"
