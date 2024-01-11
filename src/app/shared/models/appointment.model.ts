@@ -126,6 +126,7 @@ export interface AddAppointmentRequestData {
 	id?: number;
 	patientTimeZone?: string;
 	socialSecurityNumber: number;
+	qrCodeId?: string;
 }
 
 export interface AddOutSideOperatingHoursAppointmentRequest {
