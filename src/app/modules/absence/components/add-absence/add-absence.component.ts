@@ -306,81 +306,81 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	
 	private validateForm(isHoliday: boolean): boolean {
 		const { controls } = this.absenceForm;
-	
-		if (!this.validateRoomAndUserList() || this.markInvalidControls(['name', 'startedAt', 'startTime', 'info'], controls)) {
-			return false;
-		}
-	
-		if (this.formValues.isRepeat && !this.validateRepeatFields(controls)) {
-			return false;
-		}
-	
-		if (!isHoliday && !this.validateNonHoliday()) {
-			return false;
-		}
-	
-		return true;
-	}
-	
-	private validateRoomAndUserList(): boolean {
+		let valid = true;
 		if (!this.formValues.roomList.length && !this.formValues.userList.length) {
-			this.isAbsenceStaffRoomInvalid.next(true);
-	
-			if (this.formValues.roomList || this.formValues.userList) {
-				const message =
-					this.modalData.absenceType === 'rooms'
-						? Translate.SelectRoom[this.selectedLang]
-						: Translate.SelectStaff[this.selectedLang];
-	
-				this.notificationSvc.showNotification(message, NotificationType.WARNING);
-			}
-	
-			return false;
+			valid = false;
 		}
-	
-		return true;
-	}
-	
-	private validateRepeatFields(controls): boolean {
-		switch (this.absenceForm.get('repeatType')?.value) {
-			case RepeatType.Weekly:
-			case RepeatType.Monthly:
-				if (this.markInvalidControls(['repeatFrequency', 'repeatDays'], controls)) {
-					return false;
-				}
-				break;
-			default:
-				if (this.markInvalidControls(['repeatFrequency'], controls)) {
-					return false;
-				}
-				break;
-		}
-	
-		return true;
-	}
-	
-	private validateNonHoliday(): boolean {
-		if (!this.formValues.roomList || !this.formValues.userList) {
-			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
-			this.isAbsenceStaffRoomInvalid.next(true);
-			return false;
-		}
-	
-		return true;
-	}
-	
-	private markInvalidControls(keys: string[], controls): boolean {
-		const invalid = keys.some((key) => {
+
+		const invalid = ['name', 'startedAt', 'startTime', 'info'].some((key) => {
 			controls[key].markAsTouched();
 			return controls[key].invalid;
 		});
-	
+		this.absenceForm.markAllAsTouched();
+
 		if (invalid) {
-			this.absenceForm.markAllAsTouched();
 			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+			return false;
+		}
+
+		if(this.handleRepeatValidation(controls)) return false;
+	
+		if (!isHoliday && !valid) {
+			if (this.formValues.roomList || this.formValues.userList) {
+				if (this.modalData.absenceType === 'rooms') {
+					this.notificationSvc.showNotification(Translate.SelectRoom[this.selectedLang], NotificationType.WARNING);
+				} else {
+					this.notificationSvc.showNotification(Translate.SelectStaff[this.selectedLang], NotificationType.WARNING);
+				}
+				this.isAbsenceStaffRoomInvalid.next(true);
+				return false;
+			}
+
+			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+			this.isAbsenceStaffRoomInvalid.next(true);
+			return false;
 		}
 	
-		return invalid;
+		return true;
+	}
+
+
+	private handleRepeatValidation(controls: any): boolean {
+		if (this.formValues.isRepeat) {
+			if (this.endDateTypeControl.value === EndDateType.Until && controls['endedAt'].invalid) {
+				controls['endedAt'].markAsTouched();
+				this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+				return true;
+			}
+			switch (this.absenceForm.get('repeatType')?.value) {
+				case RepeatType.Weekly:
+				case RepeatType.Monthly: {
+					const invalid = ['repeatFrequency', 'repeatDays'].some((key) => {
+						controls[key].markAsTouched();
+						return controls[key].invalid;
+					});
+					if (invalid) {
+						this.absenceForm.markAllAsTouched();
+						this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+						return true;
+					}
+					break;
+				}
+				default: {
+					if (controls['repeatFrequency'].invalid) {
+						controls['repeatFrequency'].markAsTouched();
+						this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+						return true;
+					}
+					break;
+				}
+			}
+		} else if (controls['endedAt'].invalid) {
+			controls['endedAt'].markAsTouched();
+			this.notificationSvc.showNotification(Translate.FormInvalid[this.selectedLang], NotificationType.WARNING);
+			return true;
+		}
+
+		return false;
 	}
 	
 
