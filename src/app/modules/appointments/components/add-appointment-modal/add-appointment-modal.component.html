@@ -260,25 +260,20 @@
           ></dfm-text-area>
         </div>
           <div class="d-flex flex-1 flex-column dfm-gap-8 dfm-mt-2">
-            <span class="text-sm font-weight-medium dfm-text-main-700 d-flex align-items-center dfm-gap-8">{{ 'ReferralNote' | translate }}
-              <dfm-icon class="info" name="info-circle" #menuTrigger="matMenuTrigger"
-              (mouseover)="menuTrigger.openMenu(); $event.stopPropagation(); $event.preventDefault()" (mouseleave)="menuTrigger.closeMenu(); $event.stopPropagation(); $event.preventDefault()"   [matMenuTriggerFor]="infoDetail"></dfm-icon>
-              <mat-menu #infoDetail="matMenu" [hasBackdrop]="false">
-                <div class="card-info">
-                  <div>
-                    <div></div><h1 class="mat-caption dfm-text-main-500">{{'CountLimit' | translate}}: {{fileMaxCount}}</h1>
-                  </div>
-                  <div>
-                    <div></div><h1 class="mat-caption dfm-text-main-500">{{'SizeLimit' | translate}}: {{fileSize+' MB'}}</h1>
-                  </div>
-                </div>
-              </mat-menu>
-            </span>
+            <span class="text-sm font-weight-medium dfm-text-main-700 d-flex align-items-center dfm-gap-8">{{ 'ReferralNote' | translate }}</span>
             <div class="d-flex dfm-gap-16 align-items-center">
             <label class="input-type-file-primary-md text-nowrap">{{ 'ChooseFile' | translate }}
               <input #fileInput type="file" class="hidden" accept="image/*, application/pdf" multiple
                 (change)="$event.stopPropagation(); uploadRefferingNote($event)" (click)="fileInput.value = ''; documentListError$$.next([])" />
             </label>
+          </div>
+          <div class="card-info">
+            <div>
+              <h1 class="mat-caption dfm-text-main-500"> {{'FileUploadInstruction' | translate : { maxFileSize: fileSize} }}</h1>
+            </div>
+            <div>
+              <h1 class="mat-caption success dfm-text-main-500"> {{'FileUploaded' | translate : {uploaded: documentList$$.value.length, fileMaxLimit: fileMaxCount} }}</h1>
+            </div>
           </div>
           <ng-container *ngIf="(documentListError$$ | async) as documentListError">
             <div class="d-flex flex-column dfm-gap-8" *ngFor="let document of documentListError">

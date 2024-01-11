@@ -536,8 +536,14 @@
 	"CountLimit": "Count limit",
 	"SizeLimit": "Size limit",
 	"FileFormat": "File format",
-	"ReUpload": "Re-upload"
+	"ReUpload": "Re-upload",
+	"FileUploadInstruction": "Files must be pdf, jpg, jpeg, png and not exceed more than {{maxFileSize}} MB for each document",
+	"FileUploaded": "Uploaded - {{uploaded}} / {{fileMaxLimit}} Files"
 }
+
+
+
+
 
 
 
