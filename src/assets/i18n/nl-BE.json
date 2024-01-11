@@ -536,8 +536,18 @@
 	"FileSizeError": "De bestandsgrootte mag niet groter zijn dan.",
 	"UploadLimitExceeded": "Ihr Upload-Limit wurde überschritten",
 	"CountLimit": "Count limit",
-	"SizeLimit": "Size limit"
+	"SizeLimit": "Size limit",
+	"FileFormat": "File format",
+	"ReUpload": "Her-upload",
+	"FileUploadInstruction": "Bestanden moeten pdf, jpg, jpeg, png zijn en mogen per document niet groter zijn dan {{maxFileSize}} MB",
+	"FileUploaded": "Geüpload - {{uploaded}} / {{fileMaxLimit}} Bestanden"
 }
+
+
+
+
+
+
 
 
 

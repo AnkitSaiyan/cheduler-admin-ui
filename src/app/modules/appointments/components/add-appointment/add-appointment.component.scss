@@ -181,11 +181,19 @@
 }
 
 .card-info {
-  padding: 0 8px;
 
   >div {
     display: flex;
     align-items: center;
+    .mat-caption {
+        margin: 0;
+        max-width: 290px;
 
+        &.success {
+            color: var(--dfm-primary);
+            font-weight: bold;
+          }
+        }
   }
 }
+

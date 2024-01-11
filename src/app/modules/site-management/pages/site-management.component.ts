@@ -80,7 +80,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 		for (let i = 1; i < 11; i++) {
 			this.documentSize.push({ name: `${i} MB`, value: i });
 		}
-		for (let i = 1; i < 6; i++) {
+		for (let i = 0; i < 6; i++) {
 			this.documentCount.push({ name: `${i}`, value: i });
 		}
 
@@ -147,7 +147,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 			editUploadedDocument: [!!siteManagementData?.editUploadedDocument, [Validators.required]],
 			absenceImpactAlertInterval: [absenceReminder, []],
 			absenceImpactAlertIntervalType: [absenceReminderType, []],
-			docUploadMaxCount: [5, [Validators.required]],
+			docUploadMaxCount: [0, [Validators.required]],
 		});
 
 		setTimeout(() => {
@@ -156,7 +156,7 @@ export class SiteManagementComponent extends DestroyableComponent implements OnI
 				cancelAppointmentType: durationType,
 				documentSize: siteManagementData?.documentSizeInKb ? siteManagementData.documentSizeInKb / 1024 : 5,
 				absenceImpactAlertIntervalType: absenceReminderType,
-				docUploadMaxCount: siteManagementData?.docUploadMaxCount ? siteManagementData?.docUploadMaxCount : 5,
+				docUploadMaxCount: siteManagementData?.docUploadMaxCount ? siteManagementData?.docUploadMaxCount : 0,
 			});
 		}, 0);
 
