@@ -55,11 +55,11 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 		if (allUsers.length) {
 			this.radiologists = [
 				...this.nameValuePipe.transform(
-					allUsers.filter((user) => user.userType === UserType.Radiologist),
+					allUsers.filter((user) => user.userType === UserType.Radiologist).map((user)=> ({...user, firstname: `${user.firstname} ${user.lastname}`})),
 					'firstname',
 					'id',
 				),
-			];
+			];	
 		}
 
 		if (users.length) {
@@ -72,7 +72,7 @@ export class ChangeRadiologistModalComponent extends DestroyableComponent implem
 							return true;
 						}
 						return false;
-					}),
+					}).map((user)=> ({...user, firstname: `${user.firstname} ${user.lastname}`})),
 					'firstname',
 					'id',
 				),

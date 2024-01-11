@@ -8,14 +8,14 @@ export class TimeSlotUtils {
 
 		Object.values(formValues.timeSlotGroup).forEach((values) => {
 			values.forEach((value) => {
-				if (value.dayStart && value.dayEnd) {
+				// if (value.dayStart && value.dayEnd) {
 					timeSlots.push({
 						dayStart: DateTimeUtils.LocalToUTCTimeTimeString(value.dayStart),
 						dayEnd: DateTimeUtils.LocalToUTCTimeTimeString(value.dayEnd),
 						weekday: value.weekday,
 						...(value.id ? { id: value.id } : {}),
 					});
-				}
+				// }
 			});
 		});
 
