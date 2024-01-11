@@ -49,6 +49,7 @@ interface FormValues {
 	bodyPart: string[] | number[];
 	roomType: RoomType;
 	roomsForExam: {
+		batchName: string;
 		roomId: number[];
 		duration: number;
 		roomName: string[];
@@ -289,9 +290,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		this.route.params
 			.pipe(
 				filter((params) => {
-					this.examForm.get('name')?.addAsyncValidators(
-						this.examApiSvc.examValidator((+params[EXAM_ID] && this.edit) ? +params[EXAM_ID] : '0')
-					);
+					this.examForm.get('name')?.addAsyncValidators(this.examApiSvc.examValidator(+params[EXAM_ID] && this.edit ? +params[EXAM_ID] : '0'));
 					this.examForm.updateValueAndValidity();
 					return params[EXAM_ID];
 				}),
@@ -432,6 +431,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 				...this.formValues.roomsForExam.map(
 					(
 						{
+							batchName,
 							roomName,
 							duration,
 							sortOrder,
@@ -447,7 +447,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 						},
 						index,
 					) => ({
-						batchName: `Room${index + 1}`,
+						batchName: batchName?.length ? batchName : `Room ${index + 1}`,
 						roomduration: +duration,
 						roomOrder: +sortOrder,
 						roomList: roomName,
@@ -655,6 +655,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			sortOrder: [null, [Validators.required]],
 			roomName: [[], [Validators.required]],
 			selectRoom: [null, []],
+			batchName: [batch?.batchName ?? '', []],
 			assistantCount: [null, []],
 			assistants: [[], []],
 			radiologistCount: [null, []],
@@ -668,7 +669,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 		});
 
 		if (batch) {
-			this.updateFormValues(batch, fg)
+			this.updateFormValues(batch, fg);
 		}
 
 		this.handleFormSubscriptions(fg);
@@ -678,22 +679,22 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 	private updateFormValues(batch: ResourceBatch, fg: FormGroup) {
 		const { assistants, mandatory, nursing, radiologists, secretaries } = UserUtils.GroupUsersByType(batch?.users ?? [], false, false, true);
-			setTimeout(() => {
-				fg.patchValue({
-					roomName: batch?.rooms.map(({ id }) => id),
-					sortOrder: batch?.roomOrder.toString(),
-					assistantCount: batch?.assistantCount?.toString() ?? '0',
-					radiologistCount: batch?.radiologistCount?.toString() ?? '0',
-					nursingCount: batch?.nursingCount?.toString() ?? '0',
-					secretaryCount: batch?.secretaryCount?.toString() ?? '0',
-					assistants,
-					nursing,
-					secretaries,
-					radiologists,
-					mandatoryStaffs: mandatory,
-				} as any);
-			}, 100);
-		
+		setTimeout(() => {
+			fg.patchValue({
+				roomName: batch?.rooms.map(({ id }) => id),
+				sortOrder: batch?.roomOrder.toString(),
+				assistantCount: batch?.assistantCount?.toString() ?? '0',
+				batchName: batch?.batchName ?? '',
+				radiologistCount: batch?.radiologistCount?.toString() ?? '0',
+				nursingCount: batch?.nursingCount?.toString() ?? '0',
+				secretaryCount: batch?.secretaryCount?.toString() ?? '0',
+				assistants,
+				nursing,
+				secretaries,
+				radiologists,
+				mandatoryStaffs: mandatory,
+			} as any);
+		}, 100);
 	}
 
 	private handleFormSubscriptions(fg: FormGroup) {
@@ -763,7 +764,14 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 
 	public addMoreRoomForm() {
 		const fa = this.examForm.get('roomsForExam') as FormArray;
-		const fg = this.addRoomForm();
+		let batchName!: string;
+		const examDetails = this.examDetails$$.value;
+		if (examDetails) {
+			const lastBatchName = fa.value?.[fa.value?.length - 1].batchName;
+			const lastBatchNameCount = lastBatchName.split(' ').at(-1)!;
+			batchName = `Room ${+lastBatchNameCount + 1}`;
+		}
+		const fg = this.addRoomForm({ batchName } as ResourceBatch);
 		fa.push(fg);
 		this.filterBatchRooms();
 	}

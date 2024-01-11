@@ -156,7 +156,12 @@
 						<mat-tab-group [selectedIndex]="roomsForExam.length - 1" animationDuration="0ms">
 							<mat-tab [formGroupName]="rowIndex" *ngFor="let roomForExamControl of roomsForExamControls; let rowIndex = index">
 								<ng-template mat-tab-label>
-									Room {{ rowIndex + 1 }}
+                  <ng-container *ngIf="roomForExamControl.value?.batchName?.length; else addViewBatchName">
+                    {{roomForExamControl.value?.batchName }}
+                  </ng-container>
+                  <ng-template #addViewBatchName>
+                    Room {{ rowIndex + 1 }}
+                  </ng-template>
 									<dfm-button-icon
 										size="sm"
 										icon="trash-01"
