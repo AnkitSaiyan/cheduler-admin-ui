@@ -357,6 +357,7 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 	private saveDataToBackend(requestData: AddAppointmentRequestData) {
 		if (this.edit) {
+			requestData.qrCodeId = '';
 			this.appointmentApiSvc
 				.updateAppointment$(requestData)
 				.pipe(takeUntil(this.destroy$$))
