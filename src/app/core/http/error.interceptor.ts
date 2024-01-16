@@ -39,7 +39,7 @@ export class ErrorInterceptor implements HttpInterceptor {
 		} else {
 			this.errorMessage = this.handleBackendCodes(err?.error?.message, lang);
 		}
-		if (this.errorMessage !== 'MSG_400_APMT_AFFECTS') this.notificationSvc.showError(this.errorMessage);
+		if (err?.error?.message !== 'MSG_400_APMT_AFFECTS') this.notificationSvc.showError(this.errorMessage);
 	}
 
 	private handleHttpStatusCodes(statusCode: number, lang: string): string {
