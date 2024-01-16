@@ -125,9 +125,9 @@
         <ng-template #bodyRowTemplate let-item>
           <dfm-table-row-cell [fullContent]="item">
             <span class="d-flex">
+              {{ item?.exams.length ? (item.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing ) : ('' | dashIfNothing) }}
               <dfm-icon *ngIf="item.absenceDetails.length" class="alert-icon" name="alert-circle">
               </dfm-icon>
-              {{ item?.exams.length ? (item.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing ) : ('' | dashIfNothing) }}
             </span>
           </dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item">{{ item?.exams.length ? (item.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing) : ('' | dashIfNothing) }}</dfm-table-row-cell>
