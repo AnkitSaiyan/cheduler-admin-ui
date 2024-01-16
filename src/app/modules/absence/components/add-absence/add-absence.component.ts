@@ -244,10 +244,10 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				finalValue = { min: curr.dayStart, max: curr.dayEnd };
 				return finalValue;
 			}
-			if (DateTimeUtils.TimeToNumber(curr.dayStart) <= DateTimeUtils.TimeToNumber(pre?.min)) {
+			if (curr.dayStart && DateTimeUtils.TimeToNumber(curr.dayStart) <= DateTimeUtils.TimeToNumber(pre?.min)) {
 				finalValue = { ...finalValue, min: curr.dayStart };
 			}
-			if (DateTimeUtils.TimeToNumber(curr.dayEnd) >= DateTimeUtils.TimeToNumber(pre?.max)) {
+			if (curr.dayEnd && DateTimeUtils.TimeToNumber(curr.dayEnd) >= DateTimeUtils.TimeToNumber(pre?.max)) {
 				finalValue = { ...finalValue, max: curr.dayEnd };
 			}
 			return finalValue;
