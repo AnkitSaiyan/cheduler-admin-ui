@@ -194,6 +194,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			)
 			.subscribe({
 				next: (absence) => {
+					console.log(absence);
 					this.absence$$.next(absence);
 					this.selectedDate = this.modalData.selectedDate;
 					this.createForm(absence);
