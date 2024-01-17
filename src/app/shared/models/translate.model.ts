@@ -447,24 +447,24 @@ export const Translate = Object.freeze({
 			[DUTCH_BE]: 'Afwezigheid succesvol toegevoegd',
 		},
 		PublicHolidayAdded: {
-			[ENG_BE]: 'Public Holiday Added Successfully',
-			[DUTCH_BE]: 'Publieke verlofdag succesvol toegevoegd',
+			[ENG_BE]: 'Holiday Added Successfully',
+			[DUTCH_BE]: 'Verlofdag succesvol toegevoegd',
 		},
 		AbsenceUpdated: {
 			[ENG_BE]: 'Absence Updated Successfully',
 			[DUTCH_BE]: 'Afwezigheid succesvol geüpdated',
 		},
 		PublicHolidayUpdate: {
-			[ENG_BE]: 'Public Holiday Updated Successfully',
-			[DUTCH_BE]: 'Publieke verlofdag succesvol geüpdated',
+			[ENG_BE]: 'Holiday Updated Successfully',
+			[DUTCH_BE]: 'Verlofdag succesvol geüpdated',
 		},
 		AbsenceDeleted: {
 			[ENG_BE]: 'Absence Deleted Successfully',
 			[DUTCH_BE]: 'Afwezigheid succesvol verwijderd',
 		},
 		PublicHolidayDeleted: {
-			[ENG_BE]: 'Public Holiday Deleted Successfully',
-			[DUTCH_BE]: 'Publieke verlofdag succesvol verwijderd',
+			[ENG_BE]: 'Holiday Deleted Successfully',
+			[DUTCH_BE]: 'Verlofdag succesvol verwijderd',
 		},
 		AppointmentUpdate: {
 			[ENG_BE]: 'Appointment updated successfully',
