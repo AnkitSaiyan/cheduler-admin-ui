@@ -714,7 +714,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 	private openModal() {
 		const modal = this.modalSvc.open(ConfirmActionModalComponent, {
 			data: {
-				bodyText: 'APPOINTMENT_AFFECTS_ABSENCE',
+				bodyText: this.modalData.absenceType === ABSENCE_TYPE_ARRAY[2] ? 'APPOINTMENT_AFFECTS_HOLIDAY' : 'APPOINTMENT_AFFECTS_ABSENCE',
 				closeActiveModal: true,
 			},
 		});

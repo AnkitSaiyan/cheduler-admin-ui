@@ -503,6 +503,7 @@
 	"DocumentSize": "Document size",
 	"DocUploadMaxCount": "Document upload max count",
 	"APPOINTMENT_AFFECTS_ABSENCE": "Are you sure you want to add this absence? \n Note: Please note that adding this absence will impact your upcoming appointments.",
+	"APPOINTMENT_AFFECTS_HOLIDAY": "Are you sure you want to add this holiday? \n Note: Please note that adding this holiday will impact your upcoming appointments.",
 	"LabHoliday": " The Lab is closed for today",
 	"NoAbsenceForTheDay": "No absence for the day",
 	"Public-holiday": "Holiday",
