@@ -77,7 +77,7 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 				.getDocumentById$(id, true)
 				.pipe(take(1))
 				.subscribe((res: any) => {
-					this.showDocuments(res, focusedDocId);
+					if (!this.documents$$.value.length) this.showDocuments(res, focusedDocId);
 				});
 		}
 		this.isOriginFileLoading$$.next(true);
