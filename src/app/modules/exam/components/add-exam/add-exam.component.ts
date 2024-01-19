@@ -803,7 +803,7 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			return;
 		}
 
-		this.formErrors.expensiveErr = totalRoomExpensive !== expensive;
+		this.formErrors.expensiveErr = totalRoomExpensive !== +expensive;
 	}
 
 	private checkStaffCountValidity(control: AbstractControl | null, countControl: AbstractControl | null, errorName: string) {
