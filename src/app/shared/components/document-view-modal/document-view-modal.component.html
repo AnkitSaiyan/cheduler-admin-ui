@@ -1,8 +1,11 @@
 <ng-container *ngIf="(documents$$ | async) as documents">
   <div class="img-main-container" *ngIf="documents.length ; else loader">
     <div class="top-img">
-      <img *ngIf="focusedDocument.isImage" [src]="focusedDocument.fileData" class="img-fluid" alt="image" />
-      <div *ngIf="!focusedDocument.isImage" class="img-fluid top-pdf">
+      <div class="img-loader-overlay" *ngIf="(isOriginFileLoading$$ | async) ?? false">
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+      <img *ngIf="focusedDocument.isImage" [src]="focusedDocument.fileData" alt="image" />
+      <div *ngIf="!focusedDocument.isImage" class="top-pdf">
         <svg height="30vh" width="35vw" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 309.267 309.267" xml:space="preserve">
           <g>
@@ -28,10 +31,10 @@
     </div>
     <div class="bottom-img">
       <ng-container *ngFor="let doc of documents">
-        <div class="bottom-img-item" [ngClass]="{'focused': this.focusedDocument === doc}">
-          <img (click)="setFocus(doc)" *ngIf="doc.isImage" [src]="doc.fileData" class="img-fluid" alt="image" />
-          <span (click)="setFocus(doc)" class="img-fluid" *ngIf="!doc.isImage">
-            <svg width="32" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+        <div class="bottom-img-item" [ngClass]="{'focused': this.focusedDocument === doc}" (click)="setFocus(doc)">
+          <img *ngIf="doc.isImage" [src]="doc.fileData" class="img-fluid" alt="image" />
+          <span class="img-fluid" *ngIf="!doc.isImage">
+            <svg width="8vw" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 309.267 309.267" xml:space="preserve">
               <g>
                 <path style="fill: #a589b7" d="M38.658,0h164.23l87.049,86.711v203.227c0,10.679-8.659,19.329-19.329,19.329H38.658
@@ -55,7 +58,8 @@
     </div>
     <div class="d-flex dfm-gap-6 justify-content-end">
       <dfm-button color="secondary" size="lg" (click)="closeModal()">{{ 'Close' | translate}}</dfm-button>
-      <dfm-button color="primary" size="lg" (click)="downloadDocument()" [disabled]="(isOriginFileLoading$$ | async) ?? false">{{ 'Download' | translate}}</dfm-button>
+      <dfm-button color="primary" size="lg" (click)="downloadDocument()"
+        [disabled]="(isOriginFileLoading$$ | async) ?? false">{{ 'Download' | translate}}</dfm-button>
     </div>
   </div>
   <ng-template #loader>
