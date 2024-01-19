@@ -30,7 +30,7 @@
     flex-direction: row;
     justify-content: start;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 14px;
     border-radius: 8px;
 
     .bottom-img-item {
@@ -38,7 +38,6 @@
       overflow: hidden;
       position: relative;
       width: 8vw;
-      // height: 50px;
       object-fit: cover;
       display: flex;
       justify-content: center;
@@ -75,4 +74,19 @@
 
 p {
   white-space: nowrap;
+}
+
+.img-fluid {
+  width: 8vw;
+  aspect-ratio: 3/2;
+  object-fit: contain;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.img-loader-overlay {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
