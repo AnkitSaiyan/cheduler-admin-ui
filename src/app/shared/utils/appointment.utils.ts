@@ -108,7 +108,7 @@ export class AppointmentUtils {
 		appointment: Appointment | undefined,
 		isCombinable: boolean,
 	): AddAppointmentRequestData {
-		const { startedAt, startTime, examList, ...rest } = formValues;
+		const { startedAt, startTime, examList, doctorId, ...rest } = formValues;
 		const selectedTimeSlotValues: any = { ...Object.values(selectedTimeSlot)[0] }
 		const { userList, roomList, slot, exams, ...restData } = selectedTimeSlotValues;
 		let finalCombinableRequestData = {};
@@ -123,6 +123,7 @@ export class AppointmentUtils {
 		const requestData: any = {
 			...rest,
 			date: DateTimeUtils.DateDistributedToString(startedAt, '-'),
+			doctorId: doctorId || null,
 			slot:
 				!isCombinable || !exams?.length
 					? {
