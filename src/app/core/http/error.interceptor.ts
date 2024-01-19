@@ -61,6 +61,8 @@ export class ErrorInterceptor implements HttpInterceptor {
 			});
 		} else if (typeof errors?.['generalErrors'] === 'string') {
 			this.errorMessage = errors;
+		} else {
+			this.errorMessage = Translate.Error.SomethingWrong[this.language];
 		}
 		return this.errorMessage;
 	}
