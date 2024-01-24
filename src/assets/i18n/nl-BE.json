@@ -503,7 +503,7 @@
 	"Uploaded": "Geüpload",
 	"RE_UPLOAD_REFERRAL_NOTE": "Verwijsbrief opnieuw uploaden",
 	"DocumentSize": "Documentgrootte",
-	"DocUploadMaxCount": "Maximale Anzahl an Dokument-Uploads",
+	"DocUploadMaxCount": "Maximaal aantal aan document-uploads",
 	"APPOINTMENT_AFFECTS_ABSENCE": "Weet u zeker dat u deze afwezigheid wilt toevoegen? \n Let op: Houd er rekening mee dat het toevoegen van deze afwezigheid invloed heeft op uw komende afspraken.",
 	"APPOINTMENT_AFFECTS_HOLIDAY": "Weet u zeker dat u deze verlofdag wilt toevoegen? \n Let op: Houd er rekening mee dat het toevoegen van deze verlofdag invloed heeft op uw komende afspraken.",
 	"LabHoliday": "De praktijk is vandaag gesloten.",
@@ -543,18 +543,3 @@
 	"FileUploadInstruction": "Bestanden moeten pdf, jpg, jpeg, png zijn en mogen per document niet groter zijn dan {{maxFileSize}} MB",
 	"FileUploaded": "Geüpload - {{uploaded}} / {{fileMaxLimit}} Bestanden"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
