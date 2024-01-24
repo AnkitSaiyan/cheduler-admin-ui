@@ -153,6 +153,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		}
 
 		this.setHideAbsence(this.absenceData);
+		console.log(this.appointmentData);
+		
 	}
 
 	public ngOnInit(): void {
