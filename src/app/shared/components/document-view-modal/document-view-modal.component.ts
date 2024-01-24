@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { ModalService } from 'src/app/core/services/modal.service';
-import { BehaviorSubject, Subject, map, race, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, take, takeUntil } from 'rxjs';
 import { NotificationDataService } from 'src/app/core/services/notification-data.service';
 import { ShareDataService } from 'src/app/core/services/share-data.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -9,7 +9,7 @@ import { Translate } from '../../models/translate.model';
 import { ENG_BE } from '../../utils/const';
 import { DestroyableComponent } from '../destroyable.component';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Document, docApiRes } from '../../models/document.model';
+import { Document } from '../../models/document.model';
 
 @Component({
 	selector: 'dfm-document-view-modal',
@@ -23,13 +23,9 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 
 	public image = new Subject<string>();
 
-	private downloadableDoc!: string;
-
 	public fileName!: string;
 
 	public isImage: boolean = true;
-
-	private isDownloadClick: boolean = false;
 
 	private selectedLang: string = ENG_BE;
 
@@ -71,7 +67,7 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 			});
 	}
 
-	public getDocument(id, focusedDocId?: number) {
+	public getDocument(id, focusedDocId?: number): void {
 		if (!this.modalData?.documentList) {
 			this.appointmentApiSvc
 				.getDocumentById$(id, true)
@@ -95,7 +91,7 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 			});
 	}
 
-	private showDocuments(documentRes: Document[], focusedDocId?: number) {
+	private showDocuments(documentRes: Document[], focusedDocId?: number): void {
 		this.documents$$.next(
 			documentRes.map((res) => ({
 				...res,
@@ -110,11 +106,11 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 		}
 	}
 
-	public setFocus(docData: Document) {
+	public setFocus(docData: Document): void {
 		this.focusedDocument = docData;
 	}
 
-	public downloadDocument() {
+	public downloadDocument(): void {
 		if (!this.focusedDocument) {
 			return;
 		}
@@ -122,7 +118,7 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 		this.downloadImage(this.focusedDocument);
 	}
 
-	private downloadImage(docData: Document) {
+	private downloadImage(docData: Document): void {
 		const blob = this.base64ToBlob(this.getSanitizeImage(docData.fileData), docData);
 		const url = window.URL.createObjectURL(blob);
 		const a = document.createElement('a');
@@ -146,12 +142,12 @@ export class DocumentViewModalComponent extends DestroyableComponent implements 
 		return new Blob([arrayBuffer], { type: mimeString });
 	}
 
-	private getSanitizeImage(base64: string): any {
+	private getSanitizeImage(base64: string): string {
 		let url1: any = this.sanitizer.bypassSecurityTrustResourceUrl(base64);
 		return url1.changingThisBreaksApplicationSecurity;
 	}
 
-	public closeModal() {
+	public closeModal(): void {
 		this.activeModal.close();
 	}
 }

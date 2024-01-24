@@ -81,6 +81,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	public appointmentDataForWeekView$!: Observable<{ [key: string]: any[][] }>;
 
+	public switchCalender = true;
+
 	public appointmentDataForDayView$!: Observable<{
 		[key: string]: {
 			[key: number]: {
@@ -389,6 +391,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	public updateToToday() {
 		this.updateQuery('', new Date());
+		this.dateControl.setValue(new Date());
+		this.switchCalender = !this.switchCalender;
 	}
 
 	private dataModificationForWeekView(appointments: Appointment[]) {
