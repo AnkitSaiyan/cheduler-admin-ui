@@ -403,6 +403,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		let lastDateString: string;
 
 		const appointmentsGroupedByDateAndTime = {};
+		appointments = appointments.sort((a:Appointment, b:Appointment) =>new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime());
 		appointments.push({} as Appointment);
 		appointments.forEach((appointment, index) => {
 			if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
