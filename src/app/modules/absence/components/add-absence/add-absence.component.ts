@@ -125,6 +125,8 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 
 	private selectedDate: Date | undefined;
 
+	public readonly currentDate = new Date();
+
 	constructor(
 		private modalSvc: ModalService,
 		private fb: FormBuilder,
@@ -552,7 +554,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 				this.startTimes.push({ name: startTime, value: startTime });
 			}
 			this.startDateControl.setValue(date);
-		} else this.startDateControl.setValue(this.selectedDate);
+		} else this.startDateControl.setValue(this.selectedDate && new Date() < this.selectedDate ? this.selectedDate : new Date());
 
 		if (absenceDetails?.endedAt) {
 			const date = new Date(absenceDetails.endedAt);
