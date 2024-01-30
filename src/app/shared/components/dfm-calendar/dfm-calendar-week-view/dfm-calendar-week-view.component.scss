@@ -271,8 +271,12 @@ h3 {
 	right: 0px;
 	display: flex;
 	border-bottom-left-radius: 4px;
-	z-index: 2;
+	z-index: 1;
 	gap: 4px;
+
+	&:hover{
+		z-index: 2;
+	}
 	// overflow: hidden; // remove while need scale card on hover
 
 	.calendar-week-view-event-details-expanded {
