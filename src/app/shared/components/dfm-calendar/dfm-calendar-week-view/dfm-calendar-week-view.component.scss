@@ -271,9 +271,9 @@ h3 {
 	right: 0px;
 	display: flex;
 	border-bottom-left-radius: 4px;
-	z-index: 1;
+	z-index: 2;
 	gap: 4px;
-	overflow: hidden;
+	// overflow: hidden; // remove while need scale card on hover
 
 	.calendar-week-view-event-details-expanded {
 		min-width: 300px;
@@ -337,6 +337,14 @@ h3 {
 
 		&.parent {
 			position: relative;
+			transition: .3s;
+		}
+
+		&.parent:hover {
+			position: absolute;
+			z-index: 2;
+			transform: scale(1.1);
+			width: calc(100% + 20px);
 		}
 
 		&.child {
