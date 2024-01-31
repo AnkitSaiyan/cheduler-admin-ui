@@ -2,6 +2,10 @@ h3 {
 	margin: 0;
 }
 
+.overflow-none {
+	overflow: visible !important;
+}
+
 .affectedAppointments {
 	border-left: 2px solid var(--dfm-danger-500) !important;
 	background: var(--dfm-danger-200) !important;
@@ -277,7 +281,7 @@ h3 {
 	&:hover{
 		z-index: 2;
 	}
-	// overflow: hidden; // remove while need scale card on hover
+	overflow: hidden;
 
 	.calendar-week-view-event-details-expanded {
 		min-width: 300px;
@@ -341,14 +345,6 @@ h3 {
 
 		&.parent {
 			position: relative;
-			transition: .3s;
-		}
-
-		&.parent:hover {
-			position: absolute;
-			z-index: 2;
-			transform: scale(1.1);
-			width: calc(100% + 20px);
 		}
 
 		&.child {
@@ -374,6 +370,9 @@ h3 {
 		&.child:hover {
 			z-index: 2;
 			box-shadow: 0 0.125rem 1.25rem rgb(30 30 28 / 10%);
+			transform: scale(1.1);
+			width: calc(140px);
+			max-width: 140px !important;
 		}
 
 		.calendar-week-view-event-title {
