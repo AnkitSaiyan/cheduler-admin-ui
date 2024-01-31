@@ -151,7 +151,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 
 		const state = this.router.getCurrentNavigation()?.extras?.state;
 		if (state !== undefined) {
-			this.loading$$.next(true);
 			this.comingFromRoute = state[COMING_FROM_ROUTE];
 			this.edit = state[EDIT];
 
@@ -160,7 +159,6 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				localStorage.setItem(EDIT, this.edit.toString());
 			}
 		} else {
-			this.loading$$.next(true);
 			this.getComingFromRouteFromLocalStorage();
 		}
 	}
@@ -209,6 +207,8 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				filter((appointmentID: string) => {
 					if (!appointmentID) {
 						this.appointment$$.next({} as Appointment);
+					} else {
+						this.loading$$.next(true);
 					}
 					return !!appointmentID;
 				}),
@@ -218,11 +218,15 @@ export class AddAppointmentComponent extends DestroyableComponent implements OnI
 				debounceTime(0),
 				takeUntil(this.destroy$$),
 			)
-			.subscribe((appointment) => {
+			.subscribe({
+				next: (appointment) => {
+				this.loading$$.next(false);
 				this.loaderService.spinnerActivate();
 				this.appointment$$.next(appointment ?? ({} as Appointment));
 				this.updateForm(appointment);
 				if (appointment?.id && appointment.documentCount) this.getDocument(appointment.id);
+				},
+				error: () => this.loading$$.next(false)
 			});
 
 		this.appointmentForm
