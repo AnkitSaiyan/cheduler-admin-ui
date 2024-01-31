@@ -1,7 +1,6 @@
 import { DatePipe } from '@angular/common';
 import {
 	AfterViewInit,
-	ChangeDetectorRef,
 	Component,
 	EventEmitter,
 	Input,
@@ -15,7 +14,6 @@ import { BehaviorSubject, Subject, debounceTime, distinctUntilChanged, filter, m
 
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { Appointment } from 'src/app/shared/models/appointment.model';
-import { UtcToLocalPipe } from 'src/app/shared/pipes/utc-to-local.pipe';
 import { AbsenceApiService } from 'src/app/core/services/absence-api.service';
 import { ActivatedRoute, Params } from '@angular/router';
 import { DestroyableComponent } from '../../destroyable.component';
@@ -27,7 +25,6 @@ import {
 	getDurationMinutes,
 	getFromAndToDate,
 } from '../../../models/calendar.model';
-import { ModalService } from '../../../../core/services/modal.service';
 import { PIXELS_PER_MIN, TIME_INTERVAL } from 'src/app/shared/utils/const';
 
 @Component({
@@ -134,12 +131,9 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	constructor(
 		private datePipe: DatePipe,
-		private cdr: ChangeDetectorRef,
-		private modalSvc: ModalService,
 		public draggableSvc: DraggableService,
 		private route: ActivatedRoute,
 		private absenceApiSvc: AbsenceApiService,
-		private utcToLocalPipe: UtcToLocalPipe,
 	) {
 		super();
 	}
@@ -637,5 +631,15 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			isClose,
 		};
 		this.openAndClosePrioritySlot.emit(obj);
+	}
+
+	public hoverInAppointment(ele: HTMLDivElement) {
+		ele.classList.add('overflow-none');
+	}
+
+	public hoverOutAppointment(ele: HTMLDivElement) {
+		setTimeout(() => {
+			ele.classList.remove('overflow-none');
+		}, 200);
 	}
 }
