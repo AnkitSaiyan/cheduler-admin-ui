@@ -276,7 +276,7 @@ h3 {
 	display: flex;
 	border-bottom-left-radius: 4px;
 	z-index: 1;
-	gap: 4px;
+	gap: 2px;
 
 	&:hover{
 		z-index: 2;
@@ -340,8 +340,8 @@ h3 {
 	.calendar-week-view-event-details-container {
 		display: flex;
 		flex-direction: column;
-		width: calc(100% - 12px);
-		min-width: 32px;
+		width: calc(100% - 2px);
+		min-width: 16px;
 
 		&.parent {
 			position: relative;
@@ -350,7 +350,7 @@ h3 {
 		&.child {
 			position: absolute;
 			left: 0;
-			padding: 12px 8px;
+			padding: 6px 4px;
 			font-size: 0.9rem;
 			border-left: 2px solid var(--dfm-blue);
 			border-bottom: 1px solid var(--dfm-blue);
