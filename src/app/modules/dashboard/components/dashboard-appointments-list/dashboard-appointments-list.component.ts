@@ -287,7 +287,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 						this.pastAppointments$$.next(appointmentsBase.data);
 					}
 					this.pastPaginationData = appointmentsBase?.metaData?.pagination || 1;
-					this.isLoading = false;
 				},
 				error: () => this.filteredPastAppointments$$.next([]),
 			});

@@ -129,6 +129,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 
 	public holidayData$$ = new BehaviorSubject<any>({});
 
+	public isHoverOnAppointmentCard = false;
+
 	constructor(
 		private datePipe: DatePipe,
 		public draggableSvc: DraggableService,
@@ -146,9 +148,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			this.getGrayOutArea();
 		}
 
-		this.setHideAbsence(this.absenceData);
-		console.log(this.appointmentData);
-		
+		this.setHideAbsence(this.absenceData);		
 	}
 
 	public ngOnInit(): void {
@@ -633,13 +633,16 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		this.openAndClosePrioritySlot.emit(obj);
 	}
 
-	public hoverInAppointment(ele: HTMLDivElement) {
-		ele.classList.add('overflow-none');
+	public hoverInAppointment(ele: HTMLDivElement) {		
+		setTimeout(() => {
+			if(this.isHoverOnAppointmentCard)
+				ele.classList.add('overflow-none');
+		}, 0);
 	}
 
 	public hoverOutAppointment(ele: HTMLDivElement) {
 		setTimeout(() => {
 			ele.classList.remove('overflow-none');
-		}, 200);
+		}, 100);
 	}
 }
