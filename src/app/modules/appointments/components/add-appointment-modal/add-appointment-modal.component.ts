@@ -189,6 +189,7 @@ export class AddAppointmentModalComponent extends DestroyableComponent implement
 				.pipe(take(1))
 				.subscribe({
 					next: (appointment) => this.updateForm(appointment as Appointment),
+					error: ()=> this.loading$$.next(false),
 				});
 			if (this.modalData.appointment?.id && this.modalData.appointment.documentCount) this.getDocument(this.modalData.appointment.id);
 		}
