@@ -206,8 +206,6 @@
 												#cardContainer
 												*ngIf="groupedData | weekViewAppointmentCardGroupHeight : limit.min : limit.max as eventHeight"
 												class="calendar-week-view-event-container"
-												(mouseenter)="hoverInAppointment(cardContainer)"
-												(mouseleave)="hoverOutAppointment(cardContainer)"
 												[ngStyle]="{
 													'top.px': groupedData | weekViewAppointmentCardTop : limit.min : limit.max,
 													'height.px': eventHeight
@@ -216,8 +214,8 @@
 											>
 												<div *ngFor="let items of groupedData" class="calendar-week-view-event-details-container parent">
 													<div
-														(mouseenter)="isHoverOnAppointmentCard = true"
-														(mouseleave)="isHoverOnAppointmentCard = false"
+														(mouseenter)="isHoverOnAppointmentCard = true;  hoverInAppointment(cardContainer)"
+														(mouseleave)="isHoverOnAppointmentCard = false; hoverOutAppointment(cardContainer)"
 														class="calendar-week-view-event-details-container child"
 														*ngFor="let data of items"
 														[ngClass]="{ 'justify-content-center p-0': getHeight([data]) <= 40, affectedAppointments: data?.absenceDetails?.length }"

@@ -148,7 +148,7 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 			this.getGrayOutArea();
 		}
 
-		this.setHideAbsence(this.absenceData);		
+		this.setHideAbsence(this.absenceData);
 	}
 
 	public ngOnInit(): void {
@@ -633,16 +633,13 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		this.openAndClosePrioritySlot.emit(obj);
 	}
 
-	public hoverInAppointment(ele: HTMLDivElement) {		
-		setTimeout(() => {
-			if(this.isHoverOnAppointmentCard)
-				ele.classList.add('overflow-none');
-		}, 0);
+	public hoverInAppointment(ele: HTMLDivElement) {
+		if (this.isHoverOnAppointmentCard) ele.classList.add('overflow-none');
 	}
 
 	public hoverOutAppointment(ele: HTMLDivElement) {
 		setTimeout(() => {
-			ele.classList.remove('overflow-none');
-		}, 100);
+			if (!this.isHoverOnAppointmentCard) ele.classList.remove('overflow-none');
+		}, 200);
 	}
 }
