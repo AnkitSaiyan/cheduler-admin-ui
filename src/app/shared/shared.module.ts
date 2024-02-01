@@ -101,6 +101,7 @@ import { TimeSlotsTableComponent } from './components/time-slots-table/time-slot
 import { DfmButtonTypeDirective } from './directives/dfm-button-type.directive';
 import { PhoneNumberDirective } from './directives/phone-number.directive';
 import { TruncatePipe } from './pipes/truncate.pipe';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http);
@@ -205,6 +206,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		MatTabsModule,
 		MatButtonToggleModule,
 		MatExpansionModule,
+		MatProgressBarModule,
 	],
 	exports: [
 		DesignSystemModule,
@@ -289,6 +291,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		DfmButtonTypeDirective,
 		PhoneNumberDirective,
 		TruncatePipe,
+		MatProgressBarModule,
 	],
 	providers: [
 		TranslatePipe,
