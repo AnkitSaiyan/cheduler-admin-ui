@@ -377,10 +377,10 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			return;
 		}
 
-		this.submitting$$.next(true);
-
 		const createExamRequestData: CreateExamRequestData = this.requestData(timeSlotFormValues);
-
+		
+		this.submitting$$.next(true);
+		
 		this.saveDataToBackend(createExamRequestData);
 	}
 
@@ -455,19 +455,19 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 						nursingCount: +(nursingCount ?? 0),
 						radiologistCount: +(radiologistCount ?? 0),
 						secretaryCount: +(secretaryCount ?? 0),
-						mandatoryUsers: [...(mandatoryStaffs?.map((value) => +value) ?? [])],
+						mandatoryUsers: (mandatoryStaffs || []).map((value) => +value),
 						userList: [
-							...(assistants?.map((value) => +value) ?? []),
-							...(nursing?.map((value) => +value) ?? []),
-							...(radiologists?.map((value) => +value) ?? []),
-							...(secretaries?.map((value) => +value) ?? []),
+							...((assistants || [])?.map((value) => +value) ?? []),
+							...((nursing || [])?.map((value) => +value) ?? []),
+							...((radiologists || [])?.map((value) => +value) ?? []),
+							...((secretaries || [])?.map((value) => +value) ?? []),
 						],
 					}),
 				),
 			]?.sort((a, b) => (+a.roomOrder < +b.roomOrder ? -1 : 1)),
 			status: this.formValues.status,
 			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues?.length : 0,
-			uncombinables: this.formValues.uncombinables?.map((value) => +value) ?? [],
+			uncombinables: (this.formValues.uncombinables || [])?.map((value) => +value),
 			practiceAvailability: timeSlotFormValues,
 		};
 	}
