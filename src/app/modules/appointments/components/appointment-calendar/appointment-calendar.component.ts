@@ -3,7 +3,7 @@ import { Component, ContentChild, OnDestroy, OnInit, TemplateRef } from '@angula
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, Observable, combineLatest, debounceTime, distinctUntilChanged, filter, firstValueFrom, map, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest, debounceTime, distinctUntilChanged, filter, firstValueFrom, map, switchMap, take, takeUntil, throwError } from 'rxjs';
 import { AppointmentApiService } from 'src/app/core/services/appointment-api.service';
 import { DraggableService } from 'src/app/core/services/draggable.service';
 import { ModalService } from 'src/app/core/services/modal.service';
@@ -82,6 +82,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	public appointmentDataForWeekView$!: Observable<{ [key: string]: any[][] }>;
 
 	public switchCalender = true;
+
+	public isLoader$$ = new BehaviorSubject(true);
 
 	public appointmentDataForDayView$!: Observable<{
 		[key: string]: {
@@ -213,16 +215,25 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 		this.appointmentData$ = this.weekdayToPractice$$.pipe(
 			filter(Boolean),
-			switchMap(() => this.route.queryParams),
+			switchMap(() => {
+				this.isLoader$$.next(true);
+				return this.route.queryParams
+			}),
 			filter((queryParams) => !!queryParams['v'] && !!queryParams['d']),
 			distinctUntilChanged(this.distinctUntilChanged),
 			map(this.getFromAndToDate.bind(this)),
 			debounceTime(100),
 			switchMap(({ fromDate, toDate }) => {
-				return this.appointmentApiSvc.appointmentForCalendar$(fromDate, toDate);
+				return this.appointmentApiSvc.appointmentForCalendar$(fromDate, toDate).pipe(
+					catchError((err) => {
+						this.isLoader$$.next(false);
+						return throwError(() => err)
+					}),
+				);
 			}),
 			map((data) => data.data),
 			takeUntil(this.destroy$$),
+			
 		);
 
 		this.appointmentDataForDayView$ = this.appointmentData$.pipe(map(this.dataModificationForDayView.bind(this)));
@@ -486,6 +497,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments.map((value) => [value]));
 			}
 		});
+		this.isLoader$$.next(false);
 		return appointmentsGroupedByDateAndTime;
 	}
 
@@ -502,6 +514,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				}
 			}
 		});
+		this.isLoader$$.next(false);
 		return appointmentsGroupedByDate;
 	}
 
@@ -540,10 +553,12 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				}
 			}
 		});
+		this.isLoader$$.next(false);
 		return appointmentGroupedByDateAndRoom;
 	}
 
 	private updateQuery(queryStr?: string, date?: Date, replaceUrl: boolean = false) {
+		this.isLoader$$.next(true);
 		setTimeout(() => {
 			this.router.navigate([], {
 				queryParams: {

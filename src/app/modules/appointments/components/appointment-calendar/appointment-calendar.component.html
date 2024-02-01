@@ -1,3 +1,5 @@
+<mat-progress-bar *ngIf="isLoader$$ | async" mode="indeterminate"></mat-progress-bar>
+
 <div class="d-flex flex-row dfm-gap-16 calendar-main-wrapper" *ngIf="selectedDate$$ | async as selectedDate">
   <section class="side-view">
     <ng-container [ngTemplateOutlet]="sideView"></ng-container>
