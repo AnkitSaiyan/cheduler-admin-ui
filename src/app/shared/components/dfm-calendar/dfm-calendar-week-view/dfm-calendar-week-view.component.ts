@@ -498,56 +498,81 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		const grayOutSlot: any = {};
 		Object.keys(this.practiceData).forEach((value) => {
 			const { intervals } = this.practiceData[value];
+			const noPracticeGraySlot = [
+				{
+					dayStart: this.limit.min,
+					dayEnd: '',
+					top: 0,
+					height:
+						getDurationMinutes(DateTimeUtils.timeStingToDate(this.limit.min), DateTimeUtils.timeStingToDate(this.limit.max)) * this.pixelsPerMin,
+				},
+				{
+					dayStart: this.limit.min,
+					dayEnd: intervals[0].dayStart,
+					top: 0,
+					height: 0,
+				},
+			];
+			if (!intervals[0].dayStart) {
+			}
 
 			if (value === '0') {
-				grayOutSlot['6'] = [
-					{
-						dayStart: this.limit.min,
-						dayEnd: intervals[0].dayStart,
-						top: 0,
-						height:
-							getDurationMinutes(DateTimeUtils.timeStingToDate(this.limit.min), DateTimeUtils.timeStingToDate(intervals[0].dayStart)) *
-							this.pixelsPerMin,
-					},
-				];
+				if (!intervals[0].dayStart) {
+					grayOutSlot['6'] = noPracticeGraySlot;
+				} else {
+					grayOutSlot['6'] = [
+						{
+							dayStart: this.limit.min,
+							dayEnd: '',
+							top: 0,
+							height:
+								getDurationMinutes(DateTimeUtils.timeStingToDate(this.limit.min), DateTimeUtils.timeStingToDate(intervals[0].dayStart)) *
+								this.pixelsPerMin,
+						},
+					];
 
-				const start1 = DateTimeUtils.timeStingToDate(this.limit.min);
-				const end1 = DateTimeUtils.timeStingToDate(intervals[intervals.length - 1].dayEnd);
-				const minutes1 = getDurationMinutes(start1, end1);
+					const start1 = DateTimeUtils.timeStingToDate(this.limit.min);
+					const end1 = DateTimeUtils.timeStingToDate(intervals[intervals.length - 1].dayEnd);
+					const minutes1 = getDurationMinutes(start1, end1);
 
-				grayOutSlot['6'] = [
-					...grayOutSlot['6'],
-					{
-						dayStart: intervals[intervals.length - 1].dayEnd,
-						dayEnd: this.limit.max,
-						top: minutes1 * this.pixelsPerMin,
-						height:
-							getDurationMinutes(
-								DateTimeUtils.timeStingToDate(intervals[intervals.length - 1].dayEnd),
-								DateTimeUtils.timeStingToDate(this.limit.max),
-							) * this.pixelsPerMin,
-					},
-				];
+					grayOutSlot['6'] = [
+						...grayOutSlot['6'],
+						{
+							dayStart: intervals[intervals.length - 1].dayEnd,
+							dayEnd: this.limit.max,
+							top: minutes1 * this.pixelsPerMin,
+							height:
+								getDurationMinutes(
+									DateTimeUtils.timeStingToDate(intervals[intervals.length - 1].dayEnd),
+									DateTimeUtils.timeStingToDate(this.limit.max),
+								) * this.pixelsPerMin,
+						},
+					];
 
-				if (intervals?.length > 1) {
-					for (let i = 0; i < intervals.length - 1; i++) {
-						const start = DateTimeUtils.timeStingToDate(this.limit.min);
-						const end = DateTimeUtils.timeStingToDate(intervals[i].dayEnd);
-						const minutes = getDurationMinutes(start, end);
-						const timeInterval = getDurationMinutes(end, DateTimeUtils.timeStingToDate(intervals[i + 1].dayStart));
-						grayOutSlot['6'] = [
-							...grayOutSlot['6'],
-							{
-								dayStart: intervals[i].dayEnd,
-								dayEnd: intervals[i + 1].dayStart,
-								top: minutes * this.pixelsPerMin,
-								height: timeInterval * this.pixelsPerMin,
-							},
-						];
+					if (intervals?.length > 1) {
+						for (let i = 0; i < intervals.length - 1; i++) {
+							const start = DateTimeUtils.timeStingToDate(this.limit.min);
+							const end = DateTimeUtils.timeStingToDate(intervals[i].dayEnd);
+							const minutes = getDurationMinutes(start, end);
+							const timeInterval = getDurationMinutes(end, DateTimeUtils.timeStingToDate(intervals[i + 1].dayStart));
+							grayOutSlot['6'] = [
+								...grayOutSlot['6'],
+								{
+									dayStart: intervals[i].dayEnd,
+									dayEnd: intervals[i + 1].dayStart,
+									top: minutes * this.pixelsPerMin,
+									height: timeInterval * this.pixelsPerMin,
+								},
+							];
+						}
 					}
 				}
 			} else {
-				this.getGrayOutAreaElse(intervals, grayOutSlot, value);
+				if (!intervals[0].dayStart) {
+					grayOutSlot[+value - 1] = noPracticeGraySlot;
+				} else {
+					this.getGrayOutAreaElse(intervals, grayOutSlot, value);
+				}
 			}
 		});
 
