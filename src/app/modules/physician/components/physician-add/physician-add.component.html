@@ -1,93 +1,113 @@
 <dfm-mat-spinner></dfm-mat-spinner>
 
 <div class="bg-white rounded-4 ad-ph-main-wrapper dfm-px-16">
-  <section class="modal-header ad-ph-section1">
-    <h5 class="modal-title ad-ph-title-buttons">{{ modalData.edit ? ('EditPhysician' | translate) : ('AddPhysician' | translate) }} </h5>
-    <dfm-button-icon class="ad-ph-title-buttons" color="tertiary-gray" icon="x-close"
-                     (click)="closeModal(false)"></dfm-button-icon>
+	<section class="modal-header ad-ph-section1">
+		<h5 class="modal-title ad-ph-title-buttons">{{ modalData.edit ? ('EditPhysician' | translate) : ('AddPhysician' | translate) }}</h5>
+		<dfm-button-icon class="ad-ph-title-buttons" color="tertiary-gray" icon="x-close" (click)="closeModal(false)"></dfm-button-icon>
 
-    <div class="hidden dfm-gap-8 align-items-center ad-ph-title-buttons-mv">
-      <div class="rounded-circle overflow-hidden">
-        <dfm-button-icon
-          color="tertiary-gray"
-          size="sm"
-          icon="chevron-left"
-          (click)="closeModal(false)"
-        >
-        </dfm-button-icon>
-      </div>
+		<div class="hidden dfm-gap-8 align-items-center ad-ph-title-buttons-mv">
+			<div class="rounded-circle overflow-hidden">
+				<dfm-button-icon color="tertiary-gray" size="sm" icon="chevron-left" (click)="closeModal(false)"> </dfm-button-icon>
+			</div>
 
-      <dfm-button
-        color="link"
-        size="lg"
-      > {{ modalData.edit ? ('EditPhysician' | translate) : ('AddPhysician' | translate) }}
-      </dfm-button>
-    </div>
-  </section>
+			<dfm-button color="link" size="lg"> {{ modalData.edit ? ('EditPhysician' | translate) : ('AddPhysician' | translate) }} </dfm-button>
+		</div>
+	</section>
 
-  <section class="modal-body dfm-pb-24 ad-ph-section2">
-    <form [formGroup]="addPhysicianForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
-      <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
+	<section class="modal-body dfm-pb-24 ad-ph-section2">
+		<form [formGroup]="addPhysicianForm" class="d-flex flex-column dfm-gap-24 dfm-mb-16">
+			<div class="d-flex dfm-gap-32 align-items-start flex-wrap">
+				<div class="flex-1 input-field-mv">
+					<dfm-input
+						#firstname
+						[dfmNameInput]="firstname"
+						size="md"
+						placeholder="{{ 'EnterFirstName' | translate }}"
+						label="{{ 'FirstName' | translate }}*"
+						formControlName="firstname"
+					>
+					</dfm-input>
+					<div class="validation-error" *ngIf="addPhysicianForm.get('firstname')?.hasError('required') && addPhysicianForm.get('firstname')?.touched">
+						{{ 'RequiredField' | translate }}
+					</div>
+				</div>
+				<div class="flex-1 input-field-mv">
+					<dfm-input
+						#lastname
+						[dfmNameInput]="lastname"
+						size="md"
+						placeholder="{{ 'EnterLastName' | translate }}"
+						label="{{ 'LastName' | translate }} *"
+						formControlName="lastname"
+					>
+					</dfm-input>
+					<div class="validation-error" *ngIf="addPhysicianForm.get('lastname')?.hasError('required') && addPhysicianForm.get('lastname')?.touched">
+						{{ 'RequiredField' | translate }}
+					</div>
+				</div>
+			</div>
 
-        <div  class="flex-1 input-field-mv">
-        <dfm-input #firstname [dfmNameInput]="firstname" size="md" placeholder="{{'EnterFirstName' | translate}}"
-                   label="{{'FirstName' | translate}}*" formControlName="firstname">
-        </dfm-input>
-        <div class="validation-error" *ngIf="addPhysicianForm.get('firstname')?.hasError('required') && addPhysicianForm.get('firstname')?.touched">
-          {{ 'RequiredField' | translate }}
-        </div>
-        </div>
-        <div class="flex-1 input-field-mv">
-        <dfm-input #lastname [dfmNameInput]="lastname"  size="md" placeholder="{{'EnterLastName' | translate}}"
-                   label="{{'LastName' | translate}} *" formControlName="lastname">
-        </dfm-input>
-        <div class="validation-error" *ngIf="addPhysicianForm.get('lastname')?.hasError('required') && addPhysicianForm.get('lastname')?.touched">
-          {{ 'RequiredField' | translate }}
-        </div>
-        </div>
-      </div>
+			<div class="d-flex dfm-gap-32 align-items-start flex-wrap">
+				<div class="d-flex flex-column w-full flex-1">
+					<dfm-input
+						[type]="'email'"
+						class="flex-1"
+						size="md"
+						placeholder="{{ 'EnterEmail' | translate }}"
+						label="{{ 'Email' | translate }}"
+						formControlName="email"
+						(focusout)="handleEmailInput($event)"
+					>
+					</dfm-input>
+					<small *ngIf="addPhysicianForm.get('email')?.hasError('email')" class="validation-error">{{ 'InvalidEmail' | translate }}</small>
+				</div>
 
-      <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
-        <div class="d-flex flex-column w-full flex-1">
-          <dfm-input [type]="'email'" class="flex-1" size="md" placeholder="{{'EnterEmail' | translate}}" label="{{'Email' | translate}}"
-                     formControlName="email" (focusout)="handleEmailInput($event)">
-          </dfm-input>
-          <small *ngIf="addPhysicianForm.get('email')?.hasError('email')" class="validation-error">{{'InvalidEmail' | translate}}</small>
-        </div>
+				<dfm-input
+					class="flex-1"
+					size="md"
+					placeholder="{{ 'EnterRizvNumber' | translate }}"
+					label="{{ 'RizvNumber' | translate }}"
+					formControlName="rizivNumber"
+				>
+				</dfm-input>
+			</div>
 
-        <dfm-input class="flex-1" size="md" placeholder="{{'EnterRizvNumber' | translate}}" label="{{'RizvNumber' | translate}}"
-                   formControlName="rizivNumber">
-        </dfm-input>
-      </div>
+			<div class="d-flex dfm-gap-32 align-items-start flex-wrap">
+				<div class="d-flex flex-column w-full flex-1">
+					<dfm-input
+						#phone
+						[dfmNumberInput]="phone"
+						type="number"
+						class="flex-1"
+						size="md"
+						placeholder="{{ 'EnterTelephone' | translate }}"
+						label="{{ 'Telephone' | translate }} *"
+						formControlName="telephone"
+					>
+					</dfm-input>
+					<span class="validation-error" *ngIf="!addPhysicianForm.controls['telephone'].valid && addPhysicianForm.controls['telephone'].touched">
+						{{ 'RequiredField' | translate }}</span
+					>
+					<small *ngIf="addPhysicianForm.get('telephone')?.hasError('telephone')" class="validation-error">{{ 'InvalidEmail' | translate }}</small>
+				</div>
 
-      <div class="d-flex dfm-gap-32 align-items-start flex-wrap">
-        <div class="d-flex flex-column w-full flex-1">
-          <dfm-input #phone [dfmNumberInput]="phone" type="number" class="flex-1" size="md" placeholder="{{'EnterTelephone' | translate}}" label="{{'Telephone' | translate}} *"
-                     formControlName="telephone">
-          </dfm-input>
-          <span class="validation-error" *ngIf="!addPhysicianForm.controls['telephone'].valid && addPhysicianForm.controls['telephone'].touched">
-            {{ 'RequiredField' | translate }}</span>
-          <small *ngIf="addPhysicianForm.get('telephone')?.hasError('telephone')" class="validation-error">{{'InvalidEmail' | translate}}</small>
-        </div>
+				<dfm-input class="flex-1" size="md" placeholder="{{ 'EnterGsm' | translate }}" label="{{ 'GSM' }}" formControlName="gsm"> </dfm-input>
+			</div>
 
-        <dfm-input class="flex-1" size="md" placeholder="{{'EnterGsm' | translate}}" label="{{'GSM'}}" formControlName="gsm">
-        </dfm-input>
-      </div>
+			<div>
+				<dfm-text-area label="{{ 'Address' | translate }}" placeholder="{{ 'EnterAddress' | translate }}" formControlName="address"></dfm-text-area>
+			</div>
 
-      <div>
-        <dfm-text-area label="{{'Address' | translate}}" placeholder="{{'EnterAddress' | translate}}" formControlName="address"></dfm-text-area>
-      </div>
+			<!-- <div>
+				<dfm-checkbox formControlName="notifyDoctor" label="{{ 'EmailTheDoctor' | translate }}"></dfm-checkbox>
+			</div> -->
+		</form>
+	</section>
 
-      <div>
-        <dfm-checkbox formControlName="notifyDoctor"
-                      label="{{'EmailTheDoctor' | translate}}"></dfm-checkbox>
-      </div>
-    </form>
-  </section>
-
-  <section class="modal-footer ad-ph-footer-buttons">
-    <dfm-button color="secondary" size="md" (click)="closeModal(false)">{{'Cancel' | translate}}</dfm-button>
-    <dfm-button color="primary" size="md" [disabled]="(loading$$ | async) === true" class="text-nowrap"
-                (click)="savePhysician()">{{ modalData.edit ? ('SaveChanges' | translate) : ('AddPhysician' | translate) }}</dfm-button>
-  </section>
+	<section class="modal-footer ad-ph-footer-buttons">
+		<dfm-button color="secondary" size="md" (click)="closeModal(false)">{{ 'Cancel' | translate }}</dfm-button>
+		<dfm-button color="primary" size="md" [disabled]="(loading$$ | async) === true" class="text-nowrap" (click)="savePhysician()">{{
+			modalData.edit ? ('SaveChanges' | translate) : ('AddPhysician' | translate)
+		}}</dfm-button>
+	</section>
 </div>
