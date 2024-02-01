@@ -64,7 +64,7 @@ export class SignalrService {
 
 		this.hubConnection = new signalR.HubConnectionBuilder()
 			.withUrl(`${environment.schedulerApiUrl.slice(0, -3)}informhub`, options)
-			.configureLogging(signalR.LogLevel.Debug)
+			// .configureLogging(signalR.LogLevel.Debug)
 			.build();
 	}
 
@@ -72,7 +72,7 @@ export class SignalrService {
 		this.hubConnection
 			.start()
 			.then(() => {
-				console.log('Connection started.');
+				console.clear();
 				if (this.hubConnection.connectionId) this.sendConnectionId(this.hubConnection.connectionId);
 			})
 			.catch(() => {
@@ -127,6 +127,6 @@ export class SignalrService {
 	private sendConnectionId(connectionId: string) {
 		this.http
 			.post<BaseResponse<any>>(`${environment.schedulerApiUrl}/signalr?connectionId=${connectionId}`, null)
-			.subscribe(() => console.log('Data send successfully'));
-	}
+			.subscribe();
+		}
 }
