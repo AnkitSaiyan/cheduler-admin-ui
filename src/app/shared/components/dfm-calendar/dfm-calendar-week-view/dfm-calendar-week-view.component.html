@@ -214,8 +214,9 @@
 											>
 												<div *ngFor="let items of groupedData" class="calendar-week-view-event-details-container parent">
 													<div
-														(mouseenter)="isHoverOnAppointmentCard = true;  hoverInAppointment(cardContainer)"
-														(mouseleave)="isHoverOnAppointmentCard = false; hoverOutAppointment(cardContainer)"
+														#child
+														(mouseenter)="isHoverOnAppointmentCard = true;  hoverInAppointment(cardContainer, child)"
+														(mouseleave)="isHoverOnAppointmentCard = false; hoverOutAppointment(cardContainer, child)"
 														class="calendar-week-view-event-details-container child"
 														*ngFor="let data of items"
 														[ngClass]="{ 'justify-content-center p-0': getHeight([data]) <= 40, affectedAppointments: data?.absenceDetails?.length }"

@@ -1,15 +1,5 @@
 import { DatePipe } from '@angular/common';
-import {
-	AfterViewInit,
-	Component,
-	EventEmitter,
-	Input,
-	OnChanges,
-	OnDestroy,
-	OnInit,
-	Output,
-	ViewEncapsulation,
-} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { BehaviorSubject, Subject, debounceTime, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs';
 
 import { DraggableService } from 'src/app/core/services/draggable.service';
@@ -130,6 +120,8 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 	public holidayData$$ = new BehaviorSubject<any>({});
 
 	public isHoverOnAppointmentCard = false;
+
+	private childWidth = 0;
 
 	constructor(
 		private datePipe: DatePipe,
@@ -633,11 +625,14 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 		this.openAndClosePrioritySlot.emit(obj);
 	}
 
-	public hoverInAppointment(ele: HTMLDivElement) {
+	public hoverInAppointment(ele: HTMLDivElement, child: HTMLDivElement) {
+		this.childWidth = child.offsetWidth;
+		child.style.width = ele.offsetWidth + 'px';
 		if (this.isHoverOnAppointmentCard) ele.classList.add('overflow-none');
 	}
 
-	public hoverOutAppointment(ele: HTMLDivElement) {
+	public hoverOutAppointment(ele: HTMLDivElement, child: HTMLDivElement) {
+		child.style.width = this.childWidth + 'px';
 		setTimeout(() => {
 			if (!this.isHoverOnAppointmentCard) ele.classList.remove('overflow-none');
 		}, 200);
