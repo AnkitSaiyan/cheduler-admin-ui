@@ -185,7 +185,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 					this.downloadSvc.downloadJsonAs(
 						downloadAs as DownloadAsType,
 						this.tableHeaders.map(({ title }) => title).slice(0, -1),
-						this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), Translate[StatusToName[+ex.status]][this.selectedLang]]),
+						this.filteredExams$$.value.map((ex: Exam) => [ex.name, ex.expensive?.toString(), ex.bodyType, this.getBodyPartsName(ex.bodyPartDetails), Translate[StatusToName[+ex.status]][this.selectedLang]]),
 						'exams',
 					);
 
@@ -398,5 +398,9 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 
 	public onSort(e: DfmTableHeader): void {
 		this.filteredExams$$.next(GeneralUtils.SortArray(this.filteredExams$$.value, e.sort, ColumnIdToKey[e.id]));
+	}
+
+	private getBodyPartsName(value: any): string {
+		return value.map(({ bodypartName, bodypartNameNl }) => (this.selectedLang === ENG_BE ? bodypartName : bodypartNameNl)).join(', ');
 	}
 }
