@@ -566,7 +566,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			this.endDateControl.setValue(date);
 		}
 
-		this.intilaizeForm(absenceDetails, absenceDetails?.startedAt ?? this.selectedDate, startTime, endTime)
+		this.intilaizeForm(absenceDetails, absenceDetails?.startedAt ?? this.selectedDate ?? new Date(), startTime, endTime)
 
 		this.setupValueChangeSubscriptions(absenceDetails);
 	}
@@ -612,7 +612,7 @@ export class AddAbsenceComponent extends DestroyableComponent implements OnInit,
 			});
 	}
 
-	private intilaizeForm(absenceDetails: Absence | undefined, startedAt: Date | string | undefined, startTime: any, endTime: any) {
+	private intilaizeForm(absenceDetails: Absence | undefined, startedAt: Date | string , startTime: string, endTime: string) {
 		this.absenceForm = this.fb.group({
 			name: [absenceDetails?.name ?? '', [Validators.required]],
 			startedAt: [
