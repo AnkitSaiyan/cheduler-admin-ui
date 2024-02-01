@@ -216,7 +216,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		this.appointmentData$ = this.weekdayToPractice$$.pipe(
 			filter(Boolean),
 			switchMap(() => {
-				this.isLoader$$.next(true);
 				return this.route.queryParams
 			}),
 			filter((queryParams) => !!queryParams['v'] && !!queryParams['d']),
@@ -226,7 +225,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			switchMap(({ fromDate, toDate }) => {
 				return this.appointmentApiSvc.appointmentForCalendar$(fromDate, toDate).pipe(
 					catchError((err) => {
-						this.isLoader$$.next(false);
 						return throwError(() => err)
 					}),
 				);
@@ -497,7 +495,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments.map((value) => [value]));
 			}
 		});
-		this.isLoader$$.next(false);
 		return appointmentsGroupedByDateAndTime;
 	}
 
@@ -514,7 +511,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				}
 			}
 		});
-		this.isLoader$$.next(false);
 		return appointmentsGroupedByDate;
 	}
 
@@ -553,12 +549,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				}
 			}
 		});
-		this.isLoader$$.next(false);
 		return appointmentGroupedByDateAndRoom;
 	}
 
 	private updateQuery(queryStr?: string, date?: Date, replaceUrl: boolean = false) {
-		this.isLoader$$.next(true);
 		setTimeout(() => {
 			this.router.navigate([], {
 				queryParams: {
