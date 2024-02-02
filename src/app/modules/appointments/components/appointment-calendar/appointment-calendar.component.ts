@@ -228,6 +228,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				this.loaderSvc.dataLoading(true);
 				return this.appointmentApiSvc.appointmentForCalendar$(fromDate, toDate).pipe(
 					catchError((err) => {
+						this.loaderSvc.dataLoading(false);
 						return throwError(() => err)
 					}),
 				);
