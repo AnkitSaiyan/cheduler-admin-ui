@@ -513,8 +513,6 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 					height: 0,
 				},
 			];
-			if (!intervals[0].dayStart) {
-			}
 
 			if (value === '0') {
 				if (!intervals[0].dayStart) {
@@ -567,12 +565,10 @@ export class DfmCalendarWeekViewComponent extends DestroyableComponent implement
 						}
 					}
 				}
+			} else if (!intervals[0].dayStart) {
+				grayOutSlot[+value - 1] = noPracticeGraySlot;
 			} else {
-				if (!intervals[0].dayStart) {
-					grayOutSlot[+value - 1] = noPracticeGraySlot;
-				} else {
-					this.getGrayOutAreaElse(intervals, grayOutSlot, value);
-				}
+				this.getGrayOutAreaElse(intervals, grayOutSlot, value);
 			}
 		});
 

@@ -63,6 +63,8 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 
 	public isLoaderActive$$ = new Subject<boolean>();
 
+	public dataLoading$$ = new Subject<boolean>();
+
 	public navItems: NavigationItem[] = [];
 
 	public user!: AuthUser;
@@ -205,6 +207,12 @@ export class CoreComponent extends DestroyableComponent implements OnInit, OnDes
 		this.loaderService.isActive$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (value) => {
 				this.isLoaderActive$$.next(value);
+				this.cdr.detectChanges();
+			},
+		});
+		this.loaderService.isDataLoading$.pipe(takeUntil(this.destroy$$)).subscribe({
+			next: (value) => {
+				this.dataLoading$$.next(value);
 				this.cdr.detectChanges();
 			},
 		});
