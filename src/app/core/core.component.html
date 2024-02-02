@@ -18,7 +18,7 @@
     (messagesDismissed)="onDismissed($event, 'post-its')"
     [isSettingsButtonShown]="false"
   >
-    <mat-progress-bar *ngIf="isLoaderActive$$ | async" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="(isLoaderActive$$ | async) || (dataLoading$$ | async)" mode="indeterminate"></mat-progress-bar>
     <div class="dfm-content content-height" #content>
       <router-outlet></router-outlet>
     </div>

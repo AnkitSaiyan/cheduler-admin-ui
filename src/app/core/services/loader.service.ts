@@ -9,12 +9,22 @@ export class LoaderService {
 
 	private isSpinnerActive$$ = new BehaviorSubject<boolean>(false);
 
+	private isComponentDataLoading$$ = new BehaviorSubject<boolean>(false);
+
 	public get isActive$() {
 		return this.isLoaderActive$$.asObservable();
 	}
 
+	public get isDataLoading$() {
+		return this.isComponentDataLoading$$.asObservable();
+	}
+
 	public get isSpinnerActive$() {
 		return this.isSpinnerActive$$.asObservable();
+	}
+
+	public dataLoading(value: boolean) {
+		this.isComponentDataLoading$$.next(value);
 	}
 
 	public activate() {

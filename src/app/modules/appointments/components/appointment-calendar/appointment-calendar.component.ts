@@ -30,6 +30,7 @@ import { ENG_BE } from '../../../../shared/utils/const';
 import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
 	selector: 'dfm-appointment-calendar',
@@ -116,6 +117,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		private utcToLocalPipe: UtcToLocalPipe,
 		private translate: TranslateService,
 		private draggableSvc: DraggableService,
+		private loaderSvc: LoaderService
 	) {
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
@@ -223,6 +225,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			map(this.getFromAndToDate.bind(this)),
 			debounceTime(100),
 			switchMap(({ fromDate, toDate }) => {
+				this.loaderSvc.dataLoading(true);
 				return this.appointmentApiSvc.appointmentForCalendar$(fromDate, toDate).pipe(
 					catchError((err) => {
 						return throwError(() => err)
@@ -495,6 +498,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments.map((value) => [value]));
 			}
 		});
+		this.loaderSvc.dataLoading(false);
 		return appointmentsGroupedByDateAndTime;
 	}
 
@@ -511,6 +515,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				}
 			}
 		});
+		this.loaderSvc.dataLoading(false);
 		return appointmentsGroupedByDate;
 	}
 
@@ -549,10 +554,12 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				}
 			}
 		});
+		this.loaderSvc.dataLoading(false);
 		return appointmentGroupedByDateAndRoom;
 	}
 
 	private updateQuery(queryStr?: string, date?: Date, replaceUrl: boolean = false) {
+		this.loaderSvc.dataLoading(true);
 		setTimeout(() => {
 			this.router.navigate([], {
 				queryParams: {
