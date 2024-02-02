@@ -282,6 +282,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	public override ngOnDestroy() {
+		this.loaderSvc.dataLoading(false);
 		super.ngOnDestroy();
 	}
 
