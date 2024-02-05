@@ -561,7 +561,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	private updateQuery(queryStr?: string, date?: Date, replaceUrl: boolean = false) {
-		this.loaderSvc.dataLoading(true);
 		setTimeout(() => {
 			this.router.navigate([], {
 				queryParams: {
