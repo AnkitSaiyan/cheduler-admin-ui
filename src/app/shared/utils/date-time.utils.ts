@@ -150,6 +150,10 @@ export class DateTimeUtils {
 	}
 
 	public static UTCTimeToLocalTimeString(timeString: string): string {
+		if (!timeString) {
+			return timeString
+		}
+
 		if (timeString.split(':').length < 2) {
 			return timeString;
 		}
