@@ -59,10 +59,10 @@ export class WeekViewAppointmentCardTopPipe implements PipeTransform {
 			height = 0;
 		}
 
-		const horizontalBarHeight = (height / (this.pixelsPerMin * this.timeInterval)) * barHeight;
+		// const horizontalBarHeight = (height / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 
 		const top =
-			(startMinute + startHour * 60) * this.pixelsPerMin - horizontalBarHeight - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
+			(startMinute + startHour * 60) * this.pixelsPerMin - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;
 
 		if (top % 20) {
 			return Math.floor(top / 20) * 20 + 20;
