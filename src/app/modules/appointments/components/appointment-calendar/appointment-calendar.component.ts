@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, ContentChild, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { Component, ContentChild, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -31,6 +31,8 @@ import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
 import { LoaderService } from 'src/app/core/services/loader.service';
+import { DateAdapter } from '@angular/material/core';
+import { MatCalendar } from '@angular/material/datepicker';
 
 @Component({
 	selector: 'dfm-appointment-calendar',
@@ -41,6 +43,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	public calendarViewFormControl = new FormControl();
 
 	@ContentChild(TemplateRef) topAction!: TemplateRef<any>;
+
+	@ViewChild('calendar') datepicker!: MatCalendar<Date>;
 
 	public dateControl = new FormControl();
 
@@ -57,8 +61,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	public newDate$$ = new BehaviorSubject<{ date: Date | null; isWeekChange: boolean }>({ date: null, isWeekChange: false });
 
 	public headerList: NameValue[] = [];
-
-	private appointments$$: BehaviorSubject<any[]>;
 
 	public filteredAppointments$$: BehaviorSubject<any[]>;
 
@@ -81,8 +83,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	public appointmentDataForMonthView$!: Observable<{ [key: string]: any[][] }>;
 
 	public appointmentDataForWeekView$!: Observable<{ [key: string]: any[][] }>;
-
-	public switchCalender = true;
 
 	public isLoader$$ = new BehaviorSubject(true);
 
@@ -117,10 +117,10 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		private utcToLocalPipe: UtcToLocalPipe,
 		private translate: TranslateService,
 		private draggableSvc: DraggableService,
-		private loaderSvc: LoaderService
+		private loaderSvc: LoaderService,
+		private dateAdapter: DateAdapter<Date>
 	) {
 		super();
-		this.appointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
 		this.selectedSlot$$ = new BehaviorSubject<any>(null);
 		this.prioritySlots$$ = new BehaviorSubject<any>({});
@@ -147,6 +147,8 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 					} else {
 						this.selectedDate$$.next(date);
 						this.newDate$$.next({ date, isWeekChange: false });
+						this.dateControl.setValue(date);
+						this.datepicker.activeDate = date;
 					}
 				} else {
 					this.updateQuery('m', this.selectedDate$$.value, true);
@@ -405,8 +407,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 	public updateToToday() {
 		this.updateQuery('', new Date());
-		this.dateControl.setValue(new Date());
-		this.switchCalender = !this.switchCalender;
 	}
 
 	private dataModificationForWeekView(appointments: Appointment[]) {

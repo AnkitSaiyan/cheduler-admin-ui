@@ -114,9 +114,7 @@
         </div>
 
       </div>
-      <mat-calendar *ngIf="!switchCalender" [selected]="dateControl.value"
-        (selectedChange)="updateFormDate($event)"></mat-calendar>
-      <mat-calendar *ngIf="switchCalender" [selected]="dateControl.value"
+      <mat-calendar #calendar [selected]="dateControl.value"
         (selectedChange)="updateFormDate($event)"></mat-calendar>
     </div>
   </ng-template>
