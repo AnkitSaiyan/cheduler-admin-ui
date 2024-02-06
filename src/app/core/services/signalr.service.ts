@@ -60,6 +60,7 @@ export class SignalrService {
 		const SubDomain: string = window.location.host.split('.')[0];
 		const options: IHttpConnectionOptions = {
 			headers: { SubDomain },
+			transport: signalR.HttpTransportType.LongPolling,
 		};
 
 		this.hubConnection = new signalR.HubConnectionBuilder()
@@ -72,7 +73,6 @@ export class SignalrService {
 		this.hubConnection
 			.start()
 			.then(() => {
-				console.clear();
 				if (this.hubConnection.connectionId) this.sendConnectionId(this.hubConnection.connectionId);
 			})
 			.catch(() => {
