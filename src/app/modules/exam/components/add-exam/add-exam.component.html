@@ -94,7 +94,7 @@
 								class="flex-1"
 								#bodyPartDropdown
 								size="md"
-								[placeholder]="(bodyPartDropdown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectBodyPart' | async) ?? ''"
+								[placeholder]="(bodyPartDropdown.selectedItems.length ?? 0 | dfmMultiDropdownPlaceholderName : 'SelectBodyPart' | async) ?? ''"
 								label="{{ 'BodyPart' | translate }} *"
 								formControlName="bodyPart"
 								[typeToSearch]="true"
