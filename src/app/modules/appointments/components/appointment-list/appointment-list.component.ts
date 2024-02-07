@@ -281,10 +281,13 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				} else {
 					this.appointments$$.next(appointmentsBase.data);
 				}
-				this.paginationData = appointmentsBase?.metaData?.pagination || 1;
+				this.paginationData = {...appointmentsBase?.metaData?.pagination, lastDataLength: appointmentsBase.data.length};
 				this.isLoading = false;
 			},
-			error: () => this.filteredAppointments$$.next([]),
+			error: () => {
+				this.filteredAppointments$$.next([]);
+				this.isLoading = false;
+			},
 		});
 
 		this.appointmentApiSvc.pastAppointment$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -294,7 +297,7 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 				} else {
 					this.pastAppointments$$.next(appointmentsBase.data);
 				}
-				this.pastPaginationData = appointmentsBase?.metaData?.pagination || 1;
+				this.pastPaginationData = {...appointmentsBase?.metaData?.pagination, lastDataLength: appointmentsBase.data.length};
 			},
 			error: () => this.filteredPastAppointments$$.next([]),
 		});
@@ -588,9 +591,15 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.appointmentApiSvc.appointmentPageNo += 1;
 			this.upcomingTableData$$.value.isLoadingMore = true;
+		}
+	}
+
+	public pastOnScroll(): void {
+		if (this.pastPaginationData?.pageSize && this.pastPaginationData?.pageNo && this.pastPaginationData.pageSize === this.pastPaginationData.lastDataLength) {
+			this.appointmentApiSvc.pastAppointmentPageNo += 1;
 		}
 	}
 

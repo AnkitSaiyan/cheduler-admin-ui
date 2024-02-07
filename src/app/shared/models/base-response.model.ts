@@ -32,10 +32,9 @@ export interface BaseResponse<T> {
 }
 
 export interface PaginationData {
-	rowCount: number;
-	pageCount: number;
 	pageNo: number;
 	pageSize: number;
+	lastDataLength: number;
 }
 export interface MetaData {
 	pagination: PaginationData;

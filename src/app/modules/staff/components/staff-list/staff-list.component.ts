@@ -149,11 +149,12 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 		this.userApiSvc.staffs$.pipe(takeUntil(this.destroy$$)).subscribe({
 			next: (staffBase) => {
 				this.staffs$$.next([...this.staffs$$.value, ...staffBase.data]);
-				this.paginationData = staffBase?.metaData?.pagination || 1;
+				this.paginationData = {...staffBase?.metaData?.pagination, lastDataLength: staffBase.data.length};
 				this.isLoading = false;
 			},
 			error: () => {
 				this.staffs$$.next([]);
+				this.isLoading = false;
 			},
 		});
 
@@ -435,7 +436,7 @@ export class StaffListComponent extends DestroyableComponent implements OnInit, 
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.userApiSvc.pageNoStaff += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}

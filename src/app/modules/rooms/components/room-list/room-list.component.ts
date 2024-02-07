@@ -118,7 +118,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 					} else {
 						this.rooms$$.next(roomsBase.data);
 					}
-					this.paginationData = roomsBase?.metaData?.pagination || 1;
+					this.paginationData = {...roomsBase?.metaData?.pagination, lastDataLength: roomsBase.data.length};
 					this.mapRoomPlaceInAgenda();
 					this.loading$$.next(false);
 				},
@@ -512,7 +512,7 @@ export class RoomListComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public onScroll() {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.roomApiSvc.pageNo += 1;
 		}
 	}

@@ -519,7 +519,7 @@ export class UserListComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.tableData$$.value.isLoadingMore = true;
 		}
 	}
