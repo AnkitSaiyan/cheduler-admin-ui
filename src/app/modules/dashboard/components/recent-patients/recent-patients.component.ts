@@ -101,7 +101,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 				} else {
 					this.recentPatients$$.next(recentPatientBase.data);
 				}
-				this.paginationData = recentPatientBase?.metaData?.pagination || 1;
+				this.paginationData = {...recentPatientBase?.metaData?.pagination, lastDataLength: recentPatientBase.data.length};
 			},
 			error: () => this.recentPatients$$.next([]),
 		});
@@ -198,7 +198,7 @@ export class RecentPatientsComponent extends DestroyableComponent implements OnI
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.appointmentApiService.recentPatientPageNo += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}

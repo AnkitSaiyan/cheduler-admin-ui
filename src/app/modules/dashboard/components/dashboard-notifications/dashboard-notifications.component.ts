@@ -54,13 +54,13 @@ export class DashboardNotificationsComponent extends DestroyableComponent implem
 				} else {
 					this.notifications$$.next(notificationsBase?.data);
 				}
-				this.paginationData = notificationsBase?.metaData?.pagination;
+				this.paginationData = {...notificationsBase?.metaData?.pagination, lastDataLength: notificationsBase.data.length};
 			},
 		});
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.dashboardApiService.notificationPageNo += 1;
 		}
 	}

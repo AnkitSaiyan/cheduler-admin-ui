@@ -140,10 +140,13 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 				} else {
 					this.emails$$.next(emailBase.data);
 				}
-				this.paginationData = emailBase?.metaData?.pagination || 1;
+				this.paginationData = {...emailBase?.metaData?.pagination, lastDataLength: emailBase.data.length};
 				this.isLoading = false;
 			},
-			error: () => this.emails$$.next([]),
+			error: () => {
+				this.emails$$.next([]);
+				this.isLoading = false;
+			},
 		});
 
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
@@ -315,7 +318,7 @@ export class EmailTemplateListComponent extends DestroyableComponent implements 
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.emailTemplateApiSvc.pageNo += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}

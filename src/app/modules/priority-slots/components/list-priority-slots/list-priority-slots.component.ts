@@ -134,10 +134,13 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 				} else {
 					this.prioritySlots$$.next(prioritySlotBase.data);
 				}
-				this.paginationData = prioritySlotBase?.metaData?.pagination || 1;
+				this.paginationData = {...prioritySlotBase?.metaData?.pagination, lastDataLength: prioritySlotBase.data.length};
 				this.isLoading = false;
 			},
-			error: () => this.prioritySlots$$.next([]),
+			error: () => {
+				this.prioritySlots$$.next([]);
+				this.isLoading = false;
+			},
 		});
 
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe((params) => {
@@ -350,7 +353,7 @@ export class ListPrioritySlotsComponent extends DestroyableComponent implements 
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.priorityApiSvc.pageNo += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}

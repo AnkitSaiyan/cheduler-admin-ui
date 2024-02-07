@@ -146,11 +146,12 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 				} else {
 					this.exams$$.next(examsBase.data);
 				}
-				this.paginationData = examsBase?.metaData?.pagination || 1;
+				this.paginationData = {...examsBase?.metaData?.pagination, lastDataLength: examsBase.data.length};
 				this.isLoading = false;
 			},
 			error: () => {
 				this.exams$$.next([]);
+				this.isLoading = false;
 			},
 		});
 
@@ -390,7 +391,7 @@ export class ExamListComponent extends DestroyableComponent implements OnInit, O
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.examApiSvc.pageNo = this.paginationData.pageNo + 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}

@@ -250,10 +250,13 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 					} else {
 						this.appointments$$.next(appointmentsBase.data);
 					}
-					this.paginationData = appointmentsBase?.metaData?.pagination || 1;
+					this.paginationData = {...appointmentsBase?.metaData?.pagination, lastDataLength: appointmentsBase.data.length};
 					this.isLoading = false;
 				},
-				error: () => this.filteredAppointments$$.next([]),
+				error: () => {
+					this.filteredAppointments$$.next([]);
+					this.isLoading = false;
+				},
 			});
 
 		this.pastAppointments$$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -286,7 +289,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 					} else {
 						this.pastAppointments$$.next(appointmentsBase.data);
 					}
-					this.pastPaginationData = appointmentsBase?.metaData?.pagination || 1;
+					this.pastPaginationData = {...appointmentsBase?.metaData?.pagination, lastDataLength: appointmentsBase.data.length};
 				},
 				error: () => this.filteredPastAppointments$$.next([]),
 			});
@@ -618,16 +621,15 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.appointmentApiSvc.appointmentPageNo += 1;
 			this.upcomingTableData$$.value.isLoadingMore = true;
 		}
 	}
 
 	public pastOnScroll(): void {
-		if (this.pastPaginationData?.pageCount && this.pastPaginationData?.pageNo && this.pastPaginationData.pageCount > this.pastPaginationData.pageNo) {
+		if (this.pastPaginationData?.pageSize && this.pastPaginationData?.pageNo && this.pastPaginationData.pageSize === this.pastPaginationData.lastDataLength) {
 			this.appointmentApiSvc.pastAppointmentPageNo += 1;
-			this.upcomingTableData$$.value.isLoadingMore = true;
 		}
 	}
 

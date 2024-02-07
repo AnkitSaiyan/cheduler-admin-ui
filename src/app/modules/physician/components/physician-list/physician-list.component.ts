@@ -148,10 +148,13 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 				} else {
 					this.physicians$$.next(physicianBase.data);
 				}
-				this.paginationData = physicianBase?.metaData?.pagination || 1;
+				this.paginationData = {...physicianBase?.metaData?.pagination, lastDataLength: physicianBase.data.length};
 				this.isLoading = false;
 			},
-			error: () => this.physicians$$.next([]),
+			error: () => {
+				this.physicians$$.next([]);
+				this.isLoading = false;
+			},
 		});
 
 		this.route.queryParams.pipe(takeUntil(this.destroy$$)).subscribe(({ search }) => {
@@ -425,7 +428,7 @@ export class PhysicianListComponent extends DestroyableComponent implements OnIn
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.physicianApiSvc.pageNo += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}

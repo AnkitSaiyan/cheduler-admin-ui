@@ -79,7 +79,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 					} else {
 						this.absences$$.next(employeeAbsencesBase.data);
 					}
-					this.paginationData = employeeAbsencesBase?.metaData?.pagination || 1;
+					this.paginationData = {...employeeAbsencesBase?.metaData?.pagination, lastDataLength: employeeAbsencesBase.data.length};
 				},
 				error: () => this.absences$$.next([]),
 			});
@@ -146,7 +146,7 @@ export class EmployeeAbsencesComponent extends DestroyableComponent implements O
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.absenceApiService.pageNoOnDashboard += 1;
 		}
 	}

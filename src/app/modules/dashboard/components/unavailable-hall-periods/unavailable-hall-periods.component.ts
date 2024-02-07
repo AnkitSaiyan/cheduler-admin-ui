@@ -103,7 +103,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 				} else {
 					this.roomAbsence$$.next([...roomAbsenceBase.data]);
 				}
-				this.paginationData = roomAbsenceBase?.metaData?.pagination || 1;
+				this.paginationData = {...roomAbsenceBase?.metaData?.pagination, lastDataLength: roomAbsenceBase.data.length};
 			},
 			error: () => this.filteredRoomAbsence$$.next([]),
 		});
@@ -197,7 +197,7 @@ export class UnavailableHallPeriodsComponent extends DestroyableComponent implem
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.dashboardApiService.roomAbsencePageNo += 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}

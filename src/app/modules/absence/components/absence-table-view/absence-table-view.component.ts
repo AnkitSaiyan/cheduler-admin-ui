@@ -135,11 +135,12 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 					} else {
 						this.absences$$.next(absencesBase.data);
 					}
-					this.paginationData = absencesBase?.metaData?.pagination || 1;
+					this.paginationData = {...absencesBase?.metaData?.pagination, lastDataLength: absencesBase.data.length};
 					this.isLoading = false;
 				},
 				error: () => {
 					this.absences$$.next([]);
+					this.isLoading = false;
 				},
 			});
 
@@ -386,7 +387,7 @@ export class AbsenceTableViewComponent extends DestroyableComponent implements O
 	}
 
 	public onScroll(): void {
-		if (this.paginationData?.pageCount && this.paginationData?.pageNo && this.paginationData.pageCount > this.paginationData.pageNo) {
+		if (this.paginationData?.pageSize && this.paginationData?.pageNo && this.paginationData.pageSize === this.paginationData.lastDataLength) {
 			this.absenceApiSvc.pageNo = this.paginationData.pageNo + 1;
 			this.tableData$$.value.isLoadingMore = true;
 		}
