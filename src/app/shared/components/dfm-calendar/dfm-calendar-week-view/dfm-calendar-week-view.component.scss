@@ -159,6 +159,7 @@ h3 {
 
 		.calendar-week-view-events-container-main {
 			overflow-x: scroll;
+			overflow-y: hidden;
 			-webkit-overflow-scrolling: touch;
 			display: flex;
 			align-items: flex-start;
