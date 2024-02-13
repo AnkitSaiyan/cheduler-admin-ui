@@ -449,12 +449,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 						const currSD = new Date(appointment.startedAt);
 						const currED = new Date(appointment.endedAt);
 
-						if (currSD >= startDate && currSD < endDate) {
-							sameGroup = true;
-							if (currED > endDate) {
-								endDate = currED;
-							}
-						} else if (currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
+						if ((currSD >= startDate && currSD < endDate) || currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
 							sameGroup = true;
 							if (currED > endDate) {
 								endDate = currED;
@@ -468,9 +463,6 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 
 					if (!sameGroup) {
 						if (index !== 0 && lastDateString) {
-							groupedAppointments?.sort((s1, s2) =>
-								s1.endedAt.getTime() - s1.startedAt.getTime() > s2?.endedAt.getTime() - s2?.startedAt.getTime() ? 1 : -1,
-							);
 							const modifiedGroupedAppointment: any = [[]];
 							groupedAppointments?.forEach((appointment) => {
 								let pushed = true;
@@ -515,8 +507,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 				appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments.map((value) => [value]));
 			}
 		});
-		this.loaderSvc.dataLoading(false);
-
+		this.loaderSvc.dataLoading(false);		
 		return appointmentsGroupedByDateAndTime;
 	}
 
