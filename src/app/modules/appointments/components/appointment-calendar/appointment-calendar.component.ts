@@ -45,7 +45,6 @@ import { DateTimeUtils } from '../../../../shared/utils/date-time.utils';
 import { getNumberArray } from '../../../../shared/utils/getNumberArray';
 import { AddAppointmentModalComponent } from '../add-appointment-modal/add-appointment-modal.component';
 import { LoaderService } from 'src/app/core/services/loader.service';
-import { DateAdapter } from '@angular/material/core';
 import { MatCalendar } from '@angular/material/datepicker';
 
 @Component({
@@ -421,96 +420,112 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		this.updateQuery('', new Date());
 	}
 
-	private dataModificationForWeekView(appointments: Appointment[]) {
-		let startDate: Date;
-		let endDate: Date;
-		let sameGroup: boolean;
-		let groupedAppointments: Appointment[] = [];
-		let lastDateString: string;
+	private dataModificationForWeekView(appointments: Appointment[]): any {
+		appointments.sort((a: Appointment, b: Appointment) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime());
 
-		if (!appointments.length) {
-			this.loaderSvc.dataLoading(false);
-		}
-		const appointmentsGroupedByDateAndTime = {};
-		appointments = appointments.sort((a: Appointment, b: Appointment) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime());
-		appointments.push({} as Appointment);
-		appointments.forEach((appointment, index) => {
-			if (Object.keys(appointment).length && appointment.exams?.length && appointment.startedAt) {
-				const dateString = this.datePipe.transform(new Date(appointment.startedAt), 'd-M-yyyy');
+		let currDate = appointments[0].startedAt.getDate();
+		let apArray: Appointment[] = [];
+		let dateArrays: Appointment[][] = [];
 
-				if (dateString) {
-					if (!appointmentsGroupedByDateAndTime[dateString]) {
-						appointmentsGroupedByDateAndTime[dateString] = [];
-
-						startDate = new Date(appointment.startedAt);
-						endDate = new Date(appointment.endedAt);
-						sameGroup = false;
-					} else {
-						const currSD = new Date(appointment.startedAt);
-						const currED = new Date(appointment.endedAt);
-
-						if ((currSD >= startDate && currSD < endDate) || currSD > endDate && getDurationMinutes(endDate, currSD) <= 1) {
-							sameGroup = true;
-							if (currED > endDate) {
-								endDate = currED;
-							}
-						} else {
-							startDate = currSD;
-							endDate = currED;
-							sameGroup = false;
-						}
-					}
-
-					if (!sameGroup) {
-						if (index !== 0 && lastDateString) {
-							const modifiedGroupedAppointment: any = [[]];
-							groupedAppointments?.forEach((appointment) => {
-								let pushed = true;
-								for (let items of modifiedGroupedAppointment) {
-									if (
-										items.every(
-											(item: any) =>
-												!DateTimeUtils.CheckTimeRangeOverlapping(
-													this.datePipe.transform(item.startedAt, 'HH:mm:ss')!,
-													this.datePipe.transform(item.endedAt, 'HH:mm:ss')!,
-													this.datePipe.transform(appointment.startedAt, 'HH:mm:ss')!,
-													this.datePipe.transform(appointment.endedAt, 'HH:mm:ss')!,
-												),
-										)
-									) {
-										items.push(appointment);
-										pushed = false;
-										break;
-									}
-								}
-								if (pushed) {
-									modifiedGroupedAppointment.push([appointment]);
-								}
-							});
-							const finalAppointment = modifiedGroupedAppointment
-								.map((items) => {
-									const sortedData = items.sort((s1, s2) => s1.startedAt - s2.startedAt);
-									return sortedData;
-								})
-								.sort((s1, s2) => s1?.[0]?.startedAt - s2?.[0]?.startedAt);
-
-							appointmentsGroupedByDateAndTime[lastDateString].push(finalAppointment);
-							groupedAppointments = [];
-						}
-					}
-
-					lastDateString = dateString;
-
-					groupedAppointments.push(appointment);
-				}
-			} else if (lastDateString) {
-				appointmentsGroupedByDateAndTime[lastDateString].push(groupedAppointments.map((value) => [value]));
+		appointments.forEach((ap: Appointment) => {
+			if (currDate === ap.startedAt.getDate()) {
+				apArray.push(ap);
+			} else {
+				dateArrays.push(apArray);
+				apArray = [];
+				apArray.push(ap);
+				currDate = ap.startedAt.getDate();
 			}
 		});
-		this.loaderSvc.dataLoading(false);		
-		return appointmentsGroupedByDateAndTime;
+		dateArrays.push(apArray);
+
+		const finalGroupArray: Appointment[][] = [];
+		dateArrays.forEach((arr: Appointment[]) => {
+			finalGroupArray.push(...this.getDayGroups(arr));
+		});
+
+		const groupByDate = {};
+		finalGroupArray.forEach((arr: Appointment[]) => {
+			const dateString = this.datePipe.transform(new Date(arr[0].startedAt), 'd-M-yyyy');
+
+			if (dateString && groupByDate[dateString]) {
+				groupByDate[dateString] = [...groupByDate[dateString], this.makeGroup(arr)];
+			} else if (dateString) {
+				groupByDate[dateString] = [this.makeGroup(arr)];
+			}
+		});
+
+		this.loaderSvc.dataLoading(false);
+		return groupByDate;
 	}
 
+	private getDayGroups(dayAppointments: Appointment[]): Appointment[][] {
+		let min: number , max: number = 0;
+		let dayGroups: Appointment[][] = [];
+		let tempArr: Appointment[] = [];
+		dayAppointments.push({} as Appointment);
+
+		dayAppointments.forEach((ap: Appointment) => {
+			if (!min && !max) {
+				min = new Date(ap.startedAt).getTime();
+				max = new Date(ap.endedAt).getTime();
+			}
+			let apStart = new Date(ap.startedAt).getTime(),
+				apEnd = new Date(ap.endedAt).getTime();
+
+			if ((min <= apEnd && max >= apStart) || (apStart <= max && apEnd >= min)) {
+				if (min > apStart) min = apStart;
+				else if (max < apEnd) max = apEnd;
+				tempArr.push(ap);
+			} else {
+				dayGroups.push(tempArr);
+				tempArr = [];
+				tempArr.push(ap);
+				min = new Date(ap.startedAt).getTime();
+				max = new Date(ap.endedAt).getTime();
+			}
+		});
+
+		return dayGroups;
+	}
+
+	private makeGroup(appointments: Appointment[]): Appointment[][] {
+		let daygroup: Appointment[][] = [];
+		appointments.forEach((appointment: Appointment) => {
+			if (appointment.exams?.length && appointment.startedAt) {
+				if (!daygroup.length) {
+					daygroup.push([appointment]);
+				} else {
+					let spaceExist = false;
+					for (let i = 0; i < daygroup.length; i++) {
+						daygroup[i].forEach((apmt: Appointment) => {
+							spaceExist = this.getSpaceExist(spaceExist, apmt, appointment);
+						});
+
+						if (spaceExist) {
+							daygroup[i] = [...daygroup[i], appointment];
+							break;
+						}
+					}
+					if (!spaceExist) daygroup.push([appointment]);
+				}
+			}
+		});
+
+		return daygroup;
+	}
+
+	private getSpaceExist(spaceExist: boolean, apmt: Appointment, appointment: Appointment): boolean {
+		if (new Date(apmt.endedAt).getTime() <= new Date(appointment.startedAt).getTime()) {
+			spaceExist = true;
+		} else if (spaceExist && new Date(apmt.startedAt).getTime() >= new Date(appointment.endedAt).getTime()) {
+			spaceExist = true;
+		} else {
+			spaceExist = false;
+		}
+
+		return spaceExist;
+	}
 
 	private dataModificationForMonthView(appointments: Appointment[]) {
 		const appointmentsGroupedByDate = {};
