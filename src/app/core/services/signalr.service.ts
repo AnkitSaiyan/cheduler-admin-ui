@@ -60,12 +60,12 @@ export class SignalrService {
 		const SubDomain: string = window.location.host.split('.')[0];
 		const options: IHttpConnectionOptions = {
 			headers: { SubDomain },
-			transport: signalR.HttpTransportType.LongPolling,
+			// transport: signalR.HttpTransportType.LongPolling,
 		};
 
 		this.hubConnection = new signalR.HubConnectionBuilder()
 			.withUrl(`${environment.schedulerApiUrl.slice(0, -3)}informhub`, options)
-			// .configureLogging(signalR.LogLevel.Debug)
+			.configureLogging(signalR.LogLevel.Debug)
 			.build();
 	}
 
