@@ -473,7 +473,7 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			let apStart = new Date(ap.startedAt).getTime(),
 				apEnd = new Date(ap.endedAt).getTime();
 
-			if ((min <= apEnd && max >= apStart) || (apStart <= max && apEnd >= min)) {
+			if (((min <= apEnd && max >= apStart) || (apStart <= max && apEnd >= min)) && max !== apStart ) {
 				if (min > apStart) min = apStart;
 				else if (max < apEnd) max = apEnd;
 				tempArr.push(ap);
