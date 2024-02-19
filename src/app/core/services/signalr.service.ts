@@ -78,6 +78,10 @@ export class SignalrService {
 			.catch(() => {
 				console.log('Opps!');
 			});
+
+		this.hubConnection.on('ping', () => {
+			this.hubConnection.send('pong');
+		});
 	}
 
 	private registerForAppointmentModule(): void {
@@ -125,8 +129,6 @@ export class SignalrService {
 	}
 
 	private sendConnectionId(connectionId: string) {
-		this.http
-			.post<BaseResponse<any>>(`${environment.schedulerApiUrl}/signalr?connectionId=${connectionId}`, null)
-			.subscribe();
-		}
+		this.http.post<BaseResponse<any>>(`${environment.schedulerApiUrl}/signalr?connectionId=${connectionId}`, null).subscribe();
+	}
 }
