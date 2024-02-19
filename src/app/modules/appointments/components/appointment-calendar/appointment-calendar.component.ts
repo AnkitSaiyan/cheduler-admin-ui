@@ -421,15 +421,18 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	private dataModificationForWeekView(appointments: Appointment[]): any {
+		if (!appointments.length) {
+			this.loaderSvc.dataLoading(false);
+			return {};
+		}
 		appointments.sort((a: Appointment, b: Appointment) => this.getTimeOfDate(a.startedAt) - this.getTimeOfDate(b.startedAt));
 
-		let currDate = appointments[0].startedAt?.getDate();
 		let apArray: Appointment[] = [];
 		const dateArrays: Appointment[][] = [];
 		const groupByDate = {};
 
-
 		if (appointments[0].startedAt) {
+			let currDate = appointments[0].startedAt?.getDate();
 			appointments.forEach((ap: Appointment) => {
 				if (currDate === ap.startedAt.getDate()) {
 					apArray.push(ap);
