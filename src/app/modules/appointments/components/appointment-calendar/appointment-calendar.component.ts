@@ -421,68 +421,59 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 	}
 
 	private dataModificationForWeekView(appointments: Appointment[]): any {
-		appointments.sort((a: Appointment, b: Appointment) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime());
+		appointments.sort((a: Appointment, b: Appointment) => this.getTimeOfDate(a.startedAt) - this.getTimeOfDate(b.startedAt));
 
-		let currDate = appointments[0].startedAt.getDate();
+		let currDate = appointments[0].startedAt?.getDate();
 		let apArray: Appointment[] = [];
-		let dateArrays: Appointment[][] = [];
-
-		appointments.forEach((ap: Appointment) => {
-			if (currDate === ap.startedAt.getDate()) {
-				apArray.push(ap);
-			} else {
-				dateArrays.push(apArray);
-				apArray = [];
-				apArray.push(ap);
-				currDate = ap.startedAt.getDate();
-			}
-		});
-		dateArrays.push(apArray);
-
-		const finalGroupArray: Appointment[][] = [];
-		dateArrays.forEach((arr: Appointment[]) => {
-			finalGroupArray.push(...this.getDayGroups(arr));
-		});
-
+		const dateArrays: Appointment[][] = [];
 		const groupByDate = {};
-		finalGroupArray.forEach((arr: Appointment[]) => {
-			const dateString = this.datePipe.transform(new Date(arr[0].startedAt), 'd-M-yyyy');
 
-			if (dateString && groupByDate[dateString]) {
-				groupByDate[dateString] = [...groupByDate[dateString], this.makeGroup(arr)];
-			} else if (dateString) {
-				groupByDate[dateString] = [this.makeGroup(arr)];
-			}
-		});
+
+		if (appointments[0].startedAt) {
+			appointments.forEach((ap: Appointment) => {
+				if (currDate === ap.startedAt.getDate()) {
+					apArray.push(ap);
+				} else {
+					dateArrays.push(...this.getDayGroups(apArray));
+					apArray = [];
+					apArray.push(ap);
+					currDate = ap.startedAt.getDate();
+				}
+			});
+			dateArrays.push(...this.getDayGroups(apArray));
+	
+			dateArrays.forEach((arr: Appointment[]) => {
+				const dateString = this.datePipe.transform(new Date(arr[0].startedAt), 'd-M-yyyy');
+	
+				if (dateString && groupByDate[dateString]) {
+					groupByDate[dateString] = [...groupByDate[dateString], this.makeGroup(arr)];
+				} else if (dateString) {
+					groupByDate[dateString] = [this.makeGroup(arr)];
+				}
+			});
+		}
 
 		this.loaderSvc.dataLoading(false);
 		return groupByDate;
 	}
 
 	private getDayGroups(dayAppointments: Appointment[]): Appointment[][] {
-		let min: number , max: number = 0;
-		let dayGroups: Appointment[][] = [];
+		let max: number = this.getTimeOfDate(dayAppointments[0].endedAt);
 		let tempArr: Appointment[] = [];
+		const dayGroups: Appointment[][] = [];
 		dayAppointments.push({} as Appointment);
 
 		dayAppointments.forEach((ap: Appointment) => {
-			if (!min && !max) {
-				min = new Date(ap.startedAt).getTime();
-				max = new Date(ap.endedAt).getTime();
-			}
-			let apStart = new Date(ap.startedAt).getTime(),
-				apEnd = new Date(ap.endedAt).getTime();
-
-			if (((min <= apEnd && max >= apStart) || (apStart <= max && apEnd >= min)) && max !== apStart ) {
-				if (min > apStart) min = apStart;
-				else if (max < apEnd) max = apEnd;
+			let apStart = this.getTimeOfDate(ap.startedAt),
+				apEnd = this.getTimeOfDate(ap.endedAt);
+			if (apStart < max) {
+				if (max < apEnd) max = apEnd;
 				tempArr.push(ap);
 			} else {
 				dayGroups.push(tempArr);
 				tempArr = [];
 				tempArr.push(ap);
-				min = new Date(ap.startedAt).getTime();
-				max = new Date(ap.endedAt).getTime();
+				max = this.getTimeOfDate(ap.endedAt);
 			}
 		});
 
@@ -515,10 +506,12 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 		return daygroup;
 	}
 
+	private getTimeOfDate = (date: Date | string) => new Date(date).getTime();
+
 	private getSpaceExist(spaceExist: boolean, apmt: Appointment, appointment: Appointment): boolean {
-		if (new Date(apmt.endedAt).getTime() <= new Date(appointment.startedAt).getTime()) {
+		if (this.getTimeOfDate(apmt.endedAt) <= this.getTimeOfDate(appointment.startedAt)) {
 			spaceExist = true;
-		} else if (spaceExist && new Date(apmt.startedAt).getTime() >= new Date(appointment.endedAt).getTime()) {
+		} else if (spaceExist && this.getTimeOfDate(apmt.startedAt) >= this.getTimeOfDate(appointment.endedAt)) {
 			spaceExist = true;
 		} else {
 			spaceExist = false;
