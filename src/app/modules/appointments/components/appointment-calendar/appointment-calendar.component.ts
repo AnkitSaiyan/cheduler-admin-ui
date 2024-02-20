@@ -425,6 +425,26 @@ export class AppointmentCalendarComponent extends DestroyableComponent implement
 			this.loaderSvc.dataLoading(false);
 			return {};
 		}
+
+		let modifiedApplointments: Appointment[] = [];
+
+		for (let appointment of appointments){
+			if (!appointment.isCombineExam) {
+				appointment.exams?.forEach((exam:Exam) => {
+					modifiedApplointments.push({
+						...appointment,
+						startedAt: new Date(exam.startedAt),
+						endedAt: new Date(exam.endedAt),
+						roomsDetail: exam.rooms!,
+						exams: [exam]
+					})
+				})
+			} else {
+				modifiedApplointments.push(appointment);
+			}
+		};
+
+		appointments = [...modifiedApplointments];		
 		appointments.sort((a: Appointment, b: Appointment) => this.getTimeOfDate(a.startedAt) - this.getTimeOfDate(b.startedAt));
 
 		let apArray: Appointment[] = [];
