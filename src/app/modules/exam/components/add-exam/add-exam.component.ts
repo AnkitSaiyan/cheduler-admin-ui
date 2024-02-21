@@ -29,7 +29,7 @@ import { UserApiService } from '../../../../core/services/user-api.service';
 import { DestroyableComponent } from '../../../../shared/components/destroyable.component';
 import { NameValue } from '../../../../shared/components/search-modal.component';
 import { TimeSlot } from '../../../../shared/models/calendar.model';
-import { CreateExamRequestData, Exam, ResourceBatch } from '../../../../shared/models/exam.model';
+import { CreateExamRequestData, CreateExamRequestDataResourcesBatch, Exam, ResourceBatch } from '../../../../shared/models/exam.model';
 import { PracticeAvailabilityServer } from '../../../../shared/models/practice.model';
 import { RoomType, RoomsGroupedByType } from '../../../../shared/models/rooms.model';
 import { Status } from '../../../../shared/models/status.model';
@@ -427,49 +427,53 @@ export class AddExamComponent extends DestroyableComponent implements OnInit, On
 			expensive: this.formValues.expensive,
 			info: this.formValues.info ?? null,
 			instructions: this.formValues?.instructions ?? null,
-			resourcesBatch: [
-				...this.formValues.roomsForExam.map(
-					(
-						{
-							batchName,
-							roomName,
-							duration,
-							sortOrder,
-							assistantCount,
-							nursingCount,
-							radiologistCount,
-							secretaryCount,
-							mandatoryStaffs,
-							assistants,
-							nursing,
-							radiologists,
-							secretaries,
-						},
-						index,
-					) => ({
-						batchName: batchName?.length ? batchName : `Room ${index + 1}`,
-						roomduration: +duration,
-						roomOrder: +sortOrder,
-						roomList: roomName,
-						assistantCount: +(assistantCount ?? 0),
-						nursingCount: +(nursingCount ?? 0),
-						radiologistCount: +(radiologistCount ?? 0),
-						secretaryCount: +(secretaryCount ?? 0),
-						mandatoryUsers: (mandatoryStaffs || []).map((value) => +value),
-						userList: [
-							...((assistants || [])?.map((value) => +value) ?? []),
-							...((nursing || [])?.map((value) => +value) ?? []),
-							...((radiologists || [])?.map((value) => +value) ?? []),
-							...((secretaries || [])?.map((value) => +value) ?? []),
-						],
-					}),
-				),
-			]?.sort((a, b) => (+a.roomOrder < +b.roomOrder ? -1 : 1)),
+			resourcesBatch: this.resourcesBatch(),
 			status: this.formValues.status,
 			availabilityType: timeSlotFormValues ? +!!timeSlotFormValues?.length : 0,
 			uncombinables: (this.formValues.uncombinables || [])?.map((value) => +value),
 			practiceAvailability: timeSlotFormValues,
 		};
+	}
+
+	private resourcesBatch(): CreateExamRequestDataResourcesBatch[] {
+		return [
+			...this.formValues.roomsForExam.map(
+				(
+					{
+						batchName,
+						roomName,
+						duration,
+						sortOrder,
+						assistantCount,
+						nursingCount,
+						radiologistCount,
+						secretaryCount,
+						mandatoryStaffs,
+						assistants,
+						nursing,
+						radiologists,
+						secretaries,
+					},
+					index,
+				) => ({
+					batchName: batchName?.length ? batchName : `Room ${index + 1}`,
+					roomduration: +duration,
+					roomOrder: +sortOrder,
+					roomList: roomName,
+					assistantCount: +(assistantCount ?? 0),
+					nursingCount: +(nursingCount ?? 0),
+					radiologistCount: +(radiologistCount ?? 0),
+					secretaryCount: +(secretaryCount ?? 0),
+					mandatoryUsers: (mandatoryStaffs || []).map((value) => +value),
+					userList: [
+						...((assistants || [])?.map((value) => +value) ?? []),
+						...((nursing || [])?.map((value) => +value) ?? []),
+						...((radiologists || [])?.map((value) => +value) ?? []),
+						...((secretaries || [])?.map((value) => +value) ?? []),
+					],
+				}),
+			),
+		]?.sort((a, b) => (+a.roomOrder < +b.roomOrder ? -1 : 1))
 	}
 
 	private saveDataToBackend(createExamRequestData: CreateExamRequestData) {

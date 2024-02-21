@@ -69,18 +69,7 @@ export interface CreateExamRequestData {
 	expensive: number;
 	bodyType: string;
 	bodyPart: string[] | number[];
-	resourcesBatch: {
-		batchName: string;
-		roomOrder: number;
-		roomList: number[] | string[];
-		roomduration: number;
-		assistantCount: number;
-		radiologistCount: number;
-		nursingCount: number;
-		secretaryCount: number;
-		userList: number[];
-		mandatoryUsers: number[];
-	}[];
+	resourcesBatch: CreateExamRequestDataResourcesBatch[];
 	info?: string;
 	instructions?: string;
 	uncombinables?: number[];
@@ -89,3 +78,16 @@ export interface CreateExamRequestData {
 	status: Status;
 	id?: number;
 }
+
+export type CreateExamRequestDataResourcesBatch = {
+	batchName: string;
+	roomOrder: number;
+	roomList: number[] | string[];
+	roomduration: number;
+	assistantCount: number;
+	radiologistCount: number;
+	nursingCount: number;
+	secretaryCount: number;
+	userList: number[];
+	mandatoryUsers: number[];
+};

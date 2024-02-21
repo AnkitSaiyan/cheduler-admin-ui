@@ -1,4 +1,4 @@
-import { Directive, HostListener, Input, inject } from '@angular/core';
+import { Directive, HostListener, Input } from '@angular/core';
 import { NgControl } from '@angular/forms';
 import { InputComponent } from 'diflexmo-angular-design';
 
