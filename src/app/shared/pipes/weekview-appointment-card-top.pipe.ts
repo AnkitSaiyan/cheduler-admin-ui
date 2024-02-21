@@ -1,7 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 import { DateTimeUtils } from '../utils/date-time.utils';
-import { getDurationMinutes } from '../models/calendar.model';
 import { PIXELS_PER_MIN, TIME_INTERVAL } from '../utils/const';
 
 // Functions can be made common and optimized
@@ -42,24 +41,6 @@ export class WeekViewAppointmentCardTopPipe implements PipeTransform {
 		const startCalendarDate = DateTimeUtils.timeStingToDate(min);
 		const startCalendarHour = startCalendarDate.getHours();
 		const startCalendarMinute = startCalendarDate.getMinutes();
-		const barHeight = 1;
-		let height = 0;
-		const finalEndDate =
-			DateTimeUtils.timeStingToDate(groupEndDate).getTime() > DateTimeUtils.timeStingToDate(max).getTime()
-				? DateTimeUtils.timeStingToDate(max)
-				: DateTimeUtils.timeStingToDate(groupEndDate);
-		const durationMinutes = getDurationMinutes(startDate, finalEndDate);
-
-		height = durationMinutes * this.pixelsPerMin;
-		if (DateTimeUtils.timeStingToDate(groupEndDate).getTime() <= DateTimeUtils.timeStingToDate(min).getTime()) {
-			height = 0;
-		}
-
-		if (DateTimeUtils.timeStingToDate(groupStartDate).getTime() >= DateTimeUtils.timeStingToDate(max).getTime()) {
-			height = 0;
-		}
-
-		// const horizontalBarHeight = (height / (this.pixelsPerMin * this.timeInterval)) * barHeight;
 
 		const top =
 			(startMinute + startHour * 60) * this.pixelsPerMin - (startCalendarMinute + startCalendarHour * 60) * this.pixelsPerMin;

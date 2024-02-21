@@ -258,9 +258,10 @@ export class DfmCalendarDayViewComponent extends DestroyableComponent implements
 				takeUntil(this.destroy$$),
 			)
 			.subscribe((data) => {
+				const selectedDate = this.datePipe.transform(this.selectedDate, 'd-M-yyyy') ?? '';
 				const Holiday: boolean = Boolean(
-					data[this.datePipe.transform(this.selectedDate, 'd-M-yyyy') ?? ''] &&
-						data[this.datePipe.transform(this.selectedDate, 'd-M-yyyy') ?? ''].some(({ isHoliday }) => isHoliday),
+					data[selectedDate] &&
+						data[selectedDate].some(({ isHoliday }) => isHoliday),
 				);
 				this.isHoliday$$.next(Holiday);
 			});
