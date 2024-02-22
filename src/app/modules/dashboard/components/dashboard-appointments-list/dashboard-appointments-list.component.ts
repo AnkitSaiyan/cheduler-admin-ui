@@ -187,7 +187,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
-		this.appointmentApiSvc.appointmentPageNo = 1;
 		localStorage.removeItem('previousPagefromView');
 
 		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
@@ -413,7 +412,6 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		this.appointmentViewControl.valueChanges.pipe(takeUntil(this.destroy$$)).subscribe((value) => {
 			if (value) {
 				this.isUpcomingAppointmentsDashboard = value === 'upcoming';
-				this.onRefresh();
 			}
 			this.selectedAppointmentIDs = [];
 		});

@@ -418,7 +418,6 @@ export class AppointmentListComponent extends DestroyableComponent implements On
 			if (value) {
 				this.isUpcomingAppointments = value === 'upcoming';
 				this.searchControl.setValue('');
-				this.onRefresh();
 			}
 			this.selectedAppointmentIDs = [];
 			this.filteredAppointments$$.next([...this.appointments$$.value]);
