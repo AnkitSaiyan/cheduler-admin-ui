@@ -187,6 +187,7 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 		super();
 		this.appointments$$ = new BehaviorSubject<any[]>([]);
 		this.filteredAppointments$$ = new BehaviorSubject<any[]>([]);
+		this.onRefresh();
 		localStorage.removeItem('previousPagefromView');
 
 		this.permissionSvc.permissionType$.pipe(takeUntil(this.destroy$$)).subscribe({
