@@ -17,7 +17,7 @@ export class PhoneNumberDirective {
 	@Input()
 	public dfmPhoneNumber!: InputComponent;
 
-	private numberOnly: RegExp = /^[0-9/.]+$/;
+	private numberOnly: RegExp = /^[\d\s,]*$/;
 
 	constructor(private control: NgControl) {}
 

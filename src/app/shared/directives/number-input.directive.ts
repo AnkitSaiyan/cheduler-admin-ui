@@ -17,16 +17,15 @@ export class NumberInputDirective {
 	@Input()
 	public dfmNumberInput!: InputComponent;
 
-	private numberOnly: RegExp = /^\d+$/;
-	
-	constructor(private control: NgControl) {}
+	private numberOnly: RegExp = /^[0-9/.]+$/;
 
+	constructor(private control: NgControl) {}
 
 	private handleChange() {
 		const inputText = this.dfmNumberInput.value?.toString();
 
 		if (inputText && !inputText.match(this.numberOnly)) {
-			this.dfmNumberInput.value = +inputText.slice(0, -1);
+			this.dfmNumberInput.value = inputText.slice(0, -1);
 			this.control.control?.setValue(this.dfmNumberInput.value.toString());
 		}
 	}
