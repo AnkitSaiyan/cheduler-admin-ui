@@ -157,6 +157,8 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 
 	public isLoading: boolean = true;
 
+	public isLoadingPast: boolean = true;
+
 	private advanceSearchData: any;
 
 	private qrCodeId!: string;
@@ -289,9 +291,13 @@ export class DashboardAppointmentsListComponent extends DestroyableComponent imp
 					} else {
 						this.pastAppointments$$.next(appointmentsBase.data);
 					}
-					this.pastPaginationData = {...appointmentsBase?.metaData?.pagination, lastDataLength: appointmentsBase.data.length};
+					this.pastPaginationData = { ...appointmentsBase?.metaData?.pagination, lastDataLength: appointmentsBase.data.length };
+					this.isLoadingPast = false;
 				},
-				error: () => this.filteredPastAppointments$$.next([]),
+				error: () => {
+					this.isLoadingPast = false;
+					this.filteredPastAppointments$$.next([])
+				},
 			});
 
 		this.searchControl.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$$)).subscribe({

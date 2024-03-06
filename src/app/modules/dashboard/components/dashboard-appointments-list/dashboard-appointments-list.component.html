@@ -211,7 +211,7 @@
 		</ng-container>
 		<ng-container *ngIf="!isUpcomingAppointmentsDashboard">
 				<dfm-data-table  [data]="(pastTableData$$ | async) ?? {items: []}" [selectable]="false"
-							  noDataMessage="{{ isLoading ? 'Loading...' : 'NoAppointmentsFound' | translate }}"
+							  noDataMessage="{{ isLoadingPast ? 'Loading...' : 'NoAppointmentsFound' | translate }}"
 							  [rowClickable]="true"  (rowClicked)="navigateToView($event)"
 							  [stickyFirstColumn]="false" [headers]="pastTableHeaders" (scrolled)="pastOnScroll()">
 				<ng-template #bodyRowTemplate let-item>
