@@ -194,7 +194,7 @@
           <dfm-table-row-cell [fullContent]="item">{{ item?.exams.length ? (item.startedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing ) : ('' | dashIfNothing) }}</dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item">{{ item?.exams.length ? (item.endedAt | dfmUtcToLocal | dfmDefaultDate | dashIfNothing) : ('' | dashIfNothing) }}</dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item.patientFname">{{ item?.patientFname | titlecase }} {{ item?.patientLname  }}</dfm-table-row-cell>
-          <dfm-table-row-cell [fullContent]="item.exams">{{ item?.exams | joinWithAnd : 'name'  | dashIfNothing }}</dfm-table-row-cell>
+          <dfm-table-row-cell [fullContent]="item.exams | joinWithAnd : 'name'">{{ item?.exams | joinWithAnd : 'name' | truncate | dashIfNothing }}</dfm-table-row-cell>
           <dfm-table-row-cell [fullContent]="item.doctor">{{ item?.doctor | titlecase | dashIfNothing }}</dfm-table-row-cell>
           <dfm-table-body-cell>{{!item.documentCount ? '—':''}}  <span *ngIf="item.documentCount" class="view-link" (click)="$event.stopPropagation(); openDocumentModal(item.id)" >View</span></dfm-table-body-cell>
           <dfm-table-row-cell [fullContent]="item.id">{{ item?.id }}</dfm-table-row-cell>
