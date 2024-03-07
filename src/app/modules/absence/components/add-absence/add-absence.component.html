@@ -208,7 +208,7 @@
                 size="md"
                 [required]="true"
                 formControlName="roomList"
-                label="{{ 'Rooms' | translate }}"
+                label="{{ 'Rooms' | translate }} *"
               >
               </dfm-input-dropdown>
               <span class="validation-error" *ngIf="controls['roomList'].hasError('required') && controls['roomList'].touched">
@@ -228,7 +228,7 @@
                 size="md"
                 [required]="true"
                 formControlName="userList"
-                label="{{ 'Staff' | translate }}"
+                label="{{ 'Staff' | translate }} *"
                 [placeholder]="((staffDropDown.value?.length | dfmMultiDropdownPlaceholderName : 'SelectStaff') | async) ?? ''"
               >
               </dfm-input-dropdown>
